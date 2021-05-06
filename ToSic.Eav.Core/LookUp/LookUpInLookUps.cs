@@ -23,13 +23,13 @@ namespace ToSic.Eav.LookUp
         /// <param name="second">Second LookUp source</param>
         /// <param name="third">Optional third</param>
         /// <param name="fourth">Optional fourth</param>
-        public LookUpInLookUps(string name, ILookUp first, ILookUp second, ILookUp third = null, ILookUp fourth = null)
+        public LookUpInLookUps(string name, ILookUp first, ILookUp second = null, ILookUp third = null, ILookUp fourth = null)
         {
             Name = name;
             Providers.Add(first);
-            Providers.Add(second);
-            if(third != null) Providers.Add(third);
-            if(fourth != null) Providers.Add(fourth);
+            if (second != null) Providers.Add(second);
+            if (third != null) Providers.Add(third);
+            if (fourth != null) Providers.Add(fourth);
         }
 
         // not sure - doesn't seem used?

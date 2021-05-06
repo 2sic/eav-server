@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.LookUp
 {
-    public class LookUpConstants
+    public static class LookUpConstants
     {
         /// <summary>
         /// This marks a special LookUp provider which is passed around through the system

@@ -3,7 +3,7 @@
     public class Settings
     {
         public static string FileVersion = "07.00.00";
-        public static string MinimumRequiredVersion = "07.00.00";
+        public static string MinimumRequiredDnnVersion = "07.04.02";
 
         public static string[] ExcludeFolders =
         {

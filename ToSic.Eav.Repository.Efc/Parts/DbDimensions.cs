@@ -12,10 +12,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
 		private int GetDimensionId(string systemKey, string externalKey)
 		{
-		    return DbContext.SqlDb.ToSicEavDimensions.Where(d =>
-		            string.Equals(d.Key, systemKey, StringComparison.InvariantCultureIgnoreCase)
-		            && d.Matches(externalKey)
-		            && d.ZoneId == DbContext.ZoneId)
+		    // Because of changes in EF 3.x we had to split where part on server and client.
+            return DbContext.SqlDb.ToSicEavDimensions
+                .Where(d => d.ZoneId == DbContext.ZoneId) // This is evaluated on the SQL server
+                .ToList().Where(d =>
+		            d.Matches(externalKey)
+                    && d.Key.ToLower() == systemKey.ToLower())// This is evaluated on the client
 		        .Select(d => d.DimensionId)
                 .FirstOrDefault();
 		}

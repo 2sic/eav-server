@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.Catalog
         {
             // New 11.12.x If the type is identified by a GUID, that's what we should return
             var typeInfo = FindInCache(name);
-            if (typeInfo?.GlobalName != null) return typeInfo.GlobalName;
+            if (typeInfo?.Name != null) return typeInfo.Name;
 
             // Old mechanism which checks real types etc but probably is never needed any more
             var type = FindType(name);
