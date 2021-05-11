@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Data;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.Data
 {
     // TODO: 2dm 2021-04-07 - must check if we still need this, I think the EAV has a similar functionality built-in
     
