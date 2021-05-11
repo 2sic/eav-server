@@ -117,13 +117,13 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Query the Result of a Pipeline using Test-Parameters
 		/// </summary>
-		public QueryRunDto Run(int appId, int id, int top, LookUpEngine config) 
-            => DevRun(appId, id, config, top, builtQuery => builtQuery.Item1);
+		public QueryRunDto Run(int appId, int id, int top, LookUpEngine lookUps) 
+            => DevRun(appId, id, lookUps, top, builtQuery => builtQuery.Item1);
 
         /// <summary>
         /// Query the Result of a Pipeline using Test-Parameters
         /// </summary>
-        public QueryRunDto DebugStream(int appId, int id, int top, LookUpEngine config, string from, string streamName)
+        public QueryRunDto DebugStream(int appId, int id, int top, LookUpEngine lookUps, string from, string streamName)
         {
             IDataSource GetSubStream(Tuple<IDataSource, Dictionary<string, IDataSource>> builtQuery)
             {
@@ -144,16 +144,16 @@ namespace ToSic.Eav.WebApi
                 return passThroughDs;
             }
 
-            return DevRun(appId, id, config, top, GetSubStream);
+            return DevRun(appId, id, lookUps, top, GetSubStream);
         }
 
-        public QueryRunDto DevRun(int appId, int id, LookUpEngine config, int top, Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup)
+        public QueryRunDto DevRun(int appId, int id, LookUpEngine lookUps, int top, Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup)
 		{
             var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
             // Get the query, run it and track how much time this took
 		    var qDef = QueryBuilder.GetQueryDefinition(appId, id);
-			var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, true, config);
+			var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, true, lookUps);
             var outSource = builtQuery.Item1;
             
             
