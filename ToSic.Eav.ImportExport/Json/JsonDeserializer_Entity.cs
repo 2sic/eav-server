@@ -38,7 +38,7 @@ namespace ToSic.Eav.ImportExport.Json
             return jsonObj;
         }
 
-        public IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType)
+        public IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType, IEntitiesSource dynRelationshipsSource = null)
         {
             var wrapLog = Log.Call($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}");
 
@@ -81,7 +81,7 @@ namespace ToSic.Eav.ImportExport.Json
             if (contentType.IsDynamic)
             {
                 if (allowDynamic)
-                    BuildAttribsOfUnknownContentType(jEnt.Attributes, newEntity);
+                    BuildAttribsOfUnknownContentType(jEnt.Attributes, newEntity, dynRelationshipsSource);
                 else
                     Log.Add("will not resolve attributes because dynamic not allowed, but skip was ok");
             }
@@ -92,27 +92,27 @@ namespace ToSic.Eav.ImportExport.Json
             return newEntity;
         }
 
-        private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity)
+        private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null)
         {
             var wrapLog = Log.Call();
-            BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, newEntity);
-            BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, newEntity);
-            BuildAttrib(jAtts.Custom, ValueTypes.Custom, newEntity);
-            BuildAttrib(jAtts.Entity, ValueTypes.Entity, newEntity);
-            BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, newEntity);
-            BuildAttrib(jAtts.Number, ValueTypes.Number, newEntity);
-            BuildAttrib(jAtts.String, ValueTypes.String, newEntity);
+            BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, newEntity, null);
+            BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, newEntity, null);
+            BuildAttrib(jAtts.Custom, ValueTypes.Custom, newEntity, null);
+            BuildAttrib(jAtts.Entity, ValueTypes.Entity, newEntity, relationshipsSource);
+            BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, newEntity, null);
+            BuildAttrib(jAtts.Number, ValueTypes.Number, newEntity, null);
+            BuildAttrib(jAtts.String, ValueTypes.String, newEntity, null);
             wrapLog("ok");
         }
 
-        private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, ValueTypes type, Entity newEntity)
+        private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, ValueTypes type, Entity newEntity, IEntitiesSource relationshipsSource)
         {
             if (list == null) return;
 
             foreach (var attrib in list)
             {
                 var newAtt = AttributeBuilder.CreateTyped(attrib.Key, type, attrib.Value
-                    .Select(v => ValueBuilder.Build(type, v.Value, RecreateLanguageList(v.Key))).ToList());
+                    .Select(v => ValueBuilder.Build(type, v.Value, RecreateLanguageList(v.Key), relationshipsSource)).ToList());
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
             }
         }

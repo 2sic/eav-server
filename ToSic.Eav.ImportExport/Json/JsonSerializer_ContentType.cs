@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
@@ -25,9 +26,18 @@ namespace ToSic.Eav.ImportExport.Json
             try
             {
                 // check all metadata of these attributes - get possible sub-entities attached
-                var mdParts = contentType.Attributes
-                    .SelectMany(a => a.Metadata.SelectMany(m => m.Children()))
-                    .ToList();
+                var attribMdItems = contentType.Attributes.SelectMany(a => a.Metadata).ToArray();
+                var attribMdEntityAttribs = attribMdItems.SelectMany(m => m.Attributes
+                    .Where(a => a.Value.ControlledType == ValueTypes.Entity))
+                    .ToArray();
+                var mdParts =
+                    // On Dynamically Typed Entities, the Children()-Call won't work, because the Relationship-Manager doesn't know the children.
+                    // So we must go the hard way and look at each ObjectContents
+                    attribMdEntityAttribs
+                        .SelectMany(a => a.Value.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>)
+                        .Where(e => e != null) // filter out possible null items
+                        .ToList();
+
                 Log.Add($"Sub items: {mdParts.Count}");
                 package.Entities = mdParts.Select(e => ToJson(e, 0)).ToArray();
             }

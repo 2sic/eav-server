@@ -41,8 +41,8 @@ namespace ToSic.Eav.Data
 	    private IImmutableList<EntityRelationship> ChildRelationships()
         {
             if (_childRelationships != null) return _childRelationships.List;
-            Func<IImmutableList<EntityRelationship>> getChildren = () => AllRelationships.Where(r => r.Parent == _entity).ToImmutableArray(); //.ToList();
-            if (App == null) return getChildren.Invoke(); // AllRelationships.Where(r => r.Parent == _entity);
+            Func<IImmutableList<EntityRelationship>> getChildren = () => AllRelationships.Where(r => r.Parent == _entity).ToImmutableArray();
+            if (App == null) return getChildren.Invoke();
             _childRelationships = new SynchronizedList<EntityRelationship>(App, getChildren);
             return _childRelationships.List;
         }
@@ -121,13 +121,13 @@ namespace ToSic.Eav.Data
 	    }
 		#endregion
 
-		#region Relationship Information
-        [PrivateApi]
-        public IEnumerable<string> Fields()
-        {
-            return null;
-        }
+		//#region Relationship Information
+  //      [PrivateApi]
+  //      public IEnumerable<string> Fields()
+  //      {
+  //          return null;
+  //      }
 
-        #endregion
+  //      #endregion
     }
 }
