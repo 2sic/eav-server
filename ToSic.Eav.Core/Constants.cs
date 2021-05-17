@@ -127,6 +127,9 @@ namespace ToSic.Eav
         public const string InputTypeAngularAssets = "AngularAssets";
         public const string InputTypeUseAdam = "UseAdam";
 
+
+        public const string PropertyFieldIsEphemeral = "IsEphemeral";
+
         #endregion
 
 

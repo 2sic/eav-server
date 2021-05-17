@@ -55,10 +55,11 @@ namespace ToSic.Eav.Apps.Parts
             // in which case it would add it twice
             var appState = Parent.AppState;
 
+            saveOptions = saveOptions ?? SaveOptions.Build(Parent.ZoneId);
+            
             // Inner call which will be executed with the Lock of the AppState
             List<int> InnerSaveInLock()
             {
-                saveOptions = saveOptions ?? SaveOptions.Build(Parent.ZoneId);
                 // ensure the type-definitions are real, not just placeholders
                 foreach (var entity in entities)
                     if (entity is Entity e2
@@ -68,6 +69,9 @@ namespace ToSic.Eav.Apps.Parts
                         var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
                         if (newType != null) e2.UpdateType(newType); // try to update, but leave if not found
                     }
+                
+                // Clear Ephemeral attributes which shouldn't be saved (new in v12)
+                entities.ForEach(e => ClearEphemeralAttributes(e));
 
                 // attach relationship resolver - important when saving data which doesn't yet have the guid
                 entities.ForEach(appState.Relationships.AttachRelationshipResolver);
@@ -88,6 +92,32 @@ namespace ToSic.Eav.Apps.Parts
             wrapLog($"ids:{ids.Count}");
             return ids;
         }
-        
+
+
+        /// <summary>
+        /// WIP - clear attributes which shouldn't be saved at all
+        /// </summary>
+        /// <param name="entity"></param>
+        private bool ClearEphemeralAttributes(IEntity entity)
+        {
+            var wrapLog = Log.Call<bool>();
+            var attributes = entity.Type?.Attributes;
+            if(attributes == null || !attributes.Any()) return wrapLog("no attributes", false);
+
+            var toClear = attributes.Where(a =>
+                a.Metadata.GetBestValue<bool>(Constants.PropertyFieldIsEphemeral) == true)
+                .ToList();
+
+            if (!toClear.Any()) return wrapLog("no ephemeral attributes", false);
+            
+            foreach (var a in toClear)
+                if (entity.Attributes.TryGetValue(a.Name, out var attr))
+                {
+                    attr.Values.Clear();
+                    Log.Add("Cleared " + a.Name);
+                }
+
+            return wrapLog("cleared", true);
+        }
     }
 }
