@@ -43,14 +43,14 @@ namespace ToSic.Eav.Persistence
         /// <summary>
         /// 
         /// </summary>
-        public bool DiscardattributesNotInType = false;
+        public bool DiscardAttributesNotInType = false;
 
         public string LogInfo => $"save opts PUntouchedAt:{PreserveUntouchedAttributes}, " +
                                  $"PUnknownAt:{PreserveUnknownAttributes}, " +
-                                 $"SkipExstAt:{SkipExistingAttributes}" +
+                                 $"SkipExistingAt:{SkipExistingAttributes}" +
                                  $"ExistLangs:{PreserveExistingLanguages}, " +
                                  $"UnknownLangs:{PreserveUnknownLanguages}, " +
                                  $"draft-branch:{DraftShouldBranch}, Lang1:{_priLang}, langs⋮{Languages?.Count}, " +
-                                 $"DiscardAttsNotInType:{DiscardattributesNotInType}";
+                                 $"DiscardAttrsNotInType:{DiscardAttributesNotInType}";
     }
 }
