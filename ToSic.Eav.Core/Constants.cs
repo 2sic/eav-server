@@ -128,7 +128,8 @@ namespace ToSic.Eav
         public const string InputTypeUseAdam = "UseAdam";
 
 
-        public const string PropertyFieldIsEphemeral = "IsEphemeral";
+        public const string MetadataFieldAllIsEphemeral = "IsEphemeral";
+        public const string MetadataFieldAllCalculations = "Calculations";
 
         #endregion
 

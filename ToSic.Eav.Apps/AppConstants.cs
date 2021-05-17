@@ -6,11 +6,6 @@
 
         #region List / Content / Presentation capabilities
 
-        // Known App Content Types
-        //public const string TypeAppConfig = ImpExpConstants.TypeAppConfig; // "2SexyContent-App";
-        //public const string TypeAppResources = "App-Resources";
-        //public const string TypeAppSettings = "App-Settings";
-
         // App and Content Scopes
         public const string ScopeApp = "2SexyContent-App";
         public const string ScopeContentFuture = "Default";
