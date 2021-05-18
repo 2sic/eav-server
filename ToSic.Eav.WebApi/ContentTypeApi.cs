@@ -201,7 +201,7 @@ namespace ToSic.Eav.WebApi
 
                     // new in 12.01
                     IsEphemeral = a.Metadata.GetBestValue<bool>(MetadataFieldAllIsEphemeral, MetadataFieldTypeAll),
-                    HasCalculations = HasCalculations(a),
+                    HasFormulas = HasCalculations(a),
                 };
             });
             

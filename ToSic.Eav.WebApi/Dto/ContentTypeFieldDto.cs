@@ -32,6 +32,6 @@ namespace ToSic.Eav.WebApi.Dto
         /// <remarks>
         /// New in v12.01
         /// </remarks>
-        public bool HasCalculations { get; set; }
+        public bool HasFormulas { get; set; }
     }
 }
