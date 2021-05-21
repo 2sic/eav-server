@@ -229,7 +229,7 @@ namespace ToSic.Eav.WebApi
             var allMd = attribute.Metadata.FirstOrDefaultOfType(MetadataFieldTypeAll);
             if (allMd == null) return wrapLog("no @All", false);
 
-            var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == MetadataFieldAllCalculations);
+            var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == MetadataFieldAllFormulas);
             if (calculationsAttr == null) return wrapLog("no calc property", false);
 
             var calculations = calculationsAttr.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>;

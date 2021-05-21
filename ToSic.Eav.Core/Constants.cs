@@ -129,7 +129,7 @@ namespace ToSic.Eav
 
 
         public const string MetadataFieldAllIsEphemeral = "IsEphemeral";
-        public const string MetadataFieldAllCalculations = "Calculations";
+        public const string MetadataFieldAllFormulas = "Formulas";
 
         #endregion
 
