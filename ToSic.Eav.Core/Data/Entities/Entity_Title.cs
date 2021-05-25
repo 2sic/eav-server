@@ -23,7 +23,7 @@ namespace ToSic.Eav.Data
             // wrap it try-catch, because in rare cases the title may not be set or something else could break
             try
             {
-                var bestTitle = GetBestValue(Constants.EntityFieldTitle, dimensions);
+                var bestTitle = GetBestValue(Data.Attributes.EntityFieldTitle, dimensions);
 
                 // in case the title is an entity-picker and has items, try to ask it for the title
                 // note that we're counting recursions, just to be sure it won't loop forever

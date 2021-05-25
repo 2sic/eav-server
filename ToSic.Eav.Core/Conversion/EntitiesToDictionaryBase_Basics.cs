@@ -21,8 +21,8 @@ namespace ToSic.Eav.Conversion
             // otherwise the rules should be applied, but default to false
             if (rules?.SerializeGuid == null && WithGuid || (rules?.SerializeGuid ?? false))
             {
-                if (entityValues.ContainsKey(Constants.SysFieldGuid)) entityValues.Remove(Constants.SysFieldGuid);
-                entityValues.Add(Constants.SysFieldGuid, entity.EntityGuid);
+                if (entityValues.ContainsKey(Attributes.GuidNiceName)) entityValues.Remove(Attributes.GuidNiceName);
+                entityValues.Add(Attributes.GuidNiceName, entity.EntityGuid);
             }
         }
 
@@ -31,13 +31,13 @@ namespace ToSic.Eav.Conversion
         {
             // Include modified field, if there is not already one in the dictionary
             if (rules?.SerializeModified ?? true)
-                if (!entityValues.ContainsKey(Constants.SysFieldModified))
-                    entityValues.Add(Constants.SysFieldModified, entity.Modified);
+                if (!entityValues.ContainsKey(Attributes.ModifiedNiceName))
+                    entityValues.Add(Attributes.ModifiedNiceName, entity.Modified);
 
             // Include created field, if there is not already one in the dictionary
             if (rules?.SerializeCreated ?? true)
-                if (!entityValues.ContainsKey(Constants.SysFieldCreated))
-                    entityValues.Add(Constants.SysFieldCreated, entity.Created);
+                if (!entityValues.ContainsKey(Attributes.CreatedNiceName))
+                    entityValues.Add(Attributes.CreatedNiceName, entity.Created);
         }
 
     }

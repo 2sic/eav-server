@@ -84,7 +84,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             var types = _targetTypes.TargetTypes;
 
             Assert.AreEqual(10, types.Count);
-            Assert.IsTrue(types[Constants.NotMetadata] == "Default");
+            Assert.IsTrue(types[(int)TargetTypes.None] == "Default");
         }
 
         private const int MinZones = 2;

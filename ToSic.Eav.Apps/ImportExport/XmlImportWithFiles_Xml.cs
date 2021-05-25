@@ -3,6 +3,7 @@ using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
@@ -47,7 +48,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
 		    if (sourceDimensions == null || sourceDefaultLanguage == null)
 		    {
-                Messages.Add(new Message(Log.Add("Cant find source dimensions or source-default language."), Message.MessageTypes.Error));
+                Messages.Add(new Message(Log.Add("Can't find source dimensions or source-default language."), Message.MessageTypes.Error));
                 return false;
             }
 
@@ -66,7 +67,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		    var entNodes = xmlSource.Elements(XmlConstants.Entities).Elements(XmlConstants.Entity).ToList();
 
             var importAttributeSets = GetImportContentTypes(atsNodes);
-		    var importEntities = BuildEntities(entNodes, Constants.NotMetadata);
+		    var importEntities = BuildEntities(entNodes, (int)TargetTypes.None);
 
 
 			var import = _importerLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true, Log);

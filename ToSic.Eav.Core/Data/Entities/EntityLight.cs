@@ -113,7 +113,7 @@ namespace ToSic.Eav.Data
             else
             {
                 var attributeNameLower = attributeName.ToLowerInvariant();
-                if (attributeNameLower == Constants.EntityFieldTitle)
+                if (attributeNameLower == Attributes.EntityFieldTitle)
                     result = Title;
                 else
                     return GetInternalPropertyByName(attributeNameLower);
@@ -176,15 +176,15 @@ namespace ToSic.Eav.Data
         {
             switch (attributeNameLowerInvariant.ToLowerInvariant())
             {
-                case Constants.EntityFieldId:
+                case Attributes.EntityFieldId:
                     return EntityId;
-                case Constants.EntityFieldGuid:
+                case Attributes.EntityFieldGuid:
                     return EntityGuid;
-                case Constants.EntityFieldType:
+                case Attributes.EntityFieldType:
                     return Type.Name;
-                case Constants.EntityFieldCreated:
+                case Attributes.EntityFieldCreated:
                     return Created;
-                case Constants.EntityFieldModified:
+                case Attributes.EntityFieldModified:
                     return Modified;
                 default:
                     return null;
@@ -198,7 +198,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         private string GetBestTitle(int recursionCount)
         {
-            var bestTitle = GetBestValue(Constants.EntityFieldTitle);
+            var bestTitle = GetBestValue(Attributes.EntityFieldTitle);
 
             // in case the title is an entity-picker and has items, try to ask it for the title
             // note that we're counting recursions, just to be sure it won't loop forever

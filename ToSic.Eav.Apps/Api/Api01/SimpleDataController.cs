@@ -113,13 +113,13 @@ namespace ToSic.Eav.Api.Api01
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
 
-            if (values.All(v => v.Key.ToLowerInvariant() != Constants.EntityFieldGuid))
+            if (values.All(v => v.Key.ToLowerInvariant() != Attributes.EntityFieldGuid))
             {
                 Log.Add("Add new generated guid, as none was provided.");
-                values.Add(Constants.EntityFieldGuid, Guid.NewGuid());
+                values.Add(Attributes.EntityFieldGuid, Guid.NewGuid());
             }
 
-            var eGuid = Guid.Parse(values[Constants.EntityFieldGuid].ToString());
+            var eGuid = Guid.Parse(values[Attributes.EntityFieldGuid].ToString());
             var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>());
             if (target != null)
             {
@@ -194,7 +194,7 @@ namespace ToSic.Eav.Api.Api01
             foreach (var value in values)
             {
                 // Handle special attributes (for example of the system)
-                if (value.Key.ToLowerInvariant() == Constants.EntityFieldIsPublished)
+                if (value.Key.ToLowerInvariant() == Attributes.EntityFieldIsPublished)
                 {
                     entity.IsPublished = value.Value as bool? ?? true;
                     Log.Add($"IsPublished: {entity.IsPublished}");
@@ -202,7 +202,7 @@ namespace ToSic.Eav.Api.Api01
                 }
 
                 // Ignore entity guid - it's already set earlier
-                if (value.Key.ToLowerInvariant() == Constants.EntityFieldGuid)
+                if (value.Key.ToLowerInvariant() == Attributes.EntityFieldGuid)
                 {
                     Log.Add("entity-guid, ignore here");
                     continue;

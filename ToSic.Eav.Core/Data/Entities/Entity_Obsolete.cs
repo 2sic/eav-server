@@ -16,9 +16,9 @@ namespace ToSic.Eav.Data
 
             var result = GetBestValueAndType(attributeName, languages, out var attributeType);
 
-            if (attributeType == Constants.EntityFieldIsVirtual) return result;
+            if (attributeType == Data.Attributes.FieldIsVirtual) return result;
 
-            return resolveHyperlinks && attributeType == Constants.DataTypeHyperlink && result is string strResult
+            return resolveHyperlinks && attributeType == DataTypes.Hyperlink && result is string strResult
                 ? TryToResolveLink(EntityGuid, strResult)
                 : result;
         }

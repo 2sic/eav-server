@@ -58,8 +58,8 @@ namespace ToSic.Eav.Persistence
             if (!ct.IsDynamic && !saveOptions.PreserveUnknownAttributes && ct.Attributes != null)
             {
                 var keys = ct.Attributes.Select(a => a.Name).ToList();
-                keys.Add(Constants.EntityFieldGuid);
-                keys.Add(Constants.EntityFieldIsPublished);
+                keys.Add(Attributes.EntityFieldGuid);
+                keys.Add(Attributes.EntityFieldIsPublished);
 
                 if (originalWasSaved) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
                 newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
@@ -210,11 +210,11 @@ namespace ToSic.Eav.Persistence
         {
             var callLog = logDetails ? Log.Call() : null;
             // check IsPublished
-            var isPublished = newE.Value(Constants.EntityFieldIsPublished);
+            var isPublished = newE.Value(Attributes.EntityFieldIsPublished);
             if (isPublished != null)
             {
                 Log.Add("Found property for published, will move");
-                newE.Attributes.Remove(Constants.EntityFieldIsPublished);
+                newE.Attributes.Remove(Attributes.EntityFieldIsPublished);
 
                 if(isPublished is bool b)
                     newE.IsPublished = b;
@@ -223,11 +223,11 @@ namespace ToSic.Eav.Persistence
             }
 
             // check EntityGuid
-            var probablyGuid = newE.Value(Constants.EntityFieldGuid);
+            var probablyGuid = newE.Value(Attributes.EntityFieldGuid);
             if (probablyGuid != null)
             {
                 Log.Add("Found property for published, will move");
-                newE.Attributes.Remove(Constants.EntityFieldGuid);
+                newE.Attributes.Remove(Attributes.EntityFieldGuid);
                 if (Guid.TryParse(probablyGuid.ToString(), out var eGuid))
                     newE.SetGuid(eGuid);
             }

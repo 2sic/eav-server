@@ -36,27 +36,27 @@ namespace ToSic.Eav.Apps.Parts
             {
                 {"VisibleInEditUI", true},
                 {"Name", staticName},
-                {Constants.MetadataFieldAllInputType, inputType}
+                {AttributeMetadata.GeneralFieldInputType, inputType}
             };
             var meta = new Metadata.Target
             {
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };
-            Parent.Entities.SaveMetadata(meta, Constants.MetadataFieldTypeAll, newValues);
+            Parent.Entities.SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
         }
 
         public bool UpdateInputType(int attributeId, string inputType)
         {
             Log.Add($"update input type attrib:{attributeId}, input:{inputType}");
-            var newValues = new Dictionary<string, object> { { Constants.MetadataFieldAllInputType, inputType } };
+            var newValues = new Dictionary<string, object> { { AttributeMetadata.GeneralFieldInputType, inputType } };
 
             var meta = new Metadata.Target
             {
                 TargetType = Constants.MetadataForAttribute,
                 KeyNumber = attributeId
             };
-            Parent.Entities.SaveMetadata(meta, Constants.MetadataFieldTypeAll, newValues);
+            Parent.Entities.SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
             return true;
         }
 

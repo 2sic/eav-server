@@ -42,13 +42,13 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
             // test the Resolve Hyperlink
             string link = "";
-            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, link2sic, Constants.DataTypeHyperlink);
+            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, link2sic, DataTypes.Hyperlink);
             Assert.AreEqual(link, link2sic, "real link should stay the same");
 
-            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkFile, Constants.DataTypeHyperlink);
+            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkFile, DataTypes.Hyperlink);
             Assert.AreNotEqual(link, linkFile, "file link should change");
 
-            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkPage, Constants.DataTypeHyperlink);
+            link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, linkPage, DataTypes.Hyperlink);
             Assert.AreNotEqual(link, linkPage, "page link should change");
 
             link = exportListXml.ResolveHyperlinksFromSite(AppId, ItemGuid, "http://www.2sic.com/", NonLinkType);
@@ -66,9 +66,9 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             // test resolves on any value, these versions should always resolve to default values but not resolve links
             TestResolvesWithNonLinkType(NonLinkType, false);
             TestResolvesWithNonLinkType(NonLinkType, true);
-            TestResolvesWithNonLinkType(Constants.DataTypeHyperlink, false);
+            TestResolvesWithNonLinkType(DataTypes.Hyperlink, false);
 
-            var attrType = Constants.DataTypeHyperlink;
+            var attrType = DataTypes.Hyperlink;
             var ExportListXml = ServiceProvider.Build<ExportImportValueConversion>();
 
             // test resolves on any value, just certainly not a link, with "no-resolve"

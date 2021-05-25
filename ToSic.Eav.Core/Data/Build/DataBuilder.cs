@@ -30,7 +30,7 @@ namespace ToSic.Eav.Data
         [PublicApi]
         public IEntity Entity(
             Dictionary<string, object> values = null,
-            string noParameterOrder = Constants.RandomProtectionParameter,
+            string noParameterOrder = Parameters.Protector,
             int appId = 0,
             int id = 0,
             string titleField = null,
@@ -45,7 +45,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         [PublicApi]
         public IEnumerable<IEntity> Entities(IEnumerable<Dictionary<string, object>> itemValues,
-            string noParameterOrder = Constants.RandomProtectionParameter,
+            string noParameterOrder = Parameters.Protector,
             int appId = 0,
             string titleField = null,
             string typeName = DefaultTypeName,
@@ -65,10 +65,10 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         [PrivateApi]
         public IEntity FakeEntity(int appId)
-            => Entity(new Dictionary<string, object> { { Constants.SysFieldTitle, "" } },
+            => Entity(new Dictionary<string, object> { { Attributes.TitleNiceName, "" } },
                 appId: appId,
                 typeName: "FakeEntity",
-                titleField: Constants.SysFieldTitle
+                titleField: Attributes.TitleNiceName
             );
     }
 }

@@ -154,8 +154,8 @@ namespace ToSic.Eav.Apps.Parts
                 // go case insensitive...
                 var dataSource = new Dictionary<string, object>(ds, StringComparer.InvariantCultureIgnoreCase);
                 // Skip Out-DataSource
-                var originalIdentity = dataSource[Constants.EntityFieldGuid].ToString();
-                dataSource.TryGetValue(Constants.EntityFieldId, out object entityId);
+                var originalIdentity = dataSource[Attributes.EntityFieldGuid].ToString();
+                dataSource.TryGetValue(Attributes.EntityFieldId, out object entityId);
 
                 // remove key-fields, as we cannot save them (would cause error)
                 RemoveIdAndGuidFromValues(dataSource);
@@ -187,8 +187,8 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="values"></param>
         private static void RemoveIdAndGuidFromValues(Dictionary<string, object> values)
         {
-            values.Remove(Constants.EntityFieldGuid);
-            values.Remove(Constants.EntityFieldId);
+            values.Remove(Attributes.EntityFieldGuid);
+            values.Remove(Attributes.EntityFieldId);
         }
 
         /// <summary>

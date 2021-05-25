@@ -33,7 +33,7 @@ namespace ToSic.Eav.Data
         [Obsolete("Use the IDataBuilder for this - will be removed in 2sxc 12")]
         public static IEntity Entity(
             Dictionary<string, object> values = null,
-            string noParameterOrder = Constants.RandomProtectionParameter,
+            string noParameterOrder = Parameters.Protector,
             int appId = 0,
             int id = 0,
             string titleField = null,
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Data
         [PublicApi]
         [Obsolete("Use the IDataBuilder for this - will be removed in 2sxc 12")]
         public static IEnumerable<IEntity> Entity(IEnumerable<Dictionary<string, object>> itemValues,
-            string noParameterOrder = Constants.RandomProtectionParameter,
+            string noParameterOrder = Parameters.Protector,
             int appId = 0,
             string titleField = null,
             string typeName = DefaultTypeName)
@@ -85,8 +85,8 @@ namespace ToSic.Eav.Data
                 appId,
                 0,
                 ContentTypeBuilder.Fake(""),
-                new Dictionary<string, object> {{Constants.SysFieldTitle, ""}},
-                Constants.SysFieldTitle
+                new Dictionary<string, object> {{Attributes.TitleNiceName, ""}},
+                Attributes.TitleNiceName
             );
     }
 }

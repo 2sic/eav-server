@@ -18,13 +18,13 @@ namespace ToSic.Eav.Data
         {
             // Preferred storage and available in all fields defined after 2sxc ca. 6 or 7
             var inputType = definition.Metadata.GetBestValue<string>(
-                Constants.MetadataFieldAllInputType, Constants.MetadataFieldTypeAll);
+                AttributeMetadata.GeneralFieldInputType, AttributeMetadata.TypeGeneral);
 
             // if not available, check older metadata, where it was on the @String
             if (string.IsNullOrWhiteSpace(inputType))
             {
                 inputType = definition.Metadata.GetBestValue<string>(
-                    Constants.MetadataFieldAllInputType, Constants.MetadataFieldTypeString);
+                    AttributeMetadata.GeneralFieldInputType, AttributeMetadata.TypeString);
                 // if found, check and maybe add prefix string
                 const string prefix = "string-";
                 if (!string.IsNullOrWhiteSpace(inputType) && !inputType.StartsWith(prefix))
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Data
 
         public static string EntityFieldItemTypePrimary(this IContentTypeAttribute attribute)
         {
-            var itemTypeName = attribute.Metadata.GetBestValue<string>(Constants.EntityFieldType) ?? "";
+            var itemTypeName = attribute.Metadata.GetBestValue<string>(Attributes.EntityFieldType) ?? "";
             var typeName = itemTypeName.Split(',').First().Trim();
             return typeName;
         }

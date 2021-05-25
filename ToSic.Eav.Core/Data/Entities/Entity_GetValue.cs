@@ -29,7 +29,7 @@ namespace ToSic.Eav.Data
                 return attribute[languages];
             }
             
-            if (attributeName == Constants.EntityFieldTitle)
+            if (attributeName == Data.Attributes.EntityFieldTitle)
             {
                 var attribute = Title;
                 attributeType = attribute?.Type;
@@ -37,14 +37,14 @@ namespace ToSic.Eav.Data
             }
 
             // directly return internal properties, mark as virtual to not allow further Link resolution
-            attributeType = Constants.EntityFieldIsVirtual;
+            attributeType = Data.Attributes.FieldIsVirtual;
             return GetInternalPropertyByName(attributeName);
         }
 
         protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)
         {
             // first check a field which doesn't exist on EntityLight
-            if (attributeNameLowerInvariant == Constants.EntityFieldIsPublished) return IsPublished;
+            if (attributeNameLowerInvariant == Data.Attributes.EntityFieldIsPublished) return IsPublished;
 
             // Now handle the ones that EntityLight has
             return base.GetInternalPropertyByName(attributeNameLowerInvariant);

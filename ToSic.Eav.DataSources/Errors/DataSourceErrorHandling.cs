@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources
         }
 
         public ImmutableArray<IEntity> CreateErrorList(
-            string noParameterOrder = Constants.RandomProtectionParameter,
+            string noParameterOrder = Parameters.Protector,
             IDataSource source = null, 
             string title = null, 
             string message = null,
@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSources
             string streamName = Constants.DefaultStreamName
             )
         {
-            Constants.ProtectAgainstMissingParameterNames(noParameterOrder, "CreateErrorList", "various");
+            Parameters.ProtectAgainstMissingParameterNames(noParameterOrder, "CreateErrorList", "various");
 
             source?.Log?.Exception(exception);
 

@@ -7,7 +7,7 @@
         public const string Root97 = "ContentData"; // import supports new name in 2sxc 9.7, but we won't export it with this name yet
         public const string CtTemplate = "2SexyContent-Template-ContentTypes"; // old name, for old import/export format
 
-        public const string EntityGuid = Constants.SysFieldGuid;
+        public const string EntityGuid = Data.Attributes.GuidNiceName;
 
         public const string EntityLanguage = "Language";
 
@@ -35,7 +35,7 @@
         public const string CultureIsActiveAttrib = "Active";
         public const string App = "App";
         public const string AppContentGuid = "Default";
-        public const string Guid = Constants.SysFieldGuid;
+        public const string Guid = Data.Attributes.GuidNiceName;
         public const string GuidNode = "EntityGUID";
 
         // attributes / sets

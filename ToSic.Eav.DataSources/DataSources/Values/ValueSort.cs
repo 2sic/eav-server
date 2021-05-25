@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -110,7 +111,7 @@ namespace ToSic.Eav.DataSources
 		        return wrapLog("no params", originals);
 
             // only get the entities, that have these attributes (but don't test for id/title, as all have these)
-            var valueAttrs = attr.Where(v => !Constants.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
+            var valueAttrs = attr.Where(v => !Data.Attributes.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
 		    var results = valueAttrs.Length == 0
 		        ? originals
 		        : originals.Where(e => e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length).ToImmutableArray();
@@ -128,9 +129,9 @@ namespace ToSic.Eav.DataSources
 				// get attribute-name and type; set type=id|title for special cases
 				var a = attr[i];
 			    var aLow = a.ToLowerInvariant();
-				var specAttr = aLow == Constants.EntityFieldId ? 'i' 
-                    : aLow == Constants.EntityFieldTitle ? 't' 
-                    : aLow == Constants.EntityFieldModified ? 'm'
+				var specAttr = aLow == Data.Attributes.EntityFieldId ? 'i' 
+                    : aLow == Data.Attributes.EntityFieldTitle ? 't' 
+                    : aLow == Data.Attributes.EntityFieldModified ? 'm'
                     : 'x';
 				var isAscending = true;			// default
 				if (directions.Length - 1 >= i)	// if this value has a direction specified, use that...

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -146,7 +147,7 @@ namespace ToSic.Eav.DataSources
             else
             {
                 // Find first Entity which has this property being not null
-                var firstEntity = Constants.InternalOnlyIsSpecialEntityProperty(_initializedAttrName)
+                var firstEntity = Attributes.InternalOnlyIsSpecialEntityProperty(_initializedAttrName)
                     ? originals.FirstOrDefault()
                     : originals.FirstOrDefault(x => x.Attributes.ContainsKey(_initializedAttrName) 
                                                     && x.Value(_initializedAttrName) != null);

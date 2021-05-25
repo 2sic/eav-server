@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -118,14 +119,14 @@ namespace ToSic.Eav.DataSources
             // Assemble the entity
             var paging = new Dictionary<string, object>
             {
-                {Constants.SysFieldTitle, "Paging Information"},
+                {Attributes.TitleNiceName, "Paging Information"},
                 {"PageSize", PageSize},
                 {"PageNumber", PageNumber},
                 {"ItemCount", itemCount},
                 {"PageCount", pageCount}
             };
 
-            var entity = new Data.Entity(Constants.TransientAppId, 0, ContentTypeBuilder.Fake("Paging"), paging, Constants.SysFieldTitle);
+            var entity = new Data.Entity(Constants.TransientAppId, 0, ContentTypeBuilder.Fake("Paging"), paging, Attributes.TitleNiceName);
 
             // Assemble list of this for the stream
             var list = new List<IEntity> {entity};

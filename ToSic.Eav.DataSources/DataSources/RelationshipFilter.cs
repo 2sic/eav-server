@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -147,7 +148,7 @@ namespace ToSic.Eav.DataSources
             Provide(GetRelationshipsOrFallback);
 		    ConfigMask(RelationshipKey, $"[Settings:{Settings.Relationship}]");
 		    ConfigMask(FilterKey, $"[Settings:{Settings.Filter}]");
-		    ConfigMask(CompareAttributeKey, $"[Settings:{Settings.AttributeOnRelationship}||{Constants.EntityFieldTitle}]");
+		    ConfigMask(CompareAttributeKey, $"[Settings:{Settings.AttributeOnRelationship}||{Attributes.EntityFieldTitle}]");
 		    ConfigMask(CompareModeKey, $"[Settings:{Settings.Comparison}||{CompareModes.contains}]");
 		    ConfigMask(SeparatorKey, $"[Settings:{Settings.Separator}||{DefaultSeparator}]");
 		    ConfigMask(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
@@ -199,11 +200,11 @@ namespace ToSic.Eav.DataSources
             if(!GetRequiredInList(out var originals)) 
                 return wrapLog("error", originals);
 
-		    var compType = lowAttribName == Constants.EntityFieldAutoSelect
+		    var compType = lowAttribName == Attributes.EntityFieldAutoSelect
 		        ? CompareType.Auto
-		        : lowAttribName == Constants.EntityFieldId
+		        : lowAttribName == Attributes.EntityFieldId
 		            ? CompareType.Id
-		            : lowAttribName == Constants.EntityFieldTitle
+		            : lowAttribName == Attributes.EntityFieldTitle
 		                ? CompareType.Title
 		                : CompareType.Any;
 

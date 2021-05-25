@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.Data;
+using ToSic.Eav.Data;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.Core.Tests.LookUp
@@ -33,11 +34,11 @@ namespace ToSic.Eav.Core.Tests.LookUp
 
             Assert.AreNotEqual(string.Empty, valProv.Get("FirstName"), "Has first name");
             Assert.AreNotEqual(string.Empty, valProv.Get("EntityId"), "Has entity id");
-            Assert.AreNotEqual(string.Empty, valProv.Get(Constants.EntityFieldTitle), "Has entity title");
+            Assert.AreNotEqual(string.Empty, valProv.Get(Attributes.EntityFieldTitle), "Has entity title");
             Assert.AreEqual("Mettler", valProv.Get("LastName", ""));
             Assert.AreEqual("Mettler", valProv.Get("LastName"));
             Assert.AreEqual(1.ToString(), valProv.Get("EntityId"));
-            Assert.AreEqual("Daniel", valProv.Get(Constants.EntityFieldTitle));
+            Assert.AreEqual("Daniel", valProv.Get(Attributes.EntityFieldTitle));
             // this test can't work, because ispublished is blank on a light entity
             // Assert.IsTrue(Convert.ToBoolean(valProv.Get("IsPublished")));
             Assert.AreEqual(Guid.Empty, Guid.Parse(valProv.Get("EntityGuid")));

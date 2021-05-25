@@ -37,7 +37,7 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         IEntity Entity(
             Dictionary<string, object> values = null,
-            string noParameterOrder = Constants.RandomProtectionParameter,
+            string noParameterOrder = Parameters.Protector,
             int appId = 0,
             int id = 0,
             string titleField = null,
@@ -63,7 +63,7 @@ namespace ToSic.Eav.Data
         /// <param name="appId">optional app id for this item, defaults to the current app</param>
         /// <returns></returns>
         IEnumerable<IEntity> Entities(IEnumerable<Dictionary<string, object>> itemValues,
-            string noParameterOrder = Constants.RandomProtectionParameter,
+            string noParameterOrder = Parameters.Protector,
             int appId = 0,
             string titleField = null,
             string typeName = DataBuilder.DefaultTypeName,
@@ -94,7 +94,7 @@ namespace ToSic.Eav.Data
         /// <param name="values">list of values to add to this attribute</param>
         /// <returns></returns>
         IAttribute Attribute(string name,
-            string noParameterOrder = Constants.RandomProtectionParameter,
+            string noParameterOrder = Parameters.Protector,
             string typeName = null,
             ValueTypes type = ValueTypes.Undefined,
             IList<IValue> values = null);

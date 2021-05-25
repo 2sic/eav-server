@@ -16,7 +16,7 @@ namespace ToSic.Eav.Data
         /// <param name="values">list of values to add to this attribute</param>
         /// <returns></returns>
         public IAttribute Attribute(string name,
-            string noParameterOrder = Constants.RandomProtectionParameter,
+            string noParameterOrder = Parameters.Protector,
             string typeName = null,
             ValueTypes type = ValueTypes.Undefined, 
             IList<IValue> values = null)
