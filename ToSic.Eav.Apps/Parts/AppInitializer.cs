@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Types;
@@ -149,7 +150,7 @@ namespace ToSic.Eav.Apps.Parts
             var values = item.Values ?? new Dictionary<string, object>();
 
             var newEnt = new Entity(AppState.AppId, Guid.NewGuid(), ct, values);
-            newEnt.SetMetadata(new Metadata.Target { KeyNumber = AppState.AppId, TargetType = Constants.MetadataForApp });
+            newEnt.SetMetadata(new Target { KeyNumber = AppState.AppId, TargetType = (int)TargetTypes.App });
             AppManager.Entities.Save(newEnt);
 
             wrapLog(null);

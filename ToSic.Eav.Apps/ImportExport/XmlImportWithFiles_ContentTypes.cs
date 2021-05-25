@@ -3,6 +3,7 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Metadata;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow
@@ -49,7 +50,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     var attribute = new ContentTypeAttribute(AppId, name, null, fieldTypeName, 
                         null, null, null, null);
                     var md = xmlField.Elements(XmlConstants.Entity).ToList();
-                    attribute.Metadata.Use(BuildEntities(md, Constants.MetadataForAttribute));
+                    attribute.Metadata.Use(BuildEntities(md, (int)TargetTypes.Attribute));
                     attributes.Add(attribute);
 
                     Log.Add($"Attribute: {name} ({fieldTypeName}) with {md.Count} metadata items");

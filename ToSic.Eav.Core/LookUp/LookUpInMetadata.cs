@@ -53,7 +53,7 @@ namespace ToSic.Eav.LookUp
         {
             if (_initialized) return;
             var md = _parent?.Metadata ??
-                     _metaDataSource.GetMetadata(Constants.MetadataForEntity, _objectToProvideSettingsTo);
+                     _metaDataSource.GetMetadata((int)TargetTypes.Entity, _objectToProvideSettingsTo);
 
             // make sure we get the settings, but not the pipeline-parts, which may also be assigned
 			Data = md.FirstOrDefault(e => e.Type.StaticName != Constants.QueryPartTypeName);

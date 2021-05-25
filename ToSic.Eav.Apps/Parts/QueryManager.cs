@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -172,7 +173,7 @@ namespace ToSic.Eav.Apps.Parts
                 else
                 {
                     Tuple<int, Guid> entity = Parent.Entities.Create(Constants.QueryPartTypeName, dataSource,
-                        new Metadata.Target { TargetType = Constants.MetadataForEntity, KeyGuid = queryEntityGuid });
+                        new Metadata.Target { TargetType = (int)TargetTypes.Entity, KeyGuid = queryEntityGuid });
                     newDataSources.Add(originalIdentity, entity.Item2);
                 }
             }

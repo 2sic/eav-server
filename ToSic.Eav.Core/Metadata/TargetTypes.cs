@@ -16,7 +16,7 @@
         Entity = 4,
 
         /// <summary>Metadata of a content-type (data-schema)</summary>
-        MetadataForContentType = 5,
+        ContentType = 5,
 
         /// <summary>Zone metadata</summary>
         // Used externally, for example in azing

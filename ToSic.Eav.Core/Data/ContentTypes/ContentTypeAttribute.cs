@@ -70,8 +70,8 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public IMetadataOf Metadata
             => _metadata ?? (_metadata = !_isShared
-                   ? new MetadataOf<int>(Constants.MetadataForAttribute, AttributeId, _metaOfThisApp)
-                   : new RemoteMetadataOf<int>(Constants.MetadataForAttribute, AttributeId, 0, _parentAppId)
+                   ? new MetadataOf<int>((int)TargetTypes.Attribute, AttributeId, _metaOfThisApp)
+                   : new RemoteMetadataOf<int>((int)TargetTypes.Attribute, AttributeId, 0, _parentAppId)
                );
 
         private IMetadataOf _metadata;

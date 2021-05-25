@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data
     {
         /// <inheritdoc />
         public IMetadataOf Metadata => _metadata ?? (_metadata =
-            new MetadataOf<Guid>(Constants.MetadataForEntity, EntityGuid, DeferredLookupData));
+            new MetadataOf<Guid>((int)TargetTypes.Entity, EntityGuid, DeferredLookupData));
         private IMetadataOf _metadata;
         internal IHasMetadataSource DeferredLookupData = null;
 

@@ -3,6 +3,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -58,9 +59,9 @@ namespace ToSic.Eav.Apps.Parts
             ILog log)
         {
             var callLogFindParts = log.Call<bool>();
-            appConfig = appIdentity.GetMetadata(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppConfig).FirstOrDefault();
-            appResources = appIdentity.GetMetadata(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppResources).FirstOrDefault();
-            appSettings = appIdentity.GetMetadata(Constants.MetadataForApp, appIdentity.AppId, AppLoadConstants.TypeAppSettings).FirstOrDefault();
+            appConfig = appIdentity.GetMetadata((int)TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppConfig).FirstOrDefault();
+            appResources = appIdentity.GetMetadata((int)TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppResources).FirstOrDefault();
+            appSettings = appIdentity.GetMetadata((int)TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppSettings).FirstOrDefault();
 
 
             // if nothing must be done, return now
