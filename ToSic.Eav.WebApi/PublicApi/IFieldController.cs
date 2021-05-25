@@ -56,6 +56,12 @@ namespace ToSic.Eav.WebApi.PublicApi
         List<InputTypeInfo> InputTypes(int appId);
 
         /// <summary>
+        /// Reserved field names which shouldn't be used in content-type fields. Also contains information why a name is reserved.
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<string, string> ReservedNames();
+        
+        /// <summary>
         /// Rename an field
         /// </summary>
         /// <param name="appId"></param>
