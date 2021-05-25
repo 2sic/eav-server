@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Catalog
         /// <returns></returns>
         private static DataSourceInfo FindInCache(string name) =>
             Cache.FirstOrDefault(dst =>
-                string.Equals(dst.GlobalName, name,
+                string.Equals(dst.Name, name,
                     StringComparison.InvariantCultureIgnoreCase))
             ?? Cache.FirstOrDefault(dst =>
                 dst.VisualQuery?.PreviousNames.Any(pn => string.Equals(pn, name,

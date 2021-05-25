@@ -1,28 +1,29 @@
 ﻿using System;
-using System.Linq;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSources
 {
-    public class DataSourceInfo
+    public class DataSourceInfo: TypeWithMedataBase<VisualQueryAttribute>
     {
-        public Type Type { get; }
+        //public Type Type { get; }
         public VisualQueryAttribute VisualQuery { get; }
-        public string GlobalName => VisualQuery?.GlobalName;
+        public override string Name => VisualQuery?.GlobalName;
 
-        public DataSourceInfo(Type dsType)
+        public DataSourceInfo(Type dsType): base(dsType)
         {
-            Type = dsType;
+            //Type = dsType;
 
-            // must put this in a try/catch, in case other DLLs have incompatible attributes
-            try
-            {
-                VisualQuery =
-                    Type.GetCustomAttributes(typeof(VisualQueryAttribute), false).FirstOrDefault() as
-                        VisualQueryAttribute;
-            }
+            //// must put this in a try/catch, in case other DLLs have incompatible attributes
+            //try
+            //{
+            //    VisualQuery =
+            //        Type.GetCustomAttributes(typeof(VisualQueryAttribute), false).FirstOrDefault() as
+            //            VisualQueryAttribute;
+            //}
 
-            catch {  /*ignore */ }
+            //catch {  /*ignore */ }
+            VisualQuery = TypeMetadata;
         }
     }
 

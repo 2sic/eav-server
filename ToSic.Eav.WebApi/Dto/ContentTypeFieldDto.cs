@@ -17,5 +17,21 @@ namespace ToSic.Eav.WebApi.Dto
         public InputTypeInfo InputTypeConfig { get; set; }
 
         public HasPermissionsDto Permissions { get; set; }
+        
+        /// <summary>
+        /// Tells the system that it will not save the field value / temporary
+        /// </summary>
+        /// <remarks>
+        /// New in v12.01
+        /// </remarks>
+        public bool IsEphemeral { get; set; }
+        
+        /// <summary>
+        /// Information if the field has calculations attached
+        /// </summary>
+        /// <remarks>
+        /// New in v12.01
+        /// </remarks>
+        public bool HasFormulas { get; set; }
     }
 }

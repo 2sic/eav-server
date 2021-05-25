@@ -41,8 +41,9 @@ namespace ToSic.Eav.Data
             Guid? guid = null,
             DateTime? modified = null)
         {
-            return new Entity(appId, id, ContentTypeBuilder.Fake(typeName), values, titleField, modified,
-                entityGuid: guid);
+            return new Entity(appId, id, ContentTypeBuilder.Fake(typeName), values, titleField, 
+                modified: modified,
+                guid: guid);
         }
 
         /// <summary>

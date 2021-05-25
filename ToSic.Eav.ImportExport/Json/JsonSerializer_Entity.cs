@@ -17,13 +17,13 @@ namespace ToSic.Eav.ImportExport.Json
 
         public string Serialize(IEntity entity, int metadataDepth) => JsonConvert.SerializeObject(new JsonFormat
         {
-            Entity = ToJson(entity, metadataDepth, Log)
+            Entity = ToJson(entity, metadataDepth)
         }, JsonSettings.Defaults());
 
-        public JsonEntity ToJson(IEntity entity, int metadataDepth = 0, ILog parentLog = null)
+        public JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
         {
-            var log = new Log("Jsn.Serlzr", parentLog);
-            var wrapLog = log.Call($"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
+            // var log = new Log("Jsn.Serlzr", Log);
+            var wrapLog = Log.Call($"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
             // do a null-check, because sometimes code could ask to serialize not-yet existing entities
             if (entity == null)
             {
@@ -53,25 +53,25 @@ namespace ToSic.Eav.ImportExport.Json
                 switch (g.Key)
                 {
                     case ValueTypes.String:
-                        attribs.String = ToTypedDictionary<string>(gList, log);
+                        attribs.String = ToTypedDictionary<string>(gList, Log);
                         break;
                     case ValueTypes.Hyperlink:
-                        attribs.Hyperlink = ToTypedDictionary<string>(gList, log);
+                        attribs.Hyperlink = ToTypedDictionary<string>(gList, Log);
                         break;
                     case ValueTypes.Custom:
-                        attribs.Custom = ToTypedDictionary<string>(gList, log);
+                        attribs.Custom = ToTypedDictionary<string>(gList, Log);
                         break;
                     case ValueTypes.Number:
-                        attribs.Number = ToTypedDictionary<decimal?>(gList, log);
+                        attribs.Number = ToTypedDictionary<decimal?>(gList, Log);
                         break;
                     case ValueTypes.DateTime:
-                        attribs.DateTime = ToTypedDictionary<DateTime?>(gList, log);
+                        attribs.DateTime = ToTypedDictionary<DateTime?>(gList, Log);
                         break;
                     case ValueTypes.Boolean:
-                        attribs.Boolean = ToTypedDictionary<bool?>(gList, log);
+                        attribs.Boolean = ToTypedDictionary<bool?>(gList, Log);
                         break;
                     case ValueTypes.Entity:
-                        attribs.Entity = ToTypedDictionaryEntity(gList, false, log);
+                        attribs.Entity = ToTypedDictionaryEntity(gList, false, Log);
                         break;
                     case ValueTypes.Empty:
                     case ValueTypes.Undefined:

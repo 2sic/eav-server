@@ -49,7 +49,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         a => string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
                 if (attribDef == null)
                 {
-                    if (!so.DiscardattributesNotInType)
+                    if (!so.DiscardAttributesNotInType)
                         throw new Exception(
                             $"trying to save attribute {attribute.Name} but can\'t find definition in DB");
                     wrapAttrib("attribute not found, will skip according to save-options");

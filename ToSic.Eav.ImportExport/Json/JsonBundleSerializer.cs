@@ -13,7 +13,7 @@ namespace ToSic.Eav.ImportExport.Json
         public string Serialize(BundleEntityWithAssets bundle, int metadataDepth)
         {
             // new in 11.07 - try to add assets
-            var ent = ToJson(bundle.Entity, metadataDepth, Log);
+            var ent = ToJson(bundle.Entity, metadataDepth);
             if (bundle.Assets != null && bundle.Assets.Any()) ent.Assets = bundle.Assets;
             return JsonConvert.SerializeObject(new JsonFormat { Entity = ent }, JsonSettings.Defaults());
         }

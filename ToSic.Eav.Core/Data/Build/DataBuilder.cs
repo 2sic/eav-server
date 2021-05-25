@@ -37,9 +37,10 @@ namespace ToSic.Eav.Data
             string typeName = DefaultTypeName,
             ContentType type = null,
             Guid? guid = null,
+            DateTime? created = null,
             DateTime? modified = null
             ) 
-            => new Entity(appId, id, type ?? ContentTypeBuilder.Fake(typeName), values, titleField, modified, guid);
+            => new Entity(appId, id, type ?? ContentTypeBuilder.Fake(typeName), values, titleField, created: created, modified: modified, guid: guid);
 
         /// <inheritdoc />
         [PublicApi]

@@ -74,7 +74,8 @@ namespace ToSic.Eav.Data
         /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
         /// </summary>
         [PrivateApi]
-        internal EntityLight(int appId, int entityId, Guid? guid, IContentType contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null)
+        internal EntityLight(int appId, int entityId, Guid? guid, IContentType contentType, Dictionary<string, object> values, string titleAttribute = null, 
+            DateTime? created = null, DateTime? modified = null)
         {
             AppId = appId;
             EntityId = entityId;
@@ -91,8 +92,8 @@ namespace ToSic.Eav.Data
                 throw new KeyNotFoundException($"The Title Attribute with Name \"{titleAttribute}\" doesn't exist in the Entity-Attributes.");
             }
             MetadataFor = new Metadata.Target();
-            if (modified.HasValue)
-                Modified = modified.Value;
+            if (created.HasValue) Created = created.Value;
+            if (modified.HasValue) Modified = modified.Value;
             Relationships = new RelationshipManager(this, null, null);
         }
 

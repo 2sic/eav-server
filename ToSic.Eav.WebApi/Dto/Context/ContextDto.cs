@@ -7,13 +7,13 @@ namespace ToSic.Eav.WebApi.Dto
 {
     public class ContextDto
     {
-        [JsonProperty(NullValueHandling = Ignore)] public AppDto App { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public LanguageDto Language { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public UserDto User { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public ContextAppDto App { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public ContextLanguageDto Language { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public ContextUserDto User { get; set; }
         [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto System { get; set; }
         [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto Site { get; set; }
         [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto Page { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public EnableDto Enable { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public ContextEnableDto Enable { get; set; }
     }
 
     public class WebResourceDto
@@ -22,23 +22,29 @@ namespace ToSic.Eav.WebApi.Dto
         [JsonProperty(NullValueHandling = Ignore)] public string Url { get; set; }
     }
 
-    public class AppDto: WebResourceDto
+    public class ContextAppDto: WebResourceDto
     {
         public string Name { get; set; }
         public string Identifier { get; set; }
         public string GettingStartedUrl { get; set; }
         public string Folder { get; set; }
         public HasPermissionsDto Permissions { get; set; }
+        
+        /// <summary>
+        /// App API Root. Not 100% correct because it doesn't contain the App identity or anything
+        /// But this tells the UI where to go work with things that need the App-API
+        /// </summary>
+        public string Api { get; set; }
     }
 
-    public class EnableDto
+    public class ContextEnableDto
     {
         public bool AppPermissions { get; set; }
         public bool CodeEditor { get; set; }
         public bool Query { get; set; }
     }
 
-    public class LanguageDto
+    public class ContextLanguageDto
     {
         public string Primary { get; set; }
         public string Current { get; set; }
@@ -48,7 +54,7 @@ namespace ToSic.Eav.WebApi.Dto
     /// <summary>
     /// Will be enhanced later
     /// </summary>
-    public class UserDto
+    public class ContextUserDto
     {
     }
 }

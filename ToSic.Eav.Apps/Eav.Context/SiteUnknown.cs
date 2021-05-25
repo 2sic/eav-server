@@ -34,7 +34,7 @@ namespace ToSic.Eav.Context
         public string Name => Unknown;
         public string AppsRootPhysical => Unknown;
         public string AppsRootPhysicalFull => Unknown;
-        public string AppsRootLink => Unknown;
+        public string AppAssetsLinkTemplate => Unknown;
         public string ContentPath => Unknown;
     }
 }

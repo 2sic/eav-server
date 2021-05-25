@@ -151,7 +151,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // Here's the problem! #badmergeofmetadata
             contentTypes.ForEach(type => MergeContentTypeUpdateWithExisting(appState, type));
             var so = SaveOptions.Build(ZoneId);
-            so.DiscardattributesNotInType = true;
+            so.DiscardAttributesNotInType = true;
             Storage.Save(contentTypes.Cast<IContentType>().ToList(), so);
             callLog("done");
         }

@@ -39,7 +39,7 @@ namespace ToSic.Eav.Context
 
         [PrivateApi] string AppsRootPhysicalFull { get; }
 
-        [PrivateApi] string AppsRootLink { get; }
+        [PrivateApi] string AppAssetsLinkTemplate { get; }
 
         [PrivateApi]
         string ContentPath { get; }

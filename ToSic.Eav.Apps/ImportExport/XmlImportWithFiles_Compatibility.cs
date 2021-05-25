@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			// Return if no Root Node "SexyContent"
 			if (!rns.Any() || rn == null)
 			{
-				Messages.Add(new Message("The XML file you specified does not seem to be a 2sxc Export.", Message.MessageTypes.Error));
+				Messages.Add(new Message("The XML file you specified does not seem to be a 2sxc/EAV Export.", Message.MessageTypes.Error));
 				return false;
 			}
 			// Return if Version does not match

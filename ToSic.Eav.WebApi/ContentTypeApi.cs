@@ -9,6 +9,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Security;
+using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.WebApi
 {
@@ -86,7 +87,7 @@ namespace ToSic.Eav.WebApi
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var metadata = t.Metadata.Description;
 
-	        var nameOverride = metadata?.Value<string>(Constants.ContentTypeMetadataLabel);
+	        var nameOverride = metadata?.Value<string>(ContentTypeMetadataLabel);
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
             var ser = new EntitiesToDictionary();
@@ -196,7 +197,11 @@ namespace ToSic.Eav.WebApi
                             e => ser.Convert(e)
                         ),
                     InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
-                    Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count()},
+                    Permissions = new HasPermissionsDto {Count = a.Metadata.Permissions.Count()},
+
+                    // new in 12.01
+                    IsEphemeral = a.Metadata.GetBestValue<bool>(MetadataFieldAllIsEphemeral, MetadataFieldTypeAll),
+                    HasFormulas = HasCalculations(a),
                 };
             });
             
@@ -212,12 +217,24 @@ namespace ToSic.Eav.WebApi
         /// </remarks>
         private static string FindInputType(IContentTypeAttribute attribute)
         {
-            var inputType = attribute.Metadata.GetBestValue<string>(Constants.MetadataFieldAllInputType, Constants.MetadataFieldTypeAll);
+            var inputType = attribute.Metadata.GetBestValue<string>(MetadataFieldAllInputType, MetadataFieldTypeAll);
 
             // unknown will let the UI fallback on other mechanisms
             return string.IsNullOrEmpty(inputType) ? "unknown" : inputType;
         }
 
+        private bool HasCalculations(IContentTypeAttribute attribute)
+        {
+            var wrapLog = Log.Call<bool>(attribute.Name);
+            var allMd = attribute.Metadata.FirstOrDefaultOfType(MetadataFieldTypeAll);
+            if (allMd == null) return wrapLog("no @All", false);
+
+            var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == MetadataFieldAllFormulas);
+            if (calculationsAttr == null) return wrapLog("no calc property", false);
+
+            var calculations = calculationsAttr.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>;
+            return wrapLog(null, calculations?.Any() ?? false);
+        }
 
 
         public bool Reorder(int contentTypeId, string newSortOrder)
