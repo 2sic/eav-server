@@ -87,7 +87,7 @@ namespace ToSic.Eav.WebApi
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var metadata = t.Metadata.Description;
 
-	        var nameOverride = metadata?.Value<string>(ContentTypeMetadataLabel);
+	        var nameOverride = metadata?.Value<string>(ContentTypes.ContentTypeMetadataLabel);
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
             var ser = new EntitiesToDictionary();

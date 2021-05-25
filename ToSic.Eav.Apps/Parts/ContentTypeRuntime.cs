@@ -144,7 +144,7 @@ namespace ToSic.Eav.Apps.Parts
                 .Select(p => p.Value).ToList();
 
             // try to access metadata, if it has any
-            var typesToCheckInThisOrder = new[] { InputTypes.TypeForInputTypeDefinition, Constants.ContentTypeTypeName, null };
+            var typesToCheckInThisOrder = new[] { InputTypes.TypeForInputTypeDefinition, ContentTypes.ContentTypeTypeName, null };
             var retyped = types.Select(it => new InputTypeInfo(
                     it.StaticName.TrimStart(FieldTypePrefix[0]),
                     it.Metadata.GetBestValue<string>(InputTypes.InputTypeLabel, typesToCheckInThisOrder),

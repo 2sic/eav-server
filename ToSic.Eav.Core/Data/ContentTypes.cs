@@ -8,5 +8,11 @@ namespace ToSic.Eav.Data
     [PrivateApi]
     public class ContentTypes
     {
+        #region Metadata-Properties which have system use
+
+        public const string ContentTypeTypeName = "ContentType";
+        public static readonly string ContentTypeMetadataLabel = "Label";
+
+        #endregion
     }
 }
