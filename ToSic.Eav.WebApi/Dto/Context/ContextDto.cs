@@ -39,9 +39,11 @@ namespace ToSic.Eav.WebApi.Dto
 
     public class ContextEnableDto
     {
-        public bool AppPermissions { get; set; }
-        public bool CodeEditor { get; set; }
-        public bool Query { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public bool? AppPermissions { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public bool? CodeEditor { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public bool? Query { get; set; }
+
+        [JsonProperty(NullValueHandling = Ignore)] public bool? FormulaSave { get; set; }
     }
 
     public class ContextLanguageDto
