@@ -16,6 +16,10 @@ namespace ToSic.Eav.Data
             // Make sure the "Default" scope is always included, otherwise it's missing on new apps
             if (!scopes.Contains(AppConstants.ScopeContentOld))
                 scopes.Add(AppConstants.ScopeContentOld);
+            
+            // Add new Configuration scope for v12.02
+            if(!scopes.Contains(AppConstants.ScopeConfiguration))
+                scopes.Add(AppConstants.ScopeConfiguration);
 
             return scopes.OrderBy(s => s).ToArray();
         }
@@ -27,6 +31,7 @@ namespace ToSic.Eav.Data
             var lookup = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
             {
                 {AppConstants.ScopeContentOld, "Default"},
+                {AppConstants.ScopeConfiguration, "Configuration (Views etc.)" },
                 {AppConstants.ScopeContentSystem, "System: CMS"},
                 {AppConstants.ScopeApp, "System: App"},
                 {Constants.ScopeSystem, "System: System"},
