@@ -20,5 +20,10 @@
         /// The root folder for temporary data
         /// </summary>
         string TemporaryFolder { get; set; }
+        
+        /// <summary>
+        /// This is the root path of where global apps are stored
+        /// </summary>
+        string GlobalSiteFolder { get; set; }
     }
 }
