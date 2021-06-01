@@ -9,7 +9,7 @@ namespace ToSic.Eav
         #region Parameter protection
 
         // Special constant to protect functions which should use named parameters
-        public const string Protector = "all params must be named, like 'enable: true, language: ''de-ch'' - see https://r.2sxc.org/named-params";
+        public const string Protector = "Rule: all params must be named (https://r.2sxc.org/named-params), Example: \"enable: true, language: ''de-ch''\"";
 
         // ReSharper disable once UnusedParameter.Local
 
@@ -18,7 +18,7 @@ namespace ToSic.Eav
             if (criticalParameter == null || criticalParameter != Protector)
                 throw new Exception($"when using '{protectedMethod}' you must use named parameters " +
                                     "- otherwise you are relying on the parameter order staying the same. " +
-                                    $"this command experts params like {paramNames}");
+                                    $"this command expects these parameters: {paramNames}");
         }
 
         #endregion
