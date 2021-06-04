@@ -13,12 +13,13 @@ namespace ToSic.Eav
 	{
         private static IServiceCollection _serviceCollection = new ServiceCollection();
 
-        // ReSharper disable once UnusedMember.Global
+        [PrivateApi]
         public static void UseExistingServices(IServiceCollection newServiceCollection)
             => _serviceCollection = newServiceCollection;
 
         public delegate void ServiceConfigurator(IServiceCollection service);
 
+        [PrivateApi]
 	    public static void ActivateNetCoreDi(ServiceConfigurator configure)
 	    {
 	        var sc = _serviceCollection;
@@ -51,6 +52,7 @@ namespace ToSic.Eav
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
+        [PrivateApi]
         public static T StaticBuild<T>() => GetServiceProvider().Build<T>();
 
         /// <summary>
