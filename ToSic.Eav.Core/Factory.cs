@@ -5,10 +5,12 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav
 {
-	/// <summary>
-	/// The Eav DI Factory, used to construct various objects through Dependency Injection.
-	/// </summary>
-	[PublicApi_Stable_ForUseInYourCode]
+    /// <summary>
+    /// The Eav DI Factory, used to construct various objects through [Dependency Injection](xref:NetCode.DependencyInjection.Index).
+    ///
+    /// If possible avoid using this, as it's a workaround for code which is outside of the normal Dependency Injection and therefor a bad pattern.
+    /// </summary>
+    [PublicApi_Stable_ForUseInYourCode]
 	public partial class Factory
 	{
         private static IServiceCollection _serviceCollection = new ServiceCollection();
