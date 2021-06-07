@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
@@ -44,13 +45,6 @@ namespace ToSic.Eav.Data
         new
 #endif
             T GetBestValue<T>(string attributeName, string[] languages);
-
-        // 2020-12-15 disabled - I believe it was never in use
-        //[WorkInProgressApi("Still wip")]
-        //object PrimaryValue(string attributeName);
-
-        //[WorkInProgressApi("Still wip")]
-        //T PrimaryValue<T>(string attributeName);
 
         /// <summary>
         /// Best way to get the current entities title
@@ -159,6 +153,13 @@ namespace ToSic.Eav.Data
         /// <param name="fieldName"></param>
         /// <returns>The typed value or the (default) value - so a null for strings, false for boolean etc.</returns>
         T Value<T>(string fieldName);
+
+        #endregion
+
+        #region ValueAndType probably new / WIP in 12.02
+
+        [PrivateApi("WIP, internal")]
+        Tuple<object, string> ValueAndType(string fieldName, string[] languages);
 
         #endregion
     }

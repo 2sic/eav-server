@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
@@ -9,36 +11,32 @@ namespace ToSic.Eav.Data
         public object GetBestValue(string attributeName, string[] languages)
             => _useLightModel
                 ? base.GetBestValue(attributeName)
-                : GetBestValueAndType(attributeName, languages, out _);
+                : ValueAndType(attributeName, languages).Item1;
 
 
         /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, string[] languages) => ChangeTypeOrDefault<TVal>(GetBestValue(name, languages));
 
 
-
-        private object GetBestValueAndType(string attributeName, string[] languages, out string attributeType)
+        [PrivateApi("WIP / Internal")]
+        public Tuple<object, string> ValueAndType(string attributeName, string[] languages)
         {
             languages = ExtendDimsWithDefault(languages);
-
             attributeName = attributeName.ToLowerInvariant();
             if (Attributes.ContainsKey(attributeName))
             {
                 var attribute = Attributes[attributeName];
-                attributeType = attribute.Type;
-                return attribute[languages];
+                return new Tuple<object, string>(attribute[languages], attribute.Type);
             }
             
             if (attributeName == Data.Attributes.EntityFieldTitle)
             {
                 var attribute = Title;
-                attributeType = attribute?.Type;
-                return Title?[languages];
+                return new Tuple<object, string>(Title?[languages], attribute?.Type);
             }
 
             // directly return internal properties, mark as virtual to not allow further Link resolution
-            attributeType = Data.Attributes.FieldIsVirtual;
-            return GetInternalPropertyByName(attributeName);
+            return new Tuple<object, string>(GetInternalPropertyByName(attributeName), Data.Attributes.FieldIsVirtual);
         }
 
         protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)

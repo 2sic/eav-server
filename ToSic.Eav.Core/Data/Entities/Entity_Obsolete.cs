@@ -14,7 +14,9 @@ namespace ToSic.Eav.Data
             if (_useLightModel)
                 return base.GetBestValue(attributeName, resolveHyperlinks);
 
-            var result = GetBestValueAndType(attributeName, languages, out var attributeType);
+            var set = ValueAndType(attributeName, languages);
+            var result = set.Item1;
+            var attributeType = set.Item2;
 
             if (attributeType == Data.Attributes.FieldIsVirtual) return result;
 
@@ -26,11 +28,6 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         [Obsolete("Deprecated. Do not use any more, as it cannot reliably know the real language list. Use GetBestValue(name, languageList)")]
         public new object GetBestValue(string attributeName) => GetBestValue(attributeName, new string[0]);
-
-        // 2020-10-30 trying to drop uses with ResolveHyperlinks
-        ///// <inheritdoc />
-        //public new TVal GetBestValue<TVal>(string name, bool resolveHyperlinks/* = false*/)
-        //    => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
 
         [PrivateApi]
         [Obsolete("Deprecated. Do not use any more, as it cannot reliably resolve hyperlinks.")]
