@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
@@ -13,7 +12,7 @@ namespace ToSic.Eav.Data
     /// > We recommend you read about the [](xref:Basics.Data.Index)
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public partial interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions
+    public partial interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions, IEntityInternal
     {
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
@@ -156,11 +155,5 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        #region ValueAndType probably new / WIP in 12.02
-
-        [PrivateApi("WIP, internal")]
-        Tuple<object, string> ValueAndType(string fieldName, string[] languages);
-
-        #endregion
     }
 }

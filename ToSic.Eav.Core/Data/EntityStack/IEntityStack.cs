@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
@@ -11,10 +12,7 @@ namespace ToSic.Eav.Data
     {
         IImmutableList<IEntity> Stack { get; }
 
-        object Value(string fieldName, bool treatEmptyAsDefault = true);
+        Tuple<object, string, IEntity> ValueAndMore(string fieldName, string[] dimensions, bool treatEmptyAsDefault = true);
 
-        T Value<T>(string fieldName);
-
-        T Value<T>(string fieldName, bool treatEmptyAsDefault);
     }
 }
