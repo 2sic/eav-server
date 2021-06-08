@@ -23,7 +23,6 @@ namespace ToSic.Eav.Data
                     return new KeyValuePair<string, IPropertyLookup>(key, ep.Value);
                 })
                 .ToImmutableArray();
-            // _sources = entities.Where(e => e.Value != null).ToImmutableArray();
         }
 
         public IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources => _sources ?? throw new Exception($"Can't access {nameof(IPropertyStack)}.{nameof(Sources)} as it hasn't been initialized yet.");
