@@ -9,7 +9,7 @@ namespace ToSic.Eav
         #region Parameter protection
 
         // Special constant to protect functions which should use named parameters
-        public const string Protector = "Rule: all params must be named (https://r.2sxc.org/named-params), Example: \"enable: true, language: ''de-ch''\"";
+        public const string Protector = "Rule: all params must be named (https://r.2sxc.org/named-params), Example: 'enable: true, version: 10'";
 
         // ReSharper disable once UnusedParameter.Local
 
