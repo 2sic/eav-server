@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
@@ -11,32 +10,33 @@ namespace ToSic.Eav.Data
         public object GetBestValue(string attributeName, string[] languages)
             => _useLightModel
                 ? base.GetBestValue(attributeName)
-                : ValueAndType(attributeName, languages).Item1;
+                : FindPropertyInternal(attributeName, languages).Result;
 
 
         /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, string[] languages) => ChangeTypeOrDefault<TVal>(GetBestValue(name, languages));
 
 
-        [PrivateApi("WIP / Internal")]
-        public Tuple<object, string> ValueAndType(string attributeName, string[] languages)
+        [PrivateApi("Internal")]
+        public PropertyRequest FindPropertyInternal(string attributeName, string[] languages)
         {
             languages = ExtendDimsWithDefault(languages);
             attributeName = attributeName.ToLowerInvariant();
             if (Attributes.ContainsKey(attributeName))
             {
                 var attribute = Attributes[attributeName];
-                return new Tuple<object, string>(attribute[languages], attribute.Type);
+                return new PropertyRequest {Result = attribute[languages], FieldType = attribute.Type, Source = this};
             }
             
             if (attributeName == Data.Attributes.EntityFieldTitle)
             {
                 var attribute = Title;
-                return new Tuple<object, string>(Title?[languages], attribute?.Type);
+                return new PropertyRequest { Result = Title?[languages], FieldType = attribute?.Type, Source = this};
             }
 
             // directly return internal properties, mark as virtual to not allow further Link resolution
-            return new Tuple<object, string>(GetInternalPropertyByName(attributeName), Data.Attributes.FieldIsVirtual);
+            return new PropertyRequest
+                {Result = GetInternalPropertyByName(attributeName), FieldType = Data.Attributes.FieldIsVirtual, Source = this};
         }
 
         protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)

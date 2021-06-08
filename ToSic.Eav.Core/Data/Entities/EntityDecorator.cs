@@ -119,7 +119,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public T Value<T>(string field) => Entity.Value<T>(field);
 
-        [PrivateApi("WIP / Internal")]
-        public Tuple<object, string> ValueAndType(string fieldName, string[] languages) => Entity.ValueAndType(fieldName, languages);
+        [PrivateApi("Internal")]
+        public PropertyRequest FindPropertyInternal(string fieldName, string[] languages) => Entity.FindPropertyInternal(fieldName, languages);
     }
 }

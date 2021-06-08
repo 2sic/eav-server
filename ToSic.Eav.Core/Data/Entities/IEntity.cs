@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data
     /// > We recommend you read about the [](xref:Basics.Data.Index)
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public partial interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions, IEntityInternal
+    public partial interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions, IPropertyLookup
     {
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)

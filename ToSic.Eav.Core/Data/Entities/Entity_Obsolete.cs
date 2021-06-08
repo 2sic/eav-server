@@ -14,9 +14,9 @@ namespace ToSic.Eav.Data
             if (_useLightModel)
                 return base.GetBestValue(attributeName, resolveHyperlinks);
 
-            var set = ValueAndType(attributeName, languages);
-            var result = set.Item1;
-            var attributeType = set.Item2;
+            var set = FindPropertyInternal(attributeName, languages);
+            var result = set.Result;
+            var attributeType = set.FieldType;
 
             if (attributeType == Data.Attributes.FieldIsVirtual) return result;
 

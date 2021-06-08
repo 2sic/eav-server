@@ -52,7 +52,12 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Virtual fields are not real fields, but information properties like title, etc.
         /// </summary>
-        public const string FieldIsVirtual = "virtual";
+        public static string FieldIsVirtual = "virtual";
+
+        /// <summary>
+        /// Dynamic fields were constructed and are not real IEntity properties
+        /// </summary>
+        public static string FieldIsDynamic = "dynamic";
 
         #endregion
 
