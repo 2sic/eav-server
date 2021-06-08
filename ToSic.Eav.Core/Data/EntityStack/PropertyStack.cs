@@ -58,17 +58,33 @@ namespace ToSic.Eav.Data
                 if (!treatEmptyAsDefault) return result;
 
                 // this may set a null, but may also set an empty string or empty array
-                if (result.Result.IsNullOrDefault()) continue;
+                if (result.Result.IsNullOrDefault(treatFalseAsDefault: false)) continue;
 
-                if (result.Result is string foundString && !string.IsNullOrEmpty(foundString)) return result;
+                if (result.Result is string foundString)
+                {
+                    if(string.IsNullOrEmpty(foundString)) continue;
+                    return result;
+                }
 
                 // Return entity-list if it has elements, otherwise continue searching
-                if (result.Result is IEnumerable<IEntity> entityList && entityList.Any()) return result;
+                if (result.Result is IEnumerable<IEntity> entityList)
+                {
+                    if(!entityList.Any()) continue;
+                    return result;
+                }
                 
                 // not sure if this will ever hit
-                if (result.Result is ICollection list && list.Count != 0) return result;
+                if (result.Result is ICollection list)
+                {
+                    if(list.Count == 0) continue;
+                    return result;
+                }
+                
+                // All seems ok, special checks passed, return result
+                return result;
             }
 
+            // All loops completed, maybe one got a temporary result, return that
             return result;
         }
     }
