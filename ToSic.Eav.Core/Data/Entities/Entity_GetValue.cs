@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
@@ -9,42 +10,39 @@ namespace ToSic.Eav.Data
         public object GetBestValue(string attributeName, string[] languages)
             => _useLightModel
                 ? base.GetBestValue(attributeName)
-                : GetBestValueAndType(attributeName, languages, out _);
+                : FindPropertyInternal(attributeName, languages).Result;
 
 
         /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, string[] languages) => ChangeTypeOrDefault<TVal>(GetBestValue(name, languages));
 
 
-
-        private object GetBestValueAndType(string attributeName, string[] languages, out string attributeType)
+        [PrivateApi("Internal")]
+        public PropertyRequest FindPropertyInternal(string attributeName, string[] languages)
         {
             languages = ExtendDimsWithDefault(languages);
-
             attributeName = attributeName.ToLowerInvariant();
             if (Attributes.ContainsKey(attributeName))
             {
                 var attribute = Attributes[attributeName];
-                attributeType = attribute.Type;
-                return attribute[languages];
+                return new PropertyRequest {Result = attribute[languages], FieldType = attribute.Type, Source = this};
             }
             
-            if (attributeName == Constants.EntityFieldTitle)
+            if (attributeName == Data.Attributes.EntityFieldTitle)
             {
                 var attribute = Title;
-                attributeType = attribute?.Type;
-                return Title?[languages];
+                return new PropertyRequest { Result = Title?[languages], FieldType = attribute?.Type, Source = this};
             }
 
             // directly return internal properties, mark as virtual to not allow further Link resolution
-            attributeType = Constants.EntityFieldIsVirtual;
-            return GetInternalPropertyByName(attributeName);
+            return new PropertyRequest
+                {Result = GetInternalPropertyByName(attributeName), FieldType = Data.Attributes.FieldIsVirtual, Source = this};
         }
 
         protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)
         {
             // first check a field which doesn't exist on EntityLight
-            if (attributeNameLowerInvariant == Constants.EntityFieldIsPublished) return IsPublished;
+            if (attributeNameLowerInvariant == Data.Attributes.EntityFieldIsPublished) return IsPublished;
 
             // Now handle the ones that EntityLight has
             return base.GetInternalPropertyByName(attributeNameLowerInvariant);

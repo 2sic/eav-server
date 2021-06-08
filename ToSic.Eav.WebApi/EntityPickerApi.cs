@@ -15,13 +15,15 @@ namespace ToSic.Eav.WebApi
     {
         #region DI Constructor
 
-        public EntityPickerApi(AppRuntime appRuntime, IZoneCultureResolver cultureResolver) : base("Api.EntPck")
+        public EntityPickerApi(AppRuntime appRuntime, IZoneCultureResolver cultureResolver, IUser user) : base("Api.EntPck")
         {
             _cultureResolver = cultureResolver;
+            _user = user;
             AppRuntime = appRuntime;
         }
         public AppRuntime AppRuntime { get; }
         private readonly IZoneCultureResolver _cultureResolver;
+        private readonly IUser _user;
 
         #endregion
 
@@ -50,7 +52,7 @@ namespace ToSic.Eav.WebApi
             }
             else
             {
-                temp = AppRuntime.Entities.OnlyContent;
+                temp = AppRuntime.Entities.OnlyContent(_user.IsSuperUser); // only super user should also get Configuration
                 Log.Add("won't filter by type because it's null");
             }
 

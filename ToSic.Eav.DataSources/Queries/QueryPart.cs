@@ -43,8 +43,8 @@ namespace ToSic.Eav.DataSources.Queries
         /// <returns></returns>
         private string RewriteOldAssemblyNames(string assemblyAndType)
         {
-            var newName = assemblyAndType.EndsWith(Constants.V3To4DataSourceDllOld)
-                ? assemblyAndType.Replace(Constants.V3To4DataSourceDllOld, Constants.V3To4DataSourceDllNew)
+            var newName = assemblyAndType.EndsWith(DataSourceConstants.V3To4DataSourceDllOld)
+                ? assemblyAndType.Replace(DataSourceConstants.V3To4DataSourceDllOld, DataSourceConstants.V3To4DataSourceDllNew)
                 : assemblyAndType;
 
             // find the new name in the catalog

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -36,27 +37,27 @@ namespace ToSic.Eav.Apps.Parts
             {
                 {"VisibleInEditUI", true},
                 {"Name", staticName},
-                {Constants.MetadataFieldAllInputType, inputType}
+                {AttributeMetadata.GeneralFieldInputType, inputType}
             };
-            var meta = new Metadata.Target
+            var meta = new Target
             {
-                TargetType = Constants.MetadataForAttribute,
+                TargetType = (int)TargetTypes.Attribute,
                 KeyNumber = attributeId
             };
-            Parent.Entities.SaveMetadata(meta, Constants.MetadataFieldTypeAll, newValues);
+            Parent.Entities.SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
         }
 
         public bool UpdateInputType(int attributeId, string inputType)
         {
             Log.Add($"update input type attrib:{attributeId}, input:{inputType}");
-            var newValues = new Dictionary<string, object> { { Constants.MetadataFieldAllInputType, inputType } };
+            var newValues = new Dictionary<string, object> { { AttributeMetadata.GeneralFieldInputType, inputType } };
 
-            var meta = new Metadata.Target
+            var meta = new Target
             {
-                TargetType = Constants.MetadataForAttribute,
+                TargetType = (int)TargetTypes.Attribute,
                 KeyNumber = attributeId
             };
-            Parent.Entities.SaveMetadata(meta, Constants.MetadataFieldTypeAll, newValues);
+            Parent.Entities.SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
             return true;
         }
 

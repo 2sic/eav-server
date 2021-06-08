@@ -87,7 +87,7 @@ namespace ToSic.Eav.WebApi
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var metadata = t.Metadata.Description;
 
-	        var nameOverride = metadata?.Value<string>(ContentTypeMetadataLabel);
+	        var nameOverride = metadata?.Value<string>(ContentTypes.ContentTypeMetadataLabel);
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
             var ser = new EntitiesToDictionary();
@@ -200,7 +200,7 @@ namespace ToSic.Eav.WebApi
                     Permissions = new HasPermissionsDto {Count = a.Metadata.Permissions.Count()},
 
                     // new in 12.01
-                    IsEphemeral = a.Metadata.GetBestValue<bool>(MetadataFieldAllIsEphemeral, MetadataFieldTypeAll),
+                    IsEphemeral = a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral, AttributeMetadata.TypeGeneral),
                     HasFormulas = HasCalculations(a),
                 };
             });
@@ -217,7 +217,7 @@ namespace ToSic.Eav.WebApi
         /// </remarks>
         private static string FindInputType(IContentTypeAttribute attribute)
         {
-            var inputType = attribute.Metadata.GetBestValue<string>(MetadataFieldAllInputType, MetadataFieldTypeAll);
+            var inputType = attribute.Metadata.GetBestValue<string>(AttributeMetadata.GeneralFieldInputType, AttributeMetadata.TypeGeneral);
 
             // unknown will let the UI fallback on other mechanisms
             return string.IsNullOrEmpty(inputType) ? "unknown" : inputType;
@@ -226,10 +226,10 @@ namespace ToSic.Eav.WebApi
         private bool HasCalculations(IContentTypeAttribute attribute)
         {
             var wrapLog = Log.Call<bool>(attribute.Name);
-            var allMd = attribute.Metadata.FirstOrDefaultOfType(MetadataFieldTypeAll);
+            var allMd = attribute.Metadata.FirstOrDefaultOfType(AttributeMetadata.TypeGeneral);
             if (allMd == null) return wrapLog("no @All", false);
 
-            var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == MetadataFieldAllFormulas);
+            var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == AttributeMetadata.MetadataFieldAllFormulas);
             if (calculationsAttr == null) return wrapLog("no calc property", false);
 
             var calculations = calculationsAttr.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>;

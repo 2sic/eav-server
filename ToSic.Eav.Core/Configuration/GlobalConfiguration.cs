@@ -27,6 +27,13 @@ namespace ToSic.Eav.Configuration
             set => _temporaryFolder = CorrectFolderOrErrorIfInvalid(value, nameof(TemporaryFolder));
         }
 
+        /// <inheritdoc />
+        public string GlobalSiteFolder
+        {
+            get => _globalSiteFolder;
+            set => _globalSiteFolder = value;
+        }
+
         private static string CorrectFolderOrErrorIfInvalid(string value, string fieldName) 
             => value?.Backslash().TrimLastSlash() ?? throw new Exception(ErrorMessage(fieldName));
 
@@ -36,5 +43,6 @@ namespace ToSic.Eav.Configuration
         private static string _dataFolderAbsolute;
         private static string _temporaryFolder;
         private static string _globalFolder;
+        private static string _globalSiteFolder;
     }
 }

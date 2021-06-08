@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -122,8 +123,8 @@ namespace ToSic.Eav.DataSources
 		public Sql()
 		{
 			Provide(GetList);
-		    ConfigMask(TitleFieldKey, "[Settings:EntityTitleField||" + Constants.EntityFieldTitle + "]");
-		    ConfigMask(EntityIdFieldKey, "[Settings:EntityIdField||" + Constants.EntityFieldId + "]");
+		    ConfigMask(TitleFieldKey, "[Settings:EntityTitleField||" + Attributes.EntityFieldTitle + "]");
+		    ConfigMask(EntityIdFieldKey, "[Settings:EntityIdField||" + Attributes.EntityFieldId + "]");
 
 		    ConfigMask(ContentTypeKey, "[Settings:ContentType||SqlData]");
 		    ConfigMask(SelectCommandKey, "[Settings:SelectCommand]");
@@ -146,8 +147,8 @@ namespace ToSic.Eav.DataSources
 			ConnectionString = connectionString;
 			SelectCommand = selectCommand;
 			ContentType = contentType;
-		    EntityIdField = entityIdField ?? Constants.EntityFieldId;
-			TitleField = titleField ?? Constants.EntityFieldTitle;
+		    EntityIdField = entityIdField ?? Attributes.EntityFieldId;
+			TitleField = titleField ?? Attributes.EntityFieldTitle;
 		}
 
         /// <inheritdoc />

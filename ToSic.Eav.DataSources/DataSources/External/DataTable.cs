@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -36,7 +37,7 @@ namespace ToSic.Eav.DataSources
 	    /// <summary>
 	    /// Default Name of the EntityTitle Column
 	    /// </summary>
-	    internal static readonly string EntityTitleDefaultColumnName = Constants.EntityFieldTitle; 
+	    internal static readonly string EntityTitleDefaultColumnName = Attributes.EntityFieldTitle; 
 
 		/// <summary>
 		/// Source DataTable
@@ -108,7 +109,7 @@ namespace ToSic.Eav.DataSources
 		{
 			Source = source;
 			ContentType = contentType;
-			TitleField = titleField ?? Constants.EntityFieldTitle;
+			TitleField = titleField ?? Attributes.EntityFieldTitle;
 			EntityIdField = entityIdField ?? EntityIdDefaultColumnName;
 			TitleField = titleField ?? EntityTitleDefaultColumnName;
 		    ModifiedField = modifiedField ?? "";

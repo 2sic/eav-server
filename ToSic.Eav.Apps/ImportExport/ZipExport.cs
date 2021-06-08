@@ -165,7 +165,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var entities =
                 DataSourceFactory.GetPublishing(runtime, false).Out[Constants.DefaultStreamName].List.Where(
                     e => e.MetadataFor.TargetType != templateTypeId
-                         && e.MetadataFor.TargetType != Constants.MetadataForAttribute).ToList();
+                         && e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
 
             if (!includeContentGroups)
                 entities = entities.Where(p => p.Type.StaticName != SexyContentContentGroupName).ToList();

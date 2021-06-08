@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -175,7 +176,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 }
                 #endregion
 
-                var entitiesAssignedToThis = GetAssignedEntities(Constants.MetadataForEntity, entityId)
+                var entitiesAssignedToThis = GetAssignedEntities((int)TargetTypes.Entity, entityId)
                     .Select(e => new TempEntityAndTypeInfos { EntityId = e.EntityId, TypeId = e.AttributeSetId })
                     .ToList();
                 if (entitiesAssignedToThis.Any())

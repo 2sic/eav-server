@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.System.Types;
 using ToSic.Eav.Documentation;
+using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.System
@@ -132,17 +133,18 @@ namespace ToSic.Eav.DataSources.System
         {
             var wrapLog = Log.Call();
 
-            if (string.IsNullOrWhiteSpace(QueryName))
+            var qName = QueryName;
+            if (string.IsNullOrWhiteSpace(qName))
                 return;
 
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
-            var found = QueryName.StartsWith(GlobalQueries.GlobalEavQueryPrefix)
-                ? _globalQueriesLazy.Value.FindQuery(QueryName)
-                : this.QueryManager.AllQueryItems(this)
-                    .FirstOrDefault(q => string.Equals(q.Value<string>("Name"), QueryName,
-                        StringComparison.InvariantCultureIgnoreCase));
+            var found = qName.StartsWith(GlobalQueries.GlobalEavQueryPrefix)
+                ? _globalQueriesLazy.Value.FindQuery(qName)
+                : QueryManager.AllQueryItems(this)
+                    .FirstOrDefault(q => string.Equals(q.Value<string>("Name"), qName, InvariantCultureIgnoreCase)
+                                         || string.Equals(q.EntityGuid.ToString(), qName, InvariantCultureIgnoreCase));
 
-            if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{QueryName}'");
+            if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{qName}'");
 
             var builtQuery = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
                 false, Configuration.LookUpEngine);

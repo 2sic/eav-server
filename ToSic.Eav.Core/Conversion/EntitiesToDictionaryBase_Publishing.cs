@@ -7,14 +7,14 @@ namespace ToSic.Eav.Conversion
     {
         private static void AddPublishingInformation(IEntity entity, Dictionary<string, object> entityValues)
         {
-            entityValues.Add(Constants.RepoIdInternalField, entity.RepositoryId);
-            entityValues.Add(Constants.IsPublishedField, entity.IsPublished);
+            entityValues.Add(Attributes.RepoIdInternalField, entity.RepositoryId);
+            entityValues.Add(Attributes.IsPublishedField, entity.IsPublished);
             if (entity.IsPublished && entity.GetDraft() != null)
             {
                 // do a check if there was a field called Published, which we must remove for this to work
-                if (entityValues.ContainsKey(Constants.DraftEntityField))
-                    entityValues.Remove(Constants.DraftEntityField);
-                entityValues.Add(Constants.DraftEntityField, new
+                if (entityValues.ContainsKey(Attributes.DraftEntityField))
+                    entityValues.Remove(Attributes.DraftEntityField);
+                entityValues.Add(Attributes.DraftEntityField, new
                 {
                     entity.GetDraft().RepositoryId,
                 });
@@ -23,9 +23,9 @@ namespace ToSic.Eav.Conversion
             if (!entity.IsPublished & entity.GetPublished() != null)
             {
                 // do a check if there was a field called Published, which we must remove for this to work
-                if (entityValues.ContainsKey(Constants.PublishedEntityField))
-                    entityValues.Remove(Constants.PublishedEntityField);
-                entityValues.Add(Constants.PublishedEntityField, new
+                if (entityValues.ContainsKey(Attributes.PublishedEntityField))
+                    entityValues.Remove(Attributes.PublishedEntityField);
+                entityValues.Add(Attributes.PublishedEntityField, new
                 {
                     entity.GetPublished().RepositoryId,
                 });

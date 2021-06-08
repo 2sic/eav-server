@@ -105,7 +105,7 @@ namespace ToSic.Eav.Apps.Parts
             if(attributes == null || !attributes.Any()) return wrapLog("no attributes", false);
 
             var toClear = attributes.Where(a =>
-                a.Metadata.GetBestValue<bool>(Constants.MetadataFieldAllIsEphemeral) == true)
+                a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral) == true)
                 .ToList();
 
             if (!toClear.Any()) return wrapLog("no ephemeral attributes", false);

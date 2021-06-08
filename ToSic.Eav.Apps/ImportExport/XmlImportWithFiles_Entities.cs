@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
@@ -67,17 +68,17 @@ namespace ToSic.Eav.Apps.ImportExport
 					break;
                 case XmlConstants.Entity:
                 case "Data Pipeline": // 2dm: this was an old value, 2017-08-11 this was still used in the old Employees directory app v. 1.02
-					assignmentObjectTypeId = Constants.MetadataForEntity;
+					assignmentObjectTypeId = (int)TargetTypes.Entity;
 					break;
                 case XmlConstants.ContentType:
-			        assignmentObjectTypeId = Constants.MetadataForContentType;
+			        assignmentObjectTypeId = (int)TargetTypes.ContentType;
                     break;
                 case XmlConstants.CmsObject:
                     // 2021-04-08 2dm warning: this line previously said `= Constants.MetadataForContentType` which seems very wrong but was never noticed
-                    assignmentObjectTypeId = Constants.MetadataForCmsObject;
+                    assignmentObjectTypeId = (int)TargetTypes.CmsItem;
 
                     if(keyString == null)
-                        throw new Exception("found cms object, but couldn't find metadata-key of type string, will abort");
+                        throw new Exception("found cms item, but couldn't find metadata-key of type string, will abort");
 			        var newKey = GetMappedLink(keyString);
 			        if (newKey != null)
 			            keyString = newKey;

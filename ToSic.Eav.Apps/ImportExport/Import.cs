@@ -189,7 +189,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 }
 
                 var newMetaList = newAttribute.Metadata
-                    .Select(impMd => MergeOneMd(appState, Constants.MetadataForAttribute, oldAttr.AttributeId, impMd))
+                    .Select(impMd => MergeOneMd(appState, (int)TargetTypes.Attribute, oldAttr.AttributeId, impMd))
                     .ToList();
 
                 if(newAttribute.Metadata.Permissions.Any())
@@ -200,7 +200,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // check if the content-type has metadata, which needs merging
             var merged = contentType.Metadata
-                .Select(impMd => MergeOneMd(appState, Constants.MetadataForContentType, contentType.StaticName, impMd))
+                .Select(impMd => MergeOneMd(appState, (int)TargetTypes.ContentType, contentType.StaticName, impMd))
                 .ToList();
             merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
             contentType.Metadata.Use(merged);

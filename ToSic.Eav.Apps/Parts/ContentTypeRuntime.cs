@@ -98,15 +98,15 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <returns></returns>
         private List<InputTypeInfo> GetAppRegisteredInputTypes()
-            => Parent.Entities.Get(Constants.TypeForInputTypeDefinition)
+            => Parent.Entities.Get(InputTypes.TypeForInputTypeDefinition)
                 .Select(e => new InputTypeInfo(
-                    e.Value<string>(Constants.InputTypeType),
-                    e.Value<string>(Constants.InputTypeLabel),
-                    e.Value<string>(Constants.InputTypeDescription),
-                    e.Value<string>(Constants.InputTypeAssets),
-                    e.Value<bool>(Constants.InputTypeDisableI18N),
-                    e.Value<string>(Constants.InputTypeAngularAssets),
-                    e.Value<bool>(Constants.InputTypeUseAdam)
+                    e.Value<string>(InputTypes.InputTypeType),
+                    e.Value<string>(InputTypes.InputTypeLabel),
+                    e.Value<string>(InputTypes.InputTypeDescription),
+                    e.Value<string>(InputTypes.InputTypeAssets),
+                    e.Value<bool>(InputTypes.InputTypeDisableI18N),
+                    e.Value<string>(InputTypes.InputTypeAngularAssets),
+                    e.Value<bool>(InputTypes.InputTypeUseAdam)
                 ))
                 .ToList();
 
@@ -144,15 +144,15 @@ namespace ToSic.Eav.Apps.Parts
                 .Select(p => p.Value).ToList();
 
             // try to access metadata, if it has any
-            var typesToCheckInThisOrder = new[] { Constants.TypeForInputTypeDefinition, Constants.ContentTypeTypeName, null };
+            var typesToCheckInThisOrder = new[] { InputTypes.TypeForInputTypeDefinition, ContentTypes.ContentTypeTypeName, null };
             var retyped = types.Select(it => new InputTypeInfo(
                     it.StaticName.TrimStart(FieldTypePrefix[0]),
-                    it.Metadata.GetBestValue<string>(Constants.InputTypeLabel, typesToCheckInThisOrder),
-                    it.Metadata.GetBestValue<string>(Constants.InputTypeDescription, typesToCheckInThisOrder),
-                    it.Metadata.GetBestValue<string>(Constants.InputTypeAssets, Constants.TypeForInputTypeDefinition),
-                    it.Metadata.GetBestValue<bool>(Constants.InputTypeDisableI18N, Constants.TypeForInputTypeDefinition),
-                    it.Metadata.GetBestValue<string>(Constants.InputTypeAngularAssets, Constants.TypeForInputTypeDefinition),
-                    it.Metadata.GetBestValue<bool>(Constants.InputTypeUseAdam, Constants.TypeForInputTypeDefinition)
+                    it.Metadata.GetBestValue<string>(InputTypes.InputTypeLabel, typesToCheckInThisOrder),
+                    it.Metadata.GetBestValue<string>(InputTypes.InputTypeDescription, typesToCheckInThisOrder),
+                    it.Metadata.GetBestValue<string>(InputTypes.InputTypeAssets, InputTypes.TypeForInputTypeDefinition),
+                    it.Metadata.GetBestValue<bool>(InputTypes.InputTypeDisableI18N, InputTypes.TypeForInputTypeDefinition),
+                    it.Metadata.GetBestValue<string>(InputTypes.InputTypeAngularAssets, InputTypes.TypeForInputTypeDefinition),
+                    it.Metadata.GetBestValue<bool>(InputTypes.InputTypeUseAdam, InputTypes.TypeForInputTypeDefinition)
                 ))
                 .ToList();
             return retyped;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Apps.Adam;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
 
@@ -32,7 +33,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
             var originalFolder = appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "Folder").Attribute(XmlConstants.ValueAttr)?.Value;
 
             // save original AppId (because soon will be rewritten with empty string)
-            var appGuidNode = xmlDoc.XPathSelectElement("//SexyContent/Header/App")?.Attribute(Constants.SysFieldGuid);
+            var appGuidNode = xmlDoc.XPathSelectElement("//SexyContent/Header/App")?.Attribute(Attributes.GuidNiceName);
             if(appGuidNode == null) throw new Exception("app guid node not found - totally unexpected");
             var originalAppId = appGuidNode.Value;
             Log.Add($"original AppID:{originalAppId}");

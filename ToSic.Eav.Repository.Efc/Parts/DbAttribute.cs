@@ -109,8 +109,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             var attributeSet = DbContext.AttribSet.GetDbAttribSet(attributeSetId);
 
-            if (!Constants.AttributeStaticName.IsMatch(staticName))
-                throw new Exception("Attribute static name \"" + staticName + "\" is invalid. " + Constants.AttributeStaticNameRegExNotes);
+            if (!Attributes.StaticNameValidation.IsMatch(staticName))
+                throw new Exception("Attribute static name \"" + staticName + "\" is invalid. " + Attributes.StaticNameErrorMessage);
 
             // Prevent Duplicate Name
             if (AttributeExistsInSet(attributeSet.AttributeSetId, staticName))

@@ -149,7 +149,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // MergeContentTypeUpdateWithExisting(AppState appState, IContentType contentType)
                 var md = (Target)entity.MetadataFor;
                 // Set type / key
-                md.TargetType = Constants.MetadataForAttribute;
+                md.TargetType = (int)TargetTypes.Attribute;
                 md.KeyNumber = attributeId;
                 entities.Add(entity);
             }
@@ -180,7 +180,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 // MergeContentTypeUpdateWithExisting(AppState appState, IContentType contentType)
                 var md = (Target)entity.MetadataFor;
                 // Set type / key
-                md.TargetType = Constants.MetadataForContentType;
+                md.TargetType = (int)TargetTypes.ContentType;
                 md.KeyString = staticName;
                 entities.Add(entity);
             }

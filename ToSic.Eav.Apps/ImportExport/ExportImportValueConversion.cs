@@ -126,7 +126,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// the original value will be returned. 
         /// </summary>
         internal string ResolveHyperlinksFromSite(int appId, Guid itemGuid, string value, string attrType)
-            => attrType != Constants.DataTypeHyperlink
+            => attrType != DataTypes.Hyperlink
                 ? value
                 : ValueConverter.ToValue(value, itemGuid);
 

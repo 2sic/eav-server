@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data
     /// > We recommend you read about the [](xref:Basics.Data.Index)
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public partial interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions
+    public partial interface IEntity: IEntityLight, IPublish<IEntity>, IHasPermissions, IPropertyLookup
     {
         /// <summary>
         /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
@@ -44,13 +44,6 @@ namespace ToSic.Eav.Data
         new
 #endif
             T GetBestValue<T>(string attributeName, string[] languages);
-
-        // 2020-12-15 disabled - I believe it was never in use
-        //[WorkInProgressApi("Still wip")]
-        //object PrimaryValue(string attributeName);
-
-        //[WorkInProgressApi("Still wip")]
-        //T PrimaryValue<T>(string attributeName);
 
         /// <summary>
         /// Best way to get the current entities title
@@ -161,5 +154,6 @@ namespace ToSic.Eav.Data
         T Value<T>(string fieldName);
 
         #endregion
+
     }
 }

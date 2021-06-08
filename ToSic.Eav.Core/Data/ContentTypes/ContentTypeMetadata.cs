@@ -22,7 +22,7 @@ namespace ToSic.Eav.Data
         /// <param name="typeId">type id / static-name</param>
         /// <param name="metaProvider">remote / deferred metadata provider</param>
         public ContentTypeMetadata(string typeId, IHasMetadataSource metaProvider)
-            : base(Constants.MetadataForContentType, typeId, metaProvider)
+            : base((int)TargetTypes.ContentType, typeId, metaProvider)
         { }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace ToSic.Eav.Data
         /// <param name="sourceZoneId">the zone which has the metadata</param>
         /// <param name="sourceAppId">the app which has the metadata</param>
         public ContentTypeMetadata(string typeId, int sourceZoneId, int sourceAppId)
-            : base(Constants.MetadataForContentType, typeId, sourceZoneId, sourceAppId)
+            : base((int)TargetTypes.ContentType, typeId, sourceZoneId, sourceAppId)
         { }
 
         #endregion
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Data
         /// Description <see cref="IEntity"/> metadata of this content-type.
         /// </summary>
         public IEntity Description => this
-            .FirstOrDefault(md => md.Type.StaticName == Constants.ContentTypeTypeName);
+            .FirstOrDefault(md => md.Type.StaticName == ContentTypes.ContentTypeTypeName);
 
         /// <summary>
         /// Load / initialize - needed when building the cache.
@@ -58,7 +58,7 @@ namespace ToSic.Eav.Data
             // add the guid metadata on entity if it has a real guid
             // this is kind of wrong, because it should use the type MetadataForContentType
             // but this slipped in a long time ago, and we cannot change it any more
-            var additional = GetMetadataSource()?.GetMetadata(Constants.MetadataForEntity, ctGuid)
+            var additional = GetMetadataSource()?.GetMetadata((int)TargetTypes.Entity, ctGuid)
                                  .ToList()
                              ?? new List<IEntity>();
             Use(AllWithHidden.Concat(additional).ToList());

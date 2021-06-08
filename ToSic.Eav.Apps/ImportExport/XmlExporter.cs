@@ -11,6 +11,7 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Persistence.Xml;
 
@@ -167,7 +168,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         new XAttribute(XmlConstants.Type, x.Type),
                         new XAttribute(XmlConstants.IsTitle, x.IsTitle),
                         // Add Attribute MetaData
-                        from c in AppState.GetMetadata(Constants.MetadataForAttribute, x.AttributeId).ToList()
+                        from c in AppState.GetMetadata((int)TargetTypes.Attribute, x.AttributeId).ToList()
                         select GetEntityXElement(c.EntityId, c.Type.StaticName)
                     );
 

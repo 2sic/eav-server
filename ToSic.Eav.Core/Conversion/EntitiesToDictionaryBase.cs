@@ -94,12 +94,12 @@ namespace ToSic.Eav.Conversion
                     var value = entity.GetBestValue(v.Name, Languages);
 
                     // Special Case 1: Hyperlink Field which must be resolved
-                    if (v.Type == Constants.DataTypeHyperlink && value is string stringValue &&
+                    if (v.Type == DataTypes.Hyperlink && value is string stringValue &&
                         ValueConverterBase.CouldBeReference(stringValue))
                         return ValueConverter.ToValue(stringValue, entity.EntityGuid);
 
                     // Special Case 2: Entity-List
-                    if (v.Type == Constants.DataTypeEntity && value is IEnumerable<IEntity> entities)
+                    if (v.Type == DataTypes.Entity && value is IEnumerable<IEntity> entities)
                         return serRels.Serialize == true ? CreateListOfSubEntities(entities, serRels) : null;
 
                     // Default: Normal Value
@@ -127,8 +127,8 @@ namespace ToSic.Eav.Conversion
 
             // Include title field, if there is not already one in the dictionary
             if(rules?.SerializeTitle ?? true)
-                if (!entityValues.ContainsKey(Constants.SysFieldTitle))
-                    entityValues.Add(Constants.SysFieldTitle, entity.GetBestTitle(Languages));
+                if (!entityValues.ContainsKey(Attributes.TitleNiceName))
+                    entityValues.Add(Attributes.TitleNiceName, entity.GetBestTitle(Languages));
                 
             AddDateInformation(entity, entityValues, rules);
 

@@ -1,0 +1,117 @@
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.Data
+{
+    /// <summary>
+    /// Constants related to attributes.
+    /// Moved here from Eav.Constants
+    /// </summary>
+    [PrivateApi]
+    public class Attributes
+    {
+        #region Special Virtual-Attribute Names
+
+        public const string IsPublishedField = "IsPublished";
+        public const string PublishedEntityField = "PublishedEntity";
+        public const string RepoIdInternalField = "_RepositoryId";
+        public const string DraftEntityField = "DraftEntity";
+
+        #endregion
+
+        #region System field names - how they are shown / used publicly
+
+        /// <summary>
+        /// This is for public values / fields - like when the title is streamed in an API
+        /// </summary>
+        public const string TitleNiceName = "Title";
+
+        public const string ModifiedNiceName = "Modified";
+        public const string CreatedNiceName = "Created";
+        public const string GuidNiceName = "Guid";
+
+        #endregion
+
+
+        #region Special Attributes / Fields of Entities in lower-case
+
+        public const string EntityFieldTitle = "entitytitle";
+        public const string EntityFieldId = "entityid";
+        public const string EntityFieldAutoSelect = "entity-title-id"; // Special code used in a data-source to auto-check title or id
+        public const string EntityFieldGuid = "entityguid";
+        public const string EntityFieldType = "entitytype";
+        public const string EntityFieldIsPublished = "ispublished";
+        public const string EntityFieldCreated = "created";
+        public const string EntityFieldModified = "modified";
+
+        #endregion
+
+        #region Internal Attribute Information
+
+        /// <summary>
+        /// Virtual fields are not real fields, but information properties like title, etc.
+        /// </summary>
+        public static string FieldIsVirtual = "virtual";
+
+        /// <summary>
+        /// Dynamic fields were constructed and are not real IEntity properties
+        /// </summary>
+        public static string FieldIsDynamic = "dynamic";
+
+        #endregion
+
+        /// <summary>
+        /// Reserved field names - the UI should prevent creating fields with this name
+        /// </summary>
+        public static Dictionary<string, string> ReservedNames { get; } = new Dictionary<string, string>
+        {
+            { EntityFieldTitle, "This is a unique name for the entity title."},
+            { EntityFieldId, "This is a unique name for the entity Id."},
+            { EntityFieldGuid, "This is a unique name for the entity Guid."},
+            { EntityFieldType, "This is a unique name for the entity type name."},
+            { EntityFieldIsPublished, "This is a property which tells the system if the entity is published (and not draft)."},
+            { EntityFieldCreated, "This is an internal field which tells us when the entity was created."},
+            { EntityFieldModified, "This is an internal field which tells us when the entity was last modified."},
+            { "for", "This is an internal information which tells us if the entity is metadata for something."},
+            { "metadata", "This is usually a property on the entity which tells us about additional metadata of this entity."},
+        };
+
+        /// <summary>
+        /// Determine if a field-name is an internal/special property. For ValueFilter and ValueSort
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static bool InternalOnlyIsSpecialEntityProperty(string name)
+        {
+            switch (name.ToLowerInvariant())
+            {
+                case EntityFieldTitle:
+                case EntityFieldId:
+                case EntityFieldGuid:
+                case EntityFieldType:
+                case EntityFieldIsPublished:
+                case EntityFieldCreated:
+                case EntityFieldModified:
+                    return true;
+            }
+            return false;
+
+        }
+
+        #region DB Field / Names Constants
+
+        /// <summary>
+        /// AttributeSet StaticName must match this Regex. Accept Alphanumeric, except the first char must be alphabetic or underscore.
+        /// </summary>
+        public static Regex StaticNameValidation =
+            new Regex("^[_a-zA-Z]{1}[_a-zA-Z0-9]*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        /// <summary>
+        /// If AttributeSet StaticName doesn't match, users see this message.
+        /// </summary>
+        public static string StaticNameErrorMessage = "Only alphanumerics and underscore is allowed, first char must be alphabetic or underscore.";
+
+        #endregion
+    }
+}

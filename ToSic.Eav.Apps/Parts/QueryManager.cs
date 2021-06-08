@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -154,8 +155,8 @@ namespace ToSic.Eav.Apps.Parts
                 // go case insensitive...
                 var dataSource = new Dictionary<string, object>(ds, StringComparer.InvariantCultureIgnoreCase);
                 // Skip Out-DataSource
-                var originalIdentity = dataSource[Constants.EntityFieldGuid].ToString();
-                dataSource.TryGetValue(Constants.EntityFieldId, out object entityId);
+                var originalIdentity = dataSource[Attributes.EntityFieldGuid].ToString();
+                dataSource.TryGetValue(Attributes.EntityFieldId, out object entityId);
 
                 // remove key-fields, as we cannot save them (would cause error)
                 RemoveIdAndGuidFromValues(dataSource);
@@ -172,7 +173,7 @@ namespace ToSic.Eav.Apps.Parts
                 else
                 {
                     Tuple<int, Guid> entity = Parent.Entities.Create(Constants.QueryPartTypeName, dataSource,
-                        new Metadata.Target { TargetType = Constants.MetadataForEntity, KeyGuid = queryEntityGuid });
+                        new Metadata.Target { TargetType = (int)TargetTypes.Entity, KeyGuid = queryEntityGuid });
                     newDataSources.Add(originalIdentity, entity.Item2);
                 }
             }
@@ -187,8 +188,8 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="values"></param>
         private static void RemoveIdAndGuidFromValues(Dictionary<string, object> values)
         {
-            values.Remove(Constants.EntityFieldGuid);
-            values.Remove(Constants.EntityFieldId);
+            values.Remove(Attributes.EntityFieldGuid);
+            values.Remove(Attributes.EntityFieldId);
         }
 
         /// <summary>

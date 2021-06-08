@@ -11,12 +11,12 @@ namespace ToSic.Eav.Metadata
         /// Will return true if a target-type was assigned
         /// </summary>
         [Newtonsoft.Json.JsonIgnore]
-        public bool IsMetadata => TargetType != Constants.NotMetadata;
+        public bool IsMetadata => TargetType != (int)TargetTypes.None;
 
         /// <summary>
         /// This is the AssignmentObjectTypeId - usually 1 (none), 2 (attribute), 4 (entity)
         /// </summary>
-        public int TargetType { get; set; } = Constants.NotMetadata;
+        public int TargetType { get; set; } = (int)TargetTypes.None;
 
         /// <summary>
         /// The KeyNumber is null or the int of the key as stored in "Key"

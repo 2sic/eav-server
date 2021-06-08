@@ -1,6 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -14,7 +15,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var dbEnt = new ToSicEavEntities
             {
                 AppId = DbContext.AppId,
-                AssignmentObjectTypeId = newEnt.MetadataFor?.TargetType ?? Constants.NotMetadata,
+                AssignmentObjectTypeId = newEnt.MetadataFor?.TargetType ?? (int)TargetTypes.None,
                 KeyNumber = newEnt.MetadataFor?.KeyNumber,
                 KeyGuid = newEnt.MetadataFor?.KeyGuid,
                 KeyString = newEnt.MetadataFor?.KeyString,

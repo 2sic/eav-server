@@ -5,20 +5,23 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav
 {
-	/// <summary>
-	/// The Eav DI Factory, used to construct various objects through Dependency Injection.
-	/// </summary>
-	[PublicApi_Stable_ForUseInYourCode]
+    /// <summary>
+    /// The Eav DI Factory, used to construct various objects through [Dependency Injection](xref:NetCode.DependencyInjection.Index).
+    ///
+    /// If possible avoid using this, as it's a workaround for code which is outside of the normal Dependency Injection and therefor a bad pattern.
+    /// </summary>
+    [PublicApi_Stable_ForUseInYourCode]
 	public partial class Factory
 	{
         private static IServiceCollection _serviceCollection = new ServiceCollection();
 
-        // ReSharper disable once UnusedMember.Global
+        [PrivateApi]
         public static void UseExistingServices(IServiceCollection newServiceCollection)
             => _serviceCollection = newServiceCollection;
 
         public delegate void ServiceConfigurator(IServiceCollection service);
 
+        [PrivateApi]
 	    public static void ActivateNetCoreDi(ServiceConfigurator configure)
 	    {
 	        var sc = _serviceCollection;
@@ -51,6 +54,7 @@ namespace ToSic.Eav
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
+        [PrivateApi]
         public static T StaticBuild<T>() => GetServiceProvider().Build<T>();
 
         /// <summary>

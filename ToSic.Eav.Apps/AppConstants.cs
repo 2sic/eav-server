@@ -10,7 +10,9 @@
         public const string ScopeApp = "2SexyContent-App";
         public const string ScopeContentFuture = "Default";
         public const string ScopeContentOld = "2SexyContent";
+        public static string ScopeConfiguration = "System.Configuration";
         public static readonly string[] ScopesContent = {ScopeContentOld, ScopeContentFuture };
+        public static readonly string[] ScopesContentAndConfiguration = { ScopeContentOld, ScopeContentFuture, ScopeConfiguration };
 
         public const string ScopeContentSystem = "2SexyContent-System";
 
