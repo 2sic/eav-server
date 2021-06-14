@@ -8,13 +8,15 @@ namespace ToSic.Eav.Types
 {
     public class Global
     {
-        public static ILog Log = new Log("Eav.GlbTyp");
+        public static ILog Log = new Log($"{LogNames.Eav}.GlbTyp");
+
+        public static string LogHistoryGlobalTypes = "global-types";
 
         /// <summary>
         /// The constructor is automatically run exactly 1x when the first bit of code
         /// accesses any static property of this object
         /// </summary>
-       static Global() => History.Add("global-types", Log);
+       static Global() => History.Add(LogHistoryGlobalTypes, Log);
 
         /// <summary>
         /// Now using a Lazy method like recommended in
