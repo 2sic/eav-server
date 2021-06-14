@@ -120,6 +120,6 @@ namespace ToSic.Eav.Data
         public T Value<T>(string field) => Entity.Value<T>(field);
 
         [PrivateApi("Internal")]
-        public PropertyRequest FindPropertyInternal(string fieldName, string[] languages) => Entity.FindPropertyInternal(fieldName, languages);
+        public virtual PropertyRequest FindPropertyInternal(string fieldName, string[] languages) => Entity.FindPropertyInternal(fieldName, languages);
     }
 }
