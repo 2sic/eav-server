@@ -4,6 +4,25 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
+    /// <summary>
+    /// This is an internal object and it does quite some complex stuff, so we must document it.
+    /// Image if Razor requests the following setting:
+    /// * Settings.GoogleMaps.ApiKey
+    ///
+    /// Now imagine if the AppSettings has a `GoogleMaps` object which only overrides the zoom, but not the Key. In that case this _would_ happen
+    /// 1. Razor would successfully get Settings.GoogleMaps
+    /// 1. It would then ask for the ApiKey and turn up empty
+    ///
+    /// In reality, this should happen:
+    /// 1. If the ApiKey is empty, it should _backtrack_ back to the `Settings` object and find out if there is another GoogleMaps settings provider
+    /// 1. Then ask for that for an ApiKey
+    /// 1. Repeat till found
+    ///
+    /// This is what this object does:
+    /// * It wraps the first returned `GoogleMaps` object and will check if it has the desired `ApiKey` property
+    /// * If not found, it won't report that back, but ask the Parent for another GoogleMaps object...
+    /// * And let that take over - it may in turn repeat the process again
+    /// </summary>
     [PrivateApi]
     public class PropertyStackNavigator: IWrapper<IPropertyLookup>, IPropertyStackLookup
     {
@@ -14,8 +33,20 @@ namespace ToSic.Eav.Data
             ParentField = field;
             ParentIndex = index;
         }
+        
+        /// <summary>
+        /// The parent LookupStack which would get another source in case this doesn't find something
+        /// </summary>
         public IPropertyStackLookup Parent;
+        
+        /// <summary>
+        /// The name in the parent, which resulted in this object being created. 
+        /// </summary>
         public string ParentField;
+        
+        /// <summary>
+        /// The index of sources on the parent - because if this source doesn't return something, it must continue on that.
+        /// </summary>
         public int ParentIndex;
 
 
