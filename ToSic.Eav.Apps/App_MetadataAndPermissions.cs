@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -32,7 +33,7 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Call();
 
-            var appState = State.Get(this);
+            var appState = AppState;// State.Get(this);
             Metadata = appState.AppMetadata;
 
             // Get the content-items describing various aspects of this app
@@ -51,5 +52,9 @@ namespace ToSic.Eav.Apps
             wrapLog(null);
         }
         #endregion
+
+        [PrivateApi]
+        public AppState AppState => _appState ?? (_appState = State.Get(this));
+        private AppState _appState;
     }
 }
