@@ -16,6 +16,8 @@ namespace ToSic.Eav.ImportExport.Json
         public IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false) 
             => Deserialize(UnpackAndTestGenericJsonV1(serialized).Entity, allowDynamic, skipUnknownType);
 
+        internal IEntity DeserializeWithRelsWip(string serialized, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource dynRelationshipsSource = null) 
+            => Deserialize(UnpackAndTestGenericJsonV1(serialized).Entity, allowDynamic, skipUnknownType, dynRelationshipsSource);
 
         protected JsonFormat UnpackAndTestGenericJsonV1(string serialized)
         {
@@ -86,7 +88,12 @@ namespace ToSic.Eav.ImportExport.Json
                     Log.Add("will not resolve attributes because dynamic not allowed, but skip was ok");
             }
             else
-                BuildAttribsOfKnownType(jEnt.Attributes, contentType, newEntity);
+            {
+                // Note v12.03: even though we're using known types, ATM there are edge cases 
+                // with system types where the type is known, but the entities-source is not a full app-state
+                // We'll probably correct this some day, but for now we're including the relationshipSource if defined
+                BuildAttribsOfKnownType(jEnt.Attributes, contentType, newEntity, dynRelationshipsSource);
+            }
 
             wrapLog("ok");
             return newEntity;
@@ -117,7 +124,7 @@ namespace ToSic.Eav.ImportExport.Json
             }
         }
 
-        private void BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, Entity newEntity)
+        private void BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, Entity newEntity, IEntitiesSource relationshipsSource = null)
         {
             var wrapLog = Log.Call();
             foreach (var definition in contentType.Attributes)
@@ -135,8 +142,12 @@ namespace ToSic.Eav.ImportExport.Json
                         if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true)
                             break; // just keep the empty definition, as that's fine
                         newAtt.Values = jAtts.Entity[definition.Name]
-                            .Select(v => ValueBuilder.Build(definition.Type, v.Value, RecreateLanguageList(v.Key),
-                                LazyRelationshipLookupList)).ToList();
+                            .Select(v => ValueBuilder.Build(
+                                definition.Type, 
+                                v.Value,
+                                RecreateLanguageList(v.Key),
+                                relationshipsSource ?? LazyRelationshipLookupList))
+                            .ToList();
                         break;
                     case ValueTypes.Hyperlink:
                         BuildValues(jAtts.Hyperlink, definition,newAtt);
