@@ -44,49 +44,58 @@ namespace ToSic.Eav.Data
             var result = new PropertyRequest();
             for (var sourceIndex = startAtSource; sourceIndex < Sources.Count; sourceIndex++)
             {
-                var stackItem = Sources[sourceIndex];
-                // Check if the entity even has this field
-                // if (!stackItem.Value.Attributes.ContainsKey(fieldName)) continue;
+                var source = Sources[sourceIndex];
 
-                var propInfo = stackItem.Value.FindPropertyInternal(fieldName, dimensions);
+                var propInfo = source.Value.FindPropertyInternal(fieldName, dimensions);
+                
                 if (propInfo?.Result == null) continue;
-                propInfo.Name = stackItem.Key;
 
-                // Preserve, in case we won't find another but don't necessarily return now
-                result = propInfo;
-
-                // if any non-null is ok, use that.
-                if (!treatEmptyAsDefault) return result.AsFinal(sourceIndex);
-
-                // this may set a null, but may also set an empty string or empty array
-                if (result.Result.IsNullOrDefault(treatFalseAsDefault: false)) continue;
-
-                if (result.Result is string foundString)
-                {
-                    if (string.IsNullOrEmpty(foundString)) continue;
-                    return result.AsFinal(sourceIndex);
-                }
-
-                // Return entity-list if it has elements, otherwise continue searching
-                if (result.Result is IEnumerable<IEntity> entityList)
-                {
-                    if (!entityList.Any()) continue;
-                    return result.AsFinal(sourceIndex);
-                }
-
-                // not sure if this will ever hit
-                if (result.Result is ICollection list)
-                {
-                    if (list.Count == 0) continue;
-                    return result.AsFinal(sourceIndex);
-                }
-
-                // All seems ok, special checks passed, return result
-                return result.AsFinal(sourceIndex);
+                result = MarkAsFinalOrNot(propInfo, source.Key, sourceIndex, treatEmptyAsDefault);
+                if (result.IsFinal) return result;
             }
 
             // All loops completed, maybe one got a temporary result, return that
             return result;
+        }
+
+        public static PropertyRequest MarkAsFinalOrNot(PropertyRequest propInfo, string sourceName, int sourceIndex, bool treatEmptyAsDefault = true)
+        {
+            // Check nulls and prevent multiple executions
+            if (propInfo == null || propInfo.IsFinal) return propInfo;
+            
+            propInfo.Name = sourceName;
+
+            // Preserve, in case we won't find another but don't necessarily return now
+            var result = propInfo;
+
+            // if any non-null is ok, use that.
+            if (!treatEmptyAsDefault) return result.AsFinal(sourceIndex);
+
+            // this may set a null, but may also set an empty string or empty array
+            if (result.Result.IsNullOrDefault(treatFalseAsDefault: false)) return result;
+
+            if (result.Result is string foundString)
+            {
+                if (string.IsNullOrEmpty(foundString)) return result;
+                return result.AsFinal(sourceIndex);
+            }
+
+            // Return entity-list if it has elements, otherwise continue searching
+            if (result.Result is IEnumerable<IEntity> entityList)
+            {
+                if (!entityList.Any()) return result;
+                return result.AsFinal(sourceIndex);
+            }
+
+            // not sure if this will ever hit
+            if (result.Result is ICollection list)
+            {
+                if (list.Count == 0) return result;
+                return result.AsFinal(sourceIndex);
+            }
+
+            // All seems ok, special checks passed, return result
+            return result.AsFinal(sourceIndex);
         }
     }
 }

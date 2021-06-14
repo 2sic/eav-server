@@ -25,7 +25,14 @@ namespace ToSic.Eav.Data
         {
             // Try to find on child
             var childResult = UnwrappedContents.FindPropertyInternal(fieldName, dimensions);
-            if (childResult.IsFinal) return childResult;
+            if (childResult != null)
+            {
+                // Test if final was already checked, otherwise update it
+                if (!childResult.IsFinal) PropertyStack.MarkAsFinalOrNot(childResult, "", 0, treatEmptyAsDefault);
+                
+                // if it is final, return that
+                if (childResult.IsFinal) return childResult;
+            }
 
             // If it didn't work, check if parent has another option
             // Not found yet, ask parent if it may have another
