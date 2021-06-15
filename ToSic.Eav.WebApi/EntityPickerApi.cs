@@ -40,6 +40,11 @@ namespace ToSic.Eav.WebApi
             {
                 contentType = AppRuntime.AppState.GetContentType(contentTypeName);
                 Log.Add($"tried to get '{contentTypeName}' - found: {contentType != null}");
+                if (contentType == null)
+                {
+                    Log.Add("Since a type was specified and not found, will return empty list");
+                    return new List<EntityForPickerDto>();
+                }
             }
 
             IEnumerable<IEntity> temp;
