@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 
@@ -120,6 +121,6 @@ namespace ToSic.Eav.Data
         public T Value<T>(string field) => Entity.Value<T>(field);
 
         [PrivateApi("Internal")]
-        public virtual PropertyRequest FindPropertyInternal(string fieldName, string[] languages) => Entity.FindPropertyInternal(fieldName, languages);
+        public virtual PropertyRequest FindPropertyInternal(string fieldName, string[] languages, ILog parentLogOrNull) => Entity.FindPropertyInternal(fieldName, languages, parentLogOrNull);
     }
 }

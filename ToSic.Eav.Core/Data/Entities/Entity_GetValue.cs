@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data
 {
@@ -10,7 +11,7 @@ namespace ToSic.Eav.Data
         public object GetBestValue(string attributeName, string[] languages)
             => _useLightModel
                 ? base.GetBestValue(attributeName)
-                : FindPropertyInternal(attributeName, languages).Result;
+                : FindPropertyInternal(attributeName, languages, null).Result;
 
 
         /// <inheritdoc />
@@ -18,7 +19,7 @@ namespace ToSic.Eav.Data
 
 
         [PrivateApi("Internal")]
-        public PropertyRequest FindPropertyInternal(string attributeName, string[] languages)
+        public PropertyRequest FindPropertyInternal(string attributeName, string[] languages, ILog parentLogOrNull)
         {
             languages = ExtendDimsWithDefault(languages);
             attributeName = attributeName.ToLowerInvariant();
@@ -34,7 +35,7 @@ namespace ToSic.Eav.Data
                 return new PropertyRequest { Result = Title?[languages], FieldType = attribute?.Type, Source = this};
             }
 
-            // directly return internal properties, mark as virtual to not allow further Link resolution
+            // directly return internal properties, mark as virtual to not cause further Link resolution
             return new PropertyRequest
                 {Result = GetInternalPropertyByName(attributeName), FieldType = Data.Attributes.FieldIsVirtual, Source = this};
         }

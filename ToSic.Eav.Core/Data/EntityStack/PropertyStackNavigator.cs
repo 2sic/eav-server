@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data
 {
@@ -52,36 +53,50 @@ namespace ToSic.Eav.Data
 
         public IPropertyLookup UnwrappedContents { get; set; }
 
-        public PropertyRequest PropertyInStack(string fieldName, string[] dimensions, int startAtSource, bool treatEmptyAsDefault)
+        public PropertyRequest PropertyInStack(string fieldName, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
         {
+            var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PSNav");
+            var safeWrap = logOrNull.SafeCall<PropertyRequest>($"{nameof(fieldName)}:{fieldName}, {nameof(dimensions)}:{string.Join(",", dimensions)}, {nameof(startAtSource)}:{startAtSource}");
             // Try to find on child
-            var childResult = UnwrappedContents.FindPropertyInternal(fieldName, dimensions);
+            var childResult = UnwrappedContents.FindPropertyInternal(fieldName, dimensions, logOrNull);
             if (childResult != null)
             {
                 // Test if final was already checked, otherwise update it
-                if (!childResult.IsFinal) PropertyStack.MarkAsFinalOrNot(childResult, "", 0, treatEmptyAsDefault);
+                if (!childResult.IsFinal) PropertyStack.MarkAsFinalOrNot(childResult, "", 0, logOrNull, treatEmptyAsDefault);
                 
                 // if it is final, return that
-                if (childResult.IsFinal) return childResult;
+                if (childResult.IsFinal) return safeWrap("not null, final", childResult);
             }
+            
+            logOrNull.SafeAdd("Couldn't find a result  yet, will retry the parent");
 
             // If it didn't work, check if parent has another option
             // Not found yet, ask parent if it may have another
             // If the parent has another source, create a new navigator for that and return that result
             // This will in effect have a recursion - if that won't succeed it will ask the parent again.
-            var parentResult = Parent.PropertyInStack(ParentField, dimensions, ParentIndex +1, true);
-            if (parentResult.IsFinal && parentResult.Result is IEnumerable<IEntity> siblingEntities && siblingEntities.Any())
-                return new EntityWithStackNavigation(siblingEntities.First(), Parent, ParentField, parentResult.SourceIndex)
-                    .FindPropertyInternal(fieldName, dimensions);
+            var sibling = Parent.PropertyInStack(ParentField, dimensions, ParentIndex +1, true, logOrNull);
             
-            if (parentResult.IsFinal && parentResult.Result is IEnumerable<IPropertyLookup> siblingStack && siblingStack.Any())
-                return new PropertyStackNavigator(siblingStack.First(), Parent, ParentField, parentResult.SourceIndex)
-                    .PropertyInStack(fieldName, dimensions, 0, true);
+            if (!sibling.IsFinal) return safeWrap("no useful sibling found", childResult);
+            
+            logOrNull.SafeAdd($"Another sibling found. Name:{sibling.Name} #{sibling.SourceIndex}. Will try to check it's properties. ");
+            if (sibling.Result is IEnumerable<IEntity> siblingEntities && siblingEntities.Any())
+            {
+                logOrNull.SafeAdd("It's a list of entities as expected.");
+                var entityNav = new EntityWithStackNavigation(siblingEntities.First(), Parent, ParentField, sibling.SourceIndex);
+                return entityNav.FindPropertyInternal(fieldName, dimensions, logOrNull);
+            }
 
+            if (sibling.Result is IEnumerable<IPropertyLookup> siblingStack && siblingStack.Any())
+            {
+                logOrNull.SafeAdd("Another sibling found, it's a list of IPropertyLookups.");
+                var propNav = new PropertyStackNavigator(siblingStack.First(), Parent, ParentField, sibling.SourceIndex);
+                return propNav.PropertyInStack(fieldName, dimensions, 0, true, logOrNull);
+            }
+            
             // We got here, so we found nothing
             // This means result is not final or after checking the parent again, no better source was found
             // In this case, return the initial child result, which already said it's not final
-            return childResult;
+            return safeWrap("no sibling can return data, return empty result", childResult);
         }
     }
 }

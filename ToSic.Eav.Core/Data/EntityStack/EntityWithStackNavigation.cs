@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data
 {
@@ -16,7 +17,12 @@ namespace ToSic.Eav.Data
         
         internal readonly PropertyStackNavigator PropertyStackNavigator;
 
-        public override PropertyRequest FindPropertyInternal(string fieldName, string[] languages) 
-            => PropertyStackNavigator.PropertyInStack(fieldName, languages, 0, true);
+        public override PropertyRequest FindPropertyInternal(string fieldName, string[] languages, ILog parentLogOrNull)
+        {
+            var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".EntNav");
+            var wrapLog = logOrNull.SafeCall<PropertyRequest>();
+            var result = PropertyStackNavigator.PropertyInStack(fieldName, languages, 0, true, logOrNull);
+            return wrapLog(null, result);
+        }
     }
 }

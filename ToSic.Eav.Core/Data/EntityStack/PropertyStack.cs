@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data
@@ -16,7 +17,6 @@ namespace ToSic.Eav.Data
             var pairCount = 0;
 
             _sources = entities
-                // .Where(ep => ep.Value != null)
                 .Select(selector: ep =>
                 {
                     var key = !string.IsNullOrWhiteSpace(ep.Key) ? ep.Key : $"auto-named-{++pairCount}";
@@ -38,33 +38,38 @@ namespace ToSic.Eav.Data
         }
 
         [PrivateApi("Internal")]
-        public PropertyRequest FindPropertyInternal(string fieldName, string[] dimensions)
-            => PropertyInStack(fieldName, dimensions, 0, true);
+        public PropertyRequest FindPropertyInternal(string fieldName, string[] dimensions, ILog parentLogOrNull)
+            => PropertyInStack(fieldName, dimensions, 0, true, parentLogOrNull);
 
-        public PropertyRequest PropertyInStack(string fieldName, string[] dimensions, int startAtSource, bool treatEmptyAsDefault)
+        public PropertyRequest PropertyInStack(string fieldName, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
         {
+            var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PStack");
+            var wrapLog = logOrNull.SafeCall<PropertyRequest>();
             // Start with empty result, may be filled in later on
             var result = new PropertyRequest();
             for (var sourceIndex = startAtSource; sourceIndex < SourcesReal.Count; sourceIndex++)
             {
                 var source = SourcesReal[sourceIndex];
+                logOrNull.SafeAdd($"Testing source #{sourceIndex} : {source.Key}");
 
-                var propInfo = source.Value.FindPropertyInternal(fieldName, dimensions);
+                var propInfo = source.Value.FindPropertyInternal(fieldName, dimensions, logOrNull);
                 
                 if (propInfo?.Result == null) continue;
 
-                result = MarkAsFinalOrNot(propInfo, source.Key, sourceIndex, treatEmptyAsDefault);
-                if (result.IsFinal) return result;
+                result = MarkAsFinalOrNot(propInfo, source.Key, sourceIndex, logOrNull, treatEmptyAsDefault);
+                if (result.IsFinal) return wrapLog(null, result);
             }
 
             // All loops completed, maybe one got a temporary result, return that
-            return result;
+            return wrapLog(null, result);
         }
 
-        public static PropertyRequest MarkAsFinalOrNot(PropertyRequest propInfo, string sourceName, int sourceIndex, bool treatEmptyAsDefault = true)
+        public static PropertyRequest MarkAsFinalOrNot(PropertyRequest propInfo, string sourceName, int sourceIndex, ILog logOrNull, bool treatEmptyAsDefault)
         {
+            var safeWrap = logOrNull.SafeCall<PropertyRequest>();
             // Check nulls and prevent multiple executions
-            if (propInfo == null || propInfo.IsFinal) return propInfo;
+            if (propInfo == null || propInfo.IsFinal) 
+                return safeWrap("null or final", propInfo);
             
             propInfo.Name = sourceName;
 
@@ -72,33 +77,32 @@ namespace ToSic.Eav.Data
             var result = propInfo;
 
             // if any non-null is ok, use that.
-            if (!treatEmptyAsDefault) return result.AsFinal(sourceIndex);
+            if (!treatEmptyAsDefault)
+                return safeWrap("empty is ok", result.AsFinal(sourceIndex));
 
             // this may set a null, but may also set an empty string or empty array
-            if (result.Result.IsNullOrDefault(treatFalseAsDefault: false)) return result;
+            if (result.Result.IsNullOrDefault(treatFalseAsDefault: false)) 
+                return safeWrap("NullOrDefault - not final", result);
 
             if (result.Result is string foundString)
-            {
-                if (string.IsNullOrEmpty(foundString)) return result;
-                return result.AsFinal(sourceIndex);
-            }
+                return string.IsNullOrEmpty(foundString)
+                    ? safeWrap("empty string, not final", result)
+                    : safeWrap("string, non-empty - final", result.AsFinal(sourceIndex));
 
             // Return entity-list if it has elements, otherwise continue searching
             if (result.Result is IEnumerable<IEntity> entityList)
-            {
-                if (!entityList.Any()) return result;
-                return result.AsFinal(sourceIndex);
-            }
+                return !entityList.Any()
+                    ? safeWrap("empty list, not final", result)
+                    : safeWrap("list, non empty, final", result.AsFinal(sourceIndex));
 
             // not sure if this will ever hit
             if (result.Result is ICollection list)
-            {
-                if (list.Count == 0) return result;
-                return result.AsFinal(sourceIndex);
-            }
+                return list.Count == 0
+                    ? safeWrap("empty collection, not final", result)
+                    : safeWrap("list, non-empty, final",  result.AsFinal(sourceIndex));
 
             // All seems ok, special checks passed, return result
-            return result.AsFinal(sourceIndex);
+            return safeWrap("all ok/final", result.AsFinal(sourceIndex));
         }
     }
 }
