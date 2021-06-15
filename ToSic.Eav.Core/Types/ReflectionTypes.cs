@@ -9,6 +9,6 @@ namespace ToSic.Eav.Types
     {
         public static readonly ImmutableDictionary<string, IContentType> FakeCache =
             new Dictionary<string, IContentType>()
-                .ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
+                .ToImmutableDictionary(StringComparer.InvariantCultureIgnoreCase);
     }
 }

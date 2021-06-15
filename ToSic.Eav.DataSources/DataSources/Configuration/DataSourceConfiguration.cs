@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
         public void Add(string key, string value) => this[key] = value;
 
         [PrivateApi]
-        public IDictionary<string, string> Values { get; internal set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        public IDictionary<string, string> Values { get; internal set; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
 
         public ILookUpEngine LookUpEngine { get; protected internal set; }

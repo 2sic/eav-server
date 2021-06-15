@@ -105,7 +105,7 @@ namespace ToSic.Eav.Conversion
                     // Default: Normal Value
                     return value;
 
-                }, StringComparer.OrdinalIgnoreCase);
+                }, StringComparer.InvariantCultureIgnoreCase);
             
             // todo: verify what happens with null-values on the relationships, maybe we should filter them out again?
 

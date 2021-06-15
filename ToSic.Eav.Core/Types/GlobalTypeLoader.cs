@@ -24,7 +24,7 @@ namespace ToSic.Eav.Types
             // is a leftover of a temporary experiment
             Log.Add($"AllContentTypes starting load at {DateTime.Now}");
             var codeTypes =
-                new Dictionary<string, IContentType>(ReflectionTypes.FakeCache, StringComparer.OrdinalIgnoreCase);
+                new Dictionary<string, IContentType>(ReflectionTypes.FakeCache, StringComparer.InvariantCultureIgnoreCase);
 
             // add runtime stuff
             var runtimeType = ContentTypesInRuntime().ToList();
@@ -39,10 +39,10 @@ namespace ToSic.Eav.Types
 
             // create the nice-names dictionary, so it always exists when the static-name dic exists
             ByNiceName = codeTypes
-                .ToImmutableDictionary(t => t.Value.Name, t => t.Value, StringComparer.OrdinalIgnoreCase);
+                .ToImmutableDictionary(t => t.Value.Name, t => t.Value, StringComparer.InvariantCultureIgnoreCase);
 
             // make sure it's case insensitive...
-            ByStaticName = codeTypes.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
+            ByStaticName = codeTypes.ToImmutableDictionary(StringComparer.InvariantCultureIgnoreCase);
         }
 
         internal ImmutableDictionary<string, IContentType> ByStaticName;

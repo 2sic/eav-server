@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources.Queries
 	    internal Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine valuesCollectionProvider, bool showDrafts)
         {
             var wrapLog = Log.Call<Dictionary<string, IQuery>>($"..., ..., {showDrafts}");
-	        var dict = new Dictionary<string, IQuery>(StringComparer.OrdinalIgnoreCase);
+	        var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(app))
 	        {
 	            var delayedQuery = new Query(DataSourceFactory).Init(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider, showDrafts, null, Log);

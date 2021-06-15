@@ -25,8 +25,8 @@ namespace ToSic.Eav.LookUp
         {
             // either take existing dic or create new, but always make sure it's case insensitive
             Properties = valueList != null
-                ? new Dictionary<string, string>(valueList, StringComparer.OrdinalIgnoreCase)
-                : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                ? new Dictionary<string, string>(valueList, StringComparer.InvariantCultureIgnoreCase)
+                : new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
             Name = name;
 		}
 

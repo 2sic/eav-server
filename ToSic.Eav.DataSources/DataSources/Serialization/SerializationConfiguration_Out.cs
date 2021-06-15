@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources
         //    => _out.ContainsKey(name) ? _out[name] : AttachDeferredStreamToOut(name);
 
 
-        private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
+        private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase);
         private bool _requiresRebuildOfOut = true;
 
         /// <summary>

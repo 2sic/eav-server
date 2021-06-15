@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSources
         #region Out
         /// <inheritdoc/>
         public override IDictionary<string, IDataStream> Out 
-            => _out ?? (_out = new StreamDictionary(this, Query?.Out  ?? new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase)));
+            => _out ?? (_out = new StreamDictionary(this, Query?.Out  ?? new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase)));
 
         private IDictionary<string, IDataStream> _out;
         #endregion
@@ -83,10 +83,10 @@ namespace ToSic.Eav.DataSources
             #region check for various missing configurations / errors
 
             // prepare empty result, as we may need it in various use cases
-            //var emptyResult = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
+            //var emptyResult = new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase);
 
             // quit if nothing found
-            if(configEntity == null)
+            if (configEntity == null)
             {
                 Log.Add("no configuration found - empty list");
                 return wrapLog("silent error", null /*emptyResult*/);

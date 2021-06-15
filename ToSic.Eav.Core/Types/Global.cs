@@ -51,6 +51,11 @@ namespace ToSic.Eav.Types
 
             // now also try with nice-name
             var niceNamedType = Lazy.Value.ByNiceName;
+            
+            // test 2dm 
+            //var x = niceNamedType.Where(t => t.Key == name);
+            //var y = niceNamedType.Where(t => name.Equals(t.Key, StringComparison.InvariantCultureIgnoreCase));
+
             return niceNamedType.ContainsKey(name) 
                 ? niceNamedType[name]
                 : null;

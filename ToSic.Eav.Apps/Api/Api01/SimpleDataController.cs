@@ -111,7 +111,7 @@ namespace ToSic.Eav.Api.Api01
         {
             var wrapLog = Log.Call<IEntity>($"{type.Name}, {values?.Count}, target: {target != null}");
             // ensure it's case insensitive...
-            values = new Dictionary<string, object>(values, StringComparer.OrdinalIgnoreCase);
+            values = new Dictionary<string, object>(values, StringComparer.InvariantCultureIgnoreCase);
 
             if (values.All(v => v.Key.ToLowerInvariant() != Attributes.EntityFieldGuid))
             {
