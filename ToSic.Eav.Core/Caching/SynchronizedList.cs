@@ -12,15 +12,15 @@ namespace ToSic.Eav.Caching
     /// </summary>
     /// <typeparam name="T">The type which is enumerated, usually an <see cref="IEntity"/></typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class SynchronizedList<T>: IEnumerable<T>, ICacheDependent, ICacheExpiring
+    public class SynchronizedList<T>: SynchronizedObject<IImmutableList<T>>, IEnumerable<T>, ICacheDependent, ICacheExpiring
     {
-        /// <summary>
-        /// Upstream source which implements <see cref="ICacheExpiring"/> to tell this object when the data must be refreshed
-        /// </summary>
-        protected readonly ICacheExpiring Upstream;
+        ///// <summary>
+        ///// Upstream source which implements <see cref="ICacheExpiring"/> to tell this object when the data must be refreshed
+        ///// </summary>
+        //protected readonly ICacheExpiring Upstream;
 
-        private IImmutableList<T> _immutableCache;
-        private readonly Func<IImmutableList<T>> _rebuildImmutable;
+        //private IImmutableList<T> _immutableCache;
+        //private readonly Func<IImmutableList<T>> _rebuildImmutable;
 
         /// <summary>
         /// Initialized a new list which depends on another source
@@ -28,20 +28,20 @@ namespace ToSic.Eav.Caching
         /// <param name="upstream">the upstream cache which can tell us if a refresh is necessary</param>
         /// <param name="rebuild">the method which rebuilds the list</param>
         [Obsolete("You should prefer the Func<Immutable> signature")]
-        public SynchronizedList(ICacheExpiring upstream, Func<List<T>> rebuild)
+        public SynchronizedList(ICacheExpiring upstream, Func<List<T>> rebuild): base(upstream, () => rebuild().ToImmutableArray())
         {
-            Upstream = upstream;
-            _rebuildImmutable = () => rebuild().ToImmutableArray();
+            //Upstream = upstream;
+            //_rebuildImmutable = () => rebuild().ToImmutableArray();
         }
         /// <summary>
         /// Initialized a new list which depends on another source
         /// </summary>
         /// <param name="upstream">the upstream cache which can tell us if a refresh is necessary</param>
         /// <param name="rebuild">the method which rebuilds the list</param>
-        public SynchronizedList(ICacheExpiring upstream, Func<IImmutableList<T>> rebuild)
+        public SynchronizedList(ICacheExpiring upstream, Func<IImmutableList<T>> rebuild): base(upstream, rebuild)
         {
-            Upstream = upstream;
-            _rebuildImmutable = rebuild;
+            //Upstream = upstream;
+            //_rebuildImmutable = rebuild;
         }
 
 
@@ -53,11 +53,12 @@ namespace ToSic.Eav.Caching
         {
             get
             {
-                if (_immutableCache != null && !CacheChanged()) return _immutableCache;
+                return Value;
+                //if (_cache != null && !CacheChanged()) return _cache;
 
-                _immutableCache = _rebuildImmutable();
-                CacheTimestamp = Upstream.CacheTimestamp;
-                return _immutableCache;
+                //_cache = _rebuildImmutable();
+                //CacheTimestamp = Upstream.CacheTimestamp;
+                //return _immutableCache;
             }
         }
 
@@ -67,13 +68,13 @@ namespace ToSic.Eav.Caching
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        /// <inheritdoc />
-        public long CacheTimestamp { get; private set; }
+        ///// <inheritdoc />
+        //public long CacheTimestamp { get; private set; }
 
-        /// <inheritdoc />
-        public bool CacheChanged(long newCacheTimeStamp) => Upstream.CacheChanged(newCacheTimeStamp);
+        ///// <inheritdoc />
+        //public bool CacheChanged(long newCacheTimeStamp) => Upstream.CacheChanged(newCacheTimeStamp);
 
-        /// <inheritdoc />
-        public bool CacheChanged() => Upstream.CacheChanged(CacheTimestamp);
+        ///// <inheritdoc />
+        //public bool CacheChanged() => Upstream.CacheChanged(CacheTimestamp);
     }
 }
