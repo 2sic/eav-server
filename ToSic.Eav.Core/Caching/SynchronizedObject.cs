@@ -16,9 +16,20 @@ namespace ToSic.Eav.Caching
         /// </summary>
         protected readonly ICacheExpiring Upstream;
 
+        /// <summary>
+        /// The cached object/result
+        /// </summary>
         protected T Cache;
+        
+        /// <summary>
+        /// A callback to rebuild the cache which is provided when this object is created 
+        /// </summary>
         protected readonly Func<T> RebuildCache;
-
+        
+        /// <summary>
+        /// Counter to see how often the cache had been reset.
+        /// </summary>
+        public int RebuildCount;
 
         /// <summary>
         /// Initialized a new list which depends on another source
@@ -42,6 +53,7 @@ namespace ToSic.Eav.Caching
                 if (Cache != null && !CacheChanged()) return Cache;
 
                 Cache = RebuildCache();
+                RebuildCount++;
                 CacheTimestamp = Upstream.CacheTimestamp;
                 return Cache;
             }

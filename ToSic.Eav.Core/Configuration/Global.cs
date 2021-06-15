@@ -28,7 +28,7 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// WIP / Experimental
         /// </summary>
-        public static IEntity Settings
+        public static IEntity SystemSettings
         {
             get
             {

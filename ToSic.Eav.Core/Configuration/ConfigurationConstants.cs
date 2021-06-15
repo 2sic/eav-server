@@ -2,14 +2,13 @@
 {
     public class ConfigurationConstants
     {
-        public const string ContentTypeSettings = "SystemSettings";
-        public const string ContentTypeSettingsScope = "SettingsEntityScope";
-        public const string ContentTypeSettingsScopeSite = "site";
-        public const string ContentTypeSiteSettings = "SiteSettings";
-
-
-        public const string ContentTypeGlobalSettings = "GlobalSettings";
+        public const string TypeSystemSettings = "SystemSettings";
+        public const string TypeCustomSettings = "CustomSettings";
+        public const string TypeResources = "SystemResources";
         
-        public const string ContentTypeResources = "SystemResources";
+        public const string SysSettingsFieldScope = "SettingsEntityScope";
+        
+        public const string SysSettingsScopeValueSite = "site";
+
     }
 }
