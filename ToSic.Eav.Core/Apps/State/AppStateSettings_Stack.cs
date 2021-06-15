@@ -31,22 +31,20 @@ namespace ToSic.Eav.Apps
 
         private List<KeyValuePair<string, IPropertyLookup>> RebuildSettingsStack(AppState primaryAppState, AppState globalAppState)
         {
-            var sources = new List<KeyValuePair<string, IPropertyLookup>>();
-
-            // App level
-            AddIfNotNull(sources, PartApp, AppSettings);
-            AddIfNotNull(sources, PartAppSystem, SystemSettings);
-
-            // Site level
-            AddIfNotNull(sources, PartSite, primaryAppState?.SettingsInApp.CustomSettings);
-            AddIfNotNull(sources, PartSiteSystem, primaryAppState?.SettingsInApp.SystemSettingsEntireSite);
-
-            // Global
-            AddIfNotNull(sources, PartGlobal, globalAppState?.SettingsInApp.CustomSettings);
-            AddIfNotNull(sources, PartGlobalSystem, globalAppState?.SettingsInApp.SystemSettings);
-
-            // System Presets
-            AddIfNotNull(sources, PartPresetSystem, Eav.Configuration.Global.SystemSettings);
+            var sources = new List<KeyValuePair<string, IPropertyLookup>>
+            {
+                // App level
+                new KeyValuePair<string, IPropertyLookup>(PartApp, AppSettings),
+                new KeyValuePair<string, IPropertyLookup>(PartAppSystem, SystemSettings),
+                // Site level
+                new KeyValuePair<string, IPropertyLookup>(PartSite, primaryAppState?.SettingsInApp.CustomSettings),
+                new KeyValuePair<string, IPropertyLookup>(PartSiteSystem, primaryAppState?.SettingsInApp.SystemSettingsEntireSite),
+                // Global
+                new KeyValuePair<string, IPropertyLookup>(PartGlobal, globalAppState?.SettingsInApp.CustomSettings),
+                new KeyValuePair<string, IPropertyLookup>(PartGlobalSystem, globalAppState?.SettingsInApp.SystemSettings),
+                // System Presets
+                new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, Eav.Configuration.Global.SystemSettings)
+            };
             return sources;
         }
 

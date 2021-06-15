@@ -16,7 +16,7 @@ namespace ToSic.Eav.Data
             var pairCount = 0;
 
             _sources = entities
-                .Where(ep => ep.Value != null)
+                // .Where(ep => ep.Value != null)
                 .Select(selector: ep =>
                 {
                     var key = !string.IsNullOrWhiteSpace(ep.Key) ? ep.Key : $"auto-named-{++pairCount}";
@@ -27,6 +27,9 @@ namespace ToSic.Eav.Data
 
         public IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources => _sources ?? throw new Exception($"Can't access {nameof(IPropertyStack)}.{nameof(Sources)} as it hasn't been initialized yet.");
         private IImmutableList<KeyValuePair<string, IPropertyLookup>> _sources;
+
+        public IImmutableList<KeyValuePair<string, IPropertyLookup>> SourcesReal => _sourcesReal ?? (_sourcesReal = _sources.Where(ep => ep.Value != null).ToImmutableArray());
+        private IImmutableList<KeyValuePair<string, IPropertyLookup>> _sourcesReal;
 
         public IPropertyLookup GetSource(string name)
         {
@@ -42,9 +45,9 @@ namespace ToSic.Eav.Data
         {
             // Start with empty result, may be filled in later on
             var result = new PropertyRequest();
-            for (var sourceIndex = startAtSource; sourceIndex < Sources.Count; sourceIndex++)
+            for (var sourceIndex = startAtSource; sourceIndex < SourcesReal.Count; sourceIndex++)
             {
-                var source = Sources[sourceIndex];
+                var source = SourcesReal[sourceIndex];
 
                 var propInfo = source.Value.FindPropertyInternal(fieldName, dimensions);
                 
