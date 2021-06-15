@@ -75,6 +75,12 @@ namespace ToSic.Eav.Data
             { EntityFieldModified, "This is an internal field which tells us when the entity was last modified."},
             { "for", "This is an internal information which tells us if the entity is metadata for something."},
             { "metadata", "This is usually a property on the entity which tells us about additional metadata of this entity."},
+
+            { "entity", "This is a very common term in 2sxc, and would confuse users. " },
+            { "id", "This could easily be confused with the ID of an entity, so you shouldn't use it. Prefer ProductId or something." },
+            { "guid", "This is a very common term in 2sxc and will usually return the Entity Guid, so you shouldn't create a field with the same name" },
+            { "type", "This can easily be confused with the EntityType." },
+            { "presentation", "This is a common property term in 2sxc." }
         };
 
         /// <summary>
