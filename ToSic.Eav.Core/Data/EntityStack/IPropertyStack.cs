@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Documentation;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
@@ -8,6 +10,8 @@ namespace ToSic.Eav.Data
     [PrivateApi("internal only - don't publish in docs, can change at any time")]
     public interface IPropertyStack: IPropertyLookup, IPropertyStackLookup
     {
+        IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources { get; }
+        
         IPropertyLookup GetSource(string name);
         
     }

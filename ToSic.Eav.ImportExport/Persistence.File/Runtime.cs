@@ -14,9 +14,6 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 {
     public class Runtime : HasLog, IRuntime
     {
-        //public const string GroupQuery = "query";
-        //public const string GroupConfiguration = "configuration";
-
         #region Constructor and DI
 
         private readonly IServiceProvider _serviceProvider;
