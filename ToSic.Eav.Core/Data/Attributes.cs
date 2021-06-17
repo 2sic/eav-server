@@ -76,6 +76,7 @@ namespace ToSic.Eav.Data
             { "for", "This is an internal information which tells us if the entity is metadata for something."},
             { "metadata", "This is usually a property on the entity which tells us about additional metadata of this entity."},
 
+            { "count", "This is a real property on IDynamicObject so you shouldn't use it" },
             { "entity", "This is a very common term in 2sxc, and would confuse users. " },
             { "id", "This could easily be confused with the ID of an entity, so you shouldn't use it. Prefer ProductId or something." },
             { "guid", "This is a very common term in 2sxc and will usually return the Entity Guid, so you shouldn't create a field with the same name" },
