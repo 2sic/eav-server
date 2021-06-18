@@ -52,6 +52,14 @@ namespace ToSic.Eav.Data
         public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => string.Equals(a.Name, fieldName, OrdinalIgnoreCase));
 
 
+        #region New DynamicChildren Navigation - new in 12.03
+        [PrivateApi("WIP 12.03")]
+        // Don't cache the result, as it could change during runtime
+        public string DynamicChildrenField => Metadata.GetBestValue<string>(ContentTypes.DynamicChildrenField);
+        
+
+        #endregion
+
         #endregion
 
         #region Sharing Content Types
