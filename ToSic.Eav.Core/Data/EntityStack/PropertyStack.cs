@@ -44,7 +44,7 @@ namespace ToSic.Eav.Data
         public PropertyRequest PropertyInStack(string fieldName, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PStack");
-            var wrapLog = logOrNull.SafeCall<PropertyRequest>();
+            var wrapLog = logOrNull.SafeCall<PropertyRequest>($"{nameof(fieldName)}: {fieldName}, {nameof(startAtSource)}: {startAtSource}");
             // Start with empty result, may be filled in later on
             var result = new PropertyRequest();
             for (var sourceIndex = startAtSource; sourceIndex < SourcesReal.Count; sourceIndex++)
@@ -57,11 +57,11 @@ namespace ToSic.Eav.Data
                 if (propInfo?.Result == null) continue;
 
                 result = MarkAsFinalOrNot(propInfo, source.Key, sourceIndex, logOrNull, treatEmptyAsDefault);
-                if (result.IsFinal) return wrapLog(null, result);
+                if (result.IsFinal) return wrapLog("found/final", result);
             }
 
             // All loops completed, maybe one got a temporary result, return that
-            return wrapLog(null, result);
+            return wrapLog("not-final", result);
         }
 
         public static PropertyRequest MarkAsFinalOrNot(PropertyRequest propInfo, string sourceName, int sourceIndex, ILog logOrNull, bool treatEmptyAsDefault)

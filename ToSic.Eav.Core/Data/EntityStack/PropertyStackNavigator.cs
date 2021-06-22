@@ -81,16 +81,24 @@ namespace ToSic.Eav.Data
             logOrNull.SafeAdd($"Another sibling found. Name:{sibling.Name} #{sibling.SourceIndex}. Will try to check it's properties. ");
             if (sibling.Result is IEnumerable<IEntity> siblingEntities && siblingEntities.Any())
             {
-                logOrNull.SafeAdd("It's a list of entities as expected.");
+                // PROBLEM: here it tries to find a property of an Entity-List
+                // The other Lightbox-hit comes from the DynamicEntity
+                // So this case doesn't have the automatic-property check
+                var wrapInner = logOrNull.SafeCall<bool>(null, "It's a list of entities as expected.");
                 var entityNav = new EntityWithStackNavigation(siblingEntities.First(), Parent, ParentField, sibling.SourceIndex);
-                return entityNav.FindPropertyInternal(fieldName, dimensions, logOrNull);
+                var result = entityNav.FindPropertyInternal(fieldName, dimensions, logOrNull);
+                wrapInner(null, result.IsFinal);
+                return safeWrap(null, result);
             }
 
             if (sibling.Result is IEnumerable<IPropertyLookup> siblingStack && siblingStack.Any())
             {
                 logOrNull.SafeAdd("Another sibling found, it's a list of IPropertyLookups.");
+                var wrapInner = logOrNull.SafeCall<bool>(null, "It's a list of entities as expected.");
                 var propNav = new PropertyStackNavigator(siblingStack.First(), Parent, ParentField, sibling.SourceIndex);
-                return propNav.PropertyInStack(fieldName, dimensions, 0, true, logOrNull);
+                var result = propNav.PropertyInStack(fieldName, dimensions, 0, true, logOrNull);
+                wrapInner(null, result.IsFinal);
+                return safeWrap(null, result);
             }
             
             // We got here, so we found nothing
