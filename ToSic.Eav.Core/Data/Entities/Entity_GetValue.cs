@@ -36,8 +36,19 @@ namespace ToSic.Eav.Data
             }
 
             // directly return internal properties, mark as virtual to not cause further Link resolution
-            return new PropertyRequest
+            var likelyResult = new PropertyRequest
                 {Result = GetInternalPropertyByName(field), FieldType = Data.Attributes.FieldIsVirtual, Source = this};
+
+            // New Feature in 12.03 - Experimental
+            try
+            {
+                var logOrNull = parentLogOrNull?.SubLogOrNull("Entity");
+                logOrNull?.SafeAdd("Nothing found in properties, will try Sub-Item navigation");
+                var subItem = this.TryToNavigateToEntityInList(field, this, logOrNull);
+                if (subItem != null) return subItem;
+            } catch { /* ignore */ }
+            
+            return likelyResult;
         }
 
         protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)

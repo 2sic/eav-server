@@ -27,6 +27,8 @@ namespace ToSic.Eav.Data
     [PrivateApi]
     public class PropertyStackNavigator: IWrapper<IPropertyLookup>, IPropertyStackLookup
     {
+        private const int IndexOfOwnItem = 0;
+        private const int IndexOfNextItem = 1;
         public PropertyStackNavigator(IPropertyLookup child, IPropertyStackLookup parent, string field, int index)
         {
             UnwrappedContents = child;
@@ -58,17 +60,16 @@ namespace ToSic.Eav.Data
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PSNav");
             var safeWrap = logOrNull.SafeCall<PropertyRequest>(
                 $"{nameof(field)}:{field}, {nameof(dimensions)}:{string.Join(",", dimensions)}, {nameof(startAtSource)}:{startAtSource}");
-            // Try to find on child
-            var childResult = UnwrappedContents.FindPropertyInternal(field, dimensions, logOrNull);
-            if (childResult != null)
+
+            PropertyRequest childResult = null;
+            // Try to find on child - but only if startAt == 0
+            // If it's > 0, we're coming back from an inner-property not found, and then we should skip this
+            if (startAtSource == IndexOfOwnItem)
             {
-                // Test if final was already checked, otherwise update it
-                if (!childResult.IsFinal) PropertyStack.MarkAsFinalOrNot(childResult, "", 0, logOrNull, treatEmptyAsDefault);
-                
-                // if it is final, return that
-                if (childResult.IsFinal) return safeWrap("not null, final", childResult);
+                childResult = GetResultOfChild(field, dimensions, logOrNull, treatEmptyAsDefault);
+                if (childResult != null && childResult.IsFinal) return safeWrap("final", childResult);
             }
-            
+
             logOrNull.SafeAdd("Couldn't find a result  yet, will retry the parent");
 
             // If it didn't work, check if parent has another option
@@ -107,5 +108,42 @@ namespace ToSic.Eav.Data
             // In this case, return the initial child result, which already said it's not final
             return safeWrap("no sibling can return data, return empty result", childResult);
         }
+
+        
+        /// <summary>
+        /// Just get the result of the child which we're wrapping. 
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="dimensions"></param>
+        /// <param name="logOrNull"></param>
+        /// <param name="treatEmptyAsDefault"></param>
+        /// <returns></returns>
+        private PropertyRequest GetResultOfChild(string field, string[] dimensions, ILog logOrNull, bool treatEmptyAsDefault)
+        {
+            var safeWrap = logOrNull.SafeCall<PropertyRequest>();
+
+            var childResult = UnwrappedContents.FindPropertyInternal(field, dimensions, logOrNull);
+            if (childResult == null) return safeWrap("null", null);
+            
+            // Test if final was already checked, otherwise update it
+            if (!childResult.IsFinal)
+                PropertyStack.MarkAsFinalOrNot(childResult, "", 0, logOrNull, treatEmptyAsDefault);
+
+            // if it is final, return that
+            if (!childResult.IsFinal) return safeWrap("not final", childResult);
+            
+            // test if the returned stuff is one or more entities, in which case they should implement stack-fallback
+            if (!(childResult.Result is IEnumerable<IEntity> entList)) return safeWrap("not null/entities, final", childResult);
+
+            logOrNull?.SafeAdd("Result is IEnumerable<IEntity> - will wrap in navigation");
+            var entArray = entList.ToArray();
+            if (entArray.Any() && !(entArray.First() is EntityWithStackNavigation))
+                childResult.Result =
+                    entArray.Select(e => new EntityWithStackNavigation(e, this, field, IndexOfNextItem));
+
+            return safeWrap("entities, final", childResult);
+        }
     }
+    
+    
 }
