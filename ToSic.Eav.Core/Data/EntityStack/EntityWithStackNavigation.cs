@@ -17,11 +17,22 @@ namespace ToSic.Eav.Data
         
         internal readonly PropertyStackNavigator PropertyStackNavigator;
 
-        public override PropertyRequest FindPropertyInternal(string fieldName, string[] languages, ILog parentLogOrNull)
+        public override PropertyRequest FindPropertyInternal(string field, string[] languages, ILog parentLogOrNull)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".EntNav");
-            var wrapLog = logOrNull.SafeCall<PropertyRequest>();
-            var result = PropertyStackNavigator.PropertyInStack(fieldName, languages, 0, true, logOrNull);
+            var wrapLog = logOrNull == null 
+                ? logOrNull.SafeCall<PropertyRequest>() 
+                : logOrNull.SafeCall<PropertyRequest>($"EntityId: {Entity?.EntityId}, Title: {Entity?.GetBestTitle()}, {nameof(field)}: {field}");
+            var result = PropertyStackNavigator.PropertyInStack(field, languages, 0, true, logOrNull);
+
+            if (result?.Result == null)
+            {
+                logOrNull.SafeAdd("Result null - try sublist");
+                // Special case: could be the need for the sub-entity-navigation
+                var resultSubList = Entity.TryToNavigateToEntityInList(field, Entity, logOrNull);
+                if (resultSubList != null) result = resultSubList;
+            }
+            
             return wrapLog(null, result);
         }
     }

@@ -38,13 +38,13 @@ namespace ToSic.Eav.Data
         }
 
         [PrivateApi("Internal")]
-        public PropertyRequest FindPropertyInternal(string fieldName, string[] dimensions, ILog parentLogOrNull)
-            => PropertyInStack(fieldName, dimensions, 0, true, parentLogOrNull);
+        public PropertyRequest FindPropertyInternal(string field, string[] dimensions, ILog parentLogOrNull)
+            => PropertyInStack(field, dimensions, 0, true, parentLogOrNull);
 
-        public PropertyRequest PropertyInStack(string fieldName, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
+        public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PStack");
-            var wrapLog = logOrNull.SafeCall<PropertyRequest>($"{nameof(fieldName)}: {fieldName}, {nameof(startAtSource)}: {startAtSource}");
+            var wrapLog = logOrNull.SafeCall<PropertyRequest>($"{nameof(field)}: {field}, {nameof(startAtSource)}: {startAtSource}");
             // Start with empty result, may be filled in later on
             var result = new PropertyRequest();
             for (var sourceIndex = startAtSource; sourceIndex < SourcesReal.Count; sourceIndex++)
@@ -52,18 +52,33 @@ namespace ToSic.Eav.Data
                 var source = SourcesReal[sourceIndex];
                 logOrNull.SafeAdd($"Testing source #{sourceIndex} : {source.Key}");
 
-                var propInfo = source.Value.FindPropertyInternal(fieldName, dimensions, logOrNull);
+                var propInfo = source.Value.FindPropertyInternal(field, dimensions, logOrNull);
                 
                 if (propInfo?.Result == null) continue;
 
                 result = MarkAsFinalOrNot(propInfo, source.Key, sourceIndex, logOrNull, treatEmptyAsDefault);
-                if (result.IsFinal) return wrapLog("found/final", result);
+                
+                if (!result.IsFinal) continue;
+                
+                if (!(result.Result is IEnumerable<IEntity> entityChildren))
+                    return wrapLog("simple value, final", result);
+
+                var navigationWrapped = entityChildren.Select(e =>
+                    new EntityWithStackNavigation(e, this, field, result.SourceIndex)).ToList();
+                result.Result = navigationWrapped;
+
+                return wrapLog("wrapped as Entity-Stack, final", result);
             }
 
             // All loops completed, maybe one got a temporary result, return that
             return wrapLog("not-final", result);
         }
 
+        /// <summary>
+        /// Review the result and mark as final if it is final.
+        /// Also optionally log the decision process. 
+        /// </summary>
+        /// <returns></returns>
         public static PropertyRequest MarkAsFinalOrNot(PropertyRequest propInfo, string sourceName, int sourceIndex, ILog logOrNull, bool treatEmptyAsDefault)
         {
             var safeWrap = logOrNull.SafeCall<PropertyRequest>();
