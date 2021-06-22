@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data
@@ -9,9 +10,11 @@ namespace ToSic.Eav.Data
     {
         /// <summary>
         /// Special case on entity lists v12.03
-        /// If nothing was found so far, try to see if we could find a child-entity with a title matching the field
+        /// Some Content-Types specify a default navigation - this is used extensively in Settings. 
+        /// In that case, try to scan the entity for this property and try to find items with the specified title
         /// </summary>
         /// <returns></returns>
+        [PrivateApi]
         public static PropertyRequest TryToNavigateToEntityInList(this IEntity entity, string field, object parentDynEntity, ILog parentLogOrNull)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull("Sxc.SubLst");
@@ -23,7 +26,6 @@ namespace ToSic.Eav.Data
 
             var children = entity.Children(dynChildField);
             if (children == null) return safeWrap("no child", null);
-            // if (!(childField is DynamicEntity dynamicChild)) return safeWrap("child not DynamicEntity", null);
             if (children.First().EntityId == 0) return safeWrap("Child is placeholder, no real entries", null);
 
 
@@ -33,11 +35,6 @@ namespace ToSic.Eav.Data
                     .FirstOrDefault(de => field.Equals(de.GetBestTitle(), StringComparison.InvariantCultureIgnoreCase));
 
                 if (dynEntityWithTitle == null) return safeWrap("no matching child", null);
-
-                // Forward debug state if it's active
-                // if(parentLogOrNull != null) dynEntityWithTitle.SetDebug(true);
-                //if (parentDynEntity is IPropertyStackLookup parentStack)
-                //    dynEntityWithTitle = new EntityWithStackNavigation(dynEntityWithTitle, parentStack, field, 0);
 
                 var result = new PropertyRequest
                 {
