@@ -19,17 +19,17 @@ namespace ToSic.Eav.Data
 
 
         [PrivateApi("Internal")]
-        public PropertyRequest FindPropertyInternal(string attributeName, string[] languages, ILog parentLogOrNull)
+        public PropertyRequest FindPropertyInternal(string field, string[] languages, ILog parentLogOrNull)
         {
             languages = ExtendDimsWithDefault(languages);
-            attributeName = attributeName.ToLowerInvariant();
-            if (Attributes.ContainsKey(attributeName))
+            field = field.ToLowerInvariant();
+            if (Attributes.ContainsKey(field))
             {
-                var attribute = Attributes[attributeName];
+                var attribute = Attributes[field];
                 return new PropertyRequest {Result = attribute[languages], FieldType = attribute.Type, Source = this};
             }
             
-            if (attributeName == Data.Attributes.EntityFieldTitle)
+            if (field == Data.Attributes.EntityFieldTitle)
             {
                 var attribute = Title;
                 return new PropertyRequest { Result = Title?[languages], FieldType = attribute?.Type, Source = this};
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Data
 
             // directly return internal properties, mark as virtual to not cause further Link resolution
             return new PropertyRequest
-                {Result = GetInternalPropertyByName(attributeName), FieldType = Data.Attributes.FieldIsVirtual, Source = this};
+                {Result = GetInternalPropertyByName(field), FieldType = Data.Attributes.FieldIsVirtual, Source = this};
         }
 
         protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)

@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <returns></returns>
         [PrivateApi("WIP, internal 12.02")]
-        PropertyRequest FindPropertyInternal(string fieldName, string[] languages, ILog parentLogOrNull);
+        PropertyRequest FindPropertyInternal(string field, string[] languages, ILog parentLogOrNull);
 
     }
 }

@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
     [PrivateApi("internal only - don't publish in docs, can change at any time")]
     public interface IPropertyStackLookup
     {
-        PropertyRequest PropertyInStack(string fieldName, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull);
+        PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull);
 
     }
 }

@@ -53,12 +53,13 @@ namespace ToSic.Eav.Data
 
         public IPropertyLookup UnwrappedContents { get; set; }
 
-        public PropertyRequest PropertyInStack(string fieldName, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
+        public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PSNav");
-            var safeWrap = logOrNull.SafeCall<PropertyRequest>($"{nameof(fieldName)}:{fieldName}, {nameof(dimensions)}:{string.Join(",", dimensions)}, {nameof(startAtSource)}:{startAtSource}");
+            var safeWrap = logOrNull.SafeCall<PropertyRequest>(
+                $"{nameof(field)}:{field}, {nameof(dimensions)}:{string.Join(",", dimensions)}, {nameof(startAtSource)}:{startAtSource}");
             // Try to find on child
-            var childResult = UnwrappedContents.FindPropertyInternal(fieldName, dimensions, logOrNull);
+            var childResult = UnwrappedContents.FindPropertyInternal(field, dimensions, logOrNull);
             if (childResult != null)
             {
                 // Test if final was already checked, otherwise update it
@@ -86,7 +87,7 @@ namespace ToSic.Eav.Data
                 // So this case doesn't have the automatic-property check
                 var wrapInner = logOrNull.SafeCall<bool>(null, "It's a list of entities as expected.");
                 var entityNav = new EntityWithStackNavigation(siblingEntities.First(), Parent, ParentField, sibling.SourceIndex);
-                var result = entityNav.FindPropertyInternal(fieldName, dimensions, logOrNull);
+                var result = entityNav.FindPropertyInternal(field, dimensions, logOrNull);
                 wrapInner(null, result.IsFinal);
                 return safeWrap(null, result);
             }
@@ -96,7 +97,7 @@ namespace ToSic.Eav.Data
                 logOrNull.SafeAdd("Another sibling found, it's a list of IPropertyLookups.");
                 var wrapInner = logOrNull.SafeCall<bool>(null, "It's a list of entities as expected.");
                 var propNav = new PropertyStackNavigator(siblingStack.First(), Parent, ParentField, sibling.SourceIndex);
-                var result = propNav.PropertyInStack(fieldName, dimensions, 0, true, logOrNull);
+                var result = propNav.PropertyInStack(field, dimensions, 0, true, logOrNull);
                 wrapInner(null, result.IsFinal);
                 return safeWrap(null, result);
             }
