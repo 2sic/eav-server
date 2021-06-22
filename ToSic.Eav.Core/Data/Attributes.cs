@@ -75,6 +75,7 @@ namespace ToSic.Eav.Data
             { EntityFieldModified, "This is an internal field which tells us when the entity was last modified."},
             { "for", "This is an internal information which tells us if the entity is metadata for something."},
             { "metadata", "This is usually a property on the entity which tells us about additional metadata of this entity."},
+            { "toolbar", "This is used as a property in DNN only to also generate a toolbar" },
 
             { "count", "This is a real property on IDynamicObject so you shouldn't use it" },
             { "entity", "This is a very common term in 2sxc, and would confuse users. " },

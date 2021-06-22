@@ -25,15 +25,13 @@ namespace ToSic.Eav.Data
                 : logOrNull.SafeCall<PropertyRequest>($"EntityId: {Entity?.EntityId}, Title: {Entity?.GetBestTitle()}, {nameof(field)}: {field}");
             var result = PropertyStackNavigator.PropertyInStack(field, languages, 0, true, logOrNull);
 
-            if (result?.Result == null)
-            {
-                logOrNull.SafeAdd("Result null - try sublist");
-                // Special case: could be the need for the sub-entity-navigation
-                var resultSubList = Entity.TryToNavigateToEntityInList(field, Entity, logOrNull);
-                if (resultSubList != null) result = resultSubList;
-            }
             
-            return wrapLog(null, result);
+            if (result?.Result != null) return wrapLog("found", result);
+
+            // Special case: could be the need for the sub-entity-navigation
+            logOrNull?.SafeAdd("Result null - try sublist");
+            var resultSubList = Entity.TryToNavigateToEntityInList(field, Entity, logOrNull);
+            return wrapLog(resultSubList == null ? "null" : "sub-list", resultSubList ?? result);
         }
     }
 }
