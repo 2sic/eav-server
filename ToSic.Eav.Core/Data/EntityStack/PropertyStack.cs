@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data
 {
@@ -56,7 +54,7 @@ namespace ToSic.Eav.Data
                 
                 if (propInfo?.Result == null) continue;
 
-                result = MarkAsFinalOrNot(propInfo, source.Key, sourceIndex, logOrNull, treatEmptyAsDefault);
+                result = propInfo.MarkAsFinalOrNot(source.Key, sourceIndex, logOrNull, treatEmptyAsDefault);
                 
                 if (!result.IsFinal) continue;
                 
@@ -73,51 +71,6 @@ namespace ToSic.Eav.Data
             // All loops completed, maybe one got a temporary result, return that
             return wrapLog("not-final", result);
         }
-
-        /// <summary>
-        /// Review the result and mark as final if it is final.
-        /// Also optionally log the decision process. 
-        /// </summary>
-        /// <returns></returns>
-        public static PropertyRequest MarkAsFinalOrNot(PropertyRequest propInfo, string sourceName, int sourceIndex, ILog logOrNull, bool treatEmptyAsDefault)
-        {
-            var safeWrap = logOrNull.SafeCall<PropertyRequest>();
-            // Check nulls and prevent multiple executions
-            if (propInfo == null || propInfo.IsFinal) 
-                return safeWrap("null or final", propInfo);
-            
-            propInfo.Name = sourceName;
-
-            // Preserve, in case we won't find another but don't necessarily return now
-            var result = propInfo;
-
-            // if any non-null is ok, use that.
-            if (!treatEmptyAsDefault)
-                return safeWrap("empty is ok", result.AsFinal(sourceIndex));
-
-            // this may set a null, but may also set an empty string or empty array
-            if (result.Result.IsNullOrDefault(treatFalseAsDefault: false)) 
-                return safeWrap("NullOrDefault - not final", result);
-
-            if (result.Result is string foundString)
-                return string.IsNullOrEmpty(foundString)
-                    ? safeWrap("empty string, not final", result)
-                    : safeWrap("string, non-empty - final", result.AsFinal(sourceIndex));
-
-            // Return entity-list if it has elements, otherwise continue searching
-            if (result.Result is IEnumerable<IEntity> entityList)
-                return !entityList.Any()
-                    ? safeWrap("empty list, not final", result)
-                    : safeWrap("list, non empty, final", result.AsFinal(sourceIndex));
-
-            // not sure if this will ever hit
-            if (result.Result is ICollection list)
-                return list.Count == 0
-                    ? safeWrap("empty collection, not final", result)
-                    : safeWrap("list, non-empty, final",  result.AsFinal(sourceIndex));
-
-            // All seems ok, special checks passed, return result
-            return safeWrap("all ok/final", result.AsFinal(sourceIndex));
-        }
+        
     }
 }

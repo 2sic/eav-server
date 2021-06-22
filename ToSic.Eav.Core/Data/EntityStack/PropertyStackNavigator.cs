@@ -78,7 +78,7 @@ namespace ToSic.Eav.Data
             // This will in effect have a recursion - if that won't succeed it will ask the parent again.
             var sibling = Parent.PropertyInStack(ParentField, dimensions, ParentIndex +1, true, logOrNull);
             
-            if (!sibling.IsFinal) return safeWrap("no useful sibling found", childResult);
+            if (sibling == null || !sibling.IsFinal) return safeWrap("no useful sibling found", childResult);
             
             logOrNull.SafeAdd($"Another sibling found. Name:{sibling.Name} #{sibling.SourceIndex}. Will try to check it's properties. ");
             if (sibling.Result is IEnumerable<IEntity> siblingEntities && siblingEntities.Any())
@@ -86,20 +86,20 @@ namespace ToSic.Eav.Data
                 // PROBLEM: here it tries to find a property of an Entity-List
                 // The other Lightbox-hit comes from the DynamicEntity
                 // So this case doesn't have the automatic-property check
-                var wrapInner = logOrNull.SafeCall<bool>(null, "It's a list of entities as expected.");
+                var wrapInner = logOrNull.SafeCall(null, "It's a list of entities as expected.");
                 var entityNav = new EntityWithStackNavigation(siblingEntities.First(), Parent, ParentField, sibling.SourceIndex);
                 var result = entityNav.FindPropertyInternal(field, dimensions, logOrNull);
-                wrapInner(null, result.IsFinal);
+                wrapInner(null);
                 return safeWrap(null, result);
             }
 
             if (sibling.Result is IEnumerable<IPropertyLookup> siblingStack && siblingStack.Any())
             {
                 logOrNull.SafeAdd("Another sibling found, it's a list of IPropertyLookups.");
-                var wrapInner = logOrNull.SafeCall<bool>(null, "It's a list of entities as expected.");
+                var wrapInner = logOrNull.SafeCall(null, "It's a list of entities as expected.");
                 var propNav = new PropertyStackNavigator(siblingStack.First(), Parent, ParentField, sibling.SourceIndex);
                 var result = propNav.PropertyInStack(field, dimensions, 0, true, logOrNull);
-                wrapInner(null, result.IsFinal);
+                wrapInner(null);
                 return safeWrap(null, result);
             }
             
@@ -127,7 +127,7 @@ namespace ToSic.Eav.Data
             
             // Test if final was already checked, otherwise update it
             if (!childResult.IsFinal)
-                PropertyStack.MarkAsFinalOrNot(childResult, "", 0, logOrNull, treatEmptyAsDefault);
+                childResult.MarkAsFinalOrNot(null, 0, logOrNull, treatEmptyAsDefault);
 
             // if it is final, return that
             if (!childResult.IsFinal) return safeWrap("not final", childResult);

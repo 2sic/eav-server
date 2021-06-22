@@ -34,6 +34,21 @@ namespace ToSic.Eav.Logging
                 : (msg, result) => result;
         }
 
+        public static Action<string> SafeCall(this ILog log,
+            string parameters = null,
+            string message = null,
+            bool useTimer = false,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+        )
+        {
+            return log != null
+                ? log.Call(parameters, message, useTimer, cPath, cName, cLine)
+                : (msg) => { } ;
+        }
+
+
         public static ILog SubLogOrNull(this ILog log, string name)
         {
             if (log == null) return null;
