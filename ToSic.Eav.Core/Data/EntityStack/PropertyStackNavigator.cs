@@ -83,9 +83,6 @@ namespace ToSic.Eav.Data
             logOrNull.SafeAdd($"Another sibling found. Name:{sibling.Name} #{sibling.SourceIndex}. Will try to check it's properties. ");
             if (sibling.Result is IEnumerable<IEntity> siblingEntities && siblingEntities.Any())
             {
-                // PROBLEM: here it tries to find a property of an Entity-List
-                // The other Lightbox-hit comes from the DynamicEntity
-                // So this case doesn't have the automatic-property check
                 var wrapInner = logOrNull.SafeCall(null, "It's a list of entities as expected.");
                 var entityNav = new EntityWithStackNavigation(siblingEntities.First(), Parent, ParentField, sibling.SourceIndex);
                 var result = entityNav.FindPropertyInternal(field, dimensions, logOrNull);
