@@ -27,6 +27,7 @@ namespace ToSic.Eav.Data
 
             var children = entity.Children(dynChildField);
             if (children == null) return safeWrap("no child", null);
+            if (!children.Any()) return safeWrap("no children", null);
             if (children.First().EntityId == 0) return safeWrap("Child is placeholder, no real entries", null);
 
 

@@ -1,11 +1,8 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using static System.StringComparison;
 using static ToSic.Eav.Apps.AppLoadConstants;
-using static ToSic.Eav.Configuration.ConfigurationConstants;
 
 namespace ToSic.Eav.Apps
 {
@@ -13,7 +10,6 @@ namespace ToSic.Eav.Apps
     public partial class AppStateSettings
     {
         
-
         public IEntity AppSettings
             => (_appSettingsSynched ?? (_appSettingsSynched = BuildSynchedMetadata(TypeAppSettings))).Value;
         private SynchronizedObject<IEntity> _appSettingsSynched;
@@ -21,8 +17,9 @@ namespace ToSic.Eav.Apps
         public IEntity AppResources
             => (_appResourcesSynched ?? (_appResourcesSynched = BuildSynchedMetadata(TypeAppResources))).Value;
         private SynchronizedObject<IEntity> _appResourcesSynched;
+        
         public IEntity AppConfiguration
-            => (_appConfigSynched ?? (_appConfigSynched = BuildSynchedMetadata(TypeAppResources))).Value;
+            => (_appConfigSynched ?? (_appConfigSynched = BuildSynchedMetadata(TypeAppConfig))).Value;
         private SynchronizedObject<IEntity> _appConfigSynched;
         
         private SynchronizedObject<IEntity> BuildSynchedMetadata(string staticName)
