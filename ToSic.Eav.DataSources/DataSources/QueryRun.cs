@@ -37,11 +37,8 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Indicates whether to show drafts or only Published Entities. 
         /// </summary>
-        public bool ShowDrafts
-        {
-            get => bool.Parse(Configuration[QueryConstants.ParamsShowDraftKey]);
-            set => Configuration[QueryConstants.ParamsShowDraftKey] = value.ToString();
-        }
+        [PrivateApi("not sure if this should be public, probably not")]
+        private bool ShowDrafts => bool.Parse(Configuration[QueryConstants.ParamsShowDraftKey]);
 
         #endregion
 
@@ -90,9 +87,6 @@ namespace ToSic.Eav.DataSources
             #endregion
 
             #region check for various missing configurations / errors
-
-            // prepare empty result, as we may need it in various use cases
-            //var emptyResult = new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase);
 
             // quit if nothing found
             if (configEntity == null)
