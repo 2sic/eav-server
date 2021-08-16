@@ -34,15 +34,24 @@ namespace ToSic.Eav.DataSources
         private const string FieldQuery = "Query";
         private const string FieldParams = "Params";
 
-		#endregion
+        /// <summary>
+        /// Indicates whether to show drafts or only Published Entities. 
+        /// </summary>
+        public bool ShowDrafts
+        {
+            get => bool.Parse(Configuration[QueryConstants.ParamsShowDraftKey]);
+            set => Configuration[QueryConstants.ParamsShowDraftKey] = value.ToString();
+        }
 
-		/// <summary>
-		/// Constructs a new QueryRun
-		/// </summary>
-		[PrivateApi]
+        #endregion
+
+        /// <summary>
+        /// Constructs a new QueryRun
+        /// </summary>
+        [PrivateApi]
 		public QueryRun()
         {
-            //OutIsDynamic = true;
+            ConfigMask(QueryConstants.ParamsShowDraftKey, QueryConstants.ParamsShowDraftToken);
         }
 
         #region Out
@@ -106,7 +115,7 @@ namespace ToSic.Eav.DataSources
             Log.Add($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
 
             // create the query & set params
-            var query = new Query(DataSourceFactory).Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), false, null, Log);
+            var query = new Query(DataSourceFactory).Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), ShowDrafts, null, Log);
             query.Params(ResolveParams(configEntity));
             return wrapLog("ok", query);
         }

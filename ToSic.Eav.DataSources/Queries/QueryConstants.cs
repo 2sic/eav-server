@@ -8,5 +8,7 @@
         public const string ParamsLookup = "Params";
 
         public const string ParamsShowDraftKey = "ShowDrafts";
+
+        public const string ParamsShowDraftToken = "[Settings:ShowDrafts||false]";
     }
 }
