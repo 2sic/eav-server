@@ -42,8 +42,19 @@ namespace ToSic.Eav.ImportExport.Zip
         {
             var buffer = new byte[4096];
             var fileRelativePath = (relativePath.Length > 1 ? relativePath : string.Empty) + Path.GetFileName(file);
-            var entry = new ZipEntry(fileRelativePath);
-            entry.DateTime = DateTime.Now;
+
+            var entry = new ZipEntry(fileRelativePath)
+            {
+                DateTime = DateTime.Now,
+                // unicode support must be added when we drop DNN 7.4.2 support some day
+                // https://github.com/2sic/2sxc/issues/2485
+                // 2021-08-17 Future: use IsUnicodeText, but because DNN 7.4.2 still has an old ICSharp v0.86.0.518, we cannot use this property yet
+                // entry.IsUnicodeText = true;
+                // ...instead we must set the flag
+                // but it doesn't work - unsure why, but according to the ICSharp history, Unicode wasn't added till v1.0 (https://github.com/icsharpcode/SharpZipLib/wiki/Release-History)
+                // Flags = 0x0800 // 2048; // this should have the same effect as IsUnicodeText
+            };
+
 
             using (var fs = File.OpenRead(file))
             {
