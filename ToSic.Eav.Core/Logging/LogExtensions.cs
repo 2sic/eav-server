@@ -20,6 +20,10 @@ namespace ToSic.Eav.Logging
                 [CallerLineNumber] int cLine = 0
         ) => log?.Add(message, cPath, cName, cLine);
         
+        /// <summary>
+        /// Creates a safe wrap-log function which works if the log exists or not
+        /// </summary>
+        /// <returns></returns>
         public static Func<string, T, T> SafeCall<T>(this ILog log,
             string parameters = null,
             string message = null,
@@ -34,6 +38,10 @@ namespace ToSic.Eav.Logging
                 : (msg, result) => result;
         }
 
+        /// <summary>
+        /// Creates a safe wrap-log action which works if the log exists or not
+        /// </summary>
+        /// <returns></returns>
         public static Action<string> SafeCall(this ILog log,
             string parameters = null,
             string message = null,
