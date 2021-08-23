@@ -176,6 +176,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 }
                 #endregion
 
+                // TODO: This doesn't look right - entity-assignments should always be guid, not int - so this is probably wrong
+                // Must verify and then change to use the guid instead
+
                 var entitiesAssignedToThis = GetAssignedEntities((int)TargetTypes.Entity, entityId)
                     .Select(e => new TempEntityAndTypeInfos { EntityId = e.EntityId, TypeId = e.AttributeSetId })
                     .ToList();
