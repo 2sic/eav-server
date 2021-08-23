@@ -211,7 +211,7 @@ namespace ToSic.Eav.WebApi
             }
             catch (Exception ex)
             {
-                throw new Exception("Couldn't import - probably bad file format", ex);
+                throw new Exception($"Couldn't import - {ex?.Message ?? "probably bad file format"}.", ex);
             }
         }
 
