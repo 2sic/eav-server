@@ -9,11 +9,24 @@ namespace ToSic.Eav.Apps
     [PrivateApi]
     public partial class AppStateSettings
     {
+        public List<KeyValuePair<string, IPropertyLookup>> SettingsStack(IEntity viewSettings)
+        {
+            var sources = new List<KeyValuePair<string, IPropertyLookup>>
+            {
+                // View level - always add, no matter if null
+                new KeyValuePair<string, IPropertyLookup>(PartView, viewSettings)
+            };
+
+            // All in the App and below
+            sources.AddRange(SettingsStackForThisApp());
+            return sources;
+        }
+
         /// <summary>
         /// Get the stack of settings which applies to this app
         /// </summary>
         /// <returns></returns>
-        public List<KeyValuePair<string, IPropertyLookup>> SettingsStackForThisApp()
+        private List<KeyValuePair<string, IPropertyLookup>> SettingsStackForThisApp()
         {
             if (_settingsStackSynced != null) return _settingsStackSynced.Value;
             
@@ -43,15 +56,15 @@ namespace ToSic.Eav.Apps
                 new KeyValuePair<string, IPropertyLookup>(PartGlobal, globalAppState?.SettingsInApp.CustomSettings),
                 new KeyValuePair<string, IPropertyLookup>(PartGlobalSystem, globalAppState?.SettingsInApp.SystemSettings),
                 // System Presets
-                new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, Eav.Configuration.Global.SystemSettings)
+                new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, Configuration.Global.SystemSettings)
             };
             return sources;
         }
 
-        public void AddIfNotNull(List<KeyValuePair<string, IPropertyLookup>> sources, string name, IPropertyLookup lookup)
-        {
-            if (lookup != null) sources.Add(new KeyValuePair<string, IPropertyLookup>(name, lookup));
-        }
+        //public void AddIfNotNull(List<KeyValuePair<string, IPropertyLookup>> sources, string name, IPropertyLookup lookup)
+        //{
+        //    if (lookup != null) sources.Add(new KeyValuePair<string, IPropertyLookup>(name, lookup));
+        //}
 
         
     }

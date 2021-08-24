@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.WebApi.Dto;
 #if NET451
 using ExportResponse = System.Net.Http.HttpResponseMessage;
@@ -28,7 +29,9 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// </summary>
         /// <param name="appId"></param>
         /// <param name="part">Name of the part - "settings" or "resources"</param>
+        /// <param name="key">Optional key like "Settings.Images.Content.Width"</param>
+        /// <param name="view">Optional guid of a view to merge with the settings</param>
         /// <returns></returns>
-        List<StackInfoDto> GetStack(int appId, string part = null);
+        List<StackInfoDto> GetStack(int appId, string part, string key = null, Guid? view = null);
     }
 }

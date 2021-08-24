@@ -43,7 +43,7 @@ namespace ToSic.Eav.Data
             // Get all normal properties
             var resultValues =
                 Attributes
-                    .Where(att => att.Value.Type != DataTypes.Entity)
+                    .Where(att => att.Value.Type != DataTypes.Entity && att.Value.Type != DataTypes.VoidEmpty)
                     .Select(att =>
                     {
                         var property = FindPropertyInternal(att.Key, languages, parentLogOrNull);
