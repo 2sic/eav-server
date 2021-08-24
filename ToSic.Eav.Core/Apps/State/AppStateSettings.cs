@@ -1,10 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Caching;
-using ToSic.Eav.Data;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Documentation;
-using static System.StringComparison;
-using static ToSic.Eav.Configuration.ConfigurationConstants;
 
 namespace ToSic.Eav.Apps
 {
@@ -17,54 +14,23 @@ namespace ToSic.Eav.Apps
         internal AppStateSettings(AppState parent)
         {
             Parent = parent;
+
+            Stacks = ConfigurationConstants.AppThingsArray
+                .Select(at => new AppStateStackCache(parent, at))
+                .ToArray();
+
+            StackCache = ConfigurationConstants.AppThings
+                .ToDictionary(
+                    at => at.Key,
+                    at => new AppStateStackCache(parent, at.Value)
+                )
+                .ToImmutableDictionary();
         }
 
-        /// <summary>
-        /// The simple list of <em>all</em> entities, used everywhere
-        /// </summary>
-        [PrivateApi("WIP 12.03")]
-        public IEntity SystemSettings
-        {
-            get
-            {
-                var list = SystemSettingsList.List;
-                return list.Count < 2
-                    ? list.FirstOrDefault()
-                    : list.FirstOrDefault(e => string.IsNullOrEmpty(e.GetBestValue<string>(SysSettingsFieldScope, null)));
-            }
-        }
+        public AppStateStackCache[] Stacks;
+        public AppStateStackCache Get(AppThingsToStack target) => Stacks.First(s => s.Target.Target == target);
 
-        /// <summary>
-        /// The simple list of <em>all</em> entities, used everywhere
-        /// </summary>
-        [PrivateApi("WIP 12.03")]
-        public IEntity SystemSettingsEntireSite
-        {
-            get
-            {
-                var list = SystemSettingsList.List;
-                return list.Count < 2
-                    ? list.FirstOrDefault()
-                    : list.FirstOrDefault(e => SysSettingsScopeValueSite.Equals(e.GetBestValue<string>(SysSettingsFieldScope, null), InvariantCultureIgnoreCase));
-            }
-        }
+        public IImmutableDictionary<AppThingsToStack, AppStateStackCache> StackCache { get; }
 
-        private SynchronizedEntityList SystemSettingsList
-            => _systemSettingsList
-               ?? (_systemSettingsList = new SynchronizedEntityList(Parent, () => Parent.Index.Values
-                   .Where(e => e.Type.Is(TypeSystemSettings))
-                   .ToImmutableArray()));
-        private SynchronizedEntityList _systemSettingsList;
-
-
-        [PrivateApi("WIP 12.03")]
-        public IEntity CustomSettings
-            => (_siteSettingsCustom
-                ?? (_siteSettingsCustom = new SynchronizedEntityList(Parent,
-                    () => Parent.Index.Values.Where(e => e.Type.Is(TypeCustomSettings)).ToImmutableArray())))
-                .List
-                .FirstOrDefault();
-        private SynchronizedEntityList _siteSettingsCustom;
-        
     }
 }

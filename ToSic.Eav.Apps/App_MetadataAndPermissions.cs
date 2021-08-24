@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
@@ -36,8 +37,8 @@ namespace ToSic.Eav.Apps
             Metadata = appState.AppMetadata;
 
             // Get the content-items describing various aspects of this app
-            AppResources = appState.SettingsInApp.AppResources;
-            AppSettings = appState.SettingsInApp.AppSettings;
+            AppResources = appState.SettingsInApp.StackCache[AppThingsToStack.Resources].AppItem;// .AppResources;
+            AppSettings = appState.SettingsInApp.StackCache[AppThingsToStack.Settings].AppItem;// .AppSettings;
             AppConfiguration = appState.SettingsInApp.AppConfiguration;
             // in some cases these things may be null, if the app was created not allowing side-effects
             // This can usually happen when new apps are being created

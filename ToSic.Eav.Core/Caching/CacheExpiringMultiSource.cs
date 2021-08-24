@@ -14,7 +14,7 @@ namespace ToSic.Eav.Caching
         public CacheExpiringMultiSource(params ICacheExpiring[] sources) => _sources = sources;
 
         /// <summary>
-        /// Assume that the internal timestamp is the largest timestamp available internally
+        /// Assume that the relevant timestamp is the largest timestamp available on any of the sources.
         /// </summary>
         public long CacheTimestamp => _sources.Max(s => s.CacheTimestamp);
 

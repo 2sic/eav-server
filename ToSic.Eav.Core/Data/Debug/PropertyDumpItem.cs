@@ -8,9 +8,6 @@ namespace ToSic.Eav.Data.Debug
     {
         public const string Separator = ".";
 
-        internal static string[] BlacklistKeys = { "SettingsIdentifier", "ItemIdentifier" };
-
-
         public static bool ShouldStop(string path) => path?.Length > 200;
 
         public static PropertyDumpItem DummyErrorShouldStop(string path) => new PropertyDumpItem

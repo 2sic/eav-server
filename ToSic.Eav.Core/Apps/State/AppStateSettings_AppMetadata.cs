@@ -10,23 +10,22 @@ namespace ToSic.Eav.Apps
     public partial class AppStateSettings
     {
         
-        public IEntity AppSettings
-            => (_appSettingsSynched ?? (_appSettingsSynched = BuildSynchedMetadata(TypeAppSettings))).Value;
-        private SynchronizedObject<IEntity> _appSettingsSynched;
+        //public IEntity AppSettings
+        //    => (_appSettingsSynched ?? (_appSettingsSynched = BuildSynchedMetadata(Parent, TypeAppSettings))).Value;
+        //private SynchronizedObject<IEntity> _appSettingsSynched;
 
-        public IEntity AppResources
-            => (_appResourcesSynched ?? (_appResourcesSynched = BuildSynchedMetadata(TypeAppResources))).Value;
-        private SynchronizedObject<IEntity> _appResourcesSynched;
+        //public IEntity AppResources
+        //    => (_appResourcesSynched ?? (_appResourcesSynched = BuildSynchedMetadata(Parent, TypeAppResources))).Value;
+        //private SynchronizedObject<IEntity> _appResourcesSynched;
         
         public IEntity AppConfiguration
-            => (_appConfigSynched ?? (_appConfigSynched = BuildSynchedMetadata(TypeAppConfig))).Value;
+            => (_appConfigSynched ?? (_appConfigSynched = BuildSynchedMetadata(Parent, TypeAppConfig))).Value;
         private SynchronizedObject<IEntity> _appConfigSynched;
         
-        private SynchronizedObject<IEntity> BuildSynchedMetadata(string staticName)
+        internal static SynchronizedObject<IEntity> BuildSynchedMetadata(AppState parent, string staticName)
         {
-            var synched = new SynchronizedObject<IEntity>(Parent,
-                () => Parent.AppMetadata.FirstOrDefault(
-                    md => md.Type.StaticName == staticName));
+            var synched = new SynchronizedObject<IEntity>(parent,
+                () => parent.AppMetadata.FirstOrDefault(md => md.Type.StaticName == staticName));
             return synched;
         }
     }
