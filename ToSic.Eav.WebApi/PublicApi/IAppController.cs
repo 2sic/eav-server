@@ -22,5 +22,13 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// </summary>
         /// <returns></returns>
         ImportResultDto Reset(int zoneId, int appId);
+
+        /// <summary>
+        /// Get a stack of values from settings or resources
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="part">Name of the part - "settings" or "resources"</param>
+        /// <returns></returns>
+        List<StackInfoDto> GetStack(int appId, string part = null);
     }
 }

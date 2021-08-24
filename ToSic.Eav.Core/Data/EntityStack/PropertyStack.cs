@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data
 {
-    [PrivateApi("Still WIP")]
-    public class PropertyStack: IPropertyStack
+    [PrivateApi("Hide implementation")]
+    public partial class PropertyStack: IPropertyStack
     {
-        public void Init(params KeyValuePair<string, IPropertyLookup>[] entities)
+        public void Init(string name, params KeyValuePair<string, IPropertyLookup>[] entities)
         {
+            Name = name;
             var pairCount = 0;
 
             _sources = entities
@@ -24,10 +24,15 @@ namespace ToSic.Eav.Data
                 .ToImmutableArray();
         }
 
-        public IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources => _sources ?? throw new Exception($"Can't access {nameof(IPropertyStack)}.{nameof(Sources)} as it hasn't been initialized yet.");
+        public string Name { get; private set; }
+
+        public IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources 
+            => _sources ?? throw new Exception($"Can't access {nameof(IPropertyStack)}.{nameof(Sources)} as it hasn't been initialized yet.");
         private IImmutableList<KeyValuePair<string, IPropertyLookup>> _sources;
 
-        public IImmutableList<KeyValuePair<string, IPropertyLookup>> SourcesReal => _sourcesReal ?? (_sourcesReal = _sources.Where(ep => ep.Value != null).ToImmutableArray());
+        public IImmutableList<KeyValuePair<string, IPropertyLookup>> SourcesReal 
+            => _sourcesReal ?? (_sourcesReal = _sources.Where(ep => ep.Value != null).ToImmutableArray());
+
         private IImmutableList<KeyValuePair<string, IPropertyLookup>> _sourcesReal;
 
         public IPropertyLookup GetSource(string name)
@@ -39,20 +44,6 @@ namespace ToSic.Eav.Data
         [PrivateApi("Internal")]
         public PropertyRequest FindPropertyInternal(string field, string[] dimensions, ILog parentLogOrNull)
             => PropertyInStack(field, dimensions, 0, true, parentLogOrNull);
-
-        [PrivateApi("Internal")]
-        public List<PropertyDumpItem> _Dump(string[] languages, string path, ILog parentLogOrNull)
-        {
-            if (Sources == null || !Sources.Any()) return new List<PropertyDumpItem>();
-            var result = Sources
-                .SelectMany(s =>
-                {
-                    var sourceDump = s.Value._Dump(languages, path, parentLogOrNull);
-                    sourceDump.ForEach(sd => sd.Source = s.Key);
-                    return sourceDump;
-                });
-            return new List<PropertyDumpItem>();
-        }
 
         public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
         {
