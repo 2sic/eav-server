@@ -61,11 +61,5 @@ namespace ToSic.Eav.Apps
             return sources;
         }
 
-        //public void AddIfNotNull(List<KeyValuePair<string, IPropertyLookup>> sources, string name, IPropertyLookup lookup)
-        //{
-        //    if (lookup != null) sources.Add(new KeyValuePair<string, IPropertyLookup>(name, lookup));
-        //}
-
-        
     }
 }

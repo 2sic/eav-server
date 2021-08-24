@@ -38,6 +38,11 @@ namespace ToSic.Eav.Data
                     return sourceDump;
                 });
 
+            // Remove settings-internal keys which are not useful
+            // use Blacklist to find these
+            result = result.Where(r =>
+                !PropertyDumpItem.BlacklistKeys.Any(blk => r.Path.EndsWith(PropertyDumpItem.Separator + blk)));
+
             var grouped = result
                 .OrderBy(r => r.Path)
                 .ThenBy(r => r.SourcePriority)
