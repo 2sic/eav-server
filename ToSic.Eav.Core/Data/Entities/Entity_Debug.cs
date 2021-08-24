@@ -23,22 +23,22 @@ namespace ToSic.Eav.Data
             var dynChildField = Type?.DynamicChildrenField;
             if (dynChildField != null)
                 resultDynChildren = Children(dynChildField)
-                    .SelectMany(inner
-                        => inner._Dump(languages, pathRoot + inner.GetBestTitle(languages),
-                            parentLogOrNull));
+                    .Where(child => child != null)
+                    .SelectMany(inner =>
+                        inner._Dump(languages, pathRoot + inner.GetBestTitle(languages), parentLogOrNull));
 
             // Get all properties which are not dynamic children
-            var resultProperties =
-                Attributes
-                    .Where(att =>
-                        att.Value.Type == DataTypes.Entity
-                        && !att.Key.Equals(dynChildField, StringComparison.InvariantCultureIgnoreCase))
-                    .SelectMany(att
-                        => Children(att.Key)
-                            .SelectMany(inner
-                                => inner._Dump(languages, pathRoot + att.Key,
-                                    parentLogOrNull)))
-                    .ToList();
+            var childAttributes = Attributes
+                .Where(att =>
+                    att.Value.Type == DataTypes.Entity
+                    && (dynChildField == null || !att.Key.Equals(dynChildField, StringComparison.InvariantCultureIgnoreCase)));
+            var resultProperties = childAttributes
+                .SelectMany(att
+                    => Children(att.Key)
+                        .Where(child => child != null) // unclear why this is necessary, but sometimes the entities inside seem to be non-existant on Resources
+                        .SelectMany(inner
+                            => inner._Dump(languages, pathRoot + att.Key, parentLogOrNull)))
+                .ToList();
 
             // Get all normal properties
             var resultValues =

@@ -9,15 +9,7 @@ namespace ToSic.Eav.Apps
     [PrivateApi]
     public partial class AppStateSettings
     {
-        
-        //public IEntity AppSettings
-        //    => (_appSettingsSynched ?? (_appSettingsSynched = BuildSynchedMetadata(Parent, TypeAppSettings))).Value;
-        //private SynchronizedObject<IEntity> _appSettingsSynched;
 
-        //public IEntity AppResources
-        //    => (_appResourcesSynched ?? (_appResourcesSynched = BuildSynchedMetadata(Parent, TypeAppResources))).Value;
-        //private SynchronizedObject<IEntity> _appResourcesSynched;
-        
         public IEntity AppConfiguration
             => (_appConfigSynched ?? (_appConfigSynched = BuildSynchedMetadata(Parent, TypeAppConfig))).Value;
         private SynchronizedObject<IEntity> _appConfigSynched;

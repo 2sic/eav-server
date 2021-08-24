@@ -33,12 +33,12 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Call();
 
-            var appState = AppState;// State.Get(this);
+            var appState = AppState;
             Metadata = appState.AppMetadata;
 
             // Get the content-items describing various aspects of this app
-            AppResources = appState.SettingsInApp.StackCache[AppThingsToStack.Resources].AppItem;// .AppResources;
-            AppSettings = appState.SettingsInApp.StackCache[AppThingsToStack.Settings].AppItem;// .AppSettings;
+            AppResources = appState.SettingsInApp.Get(AppThingsToStack.Resources).MetadataItem;
+            AppSettings = appState.SettingsInApp.Get(AppThingsToStack.Settings).MetadataItem;
             AppConfiguration = appState.SettingsInApp.AppConfiguration;
             // in some cases these things may be null, if the app was created not allowing side-effects
             // This can usually happen when new apps are being created

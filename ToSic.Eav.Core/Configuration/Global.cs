@@ -28,14 +28,8 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// WIP / Experimental
         /// </summary>
-        public static IEntity SystemSettings
-        {
-            get
-            {
-                var settings = List.FirstOrDefault(e => e.Type.Is("SystemSettings"));
-                return settings;
-            }
-        }
+        public static IEntity SystemSettings => List.FirstOrDefault(e => e.Type.Is(ConfigurationConstants.Settings.SystemType)); //.TypeSystemSettings));// "SystemSettings"));
+        public static IEntity SystemResources => List.FirstOrDefault(e => e.Type.Is(ConfigurationConstants.Resources.SystemType)); //.TypeSystemResources));
 
         public static object Value(string typeName, string key) => For(typeName)?.Value(key);
 
