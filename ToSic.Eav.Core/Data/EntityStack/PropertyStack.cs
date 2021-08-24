@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
@@ -38,6 +39,20 @@ namespace ToSic.Eav.Data
         [PrivateApi("Internal")]
         public PropertyRequest FindPropertyInternal(string field, string[] dimensions, ILog parentLogOrNull)
             => PropertyInStack(field, dimensions, 0, true, parentLogOrNull);
+
+        [PrivateApi("Internal")]
+        public List<PropertyDumpItem> _Dump(string[] languages, string path, ILog parentLogOrNull)
+        {
+            if (Sources == null || !Sources.Any()) return new List<PropertyDumpItem>();
+            var result = Sources
+                .SelectMany(s =>
+                {
+                    var sourceDump = s.Value._Dump(languages, path, parentLogOrNull);
+                    sourceDump.ForEach(sd => sd.Source = s.Key);
+                    return sourceDump;
+                });
+            return new List<PropertyDumpItem>();
+        }
 
         public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
@@ -122,5 +123,8 @@ namespace ToSic.Eav.Data
 
         [PrivateApi("Internal")]
         public virtual PropertyRequest FindPropertyInternal(string field, string[] languages, ILog parentLogOrNull) => Entity.FindPropertyInternal(field, languages, parentLogOrNull);
+
+        [PrivateApi("Internal")]
+        public List<PropertyDumpItem> _Dump(string[] languages, string path, ILog parentLogOrNull) => Entity._Dump(languages, path, parentLogOrNull);
     }
 }

@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Documentation;
+﻿using System.Collections.Generic;
+using ToSic.Eav.Data.Debug;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data
@@ -12,6 +14,9 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         [PrivateApi("WIP, internal 12.02")]
         PropertyRequest FindPropertyInternal(string field, string[] languages, ILog parentLogOrNull);
+
+        [PrivateApi]
+        List<PropertyDumpItem> _Dump(string[] languages, string path, ILog parentLogOrNull);
 
     }
 }
