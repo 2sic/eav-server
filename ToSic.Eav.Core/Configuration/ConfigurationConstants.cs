@@ -4,11 +4,6 @@ namespace ToSic.Eav.Configuration
 {
     public class ConfigurationConstants
     {
-        //public const string TypeSystemSettings = "SystemSettings";
-        //public const string TypeCustomSettings = "Settings";
-        //public const string TypeSystemResources = "SystemResources";
-        //public const string TypeCustomResources = "Resources";
-
         public const string SysSettingsFieldScope = "SettingsEntityScope";
 
         public static string FieldSettingsIdentifier = "SettingsIdentifier";
@@ -22,15 +17,15 @@ namespace ToSic.Eav.Configuration
         public static AppThingsIdentifiers Resources = new AppThingsIdentifiers
         {
             AppType = AppLoadConstants.TypeAppResources, 
-            CustomType = "Resources", // TypeCustomResources,
-            SystemType = "SystemResources", // TypeSystemResources, 
+            CustomType = "Resources",
+            SystemType = "SystemResources",
             Target = AppThingsToStack.Resources
         };
         public static AppThingsIdentifiers Settings = new AppThingsIdentifiers
         {
             AppType = AppLoadConstants.TypeAppSettings, 
-            CustomType = "Settings", // TypeCustomSettings,
-            SystemType = "SystemSettings", // TypeSystemSettings, 
+            CustomType = "Settings",
+            SystemType = "SystemSettings",
             Target = AppThingsToStack.Settings
         };
 
@@ -38,25 +33,12 @@ namespace ToSic.Eav.Configuration
         {
             Resources,
             Settings
-            //new AppThingsIdentifiers
-            //{
-            //    AppType = AppLoadConstants.TypeAppSettings, CustomType = TypeCustomSettings,
-            //    SystemType = TypeSystemSettings, Target = AppThingsToStack.Settings
-            //}
         };
 
-        //public static Dictionary<AppThingsToStack, AppThingsIdentifiers> AppThings =
-        //    new Dictionary<AppThingsToStack, AppThingsIdentifiers>
-        //    {
-        //        {
-        //            AppThingsToStack.Resources,
-        //            new AppThingsIdentifiers { AppType = AppLoadConstants.TypeAppResources, CustomType = TypeCustomResources, SystemType = TypeSystemResources, Target = AppThingsToStack.Resources}
-        //        },
-        //        {
-        //            AppThingsToStack.Settings,
-        //            new AppThingsIdentifiers { AppType = AppLoadConstants.TypeAppSettings, CustomType = TypeCustomSettings, SystemType = TypeSystemSettings, Target = AppThingsToStack.Settings }
-        //        },
-        //    };
+        public static string WebResourcesNode = "WebResources";
+        public static string WebResourceEnabledField = "Enabled";
+        public static string WebResourceHtmlField = "Html";
+
     }
 
     public enum AppThingsToStack
