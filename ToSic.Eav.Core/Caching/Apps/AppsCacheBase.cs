@@ -1,9 +1,11 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Caching
@@ -16,6 +18,26 @@ namespace ToSic.Eav.Caching
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public abstract class AppsCacheBase : IAppsCache
     {
+
+        #region Dependency Injection
+        // TODO: WILL PROBABLY need an update on the farm cache which doesn't have these dependencies yet
+        public class Dependencies
+        {
+            public IServiceProvider ServiceProvider { get; }
+            public Dependencies(IServiceProvider serviceProvider)
+            {
+                ServiceProvider = serviceProvider;
+            }
+        }
+
+        protected AppsCacheBase(Dependencies dependencies)
+        {
+            Deps = dependencies;
+        }
+        protected Dependencies Deps { get; }
+
+        #endregion
+
         #region EnforceSingleton experimental
 
         [PrivateApi] public virtual bool EnforceSingleton => false;
@@ -24,7 +46,7 @@ namespace ToSic.Eav.Caching
         /// <summary>
         /// The repository loader. Must generate a new one on every access, to be sure that it doesn't stay in memory for long. 
         /// </summary>
-        private IRepositoryLoader GetNewRepoLoader() => Factory.Resolve<IRepositoryLoader>();
+        private IRepositoryLoader GetNewRepoLoader() => Deps.ServiceProvider.Build<IRepositoryLoader>(); // Factory.Resolve<IRepositoryLoader>();
 
 	    /// <inheritdoc />
 	    public abstract IReadOnlyDictionary<int, Zone> Zones { get; }

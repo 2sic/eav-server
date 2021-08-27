@@ -32,6 +32,7 @@ namespace ToSic.Eav
 
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
+            services.TryAddTransient<AppsCacheBase.Dependencies>();
 
             // Metadata providers
             services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
