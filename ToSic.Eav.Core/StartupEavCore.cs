@@ -44,7 +44,7 @@ namespace ToSic.Eav
             services.TryAddTransient<AppsCacheBase.Dependencies>();
 
             // Metadata providers
-            services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
+            //services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
             
             // Other...
             services.TryAddTransient<AttributeBuilder>();

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Documentation;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Metadata
 {
@@ -33,8 +34,8 @@ namespace ToSic.Eav.Metadata
 
             _metadataSource = _remoteAppId != 0
                 ? (_remoteZoneId != 0
-                    ? Factory.Resolve<IRemoteMetadata>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
-                    : Factory.Resolve<IRemoteMetadata>()?.OfApp(_remoteAppId))
+                    ? State.Get(new AppIdentity(_remoteZoneId, _remoteAppId)) // Factory.Resolve<IRemoteMetadata>()?.OfZoneAndApp(_remoteZoneId, _remoteAppId)
+                    : State.Get(_remoteAppId)) // Factory.Resolve<IRemoteMetadata>()?.OfApp(_remoteAppId))
                 : base.GetMetadataSource();
             _alreadyTriedToGetProvider = true;
             return _metadataSource;

@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps.Parts
                 return;
             }
 
-            var saveOptions = SaveOptions.Build(Parent.ZoneId);
+            var saveOptions = _environmentLazy.Value.SaveOptions(Parent.ZoneId); // SaveOptions.Build(Parent.ZoneId);
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 

@@ -8,6 +8,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
+using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Testing.Shared;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -20,11 +21,14 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private readonly Efc11Loader _loader1;
         private readonly Efc11Loader _loader2;
 
+        private readonly IImportExportEnvironment _environment;
+
         public SaveDataToDbTests()
         {
             _dbData = Resolve<DbDataController>();
             _loader1 = Resolve<Efc11Loader>();
             _loader2 = Resolve<Efc11Loader>();
+            _environment = Resolve<IImportExportEnvironment>();
         }
 
         public static ILog Log = new Log("TstSav");
@@ -39,7 +43,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public void LoadOneAndSaveUnchanged()
         {
             var test = new TestValuesOnPc2Dm();
-            var so = SaveOptions.Build(test.ZoneId);
+            var so = _environment.SaveOptions(test.ZoneId);
             var dbi = _dbData.Init(test.ZoneId, test.AppId, Log);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
@@ -67,7 +71,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public void LoadOneChangeABitAndSave()
         {
             var test = new TestValuesOnPc2Dm();
-            var so = SaveOptions.Build(test.ZoneId);
+            var so = _environment.SaveOptions(test.ZoneId);
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
 
@@ -108,7 +112,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var ctName = "Simple Content";
             var ctTitle = "wonderful new title";
             var test = new TestValuesOnPc2Dm();
-            var so = SaveOptions.Build(test.ZoneId);
+            var so = _environment.SaveOptions(test.ZoneId);
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
 
