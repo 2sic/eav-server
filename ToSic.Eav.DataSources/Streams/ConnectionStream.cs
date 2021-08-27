@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
@@ -8,6 +9,7 @@ namespace ToSic.Eav.DataSources
     [PrivateApi("Experimental")]
     public class ConnectionStream: IDataStream, IWrapper<IDataStream>
     {
+
         public ConnectionStream(Connection connection) => Connection = connection;
 
         public Connection Connection;
@@ -44,7 +46,7 @@ namespace ToSic.Eav.DataSources
         private IDataStream CreateErrorStream(string title, string message, IDataSource intendedSource = null)
         {
             var errorHandler = Connection.DataSource?.ErrorHandler
-                               ?? Factory.Resolve<DataSourceErrorHandling>();
+                               ?? new DataSourceErrorHandling(); // Factory.Resolve<DataSourceErrorHandling>();
             var entityList = errorHandler.CreateErrorList(title: title, message: message);
             return new DataStream(intendedSource, "ConnectionStreamError", () => entityList);
         }

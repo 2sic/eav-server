@@ -9,11 +9,11 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class DataSourceErrorHandling
     {
-        private readonly Lazy<IDataBuilder> _dataBuilderLazy;
+        //private readonly Lazy<IDataBuilder> _dataBuilderLazy;
 
-        public DataSourceErrorHandling(Lazy<IDataBuilder> dataBuilderLazy)
+        public DataSourceErrorHandling(/*Lazy<IDataBuilder> dataBuilderLazy*/)
         {
-            _dataBuilderLazy = dataBuilderLazy;
+            //_dataBuilderLazy = dataBuilderLazy;
         }
         
         public static string ErrorType = "Error";
@@ -32,7 +32,8 @@ namespace ToSic.Eav.DataSources
                 {"DebugNotes", "There should be more details in the insights logs, see https://r.2sxc.org/insights" }
             };
 
-            var errorEntity = _dataBuilderLazy.Value.Entity(values, titleField: ErrorTitle, typeName: ErrorType);
+            //var errorEntity = _dataBuilderLazy.Value.Entity(values, titleField: ErrorTitle, typeName: ErrorType);
+            var errorEntity = new DataBuilder().Entity(values, titleField: ErrorTitle, typeName: ErrorType);
             return errorEntity;
         }
 

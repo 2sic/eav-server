@@ -5,6 +5,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSources.Queries
 {
@@ -105,7 +106,7 @@ namespace ToSic.Eav.DataSources.Queries
 			// tell the primary-out that it has this guid, for better debugging
             var passThroughConfig = new LookUpEngine(templateConfig, Log);
             IDataSource outTarget = new PassThrough().Init(passThroughConfig);
-            if (outTarget.Guid == Guid.Empty)
+			if (outTarget.Guid == Guid.Empty)
 	            outTarget.Guid = queryDef.Entity.EntityGuid;
 
             #endregion
