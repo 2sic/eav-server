@@ -3,22 +3,26 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Types
 {
-    internal class GlobalTypeLoader: HasLog
+    [PrivateApi]
+    public class GlobalTypeLoader: HasLog<GlobalTypeLoader>
     {
-        public GlobalTypeLoader(ILog parentLog) 
-            : base("Eav.GlTLdr", parentLog, "Start Loading")
+        private readonly IRuntime _runtime;
+
+        public GlobalTypeLoader(IRuntime runtime) : base("Eav.GlTLdr", initialMessage: "Start Loading")
         {
-            BuildCache();
+            _runtime = runtime;
         }
 
 
-        private void BuildCache()
+        internal void BuildCache()
         {
+            var wrapLog = Log.Call();
             // copy the code-types dictionary...
             // note 2019-01 2dm: as of now, no code-types are actually supported, I believe this 
             // is a leftover of a temporary experiment
@@ -43,6 +47,7 @@ namespace ToSic.Eav.Types
 
             // make sure it's case insensitive...
             ByStaticName = codeTypes.ToImmutableDictionary(StringComparer.InvariantCultureIgnoreCase);
+            wrapLog("done");
         }
 
         internal ImmutableDictionary<string, IContentType> ByStaticName;
@@ -55,7 +60,7 @@ namespace ToSic.Eav.Types
         private IEnumerable<IContentType> ContentTypesInRuntime()
         {
             Log.Add("ContentTypesInRuntime() loading");
-            var runtime = Factory.Resolve<IRuntime>().Init(Log);
+            var runtime = _runtime.Init(Log);
             runtime?.LinkLog(Log);
             return runtime?.LoadGlobalContentTypes() ?? new List<IContentType>();
         }

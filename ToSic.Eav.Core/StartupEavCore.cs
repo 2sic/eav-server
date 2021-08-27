@@ -12,6 +12,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
+using ToSic.Eav.Types;
 
 namespace ToSic.Eav
 {
@@ -25,6 +26,9 @@ namespace ToSic.Eav
             // 2021-04-08 2sxc 11.13 Data Builder
             services.TryAddTransient<IDataBuilder, DataBuilder>();
             
+            // Global Content-Types - should only be loaded once ever, and then it's done
+            services.TryAddSingleton<GlobalTypeLoader>();
+
             // Configuration objects
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
@@ -32,7 +36,7 @@ namespace ToSic.Eav
             // try to drop this / replace with...
             services.TryAddTransient<IFeaturesConfiguration, Features/*Configuration*/>();
             // ...with this
-            services.TryAddTransient<FeaturesLoader>();
+            services.TryAddTransient<SystemLoader>();
             services.TryAddTransient<Features>();
 
             // App-State and Cache

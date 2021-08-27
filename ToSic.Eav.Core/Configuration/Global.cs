@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Run;
+using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Configuration
 {
+    [PrivateApi]
     public class Global
     {
         public const string GroupQuery = "query";
         public const string GroupConfiguration = "configuration";
 
-        public static List<IEntity> List => _list ?? (_list = ConfigurationInRuntime());
-        private static List<IEntity> _list;
-        public static void Reset() => _list = null;
-
+        /// <summary>
+        /// The list is set by the ConfigurationLoader. That must run at application start.
+        /// </summary>
+        public static List<IEntity> List { get; internal set; }
 
         /// <summary>
         /// Get the configuration for a specific type, or return null if no configuration found
@@ -28,8 +26,9 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// WIP / Experimental
         /// </summary>
-        public static IEntity SystemSettings => List.FirstOrDefault(e => e.Type.Is(ConfigurationConstants.Settings.SystemType)); //.TypeSystemSettings));// "SystemSettings"));
-        public static IEntity SystemResources => List.FirstOrDefault(e => e.Type.Is(ConfigurationConstants.Resources.SystemType)); //.TypeSystemResources));
+        public static IEntity SystemSettings => List.FirstOrDefault(e => e.Type.Is(ConfigurationConstants.Settings.SystemType));
+
+        public static IEntity SystemResources => List.FirstOrDefault(e => e.Type.Is(ConfigurationConstants.Resources.SystemType));
 
         public static object Value(string typeName, string key) => For(typeName)?.Value(key);
 
@@ -38,30 +37,5 @@ namespace ToSic.Eav.Configuration
             var found = Value(typeName, key);
             return found?.ToString() ?? fallback;
         }
-
-        /// <summary>
-        /// All content-types available in Reflection; will cache after first scan
-        /// </summary>
-        /// <returns></returns>
-        public static List<IEntity> ConfigurationInRuntime()
-        {
-            var log = new Log($"{LogNames.Eav}.Global");
-            log.Add("Load Global Configurations");
-            History.Add(Types.Global.LogHistoryGlobalTypes, log);
-            var wrapLog = log.Call<List<IEntity>>();
-            
-            try
-            {
-                var runtime = Factory.Resolve<IRuntime>().Init(log);
-                var list = runtime?.LoadGlobalItems(GroupConfiguration)?.ToList() ?? new List<IEntity>();
-                return wrapLog($"{list.Count}", list);
-            }
-            catch (Exception e)
-            {
-                log.Exception(e);
-                return wrapLog("error", new List<IEntity>());
-            }
-        }
-
     }
 }
