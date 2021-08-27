@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 
 namespace ToSic.Eav.Configuration
@@ -137,7 +138,7 @@ namespace ToSic.Eav.Configuration
                         if (feats2 != null)
                         {
                             var fingerprint = feats2.Fingerprint;
-                            if (fingerprint != Fingerprint.System)
+                            if (fingerprint != Factory.Resolve<IFingerprint>().GetSystemFingerprint()) // Fingerprint.System)
                                 Valid = false;
 
                             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
