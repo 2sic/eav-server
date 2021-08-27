@@ -16,8 +16,8 @@ namespace ToSic.Eav.ImportExport.Persistence.File
     {
         #region Constructor and DI
 
+        public Runtime(IServiceProvider sp) : base("Eav.Rntime") => _serviceProvider = sp;
         private readonly IServiceProvider _serviceProvider;
-        public Runtime(IServiceProvider sc) : base("Eav.Rntime") => _serviceProvider = sc;
 
         public IRuntime Init(ILog parent)
         {
@@ -77,7 +77,8 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 
 
 
-        internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths.Select(path => new FileSystemLoader(path, Source, true, null, Log)).ToList());
+        internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths
+            .Select(path => _serviceProvider.Build<FileSystemLoader>().Init(path, Source, true, null, Log)).ToList());
         private List<FileSystemLoader> _loader;
 
 

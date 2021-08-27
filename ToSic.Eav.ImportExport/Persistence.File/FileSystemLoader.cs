@@ -15,29 +15,39 @@ using IEntity = ToSic.Eav.Data.IEntity;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class FileSystemLoader: HasLog<IContentTypeLoader>, IContentTypeLoader
+    public partial class FileSystemLoader: HasLog, IContentTypeLoader
     {
         private const string ContentTypeFolder = "contenttypes\\";
         private const string QueryFolder = "queries\\";
         private const string ConfigurationFolder = "configurations\\";
-        private const string ItemFolder = "items\\";
+        //private const string ItemFolder = "items\\";
 
-        public FileSystemLoader(string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
-            : base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
+        /// <summary>
+        /// Empty constructor for DI
+        /// </summary>
+        public FileSystemLoader(JsonSerializer jsonSerializerUnready) : base("FSL.Loadr")
         {
+            _jsonSerializerUnready = jsonSerializerUnready;
+        }
+
+        public FileSystemLoader Init(string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            Log.Add($"init with path:{path} ignore:{ignoreMissing}");
             Path = path + (path.EndsWith("\\") ? "" : "\\");
             RepoType = repoType;
             IgnoreMissingStuff = ignoreMissing;
             EntitiesSource = entitiesSource;
+            return this;
         }
 
-        private string Path { get; }
+        private string Path { get; set; }
 
-        private bool IgnoreMissingStuff { get; }
+        private bool IgnoreMissingStuff { get; set; }
 
-        private RepositoryTypes RepoType { get; }
+        private RepositoryTypes RepoType { get; set; }
 
-        protected readonly IEntitiesSource EntitiesSource;
+        protected IEntitiesSource EntitiesSource;
 
         #region json serializer
         private JsonSerializer Serializer
@@ -45,14 +55,15 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_ser != null) return _ser;
-                _ser = new JsonSerializer(null /* todo: DI */);
+                _ser = _jsonSerializerUnready;
                 _ser.Initialize(0, ReflectionTypes.FakeCache.Values, EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
         }
-
         private JsonSerializer _ser;
+        private readonly JsonSerializer _jsonSerializerUnready;
+
         #endregion
 
         #region Queries & Configuration

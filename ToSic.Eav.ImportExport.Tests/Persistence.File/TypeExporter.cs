@@ -27,7 +27,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             var cts = app.ContentTypes;
             var sharedCts = cts.Where(ct => (ct as ContentType).AlwaysShareConfiguration).ToList();
 
-            var fileSysLoader = new FileSystemLoader(ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null, Log);
+            var fileSysLoader = EavTestBase.Resolve<FileSystemLoader>().Init(ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null, Log);
 
             var time = Stopwatch.StartNew();
             sharedCts.ForEach(ct => fileSysLoader.SaveContentType(ct));
