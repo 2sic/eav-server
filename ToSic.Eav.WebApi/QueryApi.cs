@@ -7,6 +7,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
@@ -34,6 +35,7 @@ namespace ToSic.Eav.WebApi
         private readonly Lazy<AppRuntime> _appReaderLazy;
         private readonly Lazy<EntitiesToDictionary> _entToDicLazy;
         private readonly Lazy<QueryInfo> _queryInfoLazy;
+        private readonly Lazy<DataSourceCatalog> _dataSourceCatalogLazy;
         private AppManager _appManager;
 
         public QueryApi(
@@ -41,7 +43,8 @@ namespace ToSic.Eav.WebApi
             Lazy<AppRuntime> appReaderLazy, 
             QueryBuilder queryBuilder, 
             Lazy<EntitiesToDictionary> entToDicLazy,
-            Lazy<QueryInfo> queryInfoLazy
+            Lazy<QueryInfo> queryInfoLazy,
+            Lazy<DataSourceCatalog> dataSourceCatalogLazy
             ) : base("Api.EavQry")
         {
             QueryBuilder = queryBuilder;
@@ -50,12 +53,14 @@ namespace ToSic.Eav.WebApi
             _appReaderLazy = appReaderLazy;
             _entToDicLazy = entToDicLazy;
             _queryInfoLazy = queryInfoLazy;
+            _dataSourceCatalogLazy = dataSourceCatalogLazy;
         }
 
         public QueryApi Init(int appId, ILog parentLog)
         {
             Log.LinkTo(parentLog);
-            _appManager = _appManagerLazy.Value.Init(appId, Log);
+            if (appId != 0) // if 0, then no context is available or used
+                _appManager = _appManagerLazy.Value.Init(appId, Log);
             return this;
         }
 
@@ -85,6 +90,25 @@ namespace ToSic.Eav.WebApi
             #endregion
 
             return query;
+        }
+
+        public IEnumerable<DataSourceDto> DataSources()
+        {
+            var dsCatalog = _dataSourceCatalogLazy.Value.Init(Log);
+
+            var callLog = Log.Call<IEnumerable<DataSourceDto>>();
+            var installedDataSources = DataSourceCatalog.GetAll(true);
+
+            var result = installedDataSources
+                .Select(dsInfo => new DataSourceDto(dsInfo.Type.Name, dsInfo.VisualQuery)
+                {
+                    PartAssemblyAndType = dsInfo.Name,
+                    Out = dsInfo.VisualQuery?.DynamicOut == true ? null : dsCatalog.GetOutStreamNames(dsInfo)
+                })
+                .ToList();
+
+            return callLog(result.Count.ToString(), result);
+
         }
 
         /// <summary>

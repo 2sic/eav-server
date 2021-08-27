@@ -35,6 +35,16 @@ namespace ToSic.Eav
         public static IServiceProvider GetServiceProvider() => _serviceCollection.BuildServiceProvider();
 #endif
 
+        /// <summary>
+        /// Dependency Injection resolver with a known type as a parameter.
+        /// </summary>
+        /// <typeparam name="T">The type / interface we need.</typeparam>
+        public static T ObsoleteResolveUseOnlyInDnnOrTests<T>()
+        {
+            if (Debug) LogResolve(typeof(T), true);
+
+            return GetServiceProvider().Build<T>();
+        }
 
         /// <summary>
         /// Dependency Injection resolver with a known type as a parameter.
@@ -57,15 +67,16 @@ namespace ToSic.Eav
         [PrivateApi]
         public static T StaticBuild<T>() => GetServiceProvider().Build<T>();
 
-        /// <summary>
-        /// Dependency Injection resolver with a known type as a parameter.
-        /// </summary>
-        /// <param name="T">The type or interface we need</param>
-        /// <returns></returns>
-        public static object Resolve(Type T)
-        {
-            if (Debug) LogResolve(T, false);
-            return GetServiceProvider().Build<object>(T);
-        }
+        // 2021-08-27 2dm - disabled for now
+        ///// <summary>
+        ///// Dependency Injection resolver with a known type as a parameter.
+        ///// </summary>
+        ///// <param name="T">The type or interface we need</param>
+        ///// <returns></returns>
+        //public static object Resolve(Type T)
+        //{
+        //    if (Debug) LogResolve(T, false);
+        //    return GetServiceProvider().Build<object>(T);
+        //}
     }
 }

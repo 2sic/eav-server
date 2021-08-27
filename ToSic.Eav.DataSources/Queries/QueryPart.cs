@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSources.Queries
                 : assemblyAndType;
 
             // find the new name in the catalog
-            return new DataSourceCatalog(Log).Find(newName);
+            return DataSourceCatalog.Find(newName);
         }
 
 

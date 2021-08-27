@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Queries;
 
 namespace ToSic.Eav.DataSources
@@ -8,6 +9,7 @@ namespace ToSic.Eav.DataSources
     {
         public static IServiceCollection AddDataSources(this IServiceCollection services)
         {
+            services.TryAddTransient<DataSourceCatalog>();
             services.TryAddTransient<DataSourceFactory>();
             services.TryAddTransient<DataSourceErrorHandling>();
 
