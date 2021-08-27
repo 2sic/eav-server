@@ -83,9 +83,9 @@ namespace ToSic.Eav.Configuration
             return enabled;
         }
 
-        private static string HelpLink => _helpLink ?? (_helpLink = Factory.StaticBuild<IFeaturesConfiguration>().FeaturesHelpLink);
+        private static string HelpLink => _helpLink ?? (_helpLink = Factory.Resolve<IFeaturesConfiguration>().FeaturesHelpLink);
         private static string _helpLink;
-        private static string InfoLinkRoot => _infoLinkRoot ?? (_infoLinkRoot = Factory.StaticBuild<IFeaturesConfiguration>().FeatureInfoLinkRoot);
+        private static string InfoLinkRoot => _infoLinkRoot ?? (_infoLinkRoot = Factory.Resolve<IFeaturesConfiguration>().FeatureInfoLinkRoot);
         private static string _infoLinkRoot;
 
         [PrivateApi]

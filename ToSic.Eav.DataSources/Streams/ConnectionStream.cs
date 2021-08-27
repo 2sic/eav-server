@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources
         private IDataStream CreateErrorStream(string title, string message, IDataSource intendedSource = null)
         {
             var errorHandler = Connection.DataSource?.ErrorHandler
-                               ?? Factory.StaticBuild<DataSourceErrorHandling>();
+                               ?? Factory.Resolve<DataSourceErrorHandling>();
             var entityList = errorHandler.CreateErrorList(title: title, message: message);
             return new DataStream(intendedSource, "ConnectionStreamError", () => entityList);
         }

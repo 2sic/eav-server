@@ -52,7 +52,7 @@ namespace ToSic.Eav.Configuration
             
             try
             {
-                var runtime = Factory.StaticBuild<IRuntime>().Init(log);
+                var runtime = Factory.Resolve<IRuntime>().Init(log);
                 var list = runtime?.LoadGlobalItems(GroupConfiguration)?.ToList() ?? new List<IEntity>();
                 return wrapLog($"{list.Count}", list);
             }

@@ -39,17 +39,6 @@ namespace ToSic.Eav
         /// Dependency Injection resolver with a known type as a parameter.
         /// </summary>
         /// <typeparam name="T">The type / interface we need.</typeparam>
-        public static T ObsoleteResolveUseOnlyInDnnOrTests<T>()
-        {
-            if (Debug) LogResolve(typeof(T), true);
-
-            return GetServiceProvider().Build<T>();
-        }
-
-        /// <summary>
-        /// Dependency Injection resolver with a known type as a parameter.
-        /// </summary>
-        /// <typeparam name="T">The type / interface we need.</typeparam>
         public static T Resolve<T>()
         {
             if (Debug) LogResolve(typeof(T), true);
@@ -64,19 +53,10 @@ namespace ToSic.Eav
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
+        /// <remarks>
+        /// Avoid using at all cost - only DNN and test-code may use this!
+        /// </remarks>
         [PrivateApi]
         public static T StaticBuild<T>() => GetServiceProvider().Build<T>();
-
-        // 2021-08-27 2dm - disabled for now
-        ///// <summary>
-        ///// Dependency Injection resolver with a known type as a parameter.
-        ///// </summary>
-        ///// <param name="T">The type or interface we need</param>
-        ///// <returns></returns>
-        //public static object Resolve(Type T)
-        //{
-        //    if (Debug) LogResolve(T, false);
-        //    return GetServiceProvider().Build<object>(T);
-        //}
     }
 }

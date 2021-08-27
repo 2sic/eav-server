@@ -17,7 +17,7 @@ namespace ToSic.Testing.Performance
             // initialize everything
             Shared.StartupTestingShared.ConfigureEfcDi();
 
-            var tester = Eav.Factory.ObsoleteResolveUseOnlyInDnnOrTests<GenerateJsonForApps>();
+            var tester = Eav.Factory.StaticBuild<GenerateJsonForApps>();
             tester.Init();
 
             // time initial sql
