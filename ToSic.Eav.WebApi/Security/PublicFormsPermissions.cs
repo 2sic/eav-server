@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Configuration;
+﻿using System;
+using ToSic.Eav.Configuration;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Security;
@@ -7,7 +9,7 @@ namespace ToSic.Sxc.WebApi.Security
 {
     internal static class PublicFormsPermissions
     {
-        internal static bool UserCanWriteAndPublicFormsEnabled(this MultiPermissionsApp mpa, out HttpExceptionAbstraction preparedException, out string error)
+        internal static bool UserCanWriteAndPublicFormsEnabled(this MultiPermissionsApp mpa, IServiceProvider sp, out HttpExceptionAbstraction preparedException, out string error)
         {
             var wrapLog = mpa.Log.Call("");
             // 1. check if user is restricted
@@ -17,7 +19,7 @@ namespace ToSic.Sxc.WebApi.Security
             var feats = new[] { FeatureIds.PublicForms };
             if (userIsRestricted && !ToSic.Eav.Configuration.Features.Enabled(feats))
             {
-                error = $"low-permission users may not access this - {ToSic.Eav.Configuration.Features.MsgMissingSome(feats)}";
+                error = $"low-permission users may not access this - {/*ToSic.Eav.Configuration.Features*/sp.Build<Features>().MsgMissingSome(feats)}";
                 preparedException = HttpException.PermissionDenied(error);
                 return false;
             }

@@ -10,7 +10,7 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class FeaturesDisabledException : Exception
     {
-        public FeaturesDisabledException(string message, IEnumerable<Guid> features): base(message + " - " + Features.MsgMissingSome(features))
+        public FeaturesDisabledException(string message, IEnumerable<Guid> features): base(message) // + " - " + Features.MsgMissingSome(features))
         { }
     }
 }

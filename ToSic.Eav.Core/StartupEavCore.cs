@@ -28,7 +28,12 @@ namespace ToSic.Eav
             // Configuration objects
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
-            services.TryAddTransient<IFeaturesConfiguration, FeaturesConfiguration>();
+            
+            // try to drop this / replace with...
+            services.TryAddTransient<IFeaturesConfiguration, Features/*Configuration*/>();
+            // ...with this
+            services.TryAddTransient<FeaturesLoader>();
+            services.TryAddTransient<Features>();
 
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
