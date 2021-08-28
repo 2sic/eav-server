@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Plumbing;
@@ -13,20 +14,32 @@ namespace ToSic.Eav.Apps
     [InternalApi_DoNotUse_MayChangeWithoutNotice("the name of this class is not final, may change")]
     public class State
     {
-        [PrivateApi]
-        public static IAppsCache Cache
+        /// <summary>
+        /// Run start-up, to set the cache object which itself needs the service provider internally.
+        /// So this is to ensure DI is preserved
+        /// </summary>
+        internal static void StartUp(IAppsCache appsCache)
         {
-            get
-            {
-                if (_appsCacheSingleton != null) return _appsCacheSingleton;
-
-                var appsCache = Factory.GetServiceProvider().Build<IAppsCache>();
-                if (appsCache.EnforceSingleton)
-                    _appsCacheSingleton = appsCache;
-                return appsCache;
-            }
+            Cache = appsCache;
         }
-        private static IAppsCache _appsCacheSingleton;
+
+        // New implementation 2021-08-28 2dm / experimental
+        [PrivateApi] public static IAppsCache Cache { get; private set; }
+
+        //[PrivateApi]
+        //public static IAppsCache Cache
+        //{
+        //    get
+        //    {
+        //        if (_appsCacheSingleton != null) return _appsCacheSingleton;
+
+        //        var appsCache = Factory.GetServiceProvider().Build<IAppsCache>();
+        //        if (appsCache.EnforceSingleton)
+        //            _appsCacheSingleton = appsCache;
+        //        return appsCache;
+        //    }
+        //}
+        //private static IAppsCache _appsCacheSingleton;
 
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice]

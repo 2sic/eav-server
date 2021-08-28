@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -16,19 +18,22 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class SystemLoader: HasLog
     {
+
         #region Constructor / DI
 
-        public SystemLoader(GlobalTypeLoader typeLoader, IFingerprint fingerprint, IRuntime runtime) : base($"{LogNames.Eav}SysLdr")
+        public SystemLoader(GlobalTypeLoader typeLoader, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache) : base($"{LogNames.Eav}SysLdr")
         {
+            _appsCache = appsCache;
             History.Add(Types.Global.LogHistoryGlobalTypes, Log);
-            TypeLoader = typeLoader.Init(Log);
-            Fingerprint = fingerprint;
-            Runtime = runtime;
+            _typeLoader = typeLoader.Init(Log);
+            _fingerprint = fingerprint;
+            _runtime = runtime;
         }
 
-        public GlobalTypeLoader TypeLoader { get; }
-        public IFingerprint Fingerprint { get; }
-        public IRuntime Runtime { get; }
+        private readonly GlobalTypeLoader _typeLoader;
+        private readonly IFingerprint _fingerprint;
+        private readonly IRuntime _runtime;
+        private readonly IAppsCache _appsCache;
 
         #endregion
 
@@ -37,12 +42,16 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         public void StartUp()
         {
+            // Prevent multiple Inits
             if (_startupAlreadyRan) throw new Exception("Startup should never be called twice.");
             _startupAlreadyRan = true;
 
+            // Initialize AppState Cache, which could be DI but has a static accessor
+            State.StartUp(_appsCache);
+
             // Build the cache of all system-types. Must happen before everything else
-            TypeLoader.BuildCache();
-            Types.Global.TypeLoader = TypeLoader;
+            _typeLoader.BuildCache();
+            Types.Global.TypeLoader = _typeLoader;
 
             // Now do a normal reload of configuration and features
             Reload();
@@ -74,7 +83,7 @@ namespace ToSic.Eav.Configuration
 
             try
             {
-                var runtime = Runtime.Init(log);
+                var runtime = _runtime.Init(log);
                 var list = runtime?.LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();
                 Global.List = list;
                 wrapLog($"{list.Count}");
@@ -120,7 +129,7 @@ namespace ToSic.Eav.Configuration
                         if (feats2 != null)
                         {
                             var fingerprint = feats2.Fingerprint;
-                            if (fingerprint != Fingerprint.GetSystemFingerprint()) 
+                            if (fingerprint != _fingerprint.GetSystemFingerprint()) 
                                 Features.Valid = false;
 
                             // ReSharper disable once ConditionIsAlwaysTrueOrFalse

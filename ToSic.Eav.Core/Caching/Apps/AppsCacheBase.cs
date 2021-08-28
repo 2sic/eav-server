@@ -46,9 +46,9 @@ namespace ToSic.Eav.Caching
         /// <summary>
         /// The repository loader. Must generate a new one on every access, to be sure that it doesn't stay in memory for long. 
         /// </summary>
-        private IRepositoryLoader GetNewRepoLoader() => Deps.ServiceProvider.Build<IRepositoryLoader>(); // Factory.Resolve<IRepositoryLoader>();
+        private IRepositoryLoader GetNewRepoLoader() => Deps.ServiceProvider.Build<IRepositoryLoader>();
 
-	    /// <inheritdoc />
+        /// <inheritdoc />
 	    public abstract IReadOnlyDictionary<int, Zone> Zones { get; }
 
         [PrivateApi]
