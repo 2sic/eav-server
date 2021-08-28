@@ -90,7 +90,7 @@ namespace ToSic.Eav.Data.Builder
             object value, string valueType, string language = null, bool languageReadOnly = false,
             bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null)
         {
-            var builder = Factory.StaticBuild<AttributeBuilder>();
+            var builder = Factory.ObsoleteBuild<AttributeBuilder>();
             return builder.AddValue(target, attributeName, value, valueType, language, languageReadOnly,
                 resolveHyperlink, allEntitiesForRelationships);
         }

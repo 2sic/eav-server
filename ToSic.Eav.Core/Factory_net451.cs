@@ -17,7 +17,7 @@ namespace ToSic.Eav
         private static IServiceProvider _sp;
 
         [PrivateApi("This is just a temporary solution - shouldn't be used long term")]
-        public static IServiceProvider GetServiceProvider()
+        private static IServiceProvider GetServiceProvider()
         {
             // Because 2sxc runs inside DNN as a webforms project and not asp.net core mvc, we have
             // to make sure the service-provider object is disposed correctly. If we don't do this,
