@@ -6,7 +6,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Plumbing;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav
@@ -22,7 +21,7 @@ namespace ToSic.Eav
         [Obsolete("Use DataSourceFactory with proper DI, this is only left over for compatibility in case it's used will remove in v12")]
         public DataSource(ILog parentLog = null) : base($"{DataSourceConstants.LogPrefix}.OldFct", parentLog)
         {
-            _dsFactory = Factory.GetServiceProvider().Build<DataSourceFactory>().Init(Log);
+            _dsFactory = Factory.ObsoleteBuild<DataSourceFactory>().Init(Log);
         }
 
         [Obsolete("Use DataSourceFactory with proper DI")]

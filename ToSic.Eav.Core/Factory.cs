@@ -58,5 +58,19 @@ namespace ToSic.Eav
         /// </remarks>
         [PrivateApi]
         public static T StaticBuild<T>() => GetServiceProvider().Build<T>();
+
+        /// <summary>
+        /// This is a special internal resolver for static objects
+        /// Should only be used with extreme caution, as downstream objects
+        /// May need more scope-specific stuff, why may be missing
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <remarks>
+        /// Avoid using at all cost - only in obsolete EAV code which will be removed in 2sxc 13
+        /// </remarks>
+        [PrivateApi]
+        [Obsolete("Use this in all EAV code to ensure we know the APIs to remove in v13")]
+        public static T ObsoleteBuild<T>() => GetServiceProvider().Build<T>();
     }
 }
