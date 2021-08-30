@@ -34,7 +34,7 @@ namespace ToSic.Eav.WebApi
         {
             Log.Add($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
-            AppRuntime.Init(State.Identity(null, appId), withDrafts, Log);
+            AppRuntime.Init(appId, withDrafts, Log);
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
             {

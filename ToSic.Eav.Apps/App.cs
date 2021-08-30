@@ -29,17 +29,20 @@ namespace ToSic.Eav.Apps
         {
             internal readonly IZoneMapper ZoneMapper;
             internal readonly ISite Site;
+            internal readonly IAppStates AppStates;
             internal readonly DataSourceFactory DataSourceFactory;
             internal readonly Lazy<GlobalQueries> GlobalQueriesLazy;
 
             public AppDependencies(
                 IZoneMapper zoneMapper,
                 ISite site,
+                IAppStates appStates,
                 DataSourceFactory dataSourceFactory,
                 Lazy<GlobalQueries> globalQueriesLazy)
             {
                 ZoneMapper = zoneMapper;
                 Site = site;
+                AppStates = appStates;
                 DataSourceFactory = dataSourceFactory;
                 GlobalQueriesLazy = globalQueriesLazy;
             }
@@ -104,7 +107,7 @@ namespace ToSic.Eav.Apps
             // Look up name in cache
             // 2020-11-25 changed to use State.Get. before it was this...
             //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
-            AppGuid = State.Get(this).AppGuidName;
+            AppGuid = _dependencies.AppStates.Get(this).AppGuidName;
 
             InitializeResourcesSettingsAndMetadata();
 

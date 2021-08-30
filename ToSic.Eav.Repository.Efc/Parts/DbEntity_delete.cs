@@ -134,7 +134,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
 
-        internal Dictionary<int, Tuple<bool, string>> CanDeleteEntity(int[] entityIds)
+        internal Dictionary<int, Tuple<bool, string>> CanDeleteEntityBasedOnDbRelationships(int[] entityIds)
         {
             var callLog = Log.Call($"can delete entity i:{entityIds.Length}", useTimer: true);
             var entities = GetDbEntities(entityIds);

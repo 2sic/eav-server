@@ -18,19 +18,20 @@ namespace ToSic.Eav.Apps.Parts
     {
         #region Constructor / DI
 
-        private readonly Lazy<ImportListXml> _lazyImportListXml;
-        private readonly Lazy<Import> _importLazy;
-        private readonly Lazy<IImportExportEnvironment> _environmentLazy;
-
         private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false, Log));
         private Import _import;
-        public EntitiesManager(Lazy<ImportListXml> lazyImportListXml, Lazy<Import> importLazy, Lazy<IImportExportEnvironment> environmentLazy) : base("App.EntMan")
+        public EntitiesManager(Lazy<ImportListXml> lazyImportListXml, Lazy<Import> importLazy, Lazy<IImportExportEnvironment> environmentLazy, SystemManager systemManager) : base("App.EntMan")
         {
             _lazyImportListXml = lazyImportListXml;
             _importLazy = importLazy;
             _environmentLazy = environmentLazy;
+            SystemManager = systemManager.Init(Log);
         }
-        
+        private readonly Lazy<ImportListXml> _lazyImportListXml;
+        private readonly Lazy<Import> _importLazy;
+        private readonly Lazy<IImportExportEnvironment> _environmentLazy;
+        protected readonly SystemManager SystemManager;
+
         #endregion
 
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
@@ -81,9 +82,13 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Initializes a new ContentType - usually when building the cache
         /// </summary>
+        [PrivateApi]
         public ContentType(int appId, string name, string staticName, int attributeSetId, string scope,
-            string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId,
-            bool configurationIsOmnipresent, IHasMetadataSource metaProviderOfThisApp): this(appId, name, staticName)
+            string description, int? usesConfigurationOfAttributeSet, 
+            int configZoneId, int configAppId,
+            bool configurationIsOmnipresent, 
+            IHasMetadataSource metaProviderOfThisApp = null, 
+            Func<IHasMetadataSource> metaSourceFinder = null): this(appId, name, staticName)
         {
             ContentTypeId = attributeSetId;
             Description = description;
@@ -93,7 +98,7 @@ namespace ToSic.Eav.Data
             ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
             _metaOfThisApp = metaProviderOfThisApp;
-
+            _metaSourceFinder = metaSourceFinder;
         }
 
         /// <summary>
@@ -102,6 +107,7 @@ namespace ToSic.Eav.Data
         /// <remarks>
         /// Overload for in-memory entities
         /// </remarks>
+        [PrivateApi]
         public ContentType(int appId, string name, string staticName = null)
         {
             AppId = appId;
@@ -141,9 +147,10 @@ namespace ToSic.Eav.Data
         public ContentTypeMetadata Metadata
             => _metadata ?? (_metadata = ParentAppId == AppId
                 ? new ContentTypeMetadata(StaticName, _metaOfThisApp)
-                : new ContentTypeMetadata(StaticName, ParentZoneId, ParentAppId));
+                : new ContentTypeMetadata(StaticName, _metaSourceFinder));
         private ContentTypeMetadata _metadata;
         private readonly IHasMetadataSource _metaOfThisApp;
+        private readonly Func<IHasMetadataSource> _metaSourceFinder;
 
         IMetadataOf IHasMetadata.Metadata => Metadata;
         #endregion

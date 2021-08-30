@@ -18,8 +18,6 @@ namespace ToSic.Eav.Apps
 
         public Dictionary<int, string> Apps => Cache.Zones[ZoneId].Apps;
 
-        //public string GetName(int appId) => Cache.Zones[ZoneId].Apps[appId];
-
         public List<DimensionDefinition> Languages(bool includeInactive = false) => includeInactive 
             ? Cache.Zones[ZoneId].Languages 
             : Cache.Zones[ZoneId].Languages.Where(l => l.Active).ToList();

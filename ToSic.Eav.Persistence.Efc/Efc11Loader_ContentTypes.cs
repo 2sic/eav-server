@@ -80,29 +80,31 @@ namespace ToSic.Eav.Persistence.Efc
                 .Where(set => set.AppId == appId && set.ChangeLogDeleted == null);
 
             var contentTypes = query
-                    .Include(set => set.ToSicEavAttributesInSets)
-                        .ThenInclude(attrs => attrs.Attribute)
-                    .Include(set => set.App)
-                    .Include(set => set.UsesConfigurationOfAttributeSetNavigation)
-                        .ThenInclude(master => master.App)
-                    .ToList()
-                    .Select(set => new
-                    {
-                        set.AttributeSetId,
-                        set.Name,
-                        set.StaticName,
-                        set.Scope,
-                        set.Description,
-                        Attributes = set.ToSicEavAttributesInSets
-                            .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
-                            .Select(a => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle, a.AttributeId, a.SortOrder, source)),
-                        IsGhost = set.UsesConfigurationOfAttributeSet,
-                        SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
-                        AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
-                        ZoneId = set.UsesConfigurationOfAttributeSetNavigation?.App?.ZoneId ?? set.App.ZoneId,
-                        ConfigIsOmnipresent =
-                        set.UsesConfigurationOfAttributeSetNavigation?.AlwaysShareConfiguration ?? set.AlwaysShareConfiguration,
-                    })
+                .Include(set => set.ToSicEavAttributesInSets)
+                .ThenInclude(attrs => attrs.Attribute)
+                .Include(set => set.App)
+                .Include(set => set.UsesConfigurationOfAttributeSetNavigation)
+                .ThenInclude(master => master.App)
+                .ToList()
+                .Select(set => new
+                {
+                    set.AttributeSetId,
+                    set.Name,
+                    set.StaticName,
+                    set.Scope,
+                    set.Description,
+                    Attributes = set.ToSicEavAttributesInSets
+                        .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
+                        .Select(a => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type,
+                            a.IsTitle, a.AttributeId, a.SortOrder, source)),
+                    IsGhost = set.UsesConfigurationOfAttributeSet,
+                    SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
+                    AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
+                    ZoneId = set.UsesConfigurationOfAttributeSetNavigation?.App?.ZoneId ?? set.App.ZoneId,
+                    ConfigIsOmnipresent =
+                        set.UsesConfigurationOfAttributeSetNavigation?.AlwaysShareConfiguration ??
+                        set.AlwaysShareConfiguration,
+                })
                 .ToList();
             sqlTime.Stop();
 
@@ -118,8 +120,14 @@ namespace ToSic.Eav.Persistence.Efc
             sqlTime.Stop();
 
             // Convert to ContentType-Model
-            var newTypes = contentTypes.Select(set => (IContentType) new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
-                    set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent, source)
+            var newTypes = contentTypes.Select(set =>
+            {
+                var notGhost = set.IsGhost == null;
+                return (IContentType)new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
+                    set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent, source,
+                    //_appStates,
+                    metaSourceFinder: () => notGhost ? source : _appStates.Get(new AppIdentity(set.ZoneId, set.AppId))
+                )
                 {
                     Attributes = (set.SharedDefinitionId.HasValue
                             ? sharedAttribs[set.SharedDefinitionId.Value]
@@ -127,8 +135,8 @@ namespace ToSic.Eav.Persistence.Efc
                         // ReSharper disable once RedundantEnumerableCastCall
                         .Cast<IContentTypeAttribute>()
                         .ToList()
-                }
-            );
+                };
+            });
 
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
 

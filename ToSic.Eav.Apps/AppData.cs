@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public override string LogId => "DS.AppCUD";
 
-        public AppData(Lazy<SimpleDataController> dataController, Lazy<IUser> userLazy)
+        public AppData(Lazy<SimpleDataController> dataController, Lazy<IUser> userLazy, IAppStates appStates): base(appStates)
         {
             _lazyDataController = dataController;
             _userLazy = userLazy;

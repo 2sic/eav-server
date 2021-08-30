@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSourceTests;
@@ -40,7 +41,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
 
         private QueryDefinition LoadQueryDef(int appId, int queryId)
         {
-            var appState = Apps.State.Get(appId);
+            var appState = EavTestBase.Resolve<IAppStates>().Get(appId);
             var pipelineEntity = _queryManager.Init(null).GetQueryEntity(queryId, appState);
             return new QueryDefinition(pipelineEntity, appId, null);
         }

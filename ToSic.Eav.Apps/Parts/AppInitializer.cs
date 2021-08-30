@@ -23,11 +23,14 @@ namespace ToSic.Eav.Apps.Parts
     {
         #region Constructor / DI
 
-        private readonly IServiceProvider _serviceProvider;
         public AppInitializer(IServiceProvider serviceProvider) : base("Eav.AppBld")
         {
             _serviceProvider = serviceProvider;
+            SystemManager = _serviceProvider.Build<SystemManager>().Init(Log);
         }
+        private readonly IServiceProvider _serviceProvider;
+        protected readonly SystemManager SystemManager;
+
 
         public AppInitializer Init(AppState appState, ILog parentLog)
         {
@@ -98,7 +101,7 @@ namespace ToSic.Eav.Apps.Parts
 
             if (CreateAllMissingContentTypes(addList))
             {
-                SystemManager.Purge(AppState, log: Log);
+                SystemManager.Purge(AppState);
                 // get the latest app-state, but not-initialized so we can make changes
                 var repoLoader = _serviceProvider.Build<IRepositoryLoader>().Init(Log);
                 AppState = repoLoader.AppState(AppState.AppId, false);
@@ -108,7 +111,7 @@ namespace ToSic.Eav.Apps.Parts
             addList.ForEach(MetadataEnsureTypeAndSingleEntity);
 
             // Reset App-State to ensure it's reloaded with the added configuration
-            SystemManager.Purge(AppState, log: Log);
+            SystemManager.Purge(AppState);
 
             return wrapLog("ok", false);
         }

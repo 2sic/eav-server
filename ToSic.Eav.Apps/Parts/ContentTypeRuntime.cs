@@ -12,14 +12,14 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class ContentTypeRuntime : PartOf<AppRuntime, ContentTypeRuntime>
     {
-        private readonly Lazy<AppRuntime> _lazyMetadataAppRuntime;
-        private readonly Lazy<IAppFileSystemLoader> _appFileSystemLoaderLazy;
 
         public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy) : base("RT.ConTyp")
         {
             _lazyMetadataAppRuntime = lazyMetadataAppRuntime;
             _appFileSystemLoaderLazy = appFileSystemLoaderLazy;
         }
+        private readonly Lazy<AppRuntime> _lazyMetadataAppRuntime;
+        private readonly Lazy<IAppFileSystemLoader> _appFileSystemLoaderLazy;
 
         public IEnumerable<IContentType> All => Parent.AppState.ContentTypes;
 
@@ -72,7 +72,7 @@ namespace ToSic.Eav.Apps.Parts
             LogListOfInputTypes("Combined", inputTypes);
 
             // Merge input types registered in global metadata-app
-            var systemAppRt = _lazyMetadataAppRuntime.Value.Init(State.Identity(null, Constants.MetaDataAppId), true, Log);
+            var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Constants.MetaDataAppId, true, Log);
             var systemAppInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
             LogListOfInputTypes("System", systemAppInputTypes);
             AddMissingTypes(inputTypes, systemAppInputTypes);

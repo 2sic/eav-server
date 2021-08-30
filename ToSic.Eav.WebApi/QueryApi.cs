@@ -44,7 +44,8 @@ namespace ToSic.Eav.WebApi
             QueryBuilder queryBuilder, 
             Lazy<EntitiesToDictionary> entToDicLazy,
             Lazy<QueryInfo> queryInfoLazy,
-            Lazy<DataSourceCatalog> dataSourceCatalogLazy
+            Lazy<DataSourceCatalog> dataSourceCatalogLazy,
+            IAppStates appStates
             ) : base("Api.EavQry")
         {
             QueryBuilder = queryBuilder;
@@ -76,7 +77,7 @@ namespace ToSic.Eav.WebApi
 
             if (!id.HasValue) return query;
 
-            var reader = _appReaderLazy.Value.Init(State.Identity(null, appId), false, Log);
+            var reader = _appReaderLazy.Value.Init(appId, false, Log);
             var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
@@ -217,7 +218,7 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
 		/// </summary>
-		public bool Delete(int appId, int id) => _appManager.Queries.Delete(id);
+		public bool Delete(/*int appId,*/ int id) => _appManager.Queries.Delete(id);
 
 
         public bool Import(EntityImportDto args)

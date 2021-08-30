@@ -13,6 +13,7 @@ namespace ToSic.Eav.Apps.ImportExport
     public class ZipImport: HasLog
     {
         private readonly Lazy<XmlImportWithFiles> _xmlImpExpFilesLazy;
+        private readonly SystemManager _systemManager;
         private int? _initialAppId;
         private int _zoneId;
         public readonly IImportExportEnvironment Env;
@@ -21,9 +22,10 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public bool AllowCodeImport;
 
-        public ZipImport(IImportExportEnvironment environment, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy) :base("Zip.Imp")
+        public ZipImport(IImportExportEnvironment environment, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, SystemManager systemManager) :base("Zip.Imp")
         {
             _xmlImpExpFilesLazy = xmlImpExpFilesLazy;
+            _systemManager = systemManager.Init(Log);
             Env = environment.Init(Log);
             Messages = new List<Message>();
         }
@@ -117,11 +119,6 @@ namespace ToSic.Eav.Apps.ImportExport
             }
         }
 
-        //private void ImportApps(string rename, string tempDir, List<Message> importMessages)
-        //{
-        //    foreach (var appDirectory in Directory.GetDirectories(tempDir))
-        //        ImportApp(rename, appDirectory, importMessages);
-        //}
 
         /// <summary>
         /// Import an app from temporary
@@ -198,7 +195,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // New in V11 - now that we just imported content types into the /system folder
             // the App must be refreshed to ensure these are available for working
             // Must happen after CopyAppFiles(...)
-            SystemManager.Purge(appId, Log);
+            _systemManager.Init(Log).PurgeApp(appId);
 
             wrapLog("ok");
         }

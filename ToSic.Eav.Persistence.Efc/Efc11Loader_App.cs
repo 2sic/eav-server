@@ -28,9 +28,9 @@ namespace ToSic.Eav.Persistence.Efc
         public AppState LoadBasicAppState(int appId)
         {
             var wrapLog = Log.Call<AppState>();
-            var appIdentity = State.Identity(null, appId);
+            var appIdentity =_appStates.Identity(null, appId);
             var appGuidName = State.Cache.Zones[appIdentity.ZoneId].Apps[appIdentity.AppId];
-            var appState = Update(new AppState(appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
+            var appState = Update(new AppState(_appStates, appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
 
             return wrapLog("ok", appState);
         }

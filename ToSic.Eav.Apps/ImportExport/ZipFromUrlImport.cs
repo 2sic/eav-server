@@ -13,8 +13,9 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         #region DI Constructor
 
-        public ZipFromUrlImport(IImportExportEnvironment environment, IServerPaths serverPaths, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, IGlobalConfiguration globalConfiguration)
-            : base(environment, xmlImpExpFilesLazy)
+        public ZipFromUrlImport(IImportExportEnvironment environment, IServerPaths serverPaths, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, 
+            IGlobalConfiguration globalConfiguration, SystemManager systemManager)
+            : base(environment, xmlImpExpFilesLazy, systemManager)
         {
             _serverPaths = serverPaths;
             _globalConfiguration = globalConfiguration;

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Caching;
@@ -16,6 +17,7 @@ namespace ToSic.Eav.Metadata
     [PrivateApi] // changed 2020-12-09 v11.11 from [PublicApi_Stable_ForUseInYourCode] - as this is a kind of lazy-metadata, we should change it to that
     public class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamped
     {
+
         #region Constructors
 
         /// <summary>
@@ -24,6 +26,14 @@ namespace ToSic.Eav.Metadata
         public MetadataOf(int targetType, T key, IHasMetadataSource metaProvider) : this(targetType, key)
         {
             _appMetadataProvider = metaProvider;
+        }
+
+        /// <summary>
+        /// initialize using an already prepared metadata source
+        /// </summary>
+        public MetadataOf(int targetType, T key, Func<IHasMetadataSource> metaSourceRemote) : this(targetType, key)
+        {
+            _metaSourceRemote = metaSourceRemote;
         }
 
         /// <summary>
@@ -42,8 +52,12 @@ namespace ToSic.Eav.Metadata
         /// <summary>
         /// The source (usually an app) which can provide all the metadata once needed
         /// </summary>
+        protected virtual IHasMetadataSource AppMetadataProvider => _appMetadataProvider ?? _metaSourceRemote?.Invoke();
+
         private readonly IHasMetadataSource _appMetadataProvider;
-        
+        private readonly Func<IHasMetadataSource> _metaSourceRemote;
+
+
         /// <summary>
         /// Type-information of the thing we're describing. This is used to retrieve metadata from the correct sub-list of pre-indexed metadata
         /// </summary>
@@ -106,7 +120,7 @@ namespace ToSic.Eav.Metadata
         public long CacheTimestamp { get; private set; }
 
         [PrivateApi]
-        protected bool RequiresReload() => _metadataSource?.CacheChanged(CacheTimestamp) == true;
+        protected bool RequiresReload() => GetMetadataSource()?.CacheChanged(CacheTimestamp) == true;
         
         /// <summary>
         /// Load the metadata from the provider
@@ -131,10 +145,9 @@ namespace ToSic.Eav.Metadata
         {
             // check if already retrieved
             if (_alreadyTriedToGetProvider) return _metadataSource;
-
-            _metadataSource = _appMetadataProvider?.MetadataSource;
             _alreadyTriedToGetProvider = true;
-            return _metadataSource;
+
+            return _metadataSource = AppMetadataProvider?.MetadataSource;
         }
         private bool _alreadyTriedToGetProvider;
         private IMetadataSource _metadataSource;

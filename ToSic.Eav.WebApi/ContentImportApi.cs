@@ -19,15 +19,16 @@ namespace ToSic.Eav.WebApi
     /// <inheritdoc />
     public class ContentImportApi : HasLog
     {
-        private readonly Lazy<AppManager> _appManagerLazy;
-        private readonly Lazy<JsonSerializer> _jsonSerializerLazy;
-        private AppManager _appManager;
-
-        public ContentImportApi(Lazy<AppManager> appManagerLazy, Lazy<JsonSerializer> jsonSerializerLazy) : base("Api.EaCtIm")
+        public ContentImportApi(Lazy<AppManager> appManagerLazy, Lazy<JsonSerializer> jsonSerializerLazy, SystemManager systemManager) : base("Api.EaCtIm")
         {
             _appManagerLazy = appManagerLazy;
             _jsonSerializerLazy = jsonSerializerLazy;
+            _systemManager = systemManager;
         }
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly Lazy<JsonSerializer> _jsonSerializerLazy;
+        private readonly SystemManager _systemManager;
+        private AppManager _appManager;
 
         public ContentImportApi Init(int appId, ILog parentLog)
         {
@@ -68,7 +69,7 @@ namespace ToSic.Eav.WebApi
             if (!import.ErrorLog.HasErrors)
             {
                 import.PersistImportToRepository();
-                SystemManager.Purge(args.AppId, Log);
+                _systemManager.Init(Log).PurgeApp(args.AppId);
             }
 
             wrapLog("done, errors: " + import.ErrorLog.HasErrors);

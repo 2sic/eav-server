@@ -8,6 +8,7 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Persistence.File;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
+using ToSic.Eav.WebApi;
 
 namespace ToSic.Eav
 {
@@ -37,6 +38,7 @@ namespace ToSic.Eav
                 .AddImportExport()
                 .AddRepositoryAndEfc()
                 .AddDataSources()
+                .AddEavWebApi()
                 .AddEavCore()
                 .AddEavCoreFallbackServices();
 

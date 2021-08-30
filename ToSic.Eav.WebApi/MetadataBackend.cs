@@ -14,12 +14,14 @@ namespace ToSic.Eav.WebApi
 	public class MetadataBackend
     {
 
-        public MetadataBackend(EntitiesToDictionary converter)
+        public MetadataBackend(EntitiesToDictionary converter, IAppStates appStates)
         {
             _converter = converter;
+            _appStates = appStates;
         }
 
         private readonly EntitiesToDictionary _converter;
+        private readonly IAppStates _appStates;
 
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
@@ -28,7 +30,7 @@ namespace ToSic.Eav.WebApi
         {
             IEnumerable<IEntity> entityList = null;
 
-            var appState = State.Get(appId);
+            var appState = _appStates.Get(appId);
 
             switch (keyType)
             {

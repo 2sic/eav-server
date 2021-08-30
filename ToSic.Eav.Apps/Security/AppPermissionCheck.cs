@@ -11,7 +11,11 @@ namespace ToSic.Eav.Apps.Security
     public abstract class AppPermissionCheck: PermissionCheckBase
     {
         #region Constructor & DI
-        protected AppPermissionCheck(string logPrefix) : base($"{logPrefix}.PrmChk") { }
+        protected AppPermissionCheck(IAppStates appStates, string logPrefix) : base($"{logPrefix}.PrmChk")
+        {
+            _appStates = appStates;
+        }
+        private readonly IAppStates _appStates;
 
         public AppPermissionCheck ForItem(IContextOfSite ctx, IAppIdentity appIdentity, IEntity targetItem, ILog parentLog)
         {
@@ -52,13 +56,13 @@ namespace ToSic.Eav.Apps.Security
             return wrapLog("ok", this);
         }
 
-        private static List<Permission> FindPermissionsOfApp(IAppIdentity appIdentity)
+        private List<Permission> FindPermissionsOfApp(IAppIdentity appIdentity)
         {
             var permissions = appIdentity == null
                 ? null
                 : (appIdentity as IApp)?.Metadata.Permissions.ToList()
                   ?? (appIdentity as AppState)?.AppMetadata.Permissions.ToList()
-                  ?? State.Get(appIdentity).AppMetadata.Permissions.ToList();
+                  ??  _appStates.Get(appIdentity).AppMetadata.Permissions.ToList();
             return permissions;
         }
 
@@ -75,7 +79,7 @@ namespace ToSic.Eav.Apps.Security
         /// Initialize this object so it can then give information regarding the permissions of an entity.
         /// Uses a GUID as identifier because that survives export/import. 
         /// </summary>
-        protected AppPermissionCheck Init(
+        private AppPermissionCheck Init(
             IContextOfSite ctx,
             IAppIdentity appIdentity,
             ILog parentLog,

@@ -22,10 +22,13 @@ namespace ToSic.Eav.Apps
 
         public AppState Parent { get; }
 
-        internal AppStateStackCache(AppState parent, AppThingsIdentifiers target)
+        private readonly IAppStates _appStates;
+
+        internal AppStateStackCache(AppState parent, AppThingsIdentifiers target, IAppStates appStates)
         {
             Target = target;
             Parent = parent;
+            _appStates = appStates;
         }
 
         /// <summary>
@@ -70,8 +73,8 @@ namespace ToSic.Eav.Apps
 
         private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack()
         {
-            var primaryAppState = State.Get(State.Identity(Parent.ZoneId, null));
-            var globalAppState = State.Get(State.Identity(null, null));
+            var primaryAppState = _appStates.Get(_appStates.Identity(Parent.ZoneId, null));
+            var globalAppState = _appStates.Get(_appStates.Identity(null, null));
 
             var cachedStack =
                 new SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>(

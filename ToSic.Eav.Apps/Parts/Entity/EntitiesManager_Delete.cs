@@ -29,13 +29,13 @@ namespace ToSic.Eav.Apps.Parts
             var oks = BatchCheckCanDelete(ids, force, skipIfCant);
 
             var ok = Parent.DataController.Entities.DeleteEntity(ids, true, true);
-            SystemManager.Purge(Parent.AppId, Log);
+            SystemManager.PurgeApp(Parent.AppId);
             return callLog(ok.ToString(), ok);
         }
 
         private Dictionary<int, Tuple<bool, string>> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant)
         {
-            var canDeleteList = Parent.DataController.Entities.CanDeleteEntity(ids);
+            var canDeleteList = Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(ids);
             foreach (var canDelete in canDeleteList)
                 if (!canDelete.Value.Item1 && !force && !skipIfCant)
                     throw new InvalidOperationException(
@@ -53,7 +53,8 @@ namespace ToSic.Eav.Apps.Parts
             }
         }
 
-        internal Tuple<bool, string> CanDelete(int entityId) => Parent.DataController.Entities.CanDeleteEntity(new[] {entityId}).First().Value;
+        internal Tuple<bool, string> CanDeleteEntityBasedOnDbRelationships(int entityId) 
+            => Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(new[] {entityId}).First().Value;
 
         public bool Delete(Guid guid)
         {

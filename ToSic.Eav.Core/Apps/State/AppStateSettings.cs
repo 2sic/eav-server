@@ -10,12 +10,12 @@ namespace ToSic.Eav.Apps
 
         public AppState Parent { get; }
 
-        internal AppStateSettings(AppState parent)
+        internal AppStateSettings(AppState parent, IAppStates appStates)
         {
             Parent = parent;
 
             Stacks = ConfigurationConstants.AppThingsArray
-                .Select(at => new AppStateStackCache(parent, at))
+                .Select(at => new AppStateStackCache(parent, at, appStates))
                 .ToArray();
         }
 

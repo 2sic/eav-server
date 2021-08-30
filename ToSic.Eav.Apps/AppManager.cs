@@ -15,13 +15,13 @@ namespace ToSic.Eav.Apps
     {
         #region Constructors
 
-        public AppManager(DataSourceFactory dataSourceFactory) : base(dataSourceFactory, "Eav.AppMan") { }
+        public AppManager(AppRuntimeDependencies dependencies) : this(dependencies, "Eav.AppMan") { }
 
-        protected AppManager(DataSourceFactory dataSourceFactory, string logName) : base(dataSourceFactory, logName) { }
+        protected AppManager(AppRuntimeDependencies dependencies, string logName) : base(dependencies, logName) { }
 
         public AppManager Init(IAppIdentity app, ILog parentLog) => Init(app, true, parentLog);
 
-        public AppManager Init(int appId, ILog parentLog) => Init(State.Identity(null, appId), true, parentLog);
+        public AppManager Init(int appId, ILog parentLog) => Init(Dependencies.AppStates.Identity(null, appId), true, parentLog);
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.
@@ -65,7 +65,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Queries Management Subsystem
         /// </summary>
-        public QueryManager Queries => _queries ?? (_queries = new QueryManager().Init(this, Log));
+        public QueryManager Queries => _queries ?? (_queries = ServiceProvider.Build<QueryManager>().Init(this, Log));
         private QueryManager _queries;
 
         /// <summary>

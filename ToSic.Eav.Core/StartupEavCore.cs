@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
@@ -42,6 +43,7 @@ namespace ToSic.Eav
 
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
+            services.TryAddTransient<IAppStates, AppStates>();
             services.TryAddTransient<AppsCacheBase.Dependencies>();
 
             // Metadata providers
