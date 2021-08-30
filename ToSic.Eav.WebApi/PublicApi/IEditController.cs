@@ -30,16 +30,17 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <returns></returns>
         Dictionary<Guid, int> Save(EditDto package, int appId, bool partOfPage);
 
-        /// <summary>
-        /// Used to be GET or POST Ui/GetAvailableEntities.
-        /// By default it uses GET, but usually the items-array is passed in through a POST.
-        /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="items"></param>
-        /// <param name="contentTypeName"></param>
-        /// <returns></returns>
-        // security check happens internally
-        IEnumerable<EntityForPickerDto> EntityPicker(int appId, string[] items, string contentTypeName = null);
+        ///// <summary>
+        ///// Used to be GET or POST Ui/GetAvailableEntities.
+        ///// By default it uses GET, but usually the items-array is passed in through a POST.
+        ///// </summary>
+        ///// <param name="appId"></param>
+        ///// <param name="contentTypeName"></param>
+        ///// <param name="items"></param>
+        ///// <returns></returns>
+        //// security check happens internally
+        // interface method is commented because aspnetcore implementation have different signature
+        // IEnumerable<EntityForPickerDto> EntityPicker(int appId, string contentTypeName = null);
 
         // 2021-04-13 2dm should be unused now
         //[Obsolete("Wait till UI only suse the Pro, then drop this")]
