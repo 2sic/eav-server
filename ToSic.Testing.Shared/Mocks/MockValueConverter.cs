@@ -11,7 +11,7 @@ namespace ToSic.Testing.Shared.Mocks
 
         public string ToReference(string value)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("Not supported in provider 'Mock'");
         }
 
         public string ToValue(string reference, Guid itemGuid)

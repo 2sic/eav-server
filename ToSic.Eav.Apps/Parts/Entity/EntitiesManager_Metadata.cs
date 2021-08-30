@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps.Parts
             var wrapLog = Log.Call("target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
 
             if (target.TargetType != (int)TargetTypes.Attribute || target.KeyNumber == null || target.KeyNumber == 0)
-                throw new NotImplementedException("atm this command only creates metadata for entities with id-keys");
+                throw new NotSupportedException("atm this command only creates metadata for entities with id-keys");
 
             // see if a metadata already exists which we would update
             var existingEntity = Parent.AppState.List

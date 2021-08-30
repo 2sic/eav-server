@@ -31,12 +31,12 @@ namespace ToSic.Eav.Apps.ImportExport
 
         protected override TenantFileItem ResolveFile(int fileId)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("Not supported in provider 'Unknown'");
         }
 
         protected override string ResolveFolderId(int folderId)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("Not supported in provider 'Unknown'");
         }
     }
 }
