@@ -7,7 +7,6 @@ using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;
@@ -63,7 +62,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Get all Entities of specified Type
         /// </summary>
-        public IEnumerable<Dictionary<string, object>> GetEntities(string contentType) 
+        public IEnumerable<IDictionary<string, object>> GetEntities(string contentType) 
             => EntityToDic.Convert(AppRead.Entities.Get(contentType));
 
         public List<BundleIEntity> GetEntitiesForEditing(List<ItemIdentifier> items)

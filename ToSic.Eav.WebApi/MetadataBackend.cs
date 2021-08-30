@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public IEnumerable<Dictionary<string, object>> Get(int appId, int targetType, string keyType, string key, string contentType = null)
+        public IEnumerable<IDictionary<string, object>> Get(int appId, int targetType, string keyType, string key, string contentType = null)
         {
             IEnumerable<IEntity> entityList = null;
 

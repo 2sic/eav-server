@@ -8,11 +8,11 @@ namespace ToSic.Eav.DataSources.Debug
 {
     public class QueryInfo: HasLog
     {
-        private readonly IEntitiesTo<Dictionary<string, object>> _errorConverter;
+        private readonly IEntitiesTo<IDictionary<string, object>> _errorConverter;
         public List<StreamInfo> Streams = new List<StreamInfo>();
         public Dictionary<Guid, DataSourceInfo> Sources = new Dictionary<Guid, DataSourceInfo>();
 
-        public QueryInfo(IEntitiesTo<Dictionary<string, object>> errorConverter) : base("Qry.Info")
+        public QueryInfo(IEntitiesTo<IDictionary<string, object>> errorConverter) : base("Qry.Info")
         {
             _errorConverter = errorConverter;
         }

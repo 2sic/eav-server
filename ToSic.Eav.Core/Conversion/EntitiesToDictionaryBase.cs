@@ -13,7 +13,7 @@ namespace ToSic.Eav.Conversion
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public abstract partial class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IEntitiesTo<Dictionary<string, object>>
+    public abstract partial class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IEntitiesTo<IDictionary<string, object>>
     {
         public static string JsonKeyMetadataFor = "For"; // temp, don't know where to put this ATM
         public static string JsonKeyMetadata = "Metadata";
@@ -21,13 +21,25 @@ namespace ToSic.Eav.Conversion
 
         #region Constructor / DI
 
-        protected EntitiesToDictionaryBase(IValueConverter valueConverter, IZoneCultureResolver cultureResolver, string logName) : base(logName)
+        public class Dependencies
         {
-            _cultureResolver = cultureResolver;
-            ValueConverter = valueConverter;
+            public IValueConverter ValueConverter { get; }
+            public IZoneCultureResolver ZoneCultureResolver { get; }
+
+            public Dependencies(IValueConverter valueConverter, IZoneCultureResolver zoneCultureResolver)
+            {
+                ValueConverter = valueConverter;
+                ZoneCultureResolver = zoneCultureResolver;
+            }
         }
-        private readonly IZoneCultureResolver _cultureResolver;
-        protected IValueConverter ValueConverter { get; }
+
+
+        protected EntitiesToDictionaryBase(Dependencies dependencies, string logName) : base(logName)
+        {
+            Deps = dependencies;
+        }
+
+        private Dependencies Deps { get; }
 
         #endregion
 
@@ -64,7 +76,7 @@ namespace ToSic.Eav.Conversion
 
         public string[] Languages
         {
-            get => _languages ?? (_languages = _cultureResolver.SafeLanguagePriorityCodes());
+            get => _languages ?? (_languages = Deps.ZoneCultureResolver.SafeLanguagePriorityCodes());
             set => _languages = value;
         }
         private string[] _languages;
@@ -79,7 +91,7 @@ namespace ToSic.Eav.Conversion
         /// <param name="entity"></param>
         /// <returns></returns>
         [PrivateApi]
-        protected virtual Dictionary<string, object> GetDictionaryFromEntity(IEntity entity)
+        protected virtual IDictionary<string, object> GetDictionaryFromEntity(IEntity entity)
         {
             // Get serialization rules if some exist - new in 11.13
             var rules = entity as IEntitySerialization;
@@ -96,7 +108,7 @@ namespace ToSic.Eav.Conversion
                     // Special Case 1: Hyperlink Field which must be resolved
                     if (v.Type == DataTypes.Hyperlink && value is string stringValue &&
                         ValueConverterBase.CouldBeReference(stringValue))
-                        return ValueConverter.ToValue(stringValue, entity.EntityGuid);
+                        return Deps.ValueConverter.ToValue(stringValue, entity.EntityGuid);
 
                     // Special Case 2: Entity-List
                     if (v.Type == DataTypes.Entity && value is IEnumerable<IEntity> entities)

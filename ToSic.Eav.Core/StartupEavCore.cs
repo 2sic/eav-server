@@ -4,10 +4,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
+using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
@@ -23,8 +23,9 @@ namespace ToSic.Eav
             // 2020-10-29 New enhancement - lazy loading dependency injection
             services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
 
-            // 2021-04-08 2sxc 11.13 Data Builder
+            // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
+            services.TryAddTransient<EntitiesToDictionaryBase.Dependencies>();
             
             // Global Content-Types - should only be loaded once ever, and then it's done
             services.TryAddSingleton<GlobalTypeLoader>();
@@ -34,7 +35,7 @@ namespace ToSic.Eav
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
             
             // try to drop this / replace with...
-            services.TryAddTransient<IFeaturesConfiguration, Features/*Configuration*/>();
+            services.TryAddTransient<IFeaturesConfiguration, Features>();
             // ...with this
             services.TryAddTransient<SystemLoader>();
             services.TryAddTransient<Features>();
