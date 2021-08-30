@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Persistence.Efc.Tests;
 using ToSic.Testing.Performance.json;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Testing.Performance
 {
@@ -17,7 +18,7 @@ namespace ToSic.Testing.Performance
             // initialize everything
             Shared.StartupTestingShared.ConfigureEfcDi();
 
-            var tester = Eav.Factory.StaticBuild<GenerateJsonForApps>();
+            var tester = EavTestBase.Resolve<GenerateJsonForApps>();
             tester.Init();
 
             // time initial sql
