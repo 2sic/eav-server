@@ -36,8 +36,7 @@ namespace ToSic.Eav.ImportExport.Json
                     jsonType.Description,
                     jsonType.Sharing?.ParentId, jsonType.Sharing?.ParentZoneId ?? 0,
                     jsonType.Sharing?.ParentAppId ?? 0,
-                    jsonType.Sharing?.AlwaysShare ?? false,
-                    null);
+                    jsonType.Sharing?.AlwaysShare ?? false);
 
                 Log.Add("deserialize metadata");
                 var ctMeta =

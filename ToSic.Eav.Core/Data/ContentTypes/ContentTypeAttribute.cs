@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
@@ -24,25 +25,28 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public bool IsTitle { get; set; }
 
-        private readonly IHasMetadataSource _metaOfThisApp;
+        //private readonly IHasMetadataSource _metaOfThisApp;
 
         /// <inheritdoc />
         /// <summary>
         /// Extended constructor when also storing the persistence Id
         /// </summary>
-        public ContentTypeAttribute(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder, IHasMetadataSource metaProvider = null, int parentApp = 0) : base(name, type)
+        public ContentTypeAttribute(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder, 
+            IHasMetadataSource metaProvider = null, int parentApp = 0, 
+            Func<IHasMetadataSource> metaSourceFinder = null) : base(name, type)
         {
             AppId = appId;
             IsTitle = isTitle;
             AttributeId = attributeId;
             SortOrder = sortOrder;
-            _metaOfThisApp = metaProvider;
-            _isShared = parentApp != 0;
-            _parentAppId = parentApp;
+            //_metaOfThisApp = metaProvider;
+            //_isShared = parentApp != 0;
+            //_parentAppId = parentApp;
+            _metaSourceFinder = metaSourceFinder;
         }
 
-        private readonly bool _isShared;
-        private readonly int _parentAppId;
+        //private readonly bool _isShared;
+        //private readonly int _parentAppId;
 
         /// <summary>
         /// Create an attribute definition "from scratch" so for
@@ -69,12 +73,15 @@ namespace ToSic.Eav.Data
         #region Metadata and Permissions
         /// <inheritdoc />
         public IMetadataOf Metadata
-            => _metadata ?? (_metadata = !_isShared
-                   ? new MetadataOf<int>((int)TargetTypes.Attribute, AttributeId, _metaOfThisApp)
-                   : new RemoteMetadataOf<int>((int)TargetTypes.Attribute, AttributeId, 0, _parentAppId)
-               );
+            => _metadata ?? (_metadata = new MetadataOf<int>((int)TargetTypes.Attribute, AttributeId, _metaSourceFinder));
+                    //new RemoteMetadataOf<int>((int)TargetTypes.Attribute, AttributeId, 0, _parentAppId)
+        //=> _metadata ?? (_metadata = !_isShared
+        //    ? new MetadataOf<int>((int) TargetTypes.Attribute, AttributeId, _metaOfThisApp)
+        ////new RemoteMetadataOf<int>((int)TargetTypes.Attribute, AttributeId, 0, _parentAppId)
+               //);
 
         private IMetadataOf _metadata;
+        private readonly Func<IHasMetadataSource> _metaSourceFinder;
 
         /// <inheritdoc />
         [PrivateApi("because permissions will probably become an entity-based type")]

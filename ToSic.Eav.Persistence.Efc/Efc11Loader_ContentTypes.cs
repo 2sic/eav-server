@@ -96,7 +96,7 @@ namespace ToSic.Eav.Persistence.Efc
                     Attributes = set.ToSicEavAttributesInSets
                         .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
                         .Select(a => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type,
-                            a.IsTitle, a.AttributeId, a.SortOrder, source)),
+                            a.IsTitle, a.AttributeId, a.SortOrder, source, metaSourceFinder: () => source)),
                     IsGhost = set.UsesConfigurationOfAttributeSet,
                     SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                     AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
@@ -116,17 +116,18 @@ namespace ToSic.Eav.Persistence.Efc
                 .Where(s => shareids.Contains(s.AttributeSetId))
                 .ToDictionary(s => s.AttributeSetId, s => s.ToSicEavAttributesInSets.Select(a
                     => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
-                        a.AttributeId, a.SortOrder, parentApp: s.AppId)));
+                        a.AttributeId, a.SortOrder, parentApp: s.AppId, metaSourceFinder: () => _appStates.Get(s.AppId))));
             sqlTime.Stop();
 
             // Convert to ContentType-Model
             var newTypes = contentTypes.Select(set =>
             {
                 var notGhost = set.IsGhost == null;
+
                 return (IContentType)new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
-                    set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent, source,
+                    set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent, // source,
                     //_appStates,
-                    metaSourceFinder: () => notGhost ? source : _appStates.Get(new AppIdentity(set.ZoneId, set.AppId))
+                    () => notGhost ? source : _appStates.Get(new AppIdentity(set.ZoneId, set.AppId))
                 )
                 {
                     Attributes = (set.SharedDefinitionId.HasValue

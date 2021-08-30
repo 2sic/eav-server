@@ -87,7 +87,7 @@ namespace ToSic.Eav.Data
             string description, int? usesConfigurationOfAttributeSet, 
             int configZoneId, int configAppId,
             bool configurationIsOmnipresent, 
-            IHasMetadataSource metaProviderOfThisApp = null, 
+            //IHasMetadataSource metaProviderOfThisApp = null, 
             Func<IHasMetadataSource> metaSourceFinder = null): this(appId, name, staticName)
         {
             ContentTypeId = attributeSetId;
@@ -97,7 +97,7 @@ namespace ToSic.Eav.Data
             ParentZoneId = configZoneId;
             ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
-            _metaOfThisApp = metaProviderOfThisApp;
+            //_metaOfThisApp = metaProviderOfThisApp;
             _metaSourceFinder = metaSourceFinder;
         }
 
@@ -145,11 +145,12 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public ContentTypeMetadata Metadata
-            => _metadata ?? (_metadata = ParentAppId == AppId
-                ? new ContentTypeMetadata(StaticName, _metaOfThisApp)
-                : new ContentTypeMetadata(StaticName, _metaSourceFinder));
+            => _metadata ?? (_metadata = new ContentTypeMetadata(StaticName, _metaSourceFinder));
+            //=> _metadata ?? (_metadata = ParentAppId == AppId
+            //? new ContentTypeMetadata(StaticName, _metaOfThisApp)
+            //: new ContentTypeMetadata(StaticName, _metaSourceFinder));
         private ContentTypeMetadata _metadata;
-        private readonly IHasMetadataSource _metaOfThisApp;
+        //private readonly IHasMetadataSource _metaOfThisApp;
         private readonly Func<IHasMetadataSource> _metaSourceFinder;
 
         IMetadataOf IHasMetadata.Metadata => Metadata;
