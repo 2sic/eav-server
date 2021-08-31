@@ -49,6 +49,7 @@ namespace ToSic.Eav.Apps
         public static AppState Get(IAppIdentity app) => Cache.Get(app);
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice]
+        [Obsolete("since v12.04 and never public, we'll remove soon")]
         public static IAppIdentity Identity(int? zoneId, int? appId) => Cache.GetIdentity(zoneId, appId);
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice] 

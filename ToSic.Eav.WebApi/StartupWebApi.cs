@@ -11,7 +11,7 @@ namespace ToSic.Eav.WebApi
             // APIs
             services.TryAddTransient<EntityPickerApi>();
             services.TryAddTransient<ContentTypeApi>();
-            services.TryAddTransient<QueryApi>();
+            //services.TryAddTransient<QueryApi>();
             services.TryAddTransient<QueryApi.Dependencies>();
             services.TryAddTransient<ContentExportApi>();
             services.TryAddTransient<ContentImportApi>();
