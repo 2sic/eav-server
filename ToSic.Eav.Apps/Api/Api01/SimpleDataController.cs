@@ -126,7 +126,9 @@ namespace ToSic.Eav.Api.Api01
                 Log.Add("Set metadata target which was provided.");
                 importEntity.SetMetadata(target);
             }
-            AddValues(importEntity, type, ConvertEntityRelations(values), _defaultLanguageCode, false,
+
+            var preparedValues = ConvertEntityRelations(values);
+            AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false,
                 true);
             return wrapLog(null, importEntity);
         }
@@ -146,7 +148,9 @@ namespace ToSic.Eav.Api.Api01
         public void Update(int entityId, Dictionary<string, object> values)
         {
             Log.Add($"update i:{entityId}");
-            _appManager.Entities.UpdateParts(entityId, values);
+            var original = _appManager.AppState.List.FindRepoId(entityId);
+            var importEntity = BuildEntity(original.Type, values, null) as Entity;
+            _appManager.Entities.UpdateParts(entityId, importEntity);
         }
         
 
@@ -178,6 +182,10 @@ namespace ToSic.Eav.Api.Api01
                         .Select(entity => entity.EntityGuid).ToList();
                     result.Add(value.Key, string.Join(",", guids));
                 }
+                else if (value.Value is IEnumerable<Guid> guids)
+                    result.Add(value.Key, string.Join(",", guids));
+                else if (value.Value is IEnumerable<Guid?> nullGuids)
+                    result.Add(value.Key, string.Join(",", nullGuids));
                 else
                     result.Add(value.Key, value.Value);
             return result;
