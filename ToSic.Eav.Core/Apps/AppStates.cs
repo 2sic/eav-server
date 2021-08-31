@@ -2,15 +2,24 @@
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
 {
+    /// <summary>
+    /// This is the implementation of States which doesn't use the static Eav.Apps.State
+    /// It's not final, so please keep very internal
+    /// The names of the Get etc. will probably change a few more times
+    /// </summary>
+    /// <remarks>
+    /// Important: this can be a long-living object, so never use loggers or anything here. 
+    /// </remarks>
+    [PrivateApi("internal")]
     public class AppStates: IAppStates
     {
 
         public AppStates(IAppsCache appsCache) => Cache = appsCache;
         private readonly IAppsCache Cache;
-        private IReadOnlyDictionary<int, Zone> _zones;
 
         /// <inheritdoc />
         public AppState Get(IAppIdentity app) => Cache.Get(app);
