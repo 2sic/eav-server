@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Persistence;
@@ -20,16 +21,24 @@ namespace ToSic.Eav.Apps.Parts
 
         private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false, Log));
         private Import _import;
-        public EntitiesManager(Lazy<ImportListXml> lazyImportListXml, Lazy<Import> importLazy, Lazy<IImportExportEnvironment> environmentLazy, SystemManager systemManager) : base("App.EntMan")
+        public EntitiesManager(
+            Lazy<ImportListXml> lazyImportListXml, 
+            Lazy<Import> importLazy, 
+            Lazy<IImportExportEnvironment> environmentLazy, 
+            SystemManager systemManager,
+            IAppsCache appsCache // Note: Singleton
+            ) : base("App.EntMan")
         {
             _lazyImportListXml = lazyImportListXml;
             _importLazy = importLazy;
             _environmentLazy = environmentLazy;
+            _appsCache = appsCache;
             SystemManager = systemManager.Init(Log);
         }
         private readonly Lazy<ImportListXml> _lazyImportListXml;
         private readonly Lazy<Import> _importLazy;
         private readonly Lazy<IImportExportEnvironment> _environmentLazy;
+        private readonly IAppsCache _appsCache;
         protected readonly SystemManager SystemManager;
 
         #endregion
@@ -85,7 +94,7 @@ namespace ToSic.Eav.Apps.Parts
                 dc.DoButSkipAppCachePurge(() => intIds = dc.Save(entities, saveOptions));
 
                 // Tell the cache to do a partial update
-                State.Cache.Update(Parent, intIds, Log);
+                _appsCache/* State.Cache*/.Update(Parent, intIds, Log);
                 return intIds;
             }
 

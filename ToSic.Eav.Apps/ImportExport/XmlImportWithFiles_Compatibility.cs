@@ -24,9 +24,9 @@ namespace ToSic.Eav.Apps.ImportExport
 				return false;
 			}
 			// Return if Version does not match
-			if (rn.Attributes().All(a => a.Name != XmlConstants.MinEnvVersion) || new Version(rn.Attribute(XmlConstants.MinEnvVersion).Value) > new Version(_environment.ModuleVersion))
+			if (rn.Attributes().All(a => a.Name != XmlConstants.MinEnvVersion) || new Version(rn.Attribute(XmlConstants.MinEnvVersion).Value) > new Version(Deps._environment.ModuleVersion))
 			{
-				Messages.Add(new Message("This template or app requires version " + rn.Attribute(XmlConstants.MinEnvVersion).Value + " in order to work, you have version " + _environment.ModuleVersion + " installed.", Message.MessageTypes.Error));
+				Messages.Add(new Message("This template or app requires version " + rn.Attribute(XmlConstants.MinEnvVersion).Value + " in order to work, you have version " + Deps._environment.ModuleVersion + " installed.", Message.MessageTypes.Error));
 				return false;
 			}
 

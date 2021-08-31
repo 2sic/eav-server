@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     appGuid = Guid.NewGuid().ToString();
 
                 // Adding app to EAV
-                var eavDc = _dbDataForNewApp.Value.Init(zoneId, null, Log);
+                var eavDc = Deps._dbDataForNewApp.Value.Init(zoneId, null, Log);
                 var app = eavDc.App.AddApp(null, appGuid);
                 eavDc.SqlDb.SaveChanges();
 
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			}
 
             Log.Add("Purging all Zones");
-            State.Cache.PurgeZones();
+            Deps.AppsCache/* State.Cache*/.PurgeZones();
             return wrapLog("done", ImportXml(zoneId, appId, doc));
 		}
 

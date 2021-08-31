@@ -47,7 +47,9 @@ namespace ToSic.Eav.Configuration
             _startupAlreadyRan = true;
 
             // Initialize AppState Cache, which could be DI but has a static accessor
+#pragma warning disable 618
             State.StartUp(_appsCache);
+#pragma warning restore 618
 
             // Build the cache of all system-types. Must happen before everything else
             _typeLoader.BuildCache();

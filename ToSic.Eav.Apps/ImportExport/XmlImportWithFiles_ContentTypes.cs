@@ -94,7 +94,7 @@ namespace ToSic.Eav.Apps.ImportExport
             ct.SetImportParameters(
 	            scope: xmlContentType.Attributes(XmlConstants.Scope).Any()
 	                ? xmlContentType.Attribute(XmlConstants.Scope).Value
-	                : _environment.FallbackContentTypeScope,
+	                : Deps._environment.FallbackContentTypeScope,
 	            staticName: xmlContentType.Attribute(XmlConstants.Static).Value,
 	            description: xmlContentType.Attribute(XmlConstants.Description).Value,
 	            AllowUpdateOnSharedTypes && isSharedType

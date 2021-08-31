@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
@@ -19,8 +20,6 @@ namespace ToSic.Eav.Repository.Efc
 
     public class DbDataController : HasLog, IStorage, IAppIdentity
     {
-        private readonly Lazy<Efc11Loader> _efcLoaderLazy;
-        private readonly Lazy<IUser> _userLazy;
 
         #region Extracted, now externalized objects with actions and private fields
 
@@ -94,25 +93,31 @@ namespace ToSic.Eav.Repository.Efc
 
         #endregion
 
-        #region new stuff
+        #region Constructor and Init
 
-        public EavDbContext SqlDb { get; }
-        internal IServiceProvider ServiceProvider { get; }
-
-        public DbDataController(EavDbContext dbContext, Lazy<Efc11Loader> efcLoaderLazy, Lazy<IUser> userLazy, IServiceProvider serviceProvider) : base("Db.Data")
+        public DbDataController(
+            EavDbContext dbContext, 
+            Lazy<Efc11Loader> efcLoaderLazy, 
+            Lazy<IUser> userLazy, 
+            IServiceProvider serviceProvider,
+            IAppsCache appsCache) : base("Db.Data")
         {
             _efcLoaderLazy = efcLoaderLazy;
             _userLazy = userLazy;
+            _appsCache = appsCache;
             SqlDb = dbContext;
             ServiceProvider = serviceProvider;
             SqlDb.AlternateSaveHandler += SaveChanges;
         }
 
+        private readonly Lazy<Efc11Loader> _efcLoaderLazy;
+        private readonly Lazy<IUser> _userLazy;
+        private readonly IAppsCache _appsCache;
 
-        #endregion
+        public EavDbContext SqlDb { get; }
+        internal IServiceProvider ServiceProvider { get; }
 
 
-        #region Constructor and Init
 
         /// <summary>
         /// Set ZoneId and AppId on current context.
@@ -185,7 +190,7 @@ namespace ToSic.Eav.Repository.Efc
         private void PurgeAppCacheIfReady()
         {
             Log.Call($"{_purgeAppCacheOnSave}")(null);
-            if(_purgeAppCacheOnSave) State.Cache.Purge(this);
+            if(_purgeAppCacheOnSave) _appsCache/* State.Cache*/.Purge(this);
         }
 
         #endregion

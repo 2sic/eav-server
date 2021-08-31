@@ -10,7 +10,8 @@ namespace ToSic.Eav.Apps
     /// - retrieve App catalog information from the cache or system (zones)
     /// - to retrieve app states (or automatically load them if accessed the first time)
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("the name of this class is not final, may change")]
+    [PrivateApi("going obsolete")]
+    [Obsolete("since v12.04 and never public, we'll remove soon")]
     public class State
     {
         /// <summary>
@@ -23,6 +24,7 @@ namespace ToSic.Eav.Apps
         }
 
         // New implementation 2021-08-28 2dm / experimental
+        [Obsolete("since v12.04 and never public, we'll remove soon")]
         [PrivateApi] public static IAppsCache Cache { get; private set; }
 
         //[PrivateApi]
@@ -46,6 +48,7 @@ namespace ToSic.Eav.Apps
         public static AppState Get(int appId) => Cache.Get(appId);
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice]
+        [Obsolete("since v12.04 and never public, we'll remove soon")]
         public static AppState Get(IAppIdentity app) => Cache.Get(app);
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice]
