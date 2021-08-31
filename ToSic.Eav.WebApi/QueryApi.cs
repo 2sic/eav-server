@@ -25,30 +25,30 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public class QueryApi : HasLog
     {
-        //public class Dependencies
-        //{
-        //    public Lazy<AppManager> AppManagerLazy { get; }
-        //    public Lazy<AppRuntime> AppReaderLazy { get; }
-        //    public QueryBuilder QueryBuilder { get; }
-        //    public Lazy<EntitiesToDictionary> EntToDicLazy { get; }
-        //    public Lazy<QueryInfo> QueryInfoLazy { get; }
-        //    public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
+        public class Dependencies
+        {
+            public Lazy<AppManager> AppManagerLazy { get; }
+            public Lazy<AppRuntime> AppReaderLazy { get; }
+            public QueryBuilder QueryBuilder { get; }
+            public Lazy<EntitiesToDictionary> EntToDicLazy { get; }
+            public Lazy<QueryInfo> QueryInfoLazy { get; }
+            public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
 
-        //    public Dependencies(Lazy<AppManager> appManagerLazy,
-        //        Lazy<AppRuntime> appReaderLazy,
-        //        QueryBuilder queryBuilder,
-        //        Lazy<EntitiesToDictionary> entToDicLazy,
-        //        Lazy<QueryInfo> queryInfoLazy,
-        //        Lazy<DataSourceCatalog> dataSourceCatalogLazy)
-        //    {
-        //        AppManagerLazy = appManagerLazy;
-        //        AppReaderLazy = appReaderLazy;
-        //        QueryBuilder = queryBuilder;
-        //        EntToDicLazy = entToDicLazy;
-        //        QueryInfoLazy = queryInfoLazy;
-        //        DataSourceCatalogLazy = dataSourceCatalogLazy;
-        //    }
-        //}
+            public Dependencies(Lazy<AppManager> appManagerLazy,
+                Lazy<AppRuntime> appReaderLazy,
+                QueryBuilder queryBuilder,
+                Lazy<EntitiesToDictionary> entToDicLazy,
+                Lazy<QueryInfo> queryInfoLazy,
+                Lazy<DataSourceCatalog> dataSourceCatalogLazy)
+            {
+                AppManagerLazy = appManagerLazy;
+                AppReaderLazy = appReaderLazy;
+                QueryBuilder = queryBuilder;
+                EntToDicLazy = entToDicLazy;
+                QueryInfoLazy = queryInfoLazy;
+                DataSourceCatalogLazy = dataSourceCatalogLazy;
+            }
+        }
 
         public QueryBuilder QueryBuilder { get; }
         private readonly Dependencies _dependencies;
