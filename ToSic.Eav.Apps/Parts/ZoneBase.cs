@@ -20,8 +20,8 @@ namespace ToSic.Eav.Apps.Parts
 
 
 
-        internal IAppsCache Cache => _cache ?? (_cache = State.Cache);
-        private IAppsCache _cache;
+        //internal IAppsCache Cache => _cache ?? (_cache = State.Cache);
+        //private IAppsCache _cache;
 
         #endregion
 

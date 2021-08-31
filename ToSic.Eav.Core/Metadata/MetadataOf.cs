@@ -141,7 +141,7 @@ namespace ToSic.Eav.Metadata
         /// </summary>
         /// <returns></returns>
         [PrivateApi]
-        protected virtual IMetadataSource GetMetadataSource()
+        protected /*virtual*/ IMetadataSource GetMetadataSource()
         {
             // check if already retrieved
             if (_alreadyTriedToGetProvider) return _metadataSource;

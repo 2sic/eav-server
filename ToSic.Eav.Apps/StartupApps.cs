@@ -27,6 +27,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ZoneManager>();
             services.TryAddTransient<QueryManager>();
             services.TryAddTransient<SystemManager>();
+            services.TryAddTransient<AppFinder>();
 
             // Runtime parts
             services.TryAddTransient<ContentTypeRuntime>();

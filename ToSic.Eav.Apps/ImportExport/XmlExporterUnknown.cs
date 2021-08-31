@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public sealed class XmlExporterUnknown: XmlExporter, IIsUnknown
     {
-        public XmlExporterUnknown(XmlSerializer xmlSerializer) : base(xmlSerializer, LogNames.NotImplemented)
+        public XmlExporterUnknown(XmlSerializer xmlSerializer, IAppStates appStates) : base(xmlSerializer, appStates, LogNames.NotImplemented)
         {
         }
 

@@ -16,12 +16,14 @@ namespace ToSic.Eav.Apps.Run
         /// <summary>
         /// DI Constructor
         /// </summary>
-        protected ImportExportEnvironmentBase(ISite site, string logName) : base(logName)
+        protected ImportExportEnvironmentBase(ISite site, IAppStates appStates, string logName) : base(logName)
         {
             Site = site;
+            _appStates = appStates;
         }
 
         protected readonly ISite Site;
+        private readonly IAppStates _appStates;
 
         //public IImportExportEnvironment Init(ILog parent)
         //{
@@ -51,8 +53,8 @@ namespace ToSic.Eav.Apps.Run
         public abstract void MapExistingFilesToImportSet(Dictionary<int, string> filesAndPaths, Dictionary<int, int> fileIdMap);
 
         public abstract void CreateFoldersAndMapToImportIds(Dictionary<int, string> foldersAndPath, Dictionary<int, int> folderIdCorrectionList, List<Message> importLog);
-        
-        public SaveOptions SaveOptions(int zoneId) 
-            => new SaveOptions(DefaultLanguage, new ZoneRuntime().Init(zoneId, Log).Languages(true));
+
+        public SaveOptions SaveOptions(int zoneId)
+            => new SaveOptions(DefaultLanguage, _appStates.Languages(zoneId, true) /*new ZoneRuntime().Init(zoneId, Log).Languages(true)*/);
     }
 }

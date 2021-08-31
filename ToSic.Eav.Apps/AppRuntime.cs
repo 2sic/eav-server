@@ -65,11 +65,11 @@ namespace ToSic.Eav.Apps
         public QueryRuntime Queries => _queries ?? (_queries = DataSourceFactory.ServiceProvider.Build<QueryRuntime>().Init(this, Log));
         private QueryRuntime _queries;
 
-        /// <summary>
-        /// Zone runtime to get the zone of this app
-        /// </summary>
-        public ZoneRuntime Zone => _zone ?? (_zone = new ZoneRuntime().Init(ZoneId, Log));
-        private ZoneRuntime _zone;
+        ///// <summary>
+        ///// Zone runtime to get the zone of this app
+        ///// </summary>
+        //public ZoneRuntime Zone => _zone ?? (_zone = new ZoneRuntime(Dependencies.AppStates).Init(ZoneId, Log));
+        //private ZoneRuntime _zone;
 
     }
 }

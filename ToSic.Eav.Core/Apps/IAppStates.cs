@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Documentation;
+﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
 {
@@ -31,7 +33,20 @@ namespace ToSic.Eav.Apps
         /// <returns>An <see cref="IAppIdentity"/> with the correct IDs</returns>
         IAppIdentity Identity(int? zoneId = null, int? appId = null);
 
+        string AppIdentifier(int zoneId, int appId);
+
         #endregion
 
+        #region Zone Stuff
+
+        int DefaultAppId(int zoneId);
+
+        IDictionary<int, string> Apps(int zoneId);
+
+        List<DimensionDefinition> Languages(int zoneId, bool includeInactive = false);
+
+        IReadOnlyDictionary<int, Zone> Zones { get; }
+
+        #endregion
     }
 }

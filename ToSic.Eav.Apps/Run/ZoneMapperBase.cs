@@ -17,9 +17,9 @@ namespace ToSic.Eav.Apps.Run
         /// </summary>
         protected ZoneMapperBase(IAppStates appStates, string logName) : base(logName)
         {
-            _appStates = appStates;
+            AppStates = appStates;
         }
-        private readonly IAppStates _appStates;
+        protected readonly IAppStates AppStates;
 
         /// <inheritdoc />
         public abstract int GetZoneId(int siteId);
@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps.Run
         {
             var wrapLog = Log.Call<ISite>($"{appId}");
             Log.Add("TenantId not found. Must be in search mode, will try to find correct portalsettings");
-            var appIdentifier = _appStates.Identity(null, appId);
+            var appIdentifier = AppStates.Identity(null, appId);
             var tenant = SiteOfZone(appIdentifier.ZoneId);
             return wrapLog(null, tenant);
         }

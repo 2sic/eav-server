@@ -34,7 +34,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         // just a note: this is Portal 54 or something on Daniels test server, change it to your system if you want to run these tests!
         public const int ZoneId = 56;
 
-        public IImportExportEnvironment Environment = new ImportExportEnvironmentMock();
+        public IImportExportEnvironment Environment = EavTestBase.Resolve<ImportExportEnvironmentMock>();
 
 
         #endregion

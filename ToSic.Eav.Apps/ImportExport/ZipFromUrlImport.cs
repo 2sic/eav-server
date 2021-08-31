@@ -5,7 +5,6 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Identity;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Interfaces;
-using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -13,14 +12,13 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         #region DI Constructor
 
-        public ZipFromUrlImport(IImportExportEnvironment environment, IServerPaths serverPaths, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, 
-            IGlobalConfiguration globalConfiguration, SystemManager systemManager)
-            : base(environment, xmlImpExpFilesLazy, systemManager)
+        public ZipFromUrlImport(IImportExportEnvironment environment, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, 
+            IGlobalConfiguration globalConfiguration, SystemManager systemManager, IAppStates appStates)
+            : base(environment, xmlImpExpFilesLazy, systemManager, appStates)
         {
-            _serverPaths = serverPaths;
             _globalConfiguration = globalConfiguration;
         }
-        private readonly IServerPaths _serverPaths;
+
         private readonly IGlobalConfiguration _globalConfiguration;
 
         #endregion

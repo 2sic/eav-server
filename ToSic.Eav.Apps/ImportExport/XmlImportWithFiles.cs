@@ -38,6 +38,7 @@ namespace ToSic.Eav.Apps.ImportExport
             IImportExportEnvironment importExportEnvironment,
             ITargetTypes metaTargetTypes,
             SystemManager systemManager,
+            IAppStates appStates,
             string logName = null) : base(logName ?? "Xml.ImpFil")
         {
             _importerLazy = importerLazy;
@@ -45,6 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
             _dbDataForAppImport = dbDataForAppImport;
             _environment = importExportEnvironment;
             _metaTargetTypes = metaTargetTypes;
+            AppStates = appStates;
             SystemManager = systemManager.Init(Log);
             _environment.LinkLog(Log);
         }
@@ -53,6 +55,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly Lazy<DbDataController> _dbDataForAppImport;
         private readonly IImportExportEnvironment _environment;
         private readonly ITargetTypes _metaTargetTypes;
+        protected readonly IAppStates AppStates;
         protected readonly SystemManager SystemManager;
 
 

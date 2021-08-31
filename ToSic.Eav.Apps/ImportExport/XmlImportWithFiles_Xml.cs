@@ -58,7 +58,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		    Log.Add($"source def dim:{sourceDefaultDimensionId}");
 
-            _targetDimensions = new ZoneRuntime().Init(zoneId, Log).Languages(true);
+            _targetDimensions = AppStates.Languages(zoneId, true); // new ZoneRuntime().Init(zoneId, Log).Languages(true);
 
             _xmlBuilder = new XmlToEntity(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage, Log);
             #endregion

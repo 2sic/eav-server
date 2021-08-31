@@ -13,6 +13,7 @@ namespace ToSic.Eav.Apps.ImportExport
     public class ZipImport: HasLog
     {
         private readonly Lazy<XmlImportWithFiles> _xmlImpExpFilesLazy;
+        private readonly IAppStates _appStates;
         private readonly SystemManager _systemManager;
         private int? _initialAppId;
         private int _zoneId;
@@ -22,9 +23,10 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public bool AllowCodeImport;
 
-        public ZipImport(IImportExportEnvironment environment, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, SystemManager systemManager) :base("Zip.Imp")
+        public ZipImport(IImportExportEnvironment environment, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, SystemManager systemManager, IAppStates appStates) :base("Zip.Imp")
         {
             _xmlImpExpFilesLazy = xmlImpExpFilesLazy;
+            _appStates = appStates;
             _systemManager = systemManager.Init(Log);
             Env = environment.Init(Log);
             Messages = new List<Message>();
@@ -181,7 +183,7 @@ namespace ToSic.Eav.Apps.ImportExport
             else
             {
                 Log.Add("will do content import");
-                appId = _initialAppId ?? new ZoneRuntime().Init(_zoneId, Log).DefaultAppId;
+                appId = _initialAppId ?? _appStates.DefaultAppId(_zoneId); // new ZoneRuntime().Init(_zoneId, Log).DefaultAppId;
 
                 if (importer.IsCompatible(imp.XmlDoc))
                     HandlePortalFilesFolder(appDirectory);

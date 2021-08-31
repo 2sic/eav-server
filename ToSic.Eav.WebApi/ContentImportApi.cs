@@ -19,15 +19,17 @@ namespace ToSic.Eav.WebApi
     /// <inheritdoc />
     public class ContentImportApi : HasLog
     {
-        public ContentImportApi(Lazy<AppManager> appManagerLazy, Lazy<JsonSerializer> jsonSerializerLazy, SystemManager systemManager) : base("Api.EaCtIm")
+        public ContentImportApi(Lazy<AppManager> appManagerLazy, Lazy<JsonSerializer> jsonSerializerLazy, SystemManager systemManager, IAppStates appStates) : base("Api.EaCtIm")
         {
             _appManagerLazy = appManagerLazy;
             _jsonSerializerLazy = jsonSerializerLazy;
             _systemManager = systemManager;
+            _appStates = appStates;
         }
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<JsonSerializer> _jsonSerializerLazy;
         private readonly SystemManager _systemManager;
+        private readonly IAppStates _appStates;
         private AppManager _appManager;
 
         public ContentImportApi Init(int appId, ILog parentLog)
@@ -79,7 +81,7 @@ namespace ToSic.Eav.WebApi
         private ImportListXml GetXmlImport(ContentImportArgsDto args)
         {
             Log.Add("get xml import " + args.DebugInfo);
-            var contextLanguages = _appManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
+            var contextLanguages = _appStates.Languages(_appManager.ZoneId) /*_appManager.Read.Zone.Languages()*/.Select(l => l.EnvironmentKey).ToArray();
 
             using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {

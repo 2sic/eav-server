@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 
@@ -41,6 +42,7 @@ namespace ToSic.Eav.Apps
 
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice]
+        [Obsolete("since v12.04 and never public, we'll remove soon")]
         public static AppState Get(int appId) => Cache.Get(appId);
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice]
@@ -50,6 +52,7 @@ namespace ToSic.Eav.Apps
         public static IAppIdentity Identity(int? zoneId, int? appId) => Cache.GetIdentity(zoneId, appId);
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice] 
+        [Obsolete("since v12.04 and never public, we'll remove soon")]
         public static IReadOnlyDictionary<int, Zone> Zones => Cache.Zones;
 
     }

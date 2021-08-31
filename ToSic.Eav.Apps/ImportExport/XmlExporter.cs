@@ -42,11 +42,13 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Constructor & DI
 
-        protected XmlExporter(XmlSerializer xmlSerializer, string logPrefix) : base(logPrefix + "XmlExp")
+        protected XmlExporter(XmlSerializer xmlSerializer, IAppStates appStates, string logPrefix) : base(logPrefix + "XmlExp")
         {
+            _appStates = appStates;
             Serializer = xmlSerializer;
         }
         public XmlSerializer Serializer { get; }
+        private readonly IAppStates _appStates;
 
         protected void Constructor(int zoneId, AppRuntime app, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, ILog parentLog)
         {
@@ -54,7 +56,7 @@ namespace ToSic.Eav.Apps.ImportExport
             Log.LinkTo(parentLog);
             Log.Add("start XML exporter using app-package");
             AppState = app.AppState;
-            Serializer.Init(app.Zone.Languages().ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId),
+            Serializer.Init(_appStates.Languages(zoneId) /*app.Zone.Languages()*/.ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId),
                 AppState, Log);
 
             _appStaticName = appStaticName;
@@ -124,7 +126,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #region Header
 
-            var dimensions = new ZoneRuntime().Init(ZoneId, Log).Languages();
+            var dimensions = _appStates.Languages(ZoneId); // new ZoneRuntime().Init(ZoneId, Log).Languages();
             var header = new XElement(XmlConstants.Header,
                 _isAppExport && _appStaticName != XmlConstants.AppContentGuid 
                     ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, _appStaticName))

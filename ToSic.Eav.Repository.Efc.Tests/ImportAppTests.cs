@@ -8,6 +8,7 @@ using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 using ToSic.Testing.Shared;
 
@@ -80,11 +81,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // to be sure, clean up first
             DeleteAnApp(Apps[name].Guid);
 
-            var baseTestPath = new ImportExportEnvironmentMock().BasePath;
+            var helper = (ImportExportEnvironmentMock)EavTestBase.Resolve<IImportExportEnvironment>();
+            var baseTestPath = helper.BasePath;
             var testFileName = baseTestPath + @"Import-Packages\" + Apps[name].Zip;// 2sxcApp_Tiles_01.02.00.zip";
 
             bool succeeded;
-            var helper = new ImportExportEnvironmentMock();
 
             using (FileStream fsSource = new FileStream(testFileName, FileMode.Open, FileAccess.Read))
             {
