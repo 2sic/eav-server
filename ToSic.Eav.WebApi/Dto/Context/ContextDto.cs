@@ -26,6 +26,9 @@ namespace ToSic.Eav.WebApi.Dto
     {
         public string Name { get; set; }
         public string Identifier { get; set; }
+
+        public string SettingsScope { get; set; }
+
         public string GettingStartedUrl { get; set; }
         public string Folder { get; set; }
         public HasPermissionsDto Permissions { get; set; }
