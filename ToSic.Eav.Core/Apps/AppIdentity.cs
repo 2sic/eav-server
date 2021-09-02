@@ -26,6 +26,10 @@ namespace ToSic.Eav.Apps
             AppId = appId;
         }
 
+        /// <summary>
+        /// This is just for extracting the Identity-part of something that may have much more information
+        /// </summary>
+        /// <param name="parent"></param>
         public AppIdentity(IAppIdentity parent)
         {
             ZoneId = parent.ZoneId;
