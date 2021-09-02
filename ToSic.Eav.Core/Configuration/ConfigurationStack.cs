@@ -8,18 +8,19 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class ConfigurationStack
     {
-        public const string PartView = "View";
-        
-        public const string PartApp = "App";
+        public const string PartView = "ViewCustom";
+        public const string PartViewSystem = "ViewSystem"; // not in use
+
+        public const string PartApp = "AppCustom";
         public const string PartAppSystem = "AppSystem";
         
-        public const string PartSite = "Site";
+        public const string PartSite = "SiteCustom";
         public const string PartSiteSystem = "SiteSystem";
         
-        public const string PartGlobal = "Global";
+        public const string PartGlobal = "GlobalCustom";
         public const string PartGlobalSystem = "GlobalSystem";
         
-        public const string PartPreset = "Preset";
+        public const string PartPreset = "PresetCustom"; // not in use
         public const string PartPresetSystem = "PresetSystem";
         
         
