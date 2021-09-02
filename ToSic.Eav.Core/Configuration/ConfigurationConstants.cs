@@ -17,15 +17,15 @@ namespace ToSic.Eav.Configuration
         public static AppThingsIdentifiers Resources = new AppThingsIdentifiers
         {
             AppType = AppLoadConstants.TypeAppResources, 
-            CustomType = "Resources",
-            SystemType = "SystemResources",
+            CustomType = "ResourcesCustom",
+            SystemType = "ResourcesSystem",
             Target = AppThingsToStack.Resources
         };
         public static AppThingsIdentifiers Settings = new AppThingsIdentifiers
         {
             AppType = AppLoadConstants.TypeAppSettings, 
-            CustomType = "Settings",
-            SystemType = "SystemSettings",
+            CustomType = "SettingsCustom",
+            SystemType = "SettingsSystem",
             Target = AppThingsToStack.Settings
         };
 
