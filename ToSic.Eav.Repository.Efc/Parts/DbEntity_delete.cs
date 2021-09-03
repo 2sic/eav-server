@@ -134,7 +134,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         }
 
 
-        internal Dictionary<int, Tuple<bool, string>> CanDeleteEntity(int[] entityIds)
+        internal Dictionary<int, Tuple<bool, string>> CanDeleteEntityBasedOnDbRelationships(int[] entityIds)
         {
             var callLog = Log.Call($"can delete entity i:{entityIds.Length}", useTimer: true);
             var entities = GetDbEntities(entityIds);
@@ -175,6 +175,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     messages.Add($"found {parents.Count} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
                 }
                 #endregion
+
+                // TODO: This doesn't look right - entity-assignments should always be guid, not int - so this is probably wrong
+                // Must verify and then change to use the guid instead
 
                 var entitiesAssignedToThis = GetAssignedEntities((int)TargetTypes.Entity, entityId)
                     .Select(e => new TempEntityAndTypeInfos { EntityId = e.EntityId, TypeId = e.AttributeSetId })

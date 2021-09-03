@@ -8,27 +8,31 @@ namespace ToSic.Eav.Types
 {
     public class Global
     {
-        public static ILog Log = new Log("Eav.GlbTyp");
+        public static ILog Log = new Log($"{LogNames.Eav}.GlbTyp");
+
+        public static string LogHistoryGlobalTypes = "global-types";
 
         /// <summary>
         /// The constructor is automatically run exactly 1x when the first bit of code
         /// accesses any static property of this object
         /// </summary>
-       static Global() => History.Add("global-types", Log);
+       static Global() => History.Add(LogHistoryGlobalTypes, Log);
 
-        /// <summary>
-        /// Now using a Lazy method like recommended in
-        /// http://csharpindepth.com/Articles/General/Singleton.aspx#lock
-        /// </summary>
-        private static readonly Lazy<GlobalTypeLoader> Lazy 
-            = new Lazy<GlobalTypeLoader>(() => new GlobalTypeLoader(Log));
+        ///// <summary>
+        ///// Now using a Lazy method like recommended in
+        ///// http://csharpindepth.com/Articles/General/Singleton.aspx#lock
+        ///// </summary>
+        //private static readonly Lazy<GlobalTypeLoader> Lazy 
+        //    = new Lazy<GlobalTypeLoader>(() => new GlobalTypeLoader(Log));
+
+        internal static GlobalTypeLoader TypeLoader;
 
         /// <summary>
         /// Dictionary of code-provided content-types, caches after first scan
         /// </summary>
         /// <returns></returns>
-        public static ImmutableDictionary<string, IContentType> AllContentTypes() 
-            => Lazy.Value.ByStaticName;
+        public static ImmutableDictionary<string, IContentType> AllContentTypes()
+            => TypeLoader.ByStaticName; // Lazy.Value.ByStaticName;
 
 
         public static IContentType FindContentType(string name)
@@ -37,18 +41,19 @@ namespace ToSic.Eav.Types
             // this is to enable lookup of system types, while in the background we're still building the json-types
             // this is important, because the deserializer for json will also call this
             // when trying to load the first file-system based content-types (while initializing the types)
-            if (!Lazy.IsValueCreated)
+            if (TypeLoader == null) // !Lazy.IsValueCreated)
             {
-                Log.Add($"FindContentType({name}) before global types have been loaded = null");
+                Log.Add($"FindContentType({name}) used before global types have been loaded = null");
                 return null;
             }
 
-            var types = Lazy.Value.ByStaticName;
+            var types = TypeLoader.ByStaticName;// Lazy.Value.ByStaticName;
             if (types.ContainsKey(name))
                 return types[name];
 
             // now also try with nice-name
-            var niceNamedType = Lazy.Value.ByNiceName;
+            var niceNamedType = TypeLoader.ByNiceName; // Lazy.Value.ByNiceName;
+            
             return niceNamedType.ContainsKey(name) 
                 ? niceNamedType[name]
                 : null;

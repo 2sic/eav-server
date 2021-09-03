@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.AppStateTests
 {
@@ -15,7 +16,7 @@ namespace ToSic.Eav.DataSourceTests.AppStateTests
         [TestMethod]
         public void Access1Times()
         {
-            var app = State.Get(new AppIdentity(TestConfig.Zone, TestConfig.AppForBigDataTests));
+            var app = GetAppState();
             var timer = new Stopwatch();
             timer.Start();
 
@@ -26,6 +27,8 @@ namespace ToSic.Eav.DataSourceTests.AppStateTests
             Trace.Write($"Time used: {timer.ElapsedMilliseconds}");
         }
 
+        private static AppState GetAppState() => EavTestBase.Resolve<IAppStates>()/* State*/.Get(new AppIdentity(TestConfig.Zone, TestConfig.AppForBigDataTests));
+
         [TestMethod]
         public void AccessOne1000TimesSame() => AccessOne1000Times(0);
 
@@ -35,7 +38,7 @@ namespace ToSic.Eav.DataSourceTests.AppStateTests
 
         public void AccessOne1000Times(int multNext)
         {
-            var app = State.Get(new AppIdentity(TestConfig.Zone, TestConfig.AppForBigDataTests));
+            var app = GetAppState();
             var timer = new Stopwatch();
             timer.Start();
 
@@ -57,7 +60,7 @@ namespace ToSic.Eav.DataSourceTests.AppStateTests
 
         public void AccessOneLazyFastAccess(int multiplyCounter)
         {
-            var app = State.Get(new AppIdentity(TestConfig.Zone, TestConfig.AppForBigDataTests));
+            var app = GetAppState();
             var timer = new Stopwatch();
             timer.Start();
 

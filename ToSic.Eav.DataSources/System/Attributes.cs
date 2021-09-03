@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -55,11 +56,13 @@ namespace ToSic.Eav.DataSources.System
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public Attributes()
+		public Attributes(IAppStates appStates)
 		{
+            _appStates = appStates;
             Provide(GetList);
 		    ConfigMask(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
 		}
+        private readonly IAppStates _appStates;
 
 	    private ImmutableArray<IEntity> GetList()
 	    {
@@ -76,7 +79,7 @@ namespace ToSic.Eav.DataSources.System
 
 	        type = useStream 
                 ? optionalList?.FirstOrDefault()?.Type
-                : Apps.State.Get(this).GetContentType(ContentTypeName);
+                : _appStates.Get(this).GetContentType(ContentTypeName);
 
 	        // try to load from type, if it exists
 	        var list = type?.Attributes?.OrderBy(at => at.Name).Select(BuildDictionary).ToList();

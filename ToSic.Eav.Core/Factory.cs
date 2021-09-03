@@ -32,9 +32,8 @@ namespace ToSic.Eav
 	    }
 
 #if !NETFRAMEWORK
-        public static IServiceProvider GetServiceProvider() => _serviceCollection.BuildServiceProvider();
+        private static IServiceProvider GetServiceProvider() => _serviceCollection.BuildServiceProvider();
 #endif
-
 
         /// <summary>
         /// Dependency Injection resolver with a known type as a parameter.
@@ -54,18 +53,24 @@ namespace ToSic.Eav
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
+        /// <remarks>
+        /// Avoid using at all cost - only DNN and test-code may use this!
+        /// </remarks>
         [PrivateApi]
         public static T StaticBuild<T>() => GetServiceProvider().Build<T>();
 
         /// <summary>
-        /// Dependency Injection resolver with a known type as a parameter.
+        /// This is a special internal resolver for static objects
+        /// Should only be used with extreme caution, as downstream objects
+        /// May need more scope-specific stuff, why may be missing
         /// </summary>
-        /// <param name="T">The type or interface we need</param>
+        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static object Resolve(Type T)
-        {
-            if (Debug) LogResolve(T, false);
-            return GetServiceProvider().Build<object>(T);
-        }
+        /// <remarks>
+        /// Avoid using at all cost - only in obsolete EAV code which will be removed in 2sxc 13
+        /// </remarks>
+        [PrivateApi]
+        [Obsolete("Use this in all EAV code to ensure we know the APIs to remove in v13")]
+        public static T ObsoleteBuild<T>() => GetServiceProvider().Build<T>();
     }
 }

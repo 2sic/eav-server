@@ -9,8 +9,6 @@ namespace ToSic.Eav.Data
     [PrivateApi]
     public class PropertyRequest
     {
-        
-        
         /// <summary>
         /// The result of the request - null if not found
         /// </summary>
@@ -30,5 +28,15 @@ namespace ToSic.Eav.Data
         /// An optional name
         /// </summary>
         public string Name;
+
+        public int SourceIndex = -1;
+
+        public bool IsFinal => SourceIndex != -1;
+
+        public PropertyRequest AsFinal(int sourceIndex)
+        {
+            SourceIndex = sourceIndex;
+            return this;
+        }
     }
 }

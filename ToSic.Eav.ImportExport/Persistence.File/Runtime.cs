@@ -14,13 +14,10 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 {
     public class Runtime : HasLog, IRuntime
     {
-        public const string GroupQuery = "query";
-        public const string GroupConfiguration = "configuration";
-
         #region Constructor and DI
 
+        public Runtime(IServiceProvider sp) : base("Eav.Rntime") => _serviceProvider = sp;
         private readonly IServiceProvider _serviceProvider;
-        public Runtime(IServiceProvider sc) : base("Eav.Rntime") => _serviceProvider = sc;
 
         public IRuntime Init(ILog parent)
         {
@@ -80,18 +77,19 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 
 
 
-        internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths.Select(path => new FileSystemLoader(path, Source, true, null, Log)).ToList());
+        internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths
+            .Select(path => _serviceProvider.Build<FileSystemLoader>().Init(path, Source, true, null, Log)).ToList());
         private List<FileSystemLoader> _loader;
 
 
-        public IEnumerable<Data.IEntity> LoadGlobalItems(string groupIdentifier)
+        public IEnumerable<IEntity> LoadGlobalItems(string groupIdentifier)
         {
             Log.Add($"loading items for {groupIdentifier}");
 
-            if(groupIdentifier != GroupQuery && groupIdentifier != GroupConfiguration)
+            if(groupIdentifier != Configuration.Global.GroupQuery && groupIdentifier != Configuration.Global.GroupConfiguration)
                 throw new ArgumentOutOfRangeException(nameof(groupIdentifier), "atm we can only load items of type 'query'/'configuration'");
 
-            var doQuery = groupIdentifier == GroupQuery;
+            var doQuery = groupIdentifier == Configuration.Global.GroupQuery;
 
             // 3 - return content types
             var entities = new List<IEntity>();

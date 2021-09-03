@@ -1,17 +1,19 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
+using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
+using ToSic.Eav.Types;
 
 namespace ToSic.Eav
 {
@@ -22,19 +24,30 @@ namespace ToSic.Eav
             // 2020-10-29 New enhancement - lazy loading dependency injection
             services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
 
-            // 2021-04-08 2sxc 11.13 Data Builder
+            // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
+            services.TryAddTransient<EntitiesToDictionaryBase.Dependencies>();
             
+            // Global Content-Types - should only be loaded once ever, and then it's done
+            services.TryAddSingleton<GlobalTypeLoader>();
+
             // Configuration objects
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
-            services.TryAddTransient<IFeaturesConfiguration, FeaturesConfiguration>();
+            
+            // try to drop this / replace with...
+            services.TryAddTransient<IFeaturesConfiguration, Features>();
+            // ...with this
+            services.TryAddTransient<SystemLoader>();
+            services.TryAddTransient<Features>();
 
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
+            services.TryAddTransient<IAppStates, AppStates>();
+            services.TryAddTransient<AppsCacheBase.Dependencies>();
 
             // Metadata providers
-            services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
+            //services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
             
             // Other...
             services.TryAddTransient<AttributeBuilder>();

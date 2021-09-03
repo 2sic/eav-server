@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// in which case the metadata must be retrieved from another "remote" location (where the original is defined). 
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class ContentTypeMetadata : RemoteMetadataOf<string>
+    public class ContentTypeMetadata : MetadataOf<string>
     {
 
         #region constructors
@@ -26,14 +26,23 @@ namespace ToSic.Eav.Data
         { }
 
         /// <summary>
-        /// Used in cases where the metadata provider isn't known, but the IDs are known
+        /// Used in cases where the metadata-provider is already known
         /// </summary>
         /// <param name="typeId">type id / static-name</param>
-        /// <param name="sourceZoneId">the zone which has the metadata</param>
-        /// <param name="sourceAppId">the app which has the metadata</param>
-        public ContentTypeMetadata(string typeId, int sourceZoneId, int sourceAppId)
-            : base((int)TargetTypes.ContentType, typeId, sourceZoneId, sourceAppId)
+        /// <param name="metaSourceFinder">remote / deferred metadata provider</param>
+        public ContentTypeMetadata(string typeId, Func<IHasMetadataSource> metaSourceFinder)
+            : base((int)TargetTypes.ContentType, typeId, metaSourceFinder)
         { }
+
+        ///// <summary>
+        ///// Used in cases where the metadata provider isn't known, but the IDs are known
+        ///// </summary>
+        ///// <param name="typeId">type id / static-name</param>
+        ///// <param name="sourceZoneId">the zone which has the metadata</param>
+        ///// <param name="sourceAppId">the app which has the metadata</param>
+        //public ContentTypeMetadata(string typeId, int sourceZoneId, int sourceAppId)
+        //    : base((int)TargetTypes.ContentType, typeId, sourceZoneId, sourceAppId)
+        //{ }
 
         #endregion
 

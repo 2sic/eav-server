@@ -8,6 +8,13 @@ namespace ToSic.Eav.Data
 {
     public static class ContentTypeListExtensions
     {
+        public static IEnumerable<IContentType> OfScope(this IEnumerable<IContentType> all, string scope = null, bool includeAttributeTypes = false)
+        {
+            var set = all.Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
+            if (scope != null)
+                set = set.Where(p => p.Scope == scope);
+            return set.OrderBy(c => c.Name);
+        }
 
         public static IList<string> GetAllScopesInclDefault(this IEnumerable<IContentType> all)
         {
@@ -39,11 +46,11 @@ namespace ToSic.Eav.Data
                 {"System.Fields", "System: Fields"}
             };
 
-            var dic = scopes
+            var results = scopes
                 .Select(s => new { value = s, name = lookup.TryGetValue(s, out var label) ? label : s })
                 .OrderBy(s => s.name)
                 .ToDictionary(s => s.value, s => s.name);
-            return dic;
+            return results;
         }
 
     }

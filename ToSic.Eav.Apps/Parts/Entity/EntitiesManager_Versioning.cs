@@ -29,7 +29,7 @@ namespace ToSic.Eav.Apps.Parts
             if (entityDraft.HasValue)
                 Parent.DataController.Entities.DeleteEntity(entityDraft.Value);
 
-            SystemManager.Purge(Parent, log: Log); 
+            SystemManager.Purge(Parent); 
         }
 
 

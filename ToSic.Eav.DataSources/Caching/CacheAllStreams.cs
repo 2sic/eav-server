@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources.Caching
         }
 
 
-		private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
+		private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase);
 		private bool _requiresRebuildOfOut = true;
 
         /// <inheritdoc />

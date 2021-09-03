@@ -1,43 +1,110 @@
 ﻿using System.Linq;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data
 {
     public partial class Entity
     {
 
+        // ReSharper disable once InheritdocInvalidUsage
         /// <inheritdoc />
         public object GetBestValue(string attributeName, string[] languages)
             => _useLightModel
                 ? base.GetBestValue(attributeName)
-                : FindPropertyInternal(attributeName, languages).Result;
+                : FindPropertyInternal(attributeName, languages, null).Result;
 
 
+        // ReSharper disable once InheritdocInvalidUsage
         /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, string[] languages) => ChangeTypeOrDefault<TVal>(GetBestValue(name, languages));
 
 
         [PrivateApi("Internal")]
-        public PropertyRequest FindPropertyInternal(string attributeName, string[] languages)
+        public PropertyRequest FindPropertyInternal(string field, string[] languages, ILog parentLogOrNull)
         {
             languages = ExtendDimsWithDefault(languages);
-            attributeName = attributeName.ToLowerInvariant();
-            if (Attributes.ContainsKey(attributeName))
+            field = field.ToLowerInvariant();
+            if (Attributes.ContainsKey(field))
             {
-                var attribute = Attributes[attributeName];
+                var attribute = Attributes[field];
                 return new PropertyRequest {Result = attribute[languages], FieldType = attribute.Type, Source = this};
             }
             
-            if (attributeName == Data.Attributes.EntityFieldTitle)
+            if (field == Data.Attributes.EntityFieldTitle)
             {
                 var attribute = Title;
                 return new PropertyRequest { Result = Title?[languages], FieldType = attribute?.Type, Source = this};
             }
 
-            // directly return internal properties, mark as virtual to not allow further Link resolution
-            return new PropertyRequest
-                {Result = GetInternalPropertyByName(attributeName), FieldType = Data.Attributes.FieldIsVirtual, Source = this};
+            // directly return internal properties, mark as virtual to not cause further Link resolution
+            var likelyResult = new PropertyRequest
+                {Result = GetInternalPropertyByName(field), FieldType = Data.Attributes.FieldIsVirtual, Source = this};
+
+            // New Feature in 12.03 - Experimental
+            try
+            {
+                var logOrNull = parentLogOrNull?.SubLogOrNull($"{LogNames.Eav}.Entity");
+                logOrNull?.SafeAdd("Nothing found in properties, will try Sub-Item navigation");
+                var subItem = this.TryToNavigateToEntityInList(field, this, logOrNull);
+                if (subItem != null) return subItem;
+            } catch { /* ignore */ }
+            
+            return likelyResult;
         }
+
+        //[PrivateApi]
+        //public List<PropertyDumpItem> _Dump(string[] languages, string path, ILog parentLogOrNull)
+        //{
+        //    if (!Attributes.Any()) return new List<PropertyDumpItem>();
+        //    if (PropertyDumpItem.ShouldStop(path)) return new List<PropertyDumpItem>{PropertyDumpItem.DummyErrorShouldStop(path)};
+
+        //    var pathRoot = string.IsNullOrEmpty(path) ? "" : path + PropertyDumpItem.Separator;
+
+        //    // Check if we have dynamic children
+        //    IEnumerable<PropertyDumpItem> resultDynChildren = null;
+        //    var dynChildField = Type?.DynamicChildrenField;
+        //    if (dynChildField != null)
+        //        resultDynChildren = Children(dynChildField)
+        //            .SelectMany(inner
+        //                => inner._Dump(languages, pathRoot + inner.GetBestTitle(languages),
+        //                    parentLogOrNull));
+
+        //    // Get all properties which are not dynamic children
+        //    var resultProperties =
+        //        Attributes
+        //            .Where(att =>
+        //                att.Value.Type == DataTypes.Entity
+        //                && !att.Key.Equals(dynChildField, StringComparison.InvariantCultureIgnoreCase))
+        //            .SelectMany(att
+        //                => Children(att.Key)
+        //                    .SelectMany(inner
+        //                        => inner._Dump(languages, pathRoot + att.Key,
+        //                            parentLogOrNull)))
+        //            .ToList();
+
+        //    // Get all normal properties
+        //    var resultValues =
+        //        Attributes
+        //            .Where(att => att.Value.Type != DataTypes.Entity)
+        //            .Select(att =>
+        //            {
+        //                var property = FindPropertyInternal(att.Key, languages, parentLogOrNull);
+        //                var item = new PropertyDumpItem
+        //                {
+        //                    Path = pathRoot + att.Key,
+        //                    Property = property
+        //                };
+        //                return item;
+        //            })
+        //            .ToList();
+
+        //    var finalResult = resultProperties.Concat(resultValues);
+        //    if (resultDynChildren != null) finalResult = finalResult.Concat(resultDynChildren);
+
+        //    return finalResult.OrderBy(f => f.Path).ToList();
+
+        //}
 
         protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)
         {

@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
 		public PublishingFilter()
 		{
             Provide(PublishingFilterList);
-		    ConfigMask(QueryConstants.ParamsShowDraftKey, "[Settings:ShowDrafts||false]");
+		    ConfigMask(QueryConstants.ParamsShowDraftKey, QueryConstants.ParamsShowDraftToken);
        }
 
 

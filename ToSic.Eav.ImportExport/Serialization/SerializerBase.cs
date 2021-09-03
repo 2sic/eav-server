@@ -21,10 +21,9 @@ namespace ToSic.Eav.Serialization
         /// </summary>
         protected SerializerBase(ITargetTypes metadataTargets, string logName): base(logName)
         {
-            _mdProvider = metadataTargets;
+            MetadataTargets = metadataTargets;
         }
-        public ITargetTypes MetadataTargets => _mdProvider ?? (_mdProvider = Factory.Resolve<ITargetTypes>());
-        private ITargetTypes _mdProvider;
+        public ITargetTypes MetadataTargets { get; }
 
 
         public void Initialize(AppState appState, ILog parentLog)

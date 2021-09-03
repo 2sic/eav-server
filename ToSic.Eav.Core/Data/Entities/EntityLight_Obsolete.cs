@@ -24,14 +24,8 @@ namespace ToSic.Eav.Data
         protected static string TryToResolveLink(Guid itemGuid, string result)
         {
             if (!ValueConverterBase.CouldBeReference(result)) return result;
-            return Factory.Resolve<IValueConverter>().ToValue(result, itemGuid);
+            return Factory.ObsoleteBuild<IValueConverter>().ToValue(result, itemGuid);
         }
-
-
-        ///// <inheritdoc />
-        //public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks) 
-        //    => ChangeTypeOrDefault<TVal>(GetBestValue(name, resolveHyperlinks));
-
     }
 }
 #endif

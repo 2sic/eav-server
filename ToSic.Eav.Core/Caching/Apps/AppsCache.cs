@@ -16,7 +16,7 @@ namespace ToSic.Eav.Caching
         // It's important that
         // - this object has no constructor (or an empty one) because of DI
         // - that it doesn't keep a log or similar inside it, because this object can sometimes be static-cached forever. 
-        //public AppsCache(): base("App.Cache", null) { }
+        public AppsCache(Dependencies dependencies) : base(dependencies) { }
 
         #endregion
 

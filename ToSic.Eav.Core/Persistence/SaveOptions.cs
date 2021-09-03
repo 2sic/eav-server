@@ -1,20 +1,24 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Persistence.Interfaces;
 
 namespace ToSic.Eav.Persistence
 {
 
     public class SaveOptions
     {
+        //private readonly Lazy<IImportExportEnvironment> _environmentLazy;
+
         /// <summary>
         /// This makes sure that SaveOptions cannot be built directly, without
         /// understanding the consequences
         /// </summary>
         // ReSharper disable once UnusedMember.Local
-        private SaveOptions() { }
+        //private SaveOptions(Lazy<IImportExportEnvironment> environmentLazy)
+        //{
+        //    _environmentLazy = environmentLazy;
+        //}
 
-        public static SaveOptions Build(int zoneId) => Factory.Resolve<IImportExportEnvironment>().SaveOptions(zoneId);
+        //public static SaveOptions Build(int zoneId) => Factory.Resolve<IImportExportEnvironment>().SaveOptions(zoneId);
 
         public SaveOptions(string primaryLanguage, List<DimensionDefinition> languages)
         {
@@ -29,7 +33,7 @@ namespace ToSic.Eav.Persistence
 
         public string PrimaryLanguage
         {
-            get => _priLang ?? (_priLang = Factory.Resolve<IImportExportEnvironment>().DefaultLanguage);
+            get => _priLang; // ?? (_priLang = _environmentLazy.Value /*Factory.Resolve<IImportExportEnvironment>()*/.DefaultLanguage);
             set => _priLang = value.ToLowerInvariant();
         }
 

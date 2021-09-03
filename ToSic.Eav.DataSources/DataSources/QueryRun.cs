@@ -34,21 +34,27 @@ namespace ToSic.Eav.DataSources
         private const string FieldQuery = "Query";
         private const string FieldParams = "Params";
 
-		#endregion
+        /// <summary>
+        /// Indicates whether to show drafts or only Published Entities. 
+        /// </summary>
+        [PrivateApi("not sure if this should be public, probably not")]
+        private bool ShowDrafts => bool.Parse(Configuration[QueryConstants.ParamsShowDraftKey]);
 
-		/// <summary>
-		/// Constructs a new QueryRun
-		/// </summary>
-		[PrivateApi]
+        #endregion
+
+        /// <summary>
+        /// Constructs a new QueryRun
+        /// </summary>
+        [PrivateApi]
 		public QueryRun()
         {
-            //OutIsDynamic = true;
+            ConfigMask(QueryConstants.ParamsShowDraftKey, QueryConstants.ParamsShowDraftToken);
         }
 
         #region Out
         /// <inheritdoc/>
         public override IDictionary<string, IDataStream> Out 
-            => _out ?? (_out = new StreamDictionary(this, Query?.Out  ?? new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase)));
+            => _out ?? (_out = new StreamDictionary(this, Query?.Out  ?? new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase)));
 
         private IDictionary<string, IDataStream> _out;
         #endregion
@@ -82,11 +88,8 @@ namespace ToSic.Eav.DataSources
 
             #region check for various missing configurations / errors
 
-            // prepare empty result, as we may need it in various use cases
-            //var emptyResult = new Dictionary<string, IDataStream>(StringComparer.OrdinalIgnoreCase);
-
             // quit if nothing found
-            if(configEntity == null)
+            if (configEntity == null)
             {
                 Log.Add("no configuration found - empty list");
                 return wrapLog("silent error", null /*emptyResult*/);
@@ -106,7 +109,7 @@ namespace ToSic.Eav.DataSources
             Log.Add($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
 
             // create the query & set params
-            var query = new Query(DataSourceFactory).Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), false, null, Log);
+            var query = new Query(DataSourceFactory).Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), ShowDrafts, null, Log);
             query.Params(ResolveParams(configEntity));
             return wrapLog("ok", query);
         }

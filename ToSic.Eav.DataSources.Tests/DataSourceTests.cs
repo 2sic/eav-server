@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Catalog;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests
 {
@@ -20,7 +21,8 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void AutoFindAllDataSources()
         {
-            var dsList = new DataSourceCatalog(null).GetAll(false);
+            var dsCatalog = EavTestBase.Resolve<DataSourceCatalog>().Init(null);
+            var dsList = dsCatalog.GetAll(false);
             Assert.AreEqual(StandardInstalledDSCount, dsList.Count(), "expect a correct number of DSs");
 
             var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);
@@ -30,7 +32,9 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void AutoFindPipelineDataSources()
         {
-            var dsList = new DataSourceCatalog(null).GetAll(true);
+            var dsCatalog = EavTestBase.Resolve<DataSourceCatalog>().Init(null);
+
+            var dsList = dsCatalog.GetAll(true);
             Assert.AreEqual(StandardInstalledPipeLineDS, dsList.Count(), "expect a correct number of DSs");
 
             var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);

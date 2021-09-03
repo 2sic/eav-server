@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using ToSic.Eav.Apps;
 using ToSic.Eav.WebApi.Security;
 using static Newtonsoft.Json.NullValueHandling;
 
@@ -10,8 +11,8 @@ namespace ToSic.Eav.WebApi.Dto
         [JsonProperty(NullValueHandling = Ignore)] public ContextAppDto App { get; set; }
         [JsonProperty(NullValueHandling = Ignore)] public ContextLanguageDto Language { get; set; }
         [JsonProperty(NullValueHandling = Ignore)] public ContextUserDto User { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto System { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto Site { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public ContextResourceWithApp System { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public ContextResourceWithApp Site { get; set; }
         [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto Page { get; set; }
         [JsonProperty(NullValueHandling = Ignore)] public ContextEnableDto Enable { get; set; }
     }
@@ -22,10 +23,18 @@ namespace ToSic.Eav.WebApi.Dto
         [JsonProperty(NullValueHandling = Ignore)] public string Url { get; set; }
     }
 
+    public class ContextResourceWithApp: WebResourceDto
+    {
+        [JsonProperty(NullValueHandling = Ignore)] public AppIdentity DefaultApp { get; set; }
+    }
+
     public class ContextAppDto: WebResourceDto
     {
         public string Name { get; set; }
         public string Identifier { get; set; }
+
+        public string SettingsScope { get; set; }
+
         public string GettingStartedUrl { get; set; }
         public string Folder { get; set; }
         public HasPermissionsDto Permissions { get; set; }

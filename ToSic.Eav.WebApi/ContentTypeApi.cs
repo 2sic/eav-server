@@ -9,7 +9,6 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Security;
-using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.WebApi
 {
@@ -17,25 +16,35 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for ContentTypes
 	/// </summary>
-	public class ContentTypeApi : HasLog<ContentTypeApi>
+	public partial class ContentTypeApi : HasLog<ContentTypeApi>
     {
 
         #region Constructor / DI
 
-        private readonly Lazy<AppRuntime> _appRuntimeLazy;
-        private readonly Lazy<AppManager> _appManagerLazy;
-        private readonly Lazy<DbDataController> _dbLazy;
-        private readonly AppInitializedChecker _appInitializedChecker;
 
-        private AppManager AppManager { get; set; }
-
-        public ContentTypeApi(Lazy<AppRuntime> appRuntimeLazy, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbLazy, AppInitializedChecker appInitializedChecker) : base("Api.EavCTC")
+        public ContentTypeApi(
+            Lazy<AppRuntime> appRuntimeLazy, 
+            Lazy<AppManager> appManagerLazy, 
+            Lazy<DbDataController> dbLazy, 
+            AppInitializedChecker appInitializedChecker,
+            Lazy<EntitiesToDictionary> dataToDictionaryLazy, 
+            IAppStates appStates) : base("Api.EavCTC")
         {
             _appRuntimeLazy = appRuntimeLazy;
             _appManagerLazy = appManagerLazy;
             _dbLazy = dbLazy;
             _appInitializedChecker = appInitializedChecker;
+            _dataToDictionaryLazy = dataToDictionaryLazy;
+            _appStates = appStates;
         }
+
+        private readonly Lazy<AppRuntime> _appRuntimeLazy;
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly Lazy<DbDataController> _dbLazy;
+        private readonly AppInitializedChecker _appInitializedChecker;
+        private readonly Lazy<EntitiesToDictionary> _dataToDictionaryLazy;
+        private readonly IAppStates _appStates;
+        private AppManager AppManager { get; set; }
 
         public ContentTypeApi Init(int appId, ILog parentLog)
         {
@@ -65,7 +74,7 @@ namespace ToSic.Eav.WebApi
             if (scope == AppConstants.ScopeApp)
             {
                 Log.Add($"is scope {scope}, will do extra processing");
-                var appState = State.Get(AppManager);
+                var appState = _appStates.Get(AppManager);
                 // make sure additional settings etc. exist
                 _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log); 
             }
@@ -90,7 +99,7 @@ namespace ToSic.Eav.WebApi
 	        var nameOverride = metadata?.Value<string>(ContentTypes.ContentTypeMetadataLabel);
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
-            var ser = new EntitiesToDictionary();
+            var ser = _dataToDictionaryLazy.Value;
 
 	        var shareInfo = (IContentTypeShared) t;
 
@@ -115,7 +124,7 @@ namespace ToSic.Eav.WebApi
 	    public ContentTypeDto GetSingle(string contentTypeStaticName, string scope = null)
 	    {
 	        var wrapLog = Log.Call($"a#{_appId}, type:{contentTypeStaticName}, scope:{scope}");
-            var appState = State.Get(_appId);
+            var appState = _appStates.Get(_appId);
 
             var ct = appState.GetContentType(contentTypeStaticName);
             wrapLog(null);
@@ -148,7 +157,7 @@ namespace ToSic.Eav.WebApi
 	    }
         #endregion
 
-	    public bool CreateGhost(string sourceStaticName)
+        public bool CreateGhost(string sourceStaticName)
 	    {
 	        Log.Add($"create ghost a#{_appId}, type:{sourceStaticName}");
 	        GetDb().ContentType.CreateGhost(sourceStaticName);
@@ -163,15 +172,15 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<ContentTypeFieldDto> GetFields(string staticName)
         {
             Log.Add($"get fields a#{_appId}, type:{staticName}");
-            var appState = State.Get(_appId);
+            var appState = _appStates.Get(_appId);
             if (!(appState.GetContentType(staticName) is ContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
 
-            var appInputTypes = _appRuntimeLazy.Value.Init(State.Identity(null, _appId), true, Log).ContentTypes.GetInputTypes();
+            var appInputTypes = _appRuntimeLazy.Value.Init(_appId, true, Log).ContentTypes.GetInputTypes();
 
-            var ser = new EntitiesToDictionary();
+            var ser = _dataToDictionaryLazy.Value;
             return fields.Select(a =>
             {
                 var inputType = FindInputType(a);

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Context;
-using ToSic.Eav.Data;
 #if NET451
 using System.Web.Http;
 using Newtonsoft.Json;
@@ -18,28 +16,43 @@ namespace ToSic.Eav.Conversion
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public class EntitiesToDictionary: EntitiesToDictionaryBase, IStreamsTo<Dictionary<string, object>>
+    public class EntitiesToDictionary: EntitiesToDictionaryBase, IStreamsTo<IDictionary<string, object>>
     {
-        // TODO: has an important side effect, this isn't clear from outside!
-        public EntitiesToDictionary(): base(Factory.Resolve<IValueConverter>(), Factory.Resolve<IZoneCultureResolver>(), "Cnv.Ent2Dc")
+        /// <summary>
+        /// Important: this constructor is used both in inherited,
+        /// but also in EAV-code which uses only this object (so no inherited)
+        /// This is why it must be public, because otherwise it can't be constructed from eav?
+        /// </summary>
+        /// <param name="dependencies"></param>
+        public EntitiesToDictionary(Dependencies dependencies): base(dependencies, "Eav.CnvE2D") { }
+
+#if NET451
+        /// <summary>
+        /// Old constructor used in some public apps in razor, so it must remain for DNN implementation
+        /// But .net 451 only!
+        /// In .net .451 it must also set the formatters to use the right date-time, which isn't necessary in .net core. 
+        /// </summary>
+        /// <remarks>
+        /// has an important side effect, this isn't clear from outside!
+        /// </remarks>
+        [Obsolete]
+        public EntitiesToDictionary(): this(Factory.ObsoleteBuild<Dependencies>())
         {
             // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
-#if NET451
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-#else
             // #DoneDotNetStandard - there it's handled in the startup.cs
-#endif
         }
+#endif
 
 
         #region Many variations of the Prepare-Statement expecting various kinds of input
 
         /// <inheritdoc />
-        public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams = null)
+        public IDictionary<string, IEnumerable<IDictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams = null)
             => Convert(source, streams, null);
         
         [PrivateApi("not public yet, as the signature is not final yet")]
-        public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams, string[] guids)
+        public IDictionary<string, IEnumerable<IDictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams, string[] onlyTheseGuids)
         {
             var wrapLog = Log.Call(useTimer: true);
             string[] streamsList;
@@ -58,8 +71,8 @@ namespace ToSic.Eav.Conversion
 
             // pre-process the guids list to ensure they are guids
             var realGuids = new Guid[0];
-            if (guids?.Length > 0)
-                realGuids = guids
+            if (onlyTheseGuids?.Length > 0)
+                realGuids = onlyTheseGuids
                     .Select(g => Guid.TryParse(g, out var validGuid) ? validGuid as Guid? : null)
                     .Where(g => g != null)
                     .Cast<Guid>()
@@ -83,11 +96,11 @@ namespace ToSic.Eav.Conversion
         }
 
         /// <inheritdoc />
-        public Dictionary<string, IEnumerable<Dictionary<string, object>>> Convert(IDataSource source, string streams)
+        public IDictionary<string, IEnumerable<IDictionary<string, object>>> Convert(IDataSource source, string streams)
             => Convert(source, streams?.Split(','));
 
         /// <inheritdoc />
-        public IEnumerable<Dictionary<string, object>> Convert(IDataStream stream)
+        public IEnumerable<IDictionary<string, object>> Convert(IDataStream stream)
             => Convert(stream.List);
         
         

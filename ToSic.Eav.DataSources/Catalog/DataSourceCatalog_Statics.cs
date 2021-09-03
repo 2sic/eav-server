@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSources.Catalog
 {
     public partial class DataSourceCatalog
     {
-        internal string Find(string name)
+        internal static string Find(string name)
         {
             // New 11.12.x If the type is identified by a GUID, that's what we should return
             var typeInfo = FindInCache(name);
@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources.Catalog
         /// Get all Installed DataSources
         /// </summary>
         /// <remarks>Objects that implement IDataSource</remarks>
-        internal IEnumerable<DataSourceInfo> GetAll(bool onlyForVisualQuery)
+        public static IEnumerable<DataSourceInfo> GetAll(bool onlyForVisualQuery)
             => onlyForVisualQuery
                 ? Cache.Where(dsi => !string.IsNullOrEmpty(dsi.VisualQuery?.GlobalName))
                 : Cache;

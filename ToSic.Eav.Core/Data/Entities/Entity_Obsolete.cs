@@ -1,4 +1,6 @@
-﻿#if NETFRAMEWORK
+﻿/* only in old old .net */
+
+#if NETFRAMEWORK
 using System;
 using ToSic.Eav.Documentation;
 
@@ -14,7 +16,7 @@ namespace ToSic.Eav.Data
             if (_useLightModel)
                 return base.GetBestValue(attributeName, resolveHyperlinks);
 
-            var set = FindPropertyInternal(attributeName, languages);
+            var set = FindPropertyInternal(attributeName, languages, null);
             var result = set.Result;
             var attributeType = set.FieldType;
 

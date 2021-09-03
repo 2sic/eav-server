@@ -77,7 +77,7 @@ namespace ToSic.Eav.LookUp
         {
             var wrapLog = Log.Call<DicString>($"values: {values.Count}, depth: {depth}");
             // start by creating a copy of the dictionary
-            values = new Dictionary<string, string>(values, StringComparer.OrdinalIgnoreCase);
+            values = new Dictionary<string, string>(values, StringComparer.InvariantCultureIgnoreCase);
 
             if (values.Count == 0)
                 return wrapLog("no values", values);
@@ -108,7 +108,7 @@ namespace ToSic.Eav.LookUp
             var wrapLog = Log.Call<DicString>($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
 
             // start by creating a copy of the dictionary
-            values = new Dictionary<string, string>(values, StringComparer.OrdinalIgnoreCase);
+            values = new Dictionary<string, string>(values, StringComparer.InvariantCultureIgnoreCase);
 
             if (values.Count == 0) return wrapLog("no values", values);
 

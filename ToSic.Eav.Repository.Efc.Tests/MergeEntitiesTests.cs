@@ -27,14 +27,19 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private const int AppId = Constants.TransientAppId;
         //ContentType _ctNull = null;
 
+        static ContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int sortOrder)
+        {
+            return new ContentTypeAttribute(appId, firstName, dataType, isTitle, attId, sortOrder);
+        }
+
         ContentType _ctPerson = new ContentType(AppId, "Person") {Attributes = new List<IContentTypeAttribute>
         {
-            new ContentTypeAttribute(AppId, "FullName", "String", true, 0, 0),
-            new ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
-            new ContentTypeAttribute(AppId, "LastName", "String", true, 0, 0),
-            new ContentTypeAttribute(AppId, "Birthday", "DateTime", true, 0, 0),
-            new ContentTypeAttribute(AppId, "Husband", "String", true, 0, 0),
-            new ContentTypeAttribute(AppId, "UnusedField", "String", true, 0,0)
+            ContentTypeAttribute(AppId, "FullName", "String", true, 0, 0),
+            ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
+            ContentTypeAttribute(AppId, "LastName", "String", true, 0, 0),
+            ContentTypeAttribute(AppId, "Birthday", "DateTime", true, 0, 0),
+            ContentTypeAttribute(AppId, "Husband", "String", true, 0, 0),
+            ContentTypeAttribute(AppId, "UnusedField", "String", true, 0,0)
         }};
         Entity _origENull = null;
 
@@ -116,9 +121,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             Attributes = new List<IContentTypeAttribute>
             {
-                new ContentTypeAttribute(AppId, "Title", "String", true, 0, 0),
-                new ContentTypeAttribute(AppId, "Teaser", "String", false, 0, 0),
-                new ContentTypeAttribute(AppId, "Image", "Hyperlink", false, 0, 0),
+                ContentTypeAttribute(AppId, "Title", "String", true, 0, 0),
+                ContentTypeAttribute(AppId, "Teaser", "String", false, 0, 0),
+                ContentTypeAttribute(AppId, "Image", "Hyperlink", false, 0, 0),
             }
         };
 

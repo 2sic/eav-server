@@ -37,8 +37,6 @@ namespace ToSic.Eav.DataSources.System
     // ReSharper disable once UnusedMember.Global
     public sealed class Apps: DataSourceBase
 	{
-        private readonly IServiceProvider _serviceProvider;
-
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavAps";
 
@@ -68,15 +66,17 @@ namespace ToSic.Eav.DataSources.System
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps(IServiceProvider serviceProvider)
+        public Apps(IServiceProvider serviceProvider, IAppStates appStates)
 		{
             _serviceProvider = serviceProvider;
+            _appStates = appStates;
             Provide(GetList);
             ConfigMask(ZoneKey, $"[Settings:{ZoneIdField}]");
 		}
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IAppStates _appStates;
 
-
-	    private ImmutableArray<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList()
         {
             var wrapLog = Log.Call<ImmutableArray<IEntity>>();
             
@@ -84,7 +84,7 @@ namespace ToSic.Eav.DataSources.System
             var builder = DataBuilder;
 
             // try to load the content-type - if it fails, return empty list
-            var zones = State.Zones;
+            var zones = _appStates.Zones;// State.Zones;
             if (!zones.ContainsKey(OfZoneId)) return ImmutableArray<IEntity>.Empty;
             var zone = zones[OfZoneId];
 

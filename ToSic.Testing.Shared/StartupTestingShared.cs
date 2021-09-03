@@ -32,7 +32,7 @@ namespace ToSic.Testing.Shared
                 sc.AddEav();
             });
             var con = optionalConnection ?? TestConstants.ConStr;
-            Factory.StaticBuild<IDbConfiguration>().ConnectionString = con;
+            EavTestBase.Resolve<IDbConfiguration>().ConnectionString = con;
         }
 
         // this helps debug in advanced scenarios

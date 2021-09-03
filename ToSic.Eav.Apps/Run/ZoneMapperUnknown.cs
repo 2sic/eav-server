@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Run
 {
     public class ZoneMapperUnknown: ZoneMapperBase, IIsUnknown
     {
-        public ZoneMapperUnknown() : base($"{LogNames.NotImplemented}.ZonMap")  {  }
+        public ZoneMapperUnknown(IAppStates appStates) : base(appStates, $"{LogNames.NotImplemented}.ZonMap")  {  }
 
         public override int GetZoneId(int siteId) => siteId;
 

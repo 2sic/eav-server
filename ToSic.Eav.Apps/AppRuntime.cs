@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 
@@ -14,13 +13,19 @@ namespace ToSic.Eav.Apps
 
         #region constructors
 
-        public AppRuntime(DataSourceFactory dataSourceFactory, string logName = null) : base(dataSourceFactory, logName ?? "Eav.AppRt") {}
+        public AppRuntime(AppRuntimeDependencies dependencies, string logName = null) : base(dependencies, logName ?? "Eav.AppRt") {}
 
         /// <summary>
-        /// Simple Override - to track if the init is being called everywhere
+        /// Simple Init
         /// </summary>
         public new AppRuntime Init(IAppIdentity app, bool showDrafts, ILog parentLog) 
             => base.Init(app, showDrafts, parentLog);
+        
+        /// <summary>
+        /// Simple Override - to track if the init is being called everywhere
+        /// </summary>
+        public new AppRuntime Init(int appId, bool showDrafts, ILog parentLog) 
+            => base.Init(Dependencies.AppStates.Identity(null, appId), showDrafts, parentLog);
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.
@@ -60,11 +65,11 @@ namespace ToSic.Eav.Apps
         public QueryRuntime Queries => _queries ?? (_queries = DataSourceFactory.ServiceProvider.Build<QueryRuntime>().Init(this, Log));
         private QueryRuntime _queries;
 
-        /// <summary>
-        /// Zone runtime to get the zone of this app
-        /// </summary>
-        public ZoneRuntime Zone => _zone ?? (_zone = new ZoneRuntime().Init(ZoneId, Log));
-        private ZoneRuntime _zone;
+        ///// <summary>
+        ///// Zone runtime to get the zone of this app
+        ///// </summary>
+        //public ZoneRuntime Zone => _zone ?? (_zone = new ZoneRuntime(Dependencies.AppStates).Init(ZoneId, Log));
+        //private ZoneRuntime _zone;
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Caching;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Documentation;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -13,16 +14,19 @@ namespace ToSic.Eav.DataSources
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class AppRoot : DataSourceBase, IAppRoot
     {
+
         [PrivateApi]
         public override string LogId => "DS.Root";
 
         [PrivateApi]
-        public AppRoot()
+        public AppRoot(IAppStates appStates)
         {
+            _appStates = appStates;
             Provide(() => AppState.List);
             Provide(Constants.PublishedStreamName, () => AppState.ListPublished.List);
             Provide(Constants.DraftsStreamName, () => AppState.ListNotHavingDrafts.List);
 		}
+        private readonly IAppStates _appStates;
 
         /// <summary>
         /// Special CacheKey generator for AppRoots, which rely on the state
@@ -34,7 +38,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Get the <see cref="AppState"/> of this app from the cache.
         /// </summary>
-	    private AppState AppState => _appState ?? (_appState = Apps.State.Get(this));
+	    private AppState AppState => _appState ?? (_appState = _appStates.Get(this));
         private AppState _appState;
 
         #region Cache-Chain

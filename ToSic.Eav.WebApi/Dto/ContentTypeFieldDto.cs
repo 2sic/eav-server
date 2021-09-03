@@ -13,7 +13,7 @@ namespace ToSic.Eav.WebApi.Dto
         public string StaticName { get; set; }
         public bool IsTitle { get; set; }
         public int AttributeId { get; set; }
-        public Dictionary<string, Dictionary<string, object>> Metadata { get; set; }
+        public IDictionary<string, IDictionary<string, object>> Metadata { get; set; }
         public InputTypeInfo InputTypeConfig { get; set; }
 
         public HasPermissionsDto Permissions { get; set; }

@@ -23,12 +23,14 @@ namespace ToSic.Eav.WebApi
 {
     public class ContentExportApi : HasLog
     {
-        private readonly Lazy<AppManager> _appManagerLazy;
         private AppManager _appManager;
-        public ContentExportApi(Lazy<AppManager> appManagerLazy) : base("Api.EaCtEx")
+        public ContentExportApi(Lazy<AppManager> appManagerLazy, IAppStates appStates) : base("Api.EaCtEx")
         {
             _appManagerLazy = appManagerLazy;
+            _appStates = appStates;
         }
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly IAppStates _appStates;
 
         public ContentExportApi Init(int appId, ILog parentLog)
         {
@@ -50,7 +52,7 @@ namespace ToSic.Eav.WebApi
             SecurityHelpers.ThrowIfNotAdmin(user);
 
             //var appManager = new AppManager(appId, Log);
-            var contextLanguages = _appManager.Read.Zone.Languages().Select(l => l.EnvironmentKey).ToArray();
+            var contextLanguages = _appStates.Languages(_appManager.ZoneId) /*_appManager.Read.Zone.Languages()*/.Select(l => l.EnvironmentKey).ToArray();
 
             // check if we have an array of ids
             int[] ids = null;

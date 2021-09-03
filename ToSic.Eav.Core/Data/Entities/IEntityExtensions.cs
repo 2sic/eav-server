@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data
 {
     [PrivateApi]
     // ReSharper disable once InconsistentNaming
-    public static class IEntityExtensions
+    public static partial class IEntityExtensions
     {
 #if DEBUG
         private static int countOneId;

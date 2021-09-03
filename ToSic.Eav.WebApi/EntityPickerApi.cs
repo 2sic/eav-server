@@ -34,12 +34,17 @@ namespace ToSic.Eav.WebApi
         {
             Log.Add($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
-            AppRuntime.Init(State.Identity(null, appId), withDrafts, Log);
+            AppRuntime.Init(appId, withDrafts, Log);
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
             {
                 contentType = AppRuntime.AppState.GetContentType(contentTypeName);
                 Log.Add($"tried to get '{contentTypeName}' - found: {contentType != null}");
+                if (contentType == null)
+                {
+                    Log.Add("Since a type was specified and not found, will return empty list");
+                    return new List<EntityForPickerDto>();
+                }
             }
 
             IEnumerable<IEntity> temp;

@@ -5,7 +5,7 @@ namespace ToSic.Eav.WebApi.Dto
 {
     public class QueryRunDto
     {
-        public Dictionary<string, IEnumerable<Dictionary<string, object>>> Query;
+        public IDictionary<string, IEnumerable<IDictionary<string, object>>> Query;
         public List<DataSources.Debug.StreamInfo> Streams;
         public Dictionary<Guid, DataSources.Debug.DataSourceInfo> Sources;
         public QueryTimerDto QueryTimer;

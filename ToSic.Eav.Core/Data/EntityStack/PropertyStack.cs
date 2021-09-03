@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Plumbing;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data
 {
-    [PrivateApi("Still WIP")]
-    public class PropertyStack: IPropertyStack
+    [PrivateApi("Hide implementation")]
+    public partial class PropertyStack: IPropertyStack
     {
-        public void Init(params KeyValuePair<string, IPropertyLookup>[] entities)
+        public void Init(string name, params KeyValuePair<string, IPropertyLookup>[] entities)
         {
+            Name = name;
             var pairCount = 0;
 
             _sources = entities
-                .Where(ep => ep.Value != null)
                 .Select(selector: ep =>
                 {
                     var key = !string.IsNullOrWhiteSpace(ep.Key) ? ep.Key : $"auto-named-{++pairCount}";
@@ -25,8 +24,16 @@ namespace ToSic.Eav.Data
                 .ToImmutableArray();
         }
 
-        public IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources => _sources ?? throw new Exception($"Can't access {nameof(IPropertyStack)}.{nameof(Sources)} as it hasn't been initialized yet.");
+        public string Name { get; private set; }
+
+        public IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources 
+            => _sources ?? throw new Exception($"Can't access {nameof(IPropertyStack)}.{nameof(Sources)} as it hasn't been initialized yet.");
         private IImmutableList<KeyValuePair<string, IPropertyLookup>> _sources;
+
+        public IImmutableList<KeyValuePair<string, IPropertyLookup>> SourcesReal 
+            => _sourcesReal ?? (_sourcesReal = _sources.Where(ep => ep.Value != null).ToImmutableArray());
+
+        private IImmutableList<KeyValuePair<string, IPropertyLookup>> _sourcesReal;
 
         public IPropertyLookup GetSource(string name)
         {
@@ -35,57 +42,41 @@ namespace ToSic.Eav.Data
         }
 
         [PrivateApi("Internal")]
-        public PropertyRequest FindPropertyInternal(string fieldName, string[] dimensions)
-            => FindPropertyInternal(fieldName, dimensions, true);
+        public PropertyRequest FindPropertyInternal(string field, string[] dimensions, ILog parentLogOrNull)
+            => PropertyInStack(field, dimensions, 0, true, parentLogOrNull);
 
-        public PropertyRequest FindPropertyInternal(string fieldName, string[] dimensions, bool treatEmptyAsDefault)
+        public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
         {
+            var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PStack");
+            var wrapLog = logOrNull.SafeCall<PropertyRequest>($"{nameof(field)}: {field}, {nameof(startAtSource)}: {startAtSource}");
             // Start with empty result, may be filled in later on
             var result = new PropertyRequest();
-            foreach (var stackItem in Sources)
+            for (var sourceIndex = startAtSource; sourceIndex < SourcesReal.Count; sourceIndex++)
             {
-                // Check if the entity even has this field
-                // if (!stackItem.Value.Attributes.ContainsKey(fieldName)) continue;
+                var source = SourcesReal[sourceIndex];
+                logOrNull.SafeAdd($"Testing source #{sourceIndex} : {source.Key}");
 
-                var propInfo = stackItem.Value.FindPropertyInternal(fieldName, dimensions);
+                var propInfo = source.Value.FindPropertyInternal(field, dimensions, logOrNull);
+                
                 if (propInfo?.Result == null) continue;
-                propInfo.Name = stackItem.Key;
+
+                result = propInfo.MarkAsFinalOrNot(source.Key, sourceIndex, logOrNull, treatEmptyAsDefault);
                 
-                // Preserve, in case we won't find another but don't necessarily return now
-                result = propInfo;
-
-                // if any non-null is ok, use that.
-                if (!treatEmptyAsDefault) return result;
-
-                // this may set a null, but may also set an empty string or empty array
-                if (result.Result.IsNullOrDefault(treatFalseAsDefault: false)) continue;
-
-                if (result.Result is string foundString)
-                {
-                    if(string.IsNullOrEmpty(foundString)) continue;
-                    return result;
-                }
-
-                // Return entity-list if it has elements, otherwise continue searching
-                if (result.Result is IEnumerable<IEntity> entityList)
-                {
-                    if(!entityList.Any()) continue;
-                    return result;
-                }
+                if (!result.IsFinal) continue;
                 
-                // not sure if this will ever hit
-                if (result.Result is ICollection list)
-                {
-                    if(list.Count == 0) continue;
-                    return result;
-                }
-                
-                // All seems ok, special checks passed, return result
-                return result;
+                if (!(result.Result is IEnumerable<IEntity> entityChildren))
+                    return wrapLog("simple value, final", result);
+
+                var navigationWrapped = entityChildren.Select(e =>
+                    new EntityWithStackNavigation(e, this, field, result.SourceIndex)).ToList();
+                result.Result = navigationWrapped;
+
+                return wrapLog("wrapped as Entity-Stack, final", result);
             }
 
             // All loops completed, maybe one got a temporary result, return that
-            return result;
+            return wrapLog("not-final", result);
         }
+        
     }
 }

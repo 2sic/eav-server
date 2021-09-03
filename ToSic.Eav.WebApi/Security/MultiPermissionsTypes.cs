@@ -12,10 +12,14 @@ namespace ToSic.Eav.WebApi.Security
 {
     public class MultiPermissionsTypes: MultiPermissionsApp
     {
-        private const string _logName = "Sec.MPTyps";
+        private const string LogName = "Sec.MPTyps";
         protected IEnumerable<string> ContentTypes;
 
-        public MultiPermissionsTypes(IZoneMapper zoneMapper): base(zoneMapper) { }
+        public MultiPermissionsTypes(IZoneMapper zoneMapper, IAppStates appStates): base(zoneMapper)
+        {
+            _appStates = appStates;
+        }
+        private readonly IAppStates _appStates;
 
         public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType, ILog parentLog)
         {
@@ -25,14 +29,14 @@ namespace ToSic.Eav.WebApi.Security
 
         public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, IEnumerable<string> contentTypes, ILog parentLog)
         { 
-           Init(context, app, parentLog, _logName);
+           Init(context, app, parentLog, LogName);
            ContentTypes = contentTypes;
            return this;
         }
 
         public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, List<ItemIdentifier> items, ILog parentLog)
         {
-            Init(context, app, parentLog, _logName);
+            Init(context, app, parentLog, LogName);
             ContentTypes = ExtractTypeNamesFromItems(items);
             return this;
         }
@@ -56,10 +60,7 @@ namespace ToSic.Eav.WebApi.Security
             return typeNames;
         }
 
-        //protected AppRuntime AppRuntime => _appRuntime ?? (_appRuntime = new AppRuntime().Init(App, true, Log));
-        //private AppRuntime _appRuntime;
-
-        protected AppState AppState => _appState ?? (_appState = State.Get(App));
+        protected AppState AppState => _appState ?? (_appState = _appStates.Get(App));
         private AppState _appState;
 
         /// <summary>

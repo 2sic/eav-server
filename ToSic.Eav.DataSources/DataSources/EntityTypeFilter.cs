@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -46,13 +47,16 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityTypeFilter
         /// </summary>
         [PrivateApi]
-        public EntityTypeFilter()
+        public EntityTypeFilter(IAppStates appStates)
 		{
+            _appStates = appStates;
             Provide(GetList);
 		    ConfigMask(TypeNameKey, "[Settings:TypeName]");
         }
+        private readonly IAppStates _appStates;
 
-	    private IImmutableList<IEntity> GetList()
+
+        private IImmutableList<IEntity> GetList()
 	    {
             var wrapLog = Log.Call<IImmutableList<IEntity>>();
 
@@ -61,7 +65,7 @@ namespace ToSic.Eav.DataSources
 
 	        try
             {
-                var appState = Apps.State.Get(this);
+                var appState = _appStates.Get(this);
 	            var foundType = appState?.GetContentType(TypeName);
 	            if (foundType != null) // maybe it doesn't find it!
                 {

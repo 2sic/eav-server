@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public sealed class XmlExporterUnknown: XmlExporter, IIsUnknown
     {
-        public XmlExporterUnknown(XmlSerializer xmlSerializer) : base(xmlSerializer, LogNames.NotImplemented)
+        public XmlExporterUnknown(XmlSerializer xmlSerializer, IAppStates appStates) : base(xmlSerializer, appStates, LogNames.NotImplemented)
         {
         }
 
@@ -31,12 +31,12 @@ namespace ToSic.Eav.Apps.ImportExport
 
         protected override TenantFileItem ResolveFile(int fileId)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("Not supported in provider 'Unknown'");
         }
 
         protected override string ResolveFolderId(int folderId)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("Not supported in provider 'Unknown'");
         }
     }
 }

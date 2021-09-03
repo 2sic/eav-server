@@ -61,7 +61,8 @@ namespace ToSic.Eav.DataSources
 
             // now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
             // because the "real" source already applies filters like published
-            var listOfTypes = Apps.State.Get(this).ContentTypes;
+            var appState = _appStates.Get(this);
+            var listOfTypes = appState.ContentTypes;
             // var dataSourceFactory = new DataSource(Log);
             var showDrafts = GetShowDraftStatus();
             var typeList = "";
@@ -73,7 +74,7 @@ namespace ToSic.Eav.DataSources
                 typeList += typeName + ",";
 
                 var deferredStream = new DataStreamWithCustomCaching(
-                    () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), Apps.State.Get(this), $"Name={typeName}&Drafts={showDrafts}"),
+                    () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState, $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
                     () => BuildTypeStream(upstreamDataSource, typeName)[Constants.DefaultStreamName].List.ToImmutableArray(),

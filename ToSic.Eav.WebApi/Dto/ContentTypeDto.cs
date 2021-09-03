@@ -13,7 +13,7 @@ namespace ToSic.Eav.WebApi.Dto
         public int? SharedDefId { get; set; }
         public int Items { get; set; }
         public int Fields { get; set; }
-        public Dictionary<string, object> Metadata { get; set; }
+        public IDictionary<string, object> Metadata { get; set; }
 
         public HasPermissionsDto Permissions { get; set; }
     }

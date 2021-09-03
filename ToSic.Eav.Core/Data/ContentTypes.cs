@@ -13,6 +13,8 @@ namespace ToSic.Eav.Data
         public const string ContentTypeTypeName = "ContentType";
         public static readonly string ContentTypeMetadataLabel = "Label";
 
+        public static readonly string DynamicChildrenField = "DynamicChildrenField";
+
         #endregion
     }
 }

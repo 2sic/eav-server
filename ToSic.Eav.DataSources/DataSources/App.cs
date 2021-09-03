@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSources.Queries;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using static System.Int32;
@@ -22,7 +23,8 @@ namespace ToSic.Eav.DataSources
         HelpLink = "https://r.2sxc.org/DsApp")]
     public partial class App : DataSourceBase
 	{
-		#region Configuration-properties
+
+        #region Configuration-properties
 		private const string AppSwitchKey = "AppSwitch";
 		private const string ZoneSwitchKey = "ZoneSwitch";
 
@@ -66,17 +68,17 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new App DataSource
 		/// </summary>
 		[PrivateApi]
-		public App()
+		public App(IAppStates appStates)
 		{
-			// this one is unusual, so don't pre-attach a default data stream to out
+            _appStates = appStates;
+            // this one is unusual, so don't pre-attach a default data stream to out
             _out = new StreamDictionary(this, null);
 
 			// Set default switch-keys to 0 = no switch
 			ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
 			ConfigMask(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
-
-            //OutIsDynamic = true;
         }
+        private readonly IAppStates _appStates;
 
 		/// <summary>
 		/// Attach a different data source than is currently attached...
@@ -101,7 +103,7 @@ namespace ToSic.Eav.DataSources
 		/// This allows users of the App to query metadata directly through this object. 
 		/// </summary>
 		/// <returns>An initialized <see cref="IMetadataSource"/> for this app</returns>
-		public IMetadataSource Metadata => _metadata ?? (_metadata = Apps.State.Get(this));
+		public IMetadataSource Metadata => _metadata ?? (_metadata = _appStates.Get(this));
         private IMetadataSource _metadata;
     }
 

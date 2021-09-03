@@ -17,7 +17,11 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class QueryManager: PartOf<AppManager, QueryManager>
     {
-        public QueryManager() : base("App.QryMng") {}
+        public QueryManager(Lazy<SystemManager> systemManagerLazy) : base("App.QryMng")
+        {
+            _systemManagerLazy = systemManagerLazy;
+        }
+        private readonly Lazy<SystemManager> _systemManagerLazy;
 
         public void SaveCopy(int id) => SaveCopy(Parent.Read.Queries.Get(id));
 
@@ -33,7 +37,7 @@ namespace ToSic.Eav.Apps.Parts
             var newMetadata = origMetadata.Select(o => CopyAndResetIds(o.Value, newParts[o.Key].EntityGuid));
 
             // now update wiring...
-            var origWiring = query.Connections;// query.Entity.GetBestValue(Constants.QueryStreamWiringAttributeName).ToString();
+            var origWiring = query.Connections;
             var keyMap = newParts.ToDictionary(o => o.Key.ToString(), o => o.Value.EntityGuid.ToString());
             var newWiring = RemapWiringToCopy(origWiring, keyMap);
 
@@ -49,7 +53,7 @@ namespace ToSic.Eav.Apps.Parts
 
         private static string RemapWiringToCopy(IList<Connection> origWiring, Dictionary<string, string> keyMap)
         {
-            var wiringsSource = origWiring;// QueryWiring.Deserialize(origWiring);
+            var wiringsSource = origWiring;
             var wiringsClone = new List<Connection>();
             if (wiringsSource != null)
                 foreach (var wireInfo in wiringsSource)
@@ -84,7 +88,7 @@ namespace ToSic.Eav.Apps.Parts
         public bool Delete(int id)
         {
             Log.Add($"delete a#{Parent.AppId}, id:{id}");
-            var canDeleteResult = Parent.Entities.CanDelete(id);
+            var canDeleteResult = Parent.Entities.CanDeleteEntityBasedOnDbRelationships(id);
             if (!canDeleteResult.Item1)
                 throw new Exception(canDeleteResult.Item2);
 
@@ -105,10 +109,9 @@ namespace ToSic.Eav.Apps.Parts
             Parent.Entities.Delete(id);
 
             // flush cache
-            SystemManager.Purge(Parent.AppId, Log);
+            _systemManagerLazy.Value.Init(Log).PurgeApp(Parent.AppId);
 
             return true;
-
         }
 
 

@@ -80,6 +80,14 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-	    bool Is(string name); 
-	}
+	    bool Is(string name);
+
+
+        #region WIP 12.03
+
+        [PrivateApi("WIP 12.03")] string DynamicChildrenField { get; }
+
+
+        #endregion
+    }
 }

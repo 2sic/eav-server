@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -43,16 +45,21 @@ namespace ToSic.Eav.DataSources.Queries
         /// All content-types available in Reflection; will cache after first scan
         /// </summary>
         /// <returns></returns>
-        private IEnumerable<IEntity> QueriesInRuntime()
+        private List<IEntity> QueriesInRuntime()
         {
             if (_runtimeCache != null) return _runtimeCache;
 
+            var log = new Log($"{LogNames.Eav}.Global");
+            log.Add("Load Global Queries");
+            History.Add(Types.Global.LogHistoryGlobalTypes, log);
+            var wrapLog = log.Call<List<IEntity>>();
+
             var runtime = _runtimeLazy.Value.Init(null);
-            _runtimeCache = runtime?.LoadGlobalItems("query") ?? new List<IEntity>();
-            return _runtimeCache;
+            _runtimeCache = runtime?.LoadGlobalItems("query")?.ToList() ?? new List<IEntity>();
+            return wrapLog($"{_runtimeCache?.Count}", _runtimeCache);
         }
 
-        private static IEnumerable<IEntity> _runtimeCache;
+        private static List<IEntity> _runtimeCache;
 
 
         public IEntity FindQuery(string name)

@@ -11,9 +11,14 @@ namespace ToSic.Eav.Apps.Parts
     {
         #region Constructor / DI
 
+        public ZoneCreator(DbDataController db, SystemManager systemManager) : base("Eav.AppBld")
+        {
+            _db = db;
+            SystemManager = systemManager.Init(Log);
+        }
         private readonly DbDataController _db;
+        protected readonly SystemManager SystemManager;
 
-        public ZoneCreator(DbDataController db) : base("Eav.AppBld") => _db = db;
 
         #endregion
 
@@ -21,7 +26,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             var wrapCall = Log.Call<int>($"create zone:{name}");
             var zoneId = _db.Init(null, null, Log).Zone.AddZone(name);
-            SystemManager.PurgeZoneList(Log);
+            SystemManager.PurgeZoneList();
             return wrapCall($"created zone {zoneId}", zoneId);
         }
 

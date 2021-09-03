@@ -1,35 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSources.Catalog
 {
     [PrivateApi]
-    public partial class DataSourceCatalog: HasLog
+    public partial class DataSourceCatalog: HasLog<DataSourceCatalog>
     {
-        public DataSourceCatalog(ILog parentLog = null) : base("DS.DsCat", parentLog)
+        public IServiceProvider ServiceProvider { get; }
+        public DataSourceCatalog(IServiceProvider serviceProvider) : base("DS.DsCat")
         {
-        }
-
-        /// <summary>
-        /// Get all installed data sources - usually for the UI
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<DataSourceDto> QueryDataSources()
-        {
-            var callLog = Log.Call<IEnumerable<DataSourceDto>>();
-            var installedDataSources = GetAll(true);
-
-            var result = installedDataSources
-                .Select(dsInfo => new DataSourceDto(dsInfo.Type.Name, dsInfo.VisualQuery)
-                {
-                    PartAssemblyAndType = dsInfo.Name,
-                    Out = dsInfo.VisualQuery?.DynamicOut == true ? null : GetOutStreamNames(dsInfo)
-                })
-                .ToList();
-
-            return callLog(result.Count.ToString(), result);
+            ServiceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -37,7 +20,7 @@ namespace ToSic.Eav.DataSources.Catalog
         /// </summary>
         /// <param name="dsInfo"></param>
         /// <returns></returns>
-        private ICollection<string> GetOutStreamNames(DataSourceInfo dsInfo)
+        public ICollection<string> GetOutStreamNames(DataSourceInfo dsInfo)
         {
             var wrapLog = Log.Call<ICollection<string>>();
             // 2021-03-23 2dm - disabled this, as it prevented interfaces from instantiating
@@ -47,7 +30,10 @@ namespace ToSic.Eav.DataSources.Catalog
             try
             {
                 // Handle Interfaces and real types (currently only on ICache / IAppRoot)
-                var dataSourceInstance = (IDataSource)Factory.Resolve(dsInfo.Type);
+                // TODO: STV - this might fail in Oqtane, because the types are not registered
+                // To make this work, we probably need to scan all DLLs for IDataSources and register them in DI
+                // Pls check
+                var dataSourceInstance = ServiceProvider.Build<IDataSource>(dsInfo.Type);// (IDataSource)Factory.Resolve(dsInfo.Type);
 
                 // skip this if out-connections cannot be queried
                 return dataSourceInstance.Out.Keys;

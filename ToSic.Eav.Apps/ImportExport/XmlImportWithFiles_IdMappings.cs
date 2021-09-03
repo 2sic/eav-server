@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		        p => int.Parse(p.Attribute(XmlConstants.FileIdAttr).Value),
 		        v => v.Attribute(XmlConstants.FolderNodePath).Value
 		    );
-            _environment.MapExistingFilesToImportSet(filesAndPaths, _fileIdCorrectionList);
+            Deps._environment.MapExistingFilesToImportSet(filesAndPaths, _fileIdCorrectionList);
             callLog("ok");
         }
 
@@ -45,7 +45,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 p => int.Parse(p.Attribute(XmlConstants.FolderNodeId).Value),
                 v => v.Attribute(XmlConstants.FolderNodePath).Value
             );
-            _environment.CreateFoldersAndMapToImportIds(foldersAndPath, _folderIdCorrectionList, Messages);
+            Deps._environment.CreateFoldersAndMapToImportIds(foldersAndPath, _folderIdCorrectionList, Messages);
             callLog("ok");
         }
 

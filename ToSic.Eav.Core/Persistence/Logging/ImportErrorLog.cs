@@ -26,10 +26,6 @@ namespace ToSic.Eav.Persistence.Logging
 
         public IEnumerator<ImportError> GetEnumerator() => Errors.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
+        IEnumerator IEnumerable.GetEnumerator() => Errors.GetEnumerator();
     }
 }

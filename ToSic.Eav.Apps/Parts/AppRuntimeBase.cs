@@ -9,6 +9,7 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public abstract class AppRuntimeBase<T>: AppBase where T: AppRuntimeBase<T>
     {
+
         #region Constructor / DI
 
         public DataSourceFactory DataSourceFactory { get; }
@@ -17,10 +18,12 @@ namespace ToSic.Eav.Apps.Parts
 
         public IServiceProvider ServiceProvider => DataSourceFactory.ServiceProvider;
 
-        protected AppRuntimeBase(DataSourceFactory dataSourceFactory, string logName): base(logName, new CodeRef())
+        protected AppRuntimeBase(AppRuntimeDependencies dependencies, string logName): base(logName, new CodeRef())
         {
-            DataSourceFactory = dataSourceFactory.Init(Log);
+            Dependencies = dependencies;
+            DataSourceFactory = dependencies.DataSourceFactory.Init(Log);
         }
+        protected readonly AppRuntimeDependencies Dependencies;
 
         public T Init(IAppIdentity app, bool showDrafts, ILog parentLog)
         {
@@ -46,7 +49,7 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         public AppState AppState
         {
-            get => _appState ?? (_appState = State.Get(this));
+            get => _appState ?? (_appState = Dependencies.AppStates/* State.*/.Get(this));
             protected set => _appState = value;
         }
 

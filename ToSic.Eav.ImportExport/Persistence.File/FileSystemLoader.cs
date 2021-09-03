@@ -15,29 +15,39 @@ using IEntity = ToSic.Eav.Data.IEntity;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class FileSystemLoader: HasLog<IContentTypeLoader>, IContentTypeLoader
+    public partial class FileSystemLoader: HasLog, IContentTypeLoader
     {
         private const string ContentTypeFolder = "contenttypes\\";
         private const string QueryFolder = "queries\\";
         private const string ConfigurationFolder = "configurations\\";
-        private const string ItemFolder = "items\\";
+        //private const string ItemFolder = "items\\";
 
-        public FileSystemLoader(string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
-            : base("FSL.Loadr", parentLog, $"init with path:{path} ignore:{ignoreMissing}")
+        /// <summary>
+        /// Empty constructor for DI
+        /// </summary>
+        public FileSystemLoader(JsonSerializer jsonSerializerUnready) : base("FSL.Loadr")
         {
+            _jsonSerializerUnready = jsonSerializerUnready;
+        }
+
+        public FileSystemLoader Init(string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            Log.Add($"init with path:{path} ignore:{ignoreMissing}");
             Path = path + (path.EndsWith("\\") ? "" : "\\");
             RepoType = repoType;
             IgnoreMissingStuff = ignoreMissing;
             EntitiesSource = entitiesSource;
+            return this;
         }
 
-        private string Path { get; }
+        private string Path { get; set; }
 
-        private bool IgnoreMissingStuff { get; }
+        private bool IgnoreMissingStuff { get; set; }
 
-        private RepositoryTypes RepoType { get; }
+        private RepositoryTypes RepoType { get; set; }
 
-        protected readonly IEntitiesSource EntitiesSource;
+        protected IEntitiesSource EntitiesSource;
 
         #region json serializer
         private JsonSerializer Serializer
@@ -45,14 +55,15 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_ser != null) return _ser;
-                _ser = new JsonSerializer(null /* todo: DI */);
+                _ser = _jsonSerializerUnready;
                 _ser.Initialize(0, ReflectionTypes.FakeCache.Values, EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
         }
-
         private JsonSerializer _ser;
+        private readonly JsonSerializer _jsonSerializerUnready;
+
         #endregion
 
         #region Queries & Configuration
@@ -69,12 +80,23 @@ namespace ToSic.Eav.Persistence.File
                 return new List<IEntity>();
 
             // #2 find all content-type files in folder
-            var jsons = Directory.GetFiles(path, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
+            var jsons = Directory.GetFiles(path, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json))
+                .OrderBy(f => f)
+                .ToArray();
 
-            // #3 load entity-items from folder
-            var cts = jsons.Select(json => LoadAndBuildEntity(Serializer, json)).Where(entity => entity != null).ToList();
+            // #3.1 WIP - Allow relationships between loaded items
+            var entitiesForRelationships = new List<IEntity>();
+            var relationshipsSource = new DirectEntitiesSource(entitiesForRelationships);
 
-            return cts;
+
+            // #3.2 load entity-items from folder
+            var jsonSerializer = Serializer;
+            var entities = jsons.Select(json => LoadAndBuildEntity(jsonSerializer, json, relationshipsSource)).Where(entity => entity != null).ToList();
+
+            // #3.3 Put all found entities into the source
+            entitiesForRelationships.AddRange(entities);
+            
+            return entities;
         }
 
         #endregion
@@ -156,23 +178,25 @@ namespace ToSic.Eav.Persistence.File
         /// <param name="ser"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        private IEntity LoadAndBuildEntity(JsonSerializer ser, string path)
+        private IEntity LoadAndBuildEntity(JsonSerializer ser, string path, IEntitiesSource relationshipSource = null)
         {
             Log.Add("Loading " + path);
             try
             {
                 var json = System.IO.File.ReadAllText(path);
-                var ct = ser.Deserialize(json, allowDynamic: true);
+                var ct = ser.DeserializeWithRelsWip(json, allowDynamic: true, skipUnknownType: false, relationshipSource);
                 return ct;
             }
             catch (IOException e)
             {
-                Log.Add("Failed loading type - couldn't read file because of " + e);
+                Log.Exception(e);
+                Log.Add($"Failed loading type - couldn't read file because of {e}");
                 return null;
             }
-            catch
+            catch (Exception e)
             {
-                Log.Add("Failed loading type - couldn't deserialize or unknown reason");
+                Log.Exception(e);
+                Log.Add($"Failed loading type - couldn't deserialize or unknown reason: {e}");
                 return null;
             }
         }

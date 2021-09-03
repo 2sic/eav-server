@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSources.Queries
 {
@@ -13,25 +15,25 @@ namespace ToSic.Eav.DataSources.Queries
 	/// </summary>
 	public class QueryBuilder: HasLog<QueryBuilder>
 	{
-
         #region Dependency Injection
 
-		public DataSourceFactory DataSourceFactory { get; }
-        private readonly IZoneCultureResolver _cultureResolver;
-
-		/// <summary>
+        /// <summary>
 		/// DI Constructor
 		/// </summary>
 		/// <remarks>
 		/// Never call this constructor from your code, as it re-configures the DataSourceFactory it gets
 		/// </remarks>
-		/// <param name="dataSourceFactory"></param>
-        public QueryBuilder(DataSourceFactory dataSourceFactory, IZoneCultureResolver cultureResolver) : base("DS.PipeFt")
+        public QueryBuilder(DataSourceFactory dataSourceFactory, IZoneCultureResolver cultureResolver, IAppStates appStates) : base("DS.PipeFt")
         {
             _cultureResolver = cultureResolver;
-            DataSourceFactory = dataSourceFactory.Init(Log);
-            DataSourceFactory.Init(Log);
+            _appStates = appStates;
+            _dataSourceFactory = dataSourceFactory.Init(Log);
+            _dataSourceFactory.Init(Log);
         }
+
+        private readonly DataSourceFactory _dataSourceFactory;
+        private readonly IZoneCultureResolver _cultureResolver;
+        private readonly IAppStates _appStates;
         
 
         #endregion
@@ -46,8 +48,8 @@ namespace ToSic.Eav.DataSources.Queries
 
 	        try
             {
-                var app = Apps.State.Identity(null, appId);
-                var source = DataSourceFactory.GetPublishing(app);
+                var app = _appStates.Identity(null, appId);
+                var source = _dataSourceFactory.GetPublishing(app);
 	            var appEntities = source[Constants.DefaultStreamName].List;
 
 	            // use findRepo, as it uses the cache, which gives the list of all items
@@ -105,7 +107,7 @@ namespace ToSic.Eav.DataSources.Queries
 			// tell the primary-out that it has this guid, for better debugging
             var passThroughConfig = new LookUpEngine(templateConfig, Log);
             IDataSource outTarget = new PassThrough().Init(passThroughConfig);
-            if (outTarget.Guid == Guid.Empty)
+			if (outTarget.Guid == Guid.Empty)
 	            outTarget.Guid = queryDef.Entity.EntityGuid;
 
             #endregion
@@ -132,8 +134,8 @@ namespace ToSic.Eav.DataSources.Queries
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
                 var assemblyAndType = dataQueryPart.DataSourceType;
 
-                var appIdentity = Apps.State.Identity(null, queryDef.AppId);
-                var dataSource = DataSourceFactory.GetDataSource(assemblyAndType, appIdentity, lookUps: partConfig);
+                var appIdentity = _appStates.Identity(null, queryDef.AppId);
+                var dataSource = _dataSourceFactory.GetDataSource(assemblyAndType, appIdentity, lookUps: partConfig);
 	            dataSource.Guid = dataQueryPart.Guid;
 
                 try

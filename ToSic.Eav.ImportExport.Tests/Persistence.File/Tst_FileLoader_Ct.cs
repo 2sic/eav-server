@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repositories;
+using ToSic.Testing.Shared;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File.Tests
@@ -96,7 +97,8 @@ namespace ToSic.Eav.Persistence.File.Tests
 
         private IList<IContentType> LoadAllTypes()
         {
-            var loader = new FileSystemLoader(TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null, Log);
+            var loader = EavTestBase.Resolve<FileSystemLoader>()
+                .Init(TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null, Log);
             IList<IContentType> cts;
             try
             {

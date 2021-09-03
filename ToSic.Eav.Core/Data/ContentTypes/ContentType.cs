@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
@@ -52,6 +53,14 @@ namespace ToSic.Eav.Data
         public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => string.Equals(a.Name, fieldName, OrdinalIgnoreCase));
 
 
+        #region New DynamicChildren Navigation - new in 12.03
+        [PrivateApi("WIP 12.03")]
+        // Don't cache the result, as it could change during runtime
+        public string DynamicChildrenField => Metadata.GetBestValue<string>(ContentTypes.DynamicChildrenField);
+        
+
+        #endregion
+
         #endregion
 
         #region Sharing Content Types
@@ -73,9 +82,13 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Initializes a new ContentType - usually when building the cache
         /// </summary>
+        [PrivateApi]
         public ContentType(int appId, string name, string staticName, int attributeSetId, string scope,
-            string description, int? usesConfigurationOfAttributeSet, int configZoneId, int configAppId,
-            bool configurationIsOmnipresent, IHasMetadataSource metaProviderOfThisApp): this(appId, name, staticName)
+            string description, int? usesConfigurationOfAttributeSet, 
+            int configZoneId, int configAppId,
+            bool configurationIsOmnipresent, 
+            //IHasMetadataSource metaProviderOfThisApp = null, 
+            Func<IHasMetadataSource> metaSourceFinder = null): this(appId, name, staticName)
         {
             ContentTypeId = attributeSetId;
             Description = description;
@@ -84,8 +97,8 @@ namespace ToSic.Eav.Data
             ParentZoneId = configZoneId;
             ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
-            _metaOfThisApp = metaProviderOfThisApp;
-
+            //_metaOfThisApp = metaProviderOfThisApp;
+            _metaSourceFinder = metaSourceFinder;
         }
 
         /// <summary>
@@ -94,6 +107,7 @@ namespace ToSic.Eav.Data
         /// <remarks>
         /// Overload for in-memory entities
         /// </remarks>
+        [PrivateApi]
         public ContentType(int appId, string name, string staticName = null)
         {
             AppId = appId;
@@ -131,11 +145,13 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public ContentTypeMetadata Metadata
-            => _metadata ?? (_metadata = ParentAppId == AppId
-                ? new ContentTypeMetadata(StaticName, _metaOfThisApp)
-                : new ContentTypeMetadata(StaticName, ParentZoneId, ParentAppId));
+            => _metadata ?? (_metadata = new ContentTypeMetadata(StaticName, _metaSourceFinder));
+            //=> _metadata ?? (_metadata = ParentAppId == AppId
+            //? new ContentTypeMetadata(StaticName, _metaOfThisApp)
+            //: new ContentTypeMetadata(StaticName, _metaSourceFinder));
         private ContentTypeMetadata _metadata;
-        private readonly IHasMetadataSource _metaOfThisApp;
+        //private readonly IHasMetadataSource _metaOfThisApp;
+        private readonly Func<IHasMetadataSource> _metaSourceFinder;
 
         IMetadataOf IHasMetadata.Metadata => Metadata;
         #endregion

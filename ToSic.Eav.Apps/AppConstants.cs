@@ -29,5 +29,9 @@
 
         // this used to be a Settings.DataIsMissingInDb
         public const int AppIdNotFound = -100;
+
+        // Settings / Resources
+        public static string RootNameSettings = "Settings";
+        public static string RootNameResources = "Resources";
     }
 }

@@ -7,6 +7,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
@@ -22,40 +23,76 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for the Pipeline Designer UI
 	/// </summary>
-	public class QueryApi : HasLog
+	public abstract class QueryApi : HasLog
     {
+        public class Dependencies
+        {
+            public Lazy<AppManager> AppManagerLazy { get; }
+            /// <summary>
+            /// The lazy reader should only be used in the Definition - it's important that it's a new object
+            /// when used, to ensure it has the changes previously saved
+            /// </summary>
+            public Lazy<AppRuntime> AppReaderLazy { get; }
+            public QueryBuilder QueryBuilder { get; }
+            public Lazy<EntitiesToDictionary> EntToDicLazy { get; }
+            public Lazy<QueryInfo> QueryInfoLazy { get; }
+            public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
+
+            public Dependencies(Lazy<AppManager> appManagerLazy,
+                Lazy<AppRuntime> appReaderLazy,
+                QueryBuilder queryBuilder,
+                Lazy<EntitiesToDictionary> entToDicLazy,
+                Lazy<QueryInfo> queryInfoLazy,
+                Lazy<DataSourceCatalog> dataSourceCatalogLazy)
+            {
+                AppManagerLazy = appManagerLazy;
+                AppReaderLazy = appReaderLazy;
+                QueryBuilder = queryBuilder;
+                EntToDicLazy = entToDicLazy;
+                QueryInfoLazy = queryInfoLazy;
+                DataSourceCatalogLazy = dataSourceCatalogLazy;
+            }
+        }
+
         public QueryBuilder QueryBuilder { get; }
-        private readonly Lazy<AppManager> _appManagerLazy;
-        
-        /// <summary>
-        /// The lazy reader should only be used in the Definition - it's important that it's a new object
-        /// when used, to ensure it has the changes previously saved
-        /// </summary>
-        private readonly Lazy<AppRuntime> _appReaderLazy;
-        private readonly Lazy<EntitiesToDictionary> _entToDicLazy;
-        private readonly Lazy<QueryInfo> _queryInfoLazy;
+        private readonly Dependencies _dependencies;
+        //private readonly Lazy<AppManager> _appManagerLazy;
+
+        ///// <summary>
+        ///// The lazy reader should only be used in the Definition - it's important that it's a new object
+        ///// when used, to ensure it has the changes previously saved
+        ///// </summary>
+        //private readonly Lazy<AppRuntime> _appReaderLazy;
+        //private readonly Lazy<EntitiesToDictionary> _entToDicLazy;
+        //private readonly Lazy<QueryInfo> _queryInfoLazy;
+        //private readonly Lazy<DataSourceCatalog> _dataSourceCatalogLazy;
         private AppManager _appManager;
 
-        public QueryApi(
-            Lazy<AppManager> appManagerLazy, 
-            Lazy<AppRuntime> appReaderLazy, 
-            QueryBuilder queryBuilder, 
-            Lazy<EntitiesToDictionary> entToDicLazy,
-            Lazy<QueryInfo> queryInfoLazy
+        protected QueryApi(
+            Dependencies dependencies
+            //Lazy<AppManager> appManagerLazy, 
+            //Lazy<AppRuntime> appReaderLazy, 
+            //QueryBuilder queryBuilder, 
+            //Lazy<EntitiesToDictionary> entToDicLazy,
+            //Lazy<QueryInfo> queryInfoLazy,
+            //Lazy<DataSourceCatalog> dataSourceCatalogLazy
             ) : base("Api.EavQry")
         {
-            QueryBuilder = queryBuilder;
+            _dependencies = dependencies;
+            QueryBuilder = dependencies.QueryBuilder;
             QueryBuilder.Init(Log);
-            _appManagerLazy = appManagerLazy;
-            _appReaderLazy = appReaderLazy;
-            _entToDicLazy = entToDicLazy;
-            _queryInfoLazy = queryInfoLazy;
+            //_appManagerLazy = appManagerLazy;
+            //_appReaderLazy = appReaderLazy;
+            //_entToDicLazy = entToDicLazy;
+            //_queryInfoLazy = queryInfoLazy;
+            //_dataSourceCatalogLazy = dataSourceCatalogLazy;
         }
 
         public QueryApi Init(int appId, ILog parentLog)
         {
             Log.LinkTo(parentLog);
-            _appManager = _appManagerLazy.Value.Init(appId, Log);
+            if (appId != 0) // if 0, then no context is available or used
+                _appManager = _dependencies.AppManagerLazy.Value.Init(appId, Log);
             return this;
         }
 
@@ -71,7 +108,7 @@ namespace ToSic.Eav.WebApi
 
             if (!id.HasValue) return query;
 
-            var reader = _appReaderLazy.Value.Init(State.Identity(null, appId), false, Log);
+            var reader = _dependencies.AppReaderLazy.Value.Init(appId, false, Log);
             var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
@@ -85,6 +122,25 @@ namespace ToSic.Eav.WebApi
             #endregion
 
             return query;
+        }
+
+        public IEnumerable<DataSourceDto> DataSources()
+        {
+            var dsCatalog = _dependencies.DataSourceCatalogLazy.Value.Init(Log);
+
+            var callLog = Log.Call<IEnumerable<DataSourceDto>>();
+            var installedDataSources = DataSourceCatalog.GetAll(true);
+
+            var result = installedDataSources
+                .Select(dsInfo => new DataSourceDto(dsInfo.Type.Name, dsInfo.VisualQuery)
+                {
+                    PartAssemblyAndType = dsInfo.Name,
+                    Out = dsInfo.VisualQuery?.DynamicOut == true ? null : dsCatalog.GetOutStreamNames(dsInfo)
+                })
+                .ToList();
+
+            return callLog(result.Count.ToString(), result);
+
         }
 
         /// <summary>
@@ -160,14 +216,14 @@ namespace ToSic.Eav.WebApi
             var serializeWrap = Log.Call("Serialize", useTimer: true);
             var timer = new Stopwatch();
             timer.Start();
-            var converter = _entToDicLazy.Value.EnableGuids();
+            var converter = _dependencies.EntToDicLazy.Value.EnableGuids();
             converter.MaxItems = top;
 		    var results = converter.Convert(partLookup(builtQuery));
             timer.Stop();
             serializeWrap("ok");
 
             // Now get some more debug info
-            var debugInfo = _queryInfoLazy.Value.Init(outSource, Log);
+            var debugInfo = _dependencies.QueryInfoLazy.Value.Init(outSource, Log);
 
             wrapLog(null);
             // ...and return the results
@@ -193,7 +249,7 @@ namespace ToSic.Eav.WebApi
 		/// <summary>
 		/// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
 		/// </summary>
-		public bool Delete(int appId, int id) => _appManager.Queries.Delete(id);
+		public bool Delete(/*int appId,*/ int id) => _appManager.Queries.Delete(id);
 
 
         public bool Import(EntityImportDto args)
@@ -211,7 +267,7 @@ namespace ToSic.Eav.WebApi
             }
             catch (Exception ex)
             {
-                throw new Exception("Couldn't import - probably bad file format", ex);
+                throw new Exception($"Couldn't import - {ex?.Message ?? "probably bad file format"}.", ex);
             }
         }
 

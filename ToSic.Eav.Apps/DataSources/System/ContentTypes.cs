@@ -37,6 +37,7 @@ namespace ToSic.Eav.DataSources.System
     // ReSharper disable once UnusedMember.Global
     public sealed class ContentTypes: DataSourceBase
 	{
+
         #region Configuration-properties (no config)
 	    public override string LogId => "DS.EavCTs";
 
@@ -79,12 +80,14 @@ namespace ToSic.Eav.DataSources.System
         /// Constructs a new ContentTypes DS
         /// </summary>
         [PrivateApi]
-        public ContentTypes()
+        public ContentTypes(IAppStates appStates)
 		{
+            _appStates = appStates;
             Provide(GetList);
 		    ConfigMask(AppIdKey, $"[Settings:{AppIdField}]");
 		    ConfigMask(ScopeKey, $"[Settings:{ScopeField}||Default]");
 		}
+        private readonly IAppStates _appStates;
 
 	    private ImmutableArray<IEntity> GetList()
 	    {
@@ -98,7 +101,7 @@ namespace ToSic.Eav.DataSources.System
 	        if (string.IsNullOrWhiteSpace(scp) || string.Equals(scp, "Default", StringComparison.InvariantCultureIgnoreCase))
 	            scp = AppConstants.ScopeContentOld;
 
-	        var types = State.Get(appId).ContentTypes.OfScope(scp);
+	        var types = _appStates.Get(appId).ContentTypes.OfScope(scp);
             
             var builder = DataBuilder;
 	        var list = types.OrderBy(t => t.Name).Select(t =>

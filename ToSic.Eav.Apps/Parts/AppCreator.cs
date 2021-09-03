@@ -14,17 +14,19 @@ namespace ToSic.Eav.Apps.Parts
     {
         #region Constructor / DI
 
-        private readonly DbDataController _db;
-        private readonly AppManager _appManager;
-        private readonly IRepositoryLoader _repositoryLoader;
         private int _zoneId;
 
-        public AppCreator(DbDataController db, AppManager appManager, IRepositoryLoader repositoryLoader) : base("Eav.AppBld")
+        public AppCreator(DbDataController db, AppManager appManager, IRepositoryLoader repositoryLoader, SystemManager systemManager) : base("Eav.AppBld")
         {
             _db = db;
             _appManager = appManager;
-            _repositoryLoader = repositoryLoader.Init(Log);
+            SystemManager = systemManager.Init(Log);
+            RepositoryLoader = repositoryLoader.Init(Log);
         }
+        private readonly DbDataController _db;
+        private readonly AppManager _appManager;
+        protected readonly SystemManager SystemManager;
+        protected readonly IRepositoryLoader RepositoryLoader;
 
         public AppCreator Init(int zoneId, ILog parentLog)
         {
@@ -49,7 +51,7 @@ namespace ToSic.Eav.Apps.Parts
             var appId = CreateInDb();
 
             // must get app from DB directly, not from cache, so no State.Get(...)
-            var appState = _repositoryLoader.AppState(appId, false);
+            var appState = RepositoryLoader.AppState(appId, false);
 
             new AppInitializer(_appManager.ServiceProvider)
                 .Init(appState, Log)
@@ -62,7 +64,7 @@ namespace ToSic.Eav.Apps.Parts
             var appGuid = Guid.NewGuid().ToString();
             var app = _db.Init(_zoneId, null, Log).App.AddApp(null, appGuid);
 
-            SystemManager.PurgeZoneList(Log);
+            SystemManager.PurgeZoneList();
             Log.Add($"app created a:{app.AppId}, guid:{appGuid}");
             return app.AppId;
         }

@@ -14,12 +14,15 @@ namespace ToSic.Eav.Persistence.Efc
         public Efc11Loader(EavDbContext dbContext,
             Lazy<IZoneCultureResolver> environmentLazy,
             IServiceProvider serviceProvider,
-            IAppInitializedChecker initializedChecker) : base("Db.Efc11")
+            IAppInitializedChecker initializedChecker,
+            IAppStates appStates
+            ) : base("Db.Efc11")
         {
             ServiceProvider = serviceProvider;
             _dbContext = dbContext;
             _environmentLazy = environmentLazy;
             _initializedChecker = initializedChecker;
+            _appStates = appStates;
         }
 
         public Efc11Loader UseExistingDb(EavDbContext dbContext)
@@ -32,6 +35,7 @@ namespace ToSic.Eav.Persistence.Efc
         private EavDbContext _dbContext;
         private readonly Lazy<IZoneCultureResolver> _environmentLazy;
         private readonly IAppInitializedChecker _initializedChecker;
+        private readonly IAppStates _appStates;
 
         #endregion
     }
