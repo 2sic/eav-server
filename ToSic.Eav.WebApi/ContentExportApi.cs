@@ -40,7 +40,8 @@ namespace ToSic.Eav.WebApi
             return this;
         }
 
-        public HttpResponseMessage ExportContent(IUser user, string language, 
+        public Tuple<string, string> ExportContent(IUser user, 
+            string language, 
             string defaultLanguage, 
             string contentType,
             ExportSelection exportSelection, 
@@ -74,14 +75,12 @@ namespace ToSic.Eav.WebApi
 
             var contentTypeName = tableExporter.ContentType.Name;
 
-
             var fileName =
                 $"2sxc {contentTypeName.Replace(" ", "-")} {language} " +
                 $"{(exportSelection == ExportSelection.Blank ? "Template" : "Data")} " +
                 $"{DateTime.Now:yyyyMMddHHmmss}.xml";
 
-            return Download.BuildDownload(fileContent, fileName);
-
+            return new Tuple<string, string>(fileContent, fileName);
         }
 
         [HttpGet]
