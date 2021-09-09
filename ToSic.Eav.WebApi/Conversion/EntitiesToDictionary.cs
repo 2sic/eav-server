@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 #if NET451
 using System.Web.Http;
 using Newtonsoft.Json;
@@ -15,8 +16,8 @@ namespace ToSic.Eav.Conversion
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
-    public class EntitiesToDictionary: EntitiesToDictionaryBase, IStreamsTo<IDictionary<string, object>>
+    [PrivateApi("Made private in v12.04, as it shouldn't be used in razor - but previously it was in some apps so we must assume it's in use")]
+    public class EntitiesToDictionary: EntitiesToDictionaryBase, IConvertStreams<IDictionary<string, object>>
     {
         /// <summary>
         /// Important: this constructor is used both in inherited,
@@ -26,7 +27,7 @@ namespace ToSic.Eav.Conversion
         /// <param name="dependencies"></param>
         public EntitiesToDictionary(Dependencies dependencies): base(dependencies, "Eav.CnvE2D") { }
 
-#if NET451
+#if NETFRAMEWORK
         /// <summary>
         /// Old constructor used in some public apps in razor, so it must remain for DNN implementation
         /// But .net 451 only!

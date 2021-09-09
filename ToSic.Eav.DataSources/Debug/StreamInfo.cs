@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using ToSic.Eav.Conversion;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources.Debug
 {
@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Debug
         [JsonIgnore]
         protected readonly IDataStream Stream;
 
-        public StreamInfo(IDataStream stream, IDataTarget target, string inName, IEntitiesTo<IDictionary<string, object>> errorConverter)
+        public StreamInfo(IDataStream stream, IDataTarget target, string inName, IConvertEntities<IDictionary<string, object>> errorConverter)
         {
             try
             {

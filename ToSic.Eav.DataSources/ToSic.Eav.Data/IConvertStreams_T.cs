@@ -3,7 +3,7 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Conversion
+namespace ToSic.Eav.Data
 {
     /// <summary>
     /// Marks objects which can convert entire DataStreams or DataSources to another format. <br/>
@@ -11,7 +11,7 @@ namespace ToSic.Eav.Conversion
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface IStreamsTo<T>
+    public interface IConvertStreams<T>
     {
         /// <summary>
         /// Returns an converted IDataSource, but is serializable.

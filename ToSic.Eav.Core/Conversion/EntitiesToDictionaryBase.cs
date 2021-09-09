@@ -12,8 +12,8 @@ namespace ToSic.Eav.Conversion
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public abstract partial class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IEntitiesTo<IDictionary<string, object>>
+    [PrivateApi]
+    public abstract partial class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IConvertEntities<IDictionary<string, object>>
     {
         public static string JsonKeyMetadataFor = "For"; // temp, don't know where to put this ATM
         public static string JsonKeyMetadata = "Metadata";

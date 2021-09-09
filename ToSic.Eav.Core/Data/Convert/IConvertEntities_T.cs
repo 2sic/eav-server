@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Conversion
+namespace ToSic.Eav.Data
 {
     /// <summary>
     /// Convert an entity into another format
     /// </summary>
-    /// <typeparam name="T">The target format we'll convert into</typeparam>
+    /// <typeparam name="TResult">The target format we'll convert into</typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface IEntitiesTo<out T>
+    public interface IConvertEntities<out TResult>: IConvert<IEntity, TResult>
     {
 
         /// <summary>
@@ -53,19 +52,19 @@ namespace ToSic.Eav.Conversion
         /// </summary>
         void ConfigureForAdminUse();
 
-        /// <summary>
-        /// Return an list of converted entities, ready to serialize
-        /// </summary>
-        /// <remarks>
-        ///     note that this could be in use on webAPIs and scripts
-        ///     so even if it looks un-used, it must stay available
-        /// </remarks>
-        IEnumerable<T> Convert(IEnumerable<IEntity> entities);
+        ///// <summary>
+        ///// Return an list of converted entities, ready to serialize
+        ///// </summary>
+        ///// <remarks>
+        /////     note that this could be in use on webAPIs and scripts
+        /////     so even if it looks un-used, it must stay available
+        ///// </remarks>
+        //IEnumerable<TResult> Convert(IEnumerable<IEntity> entities);
 
-        /// <summary>
-        /// Return an converted, serializable entity
-        /// </summary>
-        T Convert(IEntity entity);
+        ///// <summary>
+        ///// Return an converted, serializable entity
+        ///// </summary>
+        //TResult Convert(IEntity entity);
 
     }
 }
