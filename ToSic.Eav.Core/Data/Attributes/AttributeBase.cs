@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// <remarks>
     /// > We recommend you read about the [](xref:Basics.Data.Index)
     /// </remarks>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, use Interface IAttributeBase")]
+    [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi. This is just fyi, use Interface IAttributeBase")]
     public class AttributeBase : IAttributeBase
     {
         /// <inheritdoc />

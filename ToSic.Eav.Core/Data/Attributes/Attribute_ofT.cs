@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data
     /// > We recommend you read about the [](xref:Basics.Data.Index)
     /// </remarks>
     /// <typeparam name="T">Type of the Value</typeparam>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, use interface IAttribute<T>")]
+    [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi, this is just fyi, use interface IAttribute<T>")]
     public class Attribute<T> : AttributeBase, IAttribute<T>
     {
         /// <summary>

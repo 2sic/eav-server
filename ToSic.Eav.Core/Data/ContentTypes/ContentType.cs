@@ -11,7 +11,10 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents a ContentType
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
+    // Remarks: Before 2021-09 it was marked as PublicApi
+    // We should actually make it PrivateApi, but other code references this, so we need to change that to IContentType,
+    // Otherwise docs won't generate cross-links as needed
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("Always use the interface, not this class")]
     public class ContentType : IContentType, IContentTypeShared
     {
         #region simple properties
