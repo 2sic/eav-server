@@ -9,16 +9,16 @@ namespace ToSic.Eav.Data
     /// <typeparam name="TSource"></typeparam>
     /// <typeparam name="TConverted"></typeparam>
     [PublicApi]
-    public interface IConvert<TSource, out TConverted>
+    public interface IConvert<in TSource, out TConverted>
     {
         /// <summary>
         /// Return a list of converted objects - usually prepared for serialization or similar. 
         /// </summary>
-        IEnumerable<TConverted> Convert(IEnumerable<TSource> dynamicList);
+        IEnumerable<TConverted> Convert(IEnumerable<TSource> list);
 
         /// <summary>
         /// Convert an object
         /// </summary>
-        TConverted Convert(TSource dynamicEntity);
+        TConverted Convert(TSource item);
     }
 }
