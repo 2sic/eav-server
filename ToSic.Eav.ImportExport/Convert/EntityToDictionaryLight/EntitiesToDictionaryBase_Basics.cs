@@ -7,7 +7,7 @@ namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
     public abstract partial class EntitiesToDictionaryBase
     {
 
-        private void AddIdAndGuid(IEntityLight entity, Dictionary<string, object> entityValues, IEntitySerialization rules)
+        private void AddIdAndGuid(IEntityLight entity, IDictionary<string, object> entityValues, IEntitySerialization rules)
         {
             // Add Id and Guid
             // ...only if these are not already existing with this name in the entity itself as an internal value
@@ -27,7 +27,7 @@ namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
         }
 
 
-        private static void AddDateInformation(IEntityLight entity, Dictionary<string, object> entityValues, IEntitySerialization rules)
+        private static void AddDateInformation(IEntityLight entity, IDictionary<string, object> entityValues, IEntitySerialization rules)
         {
             // Include modified field, if there is not already one in the dictionary
             if (rules?.SerializeModified ?? true)

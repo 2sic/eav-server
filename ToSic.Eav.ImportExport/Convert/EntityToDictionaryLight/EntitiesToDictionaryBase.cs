@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Json.V0;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 
@@ -91,7 +92,7 @@ namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
         /// <param name="entity"></param>
         /// <returns></returns>
         [PrivateApi]
-        protected virtual IDictionary<string, object> GetDictionaryFromEntity(IEntity entity)
+        protected virtual IJsonEntity GetDictionaryFromEntity(IEntity entity)
         {
             // Get serialization rules if some exist - new in 11.13
             var rules = entity as IEntitySerialization;
@@ -99,25 +100,28 @@ namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
 
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
+            //var entityValues = new JsonV0();
+
             var entityValues = entity.Attributes
                 .Select(d => d.Value)
-                .ToDictionary(k => k.Name, v =>
+                .ToJsonV0(attribute => attribute.Name, attribute =>
                 {
-                    var value = entity.GetBestValue(v.Name, Languages);
+                    var value = entity.GetBestValue(attribute.Name, Languages);
 
                     // Special Case 1: Hyperlink Field which must be resolved
-                    if (v.Type == DataTypes.Hyperlink && value is string stringValue &&
+                    if (attribute.Type == DataTypes.Hyperlink && value is string stringValue &&
                         ValueConverterBase.CouldBeReference(stringValue))
                         return Deps.ValueConverter.ToValue(stringValue, entity.EntityGuid);
 
                     // Special Case 2: Entity-List
-                    if (v.Type == DataTypes.Entity && value is IEnumerable<IEntity> entities)
+                    if (attribute.Type == DataTypes.Entity && value is IEnumerable<IEntity> entities)
                         return serRels.Serialize == true ? CreateListOfSubEntities(entities, serRels) : null;
 
                     // Default: Normal Value
                     return value;
-
-                }, StringComparer.InvariantCultureIgnoreCase);
+                });
+                //.ToList()
+                //.ForEach(action: attribute => entityValues[attribute.Name] = GetJsonV0Value(entity, attribute, serRels));
             
             // todo: verify what happens with null-values on the relationships, maybe we should filter them out again?
 
@@ -147,6 +151,23 @@ namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
             return entityValues;
         }
 
+
+        object GetJsonV0Value(IEntity entity, IAttribute attribute, ISubEntitySerialization serRels)
+        {
+            var value = entity.GetBestValue(attribute.Name, Languages);
+
+            // Special Case 1: Hyperlink Field which must be resolved
+            if (attribute.Type == DataTypes.Hyperlink && value is string stringValue &&
+                ValueConverterBase.CouldBeReference(stringValue))
+                return Deps.ValueConverter.ToValue(stringValue, entity.EntityGuid);
+
+            // Special Case 2: Entity-List
+            if (attribute.Type == DataTypes.Entity && value is IEnumerable<IEntity> entities)
+                return serRels.Serialize == true ? CreateListOfSubEntities(entities, serRels) : null;
+
+            // Default: Normal Value
+            return value;
+        }
 
 
     }

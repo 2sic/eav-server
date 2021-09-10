@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.ImportExport.Json.V0;
 
 namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
 {
@@ -9,7 +10,7 @@ namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
         #region Many variations of the Convert-Statement expecting various kinds of input
 
         /// <inheritdoc/>
-        public IEnumerable<IDictionary<string, object>> Convert(IEnumerable<IEntity> entities)
+        public IEnumerable<IJsonEntity> Convert(IEnumerable<IEntity> entities)
         {
             var wrapLog = Log.Call(useTimer: true);
             var topEntities = MaxItems == 0 ? entities : entities.Take(MaxItems);
@@ -19,7 +20,7 @@ namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, object> Convert(IEntity entity)
+        public IJsonEntity Convert(IEntity entity)
         {
             var wrapLog = Log.Call(useTimer: true);
             var result = entity == null ? null : GetDictionaryFromEntity(entity);

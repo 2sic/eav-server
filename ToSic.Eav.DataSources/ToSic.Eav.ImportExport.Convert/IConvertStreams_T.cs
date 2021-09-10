@@ -3,7 +3,7 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.ImportExport.Convert
 {
     /// <summary>
     /// Marks objects which can convert entire DataStreams or DataSources to another format. <br/>
@@ -34,8 +34,7 @@ namespace ToSic.Eav.Data
         IEnumerable<T> Convert(IDataStream stream);
 
         [PrivateApi("not public yet, as the signature is not final yet")]
-        IDictionary<string, IEnumerable<IDictionary<string, object>>> Convert(IDataSource source,
-            IEnumerable<string> streams, string[] onlyTheseGuids);
+        IDictionary<string, IEnumerable<T>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids);
 
     }
 }

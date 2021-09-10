@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
 #if NET451
 using System.Web.Http;
 using Newtonsoft.Json;
 #endif
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.ImportExport.Convert;
 using ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight;
+using ToSic.Eav.ImportExport.Json.V0;
 using static System.String;
 
 // ReSharper disable once CheckNamespace
@@ -18,7 +19,7 @@ namespace ToSic.Eav.Conversion
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PrivateApi("Made private in v12.04, as it shouldn't be used in razor - but previously it was in some apps so we must assume it's in use")]
-    public class EntitiesToDictionary: EntitiesToDictionaryBase, IConvertStreams<IDictionary<string, object>>
+    public class EntitiesToDictionary: EntitiesToDictionaryBase, IConvertStreams<IJsonEntity>
     {
         /// <summary>
         /// Important: this constructor is used both in inherited,
@@ -50,11 +51,11 @@ namespace ToSic.Eav.Conversion
         #region Many variations of the Prepare-Statement expecting various kinds of input
 
         /// <inheritdoc />
-        public IDictionary<string, IEnumerable<IDictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams = null)
+        public IDictionary<string, IEnumerable<IJsonEntity>> Convert(IDataSource source, IEnumerable<string> streams = null)
             => Convert(source, streams, null);
         
         [PrivateApi("not public yet, as the signature is not final yet")]
-        public IDictionary<string, IEnumerable<IDictionary<string, object>>> Convert(IDataSource source, IEnumerable<string> streams, string[] onlyTheseGuids)
+        public IDictionary<string, IEnumerable<IJsonEntity>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids)
         {
             var wrapLog = Log.Call(useTimer: true);
             string[] streamsList;
@@ -73,8 +74,8 @@ namespace ToSic.Eav.Conversion
 
             // pre-process the guids list to ensure they are guids
             var realGuids = new Guid[0];
-            if (onlyTheseGuids?.Length > 0)
-                realGuids = onlyTheseGuids
+            if (filterGuids?.Length > 0)
+                realGuids = filterGuids
                     .Select(g => Guid.TryParse(g, out var validGuid) ? validGuid as Guid? : null)
                     .Where(g => g != null)
                     .Cast<Guid>()
@@ -98,11 +99,11 @@ namespace ToSic.Eav.Conversion
         }
 
         /// <inheritdoc />
-        public IDictionary<string, IEnumerable<IDictionary<string, object>>> Convert(IDataSource source, string streams)
+        public IDictionary<string, IEnumerable<IJsonEntity>> Convert(IDataSource source, string streams)
             => Convert(source, streams?.Split(','));
 
         /// <inheritdoc />
-        public IEnumerable<IDictionary<string, object>> Convert(IDataStream stream)
+        public IEnumerable<IJsonEntity> Convert(IDataStream stream)
             => Convert(stream.List);
         
         
