@@ -129,7 +129,7 @@ namespace ToSic.Eav.Data
                 || result is float
                 || result is double
                 || result is decimal)
-                return Convert.ToDecimal(result);
+                return System.Convert.ToDecimal(result);
 
             return result;
         }
@@ -156,7 +156,7 @@ namespace ToSic.Eav.Data
 
             try
             {
-                return (TVal) Convert.ChangeType(found, typeof(TVal));
+                return (TVal) System.Convert.ChangeType(found, typeof(TVal));
             }
             catch
             {

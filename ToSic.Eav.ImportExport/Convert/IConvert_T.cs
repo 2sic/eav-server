@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.ImportExport.Convert
 {
     /// <summary>
-    /// Interface which converts one type into another. Commonly used to convert entities to dictionaries etc. 
+    /// Interface which converts one type into another, or a list of that type into a list of the resulting type.
+    /// Commonly used to convert entities to dictionaries etc. 
     /// </summary>
-    /// <typeparam name="TSource"></typeparam>
+    /// <typeparam name="TSource">The source format of this conversion</typeparam>
     /// <typeparam name="TConverted"></typeparam>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("Just FYI to understand the internals")]
     public interface IConvert<in TSource, out TConverted>
     {
         /// <summary>

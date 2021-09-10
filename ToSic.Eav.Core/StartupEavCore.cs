@@ -5,7 +5,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
-using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.LookUp;
@@ -26,7 +25,6 @@ namespace ToSic.Eav
 
             // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
-            services.TryAddTransient<EntitiesToDictionaryBase.Dependencies>();
             
             // Global Content-Types - should only be loaded once ever, and then it's done
             services.TryAddSingleton<GlobalTypeLoader>();
@@ -46,9 +44,6 @@ namespace ToSic.Eav
             services.TryAddTransient<IAppStates, AppStates>();
             services.TryAddTransient<AppsCacheBase.Dependencies>();
 
-            // Metadata providers
-            //services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
-            
             // Other...
             services.TryAddTransient<AttributeBuilder>();
 

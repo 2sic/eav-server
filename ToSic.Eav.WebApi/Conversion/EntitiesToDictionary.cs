@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 #endif
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight;
 using static System.String;
 
 // ReSharper disable once CheckNamespace

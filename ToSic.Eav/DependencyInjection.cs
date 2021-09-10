@@ -30,7 +30,7 @@ namespace ToSic.Eav
             
             // standard IEntity conversion
             // not sure where to put it, interface is in Core but the implementation in Web, also used by DataSources for json errors
-            services.TryAddTransient<IConvertEntities<IDictionary<string, object>>, EntitiesToDictionary>();
+            services.TryAddTransient<IConvertEntityToDictionary, EntitiesToDictionary>();
 
             // todo: wip moving DataSource stuff into that DLL
             services

@@ -50,7 +50,7 @@ namespace ToSic.Eav.Data.Builder
                             // only try converting if it's not an empty string
                             try
                             {
-                                newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+                                newDec = System.Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                             }
                             catch { /* ignored */ }
                         }

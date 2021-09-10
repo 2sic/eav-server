@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Conversion
+namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
 {
     public abstract partial class EntitiesToDictionaryBase
     {
-        private static void AddPublishingInformation(IEntity entity, Dictionary<string, object> entityValues)
+        private static void AddPublishingInformation(IEntity entity, IDictionary<string, object> entityValues)
         {
             entityValues.Add(Attributes.RepoIdInternalField, entity.RepositoryId);
             entityValues.Add(Attributes.IsPublishedField, entity.IsPublished);

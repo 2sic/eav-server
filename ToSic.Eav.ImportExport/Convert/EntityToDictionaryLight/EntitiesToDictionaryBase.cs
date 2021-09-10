@@ -7,13 +7,13 @@ using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.Conversion
+namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PrivateApi]
-    public abstract partial class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IConvertEntities<IDictionary<string, object>>
+    public abstract partial class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IConvertJsonV0
     {
         public static string JsonKeyMetadataFor = "For"; // temp, don't know where to put this ATM
         public static string JsonKeyMetadata = "Metadata";

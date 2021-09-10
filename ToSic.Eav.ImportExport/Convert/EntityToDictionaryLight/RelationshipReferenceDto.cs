@@ -1,9 +1,11 @@
 ﻿using System;
 using Newtonsoft.Json;
+using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Conversion
+namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
 {
-    public class RelationshipReference
+    [PrivateApi]
+    public class RelationshipReferenceDto
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public int? Id;

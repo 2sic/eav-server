@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.ImportExport.Convert
 {
     /// <summary>
     /// Convert an entity into another format
     /// </summary>
     /// <typeparam name="TResult">The target format we'll convert into</typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface IConvertEntities<out TResult>: IConvert<IEntity, TResult>
+    public interface IConvertEntity<out TResult>: IConvert<IEntity, TResult>
     {
 
         /// <summary>

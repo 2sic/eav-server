@@ -3,11 +3,11 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.Conversion
+namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
 {
     public abstract partial class EntitiesToDictionaryBase
     {
-        private void AddMetadataAndFor(IEntity entity, Dictionary<string, object> entityValues, IEntitySerialization rules)
+        private void AddMetadataAndFor(IEntity entity, IDictionary<string, object> entityValues, IEntitySerialization rules)
         {
             // if rules.MetadataFor are not set, then respect WithMetadataFor
             // otherwise the rules should be applied, but default to false

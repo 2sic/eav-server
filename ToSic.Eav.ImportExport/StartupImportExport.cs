@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Persistence.Xml;
@@ -13,6 +14,10 @@ namespace ToSic.Eav.ImportExport
         {
             services.TryAddTransient<IDataSerializer, JsonSerializer>();
             services.TryAddTransient<IDataDeserializer, JsonSerializer>();
+
+            // Here we only register the dependencies, as the final converter must be registered elsewhere
+            services.TryAddTransient<EntitiesToDictionaryBase.Dependencies>();
+
 
             services.TryAddTransient<JsonSerializer>();
 
