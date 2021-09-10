@@ -52,5 +52,33 @@ namespace ToSic.Eav.Data
             public const string RegExId = "id";
             public const string RegExParams = "params";
         }
+
+        public static string TryToResolveCodeToLink(Guid itemGuid, string originalValue, Func<int, string> resolvePageLink, Func<int, Guid, string> resolveFileLink)
+        {
+            if (string.IsNullOrEmpty(originalValue)) return originalValue;
+
+            // new
+            var resultString = originalValue;
+
+            var parts = new LinkParts(resultString);
+
+            // var regularExpression = Regex.Match(resultString, ValueConverterBase.RegExToDetectConvertable, RegexOptions.IgnoreCase);
+
+            if (!parts.IsMatch) // regularExpression.Success)
+                return originalValue;
+
+            //var linkType = regularExpression.Groups[ValueConverterBase.RegExType].Value.ToLowerInvariant();
+            //var linkId = int.Parse(regularExpression.Groups[ValueConverterBase.RegExId].Value);
+            //var urlParams = regularExpression.Groups[ValueConverterBase.RegExParams].Value ?? "";
+
+            //var isPageLookup = linkType == ValueConverterBase.PrefixPage;
+
+            var result = (parts.IsPage // isPageLookup
+                             ? resolvePageLink(parts.Id)
+                             : resolveFileLink(parts.Id, itemGuid))
+                         ?? originalValue;
+
+            return result + (result == originalValue ? "" : parts.Params);
+        }
     }
 }
