@@ -5,7 +5,7 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.ImportExport.Json.Basic
 {
     /// <summary>
-    /// A relationship pointer to other entities.
+    /// DTO for a relationship pointer to other entities.
     /// 
     /// Used in preparing Entities for Basic-JSON serialization.
     /// </summary>

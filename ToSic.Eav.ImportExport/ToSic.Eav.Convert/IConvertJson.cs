@@ -4,10 +4,14 @@
 namespace ToSic.Eav.Convert
 {
     /// <summary>
-    /// Service to serialize/restore JSON. Get it using GetService{T}"
+    /// Service to serialize/restore JSON. Get it using GetService &lt; T &gt;
     ///
     /// It works for 2sxc/EAV data but can be used for any data which can be serialized/deserialized.
-    /// Since it's a data-operation, we keep it in this namespace, even if most other things in this namespace are 2sxc-data objects. 
+    /// Since it's a data-operation, we keep it in this namespace, even if most other things in this namespace are 2sxc-data objects.
+    ///
+    /// *Important* This is simple object-string conversion.
+    /// It doesn't change entity objects to be serializable.
+    /// For that you should use the <see cref="IConvertToJsonBasic"/> which returns an object that can then be serialized. 
     /// </summary>
     /// <remarks>
     /// Introduced in 2sxc 12.05.

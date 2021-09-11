@@ -2,9 +2,10 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.ImportExport.Json.Basic
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Convert
 {
-    public abstract partial class ConvertToJsonBasicBase
+    public partial class ConvertToJsonBasic
     {
 
         private void AddIdAndGuid(IEntityLight entity, IDictionary<string, object> entityValues, IEntitySerialization rules)

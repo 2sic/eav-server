@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.ImportExport.Json.Basic
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Convert
 {
-    public abstract partial class ConvertToJsonBasicBase
+    public partial class ConvertToJsonBasic
     {
         private static void AddPublishingInformation(IEntity entity, IDictionary<string, object> entityValues)
         {

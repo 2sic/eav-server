@@ -5,7 +5,7 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.ImportExport.Json.Basic
 {
     /// <summary>
-    /// Dto for the most basic JSON format of EAV.
+    /// DTO for the most basic JSON format of EAV.
     /// It's a simple dictionary with name-value pairs.
     /// It is for export/serialization only, there is no official way to re-import an entity of this type.
     ///

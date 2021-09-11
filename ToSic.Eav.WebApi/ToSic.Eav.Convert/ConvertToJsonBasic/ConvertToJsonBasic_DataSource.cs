@@ -13,15 +13,15 @@ namespace ToSic.Eav.Convert
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PrivateApi("Hide implementation")]
-    public class ConvertToJsonBasic: ConvertToJsonBasicBase, IConvertDataSource<JsonEntity>
+    public partial class ConvertToJsonBasic
     {
-        /// <summary>
-        /// Important: this constructor is used both in inherited,
-        /// but also in EAV-code which uses only this object (so no inherited)
-        /// This is why it must be public, because otherwise it can't be constructed from eav?
-        /// </summary>
-        /// <param name="dependencies"></param>
-        public ConvertToJsonBasic(Dependencies dependencies): base(dependencies, "Eav.CnvE2D") { }
+        ///// <summary>
+        ///// Important: this constructor is used both in inherited,
+        ///// but also in EAV-code which uses only this object (so no inherited)
+        ///// This is why it must be public, because otherwise it can't be constructed from eav?
+        ///// </summary>
+        ///// <param name="dependencies"></param>
+        //public ConvertToJsonBasic(Dependencies dependencies): base(dependencies, "Eav.CnvE2D") { }
 
         #region Many variations of the Prepare-Statement expecting various kinds of input
 

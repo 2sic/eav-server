@@ -1,19 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Context;
-using ToSic.Eav.Convert;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.ImportExport.Json.Basic;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.ImportExport.Json.Basic
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Convert
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
-    [PrivateApi]
-    public abstract partial class ConvertToJsonBasicBase : HasLog<ConvertToJsonBasicBase>, IConvertToJsonBasic
+    [PrivateApi("Hide Implementation")]
+    public partial class ConvertToJsonBasic : HasLog<ConvertToJsonBasic>, IConvertToJsonBasic
     {
         public static string JsonKeyMetadataFor = "For"; // temp, don't know where to put this ATM
         public static string JsonKeyMetadata = "Metadata";
@@ -33,8 +34,15 @@ namespace ToSic.Eav.ImportExport.Json.Basic
             }
         }
 
+        /// <summary>
+        /// Important: this constructor is used both in inherited,
+        /// but also in EAV-code which uses only this object (so no inherited)
+        /// This is why it must be public, because otherwise it can't be constructed from eav?
+        /// </summary>
+        /// <param name="dependencies"></param>
+        public ConvertToJsonBasic(Dependencies dependencies) : this(dependencies, "Eav.CnvE2D") { }
 
-        protected ConvertToJsonBasicBase(Dependencies dependencies, string logName) : base(logName)
+        protected ConvertToJsonBasic(Dependencies dependencies, string logName) : base(logName)
         {
             Deps = dependencies;
         }
@@ -149,25 +157,6 @@ namespace ToSic.Eav.ImportExport.Json.Basic
 
             return entityValues;
         }
-
-
-        object GetJsonV0Value(IEntity entity, IAttribute attribute, ISubEntitySerialization serRels)
-        {
-            var value = entity.GetBestValue(attribute.Name, Languages);
-
-            // Special Case 1: Hyperlink Field which must be resolved
-            if (attribute.Type == DataTypes.Hyperlink && value is string stringValue &&
-                ValueConverterBase.CouldBeReference(stringValue))
-                return Deps.ValueConverter.ToValue(stringValue, entity.EntityGuid);
-
-            // Special Case 2: Entity-List
-            if (attribute.Type == DataTypes.Entity && value is IEnumerable<IEntity> entities)
-                return serRels.Serialize == true ? CreateListOfSubEntities(entities, serRels) : null;
-
-            // Default: Normal Value
-            return value;
-        }
-
 
     }
 }

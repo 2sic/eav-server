@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data
     /// </summary>
     /// <typeparam name="T">The target format we'll convert into</typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface IConvertEntity<out T>: IConvert<IEntity, T>
+    public interface IConvertEntity<out T>: IConvert<IEntity, T>, IConvert<IEntityWrapper, T>, IConvert<object, T>
     {
 
         /// <summary>
