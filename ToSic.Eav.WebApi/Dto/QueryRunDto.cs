@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.ImportExport.Json.Basic;
+using ToSic.Eav.ImportExport.JsonLight;
 
 namespace ToSic.Eav.WebApi.Dto
 {

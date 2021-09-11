@@ -34,14 +34,14 @@ namespace ToSic.Eav.WebApi
             /// </summary>
             public Lazy<AppRuntime> AppReaderLazy { get; }
             public QueryBuilder QueryBuilder { get; }
-            public Lazy<ConvertToJsonBasic> EntToDicLazy { get; }
+            public Lazy<ConvertToJsonLight> EntToDicLazy { get; }
             public Lazy<QueryInfo> QueryInfoLazy { get; }
             public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
 
             public Dependencies(Lazy<AppManager> appManagerLazy,
                 Lazy<AppRuntime> appReaderLazy,
                 QueryBuilder queryBuilder,
-                Lazy<ConvertToJsonBasic> entToDicLazy,
+                Lazy<ConvertToJsonLight> entToDicLazy,
                 Lazy<QueryInfo> queryInfoLazy,
                 Lazy<DataSourceCatalog> dataSourceCatalogLazy)
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Convert;
+using ToSic.Eav.ImportExport.JsonLight;
 using ToSic.Eav.WebApi.Helpers;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -14,13 +15,13 @@ namespace ToSic.Eav.WebApi
 	public class MetadataBackend
     {
 
-        public MetadataBackend(IConvertToJsonBasic converter, IAppStates appStates)
+        public MetadataBackend(IConvertToJsonLight converter, IAppStates appStates)
         {
             _converter = converter;
             _appStates = appStates;
         }
 
-        private readonly IConvertToJsonBasic _converter;
+        private readonly IConvertToJsonLight _converter;
         private readonly IAppStates _appStates;
 
         /// <summary>

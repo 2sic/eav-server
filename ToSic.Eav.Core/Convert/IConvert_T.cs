@@ -9,7 +9,7 @@ namespace ToSic.Eav.Convert
     /// </summary>
     /// <typeparam name="TFrom">The source format of this conversion</typeparam>
     /// <typeparam name="TTo"></typeparam>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("Just FYI to understand the internals")]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("Just FYI to understand the internals. It will probably be moved elsewhere in the namespace some day. ")]
     public interface IConvert<in TFrom, out TTo>
     {
         /// <summary>

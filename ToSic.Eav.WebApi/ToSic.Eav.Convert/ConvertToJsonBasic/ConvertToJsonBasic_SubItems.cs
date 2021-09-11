@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.Json.Basic;
+using ToSic.Eav.ImportExport.JsonLight;
 using ToSic.Eav.Serialization;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Convert
 {
-    public partial class ConvertToJsonBasic
+    public partial class ConvertToJsonLight
     {
         private IEnumerable<JsonRelationship> CreateListOfSubEntities(IEnumerable<IEntity> items, ISubEntitySerialization rules) =>
             items.Select(e => new JsonRelationship

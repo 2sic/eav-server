@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ToSic.Eav.ImportExport.Json.Basic
+namespace ToSic.Eav.ImportExport.JsonLight
 {
     public static class ToJsonBasicLinqExtensions
     {

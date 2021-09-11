@@ -6,7 +6,7 @@ using ToSic.Eav.Serialization;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Convert
 {
-    public partial class ConvertToJsonBasic
+    public partial class ConvertToJsonLight
     {
         private void AddMetadataAndFor(IEntity entity, IDictionary<string, object> entityValues, IEntitySerialization rules)
         {

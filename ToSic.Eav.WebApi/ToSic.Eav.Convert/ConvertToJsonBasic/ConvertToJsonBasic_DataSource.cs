@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.ImportExport.Json.Basic;
+using ToSic.Eav.ImportExport.JsonLight;
 using static System.String;
 
 // ReSharper disable once CheckNamespace
@@ -13,7 +13,7 @@ namespace ToSic.Eav.Convert
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PrivateApi("Hide implementation")]
-    public partial class ConvertToJsonBasic
+    public partial class ConvertToJsonLight
     {
         ///// <summary>
         ///// Important: this constructor is used both in inherited,

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Convert;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.JsonLight;
 using ToSic.Eav.ImportExport.Persistence.File;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
@@ -28,7 +29,7 @@ namespace ToSic.Eav
             
             // standard IEntity conversion
             // not sure where to put it, interface is in Core but the implementation in Web, also used by DataSources for json errors
-            services.TryAddTransient<IConvertToJsonBasic, ConvertToJsonBasic>();
+            services.TryAddTransient<IConvertToJsonLight, ConvertToJsonLight>();
 
             // todo: wip moving DataSource stuff into that DLL
             services

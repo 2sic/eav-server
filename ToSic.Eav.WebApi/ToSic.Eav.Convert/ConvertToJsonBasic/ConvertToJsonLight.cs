@@ -3,7 +3,7 @@ using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.ImportExport.Json.Basic;
+using ToSic.Eav.ImportExport.JsonLight;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 
@@ -14,7 +14,7 @@ namespace ToSic.Eav.Convert
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PrivateApi("Hide Implementation")]
-    public partial class ConvertToJsonBasic : HasLog<ConvertToJsonBasic>, IConvertToJsonBasic
+    public partial class ConvertToJsonLight : HasLog<ConvertToJsonLight>, IConvertToJsonLight
     {
         public static string JsonKeyMetadataFor = "For"; // temp, don't know where to put this ATM
         public static string JsonKeyMetadata = "Metadata";
@@ -40,9 +40,9 @@ namespace ToSic.Eav.Convert
         /// This is why it must be public, because otherwise it can't be constructed from eav?
         /// </summary>
         /// <param name="dependencies"></param>
-        public ConvertToJsonBasic(Dependencies dependencies) : this(dependencies, "Eav.CnvE2D") { }
+        public ConvertToJsonLight(Dependencies dependencies) : this(dependencies, "Eav.CnvE2D") { }
 
-        protected ConvertToJsonBasic(Dependencies dependencies, string logName) : base(logName)
+        protected ConvertToJsonLight(Dependencies dependencies, string logName) : base(logName)
         {
             Deps = dependencies;
         }

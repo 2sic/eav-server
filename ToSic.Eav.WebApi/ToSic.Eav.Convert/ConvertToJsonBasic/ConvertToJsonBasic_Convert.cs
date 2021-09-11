@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.Json.Basic;
+using ToSic.Eav.ImportExport.JsonLight;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Convert
 {
-    public partial class ConvertToJsonBasic
+    public partial class ConvertToJsonLight
     {
         #region Many variations of the Convert-Statement expecting IEntity
 

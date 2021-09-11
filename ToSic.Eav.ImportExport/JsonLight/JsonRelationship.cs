@@ -2,14 +2,14 @@
 using Newtonsoft.Json;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.ImportExport.Json.Basic
+namespace ToSic.Eav.ImportExport.JsonLight
 {
     /// <summary>
     /// DTO for a relationship pointer to other entities.
     /// 
     /// Used in preparing Entities for Basic-JSON serialization.
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("Just FYI")]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("DTO objects are only publicly documented but can change with time. You usually will not need them in your code. ")]
     public class JsonRelationship
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public int? Id;

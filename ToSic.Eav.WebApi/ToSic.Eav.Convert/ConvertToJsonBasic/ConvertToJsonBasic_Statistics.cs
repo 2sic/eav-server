@@ -5,7 +5,7 @@ using ToSic.Eav.Data;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Convert
 {
-    public partial class ConvertToJsonBasic
+    public partial class ConvertToJsonLight
     {
 
         private static void AddStatistics(IEntity entity, IDictionary<string, object> entityValues)
