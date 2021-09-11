@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.DataSources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Conversion;
-using ToSic.Eav.Data;
+using ToSic.Eav.Convert;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.ImportExport.Convert;
 using ToSic.Eav.ImportExport.Persistence.File;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
@@ -31,7 +28,7 @@ namespace ToSic.Eav
             
             // standard IEntity conversion
             // not sure where to put it, interface is in Core but the implementation in Web, also used by DataSources for json errors
-            services.TryAddTransient<IConvertJsonV0, EntitiesToDictionary>();
+            services.TryAddTransient<IConvertToJsonBasic, ConvertToJsonBasic>();
 
             // todo: wip moving DataSource stuff into that DLL
             services

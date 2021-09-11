@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
-using ToSic.Eav.Conversion;
+using ToSic.Eav.Convert;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi
     {
         #region DI Constructor & Init
 
-        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy, Lazy<EntitiesToDictionary> entitiesToDicLazy) : base("Api.Entity")
+        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy, Lazy<IConvertToJsonBasic> entitiesToDicLazy) : base("Api.Entity")
         {
             _appRuntime = appRuntime;
             _appManagerLazy = appManagerLazy;
@@ -27,7 +27,7 @@ namespace ToSic.Eav.WebApi
         }
         private readonly AppRuntime _appRuntime;
         private readonly Lazy<AppManager> _appManagerLazy;
-        private readonly Lazy<EntitiesToDictionary> _entitiesToDicLazy;
+        private readonly Lazy<IConvertToJsonBasic> _entitiesToDicLazy;
         public AppRuntime AppRead;
 
         public EntityApi Init(int appId, bool showDrafts, ILog parentLog)
@@ -44,18 +44,18 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// The serializer, so it can be configured from outside if necessary
         /// </summary>
-        private EntitiesToDictionary EntityToDic
+        private IConvertToJsonBasic EntityToDic
         {
             get
             {
                 if (_entitiesToDictionary != null) return _entitiesToDictionary;
                 _entitiesToDictionary = _entitiesToDicLazy.Value;
                 _entitiesToDictionary.WithGuid = true;
-                _entitiesToDictionary.Init(Log);
+                (_entitiesToDictionary as ConvertToJsonBasic)?.Init(Log);
                 return _entitiesToDictionary;
             }
         }
-        private EntitiesToDictionary _entitiesToDictionary;
+        private IConvertToJsonBasic _entitiesToDictionary;
 
         #endregion
 

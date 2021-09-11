@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
         public bool RefreshOnSourceRefresh
 	    {
-            get => Convert.ToBoolean(Configuration[RefreshOnSourceRefreshKey]);
+            get => global::System.Convert.ToBoolean(Configuration[RefreshOnSourceRefreshKey]);
             set => Configuration[RefreshOnSourceRefreshKey] = value.ToString();
         }
 
@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
         public bool ReturnCacheWhileRefreshing 
         {
-            get => Convert.ToBoolean(Configuration[ReturnCacheWhileRefreshingKey]);
+            get => global::System.Convert.ToBoolean(Configuration[ReturnCacheWhileRefreshingKey]);
             set => Configuration[ReturnCacheWhileRefreshingKey] = value.ToString();
         }
 

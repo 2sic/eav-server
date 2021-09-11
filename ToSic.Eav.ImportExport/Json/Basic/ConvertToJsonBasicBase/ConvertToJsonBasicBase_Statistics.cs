@@ -2,9 +2,9 @@
 using System.Linq;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
+namespace ToSic.Eav.ImportExport.Json.Basic
 {
-    public abstract partial class EntitiesToDictionaryBase
+    public abstract partial class ConvertToJsonBasicBase
     {
 
         private static void AddStatistics(IEntity entity, IDictionary<string, object> entityValues)

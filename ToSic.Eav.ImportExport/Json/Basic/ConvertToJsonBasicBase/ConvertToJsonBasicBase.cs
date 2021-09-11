@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Context;
+using ToSic.Eav.Convert;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.ImportExport.Json.V0;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
+namespace ToSic.Eav.ImportExport.Json.Basic
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PrivateApi]
-    public abstract partial class EntitiesToDictionaryBase : HasLog<EntitiesToDictionaryBase>, IConvertJsonV0
+    public abstract partial class ConvertToJsonBasicBase : HasLog<ConvertToJsonBasicBase>, IConvertToJsonBasic
     {
         public static string JsonKeyMetadataFor = "For"; // temp, don't know where to put this ATM
         public static string JsonKeyMetadata = "Metadata";
@@ -35,7 +34,7 @@ namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
         }
 
 
-        protected EntitiesToDictionaryBase(Dependencies dependencies, string logName) : base(logName)
+        protected ConvertToJsonBasicBase(Dependencies dependencies, string logName) : base(logName)
         {
             Deps = dependencies;
         }
@@ -92,7 +91,7 @@ namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
         /// <param name="entity"></param>
         /// <returns></returns>
         [PrivateApi]
-        protected virtual IJsonEntity GetDictionaryFromEntity(IEntity entity)
+        protected virtual JsonEntity GetDictionaryFromEntity(IEntity entity)
         {
             // Get serialization rules if some exist - new in 11.13
             var rules = entity as IEntitySerialization;

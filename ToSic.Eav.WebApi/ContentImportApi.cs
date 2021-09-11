@@ -83,7 +83,7 @@ namespace ToSic.Eav.WebApi
             Log.Add("get xml import " + args.DebugInfo);
             var contextLanguages = _appStates.Languages(_appManager.ZoneId) /*_appManager.Read.Zone.Languages()*/.Select(l => l.EnvironmentKey).ToArray();
 
-            using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
+            using (var contentSteam = new MemoryStream(global::System.Convert.FromBase64String(args.ContentBase64)))
             {
                 return _appManager.Entities.Importer(args.ContentType, contentSteam,
                     contextLanguages, args.DefaultLanguage,

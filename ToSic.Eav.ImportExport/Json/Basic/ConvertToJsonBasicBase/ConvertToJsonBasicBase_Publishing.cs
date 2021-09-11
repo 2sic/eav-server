@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
+namespace ToSic.Eav.ImportExport.Json.Basic
 {
-    public abstract partial class EntitiesToDictionaryBase
+    public abstract partial class ConvertToJsonBasicBase
     {
         private static void AddPublishingInformation(IEntity entity, IDictionary<string, object> entityValues)
         {

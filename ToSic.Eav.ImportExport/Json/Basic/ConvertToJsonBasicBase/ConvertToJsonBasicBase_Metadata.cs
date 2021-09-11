@@ -3,9 +3,9 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight
+namespace ToSic.Eav.ImportExport.Json.Basic
 {
-    public abstract partial class EntitiesToDictionaryBase
+    public abstract partial class ConvertToJsonBasicBase
     {
         private void AddMetadataAndFor(IEntity entity, IDictionary<string, object> entityValues, IEntitySerialization rules)
         {

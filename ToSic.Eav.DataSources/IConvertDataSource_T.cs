@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ImportExport.Convert
+namespace ToSic.Eav.DataSources
 {
     /// <summary>
-    /// Marks objects which can convert entire DataStreams or DataSources to another format. <br/>
+    /// Marks objects which can convert a DataSource to another format.
+    ///
+    /// This will always return some kind of dictionary with stream-names and the converted items as sub-lists. 
     /// Usually used in serialization scenarios.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface IConvertStreams<T>
+    public interface IConvertDataSource<T>
     {
         /// <summary>
         /// Returns an converted IDataSource, but is serializable.
@@ -27,11 +27,6 @@ namespace ToSic.Eav.ImportExport.Convert
         /// <param name="streams">names of streams to publish. if null, will return all streams</param>
         IDictionary<string, IEnumerable<T>> Convert(IDataSource source, string streams);
 
-        /// <summary>
-        /// Returns an converted IDataStream, but is serializable.
-        /// </summary>
-        /// <param name="stream">the source</param>
-        IEnumerable<T> Convert(IDataStream stream);
 
         [PrivateApi("not public yet, as the signature is not final yet")]
         IDictionary<string, IEnumerable<T>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids);

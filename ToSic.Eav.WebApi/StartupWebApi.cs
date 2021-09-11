@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Convert;
 using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi
@@ -11,7 +12,6 @@ namespace ToSic.Eav.WebApi
             // APIs
             services.TryAddTransient<EntityPickerApi>();
             services.TryAddTransient<ContentTypeApi>();
-            //services.TryAddTransient<QueryApi>();
             services.TryAddTransient<QueryApi.Dependencies>();
             services.TryAddTransient<ContentExportApi>();
             services.TryAddTransient<ContentImportApi>();
@@ -23,6 +23,9 @@ namespace ToSic.Eav.WebApi
             // WebApi Security
             services.TryAddTransient<MultiPermissionsTypes>();
 
+            // WIP Converter clean-up v12.05
+            // This is still needed on one EAV WebApi for DataSource to JsonBasic conversion
+            services.TryAddTransient<ConvertToJsonBasic, ConvertToJsonBasic>();
 
             return services;
         }

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.ImportExport.Json.V0;
+using ToSic.Eav.ImportExport.Json.Basic;
 
 namespace ToSic.Eav.WebApi.Dto
 {
     public class QueryRunDto
     {
-        public IDictionary<string, IEnumerable<IJsonEntity>> Query;
+        public IDictionary<string, IEnumerable<JsonEntity>> Query;
         public List<DataSources.Debug.StreamInfo> Streams;
         public Dictionary<Guid, DataSources.Debug.DataSourceInfo> Sources;
         public QueryTimerDto QueryTimer;

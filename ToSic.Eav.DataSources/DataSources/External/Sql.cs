@@ -297,7 +297,7 @@ namespace ToSic.Eav.DataSources
                         var columnsToUse = columNames.Where(c => c != casedEntityId).Distinct().ToList();
 			            while (reader.Read())
 			            {
-			                var entityId = casedEntityId == null ? 0 : Convert.ToInt32(reader[casedEntityId]);
+			                var entityId = casedEntityId == null ? 0 : global::System.Convert.ToInt32(reader[casedEntityId]);
 			                var values = columnsToUse.ToDictionary(c => c, c => reader[c]);
 			                var entity = new Data.Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), values, casedTitle);
 			                list.Add(entity);

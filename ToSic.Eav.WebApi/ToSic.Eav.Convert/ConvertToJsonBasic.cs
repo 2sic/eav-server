@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if NET451
-using System.Web.Http;
-using Newtonsoft.Json;
-#endif
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.ImportExport.Convert;
-using ToSic.Eav.ImportExport.Convert.EntityToDictionaryLight;
-using ToSic.Eav.ImportExport.Json.V0;
+using ToSic.Eav.ImportExport.Json.Basic;
 using static System.String;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Conversion
+namespace ToSic.Eav.Convert
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
-    [PrivateApi("Made private in v12.04, as it shouldn't be used in razor - but previously it was in some apps so we must assume it's in use")]
-    public class EntitiesToDictionary: EntitiesToDictionaryBase, IConvertStreams<IJsonEntity>
+    [PrivateApi("Hide implementation")]
+    public class ConvertToJsonBasic: ConvertToJsonBasicBase, IConvertDataSource<JsonEntity>
     {
         /// <summary>
         /// Important: this constructor is used both in inherited,
@@ -27,35 +21,16 @@ namespace ToSic.Eav.Conversion
         /// This is why it must be public, because otherwise it can't be constructed from eav?
         /// </summary>
         /// <param name="dependencies"></param>
-        public EntitiesToDictionary(Dependencies dependencies): base(dependencies, "Eav.CnvE2D") { }
-
-#if NETFRAMEWORK
-        /// <summary>
-        /// Old constructor used in some public apps in razor, so it must remain for DNN implementation
-        /// But .net 451 only!
-        /// In .net .451 it must also set the formatters to use the right date-time, which isn't necessary in .net core. 
-        /// </summary>
-        /// <remarks>
-        /// has an important side effect, this isn't clear from outside!
-        /// </remarks>
-        [Obsolete]
-        public EntitiesToDictionary(): this(Factory.ObsoleteBuild<Dependencies>())
-        {
-            // Ensure that date-times are sent in the Zulu-time format (UTC) and not with offsets which causes many problems during round-trips
-            GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            // #DoneDotNetStandard - there it's handled in the startup.cs
-        }
-#endif
-
+        public ConvertToJsonBasic(Dependencies dependencies): base(dependencies, "Eav.CnvE2D") { }
 
         #region Many variations of the Prepare-Statement expecting various kinds of input
 
         /// <inheritdoc />
-        public IDictionary<string, IEnumerable<IJsonEntity>> Convert(IDataSource source, IEnumerable<string> streams = null)
+        public IDictionary<string, IEnumerable<JsonEntity>> Convert(IDataSource source, IEnumerable<string> streams = null)
             => Convert(source, streams, null);
         
         [PrivateApi("not public yet, as the signature is not final yet")]
-        public IDictionary<string, IEnumerable<IJsonEntity>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids)
+        public IDictionary<string, IEnumerable<JsonEntity>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids)
         {
             var wrapLog = Log.Call(useTimer: true);
             string[] streamsList;
@@ -99,14 +74,10 @@ namespace ToSic.Eav.Conversion
         }
 
         /// <inheritdoc />
-        public IDictionary<string, IEnumerable<IJsonEntity>> Convert(IDataSource source, string streams)
+        public IDictionary<string, IEnumerable<JsonEntity>> Convert(IDataSource source, string streams)
             => Convert(source, streams?.Split(','));
 
-        /// <inheritdoc />
-        public IEnumerable<IJsonEntity> Convert(IDataStream stream)
-            => Convert(stream.List);
-        
-        
+
         #endregion
 
         

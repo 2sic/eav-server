@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ToSic.Eav.ImportExport.Json.V0
+namespace ToSic.Eav.ImportExport.Json.Basic
 {
-    public static class ToJsonV0Linq
+    public static class ToJsonBasicLinqExtensions
     {
         /// <summary>
         /// Helper method to create JsonV0 from Linq - copied & Modified from .net Framework code
@@ -15,7 +15,7 @@ namespace ToSic.Eav.ImportExport.Json.V0
         /// <param name="source"></param>
         /// <param name="keySelector"></param>
         /// <returns></returns>
-        public static IJsonEntity ToJsonV0<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector)
+        public static JsonEntity ToJsonV0<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (keySelector == null) throw new ArgumentNullException(nameof(keySelector));
@@ -34,14 +34,14 @@ namespace ToSic.Eav.ImportExport.Json.V0
             return d;
         }
 
-        private static IJsonEntity ToJsonV0<TSource>(TSource[] source, Func<TSource, string> keySelector)
+        private static JsonEntity ToJsonV0<TSource>(TSource[] source, Func<TSource, string> keySelector)
         {
             var d = new JsonEntity();
             for (var i = 0; i < source.Length; i++) d.Add(keySelector(source[i]), source[i]);
             return d;
         }
 
-        private static IJsonEntity ToJsonV0<TSource>(List<TSource> source, Func<TSource, string> keySelector)
+        private static JsonEntity ToJsonV0<TSource>(List<TSource> source, Func<TSource, string> keySelector)
         {
             var d = new JsonEntity();
             foreach (var element in source) d.Add(keySelector(element), element);
@@ -50,7 +50,7 @@ namespace ToSic.Eav.ImportExport.Json.V0
         }
 
 
-        public static IJsonEntity ToJsonV0<TSource, TElement>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, Func<TSource, TElement> elementSelector) 
+        public static JsonEntity ToJsonV0<TSource, TElement>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, Func<TSource, TElement> elementSelector) 
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (keySelector == null) throw new ArgumentNullException(nameof(keySelector));
@@ -71,14 +71,14 @@ namespace ToSic.Eav.ImportExport.Json.V0
             return d;
         }
 
-        private static IJsonEntity ToJsonV0<TSource, TElement>(TSource[] source, Func<TSource, string> keySelector, Func<TSource, TElement> elementSelector)
+        private static JsonEntity ToJsonV0<TSource, TElement>(TSource[] source, Func<TSource, string> keySelector, Func<TSource, TElement> elementSelector)
         {
             var d = new JsonEntity();
             for (int i = 0; i < source.Length; i++) d.Add(keySelector(source[i]), elementSelector(source[i]));
             return d;
         }
 
-        private static IJsonEntity ToJsonV0<TSource, TElement>(List<TSource> source, Func<TSource, string> keySelector, Func<TSource, TElement> elementSelector)
+        private static JsonEntity ToJsonV0<TSource, TElement>(List<TSource> source, Func<TSource, string> keySelector, Func<TSource, TElement> elementSelector)
         {
             var d = new JsonEntity();
             foreach (var element in source) d.Add(keySelector(element), elementSelector(element));
