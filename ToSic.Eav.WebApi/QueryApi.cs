@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Convert;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Debug;
@@ -34,14 +34,14 @@ namespace ToSic.Eav.WebApi
             /// </summary>
             public Lazy<AppRuntime> AppReaderLazy { get; }
             public QueryBuilder QueryBuilder { get; }
-            public Lazy<ConvertToJsonLight> EntToDicLazy { get; }
+            public Lazy<ConvertToEavLight> EntToDicLazy { get; }
             public Lazy<QueryInfo> QueryInfoLazy { get; }
             public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
 
             public Dependencies(Lazy<AppManager> appManagerLazy,
                 Lazy<AppRuntime> appReaderLazy,
                 QueryBuilder queryBuilder,
-                Lazy<ConvertToJsonLight> entToDicLazy,
+                Lazy<ConvertToEavLight> entToDicLazy,
                 Lazy<QueryInfo> queryInfoLazy,
                 Lazy<DataSourceCatalog> dataSourceCatalogLazy)
             {
@@ -196,7 +196,7 @@ namespace ToSic.Eav.WebApi
             var timer = new Stopwatch();
             timer.Start();
             var converter = _dependencies.EntToDicLazy.Value;
-            converter.EnableGuids();
+            converter.WithGuid = true;//.EnableGuids();
             converter.MaxItems = top;
 		    var results = converter.Convert(partLookup(builtQuery));
             timer.Stop();

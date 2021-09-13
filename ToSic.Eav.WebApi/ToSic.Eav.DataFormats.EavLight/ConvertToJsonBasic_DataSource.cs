@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.ImportExport.JsonLight;
 using static System.String;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Convert
+namespace ToSic.Eav.DataFormats.EavLight
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PrivateApi("Hide implementation")]
-    public partial class ConvertToJsonLight
+    public partial class ConvertToEavLight
     {
         ///// <summary>
         ///// Important: this constructor is used both in inherited,
@@ -26,11 +26,11 @@ namespace ToSic.Eav.Convert
         #region Many variations of the Prepare-Statement expecting various kinds of input
 
         /// <inheritdoc />
-        public IDictionary<string, IEnumerable<JsonEntity>> Convert(IDataSource source, IEnumerable<string> streams = null)
+        public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string> streams = null)
             => Convert(source, streams, null);
         
         [PrivateApi("not public yet, as the signature is not final yet")]
-        public IDictionary<string, IEnumerable<JsonEntity>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids)
+        public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids)
         {
             var wrapLog = Log.Call(useTimer: true);
             string[] streamsList;
@@ -74,7 +74,7 @@ namespace ToSic.Eav.Convert
         }
 
         /// <inheritdoc />
-        public IDictionary<string, IEnumerable<JsonEntity>> Convert(IDataSource source, string streams)
+        public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, string streams)
             => Convert(source, streams?.Split(','));
 
 

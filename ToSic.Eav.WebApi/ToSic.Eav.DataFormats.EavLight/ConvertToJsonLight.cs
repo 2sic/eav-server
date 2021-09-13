@@ -3,18 +3,17 @@ using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.ImportExport.JsonLight;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Convert
+namespace ToSic.Eav.DataFormats.EavLight
 {
     /// <summary>
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PrivateApi("Hide Implementation")]
-    public partial class ConvertToJsonLight : HasLog<ConvertToJsonLight>, IConvertToJsonLight
+    public partial class ConvertToEavLight : HasLog<ConvertToEavLight>, IConvertToEavLight
     {
         public static string JsonKeyMetadataFor = "For"; // temp, don't know where to put this ATM
         public static string JsonKeyMetadata = "Metadata";
@@ -40,9 +39,9 @@ namespace ToSic.Eav.Convert
         /// This is why it must be public, because otherwise it can't be constructed from eav?
         /// </summary>
         /// <param name="dependencies"></param>
-        public ConvertToJsonLight(Dependencies dependencies) : this(dependencies, "Eav.CnvE2D") { }
+        public ConvertToEavLight(Dependencies dependencies) : this(dependencies, "Eav.CnvE2D") { }
 
-        protected ConvertToJsonLight(Dependencies dependencies, string logName) : base(logName)
+        private ConvertToEavLight(Dependencies dependencies, string logName) : base(logName)
         {
             Deps = dependencies;
         }
@@ -99,7 +98,7 @@ namespace ToSic.Eav.Convert
         /// <param name="entity"></param>
         /// <returns></returns>
         [PrivateApi]
-        protected virtual JsonEntity GetDictionaryFromEntity(IEntity entity)
+        protected virtual EavLightEntity GetDictionaryFromEntity(IEntity entity)
         {
             // Get serialization rules if some exist - new in 11.13
             var rules = entity as IEntitySerialization;
@@ -111,7 +110,7 @@ namespace ToSic.Eav.Convert
 
             var entityValues = entity.Attributes
                 .Select(d => d.Value)
-                .ToJsonV0(attribute => attribute.Name, attribute =>
+                .ToEavLight(attribute => attribute.Name, attribute =>
                 {
                     var value = entity.GetBestValue(attribute.Name, Languages);
 

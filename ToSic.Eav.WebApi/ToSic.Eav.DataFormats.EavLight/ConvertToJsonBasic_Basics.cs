@@ -3,9 +3,9 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Serialization;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Convert
+namespace ToSic.Eav.DataFormats.EavLight
 {
-    public partial class ConvertToJsonLight
+    public partial class ConvertToEavLight
     {
 
         private void AddIdAndGuid(IEntityLight entity, IDictionary<string, object> entityValues, IEntitySerialization rules)

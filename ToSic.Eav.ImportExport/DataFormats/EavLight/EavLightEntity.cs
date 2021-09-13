@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.ImportExport.JsonLight
+namespace ToSic.Eav.DataFormats.EavLight
 {
     /// <summary>
     /// DTO for the most basic JSON format of EAV.
@@ -17,9 +17,9 @@ namespace ToSic.Eav.ImportExport.JsonLight
     /// Introduced ca. 2sxc 4.0 just as a Dictionary, but for the documentation we created an own IJsonEntity type in 2sxc 12.05
     /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Internal DTO objects are documented for better understanding, but can change with time. You usually will not need them in your code. ")]
-    public class JsonEntity: Dictionary<string, object>
+    public class EavLightEntity: Dictionary<string, object>
     {
-        public JsonEntity() : base(StringComparer.InvariantCultureIgnoreCase)
+        public EavLightEntity() : base(StringComparer.InvariantCultureIgnoreCase)
         {
 
         }

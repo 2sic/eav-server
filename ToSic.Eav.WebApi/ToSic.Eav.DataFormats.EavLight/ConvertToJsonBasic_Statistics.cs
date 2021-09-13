@@ -3,9 +3,9 @@ using System.Linq;
 using ToSic.Eav.Data;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Convert
+namespace ToSic.Eav.DataFormats.EavLight
 {
-    public partial class ConvertToJsonLight
+    public partial class ConvertToEavLight
     {
 
         private static void AddStatistics(IEntity entity, IDictionary<string, object> entityValues)

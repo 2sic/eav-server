@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.Convert;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.JsonLight;
+using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Dto;
@@ -28,7 +28,7 @@ namespace ToSic.Eav.WebApi
             Lazy<AppManager> appManagerLazy, 
             Lazy<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
-            Lazy<IConvertToJsonLight> dataToDictionaryLazy, 
+            Lazy<IConvertToEavLight> dataToDictionaryLazy, 
             IAppStates appStates) : base("Api.EavCTC")
         {
             _appRuntimeLazy = appRuntimeLazy;
@@ -43,7 +43,7 @@ namespace ToSic.Eav.WebApi
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<DbDataController> _dbLazy;
         private readonly AppInitializedChecker _appInitializedChecker;
-        private readonly Lazy<IConvertToJsonLight> _dataToDictionaryLazy;
+        private readonly Lazy<IConvertToEavLight> _dataToDictionaryLazy;
         private readonly IAppStates _appStates;
         private AppManager AppManager { get; set; }
 

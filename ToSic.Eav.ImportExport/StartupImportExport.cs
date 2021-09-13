@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Convert;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Persistence.Xml;
@@ -24,9 +23,6 @@ namespace ToSic.Eav.ImportExport
             services.TryAddTransient<XmlSerializer>();
 
             services.TryAddTransient<FileSystemLoader>();
-
-            // WIP 12.05 - json converter
-            services.TryAddTransient<IConvertJson, ConvertJson>();
 
             return services;
         }

@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.JsonLight;
+using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Serialization;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Convert
+namespace ToSic.Eav.DataFormats.EavLight
 {
-    public partial class ConvertToJsonLight
+    public partial class ConvertToEavLight
     {
-        private IEnumerable<JsonRelationship> CreateListOfSubEntities(IEnumerable<IEntity> items, ISubEntitySerialization rules) =>
-            items.Select(e => new JsonRelationship
+        private IEnumerable<EavLightEntityReference> CreateListOfSubEntities(IEnumerable<IEntity> items, ISubEntitySerialization rules) =>
+            items.Select(e => new EavLightEntityReference
             {
                 Id = rules.SerializeId == true ? e?.EntityId : null,
                 Guid = rules.SerializeGuid == true ? e?.EntityGuid : null,

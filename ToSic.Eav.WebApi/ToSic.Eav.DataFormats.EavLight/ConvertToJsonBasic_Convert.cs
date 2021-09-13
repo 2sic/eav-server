@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.JsonLight;
+using ToSic.Eav.DataFormats.EavLight;
+
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Convert
+namespace ToSic.Eav.DataFormats.EavLight
 {
-    public partial class ConvertToJsonLight
+    public partial class ConvertToEavLight
     {
         #region Many variations of the Convert-Statement expecting IEntity
 
         /// <inheritdoc/>
-        public IEnumerable<JsonEntity> Convert(IEnumerable<IEntity> entities)
+        public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntity> entities)
         {
             var wrapLog = Log.Call(useTimer: true);
             var topEntities = MaxItems == 0 ? entities : entities.Take(MaxItems);
@@ -22,7 +23,7 @@ namespace ToSic.Eav.Convert
         }
 
         /// <inheritdoc/>
-        public JsonEntity Convert(IEntity entity)
+        public EavLightEntity Convert(IEntity entity)
         {
             var wrapLog = Log.Call(useTimer: true);
             var result = entity == null ? null : GetDictionaryFromEntity(entity);
@@ -34,7 +35,7 @@ namespace ToSic.Eav.Convert
 
         #region Dynamic/Objects - which first must detect what it is
 
-        public IEnumerable<JsonEntity> Convert(IEnumerable<object> dynamicList)
+        public IEnumerable<EavLightEntity> Convert(IEnumerable<object> dynamicList)
         {
             // TODO CONTINUE HERE
             // MUST TEST EVERYTHING
@@ -56,7 +57,7 @@ namespace ToSic.Eav.Convert
                 .ToList();
         }
 
-        public virtual JsonEntity Convert(object dynamicEntity)
+        public virtual EavLightEntity Convert(object dynamicEntity)
         {
             if (dynamicEntity is IEntity ent) return Convert(ent);
             if (dynamicEntity is IEntityWrapper dynEnt) return Convert(dynEnt.Entity);
@@ -66,11 +67,11 @@ namespace ToSic.Eav.Convert
 
         #endregion
 
-        public IEnumerable<JsonEntity> Convert(IEnumerable<IEntityWrapper> dynamicList)
+        public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntityWrapper> dynamicList)
             => Convert(dynamicList as IEnumerable<object>);
 
         /// <inheritdoc />
-        public JsonEntity Convert(IEntityWrapper dynamicEntity)
+        public EavLightEntity Convert(IEntityWrapper dynamicEntity)
             => Convert(dynamicEntity.Entity);
     }
 }

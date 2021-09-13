@@ -25,4 +25,8 @@
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ToSic.Eav.Convert\" />
+  </ItemGroup>
+
 </Project>

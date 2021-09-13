@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Convert
+namespace ToSic.Eav.Data
 {
     /// <summary>
     /// Interface which converts one type into another, or a list of that type into a list of the resulting type.

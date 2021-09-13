@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
-using ToSic.Eav.ImportExport.JsonLight;
+using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.WebApi.Helpers;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -14,13 +14,13 @@ namespace ToSic.Eav.WebApi
 	public class MetadataBackend
     {
 
-        public MetadataBackend(IConvertToJsonLight converter, IAppStates appStates)
+        public MetadataBackend(IConvertToEavLight converter, IAppStates appStates)
         {
             _converter = converter;
             _appStates = appStates;
         }
 
-        private readonly IConvertToJsonLight _converter;
+        private readonly IConvertToEavLight _converter;
         private readonly IAppStates _appStates;
 
         /// <summary>
@@ -52,7 +52,8 @@ namespace ToSic.Eav.WebApi
             if(entityList == null)
                 throw new Exception($"was not able to convert '{key}' to key-type {keyType}, must cancel");
 
-            return _converter.EnableGuids().Convert(entityList);
+            _converter.WithGuid = true;
+            return _converter.Convert(entityList);
         }
 
     }
