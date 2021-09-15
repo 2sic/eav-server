@@ -109,7 +109,7 @@
     <Compile Include="ListPairs\ListPairTests_Add.cs" />
     <Compile Include="ListPairs\ListPairTests.cs" />
     <Compile Include="Mocks\MockEnvironment.cs" />
-    <Compile Include="Mocks\MockTenant.cs" />
+    <Compile Include="Mocks\MockSite.cs" />
     <Compile Include="Mocks\MockZoneMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

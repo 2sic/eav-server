@@ -4,6 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Eav.LookUp;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Caches
 {
@@ -71,7 +73,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
         {
             var cacher = new CacheAllStreams();
             cacher.AttachForTests(filtered);
-            cacher.Configuration.LookUpEngine = filtered.Configuration.LookUpEngine;
+            ((LookUpEngine)cacher.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
             return cacher;
         }
 
@@ -79,10 +81,10 @@ namespace ToSic.Eav.DataSourceTests.Caches
         public void CacheAllStreams_CheckInWithLongerChain()
         {
             var filtered = CreateFilterForTesting(100, FilterIdForManyTests);
-            var secondFilter = new EntityTypeFilter();
+            var secondFilter = EavTestBase.Resolve<EntityTypeFilter>();
             secondFilter.AttachForTests(filtered);
             secondFilter.TypeName = "Person";
-            secondFilter.Configuration.LookUpEngine = filtered.Configuration.LookUpEngine;
+            ((LookUpEngine)secondFilter.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
 
             var cacher = CreateCacheDS(secondFilter);
             var listCache = new ListCache(null);
