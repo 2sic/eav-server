@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
@@ -19,10 +20,38 @@ namespace ToSic.Eav.DataSources
         public virtual IDictionary<string, IDataStream> Out { get; protected internal set; } = new StreamDictionary();
 
         /// <inheritdoc />
-        public IDataStream this[string outName] => Out[outName];
+        public IDataStream this[string outName] => GetStream(outName);
 
         /// <inheritdoc />
-        public IEnumerable<IEntity> List => Out[Constants.DefaultStreamName].List;
+        public IDataStream GetStream(string name = null, string noParameterOrder = Parameters.Protector, bool nullIfNotFound = false, bool emptyIfNotFound = false)
+        {
+            Parameters.ProtectAgainstMissingParameterNames(noParameterOrder, nameof(GetStream), $"{nameof(nullIfNotFound)}");
+
+            // Check if streamName was not provided
+            if (string.IsNullOrEmpty(name)) name = Constants.DefaultStreamName;
+
+            // Simple case - just get it
+            if (Out.ContainsKey(name)) return Out[name];
+
+            if (nullIfNotFound && emptyIfNotFound)
+                throw new ArgumentException($"You cannot set both {nameof(nullIfNotFound)} and {nameof(emptyIfNotFound)} to true");
+
+            // If null is preferred to an error, return this
+            if (nullIfNotFound) return null;
+
+            // If empty is preferred to an error, return this
+            if (emptyIfNotFound) return new DataStream(this, name, () => new List<IEntity>());
+
+            // Not found and no rule to handle it, throw error
+            throw new KeyNotFoundException(
+                $"Can't find Stream with the name '{name}'. This could be a typo. Otherwise we recommend that you use either " +
+                $"'{nameof(nullIfNotFound)}: true' (for null-checks or ?? chaining) " +
+                $"or '{nameof(emptyIfNotFound)}: true' (for situations where you just want to add LINQ statements"
+            );
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<IEntity> List => GetStream().List; // Out[Constants.DefaultStreamName].List;
 
 
         #region various Attach-In commands
