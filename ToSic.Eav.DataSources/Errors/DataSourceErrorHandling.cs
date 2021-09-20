@@ -9,11 +9,8 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class DataSourceErrorHandling
     {
-        //private readonly Lazy<IDataBuilder> _dataBuilderLazy;
-
-        public DataSourceErrorHandling(/*Lazy<IDataBuilder> dataBuilderLazy*/)
+        public DataSourceErrorHandling()
         {
-            //_dataBuilderLazy = dataBuilderLazy;
         }
         
         public static string ErrorType = "Error";
