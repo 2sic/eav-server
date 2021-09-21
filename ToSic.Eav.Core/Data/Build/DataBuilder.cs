@@ -30,7 +30,7 @@ namespace ToSic.Eav.Data
         [PublicApi]
         public IEntity Entity(
             Dictionary<string, object> values = null,
-            string noParameterOrder = Parameters.Protector,
+            string noParamOrder = Parameters.Protector,
             int appId = 0,
             int id = 0,
             string titleField = null,
@@ -45,7 +45,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         [PublicApi]
         public IEnumerable<IEntity> Entities(IEnumerable<Dictionary<string, object>> itemValues,
-            string noParameterOrder = Parameters.Protector,
+            string noParamOrder = Parameters.Protector,
             int appId = 0,
             string titleField = null,
             string typeName = DefaultTypeName,

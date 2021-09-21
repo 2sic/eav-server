@@ -10,13 +10,13 @@ namespace ToSic.Eav.Data
         /// Create a new attribute for adding to an Entity.
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="noParameterOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+        /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
         /// <param name="typeName">optional type name as string, like "String" or "Entity" - note that type OR typeName must be provided</param>
         /// <param name="type">optional type code - note that type OR typeName must be provided</param>
         /// <param name="values">list of values to add to this attribute</param>
         /// <returns></returns>
         public IAttribute Attribute(string name,
-            string noParameterOrder = Parameters.Protector,
+            string noParamOrder = Parameters.Protector,
             string typeName = null,
             ValueTypes type = ValueTypes.Undefined, 
             IList<IValue> values = null)

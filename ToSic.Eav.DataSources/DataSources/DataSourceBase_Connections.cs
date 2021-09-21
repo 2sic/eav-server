@@ -23,9 +23,9 @@ namespace ToSic.Eav.DataSources
         public IDataStream this[string outName] => GetStream(outName);
 
         /// <inheritdoc />
-        public IDataStream GetStream(string name = null, string noParameterOrder = Parameters.Protector, bool nullIfNotFound = false, bool emptyIfNotFound = false)
+        public IDataStream GetStream(string name = null, string noParamOrder = Parameters.Protector, bool nullIfNotFound = false, bool emptyIfNotFound = false)
         {
-            Parameters.ProtectAgainstMissingParameterNames(noParameterOrder, nameof(GetStream), $"{nameof(nullIfNotFound)}");
+            Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(GetStream), $"{nameof(nullIfNotFound)}");
 
             // Check if streamName was not provided
             if (string.IsNullOrEmpty(name)) name = Constants.DefaultStreamName;
