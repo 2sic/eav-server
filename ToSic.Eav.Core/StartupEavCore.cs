@@ -52,6 +52,9 @@ namespace ToSic.Eav
             services.TryAddTransient<LogHistory>();
             services.TryAddSingleton<GlobalTypes>();    // this must be singleton, could cause trouble otherwise
 
+            // Warnings for mock implementations
+            services.TryAddTransient(typeof(WarnUseOfUnknown<>));
+
             return services;
         }
 
@@ -68,13 +71,16 @@ namespace ToSic.Eav
         {
             // very basic stuff - normally overriden by the platform
             services.TryAddTransient<IFingerprint, FingerprintUnknown>();
-            services.TryAddTransient<IValueConverter, ValueConverterBase>();
+            services.TryAddTransient<IValueConverter, ValueConverterUnknown>();
 
             services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
             services.TryAddTransient<IUser, UserUnknown>();
             services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
             services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
             services.TryAddTransient<IAppRepositoryLoader, AppRepositoryLoaderUnknown>();
+
+            // Special registration of iisUnknown to verify we see warnings if such a thing is loaded
+            services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
             return services;
         }
 

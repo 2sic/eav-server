@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 
 namespace ToSic.Eav.Context
 {
     public sealed class UserUnknown: IUser, IIsUnknown
     {
+        public UserUnknown(WarnUseOfUnknown<UserUnknown> warn) { }
+
         public string IdentityToken => "unknown(eav):0";
 
         public Guid? Guid => System.Guid.Empty;

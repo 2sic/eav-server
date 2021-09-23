@@ -7,7 +7,7 @@ namespace ToSic.Eav.Run.Unknown
 {
     public class RuntimeUnknown: HasLog, IRuntime, IIsUnknown
     {
-        public RuntimeUnknown() : base("Eav.BscRnt") { }
+        public RuntimeUnknown(WarnUseOfUnknown<RuntimeUnknown> warn) : base("Eav.BscRnt") { }
 
         public IRuntime Init(ILog parent)
         {

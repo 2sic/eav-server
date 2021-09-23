@@ -1,16 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Context;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 
 namespace ToSic.Eav.Apps.Run
 {
     public class ZoneMapperUnknown: ZoneMapperBase, IIsUnknown
     {
-        public ZoneMapperUnknown(IAppStates appStates) : base(appStates, $"{LogNames.NotImplemented}.ZonMap")  {  }
+        public ZoneMapperUnknown(IAppStates appStates, WarnUseOfUnknown<ZoneMapperUnknown> warn, IServiceProvider sp) 
+            : base(appStates, $"{LogNames.NotImplemented}.ZonMap")
+        {
+            _sp = sp;
+        }
+        private readonly IServiceProvider _sp;
 
         public override int GetZoneId(int siteId) => siteId;
 
-        public override ISite SiteOfZone(int zoneId) => new SiteUnknown().Init(zoneId);
+        public override ISite SiteOfZone(int zoneId) => _sp.Build<ISite>().Init(zoneId);
 
         public override List<TempTempCulture> CulturesWithState(int siteId, int zoneId) => new List<TempTempCulture>();
     }

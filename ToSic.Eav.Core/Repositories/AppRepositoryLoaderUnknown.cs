@@ -2,12 +2,13 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 
 namespace ToSic.Eav.Repositories
 {
     public class AppRepositoryLoaderUnknown: HasLog, IAppRepositoryLoader, IIsUnknown
     {
-        public AppRepositoryLoaderUnknown() : base(LogNames.NotImplemented + ".RepLdr") { }
+        public AppRepositoryLoaderUnknown(WarnUseOfUnknown<AppRepositoryLoaderUnknown> warn) : base(LogNames.NotImplemented + ".RepLdr") { }
 
         public IAppRepositoryLoader Init(int appId, string path, ILog log)
         {

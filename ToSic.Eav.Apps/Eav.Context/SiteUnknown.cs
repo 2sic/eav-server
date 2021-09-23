@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -8,6 +9,8 @@ namespace ToSic.Eav.Context
         private const string Unknown = "unknown - please implement the ISite interface to get real values";
 
         internal const int UnknownSiteId = Constants.NullId;
+
+        public SiteUnknown(WarnUseOfUnknown<SiteUnknown> warn) { }
 
         /// <summary>
         /// The unknown zone defaults to 2, as #1 is usually reserved for internal stuff

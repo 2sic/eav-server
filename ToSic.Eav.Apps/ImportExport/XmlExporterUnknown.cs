@@ -3,12 +3,14 @@ using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Xml;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
     public sealed class XmlExporterUnknown: XmlExporter, IIsUnknown
     {
-        public XmlExporterUnknown(XmlSerializer xmlSerializer, IAppStates appStates) : base(xmlSerializer, appStates, LogNames.NotImplemented)
+        public XmlExporterUnknown(XmlSerializer xmlSerializer, IAppStates appStates, WarnUseOfUnknown<XmlExporterUnknown> warn) 
+            : base(xmlSerializer, appStates, LogNames.NotImplemented)
         {
         }
 
