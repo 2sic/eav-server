@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data.Builder
         /// <summary>
         /// Shortcut to get an @All Entity Describing an Attribute
         /// </summary>
-        internal static Entity CreateAttributeMetadata(int appId, string name, string notes, bool? visibleInEditUi, string defaultValue, string inputType)
+        public static Entity GenerateAttributeMetadata(GlobalTypes globalTypes, int appId, string name, string notes, bool? visibleInEditUi, string defaultValue, string inputType)
         {
             var valDic = new Dictionary<string, object>();
             if (!string.IsNullOrEmpty(name)) valDic.Add("Name", name);
@@ -19,7 +19,7 @@ namespace ToSic.Eav.Data.Builder
             if (defaultValue != null) valDic.Add("DefaultValue", defaultValue);
             if (!string.IsNullOrEmpty(inputType)) valDic.Add(AttributeMetadata.GeneralFieldInputType, inputType);
 
-            return new Entity(appId, Guid.Empty, Global.FindContentType(AttributeMetadata.TypeGeneral), valDic);
+            return new Entity(appId, Guid.Empty, globalTypes.FindContentType(AttributeMetadata.TypeGeneral), valDic);
         }
 
 

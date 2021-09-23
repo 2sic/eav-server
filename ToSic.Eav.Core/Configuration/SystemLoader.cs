@@ -21,10 +21,11 @@ namespace ToSic.Eav.Configuration
 
         #region Constructor / DI
 
-        public SystemLoader(GlobalTypeLoader typeLoader, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache) : base($"{LogNames.Eav}SysLdr")
+        public SystemLoader(GlobalTypeLoader typeLoader, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
         {
             _appsCache = appsCache;
-            History.Add(Types.Global.LogHistoryGlobalTypes, Log);
+            _logHistory = logHistory;
+            logHistory.Add(Types.GlobalTypes.LogHistoryGlobalTypes, Log);
             _typeLoader = typeLoader.Init(Log);
             _fingerprint = fingerprint;
             _runtime = runtime;
@@ -34,6 +35,7 @@ namespace ToSic.Eav.Configuration
         private readonly IFingerprint _fingerprint;
         private readonly IRuntime _runtime;
         private readonly IAppsCache _appsCache;
+        private readonly LogHistory _logHistory;
 
         #endregion
 
@@ -53,7 +55,8 @@ namespace ToSic.Eav.Configuration
 
             // Build the cache of all system-types. Must happen before everything else
             _typeLoader.BuildCache();
-            Types.Global.TypeLoader = _typeLoader;
+            //Types.Global.TypeLoader = _typeLoader;
+            Types.GlobalTypes.TypeLoader = _typeLoader;
 
             // Now do a normal reload of configuration and features
             Reload();
@@ -80,7 +83,7 @@ namespace ToSic.Eav.Configuration
         {
             var log = new Log($"{LogNames.Eav}.Global");
             log.Add("Load Global Configurations");
-            History.Add(Types.Global.LogHistoryGlobalTypes, log);
+            _logHistory.Add(Types.GlobalTypes.LogHistoryGlobalTypes, log);
             var wrapLog = log.Call();
 
             try

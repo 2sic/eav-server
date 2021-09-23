@@ -14,11 +14,13 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
     [TestClass]
     public class RuntimeLoaderTest:PersistenceTestsBase
     {
-        private readonly IRuntime _runtime;
         public RuntimeLoaderTest()
         {
             _runtime = EavTestBase.Resolve<IRuntime>();
+            _globalTypes = EavTestBase.Resolve<GlobalTypes>();
         }
+        private readonly IRuntime _runtime;
+        private readonly GlobalTypes _globalTypes;
 
         private int expectedTypesSysAndJson = 5;
         [Ignore("currently work in progress - as sys/json types keep changing and testing isn't updated yet")]
@@ -29,7 +31,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
             // set loader root path, based on test environment
             TestGlobalFolderRepository.PathToUse = TestStorageRoot;
 
-            var all = Global.AllContentTypes();
+            var all = _globalTypes.AllContentTypes();
             Assert.AreEqual(expectedTypesSysAndJson, all.Count);
 
             var hasCodeSql = all.Values.FirstOrDefault(t => t.Name.Contains("SqlData"));
@@ -51,7 +53,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 
             var time = Stopwatch.StartNew();
             TestGlobalFolderRepository.PathToUse = TestingPath40;
-            var count = Global.AllContentTypes().Count;
+            var count = _globalTypes.AllContentTypes().Count;
             time.Stop();
             
             Assert.IsTrue(count >= 60 && count <= 70, $"expected between 40 and 60, actually is {count}");
@@ -65,8 +67,8 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
             int res1 = 0, res2 = 0;
             TestGlobalFolderRepository.PathToUse = TestingPath40;
 
-            var t1 = new Thread(() => res1 = Global.AllContentTypes().Count);
-            var t2 = new Thread(() => res2 = Global.AllContentTypes().Count);
+            var t1 = new Thread(() => res1 = _globalTypes.AllContentTypes().Count);
+            var t2 = new Thread(() => res2 = _globalTypes.AllContentTypes().Count);
 
             t1.Start();
             t2.Start();

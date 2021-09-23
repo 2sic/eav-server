@@ -3,12 +3,13 @@ using Newtonsoft.Json;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Types;
 
 namespace ToSic.Eav.ImportExport.Json
 {
     public class JsonBundleSerializer: JsonSerializer
     {
-        public JsonBundleSerializer(ITargetTypes metadataTargets) : base(metadataTargets, "Ser.Bundle") { }
+        public JsonBundleSerializer(ITargetTypes metadataTargets, GlobalTypes globalTypes) : base(metadataTargets, globalTypes, "Ser.Bundle") { }
 
         public string Serialize(BundleEntityWithAssets bundle, int metadataDepth)
         {

@@ -7,6 +7,7 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
@@ -46,6 +47,10 @@ namespace ToSic.Eav
 
             // Other...
             services.TryAddTransient<AttributeBuilder>();
+
+            // History (very core service)
+            services.TryAddTransient<LogHistory>();
+            services.TryAddSingleton<GlobalTypes>();    // this must be singleton, could cause trouble otherwise
 
             return services;
         }

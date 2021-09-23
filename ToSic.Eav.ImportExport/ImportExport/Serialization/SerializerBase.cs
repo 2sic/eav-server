@@ -13,14 +13,16 @@ namespace ToSic.Eav.Serialization
 {
     public abstract class SerializerBase: HasLog, IDataSerializer
     {
+        private readonly GlobalTypes _globalTypes;
 
         #region Constructor / DI
 
         /// <summary>
         /// Constructor for inheriting classes
         /// </summary>
-        protected SerializerBase(ITargetTypes metadataTargets, string logName): base(logName)
+        protected SerializerBase(ITargetTypes metadataTargets, GlobalTypes globalTypes, string logName): base(logName)
         {
+            _globalTypes = globalTypes;
             MetadataTargets = metadataTargets;
         }
         public ITargetTypes MetadataTargets { get; }
@@ -67,7 +69,7 @@ namespace ToSic.Eav.Serialization
                 if (type != null) return type;
             }
 
-            return Global.FindContentType(staticName) // note: will return null if not found
+            return _globalTypes.FindContentType(staticName) // note: will return null if not found
                        ?? (_types != null
                            ? _types.FirstOrDefault(t => t.StaticName == staticName)
                            : App.GetContentType(staticName));

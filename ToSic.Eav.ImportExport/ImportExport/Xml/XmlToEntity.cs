@@ -17,16 +17,18 @@ namespace ToSic.Eav.ImportExport.Xml
 	{
         private class TargetLanguageToSourceLanguage: DimensionDefinition
         {
-            public List<DimensionDefinition> PriorizedDimensions = new List<DimensionDefinition>();
+            public List<DimensionDefinition> PrioritizedDimensions = new List<DimensionDefinition>();
         }
 
         public int AppId { get; }
-	    public XmlToEntity(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang, ILog parentLog): base("Imp.XmlEnt", parentLog, "init", "XmlToEntity")
+	    public XmlToEntity(GlobalTypes globalTypes, int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang, ILog parentLog)
+            : base("Imp.XmlEnt", parentLog, "init", "XmlToEntity")
 	    {
 	        AppId = appId;
             envLanguages = envLanguages.OrderByDescending(p => p.Matches(envDefLang)).ThenBy(p => p.EnvironmentKey).ToList();
 	        _envLangs = PrepareTargetToSourceLanguageMapping(envLanguages, envDefLang, srcLanguages, srcDefLang);
-	        _envDefLang = envDefLang;
+            _globalTypes = globalTypes;
+            _envDefLang = envDefLang;
             _srcDefLang = srcDefLang?.ToString();
 	    }
 
@@ -43,7 +45,7 @@ namespace ToSic.Eav.ImportExport.Xml
                         Active = el.Active,
                         EnvironmentKey = el.EnvironmentKey,
                         DimensionId = el.DimensionId,
-                        PriorizedDimensions = FindPriorizedMatchingDimensions(el, envDefLang, srcLanguages, srcDefLang)
+                        PrioritizedDimensions = FindPriorizedMatchingDimensions(el, envDefLang, srcLanguages, srcDefLang)
                     }).ToList();
             }
             else
@@ -61,7 +63,7 @@ namespace ToSic.Eav.ImportExport.Xml
                     {
                         Active = true,
                         EnvironmentKey = envDefLang,
-                        PriorizedDimensions = FindPriorizedMatchingDimensions(tempDimension, envDefLang, srcLanguages, srcDefLang)
+                        PrioritizedDimensions = FindPriorizedMatchingDimensions(tempDimension, envDefLang, srcLanguages, srcDefLang)
                     }
                 };
             }
@@ -102,7 +104,8 @@ namespace ToSic.Eav.ImportExport.Xml
 
         //private readonly List<string> _relevantSrcLangsByPriority;
 	    private readonly List<TargetLanguageToSourceLanguage> _envLangs;
-	    private readonly string _envDefLang;
+        private readonly GlobalTypes _globalTypes;
+        private readonly string _envDefLang;
         private readonly string _srcDefLang;
         
 
@@ -179,7 +182,7 @@ namespace ToSic.Eav.ImportExport.Xml
                 throw new NullReferenceException("trying to import an xml entity but type is null - " + xEntity);
 		    
             // find out if it's a system type, and use that if it exists
-            var globalType = Global.FindContentType(typeName);// as object ?? typeName;
+            var globalType = _globalTypes.FindContentType(typeName);
 		    var guid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
 		                          throw new NullReferenceException("can't import an entity without a guid identifier"));
 		    var attribs = finalAttributes.ToDictionary(x => x.Key, y => (object) y.Value);
@@ -279,7 +282,7 @@ namespace ToSic.Eav.ImportExport.Xml
 	        var readOnly = false;
 
             // find the xml-node which best matches the language we want to fill in
-            foreach (var sourceLanguage in envLang.PriorizedDimensions)
+            foreach (var sourceLanguage in envLang.PrioritizedDimensions)
 	        {
 	            var dimensionId = sourceLanguage.DimensionId.ToString();
 	            // find a possible match for exactly this language

@@ -23,12 +23,14 @@ namespace ToSic.Eav.Apps.Parts
     {
         #region Constructor / DI
 
-        public AppInitializer(IServiceProvider serviceProvider) : base("Eav.AppBld")
+        public AppInitializer(IServiceProvider serviceProvider, GlobalTypes globalTypes, SystemManager systemManager) : base("Eav.AppBld")
         {
             _serviceProvider = serviceProvider;
-            SystemManager = _serviceProvider.Build<SystemManager>().Init(Log);
+            SystemManager = systemManager.Init(Log);
+            _globalTypes = globalTypes;
         }
         private readonly IServiceProvider _serviceProvider;
+        private readonly GlobalTypes _globalTypes;
         protected readonly SystemManager SystemManager;
 
 
@@ -170,7 +172,7 @@ namespace ToSic.Eav.Apps.Parts
             // discuss w/2dm if you think you want to change this
             var ct = inAppType
                 ? AppManager.Read.ContentTypes.Get(setName)
-                : Global.FindContentType(setName);
+                : _globalTypes.FindContentType(setName);
             return ct;
         }
 

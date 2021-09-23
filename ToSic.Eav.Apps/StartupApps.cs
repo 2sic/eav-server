@@ -55,6 +55,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ZoneCreator>();
             services.TryAddTransient<IAppInitializedChecker, AppInitializedChecker>();
             services.TryAddTransient<AppInitializedChecker>();
+            services.TryAddTransient<AppInitializer>();
 
             // export import stuff
             services.TryAddScoped<ExportListXml>();

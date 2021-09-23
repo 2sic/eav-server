@@ -8,6 +8,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
+using ToSic.Eav.Types;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -17,7 +18,7 @@ namespace ToSic.Eav.Persistence.Xml
     {
         private Dictionary<string, int> _dimensions;
 
-        public XmlSerializer(ITargetTypes targetTypes): base(targetTypes, "IEx.XmlSer") { }
+        public XmlSerializer(ITargetTypes targetTypes, GlobalTypes globalTypes): base(targetTypes, globalTypes, "IEx.XmlSer") { }
 
         public XmlSerializer Init(Dictionary<string, int> dimensionMapping, AppState appState, ILog parentLog)
         {

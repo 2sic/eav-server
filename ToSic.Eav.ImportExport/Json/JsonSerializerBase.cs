@@ -2,6 +2,7 @@
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization;
+using ToSic.Eav.Types;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -10,7 +11,7 @@ namespace ToSic.Eav.ImportExport.Json
         /// <summary>
         /// Initialize with the correct logger name
         /// </summary>
-        protected JsonSerializerBase(ITargetTypes metadataTargets, string logName) : base(metadataTargets, logName) { }
+        protected JsonSerializerBase(ITargetTypes metadataTargets, GlobalTypes globalTypes, string logName) : base(metadataTargets, globalTypes, logName) { }
 
         public T Init(AppState package, ILog parentLog)
         {

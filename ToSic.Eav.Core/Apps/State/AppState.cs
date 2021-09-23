@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Types;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps
@@ -17,10 +18,10 @@ namespace ToSic.Eav.Apps
     {
 
         [PrivateApi("constructor, internal use only")]
-        internal AppState(IAppStates appStates, IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
+        internal AppState(IAppStates appStates, GlobalTypes globalTypes, IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
         {
             _appStates = appStates;
-            History.Add("app-state", Log);
+            _globalTypes = globalTypes;
             Log.Add($"AppState for App {app.AppId}");
             Init(app, new CodeRef(), parentLog);
             AppGuidName = appGuidName;
@@ -31,6 +32,8 @@ namespace ToSic.Eav.Apps
         }
         [PrivateApi("Accessor to other apps - replaces the static State object")]
         private readonly IAppStates _appStates;
+
+        private readonly GlobalTypes _globalTypes;
 
 
         /// <summary>

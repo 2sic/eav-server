@@ -8,6 +8,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -15,6 +16,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	{
         public class Dependencies
         {
+            public GlobalTypes GlobalTypes { get; }
 
             public Dependencies(
                 Lazy<Import> importerLazy,
@@ -24,9 +26,11 @@ namespace ToSic.Eav.Apps.ImportExport
                 ITargetTypes metaTargetTypes,
                 SystemManager systemManager,
                 IAppStates appStates,
-                IAppsCache appsCache
+                IAppsCache appsCache,
+                GlobalTypes globalTypes
                 )
             {
+                GlobalTypes = globalTypes;
                 AppsCache = appsCache;
                 _importerLazy = importerLazy;
                 _dbDataForNewApp = dbDataForNewApp;
