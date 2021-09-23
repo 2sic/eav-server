@@ -7,6 +7,7 @@ using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps
@@ -43,6 +44,11 @@ namespace ToSic.Eav.Apps
 
             // App Dependencies
             services.TryAddTransient<App.AppDependencies>();
+
+            // File System Loaders (note: Dnn will introduce it's own to work around a DI issue)
+            services.TryAddTransient<IAppFileSystemLoader, AppFileSystemLoader>();
+            services.TryAddTransient<IAppRepositoryLoader, AppFileSystemLoader>();
+            services.TryAddTransient<AppFileSystemLoader.Dependencies>();
 
             // Helpers to build stuff
             services.TryAddTransient<AppCreator>();
