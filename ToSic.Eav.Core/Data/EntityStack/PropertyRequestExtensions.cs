@@ -28,7 +28,7 @@ namespace ToSic.Eav.Data
                 return safeWrap("empty is ok", result.AsFinal(sourceIndex));
 
             // this may set a null, but may also set an empty string or empty array
-            if (result.Result.IsNullOrDefault(treatFalseAsDefault: false))
+            if (result.Result.IsNullOrDefault())
                 return safeWrap("NullOrDefault - not final", result);
 
             if (result.Result is string foundString)
