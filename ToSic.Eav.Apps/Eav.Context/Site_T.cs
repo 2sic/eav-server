@@ -18,6 +18,7 @@ namespace ToSic.Eav.Context
         /// The tenant settings - usually the DNN PortalSettings
         /// </summary>
         public virtual T UnwrappedContents { get; protected set; }
+        public T GetContents() => UnwrappedContents;
 
         /// <inheritdoc />
         public abstract string CurrentCultureCode { get; }

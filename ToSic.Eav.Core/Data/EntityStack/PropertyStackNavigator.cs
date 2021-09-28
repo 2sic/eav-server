@@ -25,13 +25,12 @@ namespace ToSic.Eav.Data
     /// * And let that take over - it may in turn repeat the process again
     /// </summary>
     [PrivateApi]
-    public class PropertyStackNavigator: IWrapper<IPropertyLookup>, IPropertyStackLookup
+    public class PropertyStackNavigator: Wrapper<IPropertyLookup>, IPropertyStackLookup
     {
         private const int IndexOfOwnItem = 0;
         private const int IndexOfNextItem = 1;
-        public PropertyStackNavigator(IPropertyLookup child, IPropertyStackLookup parent, string field, int index)
+        public PropertyStackNavigator(IPropertyLookup child, IPropertyStackLookup parent, string field, int index): base(child)
         {
-            UnwrappedContents = child;
             Parent = parent;
             ParentField = field;
             ParentIndex = index;
@@ -52,8 +51,6 @@ namespace ToSic.Eav.Data
         /// </summary>
         public int ParentIndex;
 
-
-        public IPropertyLookup UnwrappedContents { get; set; }
 
         public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
         {
@@ -119,7 +116,7 @@ namespace ToSic.Eav.Data
         {
             var safeWrap = logOrNull.SafeCall<PropertyRequest>();
 
-            var childResult = UnwrappedContents.FindPropertyInternal(field, dimensions, logOrNull);
+            var childResult = _contents.FindPropertyInternal(field, dimensions, logOrNull);
             if (childResult == null) return safeWrap("null", null);
             
             // Test if final was already checked, otherwise update it
