@@ -20,6 +20,15 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests
             IsFalse(Guid.Empty.IsAnonymous());
             IsFalse(new string[0].IsAnonymous());
         }
+        public void SimpleValueTypes()
+        {
+            IsFalse("".GetType().IsAnonymous());
+            IsFalse(5.GetType().IsAnonymous());
+            IsFalse((null as string).GetType().IsAnonymous());
+            IsFalse(DateTime.Now.GetType().IsAnonymous());
+            IsFalse(Guid.Empty.GetType().IsAnonymous());
+            IsFalse(new string[0].GetType().IsAnonymous());
+        }
 
         [TestMethod]
         public void RealObjects()
@@ -53,7 +62,7 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests
             IsFalse(JsonConvert.DeserializeObject(jsonArray).IsAnonymous());
 
             var jsonObject = "{ \"key\": 27, \"key2\": 42 }";
-            IsTrue(JsonConvert.DeserializeObject(jsonObject).IsAnonymous());
+            IsFalse(JsonConvert.DeserializeObject(jsonObject).IsAnonymous());
 
         }
     }
