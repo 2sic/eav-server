@@ -126,6 +126,7 @@
     <Compile Include="PlumbingTests\TestAccessors.cs" />
     <Compile Include="PlumbingTests\ObjectExtensionTests\ChangeTypeTests.cs" />
     <Compile Include="PlumbingTests\ObjectExtensionTests\ConvertOrFallback.cs" />
+    <Compile Include="PlumbingTests\AnonymousTypeTests.cs" />
     <Compile Include="Signature\SignatureDataSha256.cs" />
     <Compile Include="Signature\SignatureHashSha1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

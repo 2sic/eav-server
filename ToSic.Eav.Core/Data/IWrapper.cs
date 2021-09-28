@@ -16,5 +16,9 @@ namespace ToSic.Eav.Data
         /// </summary>
         T UnwrappedContents { get; }
 
+
+        // todo @2dm
+        // Create a GetContents() to get it
+        // Then change all code which only uses UnwrappedContents internally to use a private variable instead
     }
 }
