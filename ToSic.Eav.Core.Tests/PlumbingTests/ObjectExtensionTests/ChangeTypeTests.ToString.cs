@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -10,6 +6,12 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
 {
     public partial class ChangeTypeTests
     {
+        [TestMethod]
+        [Ignore("ATM not ready, won't do what we would like but not sure if this is even relevant")]
+        public void DateTimeToString()
+        {
+            ConvT(new DateTime(2021,09,29), "2021-09-29", "2021-09-29");
+        }
 
         [TestMethod]
         public void NumberToString()

@@ -117,6 +117,7 @@
     <Compile Include="LookUp\Tokens\TokenReplaceTst.cs" />
     <Compile Include="LookUp\LookUpEngineTests.cs" />
     <Compile Include="LookUp\LookUpTests.cs" />
+    <Compile Include="PlumbingTests\ObjectExtensionTests\ChangeTypeTests.ToDateTime.cs" />
     <Compile Include="PlumbingTests\ObjectExtensionTests\ChangeTypeTests.ToBool.cs" />
     <Compile Include="PlumbingTests\ObjectExtensionTests\ChangeTypeTests.ToNumber.cs" />
     <Compile Include="PlumbingTests\ObjectExtensionTests\ChangeTypeTests.ToString.cs" />
