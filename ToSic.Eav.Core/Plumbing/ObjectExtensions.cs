@@ -57,9 +57,13 @@ namespace ToSic.Eav.Plumbing
             // Numbers are first converted to decimal, because it could handle .notation
             // Booleans are also first converted to decimal, so that "1.1" or "27" is treated as truthy
             if(value is string s)
-                if ((numeric && unboxedT.IsNumeric() || truthy && unboxedT == typeof(bool))
-                    && decimal.TryParse(s, out var dec))
-                    value = dec;
+                if (((numeric && unboxedT.IsNumeric()) || (truthy && unboxedT == typeof(bool))))
+                {
+                    if (s.IndexOf(',') > -1) s = s.Replace(',', '.');
+                    if (decimal.TryParse(s, out var dec))
+                        value = dec;
+                }
+
 
             try
             {

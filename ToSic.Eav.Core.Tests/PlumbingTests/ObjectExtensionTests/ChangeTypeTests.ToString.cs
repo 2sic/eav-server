@@ -23,8 +23,7 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
             ConvT(5.299, "5.299", "5.299");
             ConvT(-5.2, "-5.2", "-5.2");
 
-            // todo: now change threading culture
-            var current = System.Globalization.CultureInfo.CurrentCulture; //.Thread.CurrentThread.CurrentCulture;
+            // Now change threading culture
             System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("de-DE");
             ConvT(5.2, "5.2", "5.2");
             ConvT(5.299, "5.299", "5.299");
