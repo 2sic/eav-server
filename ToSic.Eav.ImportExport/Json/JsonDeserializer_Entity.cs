@@ -105,6 +105,7 @@ namespace ToSic.Eav.ImportExport.Json
             BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, newEntity, null);
             BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, newEntity, null);
             BuildAttrib(jAtts.Custom, ValueTypes.Custom, newEntity, null);
+            BuildAttrib(jAtts.Json, ValueTypes.Json, newEntity, null);
             BuildAttrib(jAtts.Entity, ValueTypes.Entity, newEntity, relationshipsSource);
             BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, newEntity, null);
             BuildAttrib(jAtts.Number, ValueTypes.Number, newEntity, null);
@@ -160,6 +161,9 @@ namespace ToSic.Eav.ImportExport.Json
                         break;
                     case ValueTypes.Custom:
                         BuildValues(jAtts.Custom, definition, newAtt);
+                        break;
+                    case ValueTypes.Json:
+                        BuildValues(jAtts.Json, definition, newAtt);
                         break;
                     // ReSharper disable RedundantCaseLabel
                     case ValueTypes.Empty:

@@ -89,6 +89,7 @@ namespace ToSic.Eav.Data.Builder
                     case ValueTypes.String:
                     case ValueTypes.Hyperlink:
                     case ValueTypes.Custom:
+                    case ValueTypes.Json:
                     case ValueTypes.Undefined:
                     case ValueTypes.Empty:
                     // ReSharper restore RedundantCaseLabel

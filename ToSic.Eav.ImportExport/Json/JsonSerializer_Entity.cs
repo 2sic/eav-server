@@ -61,6 +61,9 @@ namespace ToSic.Eav.ImportExport.Json
                     case ValueTypes.Custom:
                         attribs.Custom = ToTypedDictionary<string>(gList, Log);
                         break;
+                    case ValueTypes.Json:
+                        attribs.Json = ToTypedDictionary<string>(gList, Log);
+                        break;
                     case ValueTypes.Number:
                         attribs.Number = ToTypedDictionary<decimal?>(gList, Log);
                         break;
