@@ -8,7 +8,7 @@ using ToSic.Eav.Plumbing;
 namespace ToSic.Eav.Data
 {
     /// <inheritdoc />
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, always use IEntity")]
+    [PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi, always use IEntity")]
 	public partial class EntityLight : IEntityLight
     {
         #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.

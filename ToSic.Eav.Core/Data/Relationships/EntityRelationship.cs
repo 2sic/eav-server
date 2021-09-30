@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data
 	/// <summary>
 	/// Represents a Relation between two entities, connecting a parent to a child.
 	/// </summary>
-	[PublicApi_Stable_ForUseInYourCode]
+	[PrivateApi("2021-09-30 hidden now, previously PublicApi_Stable_ForUseInYourCode - should probably create an interface for this")]
 	public class EntityRelationship
 	{
 		/// <summary>

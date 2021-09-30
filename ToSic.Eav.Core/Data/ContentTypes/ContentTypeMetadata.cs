@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
     /// Provides metadata for a content type. This can be very special, because ContentTypes can be shared (ghosts),
     /// in which case the metadata must be retrieved from another "remote" location (where the original is defined). 
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+    [PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi")]
     public class ContentTypeMetadata : MetadataOf<string>
     {
 
