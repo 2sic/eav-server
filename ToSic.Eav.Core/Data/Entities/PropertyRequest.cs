@@ -13,6 +13,12 @@ namespace ToSic.Eav.Data
         /// The result of the request - null if not found
         /// </summary>
         public object Result;
+
+
+        /// <summary>
+        /// The IValue object, in case we need to use it's cache
+        /// </summary>
+        public IValue Value;
         
         /// <summary>
         /// A field type, like "Hyperlink" or "Entity" etc.

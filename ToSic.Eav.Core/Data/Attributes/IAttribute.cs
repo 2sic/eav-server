@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
@@ -56,5 +57,9 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         [PrivateApi("might rename to Clone or something, and might be moved out")]
 	    IAttribute Copy();
-	}
+
+        [PrivateApi("experimental in 12.05")]
+        Tuple<IValue, object> GetTypedValue(string[] languageKeys);
+
+    }
 }

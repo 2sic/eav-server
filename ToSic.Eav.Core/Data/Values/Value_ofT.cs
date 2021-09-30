@@ -68,5 +68,9 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         public IValue Copy(string type) => ValueBuilder.Build(type, ObjectContents,
             Languages.Select(l => new Language {DimensionId = l.DimensionId, Key = l.Key} as ILanguage).ToList(), null);
+
+
+        [PrivateApi] public bool? DynamicUseCache { get; set; }
+        [PrivateApi] public object DynamicCache { get; set; }
     }
 }
