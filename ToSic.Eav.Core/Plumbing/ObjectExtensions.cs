@@ -83,8 +83,7 @@ namespace ToSic.Eav.Plumbing
             if (value is null) return fallback;
             try
             {
-                var valToConvert = value;
-                var result = valToConvert.TryConvert<T>(numeric: numeric, truthy: truthy);
+                var result = value.TryConvert<T>(numeric: numeric, truthy: truthy);
                 // Null should always fallback, default not always
                 if (!result.Item1 || result.Item2 == null) return fallback;
                 if (fallbackOnDefault && IsNullOrDefault(result)) return fallback;
