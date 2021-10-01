@@ -2,16 +2,16 @@
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Persistence.Logging;
+using static System.IO.Path;
 
 namespace ToSic.Eav.ImportExport
 {
     public class FileManager
     {
-
+        
         public FileManager(string sourceFolder)
         {
             _sourceFolder = sourceFolder;
-
         }
 
         /// <summary>
@@ -33,14 +33,14 @@ namespace ToSic.Eav.ImportExport
             foreach (var file in filteredFiles)
             {
                 var relativeFilePath = file.Replace(_sourceFolder, "");
-                var destinationFilePath = $"{destinationFolder}{Path.DirectorySeparatorChar}{relativeFilePath}";
+                var destinationFilePath = $"{destinationFolder}{DirectorySeparatorChar}{relativeFilePath}";
                 
-                Directory.CreateDirectory(Path.GetDirectoryName(destinationFilePath));
+                Directory.CreateDirectory(GetDirectoryName(destinationFilePath));
 
                 if (!File.Exists(destinationFilePath))
                     File.Copy(file, destinationFilePath, overwriteFiles);
                 else
-                    messages.Add(new Message("File '" + Path.GetFileName(destinationFilePath) + "' not copied because it already exists", Message.MessageTypes.Warning));
+                    messages.Add(new Message("File '" + GetFileName(destinationFilePath) + "' not copied because it already exists", Message.MessageTypes.Warning));
             }
         }
 
@@ -56,16 +56,18 @@ namespace ToSic.Eav.ImportExport
                 if (_allTransferableFiles == null)
                 {
                     // add folder slashes to ensure the term is part of a folder, not within a file-name
-                    var exclAnyFolder = Settings.ExcludeFolders.Select(f => "\\" + f + "\\").ToArray();
-                    var exclRootFolders = Settings.ExcludeRootFolders.Select(f => _sourceFolder + f).ToArray();
+                    var exclAnyFolder = Settings.ExcludeFolders.Select(f => $"{DirectorySeparatorChar}{f}{DirectorySeparatorChar}").ToArray();
+                    var exclRootFolders = Settings.ExcludeRootFolders.Select(f => $"{Combine(_sourceFolder, f)}{DirectorySeparatorChar}").ToArray();
                     var excFolders = exclAnyFolder.Union(exclRootFolders).ToArray();
 
                     _allTransferableFiles = AllFiles
-                        .Where(f => !excFolders.Any(ex => f.ToLowerInvariant().Contains(ex)));
+                        .Where(f => !excFolders.Any(ex => f.ToLowerInvariant().Contains(ex.ToLowerInvariant())));
                 }
                 return _allTransferableFiles;
             }
         }
+
+
 
         private IEnumerable<string> _allFiles; 
 
