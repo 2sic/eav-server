@@ -13,6 +13,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
+using ToSic.Eav.Security;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav
@@ -35,10 +36,14 @@ namespace ToSic.Eav
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
             
             // try to drop this / replace with...
-            services.TryAddTransient<IFeaturesConfiguration, Features>();
+            //services.TryAddTransient<IFeaturesConfiguration, Features>();
             // ...with this
             services.TryAddTransient<SystemLoader>();
-            services.TryAddTransient<Features>();
+            //services.TryAddTransient<Features>();
+
+            // Make sure that IFeaturesInternal and IFeatures use the same singleton!
+            services.TryAddSingleton<IFeaturesInternal, FeaturesService>();    // this must come first!
+            services.TryAddSingleton<IFeaturesService>(x => x.GetRequiredService<IFeaturesInternal>());
 
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
@@ -54,6 +59,9 @@ namespace ToSic.Eav
 
             // Warnings for mock implementations
             services.TryAddTransient(typeof(WarnUseOfUnknown<>));
+
+            // Permissions helper
+            services.TryAddTransient<PermissionCheckBase.Dependencies>();
 
             return services;
         }

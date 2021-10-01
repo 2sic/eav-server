@@ -21,20 +21,25 @@ namespace ToSic.Eav.Configuration
 
         #region Constructor / DI
 
-        public SystemLoader(GlobalTypeLoader typeLoader, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
+        public SystemLoader(GlobalTypeLoader typeLoader, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
         {
             _appsCache = appsCache;
+            _features = features;
             _logHistory = logHistory;
-            logHistory.Add(Types.GlobalTypes.LogHistoryGlobalTypes, Log);
+            logHistory.Add(GlobalTypes.LogHistoryGlobalTypes, Log);
             _typeLoader = typeLoader.Init(Log);
             _fingerprint = fingerprint;
             _runtime = runtime;
+
+            if (Features.FeaturesFromDI == null)
+                Features.FeaturesFromDI = features;
         }
 
         private readonly GlobalTypeLoader _typeLoader;
         private readonly IFingerprint _fingerprint;
         private readonly IRuntime _runtime;
         private readonly IAppsCache _appsCache;
+        private readonly IFeaturesInternal _features;
         private readonly LogHistory _logHistory;
 
         #endregion
@@ -119,13 +124,13 @@ namespace ToSic.Eav.Configuration
                         try
                         {
                             var data = new UnicodeEncoding().GetBytes(featStr);
-                            Features.Valid = Sha256.VerifyBase64(Features.FeaturesValidationSignature2Sxc930, signature, data);
+                            FeaturesService.ValidInternal = Sha256.VerifyBase64(Features.FeaturesValidationSignature2Sxc930, signature, data);
                         }
                         catch { /* ignore */ }
                     }
 
                     // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                    if (Features.Valid || Features.AllowUnsignedFeatures)
+                    if (FeaturesService.ValidInternal || Features.AllowUnsignedFeatures)
                     {
                         FeatureListWithFingerprint feats2 = null;
                         if (featStr.StartsWith("{"))
@@ -135,18 +140,20 @@ namespace ToSic.Eav.Configuration
                         {
                             var fingerprint = feats2.Fingerprint;
                             if (fingerprint != _fingerprint.GetSystemFingerprint()) 
-                                Features.Valid = false;
+                                FeaturesService.ValidInternal = false;
 
                             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                            if (Features.Valid || Features.AllowUnsignedFeatures)
+                            if (FeaturesService.ValidInternal || Features.AllowUnsignedFeatures)
                                 feats = feats2;
                         }
                     }
                 }
             }
             catch { /* ignore */ }
-            Features.CacheTimestamp = DateTime.Now.Ticks;
-            Features.Stored = feats ?? new FeatureList();
+            //Features.CacheTimestamp = DateTime.Now.Ticks;
+            //Features.Stored = feats ?? new FeatureList();
+            _features.Stored = feats ?? new FeatureList();
+            _features.CacheTimestamp = DateTime.Now.Ticks;
         }
 
 

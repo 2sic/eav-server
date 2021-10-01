@@ -8,8 +8,8 @@ namespace ToSic.Eav.Apps.Security
 {
     public sealed class AppPermissionCheckUnknown: AppPermissionCheck, IIsUnknown
     {
-        public AppPermissionCheckUnknown(IAppStates appStates, WarnUseOfUnknown<AppPermissionCheckUnknown> warn) 
-            : base(appStates, LogNames.NotImplemented) { }
+        public AppPermissionCheckUnknown(IAppStates appStates, Dependencies dependencies, WarnUseOfUnknown<AppPermissionCheckUnknown> warn) 
+            : base(appStates, dependencies, LogNames.NotImplemented) { }
 
         protected override bool EnvironmentAllows(List<Grants> grants) => UserIsSuperuser();
 

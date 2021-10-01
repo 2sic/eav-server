@@ -3,7 +3,8 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
 {
-    public partial class Features
+    [PrivateApi]
+    internal class FeaturesCatalog
     {
         /// <summary>
         /// The catalog contains known features, and knows if they are used in the UI
@@ -15,7 +16,7 @@ namespace ToSic.Eav.Configuration
         /// so later on this must be injected or something
         /// </remarks>
         [PrivateApi]
-        public static FeatureList Catalog = new FeatureList(new List<Feature>
+        public static FeatureList Initial = new FeatureList(new List<Feature>
         {
             // released features
             new Feature(FeatureIds.PublicForms, true, false),
@@ -37,6 +38,5 @@ namespace ToSic.Eav.Configuration
             // 2sxc 10.24+
             new Feature(FeatureIds.WebFarm, false, false),
         });
-
     }
 }

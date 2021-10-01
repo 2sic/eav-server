@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Security
     public abstract class AppPermissionCheck: PermissionCheckBase
     {
         #region Constructor & DI
-        protected AppPermissionCheck(IAppStates appStates, string logPrefix) : base($"{logPrefix}.PrmChk")
+        protected AppPermissionCheck(IAppStates appStates, Dependencies dependencies, string logPrefix) : base(dependencies, $"{logPrefix}.PrmChk")
         {
             _appStates = appStates;
         }

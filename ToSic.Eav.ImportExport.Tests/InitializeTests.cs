@@ -32,6 +32,8 @@ namespace ToSic.Eav.ImportExport.Tests
                 sc.AddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
                 sc.TryAddTransient<IValueConverter, MockValueConverter>();
                 sc.TryAddTransient<IZoneMapper, MockZoneMapper>();
+
+                sc.AddEavCore();
                 configure.Invoke(sc);
 
             }, optionalConnection);
