@@ -1,34 +1,21 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Plumbing;
+﻿using ToSic.Eav.Plumbing;
+using ToSic.Testing.Shared;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
 {
-    [TestClass]
-    public partial class ChangeTypeTests
+    public class ConvertTestBase: EavTestBase
     {
-        [TestMethod]
-        public void StringToString()
-        {
-            AreEqual(null, (null as string).TestConvertOrDefault<string>());
-            AreEqual("", "".TestConvertOrDefault<string>());
-            AreEqual("5", "5".TestConvertOrDefault<string>());
-        }
-
-
-
-
-
         /// <summary>
         /// Convert Test Basic/Numeric - Test basic conversion and numeric conversion
         /// </summary>
-        private void ConvT<T>(object value, T exp, T expNumeric)
+        protected void ConvT<T>(object value, T exp, T expNumeric)
         {
             var resultDefault = value.TestConvertOrDefault<T>();
             AreEqual(exp, resultDefault, $"Tested '{value}', expected def: '{exp}'");
             if (resultDefault != null)
                 AreEqual(typeof(T).UnboxIfNullable(), resultDefault.GetType());
-            
+
             var resultNumeric = value.TestConvertOrDefault<T>(numeric: true);
             AreEqual(expNumeric, resultNumeric, $"Tested '{value}', expected num: '{expNumeric}'");
             if (resultNumeric != null)
@@ -38,7 +25,7 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
         /// <summary>
         /// Convert Test Basic/Numeric/Truthy - Test basic, numeric and truthy
         /// </summary>
-        private void ConvT<T>(object value, T exp, T expNumeric, T expTruthy)
+        protected void ConvT<T>(object value, T exp, T expNumeric, T expTruthy)
         {
             ConvT(value, exp, expNumeric);
             var resultTruthy = value.TestConvertOrDefault<T>(truthy: true);
@@ -46,5 +33,27 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
             if (resultTruthy != null)
                 AreEqual(typeof(T).UnboxIfNullable(), resultTruthy.GetType());
         }
+
+
+        protected void ConvFbQuick<T>(object value, T fallback, T exp, bool doBasic = true, bool doOnDefault = true)
+        {
+            if (doBasic) 
+                ConvFallback(value, fallback, false, exp, exp, exp);
+            if (doOnDefault) 
+                ConvFallback(value, fallback, true, exp, exp, exp);
+        }
+
+
+        protected void ConvFallback<T>(object value, T fallback, bool fallbackOnDefault, T exp, T expNumeric, T expTruthy)
+        {
+            var msg = $"V: {value}, F: {fallback}, fbOnDef: {fallbackOnDefault}, ";
+            var result = value.TestConvertOrFallback(fallback, fallbackOnDefault: fallbackOnDefault);
+            AreEqual(exp, result, $"Exp: {exp}; {msg}");
+            result = value.TestConvertOrFallback(fallback, numeric: true, fallbackOnDefault: fallbackOnDefault);
+            AreEqual(expNumeric, result, $"Num: {expNumeric}; {msg}");
+            result = value.TestConvertOrFallback(fallback, truthy: true, fallbackOnDefault: fallbackOnDefault);
+            AreEqual(expTruthy, result, $"Trt: {expTruthy}, {msg}");
+        }
+
     }
 }

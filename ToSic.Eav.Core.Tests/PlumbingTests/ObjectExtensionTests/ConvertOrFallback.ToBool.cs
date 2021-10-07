@@ -6,78 +6,78 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
     public partial class ConvertOrFallback
     {
         [TestMethod]
-        public void NumberToBool()
+        public void NumberToBoolFallback()
         {
             // 0 should false
-            AllSameResult(0, true, false);
-            AllSameResult(0, false, false);
+            ConvFbQuick(0, true, false);
+            ConvFbQuick(0, false, false);
 
             // All other numbers should true
-            AllSameResult(1, true, true);
-            AllSameResult(1, false, true);
-            AllSameResult(2, true, true);
-            AllSameResult(2, false, true);
-            AllSameResult(-1, true, true);
-            AllSameResult(-1, false, true);
-            AllSameResult(27.3, true, true);
-            AllSameResult(27.3, false, true);
-            AllSameResult(0.1, true, true);
-            AllSameResult(0.1, false, true);
+            ConvFbQuick(1, true, true);
+            ConvFbQuick(1, false, true);
+            ConvFbQuick(2, true, true);
+            ConvFbQuick(2, false, true);
+            ConvFbQuick(-1, true, true);
+            ConvFbQuick(-1, false, true);
+            ConvFbQuick(27.3, true, true);
+            ConvFbQuick(27.3, false, true);
+            ConvFbQuick(0.1, true, true);
+            ConvFbQuick(0.1, false, true);
         }
 
         [TestMethod]
-        public void NumberNullableToBool()
+        public void NumberNullableToBoolFallback()
         {
             // 0 should false
-            AllSameResult(new int?(), true, true);
-            AllSameResult(new int?(), false, false);
-            AllSameResult(new int?(0), true, false);
-            AllSameResult(new int?(0), false, false);
+            ConvFbQuick(new int?(), true, true);
+            ConvFbQuick(new int?(), false, false);
+            ConvFbQuick(new int?(0), true, false);
+            ConvFbQuick(new int?(0), false, false);
 
             // All other numbers should true
-            AllSameResult(new int?(1), true, true);
-            AllSameResult(new int?(1), false, true);
-            AllSameResult(new int?(2), true, true);
-            AllSameResult(new int?(2), false, true);
-            AllSameResult(new int?(-1), true, true);
-            AllSameResult(new int?(-1), false, true);
-            AllSameResult(new float?(27.3f), true, true);
-            AllSameResult(new float?(27.3f), false, true);
-            AllSameResult(new double?(0.1), true, true);
-            AllSameResult(new double?(0.1), false, true);
+            ConvFbQuick(new int?(1), true, true);
+            ConvFbQuick(new int?(1), false, true);
+            ConvFbQuick(new int?(2), true, true);
+            ConvFbQuick(new int?(2), false, true);
+            ConvFbQuick(new int?(-1), true, true);
+            ConvFbQuick(new int?(-1), false, true);
+            ConvFbQuick(new float?(27.3f), true, true);
+            ConvFbQuick(new float?(27.3f), false, true);
+            ConvFbQuick(new double?(0.1), true, true);
+            ConvFbQuick(new double?(0.1), false, true);
         }
 
         [TestMethod]
-        public void ObjectToBool()
+        public void ObjectToBoolFallback()
         {
             // all objects should default
-            AllSameResult(new List<string>(), true, true);
-            AllSameResult(new List<string>(), false, false);
+            ConvFbQuick(new List<string>(), true, true);
+            ConvFbQuick(new List<string>(), false, false);
         }
         [TestMethod]
-        public void StringToBool()
+        public void StringToBoolFallback()
         {
             // Nulls should always false
-            AllSameResult(null, true, true);
-            AllSameResult(null, false, false);
+            ConvFbQuick(null, true, true);
+            ConvFbQuick(null, false, false);
 
             // Strange strings should always false
-            AllSameResult("", false, false);
-            AllSameResult("null", false, false);
-            AllSameResult("random", false, false);
+            ConvFbQuick("", false, false);
+            ConvFbQuick("null", false, false);
+            ConvFbQuick("random", false, false);
 
             // True strings should true
-            AllSameResult("true", false, true);
-            AllSameResult("TRUE", false, true);
-            AllSameResult(" TRUE", false, true);
-            AllSameResult("  TRUE  ", false, true);
+            ConvFbQuick("true", false, true);
+            ConvFbQuick("TRUE", false, true);
+            ConvFbQuick(" TRUE", false, true);
+            ConvFbQuick("  TRUE  ", false, true);
 
             // False strings should always false
-            AllSameResult("false", true, false);
-            AllSameResult("False", true, false);
-            AllSameResult("FALSE", true, false);
-            AllSameResult(" false", true, false);
-            AllSameResult("  false  ", true, false);
+            ConvFbQuick("false", true, false);
+            ConvFbQuick("False", true, false);
+            ConvFbQuick("FALSE", true, false);
+            ConvFbQuick(" false", true, false);
+            ConvFbQuick("  false  ", true, false);
         }
 
     }

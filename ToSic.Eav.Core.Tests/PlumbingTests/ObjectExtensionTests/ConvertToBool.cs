@@ -3,7 +3,8 @@ using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
 {
-    public partial class ChangeTypeTests
+    [TestClass]
+    public class ConvertToBool: ConvertTestBase
     {
 
         [TestMethod]

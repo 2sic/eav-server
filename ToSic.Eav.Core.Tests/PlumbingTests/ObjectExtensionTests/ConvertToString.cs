@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
 {
-    public partial class ChangeTypeTests
+    [TestClass]
+    public class ConvertToString: ConvertTestBase
     {
         [TestMethod]
         [Ignore("ATM not ready, won't do what we would like but not sure if this is even relevant")]
@@ -12,6 +14,15 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
         {
             ConvT(new DateTime(2021,09,29), "2021-09-29", "2021-09-29");
         }
+
+        [TestMethod]
+        public void StringToString()
+        {
+            AreEqual(null, (null as string).TestConvertOrDefault<string>());
+            AreEqual("", "".TestConvertOrDefault<string>());
+            AreEqual("5", "5".TestConvertOrDefault<string>());
+        }
+
 
         [TestMethod]
         public void NumberToString()

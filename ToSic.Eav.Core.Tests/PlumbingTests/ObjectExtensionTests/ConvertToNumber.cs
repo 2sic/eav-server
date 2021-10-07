@@ -2,7 +2,8 @@
 
 namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
 {
-    public partial class ChangeTypeTests
+    [TestClass]
+    public class ConvertToNumber: ConvertTestBase
     {
 
 

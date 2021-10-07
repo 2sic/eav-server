@@ -57,12 +57,18 @@ namespace ToSic.Eav.Plumbing
             // Numbers are first converted to decimal, because it could handle .notation
             // Booleans are also first converted to decimal, so that "1.1" or "27" is treated as truthy
             if(value is string s)
-                if (((numeric && unboxedT.IsNumeric()) || (truthy && unboxedT == typeof(bool))))
+            {
+                if (numeric && unboxedT.IsNumeric() || truthy && unboxedT == typeof(bool))
                 {
                     if (s.IndexOf(',') > -1) s = s.Replace(',', '.');
                     if (decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out var dec))
                         value = dec;
                 }
+                // Strings cannot convert to guids with Convert.ChangeType, so we do extra treatment if possible
+                // Note that if this fails, it will run the normal code resulting in a Guid.Empty
+                else if (unboxedT == typeof(Guid) && Guid.TryParse(s, out var guid)) 
+                    return new Tuple<bool, T>(true, (T)(object)guid);
+            }
 
 
             try
