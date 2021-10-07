@@ -21,6 +21,8 @@ namespace ToSic.Eav.Context
 
         public string Url => Unknown;
 
+        public string UrlRoot => Unknown;
+
         public int ZoneId { get; private set; } = UnknownZoneId;
 
         public string CurrentCultureCode => "en-us";

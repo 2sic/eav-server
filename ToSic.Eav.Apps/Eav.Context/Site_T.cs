@@ -34,6 +34,8 @@ namespace ToSic.Eav.Context
 
         public abstract string Url { get; }
 
+        public abstract string UrlRoot { get; }
+
         //public virtual bool IsMultiZone => false;
 
         /// <inheritdoc />

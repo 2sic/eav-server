@@ -14,7 +14,8 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public string DefaultLanguage => null;
 
         public string Name => "MockTenant";
-        public string Url => "Mock.org/root";
+        public string Url => "https://ock.org/root";
+        public string UrlRoot => "mock.org/root";
 
         public string AppsRootPhysical => "Mock";
         public string AppsRootPhysicalFull => "mock full";
