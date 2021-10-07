@@ -60,7 +60,7 @@ namespace ToSic.Eav.Plumbing
                 if (((numeric && unboxedT.IsNumeric()) || (truthy && unboxedT == typeof(bool))))
                 {
                     if (s.IndexOf(',') > -1) s = s.Replace(',', '.');
-                    if (decimal.TryParse(s, out var dec))
+                    if (decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out var dec))
                         value = dec;
                 }
 

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static System.Threading.Thread;
 
 namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
 {
@@ -41,7 +43,11 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
             AllSameResult("-423", 333f, -423f);
             AllSameResult("", 42f, 42f);
             AllSameResult("nothing", 42f, 42f);
+        }
 
+        [TestMethod]
+        public void StringFractionToFloat()
+        {
             // now with correct decimals
             AllSameResult("0.1", 333f, 0.1f);
             AllSameResult("27.999", 333f, 27.999f);
@@ -53,6 +59,20 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
             ConvWithAllOptions("27,999", 333f, true, 27999f, 27.999f, 27999f);
             ConvWithAllOptions("-42,42", 333f, false, -4242f, -42.42f, -4242f);
             ConvWithAllOptions("-42,42", 333f, true, -4242f, -42.42f, -4242f);
+        }
+
+        [TestMethod]
+        public void StringFractionToFloatWrongCulture()
+        {
+            // Now change threading culture
+            var current = CurrentThread.CurrentCulture;
+            CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("de-DE");
+
+            // now with correct decimals
+            AllSameResult("0.1", 333f, 0.1f);
+
+            // undo to not affect other tests
+            CurrentThread.CurrentCulture = current;
         }
 
         [TestMethod]
@@ -85,7 +105,11 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
             AllSameResult("-423", 333m, -423m);
             AllSameResult("", 42m, 42m);
             AllSameResult("nothing", 42m, 42m);
+        }
 
+        [TestMethod]
+        public void StringFractionsToDecimal()
+        {
             // now with correct decimals
             AllSameResult("0.1", 333m, 0.1m);
             AllSameResult("27.999", 333m, 27.999m);
