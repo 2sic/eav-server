@@ -34,6 +34,7 @@ namespace ToSic.Eav.Apps.Assets
 
         public int Size { get; set; }
 
+        public string PhysicalPath { get; set; }
 
         #region not available properties which existed on the previous DNN interface
         // These commented out fields are what DNN would have and they have problems
