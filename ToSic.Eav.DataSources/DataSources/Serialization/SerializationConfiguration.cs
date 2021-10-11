@@ -315,7 +315,7 @@ namespace ToSic.Eav.DataSources
 
             var result = before.Select(selector: e =>
             {
-                var newEntity = (IEntity)new EntityDecorator(e, decorator);
+                var newEntity = (IEntity)new EntityDecorator12<EntitySerializationDecorator>(e, decorator);
                 //var newEntity = new EntityWithSerialization(e)
                 //{
                 //    RemoveNullValues = dropNullValues,

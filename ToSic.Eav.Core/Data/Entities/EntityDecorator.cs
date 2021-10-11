@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data
     /// Everything in the original is passed through invisibly. <br/>
     /// </summary>
     [PrivateApi("this decorator object is for internal use only, no value in publishing it")]
-    public partial class EntityDecorator : IEntity, IEntityWrapper
+    public abstract partial class EntityDecorator : IEntity, IEntityWrapper
     {
         public IEntity Entity { get; }
 
@@ -22,7 +22,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="baseEntity"></param>
         /// <param name="decorator"></param>
-        public EntityDecorator(IEntity baseEntity, IDecorator<IEntity> decorator) : this(baseEntity)
+        protected EntityDecorator(IEntity baseEntity, IDecorator<IEntity> decorator) : this(baseEntity)
         {
             if(decorator != null) Decorators.Add(decorator);
         }
