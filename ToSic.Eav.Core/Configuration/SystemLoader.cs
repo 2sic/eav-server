@@ -31,8 +31,12 @@ namespace ToSic.Eav.Configuration
             _fingerprint = fingerprint;
             _runtime = runtime;
 
-            if (Features.FeaturesFromDI == null)
-                Features.FeaturesFromDI = features;
+#pragma warning disable 618
+#if NETFRAMEWORK
+            if (Features.FeaturesFromDi == null)
+                Features.FeaturesFromDi = features;
+#endif
+#pragma warning restore 618
         }
 
         private readonly GlobalTypeLoader _typeLoader;
@@ -112,9 +116,9 @@ namespace ToSic.Eav.Configuration
             FeatureListWithFingerprint feats = null;
             try
             {
-                var entity = Global.For(Features.TypeName);
-                var featStr = entity?.Value<string>(Features.FeaturesField);
-                var signature = entity?.Value<string>(Features.SignatureField);
+                var entity = Global.For(FeatureConstants.TypeName);
+                var featStr = entity?.Value<string>(FeatureConstants.FeaturesField);
+                var signature = entity?.Value<string>(FeatureConstants.SignatureField);
 
                 // Verify signature from security-system
                 if (!string.IsNullOrWhiteSpace(featStr))
@@ -124,13 +128,13 @@ namespace ToSic.Eav.Configuration
                         try
                         {
                             var data = new UnicodeEncoding().GetBytes(featStr);
-                            FeaturesService.ValidInternal = Sha256.VerifyBase64(Features.FeaturesValidationSignature2Sxc930, signature, data);
+                            FeaturesService.ValidInternal = Sha256.VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930, signature, data);
                         }
                         catch { /* ignore */ }
                     }
 
                     // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                    if (FeaturesService.ValidInternal || Features.AllowUnsignedFeatures)
+                    if (FeaturesService.ValidInternal || FeatureConstants.AllowUnsignedFeatures)
                     {
                         FeatureListWithFingerprint feats2 = null;
                         if (featStr.StartsWith("{"))
@@ -143,7 +147,7 @@ namespace ToSic.Eav.Configuration
                                 FeaturesService.ValidInternal = false;
 
                             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                            if (FeaturesService.ValidInternal || Features.AllowUnsignedFeatures)
+                            if (FeaturesService.ValidInternal || FeatureConstants.AllowUnsignedFeatures)
                                 feats = feats2;
                         }
                     }
