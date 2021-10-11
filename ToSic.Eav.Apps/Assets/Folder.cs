@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace ToSic.Eav.Apps.Assets
 {
-    public abstract class Folder<TFolderId, TFileId> : IFolder<TFolderId, TFolderId>
+    public abstract class Folder<TFolderId, TFileId> : IFolder<TFolderId, TFileId>
     {
         /// <inheritdoc/>
         int IAsset.Id => SysId as int? ?? 0;
