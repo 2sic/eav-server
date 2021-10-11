@@ -42,11 +42,5 @@ namespace ToSic.Eav.Apps.Assets
         /// <returns>the size in bytes</returns>
         // ReSharper disable once UnusedMemberInSuper.Global
         int Size { get; set; }
-
-        /// <summary>
-        /// The full physical path to this file as used from external access.
-        /// </summary>
-        /// <returns>The full physical path to this asset</returns>
-        string PhysicalPath { get; }
     }
 }

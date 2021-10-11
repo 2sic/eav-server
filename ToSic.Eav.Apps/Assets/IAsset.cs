@@ -47,5 +47,11 @@ namespace ToSic.Eav.Apps.Assets
         /// <returns>The full path of this item</returns>
         string Path { get; set; }
 
+        /// <summary>
+        /// The full physical path to folder or file to access them on the local server.
+        /// </summary>
+        /// <returns>The full physical path to this asset</returns>
+        string PhysicalPath { get; }
+
     }
 }
