@@ -169,7 +169,6 @@ namespace ToSic.Eav.WebApi
             return Init(app.AppId, true, parentLog);
         }
 
-        // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
         public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType)
         {
             var wrapLog = Log.Call(useTimer: true);
@@ -188,7 +187,6 @@ namespace ToSic.Eav.WebApi
         }
 
 
-         //2020-12-08 2dm - unused code, disable for now, delete ca.Feb 2021
         private object Truncate(object value, int length)
         {
             if (!(value is string asTxt))

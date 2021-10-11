@@ -58,6 +58,11 @@ namespace ToSic.Eav.DataSources
                 return "Not Yet Implemented in .net standard #TodoNetStandard";
                 // should be easy to fix, just have to inject IEnvironment or something that has MapPath
 #else
+                // TODO: STV - discuss what we should do here
+                // Should we allow c:\ paths? or is that a security risk?
+                // How can we tell if we should MapPath or not? look for a ":" or is there an api for it?
+                // Do we allow relative paths like "../" - I presume no...
+
                 return HttpContext.Current != null ? HttpContext.Current.Server.MapPath(FilePath) : FilePath;
 #endif
             }

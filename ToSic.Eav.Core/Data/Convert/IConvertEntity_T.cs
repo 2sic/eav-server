@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Data
 {
@@ -30,10 +31,17 @@ namespace ToSic.Eav.Data
         /// </summary>
         bool WithPublishing { get; }
 
-        /// <summary>
-        /// Include metadata for-information
-        /// </summary>
-        bool WithMetadataFor { get; }
+        ///// <summary>
+        ///// Include metadata for-information
+        ///// </summary>
+        //[PrivateApi]
+        //bool WithMetadataFor { get; }
+
+        [PrivateApi]
+        ISubEntitySerialization MetadataFor { get; }
+        
+        [PrivateApi]
+        ISubEntitySerialization Metadata { get; }
 
         /// <summary>
         /// Include the title in a special field _Title

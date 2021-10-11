@@ -104,6 +104,7 @@ namespace ToSic.Eav.WebApi
 
 	        var shareInfo = (IContentTypeShared) t;
 
+            var properties = ser.Convert(metadata);
 	        var jsonReady = new ContentTypeDto
 	        {
 	            Id = t.ContentTypeId,
@@ -116,7 +117,8 @@ namespace ToSic.Eav.WebApi
 	            SharedDefId = shareInfo.ParentId,
 	            Items = count,
 	            Fields = t.Attributes.Count,
-	            Metadata = ser.Convert(metadata),
+	            Metadata = properties,
+                Properties = properties,
                 Permissions = new HasPermissionsDto { Count = t.Metadata.Permissions.Count()},
 	        };
 	        return jsonReady;

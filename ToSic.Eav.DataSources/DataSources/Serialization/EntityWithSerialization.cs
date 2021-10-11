@@ -23,10 +23,17 @@ namespace ToSic.Eav.DataSources
         public bool? SerializeModified { get; set; } = null;
 
         public bool? SerializeCreated { get; set; } = null;
+        public bool RemoveEmptyStringValues { get; set; } = false;
+
+        public bool RemoveBoolFalseValues { get; set; } = false;
+
+        public bool RemoveNullValues { get; set; } = false;
+
+        public bool RemoveZeroValues { get; set; } = false;
 
         #region Metadata & Relationships
 
-        public bool? SerializeMetadataFor { get; set; } = null;
+        public MetadataForSerialization SerializeMetadataFor { get; set; } = null;
 
         public ISubEntitySerialization SerializeMetadata { get; set; } = null;
 

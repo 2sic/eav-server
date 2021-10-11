@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 
 // ReSharper disable once CheckNamespace
@@ -60,8 +62,10 @@ namespace ToSic.Eav.DataFormats.EavLight
         public bool WithGuid { get; set; }
         /// <inheritdoc/>
         public bool WithPublishing { get; private set; }
-        /// <inheritdoc/>
-        public bool WithMetadataFor { get; private set; }
+        
+        [PrivateApi] public ISubEntitySerialization MetadataFor { get; private set; } = new SubEntitySerialization();
+        [PrivateApi] public ISubEntitySerialization Metadata { get; private set; } = new SubEntitySerialization();
+
         /// <inheritdoc/>
         public bool WithTitle { get; private set; }
 
@@ -72,7 +76,8 @@ namespace ToSic.Eav.DataFormats.EavLight
         {
             WithGuid = true;
             WithPublishing = true;
-            WithMetadataFor = true;
+            MetadataFor = new SubEntitySerialization { Serialize = true };
+            Metadata = new SubEntitySerialization { Serialize = true, SerializeId = true, SerializeTitle = true, SerializeGuid = true };
             WithTitle = true;
             WithStats = true;
         }
@@ -106,8 +111,6 @@ namespace ToSic.Eav.DataFormats.EavLight
 
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
-            //var entityValues = new JsonV0();
-
             var entityValues = entity.Attributes
                 .Select(d => d.Value)
                 .ToEavLight(attribute => attribute.Name, attribute =>
@@ -126,11 +129,11 @@ namespace ToSic.Eav.DataFormats.EavLight
                     // Default: Normal Value
                     return value;
                 });
-                //.ToList()
-                //.ForEach(action: attribute => entityValues[attribute.Name] = GetJsonV0Value(entity, attribute, serRels));
-            
+
             // todo: verify what happens with null-values on the relationships, maybe we should filter them out again?
 
+            // New 12.05 - drop null values
+            if(rules != null) OptimizeRemoveEmptyValues(rules, entityValues);
 
             AddIdAndGuid(entity, entityValues, rules);
 
@@ -139,6 +142,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             AddMetadataAndFor(entity, entityValues, rules);
 
             // this internal _Title field is probably not used much any more, so there is no rule for it
+            // Probably remove at some time in near future, once verified it's not used in the admin-front-end
             if(WithTitle)
                 try { entityValues.Add("_Title", entity.GetBestTitle(Languages)); }
                 catch { /* ignore */ }
@@ -157,5 +161,71 @@ namespace ToSic.Eav.DataFormats.EavLight
             return entityValues;
         }
 
+        private void OptimizeRemoveEmptyValues(IEntitySerialization rules, EavLightEntity entityValues)
+        {
+            if (rules == null) return;
+            var dropNulls = rules.RemoveNullValues;
+            var dropZeros = rules.RemoveZeroValues;
+            var dropEmptyStrings = rules.RemoveEmptyStringValues;
+            var dropBoolFalse = rules.RemoveBoolFalseValues;
+
+            try
+            {
+                if (dropNulls)
+                    entityValues
+                        .Where(vp => vp.Value == null)
+                        .ToList()
+                        .ForEach(vp => entityValues.Remove(vp.Key));
+            }
+            catch (Exception e)
+            {
+                Log.Add("Couldn't drop NULL values, will ignore and continue");
+                Log.Exception(e);
+            }
+
+            try
+            {
+                if (dropZeros)
+                    entityValues
+                        .Where(vp =>
+                            vp.Value is IConvertible convertible && convertible.IsNumeric() &&
+                            System.Convert.ToDouble(convertible) == 0)
+                        .ToList()
+                        .ForEach(vp => entityValues.Remove(vp.Key));
+            }
+            catch (Exception e)
+            {
+                Log.Add("Couldn't drop ZERO values, will ignore and continue");
+                Log.Exception(e);
+            }
+
+            try
+            {
+                if (dropEmptyStrings)
+                    entityValues
+                        .Where(vp => vp.Value as string == string.Empty)
+                        .ToList()
+                        .ForEach(vp => entityValues.Remove(vp.Key));
+            }
+            catch (Exception e)
+            {
+                Log.Add("Couldn't drop EMPTY string values, will ignore and continue");
+                Log.Exception(e);
+            }
+
+            try
+            {
+                if (dropBoolFalse)
+                    entityValues
+                        .Where(vp => vp.Value is bool boolVal && boolVal == false)
+                        .ToList()
+                        .ForEach(vp => entityValues.Remove(vp.Key));
+            }
+            catch (Exception e)
+            {
+                Log.Add("Couldn't drop FALSE boolean values, will ignore and continue");
+                Log.Exception(e);
+            }
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace ToSic.Eav.WebApi.Dto
         public int Items { get; set; }
         public int Fields { get; set; }
         public IDictionary<string, object> Metadata { get; set; }
+        public IDictionary<string, object> Properties { get; set; }
 
         public HasPermissionsDto Permissions { get; set; }
     }

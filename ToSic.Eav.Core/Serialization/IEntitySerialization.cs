@@ -13,7 +13,13 @@ namespace ToSic.Eav.Serialization
 
         bool? SerializeCreated { get; }
         
-        bool? SerializeMetadataFor { get; }
+        bool RemoveEmptyStringValues { get; }
+        bool RemoveNullValues { get; }
+        bool RemoveZeroValues { get; }
+
+        bool RemoveBoolFalseValues { get; }
+
+        MetadataForSerialization SerializeMetadataFor { get; }
 
         ISubEntitySerialization SerializeMetadata { get; }
         
