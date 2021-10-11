@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace ToSic.Eav.Apps.Assets
 {
@@ -31,6 +32,7 @@ namespace ToSic.Eav.Apps.Assets
         public string Name { get; set; }
 
         /// <inheritdoc/>
+        [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi - TODO: STV verify
         public string PhysicalPath { get; set; }
 
 
