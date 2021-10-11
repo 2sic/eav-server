@@ -1,19 +1,18 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.Serialization
 {
     /// <summary>
-    /// Experimental
+    /// An entity should be able to specify if some properties should not be included
     /// </summary>
-    [PrivateApi]
-    public class EntityWithSerialization: EntityDecorator, IEntitySerialization
+    /// <remarks>
+    /// * Introduced v11.13 in a slightly different implementation
+    /// * Enhanced as a standalone decorator in 12.05
+    /// </remarks>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("Just fyi")]
+    public class EntitySerializationDecorator: IDecorator<IEntity>, IEntityIdSerialization
     {
-        public EntityWithSerialization(IEntity baseEntity) : base(baseEntity)
-        {
-        }
-
         public bool? SerializeId { get; set; } = null;
 
         public bool? SerializeGuid { get; set; } = null;

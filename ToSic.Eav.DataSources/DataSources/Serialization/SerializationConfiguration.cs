@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Serialization;
@@ -291,31 +292,55 @@ namespace ToSic.Eav.DataSources
                 SerializeTitle = TryParseIncludeRule(IncludeRelationshipTitle)
             };
 
+            var decorator = new EntitySerializationDecorator()
+            {
+                RemoveNullValues = dropNullValues,
+                RemoveZeroValues = dropZeroValues,
+                RemoveEmptyStringValues = dropEmptyStringValues,
+                RemoveBoolFalseValues = dropFalseValues,
+
+                // Metadata & Relationships
+                SerializeMetadataFor = mdForSer,
+                SerializeMetadata = mdSer,
+                SerializeRelationships = relSer,
+
+            };
+            decorator.SerializeId = id;
+            decorator.SerializeTitle = title;
+            decorator.SerializeGuid = guid;
+            
+            // dates
+            decorator.SerializeCreated = created;
+            decorator.SerializeModified = modified;
 
             var result = before.Select(selector: e =>
             {
-                var newEntity = new EntityWithSerialization(e)
-                {
-                    RemoveNullValues = dropNullValues,
-                    RemoveZeroValues = dropZeroValues,
-                    RemoveEmptyStringValues = dropEmptyStringValues,
-                    RemoveBoolFalseValues = dropFalseValues,
+                var newEntity = (IEntity)new EntityDecorator(e, decorator);
+                //var newEntity = new EntityWithSerialization(e)
+                //{
+                //    RemoveNullValues = dropNullValues,
+                //    RemoveZeroValues = dropZeroValues,
+                //    RemoveEmptyStringValues = dropEmptyStringValues,
+                //    RemoveBoolFalseValues = dropFalseValues,
 
-                    // Metadata & Relationships
-                    SerializeMetadataFor = mdForSer,
-                    SerializeMetadata = mdSer,
-                    SerializeRelationships = relSer,
-                };
+                //    // Metadata & Relationships
+                //    SerializeMetadataFor = mdForSer,
+                //    SerializeMetadata = mdSer,
+                //    SerializeRelationships = relSer,
+                //};
 
-                if (id != null) newEntity.SerializeId = id;
-                if (title != null) newEntity.SerializeTitle = title;
-                if (guid != null) newEntity.SerializeGuid = guid;
+                //if (id != null) newEntity.SerializeId = id;
+                //if (title != null) newEntity.SerializeTitle = title;
+                //if (guid != null) newEntity.SerializeGuid = guid;
                 
-                // dates
-                if (created != null) newEntity.SerializeCreated = created;
-                if (modified != null) newEntity.SerializeModified = modified;
+                //// dates
+                //if (created != null) newEntity.SerializeCreated = created;
+                //if (modified != null) newEntity.SerializeModified = modified;
 
-                return (IEntity) newEntity;
+                //// WIP: add decorator
+                //newEntity.Decorators.Add(decorator);
+
+                return newEntity;
             });
 
             return wrapLog("modified", result.ToImmutableList());

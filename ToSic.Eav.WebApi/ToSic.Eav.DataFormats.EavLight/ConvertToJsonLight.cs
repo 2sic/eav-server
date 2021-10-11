@@ -106,7 +106,8 @@ namespace ToSic.Eav.DataFormats.EavLight
         protected virtual EavLightEntity GetDictionaryFromEntity(IEntity entity)
         {
             // Get serialization rules if some exist - new in 11.13
-            var rules = entity as IEntitySerialization;
+            // var rules = entity as IEntitySerialization;
+            var rules = (entity as IHasDecorator<IEntity>)?.GetDecorator<EntitySerializationDecorator, IEntity>();
             var serRels = SubEntitySerialization.Stabilize(rules?.SerializeRelationships, true, true, false, true);
 
             // Convert Entity to dictionary
@@ -161,7 +162,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             return entityValues;
         }
 
-        private void OptimizeRemoveEmptyValues(IEntitySerialization rules, EavLightEntity entityValues)
+        private void OptimizeRemoveEmptyValues(EntitySerializationDecorator rules, EavLightEntity entityValues)
         {
             if (rules == null) return;
             var dropNulls = rules.RemoveNullValues;

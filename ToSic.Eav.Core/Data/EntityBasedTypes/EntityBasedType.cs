@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
@@ -15,6 +16,8 @@ namespace ToSic.Eav.Data
         public IEntity Entity { get; protected set; }
 
         [PrivateApi] public IEntity EntityForEqualityCheck => (Entity as IEntityWrapper)?.EntityForEqualityCheck ?? Entity;
+        public List<IDecorator<IEntity>> Decorators => _decorators ?? (_decorators = (Entity as IEntityWrapper)?.Decorators ?? new List<IDecorator<IEntity>>());
+        private List<IDecorator<IEntity>> _decorators;
 
         /// <summary>
         /// Create a EntityBasedType and wrap the entity provided
@@ -23,7 +26,6 @@ namespace ToSic.Eav.Data
         protected EntityBasedType(IEntity entity)
         {
             Entity = entity;    
-            //EntityForEqualityCheck = (Entity as IEntityWrapper)?.EntityForEqualityCheck ?? Entity;
         }
 
         protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Serialization;
 
 // ReSharper disable once CheckNamespace
@@ -8,7 +9,7 @@ namespace ToSic.Eav.DataFormats.EavLight
     public partial class ConvertToEavLight
     {
 
-        private void AddIdAndGuid(IEntityLight entity, IDictionary<string, object> entityValues, IEntitySerialization rules)
+        private void AddIdAndGuid(IEntityLight entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules)
         {
             // Add Id and Guid
             // ...only if these are not already existing with this name in the entity itself as an internal value
@@ -28,7 +29,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         }
 
 
-        private static void AddDateInformation(IEntityLight entity, IDictionary<string, object> entityValues, IEntitySerialization rules)
+        private static void AddDateInformation(IEntityLight entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules)
         {
             // Include modified field, if there is not already one in the dictionary
             if (rules?.SerializeModified ?? true)

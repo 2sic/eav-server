@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Serialization;
 
 // ReSharper disable once CheckNamespace
@@ -8,7 +9,7 @@ namespace ToSic.Eav.DataFormats.EavLight
 {
     public partial class ConvertToEavLight
     {
-        private void AddMetadataAndFor(IEntity entity, IDictionary<string, object> entityValues, IEntitySerialization rules)
+        private void AddMetadataAndFor(IEntity entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules)
         {
             // if rules.MetadataFor are not set, then respect WithMetadataFor
             // otherwise the rules should be applied, but default to false
