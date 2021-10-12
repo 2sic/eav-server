@@ -107,7 +107,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         {
             // Get serialization rules if some exist - new in 11.13
             // var rules = entity as IEntitySerialization;
-            var rules = (entity as IHasDecorator<IEntity>)?.GetDecorator<EntitySerializationDecorator, IEntity>();
+            var rules = entity.GetDecorator<EntitySerializationDecorator>();
             var serRels = SubEntitySerialization.Stabilize(rules?.SerializeRelationships, true, true, false, true);
 
             // Convert Entity to dictionary
