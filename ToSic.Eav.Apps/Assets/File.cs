@@ -6,9 +6,11 @@ namespace ToSic.Eav.Apps.Assets
     public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
     {
         /// <inheritdoc />
+        [JsonIgnore]
         public TFileId SysId { get; set; }
 
         /// <inheritdoc />
+        [JsonIgnore]
         public TFolderId ParentSysId {get; set; }
 
         public string Folder { get; set; }

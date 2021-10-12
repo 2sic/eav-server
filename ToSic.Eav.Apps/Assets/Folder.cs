@@ -12,8 +12,10 @@ namespace ToSic.Eav.Apps.Assets
         /// <inheritdoc/>
         int IAsset.ParentId => ParentSysId as int? ?? 0;
 
+        [JsonIgnore]
         public TFolderId ParentSysId { get; set; }
 
+        [JsonIgnore]
         public TFolderId SysId { get; set; }
 
 
