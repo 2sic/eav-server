@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps.Assets
         public string Name { get; set; }
 
         /// <inheritdoc/>
-        // [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi
+        [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi
         public string PhysicalPath { get; set; }
 
         #region not available properties which existed on the previous DNN interface
