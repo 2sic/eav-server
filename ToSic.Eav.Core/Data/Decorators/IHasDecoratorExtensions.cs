@@ -11,8 +11,8 @@ namespace ToSic.Eav.Data
             return decorator as TDecorator;
         }
 
-        public static TDecorator GetDecorator<TDecorator>(this IHasDecorator<IEntity> parent) where TDecorator: class, IDecorator
-            => parent.GetDecorator<TDecorator, IEntity>();
+        //public static TDecorator GetDecorator<TDecorator>(this IHasDecorator<IEntity> parent) where TDecorator: class, IDecorator
+        //    => parent.GetDecorator<TDecorator, IEntity>();
 
         public static TDecorator GetDecorator<TDecorator>(this IEntity parent) where TDecorator : class, IDecorator
         {
