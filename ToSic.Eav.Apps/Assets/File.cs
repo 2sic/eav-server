@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps.Assets
 
         public int Size { get; set; }
 
-        [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi - TODO: STV verify
+        [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi
         public string PhysicalPath { get; set; }
 
         #region not available properties which existed on the previous DNN interface
