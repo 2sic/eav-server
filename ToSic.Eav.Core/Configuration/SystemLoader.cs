@@ -128,7 +128,7 @@ namespace ToSic.Eav.Configuration
                         try
                         {
                             var data = new UnicodeEncoding().GetBytes(featStr);
-                            FeaturesService.ValidInternal = Sha256.VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930, signature, data);
+                            FeaturesService.ValidInternal = new Sha256().VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930, signature, data);
                         }
                         catch { /* ignore */ }
                     }

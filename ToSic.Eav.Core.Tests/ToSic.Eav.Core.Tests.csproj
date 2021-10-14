@@ -129,10 +129,13 @@
     <Compile Include="PlumbingTests\TestAccessors.cs" />
     <Compile Include="PlumbingTests\ObjectExtensionTests\ConvertOrFallback.cs" />
     <Compile Include="PlumbingTests\AnonymousTypeTests.cs" />
+    <Compile Include="Signature\KeyPairForTesting.cs" />
     <Compile Include="Signature\SignatureDataSha256.cs" />
     <Compile Include="Signature\SignatureHashSha1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Signature\TestData.cs" />
+    <Compile Include="Signature\TestKeys.cs" />
+    <Compile Include="Signature\EncryptTests.cs" />
     <Compile Include="Types\Builder\Entity.cs" />
     <Compile Include="Types\Builder\String.cs" />
     <Compile Include="Types\GlobalManagerTests.cs" />
@@ -143,7 +146,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Signature\2sxc-ca.pfx" />
     <None Include="Signature\2sxc-ca_Base64.cer" />
     <None Include="Signature\2sxc-ca_Base64_Public.cer" />
     <None Include="Signature\2sxc-ca_Public.crt" />
