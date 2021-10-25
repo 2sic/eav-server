@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources.Tests
         {
             var dsCatalog = EavTestBase.Resolve<DataSourceCatalog>().Init(null);
 
-            var allDS = dsCatalog.GetAll(true).ToList();
+            var allDS = DataSourceCatalog.GetAll(true).ToList();
 
             allDS.ForEach(ds =>
             {

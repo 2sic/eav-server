@@ -21,19 +21,30 @@ namespace ToSic.Eav.Configuration
 
         #region Constructor / DI
 
-        public SystemLoader(GlobalTypeLoader typeLoader, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache) : base($"{LogNames.Eav}SysLdr")
+        public SystemLoader(GlobalTypeLoader typeLoader, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
         {
             _appsCache = appsCache;
-            History.Add(Types.Global.LogHistoryGlobalTypes, Log);
+            _features = features;
+            _logHistory = logHistory;
+            logHistory.Add(GlobalTypes.LogHistoryGlobalTypes, Log);
             _typeLoader = typeLoader.Init(Log);
             _fingerprint = fingerprint;
             _runtime = runtime;
+
+#pragma warning disable 618
+#if NETFRAMEWORK
+            if (Features.FeaturesFromDi == null)
+                Features.FeaturesFromDi = features;
+#endif
+#pragma warning restore 618
         }
 
         private readonly GlobalTypeLoader _typeLoader;
         private readonly IFingerprint _fingerprint;
         private readonly IRuntime _runtime;
         private readonly IAppsCache _appsCache;
+        private readonly IFeaturesInternal _features;
+        private readonly LogHistory _logHistory;
 
         #endregion
 
@@ -53,7 +64,8 @@ namespace ToSic.Eav.Configuration
 
             // Build the cache of all system-types. Must happen before everything else
             _typeLoader.BuildCache();
-            Types.Global.TypeLoader = _typeLoader;
+            //Types.Global.TypeLoader = _typeLoader;
+            Types.GlobalTypes.TypeLoader = _typeLoader;
 
             // Now do a normal reload of configuration and features
             Reload();
@@ -80,7 +92,7 @@ namespace ToSic.Eav.Configuration
         {
             var log = new Log($"{LogNames.Eav}.Global");
             log.Add("Load Global Configurations");
-            History.Add(Types.Global.LogHistoryGlobalTypes, log);
+            _logHistory.Add(Types.GlobalTypes.LogHistoryGlobalTypes, log);
             var wrapLog = log.Call();
 
             try
@@ -104,9 +116,9 @@ namespace ToSic.Eav.Configuration
             FeatureListWithFingerprint feats = null;
             try
             {
-                var entity = Global.For(Features.TypeName);
-                var featStr = entity?.Value<string>(Features.FeaturesField);
-                var signature = entity?.Value<string>(Features.SignatureField);
+                var entity = Global.For(FeatureConstants.TypeName);
+                var featStr = entity?.Value<string>(FeatureConstants.FeaturesField);
+                var signature = entity?.Value<string>(FeatureConstants.SignatureField);
 
                 // Verify signature from security-system
                 if (!string.IsNullOrWhiteSpace(featStr))
@@ -116,13 +128,13 @@ namespace ToSic.Eav.Configuration
                         try
                         {
                             var data = new UnicodeEncoding().GetBytes(featStr);
-                            Features.Valid = Sha256.VerifyBase64(Features.FeaturesValidationSignature2Sxc930, signature, data);
+                            FeaturesService.ValidInternal = new Sha256().VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930, signature, data);
                         }
                         catch { /* ignore */ }
                     }
 
                     // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                    if (Features.Valid || Features.AllowUnsignedFeatures)
+                    if (FeaturesService.ValidInternal || FeatureConstants.AllowUnsignedFeatures)
                     {
                         FeatureListWithFingerprint feats2 = null;
                         if (featStr.StartsWith("{"))
@@ -132,18 +144,20 @@ namespace ToSic.Eav.Configuration
                         {
                             var fingerprint = feats2.Fingerprint;
                             if (fingerprint != _fingerprint.GetSystemFingerprint()) 
-                                Features.Valid = false;
+                                FeaturesService.ValidInternal = false;
 
                             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                            if (Features.Valid || Features.AllowUnsignedFeatures)
+                            if (FeaturesService.ValidInternal || FeatureConstants.AllowUnsignedFeatures)
                                 feats = feats2;
                         }
                     }
                 }
             }
             catch { /* ignore */ }
-            Features.CacheTimestamp = DateTime.Now.Ticks;
-            Features.Stored = feats ?? new FeatureList();
+            //Features.CacheTimestamp = DateTime.Now.Ticks;
+            //Features.Stored = feats ?? new FeatureList();
+            _features.Stored = feats ?? new FeatureList();
+            _features.CacheTimestamp = DateTime.Now.Ticks;
         }
 
 

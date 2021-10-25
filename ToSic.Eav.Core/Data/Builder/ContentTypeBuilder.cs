@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         public static ContentType SystemAttributeSet(int appId, string staticName, string description,
             List<IContentTypeAttribute> attributes, bool alwaysShareConfiguration = false)
-            => new ContentType(appId, staticName, staticName, 0, "System", description, null, 0, 0,
+            => new ContentType(appId, staticName, staticName, 0, Constants.ScopeSystem, description, null, 0, 0,
                 alwaysShareConfiguration)
             {
                 Attributes = attributes

@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Defines an attribute with name and the type this attribute has. Part of of a <see cref="IContentType"/> definition.
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, always use the interface")]
+    [PrivateApi("2021-09-30 changed to private, before was internal-this is just fyi, always use the interface")]
     public class ContentTypeAttribute : AttributeBase, IContentTypeAttribute
     {
         /// <inheritdoc />
@@ -25,8 +25,6 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public bool IsTitle { get; set; }
 
-        //private readonly IHasMetadataSource _metaOfThisApp;
-
         /// <inheritdoc />
         /// <summary>
         /// Extended constructor when also storing the persistence Id
@@ -39,27 +37,23 @@ namespace ToSic.Eav.Data
             IsTitle = isTitle;
             AttributeId = attributeId;
             SortOrder = sortOrder;
-            //_metaOfThisApp = metaProvider;
-            //_isShared = parentApp != 0;
-            //_parentAppId = parentApp;
             _metaSourceFinder = metaSourceFinder;
         }
-
-        //private readonly bool _isShared;
-        //private readonly int _parentAppId;
 
         /// <summary>
         /// Create an attribute definition "from scratch" so for
         /// import-scenarios and code-created attribute definitions
         /// </summary>
-        public ContentTypeAttribute(int appId, string name, string niceName, string type, string inputType, string notes,
-            bool? visibleInEditUi, object defaultValue)
+        public ContentTypeAttribute(int appId, string name, /* string niceName, */ string type, /*, string inputType, string notes,
+            bool? visibleInEditUi, object defaultValue,*/ List<IEntity> attributeMetadata)
             : this(appId, name, type, false, 0, 0)
-            => Metadata.Use(new List<IEntity>
-            {
-                AttDefBuilder.CreateAttributeMetadata(appId, niceName, notes, visibleInEditUi,
-                    HelpersToRefactor.SerializeValue(defaultValue), inputType)
-            });
+            => Metadata.Use(attributeMetadata
+            //    new List<IEntity>
+            //{
+            //    AttDefBuilder.GenerateAttributeMetadata(appId, niceName, notes, visibleInEditUi,
+            //        HelpersToRefactor.SerializeValue(defaultValue), inputType)
+            //}
+                );
 
 
         /// <summary>
@@ -74,11 +68,6 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public IMetadataOf Metadata
             => _metadata ?? (_metadata = new MetadataOf<int>((int)TargetTypes.Attribute, AttributeId, _metaSourceFinder));
-                    //new RemoteMetadataOf<int>((int)TargetTypes.Attribute, AttributeId, 0, _parentAppId)
-        //=> _metadata ?? (_metadata = !_isShared
-        //    ? new MetadataOf<int>((int) TargetTypes.Attribute, AttributeId, _metaOfThisApp)
-        ////new RemoteMetadataOf<int>((int)TargetTypes.Attribute, AttributeId, 0, _parentAppId)
-               //);
 
         private IMetadataOf _metadata;
         private readonly Func<IHasMetadataSource> _metaSourceFinder;

@@ -9,11 +9,8 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class DataSourceErrorHandling
     {
-        //private readonly Lazy<IDataBuilder> _dataBuilderLazy;
-
-        public DataSourceErrorHandling(/*Lazy<IDataBuilder> dataBuilderLazy*/)
+        public DataSourceErrorHandling()
         {
-            //_dataBuilderLazy = dataBuilderLazy;
         }
         
         public static string ErrorType = "Error";
@@ -38,7 +35,7 @@ namespace ToSic.Eav.DataSources
         }
 
         public ImmutableArray<IEntity> CreateErrorList(
-            string noParameterOrder = Parameters.Protector,
+            string noParamOrder = Parameters.Protector,
             IDataSource source = null, 
             string title = null, 
             string message = null,
@@ -46,7 +43,7 @@ namespace ToSic.Eav.DataSources
             string streamName = Constants.DefaultStreamName
             )
         {
-            Parameters.ProtectAgainstMissingParameterNames(noParameterOrder, "CreateErrorList", "various");
+            Parameters.ProtectAgainstMissingParameterNames(noParamOrder, "CreateErrorList", "various");
 
             source?.Log?.Exception(exception);
 

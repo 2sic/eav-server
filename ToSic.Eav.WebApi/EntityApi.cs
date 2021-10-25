@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
-using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Errors;
@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi
     {
         #region DI Constructor & Init
 
-        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy, Lazy<EntitiesToDictionary> entitiesToDicLazy) : base("Api.Entity")
+        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy, Lazy<IConvertToEavLight> entitiesToDicLazy) : base("Api.Entity")
         {
             _appRuntime = appRuntime;
             _appManagerLazy = appManagerLazy;
@@ -27,7 +27,7 @@ namespace ToSic.Eav.WebApi
         }
         private readonly AppRuntime _appRuntime;
         private readonly Lazy<AppManager> _appManagerLazy;
-        private readonly Lazy<EntitiesToDictionary> _entitiesToDicLazy;
+        private readonly Lazy<IConvertToEavLight> _entitiesToDicLazy;
         public AppRuntime AppRead;
 
         public EntityApi Init(int appId, bool showDrafts, ILog parentLog)
@@ -44,18 +44,18 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// The serializer, so it can be configured from outside if necessary
         /// </summary>
-        private EntitiesToDictionary EntityToDic
+        private IConvertToEavLight EntityToDic
         {
             get
             {
                 if (_entitiesToDictionary != null) return _entitiesToDictionary;
                 _entitiesToDictionary = _entitiesToDicLazy.Value;
                 _entitiesToDictionary.WithGuid = true;
-                _entitiesToDictionary.Init(Log);
+                (_entitiesToDictionary as ConvertToEavLight)?.Init(Log);
                 return _entitiesToDictionary;
             }
         }
-        private EntitiesToDictionary _entitiesToDictionary;
+        private IConvertToEavLight _entitiesToDictionary;
 
         #endregion
 
@@ -169,7 +169,6 @@ namespace ToSic.Eav.WebApi
             return Init(app.AppId, true, parentLog);
         }
 
-        // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
         public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType)
         {
             var wrapLog = Log.Call(useTimer: true);
@@ -188,7 +187,6 @@ namespace ToSic.Eav.WebApi
         }
 
 
-         //2020-12-08 2dm - unused code, disable for now, delete ca.Feb 2021
         private object Truncate(object value, int length)
         {
             if (!(value is string asTxt))

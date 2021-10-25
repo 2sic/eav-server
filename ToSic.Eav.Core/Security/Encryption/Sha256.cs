@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Security.Encryption
 {
+    [PrivateApi]
     public class Sha256
     {
-        public static string SignBase64(string certificateBase64, byte[] data)
+        public string SignBase64(string certificateBase64, byte[] data)
         {
             var certificate = new X509Certificate2(Convert.FromBase64String(certificateBase64),
                 "", X509KeyStorageFlags.Exportable);
@@ -19,8 +21,7 @@ namespace ToSic.Eav.Security.Encryption
         }
 
 
-        public static bool VerifyBase64(string publicCertBase64, string signatureBase64,
-            byte[] dataClient)
+        public bool VerifyBase64(string publicCertBase64, string signatureBase64, byte[] dataClient)
         {
             var publicCert = new X509Certificate2(Convert.FromBase64String(publicCertBase64), "");
             var cspPublic = (RSACryptoServiceProvider)publicCert.PublicKey.Key;
@@ -30,5 +31,6 @@ namespace ToSic.Eav.Security.Encryption
             var isValidSignature = cspPublic.VerifyData(dataClient, CryptoConfig.MapNameToOID("SHA256"), signatureClient);
             return isValidSignature;
         }
+
     }
 }

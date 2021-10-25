@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -13,7 +12,7 @@ namespace ToSic.Eav.Persistence.Efc
         public IReadOnlyDictionary<int, Zone> Zones()
         {
             var log = new Log("DB.EfLoad", null, "Zones()");
-            History.Add("zone-app-map", log);
+            _logHistory.Add("zone-app-map", log);
 
             var zones = _dbContext.ToSicEavZones
                 .Include(z => z.ToSicEavApps)

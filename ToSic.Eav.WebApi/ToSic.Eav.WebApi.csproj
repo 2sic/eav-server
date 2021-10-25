@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
-    <Version>12.04.00</Version>
+    <Version>12.06.00</Version>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
   </PropertyGroup>
 
@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
+    <!--<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />-->
     <!--<PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />-->
     <!--<PackageReference Include="Microsoft.AspNet.WebApi.WebHost" Version="5.2.7" />-->
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />

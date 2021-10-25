@@ -21,10 +21,25 @@ namespace ToSic.Eav.Data
         /// Initialize the object and store the underlying IEntity.
         /// </summary>
         /// <param name="baseEntity"></param>
+        /// <param name="decorator"></param>
+        protected EntityDecorator(IEntity baseEntity, IDecorator<IEntity> decorator) : this(baseEntity)
+        {
+            if(decorator != null) Decorators.Add(decorator);
+        }
+
+        /// <summary>
+        /// Initialize the object and store the underlying IEntity.
+        /// </summary>
+        /// <param name="baseEntity"></param>
         protected EntityDecorator(IEntity baseEntity)
         {
             Entity = baseEntity;
-            EntityForEqualityCheck = (Entity as IEntityWrapper)?.EntityForEqualityCheck ?? Entity;
+            EntityForEqualityCheck = Entity;
+            if (Entity is IEntityWrapper wrapper)
+            {
+                EntityForEqualityCheck = wrapper.EntityForEqualityCheck ?? Entity;
+                Decorators.AddRange(wrapper.Decorators);
+            }
         }
 
         #region IEntity Implementation
@@ -126,5 +141,7 @@ namespace ToSic.Eav.Data
 
         [PrivateApi("Internal")]
         public List<PropertyDumpItem> _Dump(string[] languages, string path, ILog parentLogOrNull) => Entity._Dump(languages, path, parentLogOrNull);
+
+        public List<IDecorator<IEntity>> Decorators { get; } = new List<IDecorator<IEntity>>();
     }
 }

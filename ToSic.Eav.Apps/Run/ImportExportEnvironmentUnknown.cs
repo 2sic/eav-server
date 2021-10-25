@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using ToSic.Eav.Context;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 
 namespace ToSic.Eav.Apps.Run
 {
     public class ImportExportEnvironmentUnknown: ImportExportEnvironmentBase, IIsUnknown
     {
-        public ImportExportEnvironmentUnknown(ISite site, IAppStates appStates) : base(site, appStates, $"{LogNames.NotImplemented}.IExEnv") { }
+        public ImportExportEnvironmentUnknown(ISite site, IAppStates appStates, WarnUseOfUnknown<ImportExportEnvironmentUnknown> warn) 
+            : base(site, appStates, $"{LogNames.NotImplemented}.IExEnv") { }
 
         public override List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)
         {

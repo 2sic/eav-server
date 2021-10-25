@@ -12,6 +12,8 @@ namespace ToSic.Eav.ImportExport.Json.V1
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public Dictionary<string, Dictionary<string, string>> Custom;
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public Dictionary<string, Dictionary<string, string>> Json;
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public Dictionary<string, Dictionary<string, List<Guid?>>> Entity;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public Dictionary<string, Dictionary<string, decimal?>> Number;

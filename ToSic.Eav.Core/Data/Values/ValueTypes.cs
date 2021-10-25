@@ -29,7 +29,15 @@ namespace ToSic.Eav.Data
         Empty,
 
         /// <summary> Custom data-type - for custom serialization, will store string </summary>
-        Custom
+        Custom,
+
+		/// <summary>
+		/// Json data-type, will usually have various help to ensure that dynamic code is optimized
+		/// </summary>
+		/// <remarks>
+		/// Experimentally added in 12.05, but not fully useful yet, as the DB must also be updated
+		/// </remarks>
+		Json
 
 	}
 }

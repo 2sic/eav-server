@@ -48,8 +48,15 @@ namespace ToSic.Eav.Context
         // unsure about this
         /// <summary>
         /// The resource specific url, like the one to this page or portal
+        /// Should also contain the current / primary protocol, so links can be made with it
         /// </summary>
         string Url { get; }
+
+        /// <summary>
+        /// The root identifier of the site, like "2sxc.org" or "2sxc.org/en" - aka Site Alias.
+        /// Without protocol like Http etc.
+        /// </summary>
+        string UrlRoot { get; }
 
         //[PrivateApi] 
         //bool IsMultiZone { get; }

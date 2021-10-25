@@ -358,7 +358,7 @@ namespace ToSic.Eav.DataSources
                 try
                 {
                     // treat null as DateTime.MinValue - because that's also how the null-parameter is parsed when creating the filter
-                    var valAsDec = value == null ? DateTime.MinValue : Convert.ToDateTime(value);
+                    var valAsDec = value == null ? DateTime.MinValue : global::System.Convert.ToDateTime(value);
                     return dateTimeCompare(valAsDec);
                 }
                 catch
@@ -431,7 +431,7 @@ namespace ToSic.Eav.DataSources
                     return false;
                 try
                 {
-                    var valAsDec = Convert.ToDecimal(value);
+                    var valAsDec = global::System.Convert.ToDecimal(value);
                     return numberCompare(valAsDec);
                 }
                 catch

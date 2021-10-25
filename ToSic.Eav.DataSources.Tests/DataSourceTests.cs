@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSourceTests
         public void AutoFindAllDataSources()
         {
             var dsCatalog = EavTestBase.Resolve<DataSourceCatalog>().Init(null);
-            var dsList = dsCatalog.GetAll(false);
+            var dsList = DataSourceCatalog.GetAll(false);
             Assert.AreEqual(StandardInstalledDSCount, dsList.Count(), "expect a correct number of DSs");
 
             var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);
@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var dsCatalog = EavTestBase.Resolve<DataSourceCatalog>().Init(null);
 
-            var dsList = dsCatalog.GetAll(true);
+            var dsList = DataSourceCatalog.GetAll(true);
             Assert.AreEqual(StandardInstalledPipeLineDS, dsList.Count(), "expect a correct number of DSs");
 
             var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);

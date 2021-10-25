@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data
 {
     /// <inheritdoc />
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, always use IEntity")]
+    [PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi, always use IEntity")]
 	public partial class EntityLight : IEntityLight
     {
         #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
@@ -129,7 +130,7 @@ namespace ToSic.Eav.Data
                 || result is float
                 || result is double
                 || result is decimal)
-                return Convert.ToDecimal(result);
+                return System.Convert.ToDecimal(result);
 
             return result;
         }
@@ -137,32 +138,9 @@ namespace ToSic.Eav.Data
 
 
         [PrivateApi("Testing / wip #IValueConverter")]
-        public TVal GetBestValue<TVal>(string name) => ChangeTypeOrDefault<TVal>(GetBestValue(name));
+        public TVal GetBestValue<TVal>(string name) => GetBestValue(name).ConvertOrDefault<TVal>();
 
-        /// <summary>
-        /// Will try to convert an object to a type, or if not valid
-        /// return the default (null, zero, etc.) of a type
-        /// </summary>
-        /// <typeparam name="TVal"></typeparam>
-        /// <param name="found"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// also used by Entity.cs, because that uses it's own GetBestValue(...)
-        /// </remarks>
-        [PrivateApi]
-        protected static TVal ChangeTypeOrDefault<TVal>(object found)
-        {
-            if (found == null) return default;
 
-            try
-            {
-                return (TVal) Convert.ChangeType(found, typeof(TVal));
-            }
-            catch
-            {
-                return default;
-            }
-        }
 
         /// <summary>
         /// Get internal properties by string-name like "EntityTitle", etc.

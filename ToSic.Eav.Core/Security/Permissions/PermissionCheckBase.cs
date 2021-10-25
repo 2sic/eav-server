@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
@@ -51,10 +52,23 @@ namespace ToSic.Eav.Security
 
         #region constructors
 
+        public class Dependencies
+        {
+            public IFeaturesService Features { get; }
+            public Dependencies(IFeaturesService features)
+            {
+                Features = features;
+            }
+        }
+
         /// <summary>
         /// Basic constructor, you must always call Init afterwards
         /// </summary>
-        protected PermissionCheckBase(string logName): base(logName) { }
+        protected PermissionCheckBase(Dependencies dependencies, string logName): base(logName)
+        {
+            _dependencies = dependencies;
+        }
+        private readonly Dependencies _dependencies;
 
         /// <summary>
         /// Initialize this object so it can then give information regarding the permissions of an entity.

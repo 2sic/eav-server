@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data
     /// > We recommend you read about the [](xref:Basics.Data.Index)
     /// </remarks>
     /// <typeparam name="T">Type of the Value</typeparam>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, use interface IAttribute<T>")]
+    [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi, this is just fyi, use interface IAttribute<T>")]
     public class Attribute<T> : AttributeBase, IAttribute<T>
     {
         /// <summary>
@@ -31,17 +31,31 @@ namespace ToSic.Eav.Data
             get
             {
 				// Prevent Exception if Values is null
-	            if (Values == null) return default;
+	            // if (Values == null) return default;
 
                 try
                 {
-                    var value = (IValue<T>)Values.FirstOrDefault();
+                    var value = GetTypedValue();
+                    // var value = (IValue<T>)Values.FirstOrDefault();
                     return value != null ? value.TypedContents : default;
                 }
                 catch
                 {
                     return default;
                 }
+            }
+        }
+
+        internal IValue<T> GetTypedValue()
+        {
+            try
+            {
+                // in some cases Values can be null
+                return Values?.FirstOrDefault() as IValue<T>;
+            }
+            catch
+            {
+                return default;
             }
         }
 
@@ -57,6 +71,14 @@ namespace ToSic.Eav.Data
 
         [PrivateApi]
         object IAttribute.this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
+
+        [PrivateApi]
+        public Tuple<IValue, object> GetTypedValue(string[] languageKeys)
+        {
+            var iVal = GetInternalValue(languageKeys, FindHavingDimensions);
+            return new Tuple<IValue, object>(iVal, iVal == null ? default : iVal.TypedContents);
+        }
+
         [PrivateApi]
         object IAttribute.this[int languageId] => this[languageId];
         #endregion
@@ -73,6 +95,43 @@ namespace ToSic.Eav.Data
 
         private T GetInternal<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
         {
+            var valT = GetInternalValue(keys, lookupCallback);
+            return valT == null ? default : valT.TypedContents;
+
+            // Value with Dimensions specified
+            //if (keys != null && keys.Length > 0 && Values != null && Values.Count > 0)
+            //{
+            //    // try match all specified Dimensions
+            //    // note that as of now, the dimensions are always just 1 language, not more
+            //    // so the dimensions are _not_ a list of languages, but would contain other dimensions
+            //    // that is why we match ALL - but in truth it's a "feature" that's never been used
+            //    IValue valueHavingSpecifiedLanguages = null;
+            //    foreach (var key in keys)
+            //    {
+            //        // if it's null or 0, try to just get anything
+            //        if (EqualityComparer<TKey>.Default.Equals(key, default))
+            //            valueHavingSpecifiedLanguages = Values.FirstOrDefault();
+            //        else if (key != null)
+            //            valueHavingSpecifiedLanguages = lookupCallback(new[] {key});
+                    
+            //        // stop at first hit
+            //        if (valueHavingSpecifiedLanguages != null) break;
+            //    }
+
+            //    if (valueHavingSpecifiedLanguages != null)
+            //        try
+            //        {
+            //            return ((IValue<T>)valueHavingSpecifiedLanguages).TypedContents;
+            //        }
+            //        catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
+            //}
+            //// use Default
+            //return TypedContents == null ? default : TypedContents;
+
+        }
+
+        private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
+        {
             // Value with Dimensions specified
             if (keys != null && keys.Length > 0 && Values != null && Values.Count > 0)
             {
@@ -87,8 +146,8 @@ namespace ToSic.Eav.Data
                     if (EqualityComparer<TKey>.Default.Equals(key, default))
                         valueHavingSpecifiedLanguages = Values.FirstOrDefault();
                     else if (key != null)
-                        valueHavingSpecifiedLanguages = lookupCallback(new[] {key});
-                    
+                        valueHavingSpecifiedLanguages = lookupCallback(new[] { key });
+
                     // stop at first hit
                     if (valueHavingSpecifiedLanguages != null) break;
                 }
@@ -96,12 +155,12 @@ namespace ToSic.Eav.Data
                 if (valueHavingSpecifiedLanguages != null)
                     try
                     {
-                        return ((IValue<T>)valueHavingSpecifiedLanguages).TypedContents;
+                        return (IValue<T>)valueHavingSpecifiedLanguages;
                     }
                     catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
             }
             // use Default
-            return TypedContents == null ? default : TypedContents;
+            return GetTypedValue(); // TypedContents == null ? default : TypedContents;
 
         }
 

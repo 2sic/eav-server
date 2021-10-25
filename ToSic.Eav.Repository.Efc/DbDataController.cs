@@ -100,11 +100,14 @@ namespace ToSic.Eav.Repository.Efc
             Lazy<Efc11Loader> efcLoaderLazy, 
             Lazy<IUser> userLazy, 
             IServiceProvider serviceProvider,
-            IAppsCache appsCache) : base("Db.Data")
+            IAppsCache appsCache,
+            LogHistory logHistory
+            ) : base("Db.Data")
         {
             _efcLoaderLazy = efcLoaderLazy;
             _userLazy = userLazy;
             _appsCache = appsCache;
+            _logHistory = logHistory;
             SqlDb = dbContext;
             ServiceProvider = serviceProvider;
             SqlDb.AlternateSaveHandler += SaveChanges;
@@ -113,6 +116,7 @@ namespace ToSic.Eav.Repository.Efc
         private readonly Lazy<Efc11Loader> _efcLoaderLazy;
         private readonly Lazy<IUser> _userLazy;
         private readonly IAppsCache _appsCache;
+        private readonly LogHistory _logHistory;
 
         public EavDbContext SqlDb { get; }
         internal IServiceProvider ServiceProvider { get; }
@@ -267,7 +271,7 @@ namespace ToSic.Eav.Repository.Efc
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
         {
             var callLog = Log.Call<List<int>>(useTimer: true);
-            History.Add("save-data", Log);
+            _logHistory.Add("save-data", Log);
             return callLog("ok", Entities.SaveEntity(entities, saveOptions));
         }
 

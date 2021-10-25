@@ -5,14 +5,15 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
-using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
+using ToSic.Eav.Security;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav
@@ -26,7 +27,6 @@ namespace ToSic.Eav
 
             // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
-            services.TryAddTransient<EntitiesToDictionaryBase.Dependencies>();
             
             // Global Content-Types - should only be loaded once ever, and then it's done
             services.TryAddSingleton<GlobalTypeLoader>();
@@ -36,21 +36,32 @@ namespace ToSic.Eav
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
             
             // try to drop this / replace with...
-            services.TryAddTransient<IFeaturesConfiguration, Features>();
+            //services.TryAddTransient<IFeaturesConfiguration, Features>();
             // ...with this
             services.TryAddTransient<SystemLoader>();
-            services.TryAddTransient<Features>();
+            //services.TryAddTransient<Features>();
+
+            // Make sure that IFeaturesInternal and IFeatures use the same singleton!
+            services.TryAddSingleton<IFeaturesInternal, FeaturesService>();    // this must come first!
+            services.TryAddSingleton<IFeaturesService>(x => x.GetRequiredService<IFeaturesInternal>());
 
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
             services.TryAddTransient<IAppStates, AppStates>();
             services.TryAddTransient<AppsCacheBase.Dependencies>();
 
-            // Metadata providers
-            //services.TryAddTransient<IRemoteMetadata, RemoteMetadata>();
-            
             // Other...
             services.TryAddTransient<AttributeBuilder>();
+
+            // History (very core service)
+            services.TryAddTransient<LogHistory>();
+            services.TryAddSingleton<GlobalTypes>();    // this must be singleton, could cause trouble otherwise
+
+            // Warnings for mock implementations
+            services.TryAddTransient(typeof(WarnUseOfUnknown<>));
+
+            // Permissions helper
+            services.TryAddTransient<PermissionCheckBase.Dependencies>();
 
             return services;
         }
@@ -68,13 +79,16 @@ namespace ToSic.Eav
         {
             // very basic stuff - normally overriden by the platform
             services.TryAddTransient<IFingerprint, FingerprintUnknown>();
-            services.TryAddTransient<IValueConverter, ValueConverterBase>();
+            services.TryAddTransient<IValueConverter, ValueConverterUnknown>();
 
             services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
             services.TryAddTransient<IUser, UserUnknown>();
             services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
             services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
             services.TryAddTransient<IAppRepositoryLoader, AppRepositoryLoaderUnknown>();
+
+            // Special registration of iisUnknown to verify we see warnings if such a thing is loaded
+            services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
             return services;
         }
 

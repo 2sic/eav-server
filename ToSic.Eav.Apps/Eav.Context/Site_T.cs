@@ -18,6 +18,7 @@ namespace ToSic.Eav.Context
         /// The tenant settings - usually the DNN PortalSettings
         /// </summary>
         public virtual T UnwrappedContents { get; protected set; }
+        public T GetContents() => UnwrappedContents;
 
         /// <inheritdoc />
         public abstract string CurrentCultureCode { get; }
@@ -32,6 +33,8 @@ namespace ToSic.Eav.Context
         public abstract string Name { get; }
 
         public abstract string Url { get; }
+
+        public abstract string UrlRoot { get; }
 
         //public virtual bool IsMultiZone => false;
 

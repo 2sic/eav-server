@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data
 {
@@ -17,7 +18,7 @@ namespace ToSic.Eav.Data
 
         // ReSharper disable once InheritdocInvalidUsage
         /// <inheritdoc />
-        public TVal GetBestValue<TVal>(string name, string[] languages) => ChangeTypeOrDefault<TVal>(GetBestValue(name, languages));
+        public TVal GetBestValue<TVal>(string name, string[] languages) => GetBestValue(name, languages).ConvertOrDefault<TVal>();
 
 
         [PrivateApi("Internal")]
@@ -28,13 +29,15 @@ namespace ToSic.Eav.Data
             if (Attributes.ContainsKey(field))
             {
                 var attribute = Attributes[field];
-                return new PropertyRequest {Result = attribute[languages], FieldType = attribute.Type, Source = this};
+                var valT = attribute.GetTypedValue(languages);
+                return new PropertyRequest { Value = valT.Item1, Result = valT.Item2, FieldType = attribute.Type, Source = this};
             }
             
             if (field == Data.Attributes.EntityFieldTitle)
             {
                 var attribute = Title;
-                return new PropertyRequest { Result = Title?[languages], FieldType = attribute?.Type, Source = this};
+                var valT = attribute?.GetTypedValue(languages);
+                return new PropertyRequest { Value = valT?.Item1, Result = valT?.Item2, FieldType = attribute?.Type, Source = this};
             }
 
             // directly return internal properties, mark as virtual to not cause further Link resolution
@@ -52,59 +55,6 @@ namespace ToSic.Eav.Data
             
             return likelyResult;
         }
-
-        //[PrivateApi]
-        //public List<PropertyDumpItem> _Dump(string[] languages, string path, ILog parentLogOrNull)
-        //{
-        //    if (!Attributes.Any()) return new List<PropertyDumpItem>();
-        //    if (PropertyDumpItem.ShouldStop(path)) return new List<PropertyDumpItem>{PropertyDumpItem.DummyErrorShouldStop(path)};
-
-        //    var pathRoot = string.IsNullOrEmpty(path) ? "" : path + PropertyDumpItem.Separator;
-
-        //    // Check if we have dynamic children
-        //    IEnumerable<PropertyDumpItem> resultDynChildren = null;
-        //    var dynChildField = Type?.DynamicChildrenField;
-        //    if (dynChildField != null)
-        //        resultDynChildren = Children(dynChildField)
-        //            .SelectMany(inner
-        //                => inner._Dump(languages, pathRoot + inner.GetBestTitle(languages),
-        //                    parentLogOrNull));
-
-        //    // Get all properties which are not dynamic children
-        //    var resultProperties =
-        //        Attributes
-        //            .Where(att =>
-        //                att.Value.Type == DataTypes.Entity
-        //                && !att.Key.Equals(dynChildField, StringComparison.InvariantCultureIgnoreCase))
-        //            .SelectMany(att
-        //                => Children(att.Key)
-        //                    .SelectMany(inner
-        //                        => inner._Dump(languages, pathRoot + att.Key,
-        //                            parentLogOrNull)))
-        //            .ToList();
-
-        //    // Get all normal properties
-        //    var resultValues =
-        //        Attributes
-        //            .Where(att => att.Value.Type != DataTypes.Entity)
-        //            .Select(att =>
-        //            {
-        //                var property = FindPropertyInternal(att.Key, languages, parentLogOrNull);
-        //                var item = new PropertyDumpItem
-        //                {
-        //                    Path = pathRoot + att.Key,
-        //                    Property = property
-        //                };
-        //                return item;
-        //            })
-        //            .ToList();
-
-        //    var finalResult = resultProperties.Concat(resultValues);
-        //    if (resultDynChildren != null) finalResult = finalResult.Concat(resultDynChildren);
-
-        //    return finalResult.OrderBy(f => f.Path).ToList();
-
-        //}
 
         protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)
         {

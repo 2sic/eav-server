@@ -11,12 +11,12 @@ namespace ToSic.Eav
         public static string SerializeValue(object newValue)
         {
             string newValueSerialized;
-            if (newValue is DateTime)
-                newValueSerialized = ((DateTime)newValue).ToString("s");
-            else if (newValue is double)
-                newValueSerialized = ((double)newValue).ToString(CultureInfo.InvariantCulture);
-            else if (newValue is decimal)
-                newValueSerialized = ((decimal)newValue).ToString(CultureInfo.InvariantCulture);
+            if (newValue is DateTime dateTime)
+                newValueSerialized = dateTime.ToString("s");
+            else if (newValue is double doubleValue)
+                newValueSerialized = doubleValue.ToString(CultureInfo.InvariantCulture);
+            else if (newValue is decimal decValue)
+                newValueSerialized = decValue.ToString(CultureInfo.InvariantCulture);
             else if (newValue == null)
                 newValueSerialized = string.Empty;
             else

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -9,6 +10,8 @@ namespace ToSic.Eav.Context
 
         internal const int UnknownSiteId = Constants.NullId;
 
+        public SiteUnknown(WarnUseOfUnknown<SiteUnknown> warn) { }
+
         /// <summary>
         /// The unknown zone defaults to 2, as #1 is usually reserved for internal stuff
         /// </summary>
@@ -17,6 +20,8 @@ namespace ToSic.Eav.Context
         public int Id { get; private set; } = UnknownSiteId;
 
         public string Url => Unknown;
+
+        public string UrlRoot => Unknown;
 
         public int ZoneId { get; private set; } = UnknownZoneId;
 

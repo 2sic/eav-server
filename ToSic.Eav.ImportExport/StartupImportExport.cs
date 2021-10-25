@@ -14,6 +14,10 @@ namespace ToSic.Eav.ImportExport
             services.TryAddTransient<IDataSerializer, JsonSerializer>();
             services.TryAddTransient<IDataDeserializer, JsonSerializer>();
 
+            // Here we only register the dependencies, as the final converter must be registered elsewhere
+            //services.TryAddTransient<ConvertToJsonBasicBase.Dependencies>();
+
+
             services.TryAddTransient<JsonSerializer>();
 
             services.TryAddTransient<XmlSerializer>();

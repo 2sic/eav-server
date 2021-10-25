@@ -1,8 +1,10 @@
 ﻿using System;
+using Microsoft.SqlServer.Server;
+using Newtonsoft.Json;
 
 namespace ToSic.Eav.Apps.Assets
 {
-    public abstract class Folder<TFolderId, TFileId> : IFolder<TFolderId, TFolderId>
+    public abstract class Folder<TFolderId, TFileId> : IFolder<TFolderId, TFileId>
     {
         /// <inheritdoc/>
         int IAsset.Id => SysId as int? ?? 0;
@@ -10,8 +12,10 @@ namespace ToSic.Eav.Apps.Assets
         /// <inheritdoc/>
         int IAsset.ParentId => ParentSysId as int? ?? 0;
 
+        [JsonIgnore]
         public TFolderId ParentSysId { get; set; }
 
+        [JsonIgnore]
         public TFolderId SysId { get; set; }
 
 
@@ -30,8 +34,12 @@ namespace ToSic.Eav.Apps.Assets
         /// <inheritdoc/>
         public string Name { get; set; }
 
+        /// <inheritdoc/>
+        [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi
+        public string PhysicalPath { get; set; }
 
         #region not available properties which existed on the previous DNN interface
+
         // These commented out fields are what DNN would have and they have problems
         // 1. they are basically meaningless for output
         // 2. they probably don't exist in a similer model a non-dnn system
@@ -52,6 +60,7 @@ namespace ToSic.Eav.Apps.Assets
         //public Guid UniqueId { get; internal set; }
         //public bool IsProtected { get; internal set; }
         //public int KeyID { get; internal set; }
+
         #endregion
     }
 }

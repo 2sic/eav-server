@@ -16,5 +16,11 @@ namespace ToSic.Eav.Data
         /// </summary>
         T UnwrappedContents { get; }
 
+        /// <summary>
+        /// The underlying, original object. Helpful for inner methods which need access to the real, underlying item. <br/>
+        /// It has a lengthy name so that objects which implement the wrapper don't need to fear that another property would have the same name.
+        /// </summary>
+        [PrivateApi("not yet final, may be removed again...")]
+        T GetContents();
     }
 }

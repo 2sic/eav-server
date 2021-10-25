@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 
 namespace ToSic.Eav.LookUp
 {
@@ -9,7 +10,7 @@ namespace ToSic.Eav.LookUp
     /// </summary>
     public sealed class LookUpEngineResolverUnknown: HasLog<ILookUpEngineResolver>, ILookUpEngineResolver, IIsUnknown
     {
-        public LookUpEngineResolverUnknown() : base($"{LogNames.NotImplemented}.LookUp")
+        public LookUpEngineResolverUnknown(WarnUseOfUnknown<LookUpEngineResolverUnknown> warn) : base($"{LogNames.NotImplemented}.LookUp")
         {
         }
 

@@ -4,6 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -33,7 +34,7 @@ namespace ToSic.Eav.Apps.Parts
                 return callLog("ok", false);
 
             // something is missing, so we must build them
-            new AppInitializer(ServiceProvider)
+            ServiceProvider.Build<AppInitializer>() // (ServiceProvider)
                 .Init(appIdentity, log)
                 .InitializeApp(appName);
             return callLog(null, true);

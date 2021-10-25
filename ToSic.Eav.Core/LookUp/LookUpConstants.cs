@@ -1,5 +1,8 @@
-﻿namespace ToSic.Eav.LookUp
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav.LookUp
 {
+    [PrivateApi]
     public static class LookUpConstants
     {
         /// <summary>

@@ -13,13 +13,15 @@ namespace ToSic.Eav.Apps.Parts
     public class ContentTypeRuntime : PartOf<AppRuntime, ContentTypeRuntime>
     {
 
-        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy) : base("RT.ConTyp")
+        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy, GlobalTypes globalTypes) : base("RT.ConTyp")
         {
             _lazyMetadataAppRuntime = lazyMetadataAppRuntime;
             _appFileSystemLoaderLazy = appFileSystemLoaderLazy;
+            _globalTypes = globalTypes;
         }
         private readonly Lazy<AppRuntime> _lazyMetadataAppRuntime;
         private readonly Lazy<IAppFileSystemLoader> _appFileSystemLoaderLazy;
+        private readonly GlobalTypes _globalTypes;
 
         public IEnumerable<IContentType> All => Parent.AppState.ContentTypes;
 
@@ -137,9 +139,9 @@ namespace ToSic.Eav.Apps.Parts
         /// Build a list of global (json) Content-Types and their metadata
         /// </summary>
         /// <returns></returns>
-        private static List<InputTypeInfo> GetGlobalInputTypesBasedOnContentTypes()
+        private List<InputTypeInfo> GetGlobalInputTypesBasedOnContentTypes()
         {
-            var types = Global.AllContentTypes()
+            var types = _globalTypes.AllContentTypes()
                 .Where(p => p.Key.StartsWith(FieldTypePrefix))
                 .Select(p => p.Value).ToList();
 

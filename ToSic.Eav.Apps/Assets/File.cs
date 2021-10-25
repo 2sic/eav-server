@@ -1,13 +1,16 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace ToSic.Eav.Apps.Assets
 {
     public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
     {
         /// <inheritdoc />
+        [JsonIgnore]
         public TFileId SysId { get; set; }
 
         /// <inheritdoc />
+        [JsonIgnore]
         public TFolderId ParentSysId {get; set; }
 
         public string Folder { get; set; }
@@ -34,6 +37,8 @@ namespace ToSic.Eav.Apps.Assets
 
         public int Size { get; set; }
 
+        [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi
+        public string PhysicalPath { get; set; }
 
         #region not available properties which existed on the previous DNN interface
         // These commented out fields are what DNN would have and they have problems

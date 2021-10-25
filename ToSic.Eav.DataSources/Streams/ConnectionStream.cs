@@ -52,6 +52,7 @@ namespace ToSic.Eav.DataSources
         }
 
         public IDataStream UnwrappedContents => _dataStream ?? (_dataStream = LoadStream());
+        public IDataStream GetContents() => UnwrappedContents;
 
         private IDataStream _dataStream;
 

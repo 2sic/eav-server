@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Serialization;
@@ -40,8 +41,16 @@ namespace ToSic.Eav.DataSources
         private const string IncludeTitleKey = "IncludeTitle";
         private const string IncludeCreatedKey = "IncludeCreated";
         private const string IncludeModifiedKey = "IncludeModified";
-        
+
+        private const string RmvNullValuesKey = "RemoveNullValues";
+        private const string RmvZeroValuesKey = "RemoveZeroValues";
+        private const string RmvEmptyStringsKey = "RemoveEmptyStringValues";
+        private const string RmvBooleanFalseKey = "RemoveFalseValues";
+
         private const string IncludeMetadataForKey = "IncludeMetadataFor";
+        private const string IncludeMetadataForIdKey = "IncludeMetadataForId";
+        private const string IncludeMetadataForTypeKey = "IncludeMetadataForType";
+
         private const string IncludeMetadataKey = "IncludeMetadata";
         private const string IncludeMetadataIdKey = "IncludeMetadataId";
         private const string IncludeMetadataGuidKey = "IncludeMetadataGuid";
@@ -89,11 +98,49 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-        #region Metadata
+        #region Optimize - new in 12.05
+
+        /// <summary>
+        /// todo
+        /// </summary>
+        public string RemoveNullValues { get => Configuration[RmvNullValuesKey]; set => Configuration[RmvNullValuesKey] = value; }
+
+        /// <summary>
+        /// todo
+        /// </summary>
+        public string RemoveZeroValues { get => Configuration[RmvZeroValuesKey]; set => Configuration[RmvZeroValuesKey] = value; }
+
+        /// <summary>
+        /// todo
+        /// </summary>
+        public string RemoveEmptyStrings { get => Configuration[RmvEmptyStringsKey]; set => Configuration[RmvEmptyStringsKey] = value; }
+
+        /// <summary>
+        /// todo
+        /// </summary>
+        public string DropFalseValues { get => Configuration[RmvBooleanFalseKey]; set => Configuration[RmvBooleanFalseKey] = value; }
+
+        #endregion
+
+        #region Metadata For - enhanced in 12.05
+
         /// <summary>
         /// Should the Metadata target/for information be included in serialization
         /// </summary>
         public string IncludeMetadataFor { get => Configuration[IncludeMetadataForKey]; set => Configuration[IncludeMetadataForKey] = value; }
+
+        /// <summary>
+        /// Should the Metadata target/for information be included in serialization
+        /// </summary>
+        public string IncludeMetadataForId { get => Configuration[IncludeMetadataForIdKey]; set => Configuration[IncludeMetadataForIdKey] = value; }
+
+        /// <summary>
+        /// Should the Metadata target/for information be included in serialization
+        /// </summary>
+        public string IncludeMetadataForType { get => Configuration[IncludeMetadataForTypeKey]; set => Configuration[IncludeMetadataForTypeKey] = value; }
+        #endregion
+
+        #region Metadata
 
         /// <summary>
         /// Should the Metadata ID be included in serialization
@@ -152,8 +199,6 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public SerializationConfiguration()
 		{
-            //OutIsDynamic = true;
-            
             // Basic system properties
             ConfigMask(IncludeIdKey, $"[Settings:{IncludeIdKey}]");
             ConfigMask(IncludeGuidKey, $"[Settings:{IncludeGuidKey}]");
@@ -163,8 +208,18 @@ namespace ToSic.Eav.DataSources
             ConfigMask(IncludeCreatedKey, $"[Settings:{IncludeCreatedKey}]");
             ConfigMask(IncludeModifiedKey, $"[Settings:{IncludeModifiedKey}]");
             
-            // Metadata
+            // Optimize output - enhanced in 12.05
+            ConfigMask(RmvNullValuesKey, $"[Settings:{RmvNullValuesKey}]");
+            ConfigMask(RmvZeroValuesKey, $"[Settings:{RmvZeroValuesKey}]");
+            ConfigMask(RmvEmptyStringsKey, $"[Settings:{RmvEmptyStringsKey}]");
+            ConfigMask(RmvBooleanFalseKey, $"[Settings:{RmvBooleanFalseKey}]");
+
+            // Metadata For - enhanced in 12.05
             ConfigMask(IncludeMetadataForKey, $"[Settings:{IncludeMetadataForKey}]");
+            ConfigMask(IncludeMetadataForIdKey, $"[Settings:{IncludeMetadataForTypeKey}]");
+            ConfigMask(IncludeMetadataForTypeKey, $"[Settings:{IncludeMetadataForTypeKey}]");
+
+            // Metadata
             ConfigMask(IncludeMetadataKey, $"[Settings:{IncludeMetadataKey}]");
             ConfigMask(IncludeMetadataIdKey, $"[Settings:{IncludeMetadataIdKey}]");
             ConfigMask(IncludeMetadataGuidKey, $"[Settings:{IncludeMetadataGuidKey}]");
@@ -197,12 +252,7 @@ namespace ToSic.Eav.DataSources
         {
             var wrapLog = Log.Call<IImmutableList<IEntity>>();
             // Skip if no rules defined
-            var noRules = string.IsNullOrWhiteSpace(""
-                + IncludeId + IncludeGuid + IncludeTitle 
-                + IncludeCreated + IncludeModified
-                + IncludeMetadataFor
-                + IncludeMetadata + IncludeMetadataId + IncludeMetadataGuid + IncludeMetadataTitle
-                + IncludeRelationships + IncludeRelationshipId + IncludeRelationshipGuid + IncludeRelationshipTitle);
+            var noRules = string.IsNullOrWhiteSpace(string.Join("", Configuration));
             if(noRules) return wrapLog("no rules, unmodified", before);
 
             var id = TryParseIncludeRule(IncludeId);
@@ -211,8 +261,18 @@ namespace ToSic.Eav.DataSources
             var created = TryParseIncludeRule(IncludeCreated);
             var modified = TryParseIncludeRule(IncludeModified);
             
-            var mdFor = TryParseIncludeRule(IncludeMetadataFor);
-            
+            var dropNullValues = TryParseIncludeRule(RemoveNullValues) ?? false;
+            var dropZeroValues = TryParseIncludeRule(RemoveZeroValues) ?? false;
+            var dropEmptyStringValues = TryParseIncludeRule(RemoveEmptyStrings) ?? false;
+            var dropFalseValues = TryParseIncludeRule(DropFalseValues) ?? false;
+
+            var mdForSer = new MetadataForSerialization
+            {
+                Serialize = TryParseIncludeRule(IncludeMetadataFor),
+                SerializeKey = TryParseIncludeRule(IncludeMetadataForId),
+                SerializeType = TryParseIncludeRule(IncludeMetadataForType),
+            };
+
             var mdSer = new SubEntitySerialization
             {
                 Serialize = TryParseIncludeRule(IncludeMetadata),
@@ -230,25 +290,30 @@ namespace ToSic.Eav.DataSources
                 SerializeTitle = TryParseIncludeRule(IncludeRelationshipTitle)
             };
 
-
-            var result = before.Select(selector: e =>
+            var decorator = new EntitySerializationDecorator
             {
-                var newEntity = new EntityWithSerialization(e);
-                if (id != null) newEntity.SerializeId = id;
-                if (title != null) newEntity.SerializeTitle = title;
-                if (guid != null) newEntity.SerializeGuid = guid;
-                
-                // dates
-                if (created != null) newEntity.SerializeCreated = created;
-                if (modified != null) newEntity.SerializeModified = modified;
-                
-                // Metadata & Relationships
-                if (mdFor != null) newEntity.SerializeMetadataFor = mdFor;
-                newEntity.SerializeMetadata = mdSer;
-                newEntity.SerializeRelationships = relSer;
+                RemoveNullValues = dropNullValues,
+                RemoveZeroValues = dropZeroValues,
+                RemoveEmptyStringValues = dropEmptyStringValues,
+                RemoveBoolFalseValues = dropFalseValues,
 
-                return (IEntity) newEntity;
-            });
+                // Metadata & Relationships
+                SerializeMetadataFor = mdForSer,
+                SerializeMetadata = mdSer,
+                SerializeRelationships = relSer,
+
+                // id, title, guid
+                SerializeId = id,
+                SerializeTitle = title,
+                SerializeGuid = guid,
+
+                // dates
+                SerializeCreated = created,
+                SerializeModified = modified
+            };
+
+            var result = before
+                .Select(e => (IEntity)new EntityDecorator12<EntitySerializationDecorator>(e, decorator));
 
             return wrapLog("modified", result.ToImmutableList());
         }

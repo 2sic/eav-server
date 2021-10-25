@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Debug;
@@ -34,14 +34,14 @@ namespace ToSic.Eav.WebApi
             /// </summary>
             public Lazy<AppRuntime> AppReaderLazy { get; }
             public QueryBuilder QueryBuilder { get; }
-            public Lazy<EntitiesToDictionary> EntToDicLazy { get; }
+            public Lazy<ConvertToEavLight> EntToDicLazy { get; }
             public Lazy<QueryInfo> QueryInfoLazy { get; }
             public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
 
             public Dependencies(Lazy<AppManager> appManagerLazy,
                 Lazy<AppRuntime> appReaderLazy,
                 QueryBuilder queryBuilder,
-                Lazy<EntitiesToDictionary> entToDicLazy,
+                Lazy<ConvertToEavLight> entToDicLazy,
                 Lazy<QueryInfo> queryInfoLazy,
                 Lazy<DataSourceCatalog> dataSourceCatalogLazy)
             {
@@ -56,36 +56,15 @@ namespace ToSic.Eav.WebApi
 
         public QueryBuilder QueryBuilder { get; }
         private readonly Dependencies _dependencies;
-        //private readonly Lazy<AppManager> _appManagerLazy;
 
-        ///// <summary>
-        ///// The lazy reader should only be used in the Definition - it's important that it's a new object
-        ///// when used, to ensure it has the changes previously saved
-        ///// </summary>
-        //private readonly Lazy<AppRuntime> _appReaderLazy;
-        //private readonly Lazy<EntitiesToDictionary> _entToDicLazy;
-        //private readonly Lazy<QueryInfo> _queryInfoLazy;
-        //private readonly Lazy<DataSourceCatalog> _dataSourceCatalogLazy;
         private AppManager _appManager;
 
         protected QueryApi(
-            Dependencies dependencies
-            //Lazy<AppManager> appManagerLazy, 
-            //Lazy<AppRuntime> appReaderLazy, 
-            //QueryBuilder queryBuilder, 
-            //Lazy<EntitiesToDictionary> entToDicLazy,
-            //Lazy<QueryInfo> queryInfoLazy,
-            //Lazy<DataSourceCatalog> dataSourceCatalogLazy
-            ) : base("Api.EavQry")
+            Dependencies dependencies) : base("Api.EavQry")
         {
             _dependencies = dependencies;
             QueryBuilder = dependencies.QueryBuilder;
             QueryBuilder.Init(Log);
-            //_appManagerLazy = appManagerLazy;
-            //_appReaderLazy = appReaderLazy;
-            //_entToDicLazy = entToDicLazy;
-            //_queryInfoLazy = queryInfoLazy;
-            //_dataSourceCatalogLazy = dataSourceCatalogLazy;
         }
 
         public QueryApi Init(int appId, ILog parentLog)
@@ -169,17 +148,10 @@ namespace ToSic.Eav.WebApi
 		    return Definition(appId, id);
 		}
 
-
-		/// <summary>
-		/// Query the Result of a Pipeline using Test-Parameters
-		/// </summary>
-		public QueryRunDto Run(int appId, int id, int top, LookUpEngine lookUps) 
-            => DevRun(appId, id, lookUps, top, builtQuery => builtQuery.Item1);
-
         /// <summary>
         /// Query the Result of a Pipeline using Test-Parameters
         /// </summary>
-        public QueryRunDto DebugStream(int appId, int id, int top, LookUpEngine lookUps, string from, string streamName)
+        protected QueryRunDto DebugStream(int appId, int id, int top, LookUpEngine lookUps, string from, string streamName)
         {
             IDataSource GetSubStream(Tuple<IDataSource, Dictionary<string, IDataSource>> builtQuery)
             {
@@ -200,10 +172,10 @@ namespace ToSic.Eav.WebApi
                 return passThroughDs;
             }
 
-            return DevRun(appId, id, lookUps, top, GetSubStream);
+            return RunDevInternal(appId, id, lookUps, top, GetSubStream);
         }
 
-        public QueryRunDto DevRun(int appId, int id, LookUpEngine lookUps, int top, Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup)
+        protected QueryRunDto RunDevInternal(int appId, int id, LookUpEngine lookUps, int top, Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup)
 		{
             var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
@@ -216,7 +188,8 @@ namespace ToSic.Eav.WebApi
             var serializeWrap = Log.Call("Serialize", useTimer: true);
             var timer = new Stopwatch();
             timer.Start();
-            var converter = _dependencies.EntToDicLazy.Value.EnableGuids();
+            var converter = _dependencies.EntToDicLazy.Value;
+            converter.WithGuid = true;//.EnableGuids();
             converter.MaxItems = top;
 		    var results = converter.Convert(partLookup(builtQuery));
             timer.Stop();
@@ -230,7 +203,12 @@ namespace ToSic.Eav.WebApi
 			return new QueryRunDto
 			{
 				Query = results, 
-				Streams = debugInfo.Streams,
+				Streams = debugInfo.Streams.Select(si =>
+                {
+                    if(si.ErrorData != null && si.ErrorData is IEntity errorEntity)
+                        si.ErrorData = _dependencies.EntToDicLazy.Value.Convert(errorEntity);
+                    return si;
+                }).ToList(),
 				Sources = debugInfo.Sources,
                 QueryTimer = new QueryTimerDto { 
                     Milliseconds = timer.ElapsedMilliseconds,

@@ -50,7 +50,7 @@ namespace ToSic.Eav.Data.Builder
                             // only try converting if it's not an empty string
                             try
                             {
-                                newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+                                newDec = System.Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                             }
                             catch { /* ignored */ }
                         }
@@ -80,6 +80,7 @@ namespace ToSic.Eav.Data.Builder
                     case ValueTypes.String:  // most common case
                     case ValueTypes.Empty:   // empty - should actually not contain anything!
                     case ValueTypes.Custom:  // custom value, currently just parsed as string for manual processing as needed
+                    case ValueTypes.Json:
                     case ValueTypes.Hyperlink:// special case, handled as string
                     case ValueTypes.Undefined:// backup case, where it's not known...
                     // ReSharper restore RedundantCaseLabel

@@ -27,7 +27,7 @@ namespace ToSic.Eav.ImportExport.Json.V1
                 if (content[i] == 0x00 && content[i - 1] == 0x00)
                 {
                     ast.Encoding = JsonAsset.EncodingBase64;
-                    ast.File = Convert.ToBase64String(content);
+                    ast.File = System.Convert.ToBase64String(content);
                     return ast;
                 }
 
@@ -45,7 +45,7 @@ namespace ToSic.Eav.ImportExport.Json.V1
             // try to restore it
             if (asset.Encoding == JsonAsset.EncodingBase64)
             {
-                var contents = Convert.FromBase64String(asset.File);
+                var contents = System.Convert.FromBase64String(asset.File);
                 File.WriteAllBytes(realPath, contents);
                 return true;
             }

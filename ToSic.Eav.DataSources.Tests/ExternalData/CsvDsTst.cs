@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.ExternalData
 {
@@ -119,14 +120,15 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
 
         public static CsvDataSource CreateDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
         {
-            var source = new CsvDataSource
+            var source = EavTestBase.Resolve<CsvDataSource>();
+
             {
-                FilePath = filePath,
-                Delimiter = delimiter,
-                ContentType = contentType,
-                IdColumnName = idColumnName,
-                TitleColumnName = titleColumnName,
-                //ConfigurationProvider = DemoConfigs.AppSetAndRes()
+                source.FilePath = filePath;
+                source.Delimiter = delimiter;
+                source.ContentType = contentType;
+                source.IdColumnName = idColumnName;
+                source.TitleColumnName = titleColumnName;
+                //source.ConfigurationProvider = DemoConfigs.AppSetAndRes()
             };
             return source.Init(LookUpTestData.AppSetAndRes());
         }

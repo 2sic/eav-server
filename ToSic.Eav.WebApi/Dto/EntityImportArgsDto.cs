@@ -13,7 +13,7 @@ namespace ToSic.Eav.WebApi.Dto
 
         public string GetContentString()
         {
-            var data = Convert.FromBase64String(ContentBase64);
+            var data = System.Convert.FromBase64String(ContentBase64);
             var str = Encoding.UTF8.GetString(data);
             return str;
         }

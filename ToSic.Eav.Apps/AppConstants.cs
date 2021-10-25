@@ -33,5 +33,8 @@
         // Settings / Resources
         public static string RootNameSettings = "Settings";
         public static string RootNameResources = "Resources";
+
+        // Placeholders / Tokens - probably should move somewhere else someday
+        public static string AppPathPlaceholder = "[App:Path]";
     }
 }

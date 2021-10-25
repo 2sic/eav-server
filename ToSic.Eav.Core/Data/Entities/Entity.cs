@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// A basic unit / item of data. Has many <see cref="IAttribute{T}"/>s which then contains <see cref="IValue{T}"/>s which are multi-language. 
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, always use IEntity")]
+    [PrivateApi("2021-09-30 hidden, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi, always use IEntity")]
 
     public partial class Entity: EntityLight, IEntity
     {

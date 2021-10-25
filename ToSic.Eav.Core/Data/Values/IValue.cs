@@ -39,6 +39,11 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         [PrivateApi("not sure if this is here to stay, or if we'll change to use a T based type instead of string-based")]
         IValue Copy(string type);
+
+        [PrivateApi("very experimental in 12.05")]
+        bool? DynamicUseCache { get; set; }
+        [PrivateApi("very experimental in 12.05")]
+        object DynamicCache { get; set; }
     }
 
 }

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.Conversion;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.WebApi.Dto;
@@ -27,7 +28,7 @@ namespace ToSic.Eav.WebApi
             Lazy<AppManager> appManagerLazy, 
             Lazy<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
-            Lazy<EntitiesToDictionary> dataToDictionaryLazy, 
+            Lazy<IConvertToEavLight> dataToDictionaryLazy, 
             IAppStates appStates) : base("Api.EavCTC")
         {
             _appRuntimeLazy = appRuntimeLazy;
@@ -42,7 +43,7 @@ namespace ToSic.Eav.WebApi
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<DbDataController> _dbLazy;
         private readonly AppInitializedChecker _appInitializedChecker;
-        private readonly Lazy<EntitiesToDictionary> _dataToDictionaryLazy;
+        private readonly Lazy<IConvertToEavLight> _dataToDictionaryLazy;
         private readonly IAppStates _appStates;
         private AppManager AppManager { get; set; }
 
@@ -103,6 +104,7 @@ namespace ToSic.Eav.WebApi
 
 	        var shareInfo = (IContentTypeShared) t;
 
+            var properties = ser.Convert(metadata);
 	        var jsonReady = new ContentTypeDto
 	        {
 	            Id = t.ContentTypeId,
@@ -115,7 +117,8 @@ namespace ToSic.Eav.WebApi
 	            SharedDefId = shareInfo.ParentId,
 	            Items = count,
 	            Fields = t.Attributes.Count,
-	            Metadata = ser.Convert(metadata),
+	            Metadata = properties,
+                Properties = properties,
                 Permissions = new HasPermissionsDto { Count = t.Metadata.Permissions.Count()},
 	        };
 	        return jsonReady;

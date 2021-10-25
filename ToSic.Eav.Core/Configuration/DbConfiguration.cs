@@ -18,11 +18,11 @@ namespace ToSic.Eav.Configuration
             set => _conStr = value;
         }
 
-        /// <inheritdoc />
-	    public string FeaturesHelpLink => _featuresHelpLink;
+     //   /// <inheritdoc />
+	    //public string FeaturesHelpLink => _featuresHelpLink;
 
-	    /// <inheritdoc />
-	    public string FeatureInfoLinkRoot => _featureInfoLinkRoot;
+	    ///// <inheritdoc />
+	    //public string FeatureInfoLinkRoot => _featureInfoLinkRoot;
 
 
 	    private static string _featuresHelpLink;

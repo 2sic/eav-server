@@ -10,16 +10,18 @@ namespace ToSic.Eav.DataSources.Queries
 {
     public class GlobalQueries
     {
-        private readonly Lazy<IRuntime> _runtimeLazy;
         public const string GlobalEavQueryPrefix = "Eav.Queries.Global.";
         public const string GlobalQueryPrefix = "Global.";
 
         #region Constructor / DI
 
-        public GlobalQueries(Lazy<IRuntime> runtimeLazy)
+        public GlobalQueries(Lazy<IRuntime> runtimeLazy, LogHistory logHistory)
         {
             _runtimeLazy = runtimeLazy;
+            _logHistory = logHistory;
         }
+        private readonly Lazy<IRuntime> _runtimeLazy;
+        private readonly LogHistory _logHistory;
 
         #endregion
 
@@ -51,7 +53,7 @@ namespace ToSic.Eav.DataSources.Queries
 
             var log = new Log($"{LogNames.Eav}.Global");
             log.Add("Load Global Queries");
-            History.Add(Types.Global.LogHistoryGlobalTypes, log);
+            _logHistory.Add(Types.GlobalTypes.LogHistoryGlobalTypes, log);
             var wrapLog = log.Call<List<IEntity>>();
 
             var runtime = _runtimeLazy.Value.Init(null);

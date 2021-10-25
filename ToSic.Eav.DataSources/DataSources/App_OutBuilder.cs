@@ -77,7 +77,7 @@ namespace ToSic.Eav.DataSources
                     () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState, $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
-                    () => BuildTypeStream(upstreamDataSource, typeName)[Constants.DefaultStreamName].List.ToImmutableArray(),
+                    () => BuildTypeStream(upstreamDataSource, typeName).List /*[Constants.DefaultStreamName].List*/.ToImmutableArray(),
                     true);
                 _out.Add(typeName, deferredStream);
             }

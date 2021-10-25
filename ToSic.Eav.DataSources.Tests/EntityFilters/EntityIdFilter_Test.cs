@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
             var ll = filtered.ListForTests();
 
             //Assert.AreEqual(0, dicList.Count, "Should return 0 items");
-            Assert.AreEqual(0, ll.Count, "Should return 0 items");
+            Assert.AreEqual(0, ll.Count(), "Should return 0 items");
         }
 
         [TestMethod]
@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
 
             var ll = filtered.ListForTests();
             Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
-            Assert.AreEqual(4, ll.Count, "Count after filtering");
+            Assert.AreEqual(4, ll.Count(), "Count after filtering");
         }
 
         [TestMethod]
@@ -64,7 +64,7 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
 
             var ll = filtered.ListForTests();
             Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
-            Assert.AreEqual(4, ll.Count, "Count after filtering");
+            Assert.AreEqual(4, ll.Count(), "Count after filtering");
         }
 
         [TestMethod]

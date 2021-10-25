@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc;
 
@@ -53,7 +54,7 @@ namespace ToSic.Eav.Apps.Parts
             // must get app from DB directly, not from cache, so no State.Get(...)
             var appState = RepositoryLoader.AppState(appId, false);
 
-            new AppInitializer(_appManager.ServiceProvider)
+            _appManager.ServiceProvider.Build<AppInitializer>() //(_appManager.ServiceProvider)
                 .Init(appState, Log)
                 .InitializeApp(appName);
         }

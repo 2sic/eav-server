@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Core.Tests.Types
@@ -36,7 +37,12 @@ namespace ToSic.Eav.Core.Tests.Types
         protected ContentTypeAttribute AttDef(ValueTypes type, string input, string name, string niceName = null, string description = null, string defaultValue = null)
         {
             var correctedInput = type.ToString().ToLowerInvariant() + "-" + input;
-            var attDef = new ContentTypeAttribute(AppId, name, niceName, type.ToString(), correctedInput, description, true, defaultValue);
+            var attDef = new ContentTypeAttribute(AppId, name, /* niceName, */ type.ToString(), /* correctedInput, description, true, defaultValue, */
+                attributeMetadata: new List<IEntity>
+                {
+                    AttDefBuilder.GenerateAttributeMetadata(null /* TODO: NOW NEEDS GlobalTypes, but tests not updated */, AppId, niceName, description, true,
+                        HelpersToRefactor.SerializeValue(defaultValue), correctedInput)
+                });
             return attDef;
         }
     }

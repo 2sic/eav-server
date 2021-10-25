@@ -171,7 +171,7 @@ namespace ToSic.Eav.Apps.Parts
                     dataSource[QueryConstants.VisualDesignerData] = dataSource[QueryConstants.VisualDesignerData].ToString(); // serialize this JSON into string
 
                 if (entityId != null)
-                    Parent.Entities.UpdateParts(Convert.ToInt32(entityId), dataSource);
+                    Parent.Entities.UpdateParts(System.Convert.ToInt32(entityId), dataSource);
                 // Add new DataSource
                 else
                 {

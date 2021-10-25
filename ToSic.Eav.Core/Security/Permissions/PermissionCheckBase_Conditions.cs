@@ -65,9 +65,9 @@ namespace ToSic.Eav.Security
         /// Verify if the permission refers to this user
         /// Note that this only works if the feature is enabled
         /// </summary>
-        private static bool VerifyUserIsThisUser(string identity, IUser user)
+        private bool VerifyUserIsThisUser(string identity, IUser user)
         {
-            if (!Features.Enabled(FeatureIds.PermissionCheckUserId)) return false;
+            if (!_dependencies.Features.Enabled(FeatureIds.PermissionCheckUserId)) return false;
             return identity == user.Guid.ToString();
         }
 
@@ -78,9 +78,9 @@ namespace ToSic.Eav.Security
         /// <param name="identity"></param>
         /// <param name="user"></param>
         /// <returns></returns>
-        private static bool VerifyUserIsInGroup(string identity, IUser user)
+        private bool VerifyUserIsInGroup(string identity, IUser user)
         {
-            if (!Features.Enabled(FeatureIds.PermissionCheckGroups)) return false;
+            if (!_dependencies.Features.Enabled(FeatureIds.PermissionCheckGroups)) return false;
 
             if (string.IsNullOrWhiteSpace(identity)) return false;
 

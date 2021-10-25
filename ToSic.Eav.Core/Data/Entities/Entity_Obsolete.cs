@@ -3,6 +3,7 @@
 #if NETFRAMEWORK
 using System;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data
 {
@@ -33,7 +34,7 @@ namespace ToSic.Eav.Data
 
         [PrivateApi]
         [Obsolete("Deprecated. Do not use any more, as it cannot reliably resolve hyperlinks.")]
-        public new TVal GetBestValue<TVal>(string name) => ChangeTypeOrDefault<TVal>(GetBestValue(name));
+        public new TVal GetBestValue<TVal>(string name) => GetBestValue(name).ConvertOrDefault<TVal>();
 
 
         [PrivateApi]
@@ -45,7 +46,7 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
         public TVal GetBestValue<TVal>(string name, string[] languages, bool resolveHyperlinks)
-            => ChangeTypeOrDefault<TVal>(GetBestValue(name, languages, resolveHyperlinks));
+            => GetBestValue(name, languages, resolveHyperlinks).ConvertOrDefault<TVal>();
 
         // 2020-12-15 Deprecated this
         [PrivateApi]
@@ -64,7 +65,7 @@ namespace ToSic.Eav.Data
 
         [PrivateApi]
         [Obsolete("was probably never in use anywhere, but we'll leave it alive to not break existing code")]
-        public T Value<T>(string field, bool resolve) => ChangeTypeOrDefault<T>(Value(field));
+        public T Value<T>(string field, bool resolve) => Value(field).ConvertOrDefault<T>();
 
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using ToSic.Eav.Conversion;
 
 namespace ToSic.Eav.DataSources.Debug
 {
@@ -16,13 +15,19 @@ namespace ToSic.Eav.DataSources.Debug
         
         
         public bool Error = false;
+        /// <summary>
+        /// This object contains error data - usually as an IEntity. 
+        /// </summary>
+        /// <remarks>
+        /// Before sending in a web-api it must be converted, but the converter is not available in the DataSources project, so it must be handled at API level
+        /// </remarks>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public IDictionary<string, object> ErrorData;
+        public object /*IDictionary<string, object>*/ ErrorData;
         
         [JsonIgnore]
         protected readonly IDataStream Stream;
 
-        public StreamInfo(IDataStream stream, IDataTarget target, string inName, IEntitiesTo<IDictionary<string, object>> errorConverter)
+        public StreamInfo(IDataStream stream, IDataTarget target, string inName)
         {
             try
             {
@@ -33,12 +38,12 @@ namespace ToSic.Eav.DataSources.Debug
                 if (stream is ConnectionStream conStream1) SourceOut = conStream1.Connection.SourceStream;
                 else
                     foreach (var outStm in stream.Source.Out)
-                        if (outStm.Value == stream) // || (stream is ConnectionStream conStream && conStream.Connection.SourceStream == outStm.Key))
+                        if (outStm.Value == stream)
                             SourceOut = outStm.Key;
 
                 var firstItem = Stream.List?.FirstOrDefault();
                 Error = firstItem?.Type?.Name == DataSourceErrorHandling.ErrorType;
-                if (Error) ErrorData = errorConverter.Convert(firstItem);
+                if (Error) ErrorData = firstItem; // errorConverter.Convert(firstItem);
             }
             catch
             {

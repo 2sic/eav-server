@@ -34,6 +34,21 @@ namespace ToSic.Eav.DataSources
 		IDataStream this[string outName] { get; }
 
         /// <summary>
+        /// Gets the Out-Stream with specified Name and allowing some error handling if not found.
+        /// </summary>
+        /// <param name="name">The desired stream name. If empty, will default to the default stream.</param>
+        /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+        /// <param name="nullIfNotFound">In case the stream `name` isn't found, will return null. Ideal for chaining with ??</param>
+        /// <param name="emptyIfNotFound">In case the stream `name` isn't found, will return an empty stream. Ideal for using LINQ directly.</param>
+        /// <returns>an <see cref="IDataStream"/> of the desired name</returns>
+        /// <exception cref="NullReferenceException">if the stream does not exist and `nullIfNotFound` is false</exception>
+        /// <remarks>
+        /// 1. Added in 2sxc 12.05
+        /// 1. for more in-depth checking if a stream exists, you can access the <see cref="Out"/> which is an IDictionary
+        /// </remarks>
+        IDataStream GetStream(string name = null, string noParamOrder = Parameters.Protector, bool nullIfNotFound = false, bool emptyIfNotFound = false);
+
+        /// <summary>
         /// The items in the data-source - to be exact, the ones in the Default stream.
         /// </summary>
         /// <returns>A list of <see cref="IEntity"/> items in the Default stream.</returns>

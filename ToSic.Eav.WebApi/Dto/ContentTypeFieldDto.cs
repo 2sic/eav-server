@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi.Dto
@@ -13,7 +14,7 @@ namespace ToSic.Eav.WebApi.Dto
         public string StaticName { get; set; }
         public bool IsTitle { get; set; }
         public int AttributeId { get; set; }
-        public IDictionary<string, IDictionary<string, object>> Metadata { get; set; }
+        public IDictionary<string, EavLightEntity> Metadata { get; set; }
         public InputTypeInfo InputTypeConfig { get; set; }
 
         public HasPermissionsDto Permissions { get; set; }
