@@ -199,8 +199,6 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public SerializationConfiguration()
 		{
-            //OutIsDynamic = true;
-            
             // Basic system properties
             ConfigMask(IncludeIdKey, $"[Settings:{IncludeIdKey}]");
             ConfigMask(IncludeGuidKey, $"[Settings:{IncludeGuidKey}]");
@@ -292,7 +290,7 @@ namespace ToSic.Eav.DataSources
                 SerializeTitle = TryParseIncludeRule(IncludeRelationshipTitle)
             };
 
-            var decorator = new EntitySerializationDecorator()
+            var decorator = new EntitySerializationDecorator
             {
                 RemoveNullValues = dropNullValues,
                 RemoveZeroValues = dropZeroValues,
@@ -304,44 +302,18 @@ namespace ToSic.Eav.DataSources
                 SerializeMetadata = mdSer,
                 SerializeRelationships = relSer,
 
+                // id, title, guid
+                SerializeId = id,
+                SerializeTitle = title,
+                SerializeGuid = guid,
+
+                // dates
+                SerializeCreated = created,
+                SerializeModified = modified
             };
-            decorator.SerializeId = id;
-            decorator.SerializeTitle = title;
-            decorator.SerializeGuid = guid;
-            
-            // dates
-            decorator.SerializeCreated = created;
-            decorator.SerializeModified = modified;
 
-            var result = before.Select(selector: e =>
-            {
-                var newEntity = (IEntity)new EntityDecorator12<EntitySerializationDecorator>(e, decorator);
-                //var newEntity = new EntityWithSerialization(e)
-                //{
-                //    RemoveNullValues = dropNullValues,
-                //    RemoveZeroValues = dropZeroValues,
-                //    RemoveEmptyStringValues = dropEmptyStringValues,
-                //    RemoveBoolFalseValues = dropFalseValues,
-
-                //    // Metadata & Relationships
-                //    SerializeMetadataFor = mdForSer,
-                //    SerializeMetadata = mdSer,
-                //    SerializeRelationships = relSer,
-                //};
-
-                //if (id != null) newEntity.SerializeId = id;
-                //if (title != null) newEntity.SerializeTitle = title;
-                //if (guid != null) newEntity.SerializeGuid = guid;
-                
-                //// dates
-                //if (created != null) newEntity.SerializeCreated = created;
-                //if (modified != null) newEntity.SerializeModified = modified;
-
-                //// WIP: add decorator
-                //newEntity.Decorators.Add(decorator);
-
-                return newEntity;
-            });
+            var result = before
+                .Select(e => (IEntity)new EntityDecorator12<EntitySerializationDecorator>(e, decorator));
 
             return wrapLog("modified", result.ToImmutableList());
         }
