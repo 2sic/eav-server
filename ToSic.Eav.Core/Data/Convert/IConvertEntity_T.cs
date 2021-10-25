@@ -18,34 +18,43 @@ namespace ToSic.Eav.Data
         /// <remarks>
         /// Added v11.13
         /// </remarks>
-        [WorkInProgressApi("Exact name not final yet")]
+        [PrivateApi("Exact name / functionality not final yet")]
         int MaxItems { get; set; }
 
         /// <summary>
         /// Include the entity Guid in the conversion
         /// </summary>
+        [PrivateApi("Exact name / functionality not final yet, but this may have leaked to public use, not sure")]
         bool WithGuid { get; set; }
 
         /// <summary>
         /// Include publishing information (draft etc.) in the conversion
         /// </summary>
+        [PrivateApi("Exact name / functionality not final yet, but this may have leaked to public use, not sure")]
         bool WithPublishing { get; }
 
-        ///// <summary>
-        ///// Include metadata for-information
-        ///// </summary>
-        //[PrivateApi]
-        //bool WithMetadataFor { get; }
-
+        /// <summary>
+        /// Settings to configure the For-serialization
+        /// </summary>
+        /// <remarks>
+        /// Added in 12.05, was never public
+        /// </remarks>
         [PrivateApi]
         ISubEntitySerialization MetadataFor { get; }
-        
+
+        /// <summary>
+        /// Settings to configure the Metadata-serialization
+        /// </summary>
+        /// <remarks>
+        /// Added in 12.05, was never public
+        /// </remarks>
         [PrivateApi]
         ISubEntitySerialization Metadata { get; }
 
         /// <summary>
         /// Include the title in a special field _Title
         /// </summary>
+        [PrivateApi("this is really internal, and will be removed some day")]
         bool WithTitle { get; }
 
         /// <summary>
@@ -57,21 +66,8 @@ namespace ToSic.Eav.Data
         /// Ensure all settings are so it includes guids etc.
         /// This is so the serializable information is useful for admin UIs
         /// </summary>
+        [PrivateApi("Internal use only")]
         void ConfigureForAdminUse();
-
-        ///// <summary>
-        ///// Return an list of converted entities, ready to serialize
-        ///// </summary>
-        ///// <remarks>
-        /////     note that this could be in use on webAPIs and scripts
-        /////     so even if it looks un-used, it must stay available
-        ///// </remarks>
-        //IEnumerable<TResult> Convert(IEnumerable<IEntity> entities);
-
-        ///// <summary>
-        ///// Return an converted, serializable entity
-        ///// </summary>
-        //TResult Convert(IEntity entity);
-
+        
     }
 }
