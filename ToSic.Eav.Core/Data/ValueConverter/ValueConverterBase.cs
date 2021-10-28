@@ -20,8 +20,12 @@ namespace ToSic.Eav.Data
         public static bool CouldBeReference(string reference)
         {
             if (string.IsNullOrWhiteSpace(reference)) return false;
+            // must contain ":"
             if (!reference.Contains(Separator)) return false;
-            if (reference.Length < 6) return false; // minimum "page|file:number"
+            // Avoid false positives on full paths
+            if (reference.Contains("/") || reference.Contains("\\")) return false;
+            // minimum "page:#" or "file:#"
+            if (reference.Length < 6) return false; 
             return true;
         }
         

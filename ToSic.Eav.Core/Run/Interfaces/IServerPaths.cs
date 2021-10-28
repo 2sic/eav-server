@@ -23,5 +23,7 @@ namespace ToSic.Eav.Run
         //string FullSystemPath(string virtualPath);
 
         string FullContentPath(string virtualPath);
+
+        string FullPathOfReference(string fileReference);
     }
 }

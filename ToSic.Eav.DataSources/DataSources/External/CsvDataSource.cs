@@ -5,11 +5,10 @@ using System.Linq;
 using CsvHelper;
 using System.IO;
 using ToSic.Eav.Context;
-#if !NETSTANDARD
-using System.Web;
-#endif
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Run;
 using ContentTypeBuilder = ToSic.Eav.Data.Builder.ContentTypeBuilder;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -30,8 +29,6 @@ namespace ToSic.Eav.DataSources
         HelpLink = "https://r.2sxc.org/DsCsv")]
     public class CsvDataSource : ExternalData
     {
-        private readonly IUser _user;
-
         /// <inheritdoc/>
         [PrivateApi]
         public override string LogId => "DS.CSV";
@@ -50,22 +47,25 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Full path to the CSV file. 
         /// </summary>
-        public string ServerFilePath
+        public string GetServerPath(string csvPath)
         {
-            get
-            {
-#if NETSTANDARD
-                return "Not Yet Implemented in .net standard #TodoNetStandard";
-                // should be easy to fix, just have to inject IEnvironment or something that has MapPath
-#else
-                // TODO: STV - discuss what we should do here
-                // Should we allow c:\ paths? or is that a security risk?
-                // How can we tell if we should MapPath or not? look for a ":" or is there an api for it?
-                // Do we allow relative paths like "../" - I presume no...
+            var wrapLog = Log.Call<string>($"csvPath: {csvPath}");
 
-                return HttpContext.Current != null ? HttpContext.Current.Server.MapPath(FilePath) : FilePath;
-#endif
+            // Handle cases where it's a "file:72"
+            if (ValueConverterBase.CouldBeReference(csvPath))
+            {
+                Log.Add($"This seems to be a reference: '{csvPath}'");
+                csvPath = _serverPaths.FullPathOfReference(csvPath);
+                Log.Add($"Resolved to '{csvPath}'");
+                return wrapLog(csvPath, csvPath);
             }
+
+            Log.Add("Doesn't seem to be a reference, will use as is");
+
+            // if it's a full path, use that, otherwise do map-path assuming it must be in the app
+            // this is for backward compatibility, because old samples used "[App:Path]/something.csv" which returns a relative path
+            var result = csvPath.Contains(":") ? csvPath : _serverPaths.FullContentPath(csvPath);
+            return wrapLog(result, result);
         }
 
 
@@ -114,9 +114,10 @@ namespace ToSic.Eav.DataSources
 
 
         [PrivateApi]
-        public CsvDataSource(IUser user)
+        public CsvDataSource(IUser user, IServerPaths serverPaths)
         {
             _user = user;
+            _serverPaths = serverPaths;
             Provide(GetList);
 
             ConfigMask(FilePathKey, "[Settings:FilePath]");
@@ -125,6 +126,9 @@ namespace ToSic.Eav.DataSources
             ConfigMask(IdColumnNameKey, "[Settings:IdColumnName]", cacheRelevant: false);
             ConfigMask(TitleColumnNameKey, "[Settings:TitleColumnName]", cacheRelevant: false);
         }
+        private readonly IUser _user;
+        private readonly IServerPaths _serverPaths;
+
 
         private ImmutableArray<IEntity> GetList()
         {
@@ -133,7 +137,7 @@ namespace ToSic.Eav.DataSources
 
             var entityList = new List<IEntity>();
 
-            var csvPath = ServerFilePath;
+            var csvPath = GetServerPath(FilePath);
             Log.Add($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
 
             if (string.IsNullOrWhiteSpace(csvPath))
@@ -160,7 +164,7 @@ namespace ToSic.Eav.DataSources
                 "A common mistake is to use the wrong delimiter (comma / semi-colon) in which case this may also fail. ";
 
             var firstRun = true;
-            using (var stream = new StreamReader(ServerFilePath))
+            using (var stream = new StreamReader(csvPath))
             using (var parser = new CsvReader(stream))
             {
                 parser.Configuration.Delimiter = Delimiter;
@@ -224,7 +228,7 @@ namespace ToSic.Eav.DataSources
                     for (var i = 0; i < parser.FieldHeaders.Length; i++)
                         entityValues.Add(parser.FieldHeaders[i], fields[i]);
 
-                    entityList.Add(new Data.Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), entityValues, titleColName));
+                    entityList.Add(new Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), entityValues, titleColName));
                 }
             }
             return wrapLog($"{entityList.Count}", entityList.ToImmutableArray());
