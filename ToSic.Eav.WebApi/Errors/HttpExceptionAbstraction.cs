@@ -1,6 +1,6 @@
 ﻿using System.Net;
-using System.Net.Http;
 #if NETFRAMEWORK
+using System.Net.Http;
 using BaseType = System.Web.Http.HttpResponseException;
 #else
 using BaseType = System.Exception;
@@ -17,7 +17,7 @@ namespace ToSic.Eav.WebApi.Errors
                 ReasonPhrase = title ?? "Error in 2sxc Content API - not allowed"
             })
 #else
-            : base("Error " + statusCode.ToString() + " " + message)
+            : base("Error " + statusCode + " " + message)
 #endif
 
         {
@@ -26,6 +26,6 @@ namespace ToSic.Eav.WebApi.Errors
         }
 
         public int Status { get; set; } = 500;
-        public object Value { get; set; }
+        public string Value { get; set; }   // additional message, because sometimes we need to pick it up elsewhere
     }
 }

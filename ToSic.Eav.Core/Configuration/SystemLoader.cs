@@ -21,13 +21,13 @@ namespace ToSic.Eav.Configuration
 
         #region Constructor / DI
 
-        public SystemLoader(GlobalTypeLoader typeLoader, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
+        public SystemLoader(GlobalTypes globalTypes, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
         {
+            _globalTypes = globalTypes;
             _appsCache = appsCache;
             _features = features;
             _logHistory = logHistory;
             logHistory.Add(GlobalTypes.LogHistoryGlobalTypes, Log);
-            _typeLoader = typeLoader.Init(Log);
             _fingerprint = fingerprint;
             _runtime = runtime;
 
@@ -39,9 +39,9 @@ namespace ToSic.Eav.Configuration
 #pragma warning restore 618
         }
 
-        private readonly GlobalTypeLoader _typeLoader;
         private readonly IFingerprint _fingerprint;
         private readonly IRuntime _runtime;
+        private readonly GlobalTypes _globalTypes;
         private readonly IAppsCache _appsCache;
         private readonly IFeaturesInternal _features;
         private readonly LogHistory _logHistory;
@@ -63,9 +63,7 @@ namespace ToSic.Eav.Configuration
 #pragma warning restore 618
 
             // Build the cache of all system-types. Must happen before everything else
-            _typeLoader.BuildCache();
-            //Types.Global.TypeLoader = _typeLoader;
-            Types.GlobalTypes.TypeLoader = _typeLoader;
+            _globalTypes.StartUp(Log);
 
             // Now do a normal reload of configuration and features
             Reload();
