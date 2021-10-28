@@ -12,12 +12,19 @@ namespace ToSic.Eav.Types
     [PrivateApi]
     public class GlobalTypeLoader: HasLog<GlobalTypeLoader>
     {
-        private readonly IRuntime _runtime;
+        /// <summary>
+        /// Determines if the types have been fully loaded.
+        /// This is important because during loading some code may already try to access some types, in which case it should
+        /// be skipped. 
+        /// </summary>
+        public bool Ready = false;
 
         public GlobalTypeLoader(IRuntime runtime) : base("Eav.GlTLdr", initialMessage: "Start Loading")
         {
             _runtime = runtime;
         }
+        private readonly IRuntime _runtime;
+
 
 
         internal void BuildCache()
@@ -47,6 +54,7 @@ namespace ToSic.Eav.Types
 
             // make sure it's case insensitive...
             ByStaticName = codeTypes.ToImmutableDictionary(StringComparer.InvariantCultureIgnoreCase);
+            Ready = true;
             wrapLog("done");
         }
 
