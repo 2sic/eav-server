@@ -23,7 +23,11 @@ namespace ToSic.Eav.Core.Tests
                 //Trace.WriteLine("di configuration core");
                 sc.TryAddTransient<IValueConverter, MockValueConverter>();
                 sc.TryAddTransient<IRuntime, RuntimeUnknown>();
-                sc.TryAddTransient<IFingerprint, FingerprintUnknown>();
+                //sc.TryAddTransient<IFingerprint, FingerprintUnknown>();
+
+                sc
+                    .AddEavCorePlumbing()
+                    .AddEavCoreFallbackServices();
                 configure.Invoke(sc);   // call parent invoker if necessary (usually not relevant at core, as this is the top-level
             });
 

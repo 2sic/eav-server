@@ -40,6 +40,7 @@ namespace ToSic.Eav
                 .AddDataSources()
                 .AddEavWebApi()
                 .AddEavCore()
+                .AddEavCorePlumbing()
                 .AddEavCoreFallbackServices();
 
 
