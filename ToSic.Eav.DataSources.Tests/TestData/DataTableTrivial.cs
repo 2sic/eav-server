@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Core.Tests.LookUp;
-using ToSic.Eav.DataSources;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.DataSourceTests.TestData
 {
-    public class DataTableTrivial
+    public class DataTableTrivial: EavDataSourceTestBase
     {
-        private static readonly Dictionary<int, DataTable> _cachedDs = new Dictionary<int, DataTable>();
+        private static readonly Dictionary<int, DataTable> CachedDs = new Dictionary<int, DataTable>();
         
         public static DataTable Generate(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {
@@ -26,15 +25,17 @@ namespace ToSic.Eav.DataSourceTests.TestData
             });
             AddSemirandomTrivial(dataTable, itemsToGenerate, firstId);
 
-            var source = new DataTable(dataTable, "Person", modifiedField: PersonSpecs.FieldModifiedInternal)
-                .Init(LookUpTestData.AppSetAndRes());
+            var source = GetTestDataSource<DataTable>(LookUpTestData.AppSetAndRes())
+                .Setup(dataTable, "Person", modifiedField: PersonSpecs.FieldModifiedInternal)
+                //.Init(LookUpTestData.AppSetAndRes())
+                ;
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             source.List.LastOrDefault();
 
             if (useCacheForSpeed)
-                _cachedDs.Add(itemsToGenerate, source);
+                CachedDs.Add(itemsToGenerate, source);
             return source;
         }
 

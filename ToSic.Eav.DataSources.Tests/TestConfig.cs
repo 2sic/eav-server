@@ -9,7 +9,7 @@
 
         public static int AppForBigDataTests = 9;
 
-        public const string GlobalQueriesData = "..\\..\\..\\2sxc\\Src\\Data\\.data\\queries\\";//"Query\\.data\\";
+        public const string GlobalQueriesData = "..\\..\\..\\2sxc\\Src\\Data\\.data\\queries\\";
         public const string TestingPath = "testdata";
 
     }

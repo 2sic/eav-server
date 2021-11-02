@@ -6,12 +6,12 @@ using ToSic.Eav.DataSourceTests.TestData;
 namespace ToSic.Eav.DataSourceTests.LookUps
 {
     [TestClass]
-    public class LookUpsTest
+    public class LookUpsTest: EavDataSourceTestBase
     {
         [TestMethod]
         public void DataTargetValueProvider_General()
         {
-            var testSource = new EntityIdFilter();
+            var testSource = GetTestDataSource<EntityIdFilter>(); // new EntityIdFilter();
             testSource.EntityIds = "1001";  // needed to ensure 
             // Assemble a simple source-stream with demo data
             const int ItemsToGenerate = 499;

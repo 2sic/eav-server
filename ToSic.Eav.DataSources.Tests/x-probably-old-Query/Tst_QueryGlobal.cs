@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSourceTests.Query
             _queryBuilder = EavTestBase.Resolve<QueryBuilder>();
         }
 
-        private const int testQueryCount = 6;
+        private const int testQueryCount = 7;
 
         [ClassInitialize]
         public static void Config(TestContext context)

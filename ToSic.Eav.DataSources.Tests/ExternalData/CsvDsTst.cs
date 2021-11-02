@@ -4,13 +4,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
     // ReSharper disable once InconsistentNaming
-    public class CsvDsTst_RerunIfFailed
+    public class CsvDsTst_RerunIfFailed: EavDataSourceTestBase
     {
         private const int TestFileRowCount = 40;
 
@@ -93,14 +92,14 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             var sourceList = source.ListForTests().OrderBy(item => item.EntityId).ToList();
 
             // List
-            Assert.AreEqual(sourceList.Count(), TestFileRowCount, "Entity list has not the expected length.");
+            Assert.AreEqual(TestFileRowCount, sourceList.Count, "Entity list has not the expected length.");
 
             // Entities
-            for (var i = 0; i < sourceList.Count(); i++)
+            for (var i = 0; i < sourceList.Count; i++)
             {
                 var entity = sourceList.ElementAt(i);
 
-                Assert.AreEqual(TestFileColumnCount, entity.Attributes.Count(), "Entity " + i + ": Attributes do not match the columns in the file.");
+                Assert.AreEqual(TestFileColumnCount, entity.Attributes.Count, "Entity " + i + ": Attributes do not match the columns in the file.");
                 if (string.IsNullOrEmpty(source.IdColumnName))
                 {
                     Assert.AreEqual(i + 2, entity.EntityId, "Entity " + i + ": ID does not match.");
@@ -120,16 +119,16 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
 
         public static CsvDataSource CreateDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
         {
-            var source = EavTestBase.Resolve<CsvDataSource>();
+            var source = GetTestDataSource<CsvDataSource>(); // EavTestBase.Resolve<CsvDataSource>();
 
-            {
-                source.FilePath = filePath;
-                source.Delimiter = delimiter;
-                source.ContentType = contentType;
-                source.IdColumnName = idColumnName;
-                source.TitleColumnName = titleColumnName;
-                //source.ConfigurationProvider = DemoConfigs.AppSetAndRes()
-            };
+            source.FilePath = filePath;
+            source.Delimiter = delimiter;
+            source.ContentType = contentType;
+            source.IdColumnName = idColumnName;
+            source.TitleColumnName = titleColumnName;
+            //source.ConfigurationProvider = DemoConfigs.AppSetAndRes()
+
+
             return source.Init(LookUpTestData.AppSetAndRes());
         }
     }

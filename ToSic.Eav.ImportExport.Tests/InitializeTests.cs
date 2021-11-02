@@ -33,7 +33,11 @@ namespace ToSic.Eav.ImportExport.Tests
                 sc.TryAddTransient<IValueConverter, MockValueConverter>();
                 sc.TryAddTransient<IZoneMapper, MockZoneMapper>();
 
-                sc.AddEavCore();
+                sc
+                    .AddEavCore()
+                    .AddEavCorePlumbing()
+                    .AddEavCoreFallbackServices();
+
                 configure.Invoke(sc);
 
             }, optionalConnection);
