@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Full path to the CSV file. 
         /// </summary>
-        public string GetServerPath(string csvPath)
+        private string GetServerPath(string csvPath)
         {
             var wrapLog = Log.Call<string>($"csvPath: {csvPath}");
 
