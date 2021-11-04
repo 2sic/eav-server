@@ -146,7 +146,6 @@
     <Compile Include="Caches\CacheAllStreams_Test.cs" />
     <Compile Include="Caches\QuickCaches_Test.cs" />
     <Compile Include="DataSourceErrors.cs" />
-    <Compile Include="EavDataSourceTestBase.cs" />
     <Compile Include="DataSources\EntityIdFilterTest.cs" />
     <Compile Include="DataSources\EntityTypeFilterTest.cs" />
     <Compile Include="ExtensionsForTesting.cs" />
