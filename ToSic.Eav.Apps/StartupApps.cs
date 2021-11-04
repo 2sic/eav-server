@@ -61,6 +61,7 @@ namespace ToSic.Eav.Apps
             services.TryAddScoped<ExportListXml>();
             services.TryAddScoped<ImportListXml>();
             services.TryAddTransient<ExportImportValueConversion>();
+            services.TryAddTransient<XmlImportWithFiles.Dependencies>();
 
             return services;
         }

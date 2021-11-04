@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
+using ToSic.Sxc.Apps.ImportExport;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Repository.Efc.Tests
@@ -27,7 +26,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
             _zoneManager = Build<ZoneManager>();
         }
 
-        public static ILog Log = new Log("TstImA");
+        protected override void AddServices(IServiceCollection services)
+        {
+            services.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
+            services.AddTransient<XmlImportWithFiles, XmlImportFull>();
+        }
 
         //public const string BaseTestPath = @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
         #region Test Data
@@ -45,8 +48,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         };
 
-        // just a note: this is Portal 54 or something on Daniels test server, change it to your system if you want to run these tests!
-        public const int ZoneId = 2;
+        // Zone 5 is the /import-export on the eav-testing system
+        public const int ZoneId = 5;
 
         #endregion
         [TestMethod]
@@ -56,33 +59,22 @@ namespace ToSic.Eav.Repository.Efc.Tests
         }
 
         [TestMethod]
-        public void ImportApp_Tile()
-        {
-            ImportAnApp("tile");
-        }
+        public void ImportApp_Tile() => ImportAnApp("tile");
 
         [TestMethod]
-        public void DeleteApp_Qr()
-        {
-            DeleteAnApp(Apps["qr"].Guid);
-        }
+        public void DeleteApp_Qr() => DeleteAnApp(Apps["qr"].Guid);
+
         [TestMethod]
-        public void ImportApp_Qr()
-        {
-            ImportAnApp("qr");
-            Console.Write("resolves: " + Factory.CountResolves);
-            Console.Write(string.Join("\n", Factory.ResolvesList));
-        }
+        public void ImportApp_Qr() => ImportAnApp("qr");
 
         internal void ImportAnApp(string name)
-        { 
-
+        {
             // to be sure, clean up first
             DeleteAnApp(Apps[name].Guid);
 
             var helper = (ImportExportEnvironmentMock)Build<IImportExportEnvironment>();
             var baseTestPath = helper.BasePath;
-            var testFileName = baseTestPath + @"Import-Packages\" + Apps[name].Zip;// 2sxcApp_Tiles_01.02.00.zip";
+            var testFileName = baseTestPath + @"Import-Packages\" + Apps[name].Zip;
 
             bool succeeded;
 
