@@ -10,8 +10,10 @@ namespace ToSic.Testing.Performance.json
 {
     public class GenerateJsonForApps: Efc11TestBase
     {
-
-        public int TestAppId = 9;// app on 2dms DNN previously - the tractor app on http://2sexycontent.2dm.2sic/owner-filter/tractor-app  = 261;
+        public const int EmptyAppId = 3010;
+        public const int HugeAppWith4000Items = 9;
+        public const int OldTestAppOn2dmDnn = 269; // app on 2dms DNN previously - the tractor app on http://2sexycontent.2dm.2sic/owner-filter/tractor-app;
+        public int TestAppId = EmptyAppId;
         public void GenerateJsonForApp261()
         {
             GenerateJsonForAllEntitiesOfApp(TestAppId);

@@ -13,18 +13,18 @@ namespace ToSic.Eav.Serialization
 {
     public abstract class SerializerBase: HasLog, IDataSerializer
     {
-        private readonly GlobalTypes _globalTypes;
-
         #region Constructor / DI
 
         /// <summary>
         /// Constructor for inheriting classes
         /// </summary>
-        protected SerializerBase(ITargetTypes metadataTargets, GlobalTypes globalTypes, string logName): base(logName)
+        protected SerializerBase(ITargetTypes metadataTargets, IGlobalTypes globalTypes, string logName): base(logName)
         {
             _globalTypes = globalTypes;
             MetadataTargets = metadataTargets;
         }
+        private readonly IGlobalTypes _globalTypes;
+
         public ITargetTypes MetadataTargets { get; }
 
 

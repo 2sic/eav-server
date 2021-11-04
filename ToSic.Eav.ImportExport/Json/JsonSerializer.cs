@@ -12,9 +12,9 @@ namespace ToSic.Eav.ImportExport.Json
         /// <summary>
         /// Initialize with the correct logger name
         /// </summary>
-        public JsonSerializer(ITargetTypes metadataTargets, GlobalTypes globalTypes) : this(metadataTargets, globalTypes, "Jsn.Serlzr") {}
+        public JsonSerializer(ITargetTypes metadataTargets, IGlobalTypes globalTypes) : this(metadataTargets, globalTypes, "Jsn.Serlzr") {}
 
-        protected JsonSerializer(ITargetTypes metadataTargets, GlobalTypes globalTypes, string logName): base(metadataTargets, globalTypes, logName) { }
+        protected JsonSerializer(ITargetTypes metadataTargets, IGlobalTypes globalTypes, string logName): base(metadataTargets, globalTypes, logName) { }
     }
 
     internal static class StringHelpers

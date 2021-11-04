@@ -12,7 +12,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSources.Tests.Query
 {
     [TestClass]
-    public class Tst_QueryBasic: EavTestBase
+    public class Tst_QueryBasic: TestBaseDiEavFullAndDb
     {
         private readonly JsonSerializer _jsonSerializer;
         private readonly QueryManager _queryManager;
@@ -20,9 +20,9 @@ namespace ToSic.Eav.DataSources.Tests.Query
 
         public Tst_QueryBasic()
         {
-            _jsonSerializer = Resolve<JsonSerializer>();
-            _queryManager = Resolve<QueryManager>();
-            _queryBuilder = Resolve<QueryBuilder>();
+            _jsonSerializer = Build<JsonSerializer>();
+            _queryManager = Build<QueryManager>();
+            _queryBuilder = Build<QueryBuilder>();
         }
 
         private const int basicId = 765;

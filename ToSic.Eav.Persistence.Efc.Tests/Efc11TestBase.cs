@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Testing.Shared;
 

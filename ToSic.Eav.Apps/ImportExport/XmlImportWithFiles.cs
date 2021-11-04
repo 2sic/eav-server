@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	{
         public class Dependencies
         {
-            public GlobalTypes GlobalTypes { get; }
+            public IGlobalTypes GlobalTypes { get; }
 
             public Dependencies(
                 Lazy<Import> importerLazy,
@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 SystemManager systemManager,
                 IAppStates appStates,
                 IAppsCache appsCache,
-                GlobalTypes globalTypes
+                IGlobalTypes globalTypes
                 )
             {
                 GlobalTypes = globalTypes;
@@ -38,8 +38,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 _environment = importExportEnvironment;
                 _metaTargetTypes = metaTargetTypes;
                 AppStates = appStates;
-                SystemManager = systemManager;//.Init(Log);
-                //_environment.LinkLog(Log);
+                SystemManager = systemManager;
             }
             internal readonly IAppsCache AppsCache;
             internal readonly Lazy<Import> _importerLazy;

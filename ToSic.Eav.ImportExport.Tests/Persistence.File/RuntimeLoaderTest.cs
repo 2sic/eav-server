@@ -17,10 +17,10 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         public RuntimeLoaderTest()
         {
             _runtime = EavTestBase.Resolve<IRuntime>();
-            _globalTypes = EavTestBase.Resolve<GlobalTypes>();
+            _globalTypes = EavTestBase.Resolve<IGlobalTypes>();
         }
         private readonly IRuntime _runtime;
-        private readonly GlobalTypes _globalTypes;
+        private readonly IGlobalTypes _globalTypes;
 
         private int expectedTypesSysAndJson = 5;
         [Ignore("currently work in progress - as sys/json types keep changing and testing isn't updated yet")]

@@ -7,7 +7,7 @@ using ToSic.Testing.Shared;
 
 namespace ToSic.Testing.Performance
 {
-    class Program : Efc11TestBase
+    class Program // : Efc11TestBase
     {
         //public Program(IServiceProvider serviceProvider) : base(serviceProvider)
         //{

@@ -18,7 +18,7 @@ namespace ToSic.Eav.Persistence.Efc
             IAppInitializedChecker initializedChecker,
             IAppStates appStates,
             LogHistory logHistory,
-            GlobalTypes globalTypes
+            IGlobalTypes globalTypes
             ) : base("Db.Efc11")
         {
             ServiceProvider = serviceProvider;
@@ -42,7 +42,7 @@ namespace ToSic.Eav.Persistence.Efc
         private readonly IAppInitializedChecker _initializedChecker;
         private readonly IAppStates _appStates;
         private readonly LogHistory _logHistory;
-        private readonly GlobalTypes _globalTypes;
+        private readonly IGlobalTypes _globalTypes;
 
         #endregion
     }

@@ -9,7 +9,7 @@ namespace ToSic.Eav.ImportExport.Json
 {
     public class JsonBundleSerializer: JsonSerializer
     {
-        public JsonBundleSerializer(ITargetTypes metadataTargets, GlobalTypes globalTypes) : base(metadataTargets, globalTypes, "Ser.Bundle") { }
+        public JsonBundleSerializer(ITargetTypes metadataTargets, IGlobalTypes globalTypes) : base(metadataTargets, globalTypes, "Ser.Bundle") { }
 
         public string Serialize(BundleEntityWithAssets bundle, int metadataDepth)
         {

@@ -12,7 +12,7 @@ using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 {
-    public class RelationshipTestBase: EavTestBase
+    public class RelationshipTestBase: TestBaseDiEavFullAndDb
     {
         #region Const Values for testing
 
@@ -93,8 +93,8 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
         protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, ILookUpEngine config = null)
         {
-            var baseDs = Resolve<DataSourceFactory>().GetPublishing(new AppIdentity(zone, app), configProvider: config);
-            var appDs = Resolve<DataSourceFactory>().GetDataSource<App>(baseDs);
+            var baseDs = Build<DataSourceFactory>().GetPublishing(new AppIdentity(zone, app), configProvider: config);
+            var appDs = Build<DataSourceFactory>().GetDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.
             Assert.IsTrue(appDs.ListForTests().Count() > 20, "appDs.List.Count() > 20");
@@ -110,7 +110,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
             Assert.IsTrue(stream.ListForTests().Any(), "stream.List.Count() > 0");
 
-            var relFilt = Resolve<DataSourceFactory>().GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
+            var relFilt = Build<DataSourceFactory>().GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
                 appDs.Configuration.LookUpEngine/*, parentLog: Log*/);
             relFilt.AttachForTests(Constants.DefaultStreamName, stream);
             return relFilt;

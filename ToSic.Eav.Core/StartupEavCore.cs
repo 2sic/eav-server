@@ -46,7 +46,10 @@ namespace ToSic.Eav
             // Other...
             services.TryAddTransient<AttributeBuilder>();
 
-            services.TryAddSingleton<GlobalTypes>();    // this must be singleton, could cause trouble otherwise
+            // The GlobalTypes must be singleton, could cause trouble otherwise
+            //services.TryAddSingleton<GlobalTypes>();    
+            services.TryAddSingleton<IGlobalTypes, GlobalTypes>();//(x => x.GetRequiredService<GlobalTypes>());
+
 
             // Permissions helper
             services.TryAddTransient<PermissionCheckBase.Dependencies>();

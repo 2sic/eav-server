@@ -11,8 +11,15 @@ namespace ToSic.Testing.Shared
     {
         protected TestBaseDiEavFullAndDb()
         {
-            // this will run after the base contructor, which configures DI
-            Build<IDbConfiguration>().ConnectionString = DbConnectionString;
+            // this will run after the base constructor, which configures DI
+            var dbConfiguration = Build<IDbConfiguration>();
+            dbConfiguration.ConnectionString = DbConnectionString;
+
+            var globalConfig = Build<IGlobalConfiguration>();
+            globalConfig.DataFolder = "c:\\Projects\\2sxc\\2sxc\\Src\\Data\\";
+
+            // Make sure global types are loaded
+            Build<SystemLoader>().StartUp();
         }
 
         protected virtual string DbConnectionString => TestConstants.ConStr;

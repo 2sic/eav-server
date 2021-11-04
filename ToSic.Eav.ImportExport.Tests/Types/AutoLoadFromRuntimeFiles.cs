@@ -10,9 +10,9 @@ namespace ToSic.Eav.ImportExport.Tests.Types
     {
         public AutoLoadFromRuntimeFiles()
         {
-            _globalTypes = EavTestBase.Resolve<GlobalTypes>();
+            _globalTypes = EavTestBase.Resolve<IGlobalTypes>();
         }
-        private readonly GlobalTypes _globalTypes;
+        private readonly IGlobalTypes _globalTypes;
 
         public Tuple<int, int> TypesInFilesRuntime = Tuple.Create(50, 65); // use range
 

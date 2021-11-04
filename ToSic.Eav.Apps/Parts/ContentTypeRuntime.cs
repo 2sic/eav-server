@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
     public class ContentTypeRuntime : PartOf<AppRuntime, ContentTypeRuntime>
     {
 
-        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy, GlobalTypes globalTypes) : base("RT.ConTyp")
+        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy, IGlobalTypes globalTypes) : base("RT.ConTyp")
         {
             _lazyMetadataAppRuntime = lazyMetadataAppRuntime;
             _appFileSystemLoaderLazy = appFileSystemLoaderLazy;
@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps.Parts
         }
         private readonly Lazy<AppRuntime> _lazyMetadataAppRuntime;
         private readonly Lazy<IAppFileSystemLoader> _appFileSystemLoaderLazy;
-        private readonly GlobalTypes _globalTypes;
+        private readonly IGlobalTypes _globalTypes;
 
         public IEnumerable<IContentType> All => Parent.AppState.ContentTypes;
 

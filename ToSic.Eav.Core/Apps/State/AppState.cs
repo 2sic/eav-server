@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps
     {
 
         [PrivateApi("constructor, internal use only")]
-        internal AppState(IAppStates appStates, GlobalTypes globalTypes, IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
+        internal AppState(IAppStates appStates, IGlobalTypes globalTypes, IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
         {
             _appStates = appStates;
             _globalTypes = globalTypes;
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps
         [PrivateApi("Accessor to other apps - replaces the static State object")]
         private readonly IAppStates _appStates;
 
-        private readonly GlobalTypes _globalTypes;
+        private readonly IGlobalTypes _globalTypes;
 
 
         /// <summary>

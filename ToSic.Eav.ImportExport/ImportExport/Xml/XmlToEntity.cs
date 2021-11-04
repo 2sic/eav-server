@@ -21,7 +21,7 @@ namespace ToSic.Eav.ImportExport.Xml
         }
 
         public int AppId { get; }
-	    public XmlToEntity(GlobalTypes globalTypes, int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang, ILog parentLog)
+	    public XmlToEntity(IGlobalTypes globalTypes, int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang, ILog parentLog)
             : base("Imp.XmlEnt", parentLog, "init", "XmlToEntity")
 	    {
 	        AppId = appId;
@@ -104,7 +104,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
         //private readonly List<string> _relevantSrcLangsByPriority;
 	    private readonly List<TargetLanguageToSourceLanguage> _envLangs;
-        private readonly GlobalTypes _globalTypes;
+        private readonly IGlobalTypes _globalTypes;
         private readonly string _envDefLang;
         private readonly string _srcDefLang;
         
