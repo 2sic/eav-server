@@ -5,13 +5,13 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSourceTests.Paging
+namespace ToSic.Eav.DataSourceTests
 {
     // Todo
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class Paging_Test: TestBaseDiEavFullAndDb
+    public class PagingTest: TestBaseDiEavFullAndDb
     {
         private readonly int seedId = 1001;
 
@@ -19,11 +19,11 @@ namespace ToSic.Eav.DataSourceTests.Paging
         public void Paging_BasicPagingPg1On1000Items()
         {
             var ds = CreatePagingForTesting(1000);
-            var pgstream = ds["Paging"].ListForTests().First();
-            Assert.AreEqual(1.ToDecimal(), pgstream.Value<int>("PageNumber"));
-            Assert.AreEqual(10.ToDecimal(), pgstream.Value<int>("PageSize"));
-            Assert.AreEqual(100.ToDecimal(), pgstream.Value<int>("PageCount"));
-            Assert.AreEqual(1000.ToDecimal(), pgstream.Value<int>("ItemCount"));
+            var pgStream = ds["Paging"].ListForTests().First();
+            Assert.AreEqual(1.ToDecimal(), pgStream.Value<int>("PageNumber"));
+            Assert.AreEqual(10.ToDecimal(), pgStream.Value<int>("PageSize"));
+            Assert.AreEqual(100.ToDecimal(), pgStream.Value<int>("PageCount"));
+            Assert.AreEqual(1000.ToDecimal(), pgStream.Value<int>("ItemCount"));
 
             var result = ds.ListForTests();
             Assert.AreEqual(10, result.Count());

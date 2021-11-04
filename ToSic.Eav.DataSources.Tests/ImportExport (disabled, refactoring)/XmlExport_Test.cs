@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ToSic.Eav.UnitTests.ImportExport.Refactoring
+namespace ToSic.Eav.DataSourceTests.ImportExport__disabled__refactoring_
 {
     [TestClass]
     public class XmlExport_Test

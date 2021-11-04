@@ -147,8 +147,8 @@
     <Compile Include="Caches\QuickCaches_Test.cs" />
     <Compile Include="DataSourceErrors.cs" />
     <Compile Include="EavDataSourceTestBase.cs" />
-    <Compile Include="EntityFilters\EntityIdFilter_Test.cs" />
-    <Compile Include="EntityFilters\EntityTypeFilter_Test.cs" />
+    <Compile Include="DataSources\EntityIdFilterTest.cs" />
+    <Compile Include="DataSources\EntityTypeFilterTest.cs" />
     <Compile Include="ExtensionsForTesting.cs" />
     <Compile Include="ExternalData\CsvDsTst.cs" />
     <Compile Include="ExternalData\DataTableDataSource_Test.cs" />
@@ -156,9 +156,9 @@
     <Compile Include="ImportExport %28disabled, refactoring%29\XmlExport_Test.cs" />
     <Compile Include="ImportExport %28disabled, refactoring%29\XmlImport_Test.cs" />
     <Compile Include="IServiceBuilderExtensions.cs" />
-    <Compile Include="ItemFilterDuplicates\Tst_ItemFilterDuplicates.cs" />
+    <Compile Include="DataSources\ItemFilterDuplicatesTest.cs" />
     <Compile Include="LookUps\LookUpsTest.cs" />
-    <Compile Include="Paging\Paging_Test.cs" />
+    <Compile Include="DataSources\PagingTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestData\DataTableTrivial.cs" />
     <Compile Include="TestData\DataTablePerson.cs" />
@@ -167,14 +167,14 @@
     <Compile Include="TestData\PersonSpecs.cs" />
     <Compile Include="TestData\RandomData.cs" />
     <Compile Include="ValueFilter\ValueFilterMaker.cs" />
-    <Compile Include="x-probably-old-Query\Tst_QueryBasic.cs" />
-    <Compile Include="x-probably-old-Query\Tst_QueryGlobal.cs" />
-    <Compile Include="x-probably-old-Query\ParamsTests.cs" />
+    <Compile Include="Query\QueryBasicTest.cs" />
+    <Compile Include="Query\QueryGlobalTest.cs" />
+    <Compile Include="Query\ParamsTests.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTest.cs" />
     <Compile Include="RelationshipFilterTests\RelationshipTestBase.cs" />
-    <Compile Include="RelationshipFilterTests\Tst_RelationshipFilterDS_Modes.cs" />
-    <Compile Include="RelationshipFilterTests\Tst_RelationshipFilterDS.cs" />
-    <Compile Include="Shuffle\Shuffle.cs" />
+    <Compile Include="RelationshipFilterTests\RelationshipFilterTest_Modes.cs" />
+    <Compile Include="RelationshipFilterTests\RelationshipFilterTest.cs" />
+    <Compile Include="DataSources\ShuffleTest.cs" />
     <Compile Include="DataSourceTests.cs" />
     <Compile Include="PassThrough\PassThrough_Cache.cs" />
     <Compile Include="Streams\StreamMergeTst.cs" />
@@ -245,8 +245,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="x-probably-old-Query\.data\queries\Query.Eav.Queries.Global.Apps.json" />
-    <None Include="x-probably-old-Query\.data\queries\Query.Eav.Queries.Global.Zones.json" />
+    <None Include="Query\.data\queries\Query.Eav.Queries.Global.Apps.json" />
+    <None Include="Query\.data\queries\Query.Eav.Queries.Global.Zones.json" />
   </ItemGroup>
   <ItemGroup />
   <Choose>

@@ -8,7 +8,7 @@ using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.DataSourceTests.TestData
 {
-    public class DataTablePerson: TestServiceBase, IServiceBuilder
+    public class DataTablePerson: TestServiceBase
     {
         public DataTablePerson(IServiceBuilder serviceProvider) : base(serviceProvider)
         {

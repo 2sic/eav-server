@@ -4,10 +4,10 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSourceTests.EntityFilters
+namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
-    public class EntityTypeFilter_Test: TestBaseDiEavFullAndDb
+    public class EntityTypeFilterTest: TestBaseDiEavFullAndDb
     {
         [TestMethod]
         public void EntityTypeFilter_FindAllIfAllApply()

@@ -5,48 +5,39 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSourceTests.EntityFilters
+namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
-    public class EntityIdFilter_Test: TestBaseDiEavFullAndDb
+    public class EntityIdFilterTest: TestBaseDiEavFullAndDb
     {
         [TestMethod]
         public void EntityIdFilter_SingleItem()
         {
-            const string ItemToFilter = "1023";
-            var filtered = CreateFilterForTesting(100, ItemToFilter);
+            const string itemToFilter = "1023";
+            var filtered = CreateFilterForTesting(100, itemToFilter);
 
-            // diclist
-            //var dicList = filtered.LightList;
             var ll = filtered.ListForTests();
 
-            //Assert.AreEqual(ItemToFilter, dicList.First().Value.EntityId.ToString());
-            Assert.AreEqual(ItemToFilter, ll.First().EntityId.ToString());
+            Assert.AreEqual(itemToFilter, ll.First().EntityId.ToString());
         }
 
 
         [TestMethod]
         public void EntityIdFilter_NoItems()
         {
-            const string ItemToFilter = "";
-            var filtered = CreateFilterForTesting(100, ItemToFilter);
-            //var dicList = filtered.List;
+            const string itemToFilter = "";
+            var filtered = CreateFilterForTesting(100, itemToFilter);
+
             var ll = filtered.ListForTests();
 
-            //Assert.AreEqual(0, dicList.Count, "Should return 0 items");
             Assert.AreEqual(0, ll.Count(), "Should return 0 items");
         }
 
         [TestMethod]
         public void EntityIdFilter_MultipleItems()
         {
-            const string ItemToFilter = "1011,1023,1050,1003";
-            var filtered = CreateFilterForTesting(100, ItemToFilter);
-
-            //var dl = filtered.List;
-            //Assert.AreEqual("1011", dl.First().Value.EntityId.ToString(), "Test Dic that sorting IS affected");
-            //Assert.AreEqual(4, dl.Count, "Count after filtering");
-
+            const string itemToFilter = "1011,1023,1050,1003";
+            var filtered = CreateFilterForTesting(100, itemToFilter);
 
             var ll = filtered.ListForTests();
             Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
@@ -56,12 +47,8 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
         [TestMethod]
         public void EntityIdFilter_FilterWithSpaces()
         {
-            const string ItemToFilter = "1011, 1023 ,1050   ,1003";
-            var filtered = CreateFilterForTesting(100, ItemToFilter);
-
-            //var dl = filtered.List;
-            //Assert.AreEqual("1011", dl.First().Value.EntityId.ToString(), "Test Dic that sorting IS affeted");
-            //Assert.AreEqual(4, dl.Count, "Count after filtering");
+            const string itemToFilter = "1011, 1023 ,1050   ,1003";
+            var filtered = CreateFilterForTesting(100, itemToFilter);
 
             var ll = filtered.ListForTests();
             Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
@@ -72,8 +59,8 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
         public void EntityIdFilter_CacheKey1()
         {
             // Simple scenario, 1 filter, no special spaces etc.
-            const string ItemToFilter = "1023";
-            var ds = CreateFilterForTesting(100, ItemToFilter);
+            const string itemToFilter = "1023";
+            var ds = CreateFilterForTesting(100, itemToFilter);
 
             Assert.AreEqual("EntityIdFilter:NoGuid&EntityIds=1023", ds.CachePartialKey);
             Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
@@ -86,17 +73,17 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
         public void EntityIdFilter_CacheKeyMulti()
         {
             // Multi-value scenario, no special spaces etc.
-            var ItemToFilter = "1011,1023,1050,1003";
-            var ds = CreateFilterForTesting(100, ItemToFilter);
+            var itemToFilter = "1011,1023,1050,1003";
+            var ds = CreateFilterForTesting(100, itemToFilter);
 
             Assert.AreEqual("EntityIdFilter:NoGuid&EntityIds=1011,1023,1050,1003", ds.CachePartialKey);
             Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
                             ">EntityIdFilter:NoGuid&EntityIds=1011,1023,1050,1003", ds.CacheFullKey);
 
             // Multi-value scenario, special spaces and trailing comma etc.
-            ItemToFilter = "1011, 1023  ,   1050,    1003,";
+            itemToFilter = "1011, 1023  ,   1050,    1003,";
             var partialKey = "EntityIdFilter:NoGuid&EntityIds=1011,1023,1050,1003,";
-            ds = CreateFilterForTesting(100, ItemToFilter);
+            ds = CreateFilterForTesting(100, itemToFilter);
             Assert.AreEqual(partialKey, ds.CachePartialKey);
             Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
                             ">" + partialKey, ds.CacheFullKey);
@@ -108,7 +95,6 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
             var filtered = new EntityIdFilter()
                 .Init(ds.Configuration.LookUpEngine);
-            //filtered.ConfigurationProvider = ds.ConfigurationProvider;
             filtered.AttachForTests(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;

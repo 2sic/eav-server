@@ -1,13 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSourceTests;
-using ToSic.Eav.DataSourceTests.RelationshipFilterTests;
 
-namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
+namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 {
     [TestClass]
-    public partial class Tst_RelationshipFilterDs: RelationshipTestBase
+    public partial class RelationshipFilterTest: RelationshipTestBase
     {
 
         // todo: necessary tests

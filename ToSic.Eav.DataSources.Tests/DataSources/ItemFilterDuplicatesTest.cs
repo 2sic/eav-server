@@ -2,26 +2,20 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.DataSourceTests;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Eav.Logging;
-using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 
-
-namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
+namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
-    public class Tst_ItemFilterDuplicates: TestBaseDiEavFullAndDb
+    public class ItemFilterDuplicatesTest: TestBaseDiEavFullAndDb
     {
         [TestMethod]
         public void ItemFilterDuplicates_In0()
         {
             var desiredFinds = 0;
-            // todo: replace with this.GetTestDataSource
-            var sf = Build<DataSourceFactory>().GetDataSource<DataSources.ItemFilterDuplicates>(
-                new AppIdentity(0,0), null, 
-                new LookUpEngine(null as ILog));
+            var sf = this.GetTestDataSource<DataSources.ItemFilterDuplicates>();
             var found = sf.ListForTests().Count();
             Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
@@ -86,7 +80,6 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
             for (int i = 1; i < attach; i++)
                 sf.InForTests().Add("another" + i, ds.Out.First().Value);
 
-            // todo: replace with this.GetTestDataSource
             var unique = dsf.GetDataSource<DataSources.ItemFilterDuplicates>(new AppIdentity(0, 0), sf);
             return unique;
         }

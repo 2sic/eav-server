@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
     public class CheckVisualQueryAttribute: TestBaseDiEavFullAndDb

@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSourceTests.RelationshipFilterTests;
+using ToSic.Eav.DataSources;
 
-namespace ToSic.Eav.DataSources.Tests.RelationshipFilterTests
+namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 {
-    public partial class Tst_RelationshipFilterDs
+    public partial class RelationshipFilterTest
     {
         // More tests
         // 

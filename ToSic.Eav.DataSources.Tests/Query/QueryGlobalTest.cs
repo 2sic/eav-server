@@ -8,12 +8,12 @@ namespace ToSic.Eav.DataSourceTests.Query
 {
     [TestClass]
     [DeploymentItem("..\\..\\" + TestConfig.GlobalQueriesData, TestConfig.TestingPath)]
-    public class Tst_QueryGlobal: TestBaseDiEavFull
+    public class QueryGlobalTest: TestBaseDiEavFull
     {
         private readonly GlobalQueries _globalQueries;
         private readonly QueryBuilder _queryBuilder;
 
-        public Tst_QueryGlobal()
+        public QueryGlobalTest()
         {
             _globalQueries = Build<GlobalQueries>();
             _queryBuilder = Build<QueryBuilder>();

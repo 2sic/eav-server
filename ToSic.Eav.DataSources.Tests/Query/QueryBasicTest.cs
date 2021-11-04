@@ -5,20 +5,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSources.Tests.Query
+namespace ToSic.Eav.DataSourceTests.Query
 {
     [TestClass]
-    public class Tst_QueryBasic: TestBaseDiEavFullAndDb
+    public class QueryBasicTest: TestBaseDiEavFullAndDb
     {
         private readonly JsonSerializer _jsonSerializer;
         private readonly QueryManager _queryManager;
         private readonly QueryBuilder _queryBuilder;
 
-        public Tst_QueryBasic()
+        public QueryBasicTest()
         {
             _jsonSerializer = Build<JsonSerializer>();
             _queryManager = Build<QueryManager>();
