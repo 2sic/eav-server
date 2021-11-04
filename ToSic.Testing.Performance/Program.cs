@@ -7,7 +7,7 @@ using ToSic.Testing.Shared;
 
 namespace ToSic.Testing.Performance
 {
-    class Program // : Efc11TestBase
+    class Program : Efc11TestBase
     {
         //public Program(IServiceProvider serviceProvider) : base(serviceProvider)
         //{
@@ -16,9 +16,9 @@ namespace ToSic.Testing.Performance
         static void Main(string[] args)
         {
             // initialize everything
-            Shared.StartupTestingShared.ConfigureEfcDi();
+            //Shared.StartupTestingShared.ConfigureEfcDi();
 
-            var tester = EavTestBase.Resolve<GenerateJsonForApps>();
+            var tester = new GenerateJsonForApps(); // EavTestBase.Resolve<GenerateJsonForApps>();
             tester.Init();
 
             // time initial sql

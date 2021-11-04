@@ -19,16 +19,11 @@ namespace ToSic.Testing.Shared
             Factory.Debug = true;
         }
 
-        public static void ConfigureEfcDi(string optionalConnection = null) => ConfigureEfcDi(sc => { }, optionalConnection);
-
-        public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
+        public static void ConfigureEfcDi(Factory.ServiceConfigurator configure = null, string optionalConnection = null)
         {
             Factory.ActivateNetCoreDi(sc =>
             {
-                sc.TryAddTransient<IUser, UserUnknown>();
-                sc.TryAddTransient<IRuntime, RuntimeUnknown>();
-                configure.Invoke(sc);
-
+                configure?.Invoke(sc);
                 sc.AddEav();
             });
             var con = optionalConnection ?? TestConstants.ConStr;

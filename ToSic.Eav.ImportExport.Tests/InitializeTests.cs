@@ -2,11 +2,9 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps.Tests.Mocks;
-using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Persistence.File;
 using ToSic.Eav.Run;
-using ToSic.Eav.Run.Unknown;
 using ToSic.Testing.Shared.Mocks;
 
 namespace ToSic.Eav.ImportExport.Tests
@@ -19,26 +17,26 @@ namespace ToSic.Eav.ImportExport.Tests
         {
             AssemblyInit(context, null);
         }
+
         public static void AssemblyInit(TestContext context, string connectionString)
         {
-            ConfigureEfcDi(sc => { }, connectionString);
+            ConfigureEfcDi(null, connectionString);
         }
 
-        public static void ConfigureEfcDi(Factory.ServiceConfigurator configure, string optionalConnection = null)
+        public static void ConfigureEfcDi(Factory.ServiceConfigurator configure = null, string optionalConnection = null)
         {
-            Repository.Efc.Tests.StartupTestingRepository.ConfigureEfcDi(sc =>
+            Repository.Efc.Tests.StartupTestingRepository.ConfigureEfcDi(services =>
             {
-                sc.AddTransient<IRuntime, Runtime>();
-                sc.AddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
-                sc.TryAddTransient<IValueConverter, MockValueConverter>();
-                sc.TryAddTransient<IZoneMapper, MockZoneMapper>();
+                services.AddTransient<IRuntime, Runtime>();
+                services.TryAddTransient<IValueConverter, MockValueConverter>();
+                services.TryAddTransient<IZoneMapper, MockZoneMapper>();
 
-                sc
+                services
                     .AddEavCore()
                     .AddEavCorePlumbing()
                     .AddEavCoreFallbackServices();
 
-                configure.Invoke(sc);
+                configure?.Invoke(services);
 
             }, optionalConnection);
         }

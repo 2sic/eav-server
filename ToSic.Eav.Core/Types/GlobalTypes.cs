@@ -21,9 +21,11 @@ namespace ToSic.Eav.Types
         }
 
         /// <summary>
-        /// Careful: this initially doesn't exist which is by design
-        /// WIP: 2021-10-28 trying to fix edge case where DI was re-used
+        /// The Type Loader - must be re-used because it's critical that it's singleton
         /// </summary>
+        /// <remarks>
+        /// It's only public because the insights need to show loading-logs of the TypeLoader
+        /// </remarks>
         public static GlobalTypeLoader TypeLoader;
 
         /// <summary>

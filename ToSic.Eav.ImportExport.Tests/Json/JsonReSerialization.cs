@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Persistence.Efc;
-using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Tests;
 using ToSic.Testing.Shared;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
@@ -15,10 +13,10 @@ namespace ToSic.Eav.ImportExport.Tests.json
         private readonly JsonSerializer _jsonSerializer;
         private readonly Efc11Loader _loader;
 
-        public JsonReSerialization(): base()
+        public JsonReSerialization()
         {
-            _jsonSerializer = EavTestBase.Resolve<JsonSerializer>();
-            _loader = EavTestBase.Resolve<Efc11Loader>();
+            _jsonSerializer = Build<JsonSerializer>();
+            _loader = Build<Efc11Loader>();
         }
 
         [TestMethod]

@@ -10,7 +10,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
     {
         public IFeaturesInternalTests()
         {
-            FeaturesInternal = Resolve<IFeaturesInternal>();
+            FeaturesInternal = Build<IFeaturesInternal>();
         }
 
         internal IFeaturesInternal FeaturesInternal;
@@ -19,7 +19,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
         [TestMethod]
         public void EnsureIFeaturesAndIFeaturesInternalAreSameSingleton()
         {
-            var featuresNonInternal = Resolve<IFeaturesService>();
+            var featuresNonInternal = Build<IFeaturesService>();
             Assert.AreEqual(FeaturesInternal, featuresNonInternal, "They must be the identical object");
         }
 

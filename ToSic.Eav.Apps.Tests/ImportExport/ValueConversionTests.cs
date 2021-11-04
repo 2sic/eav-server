@@ -4,14 +4,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.Plumbing;
 using ToSic.Testing.Shared;
 using ToSic.Testing.Shared.Mocks;
 
 namespace ToSic.Eav.Apps.Tests.ImportExport
 {
     [TestClass]
-    public class ValueConversionTests: TestBaseWithCustomDependencyInjection
+    public class ValueConversionTests: TestBaseDiEmpty
     {
         private int AppId = 78;
         public Guid ItemGuid = new Guid("cdf540dd-d012-4e7e-b828-7aa0efc5d81f");
@@ -24,13 +23,10 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         string unchanged = "some test string which shouldn't change in a resolve as it's not a link or reference";
 
-        public ValueConversionTests(): base(ConfigureDi) { }
-
-        private static IServiceCollection ConfigureDi(IServiceCollection services)
+        protected override void AddServices(IServiceCollection services)
         {
             services.AddTransient<ExportImportValueConversion>();
             services.AddTransient<IValueConverter, MockValueConverter>();
-            return services;
         }
 
 
@@ -38,7 +34,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
         [TestMethod]
         public void ValueConversion_ResolveHyperlink()
         {
-            var exportListXml = ServiceProvider.Build<ExportImportValueConversion>();
+            var exportListXml = Build<ExportImportValueConversion>();
 
             // test the Resolve Hyperlink
             string link = "";
@@ -69,7 +65,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             TestResolvesWithNonLinkType(DataTypes.Hyperlink, false);
 
             var attrType = DataTypes.Hyperlink;
-            var ExportListXml = ServiceProvider.Build<ExportImportValueConversion>();
+            var ExportListXml = Build<ExportImportValueConversion>();
 
             // test resolves on any value, just certainly not a link, with "no-resolve"
             Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, true), "test null resolve");
@@ -84,7 +80,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         private void TestResolvesWithNonLinkType(string attrType, bool tryResolve)
         {
-            var ExportListXml = ServiceProvider.Build<ExportImportValueConversion>();
+            var ExportListXml = Build<ExportImportValueConversion>();
 
             Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, tryResolve), "test null resolve");
             Assert.AreEqual(XmlConstants.Empty, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, "", tryResolve), "test empty resolve");

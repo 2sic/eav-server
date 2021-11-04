@@ -22,9 +22,6 @@ namespace ToSic.Eav
     {
         public static IServiceCollection AddEavCore(this IServiceCollection services)
         {
-            // 2020-10-29 New enhancement - lazy loading dependency injection
-            //services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
-
             // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
             
@@ -49,12 +46,7 @@ namespace ToSic.Eav
             // Other...
             services.TryAddTransient<AttributeBuilder>();
 
-            // History (very core service)
-            //services.TryAddTransient<LogHistory>();
             services.TryAddSingleton<GlobalTypes>();    // this must be singleton, could cause trouble otherwise
-
-            // Warnings for mock implementations
-            //services.TryAddTransient(typeof(WarnUseOfUnknown<>));
 
             // Permissions helper
             services.TryAddTransient<PermissionCheckBase.Dependencies>();
@@ -104,8 +96,8 @@ namespace ToSic.Eav
             // Special registration of iisUnknown to verify we see warnings if such a thing is loaded
             services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
 
-            // Warnings for mock implementations
-            services.TryAddTransient(typeof(WarnUseOfUnknown<>));
+            // Unknown-Runtime for loading configuration etc. File-runtime
+            services.TryAddTransient<IRuntime, RuntimeUnknown>();
 
             return services;
         }

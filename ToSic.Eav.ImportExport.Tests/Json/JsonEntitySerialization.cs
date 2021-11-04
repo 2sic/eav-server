@@ -15,7 +15,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
         private readonly JsonSerializer _jsonSerializer;
         private readonly Efc11Loader _loader;
 
-        public JsonEntitySerialization(): base()
+        public JsonEntitySerialization()
         {
             _jsonSerializer = EavTestBase.Resolve<JsonSerializer>();
             _loader = EavTestBase.Resolve<Efc11Loader>();

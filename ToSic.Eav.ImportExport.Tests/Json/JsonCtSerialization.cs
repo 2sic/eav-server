@@ -9,8 +9,6 @@ namespace ToSic.Eav.ImportExport.Tests.json
     [TestClass]
     public class JsonCtSerialization: Eav.Persistence.Efc.Tests.Efc11TestBase
     {
-        public JsonCtSerialization() : base() { }
-
         [TestMethod]
         public void Json_ExportCTOfItemOnHome()
         {

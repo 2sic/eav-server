@@ -1,18 +1,23 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Testing.Shared
 {
     public abstract class TestBaseWithCustomDependencyInjection: HasLog
     {
-        protected IServiceProvider ServiceProvider { get; }
+        protected IServiceProvider ServiceProvider => _serviceProvider;
+        private IServiceProvider _serviceProvider;
+
+        public T Resolve<T>() => ServiceProvider.Build<T>();
 
         protected TestBaseWithCustomDependencyInjection(Func<IServiceCollection, IServiceCollection> configure): base("Tst.BaseDI")
         {
             var services = new ServiceCollection() as IServiceCollection;
             services = configure(services);
-            ServiceProvider = services.BuildServiceProvider();
+            _serviceProvider = services.BuildServiceProvider();
         }
+
     }
 }

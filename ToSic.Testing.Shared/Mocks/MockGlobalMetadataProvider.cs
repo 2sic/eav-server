@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 
-namespace ToSic.Eav.ImportExport.Tests.Mocks
+namespace ToSic.Testing.Shared.Mocks
 {
     public class MockGlobalMetadataProvider : EfcMetadataTargetTypes
     {        
