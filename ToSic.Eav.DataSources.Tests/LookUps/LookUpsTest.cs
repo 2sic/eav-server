@@ -2,11 +2,12 @@
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.LookUps
 {
     [TestClass]
-    public class LookUpsTest: EavDataSourceTestBase
+    public class LookUpsTest: TestBaseDiEavFullAndDb
     {
         [TestMethod]
         public void DataTargetValueProvider_General()

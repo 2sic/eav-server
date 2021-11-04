@@ -145,6 +145,7 @@
     <Compile Include="Attributes\AttributeRenameTests.cs" />
     <Compile Include="Caches\CacheAllStreams_Test.cs" />
     <Compile Include="Caches\QuickCaches_Test.cs" />
+    <Compile Include="DataSourceErrors.cs" />
     <Compile Include="EavDataSourceTestBase.cs" />
     <Compile Include="EntityFilters\EntityIdFilter_Test.cs" />
     <Compile Include="EntityFilters\EntityTypeFilter_Test.cs" />

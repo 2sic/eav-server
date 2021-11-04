@@ -89,6 +89,8 @@ namespace ToSic.Eav.DataSources
         #region Error Constants
 
         // these are public so we can verify them in tests
+
+        [PrivateApi]
         public const string ErrorInvalidOperator = "Invalid Operator";
 
         #endregion

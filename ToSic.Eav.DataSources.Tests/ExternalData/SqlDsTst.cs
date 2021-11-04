@@ -7,7 +7,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
-    public class SqlDsTst: EavDataSourceTestBase
+    public class SqlDsTst: TestBaseDiEavFullAndDb
     {
         private const string ConnectionDummy = "";
         private const string ConnectionName = TestConstants.ConStr;// "Data Source=.\\SQLExpress;Initial Catalog=2flex 2Sexy Content;Integrated Security=True";
@@ -82,32 +82,32 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
         public void SqlDataSource_BadSqlInsert()
         {
             var results = GenerateSqlDataSource(ConnectionDummy, "Insert something into something", ContentTypeName);
-            VerifyStreamIsError(results, Sql.ErrorTitleForbiddenSql);
+            DataSourceErrors.VerifyStreamIsError(results, Sql.ErrorTitleForbiddenSql);
         }
 
 
         [TestMethod]
         public void SqlDataSource_BadSqlSelectInsert()
-            => VerifyStreamIsError(
+            => DataSourceErrors.VerifyStreamIsError(
                 GenerateSqlDataSource(ConnectionDummy, "Select * from table; Insert something", ContentTypeName),
                 Sql.ErrorTitleForbiddenSql
             );
 
         [TestMethod]
         public void SqlDataSource_BadSqlSpaceInsert()
-            => VerifyStreamIsError(
+            => DataSourceErrors.VerifyStreamIsError(
                 GenerateSqlDataSource(ConnectionDummy, " Insert something into something", ContentTypeName),
                 Sql.ErrorTitleForbiddenSql);
 
         [TestMethod]
         public void SqlDataSource_BadSqlDropInsert()
-            => VerifyStreamIsError(
+            => DataSourceErrors.VerifyStreamIsError(
                 GenerateSqlDataSource(ConnectionDummy, "Drop tablename", ContentTypeName),
                 Sql.ErrorTitleForbiddenSql);
 
         [TestMethod]
         public void SqlDataSource_BadSqlSelectDrop()
-            => VerifyStreamIsError(
+            => DataSourceErrors.VerifyStreamIsError(
                 GenerateSqlDataSource(ConnectionDummy, "Select * from Products; Drop tablename", ContentTypeName),
                 Sql.ErrorTitleForbiddenSql);
 

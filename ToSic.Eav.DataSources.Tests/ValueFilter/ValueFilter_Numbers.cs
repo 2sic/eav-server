@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests
 {
@@ -9,16 +10,14 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ValueFilterNumbers: EavDataSourceTestBase
+    public class ValueFilterNumbers: TestBaseDiEavFullAndDb
     {
-        private readonly ValueFilterMaker _valueFilterMaker;
-
         private const int TestVolume = 10000;
         private readonly ValueFilter _testDataGeneratedOutsideTimer;
         public ValueFilterNumbers()
         {
-            _valueFilterMaker = new ValueFilterMaker(this);
-            _testDataGeneratedOutsideTimer = _valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
+            var valueFilterMaker = new ValueFilterMaker(this);
+            _testDataGeneratedOutsideTimer = valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
         }
 
 
@@ -99,7 +98,7 @@ namespace ToSic.Eav.DataSourceTests
 
         [TestMethod]
         public void NumberFilterInvalidOperator()
-            => VerifyStreamIsError(PrepareNumberFilterDs("Height", "180", "!!"), 
+            => DataSourceErrors.VerifyStreamIsError(PrepareNumberFilterDs("Height", "180", "!!"), 
                 ValueFilter.ErrorInvalidOperator);
 
 

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests
 {
@@ -8,7 +9,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ValueFilterDateTime: EavDataSourceTestBase
+    public class ValueFilterDateTime: TestBaseDiEavFullAndDb
     {
         private const int TestVolume = 10000;
         private readonly ValueFilter _testDataGeneratedOutsideTimer;
@@ -75,7 +76,7 @@ namespace ToSic.Eav.DataSourceTests
 
         [TestMethod]
         public void NumberFilterInvalidOperator()
-            => VerifyStreamIsError(PrepareDateTimeFilterDs("Birthdate", "180", "!!"),
+            => DataSourceErrors.VerifyStreamIsError(PrepareDateTimeFilterDs("Birthdate", "180", "!!"),
                 ValueFilter.ErrorInvalidOperator);
 
 

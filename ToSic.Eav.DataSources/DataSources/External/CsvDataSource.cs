@@ -29,6 +29,12 @@ namespace ToSic.Eav.DataSources
         HelpLink = "https://r.2sxc.org/DsCsv")]
     public class CsvDataSource : ExternalData
     {
+        #region Known errors
+        [PrivateApi]
+        public const string ErrorIdNaN = "ID is not a number";
+
+        #endregion
+
         /// <inheritdoc/>
         [PrivateApi]
         public override string LogId => "DS.CSV";
@@ -220,8 +226,10 @@ namespace ToSic.Eav.DataSources
                         entityId = parser.Row; 
                     // check if id can be parsed from the current row
                     else if (!int.TryParse(fields[idColumnIndex], out entityId))
-                        return SetError("ID is not a number",
+                    {
+                        return SetError(ErrorIdNaN,
                             $"Row {parser.Row}: ID field '{fields[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'.");
+                    }
 
 
                     var entityValues = new Dictionary<string, object>();
