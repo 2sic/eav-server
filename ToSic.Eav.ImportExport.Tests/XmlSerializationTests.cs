@@ -3,8 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Xml;
 using ToSic.Eav.Repository.Efc.Tests;
@@ -21,20 +19,19 @@ namespace ToSic.Eav.ImportExport.Tests
             _xmlSerializer = Build<XmlSerializer>();
         }
 
-        public static ILog Log = new Log("TstXml");
         //private int AppId = 2;
         //private int TestItemId = 0;
 
         [TestMethod]
         public void Xml_SerializeItemOnHome()
         {
-            var test = new TestValuesOnPc2Dm();
+            var test = new SpecsTestExportSerialize();
             var app = Build<Efc11Loader>().AppState(test.AppId, false);
             //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = Build<IAppStates>().Languages(test.ZoneId)
                 .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app, Log);
-            var xmlEnt = exBuilder.Serialize(test.ItemOnHomeId);
+            var xmlEnt = exBuilder.Serialize(test.TestItemToSerialize);
             Assert.IsTrue(xmlEnt.Length > 200, "should get a long xml string");
             Trace.Write(xmlEnt);
             //Assert.AreEqual(xmlstring, xmlEnt, "xml strings should be identical");
@@ -44,8 +41,8 @@ namespace ToSic.Eav.ImportExport.Tests
         [TestMethod]
         public void Xml_CompareAllSerializedEntitiesOfApp()
         {
-            var test = new TestValuesOnPc2Dm();
-            var appId = test.BlogAppId;
+            var test = new SpecsTestExportSerialize();
+            var appId = test.AppId;
             var app = Build<Efc11Loader>().AppState(appId, false);
             var languageMap = Build<IAppStates>().Languages(test.ZoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app, Log);

@@ -17,10 +17,10 @@ namespace ToSic.Eav.Persistence.File.Tests
         [TestMethod]
         public void TypeExp_AllSharedFromInstallation()
         {
-            var test = new TestValuesOnPc2Dm();
+            var test = new SpecsTestExportSerialize();
 
             var loader = Build<Efc11Loader>();
-            var app = loader.AppState(test.RootAppId, false);
+            var app = loader.AppState(test.AppId, false);
 
 
             var cts = app.ContentTypes;

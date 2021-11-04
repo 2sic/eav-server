@@ -8,8 +8,8 @@ namespace ToSic.Eav.Persistence.Efc.Tests
     [TestClass]
     public class ZoneLanguages : Efc11TestBase
     {
-        private const int MinZones = 2;
-        private const int MaxZones = 5;
+        private const int MinZones = 4;
+        private const int MaxZones = 10;
         private const int AppCountInHomeZone = 5;
         private const int ZoneCountWithMultiLanguage = 2;
         

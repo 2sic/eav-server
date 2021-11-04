@@ -21,15 +21,15 @@ namespace ToSic.Eav.ImportExport.Tests.json
         [TestMethod]
         public void JsonReExportHome()
         {
-            var test = new TestValuesOnPc2Dm();
-            Test_DoubleExportEntity(test.AppId, test.ItemOnHomeId);
+            var test = new SpecsTestExportSerialize();
+            Test_DoubleExportEntity(test.AppId, test.TestItemToSerialize);
         }
 
         [TestMethod]
         public void JsonReExportContentGroup()
         {
-            var test = new TestValuesOnPc2Dm();
-            Test_DoubleExportEntity(test.AppId, test.ContentBlockItemWith9Items);
+            var test = new SpecsTestExportSerialize();
+            Test_DoubleExportEntity(test.AppId, test.ContentBlockWithALotOfItems);
         }
 
         private void Test_DoubleExportEntity(int appId, int eid, JsonSerializer serializer = null)
@@ -55,7 +55,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
         [TestMethod]
         public void Json_ReExportHundredsOfAnApp()
         {
-            var test = new TestValuesOnPc2Dm();
+            var test = new SpecsTestExportSerialize();
             var appId = test.AppId;
 
             Test_DoubleExportAllOfAnApp(appId);

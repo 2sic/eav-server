@@ -33,8 +33,8 @@ namespace ToSic.Eav.ImportExport.Tests.json
         [TestMethod]
         public void Json_ExportCBWithRelationships()
         {
-            var test = new TestValuesOnPc2Dm();
-            var json = GetJsonOfEntity(test.AppId, test.ContentBlockItemWith9Items);
+            var test = new SpecsTestExportSerialize();
+            var json = GetJsonOfEntity(test.AppId, test.ContentBlockWithALotOfItems);
             Trace.Write(json);
             Assert.IsTrue(json.Length > 200, "should get a long json string");
         }
@@ -46,7 +46,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
         [TestMethod]
         public void Json_ExportHundredsOfAnApp()
         {
-            var test = new TestValuesOnPc2Dm();
+            var test = new SpecsTestExportSerialize();
             var appId = test.AppId;
 
             Test_ExportAllOfAnApp(appId);
