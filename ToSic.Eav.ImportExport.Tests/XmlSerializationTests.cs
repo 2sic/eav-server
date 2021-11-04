@@ -29,14 +29,6 @@ namespace ToSic.Eav.ImportExport.Tests
         public void Xml_SerializeItemOnHome()
         {
             var test = new TestValuesOnPc2Dm();
-            //var dbc = Factory.Resolve<DbDataController>().Init(null, test.AppId, Log);
-            //var xmlbuilder = new DbXmlBuilder(dbc);
-
-            //var xml = xmlbuilder.XmlEntity(test.ItemOnHomeId);
-            
-            //var xmlstring = xml.ToString();
-            //Assert.IsTrue(xmlstring.Length > 200, "should get a long xml string");
-
             var app = Build<Efc11Loader>().AppState(test.AppId, false);
             //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = Build<IAppStates>().Languages(test.ZoneId)
@@ -55,7 +47,6 @@ namespace ToSic.Eav.ImportExport.Tests
             var test = new TestValuesOnPc2Dm();
             var appId = test.BlogAppId;
             var app = Build<Efc11Loader>().AppState(appId, false);
-            //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = Build<IAppStates>().Languages(test.ZoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app, Log);
 

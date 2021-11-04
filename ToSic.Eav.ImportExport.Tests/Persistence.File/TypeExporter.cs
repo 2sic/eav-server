@@ -6,7 +6,6 @@ using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;
-using ToSic.Testing.Shared;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File.Tests

@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.ImportExport.Tests.Json;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Repository.Efc.Tests;
-using ToSic.Testing.Shared;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests.json
@@ -24,8 +23,8 @@ namespace ToSic.Eav.ImportExport.Tests.json
         [TestMethod]
         public void Json_ExportItemOnHome()
         {
-            var test = new TestValuesOnPc2Dm();
-            var json = GetJsonOfEntity(test.AppId, test.ItemOnHomeId);
+            var test = new SpecsTestExportSerialize();
+            var json = GetJsonOfEntity(test.AppId, test.TestItemToSerialize);
             Trace.Write(json);
             Assert.IsTrue(json.Length > 200, "should get a long json string");
         }

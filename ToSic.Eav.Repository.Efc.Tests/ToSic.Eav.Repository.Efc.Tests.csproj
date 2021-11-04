@@ -161,6 +161,7 @@
     <Compile Include="MergeEntitiesTests.cs" />
     <Compile Include="TestGlobalFolderRepository.cs" />
     <Compile Include="SaveDataToDbTests.cs" />
+    <Compile Include="SpecsTestExportSerialize.cs" />
     <Compile Include="TestValuesOnPc2dm.cs" />
     <Compile Include="VersioningTests.cs" />
     <Compile Include="Mocks\ImportExportEnvironmentMock.cs" />

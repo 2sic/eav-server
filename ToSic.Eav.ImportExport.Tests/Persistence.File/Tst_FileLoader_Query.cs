@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repositories;
-using ToSic.Testing.Shared;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace

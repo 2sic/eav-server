@@ -73,7 +73,8 @@ namespace ToSic.Eav.DataSourceTests.Caches
         {
             var cacher = new CacheAllStreams();
             cacher.AttachForTests(filtered);
-            ((LookUpEngine)cacher.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
+            cacher.Init(filtered.Configuration.LookUpEngine);
+            // ((LookUpEngine)cacher.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
             return cacher;
         }
 
@@ -84,7 +85,8 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var secondFilter = Build<EntityTypeFilter>();
             secondFilter.AttachForTests(filtered);
             secondFilter.TypeName = "Person";
-            ((LookUpEngine)secondFilter.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
+            secondFilter.Init(filtered.Configuration.LookUpEngine);
+            // ((LookUpEngine)secondFilter.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
 
             var cacher = CreateCacheDS(secondFilter);
             var listCache = new ListCache(null);
