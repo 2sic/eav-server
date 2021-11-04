@@ -2,18 +2,19 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
-    public class DataTableTst
+    public class DataTableTst: TestBaseDiEavFullAndDb
     {
 
         [TestMethod]
         public void DataSource_Create_GeneralTest()
         {
             const int itemsToGenerate = 499;
-            var ds = DataTablePerson.Generate(itemsToGenerate);
+            var ds = new DataTablePerson(this).Generate(itemsToGenerate);
             Assert.IsTrue(ds.InForTests().Count == 0, "In count should be 0");
             Assert.IsTrue(ds.Out.Count == 1, "Out count should be 1");
             var defaultOut = ds[Constants.DefaultStreamName];
@@ -32,7 +33,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
         public void DataTable_CacheKey()
         {
             const int itemsToGenerate = 499;
-            var ds = DataTablePerson.Generate(itemsToGenerate);
+            var ds = new DataTablePerson(this).Generate(itemsToGenerate);
 
             var expKey =
                 "DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person";
@@ -46,7 +47,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
         public void DataTable_DefaultTitleField()
         {
             const int itemsToGenerate = 25;
-            var ds = DataTableTrivial.Generate(itemsToGenerate);
+            var ds = new DataTableTrivial(this).Generate(itemsToGenerate);
 
             Assert.AreEqual(25, ds.ListForTests().Count());
             var first = ds.ListForTests().FirstOrDefault();

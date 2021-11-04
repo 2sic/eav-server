@@ -12,13 +12,14 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
 {
     [TestClass]
-    public class Tst_ItemFilterDuplicates: EavTestBase
+    public class Tst_ItemFilterDuplicates: TestBaseDiEavFullAndDb
     {
         [TestMethod]
         public void ItemFilterDuplicates_In0()
         {
             var desiredFinds = 0;
-            var sf = Resolve<DataSourceFactory>().GetDataSource<DataSources.ItemFilterDuplicates>(
+            // todo: replace with this.GetTestDataSource
+            var sf = Build<DataSourceFactory>().GetDataSource<DataSources.ItemFilterDuplicates>(
                 new AppIdentity(0,0), null, 
                 new LookUpEngine(null as ILog));
             var found = sf.ListForTests().Count();
@@ -75,16 +76,18 @@ namespace ToSic.Eav.DataSources.Tests.ItemFilterDuplicates
 
 
 
-        private static DataSources.ItemFilterDuplicates GenerateDuplsDs(int desiredFinds, int attach)
+        private DataSources.ItemFilterDuplicates GenerateDuplsDs(int desiredFinds, int attach)
         {
             if(attach < 1) throw new Exception("attach must be at least 1");
-            var ds = DataTablePerson.Generate(desiredFinds, 1001, true);
-            var sf = Resolve<DataSourceFactory>().GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
+            var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
+            var dsf = Build<DataSourceFactory>();
+            var sf = dsf.GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
 
             for (int i = 1; i < attach; i++)
                 sf.InForTests().Add("another" + i, ds.Out.First().Value);
 
-            var unique = Resolve<DataSourceFactory>().GetDataSource<DataSources.ItemFilterDuplicates>(new AppIdentity(0, 0), sf);
+            // todo: replace with this.GetTestDataSource
+            var unique = dsf.GetDataSource<DataSources.ItemFilterDuplicates>(new AppIdentity(0, 0), sf);
             return unique;
         }
     }

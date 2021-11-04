@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class Shuffle: EavTestBase
+    public class Shuffle: TestBaseDiEavFullAndDb
     {
         //private const int TestVolume = 10000;
         //private ValueFilter _testDataGeneratedOutsideTimer;
@@ -24,10 +24,10 @@ namespace ToSic.Eav.DataSourceTests
         #region shuffle tests
 
 
-        private static DataSources.Shuffle GenerateShuffleDS(int desiredFinds)
+        private DataSources.Shuffle GenerateShuffleDS(int desiredFinds)
         {
-            var ds = DataTablePerson.Generate(desiredFinds, 1001, true);
-            var sf = Resolve<DataSourceFactory>().GetDataSource<DataSources.Shuffle>(new AppIdentity(0, 0), ds);
+            var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
+            var sf = Build<DataSourceFactory>().GetDataSource<DataSources.Shuffle>(new AppIdentity(0, 0), ds);
             return sf;
         }
 

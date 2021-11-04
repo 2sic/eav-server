@@ -5,7 +5,7 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Testing.Shared
 {
-    public abstract class TestBaseDiEmpty : HasLog
+    public abstract class TestBaseDiEmpty : HasLog, IServiceBuilder
     {
         private IServiceProvider ServiceProvider { get; }
 

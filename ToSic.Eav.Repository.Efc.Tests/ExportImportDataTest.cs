@@ -8,15 +8,15 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.Repository.Efc.Tests
 {
     [TestClass]
-    public class ExportImportDataTest: EavTestBase
+    public class ExportImportDataTest: TestBaseDiEavFullAndDb
     {
         private readonly AppRuntime _appRuntime;
         private readonly XmlExporter _xmlExporter;
 
         public ExportImportDataTest()
         {
-            _appRuntime = Resolve<AppRuntime>();
-            _xmlExporter = Resolve<XmlExporter>();
+            _appRuntime = Build<AppRuntime>();
+            _xmlExporter = Build<XmlExporter>();
         }
         [TestMethod]
         [Ignore] // ignore for now, reason is that we don't have a mock-portal-settings provider

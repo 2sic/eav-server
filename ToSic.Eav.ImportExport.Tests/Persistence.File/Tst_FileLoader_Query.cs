@@ -29,7 +29,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         private IList<IEntity> LoadAllQueries()
         {
             Trace.WriteLine($"path:'{TestStorageRoot}'");
-            var loader = EavTestBase.Resolve<FileSystemLoader>().Init(TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null, Log);
+            var loader = Build<FileSystemLoader>().Init(TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null, Log);
             IList<IEntity> cts;
             try
             {

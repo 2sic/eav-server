@@ -17,8 +17,8 @@ namespace ToSic.Eav.ImportExport.Tests.json
 
         public JsonEntitySerialization()
         {
-            _jsonSerializer = EavTestBase.Resolve<JsonSerializer>();
-            _loader = EavTestBase.Resolve<Efc11Loader>();
+            _jsonSerializer = Build<JsonSerializer>();
+            _loader = Build<Efc11Loader>();
         }
 
         [TestMethod]

@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources.Tests.Query
 
         private QueryDefinition LoadQueryDef(int appId, int queryId)
         {
-            var appState = EavTestBase.Resolve<IAppStates>().Get(appId);
+            var appState = Build<IAppStates>().Get(appId);
             var pipelineEntity = _queryManager.Init(null).GetQueryEntity(queryId, appState);
             return new QueryDefinition(pipelineEntity, appId, null);
         }

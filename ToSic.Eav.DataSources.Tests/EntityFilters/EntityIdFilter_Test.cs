@@ -3,11 +3,12 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.EntityFilters
 {
     [TestClass]
-    public class EntityIdFilter_Test
+    public class EntityIdFilter_Test: TestBaseDiEavFullAndDb
     {
         [TestMethod]
         public void EntityIdFilter_SingleItem()
@@ -102,9 +103,9 @@ namespace ToSic.Eav.DataSourceTests.EntityFilters
 
         }
 
-        public static EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
+        public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
         {
-            var ds = DataTablePerson.Generate(testItemsInRootSource, 1001);
+            var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
             var filtered = new EntityIdFilter()
                 .Init(ds.Configuration.LookUpEngine);
             //filtered.ConfigurationProvider = ds.ConfigurationProvider;

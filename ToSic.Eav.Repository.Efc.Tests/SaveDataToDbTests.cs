@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
@@ -15,7 +14,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Repository.Efc.Tests
 {
     [TestClass]
-    public class SaveDataToDbTests: EavTestBase
+    public class SaveDataToDbTests: TestBaseDiEavFullAndDb
     {
         private readonly DbDataController _dbData;
         private readonly Efc11Loader _loader1;
@@ -25,13 +24,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public SaveDataToDbTests()
         {
-            _dbData = Resolve<DbDataController>();
-            _loader1 = Resolve<Efc11Loader>();
-            _loader2 = Resolve<Efc11Loader>();
-            _environment = Resolve<IImportExportEnvironment>();
+            _dbData = Build<DbDataController>();
+            _loader1 = Build<Efc11Loader>();
+            _loader2 = Build<Efc11Loader>();
+            _environment = Build<IImportExportEnvironment>();
         }
-
-        public static ILog Log = new Log("TstSav");
 
         [TestInitialize]
         public void Init()

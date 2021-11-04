@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void TitleChange()
         {
-            var test = new AttributeRenameTester(MapDropTitle, false);
+            var test = new AttributeRenameTester(this).Init(MapDropTitle, false);
             Assert.AreEqual(10, test.CList.Count);
             Assert.AreEqual(1, test.CItem.Attributes.Count, "expected the same amount of columns");
 

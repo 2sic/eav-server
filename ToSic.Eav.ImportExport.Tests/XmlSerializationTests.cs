@@ -13,12 +13,12 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.ImportExport.Tests
 {
     [TestClass]
-    public class XmlSerializationTests: EavTestBase
+    public class XmlSerializationTests: TestBaseDiEavFullAndDb
     {
         private readonly XmlSerializer _xmlSerializer;
         public XmlSerializationTests()
         {
-            _xmlSerializer = Resolve<XmlSerializer>();
+            _xmlSerializer = Build<XmlSerializer>();
         }
 
         public static ILog Log = new Log("TstXml");
@@ -37,9 +37,9 @@ namespace ToSic.Eav.ImportExport.Tests
             //var xmlstring = xml.ToString();
             //Assert.IsTrue(xmlstring.Length > 200, "should get a long xml string");
 
-            var app = Resolve<Efc11Loader>().AppState(test.AppId, false);
+            var app = Build<Efc11Loader>().AppState(test.AppId, false);
             //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
-            var languageMap = Resolve<IAppStates>().Languages(test.ZoneId) // zone.Languages()
+            var languageMap = Build<IAppStates>().Languages(test.ZoneId) // zone.Languages()
                 .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app, Log);
             var xmlEnt = exBuilder.Serialize(test.ItemOnHomeId);
@@ -54,9 +54,9 @@ namespace ToSic.Eav.ImportExport.Tests
         {
             var test = new TestValuesOnPc2Dm();
             var appId = test.BlogAppId;
-            var app = Resolve<Efc11Loader>().AppState(appId, false);
+            var app = Build<Efc11Loader>().AppState(appId, false);
             //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
-            var languageMap = Resolve<IAppStates>().Languages(test.ZoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
+            var languageMap = Build<IAppStates>().Languages(test.ZoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app, Log);
 
             var maxCount = 500;

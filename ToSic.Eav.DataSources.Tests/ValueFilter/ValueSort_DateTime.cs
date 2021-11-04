@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with Modified!
 
     [TestClass]
-    public class ValueSort_DateTime: EavTestBase
+    public class ValueSort_DateTime: TestBaseDiEavFullAndDb
     {
         private const int TestVolume = 30;
         private const string Birthdate = PersonSpecs.FieldBirthday;
@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSourceTests
 
         public ValueSort_DateTime()
         {
-            _valueFilterMaker = Resolve<ValueFilterMaker>();
+            _valueFilterMaker = new ValueFilterMaker(this);
 
             _testDataGeneratedOutsideTimer = _valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume);
         }

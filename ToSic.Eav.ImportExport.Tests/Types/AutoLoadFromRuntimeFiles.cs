@@ -6,11 +6,11 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.ImportExport.Tests.Types
 {
     [TestClass]
-    public class AutoLoadFromRuntimeFiles
+    public class AutoLoadFromRuntimeFiles: TestBaseDiCore
     {
         public AutoLoadFromRuntimeFiles()
         {
-            _globalTypes = EavTestBase.Resolve<IGlobalTypes>();
+            _globalTypes = Build<IGlobalTypes>();
         }
         private readonly IGlobalTypes _globalTypes;
 

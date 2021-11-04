@@ -14,11 +14,8 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.Repository.Efc.Tests
 {
     [TestClass]
-    public class VersioningTests: EavTestBase
+    public class VersioningTests: TestBaseDiEavFullAndDb
     {
-
-        public static ILog Log = new Log("TstVer");
-
         #region Test Data
 
         private int TestItemWithCa20Changes = 3893;
@@ -34,10 +31,14 @@ namespace ToSic.Eav.Repository.Efc.Tests
         // just a note: this is Portal 54 or something on Daniels test server, change it to your system if you want to run these tests!
         public const int ZoneId = 56;
 
-        public IImportExportEnvironment Environment = EavTestBase.Resolve<ImportExportEnvironmentMock>();
-
+        public IImportExportEnvironment Environment ;
 
         #endregion
+
+        public VersioningTests()
+        {
+            Environment = Build<ImportExportEnvironmentMock>();
+        }
 
         // todo: move tests to tests of ToSic.Eav.Apps
         [TestMethod]
@@ -45,8 +46,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = DevPc2dmItemOnHome;
             var version = 2;
-            var _appManager = Resolve<AppManager>().Init(td.TestApp, Log);
-            var dc = Resolve<DbDataController>().Init(td.ZoneId, td.AppId, Log);
+            var _appManager = Build<AppManager>().Init(td.TestApp, Log);
+            var dc = Build<DbDataController>().Init(td.ZoneId, td.AppId, Log);
             var all = _appManager.Entities.VersionHistory(id);  dc.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
 
@@ -68,7 +69,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = TestItemWithCa20Changes;
             var version = 6;
-            var _dbData = Resolve<DbDataController>().Init(ZoneId, null, Log);
+            var _dbData = Build<DbDataController>().Init(ZoneId, null, Log);
             var all = _dbData.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
             var vItem = _dbData.Versioning.GetItem(id, vId);
@@ -80,7 +81,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private List<ItemHistory> GetHistoryTest(int entityId, int expectedCount)
         {
-            var _dbData = Resolve<DbDataController>().Init(ZoneId, null, Log);
+            var _dbData = Build<DbDataController>().Init(ZoneId, null, Log);
             var history = _dbData.Versioning.GetHistoryList(entityId, true);
             Assert.AreEqual(expectedCount, history.Count, $"should have {expectedCount} items in history for this one");
             return history;

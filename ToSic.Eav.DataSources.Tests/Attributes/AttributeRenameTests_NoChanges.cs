@@ -9,12 +9,12 @@ using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests
 {
-    public partial class AttributeRenameTests: EavTestBase
+    public partial class AttributeRenameTests: TestBaseDiEavFullAndDb
     {
         [TestMethod]
         public void DefaultConfiguration()
         {
-            var attrRename = Resolve<DataSourceFactory>().GetDataSource<AttributeRename>(new AppIdentity(1, 1), null, new LookUpEngine(null as ILog));
+            var attrRename = Build<DataSourceFactory>().GetDataSource<AttributeRename>(new AppIdentity(1, 1), null, new LookUpEngine(null as ILog));
             attrRename.Configuration.Parse();
             Assert.AreEqual(true, attrRename.KeepOtherAttributes);
             Assert.AreEqual("", attrRename.AttributeMap);
@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void DefaultWithoutMap()
         {
-            var attRenCompare = AttributeRenameTester.CreateRenamer(10);
+            var attRenCompare = new AttributeRenameTester(this).CreateRenamer(10);
             var item = attRenCompare.ListForTests().First();
             AssertHasFields(item, PersonSpecs.Fields);
             Assert.AreEqual(PersonSpecs.PersonTypeName, item.Type.Name, "Typename should not change");
@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void NoChanges()
         {
-            var attRen = AttributeRenameTester.CreateRenamer(10);
+            var attRen = new AttributeRenameTester(this).CreateRenamer(10);
             var result = attRen.ListForTests().ToList();
             Assert.AreEqual(10, result.Count);
             var item = result.First();

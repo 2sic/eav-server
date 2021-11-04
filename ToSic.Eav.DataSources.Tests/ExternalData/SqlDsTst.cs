@@ -130,9 +130,9 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
 
         #endregion
 
-        public static Sql GenerateSqlDataSource(string connection, string query, string typeName)
+        public Sql GenerateSqlDataSource(string connection, string query, string typeName)
         {
-            var source = GetTestDataSource<Sql>(LookUpTestData.AppSetAndRes())
+            var source = this.GetTestDataSource<Sql>(LookUpTestData.AppSetAndRes())
                 .Setup(connection, query, typeName);
             //source.Init(LookUpTestData.AppSetAndRes());
             //source.ConfigurationProvider = DemoConfigs.AppSetAndRes();

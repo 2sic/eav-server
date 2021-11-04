@@ -20,14 +20,14 @@ namespace ToSic.Eav.Persistence.File.Tests
         {
             var test = new TestValuesOnPc2Dm();
 
-            var loader = EavTestBase.Resolve<Efc11Loader>();
+            var loader = Build<Efc11Loader>();
             var app = loader.AppState(test.RootAppId, false);
 
 
             var cts = app.ContentTypes;
             var sharedCts = cts.Where(ct => (ct as ContentType).AlwaysShareConfiguration).ToList();
 
-            var fileSysLoader = EavTestBase.Resolve<FileSystemLoader>().Init(ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null, Log);
+            var fileSysLoader = Build<FileSystemLoader>().Init(ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null, Log);
 
             var time = Stopwatch.StartNew();
             sharedCts.ForEach(ct => fileSysLoader.SaveContentType(ct));

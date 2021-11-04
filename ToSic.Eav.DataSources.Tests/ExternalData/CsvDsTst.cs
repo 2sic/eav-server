@@ -117,9 +117,9 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             return entity.Value(entity.Attributes[name].Name);
         }
 
-        public static CsvDataSource CreateDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
+        public CsvDataSource CreateDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
         {
-            var source = GetTestDataSource<CsvDataSource>(); // EavTestBase.Resolve<CsvDataSource>();
+            var source = this.GetTestDataSource<CsvDataSource>(); // EavTestBase.Resolve<CsvDataSource>();
 
             source.FilePath = filePath;
             source.Delimiter = delimiter;

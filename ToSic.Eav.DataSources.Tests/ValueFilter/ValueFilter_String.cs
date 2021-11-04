@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ValueFilterString: EavTestBase
+    public class ValueFilterString: TestBaseDiEavFullAndDb
     {
         private const int TestVolume = 10000;
         private readonly ValueFilter _testDataGeneratedOutsideTimer;
@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSourceTests
 
         public ValueFilterString()
         {
-            _valueFilterMaker = Resolve<ValueFilterMaker>();
+            _valueFilterMaker = new ValueFilterMaker(this);
             _testDataGeneratedOutsideTimer = _valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
         }
 

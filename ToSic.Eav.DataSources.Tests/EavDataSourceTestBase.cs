@@ -7,14 +7,8 @@ using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace ToSic.Eav.DataSourceTests
 {
-    public abstract class EavDataSourceTestBase: EavTestBase
+    public abstract class EavDataSourceTestBase: TestBaseDiEavFullAndDb
     {
-        protected static T GetTestDataSource<T>(ILookUpEngine lookUps = null) where T: IDataSource
-        {
-            var dsf = Resolve<DataSourceFactory>();
-            var ds = dsf.GetDataSource<T>(new AppIdentity(0, 0), null, lookUps ?? new LookUpEngine(null));
-            return ds;
-        }
 
         /// <summary>
         /// Verify that the source returns an error as expected

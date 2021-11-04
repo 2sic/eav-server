@@ -9,15 +9,17 @@ using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests
 {
-    internal class AttributeRenameTester: EavTestBase
+    internal class AttributeRenameTester: TestServiceBase
     {
-        public readonly AttributeRename Original;
-        public readonly AttributeRename Changed;
-        public readonly IEntity CItem;
-        public readonly List<IEntity> CList;
-        public readonly IEntity OItem;
+        public AttributeRename Original;
+        public AttributeRename Changed;
+        public IEntity CItem;
+        public List<IEntity> CList;
+        public IEntity OItem;
 
-        public AttributeRenameTester(string map, bool preserve = true)
+        public AttributeRenameTester(IServiceBuilder parent): base(parent) {}
+
+        public AttributeRenameTester Init(string map, bool preserve = true)
         {
             Original = CreateRenamer(10);
             Changed = CreateRenamer(10);
@@ -28,6 +30,7 @@ namespace ToSic.Eav.DataSourceTests
             CList = Changed.ListForTests().ToList();
             CItem = CList.First();
             OItem = Original.ListForTests().First();
+            return this;
         }
 
         internal void AssertValues(string fieldOriginal, string fieldNew = null)
@@ -42,10 +45,10 @@ namespace ToSic.Eav.DataSourceTests
 
         }
 
-        public static AttributeRename CreateRenamer(int testItemsInRootSource)
+        public AttributeRename CreateRenamer(int testItemsInRootSource)
         {
-            var ds = DataTablePerson.Generate(testItemsInRootSource, 1001);
-            var filtered = Resolve<DataSourceFactory>().GetDataSource<AttributeRename>(new AppIdentity(1, 1), ds);
+            var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
+            var filtered = Build<DataSourceFactory>().GetDataSource<AttributeRename>(new AppIdentity(1, 1), ds);
             return filtered;
         }
     }

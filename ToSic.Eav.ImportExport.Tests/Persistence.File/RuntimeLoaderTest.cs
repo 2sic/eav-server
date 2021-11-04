@@ -2,12 +2,10 @@
 using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Core.Tests.Types;
 using ToSic.Eav.ImportExport.Persistence.File;
 using ToSic.Eav.Run;
 using ToSic.Eav.Types;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 {
@@ -16,8 +14,8 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
     {
         public RuntimeLoaderTest()
         {
-            _runtime = EavTestBase.Resolve<IRuntime>();
-            _globalTypes = EavTestBase.Resolve<IGlobalTypes>();
+            _runtime = Build<IRuntime>();
+            _globalTypes = Build<IGlobalTypes>();
         }
         private readonly IRuntime _runtime;
         private readonly IGlobalTypes _globalTypes;

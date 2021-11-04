@@ -15,7 +15,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.Repository.Efc.Tests
 {
     [TestClass]
-    public class ImportAppTests: EavTestBase
+    public class ImportAppTests: TestBaseDiEavFullAndDb
     {
         private readonly ZipImport _zipImport;
         private readonly DbDataController _dbData;
@@ -23,9 +23,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public ImportAppTests()
         {
-            _zipImport = Resolve<ZipImport>();
-            _dbData = Resolve<DbDataController>();
-            _zoneManager = Resolve<ZoneManager>();
+            _zipImport = Build<ZipImport>();
+            _dbData = Build<DbDataController>();
+            _zoneManager = Build<ZoneManager>();
         }
 
         public static ILog Log = new Log("TstImA");
@@ -39,10 +39,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
             public string Guid;
             public string Zip;
         }
-        internal Dictionary<string, AppImportDef> Apps = new Dictionary<string, AppImportDef>()
+        internal Dictionary<string, AppImportDef> Apps = new Dictionary<string, AppImportDef>
         {
-            { "tile", new AppImportDef() { Name = "Tile", Guid = "efba5a03-2926-488e-a30d-0bf9b6541bbb", Zip = "2sxcApp_Tiles_01.02.00.zip"}},
-            { "qr", new AppImportDef() { Name = "QR Code", Guid = "55e57a39-e506-416a-aed0-1c7459d31e86", Zip = "2sxcApp_QRCode_01.00.03.zip"}}
+            { "tile", new AppImportDef { Name = "Tile", Guid = "efba5a03-2926-488e-a30d-0bf9b6541bbb", Zip = "2sxcApp_Tiles_01.02.00.zip"}},
+            { "qr", new AppImportDef { Name = "QR Code", Guid = "55e57a39-e506-416a-aed0-1c7459d31e86", Zip = "2sxcApp_QRCode_01.00.03.zip"}}
 
         };
 
@@ -81,7 +81,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // to be sure, clean up first
             DeleteAnApp(Apps[name].Guid);
 
-            var helper = (ImportExportEnvironmentMock)EavTestBase.Resolve<IImportExportEnvironment>();
+            var helper = (ImportExportEnvironmentMock)Build<IImportExportEnvironment>();
             var baseTestPath = helper.BasePath;
             var testFileName = baseTestPath + @"Import-Packages\" + Apps[name].Zip;// 2sxcApp_Tiles_01.02.00.zip";
 

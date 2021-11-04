@@ -9,15 +9,15 @@ namespace ToSic.Eav.DataSourceTests.Query
 {
     [TestClass]
     [DeploymentItem("..\\..\\" + TestConfig.GlobalQueriesData, TestConfig.TestingPath)]
-    public class Tst_QueryGlobal: HasLog
+    public class Tst_QueryGlobal: TestBaseDiEavFull
     {
         private readonly GlobalQueries _globalQueries;
         private readonly QueryBuilder _queryBuilder;
 
-        public Tst_QueryGlobal(): base("Tst.QryGlb")
+        public Tst_QueryGlobal()
         {
-            _globalQueries = EavTestBase.Resolve<GlobalQueries>();
-            _queryBuilder = EavTestBase.Resolve<QueryBuilder>();
+            _globalQueries = Build<GlobalQueries>();
+            _queryBuilder = Build<QueryBuilder>();
         }
 
         private const int testQueryCount = 7;

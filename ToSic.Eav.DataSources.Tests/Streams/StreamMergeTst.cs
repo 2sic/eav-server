@@ -10,14 +10,14 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class StreamMergeTst: EavTestBase
+    public class StreamMergeTst: TestBaseDiEavFullAndDb
     {
 
         [TestMethod]
         public void StreamMerge_In0()
         {
             var desiredFinds = 0;
-            var sf = Resolve<DataSourceFactory>().GetDataSource<StreamMerge>(
+            var sf = Build<DataSourceFactory>().GetDataSource<StreamMerge>(
                 new AppIdentity(0, 0), null, 
                 new LookUpEngine(null as ILog));
             var found = sf.ListForTests().Count();
@@ -61,10 +61,10 @@ namespace ToSic.Eav.DataSourceTests.Streams
 
         }
 
-        private static StreamMerge GenerateMergeDs(int desiredFinds)
+        private StreamMerge GenerateMergeDs(int desiredFinds)
         {
-            var ds = DataTablePerson.Generate(desiredFinds, 1001, true);
-            var sf = Resolve<DataSourceFactory>().GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
+            var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
+            var sf = Build<DataSourceFactory>().GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
             return sf;
         }
     }

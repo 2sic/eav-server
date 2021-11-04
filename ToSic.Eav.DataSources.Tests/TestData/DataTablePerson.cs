@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Core.Tests.LookUp;
+using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.DataSourceTests.TestData
 {
-    public class DataTablePerson: EavDataSourceTestBase
+    public class DataTablePerson: TestServiceBase, IServiceBuilder
     {
+        public DataTablePerson(IServiceBuilder serviceProvider) : base(serviceProvider)
+        {
+        }
+
         private static readonly Dictionary<int, DataTable> CachedDs = new Dictionary<int, DataTable>();
 
-        public static DataTable Generate(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
+        public DataTable Generate(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
         {
             if (useCacheForSpeed && CachedDs.ContainsKey(itemsToGenerate))
                 return CachedDs[itemsToGenerate];
@@ -45,7 +50,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                     person.CityOrNull,
                     person.Modified));
 
-            var source = GetTestDataSource<DataTable>(LookUpTestData.AppSetAndRes())
+            var source = this.GetTestDataSource<DataTable>(LookUpTestData.AppSetAndRes())
                 .Setup(dataTable, PersonSpecs.PersonTypeName, 
                     titleField: PersonSpecs.FieldFullName, 
                     modifiedField: PersonSpecs.FieldModifiedInternal)

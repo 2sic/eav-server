@@ -10,7 +10,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.Apps.Tests.ImportExport
 {
     [TestClass]
-    public class XmlTable: EavTestBase
+    public class XmlTable: TestBaseDiEavFullAndDb
     {
 
         public static ILog Log = new Log("TstXml");
@@ -30,10 +30,10 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         private ExportListXml BuildExporter(int appId, string ctName)
         {
-            var loader = Resolve<Efc11Loader>();
+            var loader = Build<Efc11Loader>();
             var appPackage = loader.AppState(appId, false);
             var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
-            return Resolve<ExportListXml>().Init(appPackage, type, Log);
+            return Build<ExportListXml>().Init(appPackage, type, Log);
         }
     }
 }

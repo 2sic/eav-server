@@ -133,6 +133,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IServiceBuilder.cs" />
     <Compile Include="Mocks\MockGlobalMetadataProvider.cs" />
     <Compile Include="TestBaseDiCore.cs" />
     <Compile Include="TestBaseDiEavFullAndDb.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="TestBaseDiEmpty.cs" />
     <Compile Include="TestBaseWithCustomDependencyInjection.cs" />
     <Compile Include="TestConstants.cs" />
+    <Compile Include="TestServiceBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
