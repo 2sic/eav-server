@@ -154,7 +154,6 @@
     <Compile Include="ExternalData\SqlDsTst.cs" />
     <Compile Include="ImportExport %28disabled, refactoring%29\XmlExport_Test.cs" />
     <Compile Include="ImportExport %28disabled, refactoring%29\XmlImport_Test.cs" />
-    <Compile Include="InitializeTests.cs" />
     <Compile Include="IServiceBuilderExtensions.cs" />
     <Compile Include="ItemFilterDuplicates\Tst_ItemFilterDuplicates.cs" />
     <Compile Include="LookUps\LookUpsTest.cs" />

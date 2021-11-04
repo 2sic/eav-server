@@ -158,7 +158,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="StartupTestingRepository.cs" />
     <Compile Include="MergeEntitiesTests.cs" />
     <Compile Include="TestGlobalFolderRepository.cs" />
     <Compile Include="SaveDataToDbTests.cs" />

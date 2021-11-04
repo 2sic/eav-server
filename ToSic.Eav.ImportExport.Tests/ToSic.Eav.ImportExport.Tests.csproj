@@ -111,7 +111,6 @@
     <Compile Include="FeatureTests\FeaturesStaticTests.cs" />
     <Compile Include="FeatureTests\IFeaturesTests.cs" />
     <Compile Include="FeatureTests\IFeaturesInternalTests.cs" />
-    <Compile Include="InitializeTests.cs" />
     <Compile Include="Json\JsonCtDeSerialization.cs" />
     <Compile Include="Json\JsonReSerialization.cs" />
     <Compile Include="Json\JsonCtSerialization.cs" />

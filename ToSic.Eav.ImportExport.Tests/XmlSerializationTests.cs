@@ -39,7 +39,7 @@ namespace ToSic.Eav.ImportExport.Tests
 
             var app = Build<Efc11Loader>().AppState(test.AppId, false);
             //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
-            var languageMap = Build<IAppStates>().Languages(test.ZoneId) // zone.Languages()
+            var languageMap = Build<IAppStates>().Languages(test.ZoneId)
                 .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app, Log);
             var xmlEnt = exBuilder.Serialize(test.ItemOnHomeId);

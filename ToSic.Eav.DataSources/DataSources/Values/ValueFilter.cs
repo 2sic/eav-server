@@ -83,14 +83,21 @@ namespace ToSic.Eav.DataSources
 		{
 			get => Configuration[TakeKey];
 		    set => Configuration[TakeKey] = value;
-		}		
+		}
         #endregion
 
-		/// <inheritdoc />
-		/// <summary>
-		/// Constructs a new ValueFilter
-		/// </summary>
-		[PrivateApi]
+        #region Error Constants
+
+        // these are public so we can verify them in tests
+        public const string ErrorInvalidOperator = "Invalid Operator";
+
+        #endregion
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Constructs a new ValueFilter
+        /// </summary>
+        [PrivateApi]
 		public ValueFilter(ValueLanguages valLanguages)
 		{
             Provide(GetValueFilterOrFallback);
@@ -231,7 +238,7 @@ namespace ToSic.Eav.DataSources
 
             if (!stringComparison.ContainsKey(operation))
             {
-                SetError("Invalid Operator", $"Bad operator for string compare, can't find comparison '{operation}'");
+                SetError(ErrorInvalidOperator, $"Bad operator for string compare, can't find comparison '{operation}'");
                 return wrapLog("error", null);
             }
 
@@ -270,7 +277,7 @@ namespace ToSic.Eav.DataSources
                     };
             }
 
-            SetError("Invalid Operator",message: $"Bad operator for boolean compare, can't find comparison '{operation}'");
+            SetError(ErrorInvalidOperator,message: $"Bad operator for boolean compare, can't find comparison '{operation}'");
             wrapLog("error");
             return null;
         }
@@ -346,7 +353,7 @@ namespace ToSic.Eav.DataSources
 
             if (!dateComparisons.ContainsKey(operation))
             {
-                SetError("Invalid Operator", $"Bad operator for datetime compare, can't find comparison '{operation}'");
+                SetError(ErrorInvalidOperator, $"Bad operator for datetime compare, can't find comparison '{operation}'");
                 return wrapLog("error", null);
             }
 
@@ -418,7 +425,7 @@ namespace ToSic.Eav.DataSources
 
             if (!numComparisons.ContainsKey(operation))
             {
-                SetError("Invalid Operator", $"Bad operator for number compare, can't find comparison '{operation}'");
+                SetError(ErrorInvalidOperator, $"Bad operator for number compare, can't find comparison '{operation}'");
                 return wrapLog("error", null);
             }
 

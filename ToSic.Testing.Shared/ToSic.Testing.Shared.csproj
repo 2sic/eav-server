@@ -135,13 +135,13 @@
   <ItemGroup>
     <Compile Include="IServiceBuilder.cs" />
     <Compile Include="Mocks\MockGlobalMetadataProvider.cs" />
+    <Compile Include="SqlTracing.cs" />
     <Compile Include="TestBaseDiCore.cs" />
     <Compile Include="TestBaseDiEavFullAndDb.cs" />
     <Compile Include="TestBaseDiEavFull.cs" />
     <Compile Include="TestBaseDiPlumbing.cs" />
     <Compile Include="EavTestBase.cs" />
     <Compile Include="Mocks\MockValueConverter.cs" />
-    <Compile Include="StartupTestingShared.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestBaseDiEmpty.cs" />
     <Compile Include="TestBaseWithCustomDependencyInjection.cs" />

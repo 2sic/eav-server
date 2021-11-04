@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ValueFilterDateTime: TestBaseDiEavFullAndDb
+    public class ValueFilterDateTime: EavDataSourceTestBase
     {
         private const int TestVolume = 10000;
         private readonly ValueFilter _testDataGeneratedOutsideTimer;
@@ -41,14 +41,18 @@ namespace ToSic.Eav.DataSourceTests
         [DataTestMethod]
         public void DateTimeFilter(string attr, string value, int expected, string operation, string name)
         {
+            var vf = PrepareDateTimeFilterDs(attr, value, operation);
+            Assert.AreEqual(expected, vf.ListForTests().Count(), "Should find exactly " + expected + " amount people");
+        }
+
+        private ValueFilter PrepareDateTimeFilterDs(string attr, string value, string operation)
+        {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = attr;
             vf.Value = value;
-            if (operation != null)
-                vf.Operator = operation;
-            Assert.AreEqual(expected, vf.ListForTests().Count(), "Should find exactly " + expected + " amount people");
+            if (operation != null) vf.Operator = operation;
+            return vf;
         }
-        
 
         #endregion
 
@@ -70,11 +74,10 @@ namespace ToSic.Eav.DataSourceTests
         #endregion
 
 
-        // test invalid operator
         [TestMethod]
-        [ExpectedException(typeof (System.Exception))]
         public void NumberFilterInvalidOperator()
-            => DateTimeFilter("Birthdate", "180", 5632, "!!", null);
+            => VerifyStreamIsError(PrepareDateTimeFilterDs("Birthdate", "180", "!!"),
+                ValueFilter.ErrorInvalidOperator);
 
 
     }

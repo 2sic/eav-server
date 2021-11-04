@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
@@ -9,7 +7,6 @@ namespace ToSic.Eav.DataSourceTests
 {
     public abstract class EavDataSourceTestBase: TestBaseDiEavFullAndDb
     {
-
         /// <summary>
         /// Verify that the source returns an error as expected
         /// </summary>

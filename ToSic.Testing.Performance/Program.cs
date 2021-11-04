@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using ToSic.Eav.Persistence.Efc.Tests;
 using ToSic.Testing.Performance.json;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Testing.Performance
 {

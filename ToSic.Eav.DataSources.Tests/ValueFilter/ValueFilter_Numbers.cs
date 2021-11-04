@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ValueFilterNumbers: TestBaseDiEavFullAndDb
+    public class ValueFilterNumbers: EavDataSourceTestBase
     {
         private readonly ValueFilterMaker _valueFilterMaker;
 
@@ -82,22 +82,26 @@ namespace ToSic.Eav.DataSourceTests
 
         public void NumberFilter(string attr, string value, int expected, string operation = null)
         {
+            var vf = PrepareNumberFilterDs(attr, value, operation);
+            Assert.AreEqual(expected, vf.ListForTests().Count(), "Should find exactly " + expected + " amount people");
+        }
+
+        private ValueFilter PrepareNumberFilterDs(string attr, string value, string operation)
+        {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = attr;
             vf.Value = value;
-            if (operation != null)
-                vf.Operator = operation;
-            Assert.AreEqual(expected, vf.ListForTests().Count(), "Should find exactly " + expected + " amount people");
+            if (operation != null) vf.Operator = operation;
+            return vf;
         }
 
         #endregion
 
 
-        // test invalid operator
         [TestMethod]
-        [ExpectedException(typeof (global::System.Exception))]
         public void NumberFilterInvalidOperator()
-            => NumberFilter("Height", "180", 5632, "!!");
+            => VerifyStreamIsError(PrepareNumberFilterDs("Height", "180", "!!"), 
+                ValueFilter.ErrorInvalidOperator);
 
 
     }

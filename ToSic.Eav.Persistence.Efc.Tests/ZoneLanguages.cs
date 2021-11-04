@@ -10,7 +10,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
     {
         private const int MinZones = 2;
         private const int MaxZones = 5;
-        private const int AppCountInHomeZone = 4;
+        private const int AppCountInHomeZone = 5;
         private const int ZoneCountWithMultiLanguage = 2;
         
         private const int ZoneHome = 2;
