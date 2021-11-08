@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.DataSources;
 
 namespace ToSic.Testing.Shared
 {
@@ -29,5 +30,9 @@ namespace ToSic.Testing.Shared
             return base.SetupServices(services)
                 .AddEav();
         }
+
+        public DataSourceFactory DataSourceFactory =>
+            _dataSourceFactory ?? (_dataSourceFactory = Build<DataSourceFactory>());
+        private DataSourceFactory _dataSourceFactory;
     }
 }

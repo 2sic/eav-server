@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSourceTests
         public List<IEntity> CList;
         public IEntity OItem;
 
-        public AttributeRenameTester(IServiceBuilder parent): base(parent) {}
+        public AttributeRenameTester(TestBaseDiEavFullAndDb parent): base(parent) {}
 
         public AttributeRenameTester Init(string map, bool preserve = true)
         {
@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSourceTests
         public AttributeRename CreateRenamer(int testItemsInRootSource)
         {
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
-            var filtered = Build<DataSourceFactory>().GetDataSource<AttributeRename>(new AppIdentity(1, 1), ds);
+            var filtered = (Parent as TestBaseDiEavFullAndDb).DataSourceFactory.GetDataSource<AttributeRename>(new AppIdentity(1, 1), ds);
             return filtered;
         }
     }

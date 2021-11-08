@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSourceTests
         public EntityTypeFilter CreateEntityTypeFilterForTesting(int testItemsInRootSource)
         {
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
-            var filtered = Build<DataSourceFactory>().GetDataSource<EntityTypeFilter>(ds);
+            var filtered = DataSourceFactory.GetDataSource<EntityTypeFilter>(ds);
             return filtered;
         }
     }

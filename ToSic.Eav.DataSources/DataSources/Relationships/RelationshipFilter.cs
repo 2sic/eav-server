@@ -16,9 +16,9 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Relationship Filter",
-        UiHint = "Get items which are related to some item",
+        UiHint = "Keep items having a relationship matching a criteria",
         Icon = "share",
-        Type = DataSourceType.Lookup, 
+        Type = DataSourceType.Filter, 
         GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
         In = new[] { Constants.DefaultStreamNameRequired, Constants.FallbackStreamName }, 
         DynamicOut = false,
@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources
         #region Configuration-properties
         /// <inheritdoc/>
         [PrivateApi]
-	    public override string LogId => "DS.RelatF";
+	    public override string LogId => $"{DataSourceConstants.LogPrefix}.RelFil";
 
         /// <summary>
         /// Settings-keys as they are used in the entity which provides settings

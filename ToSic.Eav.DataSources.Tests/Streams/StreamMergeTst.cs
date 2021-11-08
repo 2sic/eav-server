@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         public void StreamMerge_In0()
         {
             var desiredFinds = 0;
-            var sf = Build<DataSourceFactory>().GetDataSource<StreamMerge>(
+            var sf = DataSourceFactory.GetDataSource<StreamMerge>(
                 new AppIdentity(0, 0), null, 
                 new LookUpEngine(null as ILog));
             var found = sf.ListForTests().Count();
@@ -64,7 +64,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         private StreamMerge GenerateMergeDs(int desiredFinds)
         {
             var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
-            var sf = Build<DataSourceFactory>().GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
+            var sf = DataSourceFactory.GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
             return sf;
         }
     }

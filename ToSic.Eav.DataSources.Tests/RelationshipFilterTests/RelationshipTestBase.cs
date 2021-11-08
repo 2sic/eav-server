@@ -5,6 +5,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSourceTests.RelationshipTests;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.LookUp;
@@ -16,15 +17,10 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
     {
         #region Const Values for testing
 
-        protected const string Company = "Company";
-        protected const string Category = "Category";
-        protected const string Country = "Country";
-        protected const string Person = "Person";
-
-        protected const string CompCat = "Categories";
-        protected const string CatWeb = "Web";
-        protected const string CatGreen = "Green";
-        protected const string CompInexistingProp = "InexistingProperty";
+        public const string CompCat = "Categories";
+        public const string CatWeb = "Web";
+        public const string CatGreen = "Green";
+        public const string CompInexistingProp = "InexistingProperty";
 
 
         protected const string DefSeparator = ",";
@@ -50,7 +46,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             string separator = null,
         string direction = null)
         {
-            var relApi = BuildRelationshipFilter(TestConfig.Zone, TestConfig.AppForRelationshipTests, type);
+            var relApi = BuildRelationshipFilter(type);
 
             if (relationship != null) relApi.Relationship = relationship;
             if (filter != null) relApi.Filter = filter;
@@ -84,17 +80,17 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             MaybeAddValue(RelationshipFilter.Settings.Separator, separator);
             MaybeAddValue(RelationshipFilter.Settings.Direction, direction);
 
-            var config = BuildConfigurationProvider("Settings", settings);
-            return BuildRelationshipFilter(TestConfig.Zone, TestConfig.AppForRelationshipTests, Company, config);
+            var config = BuildConfigurationProvider(settings);
+            return BuildRelationshipFilter(RelationshipTestSpecs.Company, config);
         }
 
 
 
 
-        protected RelationshipFilter BuildRelationshipFilter(int zone, int app, string primaryType, ILookUpEngine config = null)
+        protected RelationshipFilter BuildRelationshipFilter(string primaryType, ILookUpEngine config = null)
         {
-            var baseDs = Build<DataSourceFactory>().GetPublishing(new AppIdentity(zone, app), configProvider: config);
-            var appDs = Build<DataSourceFactory>().GetDataSource<App>(baseDs);
+            var baseDs = DataSourceFactory.GetPublishing(RelationshipTestSpecs.AppIdentity, configProvider: config);
+            var appDs = DataSourceFactory.GetDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.
             Assert.IsTrue(appDs.ListForTests().Count() > 20, "appDs.List.Count() > 20");
@@ -110,23 +106,17 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
             Assert.IsTrue(stream.ListForTests().Any(), "stream.List.Count() > 0");
 
-            var relFilt = Build<DataSourceFactory>().GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
-                appDs.Configuration.LookUpEngine/*, parentLog: Log*/);
+            var relFilt = DataSourceFactory.GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
+                appDs.Configuration.LookUpEngine);
             relFilt.AttachForTests(Constants.DefaultStreamName, stream);
             return relFilt;
         }
 
 
-        protected static LookUpEngine BuildConfigurationProvider(string name, Dictionary<string, object> vals)
-        {
-            var vc = BuildConfigurationProvider();
-            vc.Add(LookUpTestData.BuildLookUpEntity("Settings", vals));
-            return vc;
-        }
-
-        protected static LookUpEngine BuildConfigurationProvider()
+        protected static LookUpEngine BuildConfigurationProvider(Dictionary<string, object> vals)
         {
             var vc = LookUpTestData.AppSetAndRes();
+            vc.Add(LookUpTestData.BuildLookUpEntity("Settings", vals));
             return vc;
         }
 

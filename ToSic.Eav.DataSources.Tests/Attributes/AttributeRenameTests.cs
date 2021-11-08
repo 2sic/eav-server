@@ -3,11 +3,12 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
-    public partial class AttributeRenameTests
+    public partial class AttributeRenameTests: TestBaseDiEavFullAndDb
     {
         
         private static void AssertHasFields(IEntity item, IEnumerable<string> fieldsExpected)

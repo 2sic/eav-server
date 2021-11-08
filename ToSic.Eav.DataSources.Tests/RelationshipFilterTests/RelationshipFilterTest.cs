@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSourceTests.RelationshipTests;
 
 namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 {
@@ -25,7 +26,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         [TestMethod]
         public void DS_RelFil_ConstructionWorks()
         {
-            var relFilt = BuildRelationshipFilter(TestConfig.Zone, TestConfig.AppForRelationshipTests, Company);
+            var relFilt = BuildRelationshipFilter(RelationshipTestSpecs.Company);
             Trace.Write(Log.Dump());
             Assert.IsNotNull(relFilt, "relFilt != null");
         }
@@ -33,7 +34,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         [TestMethod]
         public void DS_RelFil_NoConfigEmpty()
         {
-            var relFilt = BuildRelationshipFilter(TestConfig.Zone, TestConfig.AppForRelationshipTests, Company);
+            var relFilt = BuildRelationshipFilter(RelationshipTestSpecs.Company);
 
             var result = relFilt.ListForTests().ToList();
 
@@ -44,7 +45,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         [TestMethod]
         public void DS_RelFil_NoConfigFallback()
         {
-            var relFilt = BuildRelationshipFilter(TestConfig.Zone, TestConfig.AppForRelationshipTests, Company);
+            var relFilt = BuildRelationshipFilter(RelationshipTestSpecs.Company);
             relFilt.AttachForTests(Constants.FallbackStreamName, relFilt.InForTests()[Constants.DefaultStreamName]);
 
             var result = relFilt.ListForTests().ToList();
@@ -55,15 +56,15 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
         [TestMethod]
         public void DS_RelFil_Companies_Having_Category_Title() 
-            => new RelationshipTest("basic-cat-having-title", Company, CompCat, CatWeb).Run(true);
+            => new RelationshipTest("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb).Run(true);
 
         [TestMethod]
         public void DS_RelFil_Companies_Having_Category_Active() 
-            => new RelationshipTest("basic-cat-having-title", Company, CompCat, "true", relAttribute: "Active").Run(true);
+            => new RelationshipTest("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, "true", relAttribute: "Active").Run(true);
 
         [TestMethod]
         public void DS_RelFil_Companies_Having_InexistingProperty_Title() 
-            => new RelationshipTest("basic-cat-having-inexisting-property", Company, CompInexistingProp, CatWeb).Run(false);
+            => new RelationshipTest("basic-cat-having-inexisting-property", RelationshipTestSpecs.Company, CompInexistingProp, CatWeb).Run(false);
 
     }
 }

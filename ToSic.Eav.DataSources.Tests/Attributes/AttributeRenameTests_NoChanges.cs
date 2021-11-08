@@ -5,16 +5,15 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests
 {
-    public partial class AttributeRenameTests: TestBaseDiEavFullAndDb
+    public partial class AttributeRenameTests
     {
         [TestMethod]
         public void DefaultConfiguration()
         {
-            var attrRename = Build<DataSourceFactory>().GetDataSource<AttributeRename>(new AppIdentity(1, 1), null, new LookUpEngine(null as ILog));
+            var attrRename = DataSourceFactory.GetDataSource<AttributeRename>(new AppIdentity(1, 1), null, new LookUpEngine(null as ILog));
             attrRename.Configuration.Parse();
             Assert.AreEqual(true, attrRename.KeepOtherAttributes);
             Assert.AreEqual("", attrRename.AttributeMap);
