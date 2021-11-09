@@ -56,15 +56,15 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
         [TestMethod]
         public void DS_RelFil_Companies_Having_Category_Title() 
-            => new RelationshipTest("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb).Run(true);
+            => new RelationshipTestCase("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb).Run(true);
 
         [TestMethod]
         public void DS_RelFil_Companies_Having_Category_Active() 
-            => new RelationshipTest("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, "true", relAttribute: "Active").Run(true);
+            => new RelationshipTestCase("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, "true", relAttribute: "Active").Run(true);
 
         [TestMethod]
         public void DS_RelFil_Companies_Having_InexistingProperty_Title() 
-            => new RelationshipTest("basic-cat-having-inexisting-property", RelationshipTestSpecs.Company, CompInexistingProp, CatWeb).Run(false);
+            => new RelationshipTestCase("basic-cat-having-inexisting-property", RelationshipTestSpecs.Company, CompInexistingProp, CatWeb).Run(false);
 
     }
 }

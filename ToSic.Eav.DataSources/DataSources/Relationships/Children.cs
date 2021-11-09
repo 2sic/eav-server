@@ -1,40 +1,44 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
     /// <summary>
-    /// Will get the ??? children of an item based on the field they are in.
-    ///
-    /// Options - unclear?
-    ///
-    /// Scenarios
-    /// 1. Just get all the children of the items involved - all fields
-    /// 1. Just get all the children of the items involved - specific field
-    /// 1. Allow multiple streams? 
-    /// 1. Count? the thildren of items
+    /// Get Children Entities (child-relationships) of the Entities coming into this DataSource
     /// </summary>
+    /// <remarks>
+    /// Added in v12.10
+    /// </remarks>
+    [VisualQuery(
+        NiceName = "Children",
+        UiHint = "Get the item's children",
+        Icon = "escalator_warning",
+        Type = DataSourceType.Lookup,
+        GlobalName = "ToSic.Eav.DataSources.Children, ToSic.Eav.DataSources",
+        In = new[] { Constants.DefaultStreamNameRequired },
+        DynamicOut = false,
+        ExpectsDataOfType = "832cd470-49f2-4909-a08a-77644457713e",
+        HelpLink = "https://r.2sxc.org/DsChildren")]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
-    public class Children : DataSourceBase
+    public class Children : RelationshipDataSourceBase
     {
         /// <inheritdoc/>
         [PrivateApi]
-        public override string LogId => $"{DataSourceConstants.LogPrefix}.RelLok";
+        public override string LogId => $"{DataSourceConstants.LogPrefix}.Child";
 
-        [PrivateApi] public const string FieldNameKey = "FieldName";
-
-        [PrivateApi] public const string ContentTypeNameKey = "ContentTypeName";
 
         /// <summary>
         /// Name of the field pointing to the children.
         /// If left blank, will use get all children.
         /// </summary>
-        public string FieldName
+        public override string FieldName
         {
-            get => Configuration[FieldNameKey];
-            set => Configuration[FieldNameKey] = value;
+            get => Configuration[nameof(FieldName)];
+            set => Configuration[nameof(FieldName)] = value;
         }
 
         /// <summary>
@@ -43,44 +47,19 @@ namespace ToSic.Eav.DataSources
         ///
         /// Can usually be left empty (recommended).
         /// </summary>
-        public string ContentTypeName
+        public override string ContentTypeName
         {
-            get => Configuration[ContentTypeNameKey];
-            set => Configuration[ContentTypeNameKey] = value;
+            get => Configuration[nameof(ContentTypeName)];
+            set => Configuration[nameof(ContentTypeName)] = value;
         }
-
 
         /// <summary>
-        /// Constructor - DI Compatible - don't call yourself
+        /// Construct function for the get of the related items
         /// </summary>
-        public Children()
-        {
-            Provide(GetChildren);
-            ConfigMask(FieldNameKey, $"[Settings:{FieldNameKey}]");
-            ConfigMask(ContentTypeNameKey, $"[Settings:{ContentTypeNameKey}]");
-        }
-
-        private IImmutableList<IEntity> GetChildren()
-        {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
-
-            // Make sure we have an In - otherwise error
-            if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
-
-            var fieldName = FieldName;
-            if (string.IsNullOrWhiteSpace(fieldName)) fieldName = null;
-            Log.Add($"Field Name: {fieldName}");
-            
-            var typeName = ContentTypeName;
-            if (string.IsNullOrWhiteSpace(typeName)) typeName = null;
-            Log.Add($"Content Type Name: {typeName}");
-
-            var result = originals
-                .SelectMany(o => o.Relationships.FindChildren(fieldName, typeName, Log))
-                .ToImmutableList();
-
-            return wrapLog(null, result);
-        }
+        /// <param name="fieldName"></param>
+        /// <param name="typeName"></param>
+        /// <returns></returns>
+        protected override Func<IEntity, IEnumerable<IEntity>> InnerGet(string fieldName, string typeName) 
+            => o => o.Relationships.FindChildren(fieldName, typeName, Log);
     }
 }

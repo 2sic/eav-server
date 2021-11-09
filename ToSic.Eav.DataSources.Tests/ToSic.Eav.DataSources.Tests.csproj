@@ -143,6 +143,8 @@
     <Compile Include="Attributes\AttributeRenameTests_Mapped.cs" />
     <Compile Include="Attributes\AttributeRenameTests_NoChanges.cs" />
     <Compile Include="Attributes\AttributeRenameTests.cs" />
+    <Compile Include="BaseClassTests\ConfigMaskTests.cs" />
+    <Compile Include="BaseClassTests\TestDataSourceBase.cs" />
     <Compile Include="Caches\CacheAllStreams_Test.cs" />
     <Compile Include="Caches\QuickCaches_Test.cs" />
     <Compile Include="DataSourceErrors.cs" />
@@ -159,7 +161,9 @@
     <Compile Include="LookUps\LookUpsTest.cs" />
     <Compile Include="DataSources\PagingTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RelationshipTests\ChildLookupTests.cs" />
+    <Compile Include="RelationshipTests\ChildParentTestBase.cs" />
+    <Compile Include="RelationshipTests\ParentsTests.cs" />
+    <Compile Include="RelationshipTests\ChildrenTests.cs" />
     <Compile Include="RelationshipTests\RelationshipTestSpecs.cs" />
     <Compile Include="TestData\DataTableTrivial.cs" />
     <Compile Include="TestData\DataTablePerson.cs" />
@@ -171,10 +175,10 @@
     <Compile Include="Query\QueryBasicTest.cs" />
     <Compile Include="Query\QueryGlobalTest.cs" />
     <Compile Include="Query\ParamsTests.cs" />
-    <Compile Include="RelationshipFilterTests\RelationshipTest.cs" />
-    <Compile Include="RelationshipFilterTests\RelationshipTestBase.cs" />
-    <Compile Include="RelationshipFilterTests\RelationshipFilterTest_Modes.cs" />
-    <Compile Include="RelationshipFilterTests\RelationshipFilterTest.cs" />
+    <Compile Include="RelationshipTests\RelationshipTestCase.cs" />
+    <Compile Include="RelationshipTests\RelationshipTestBase.cs" />
+    <Compile Include="RelationshipTests\RelationshipFilterTest_Modes.cs" />
+    <Compile Include="RelationshipTests\RelationshipFilterTest.cs" />
     <Compile Include="DataSources\ShuffleTest.cs" />
     <Compile Include="DataSourceTests.cs" />
     <Compile Include="PassThrough\PassThrough_Cache.cs" />

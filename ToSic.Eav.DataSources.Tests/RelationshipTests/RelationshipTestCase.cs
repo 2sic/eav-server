@@ -7,7 +7,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 {
-    internal class RelationshipTest : RelationshipTestBase
+    internal class RelationshipTestCase : RelationshipTestBase
     {
         internal string Name;
         internal RelationshipFilter Api;
@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             CompareMode, 
             Separator, 
             Direction;
-        internal RelationshipTest(string name, 
+        internal RelationshipTestCase(string name, 
             string type, 
             string relationship = null, 
             string filter = null, 
@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             Direction = direction;
         }
 
-        private RelationshipTest BuildObjects()
+        private RelationshipTestCase BuildObjects()
         {
             // test using api configuration
             Api = FilterWithApi(Type, 

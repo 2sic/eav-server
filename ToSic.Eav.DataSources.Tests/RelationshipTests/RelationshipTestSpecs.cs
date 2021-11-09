@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.DataSources.Caching;
 
 namespace ToSic.Eav.DataSourceTests.RelationshipTests
 {
@@ -16,5 +17,10 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
         public const int PersonCompanyCount = 1;
 
         public const int CompanyIdWithCountryAnd4Categories = 750;
+
+        public const int CountrySwitzerland = 732;
+        public const int CountrySwitzerlandParents = 2;
+
+        
     }
 }

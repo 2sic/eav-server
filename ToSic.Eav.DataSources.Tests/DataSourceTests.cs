@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSourceTests
     [TestClass]
     public class DataSourceTests: TestBaseDiEavFullAndDb
     {
-        public const int EavInstalledDsCount = 40;
+        public const int EavInstalledDsCount = 42;
         public const int TestingAddedDsCount = 1;
         public const int StandardInstalledDSCount = EavInstalledDsCount + TestingAddedDsCount;
 

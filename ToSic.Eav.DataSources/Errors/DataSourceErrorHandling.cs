@@ -9,10 +9,6 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class DataSourceErrorHandling
     {
-        public DataSourceErrorHandling()
-        {
-        }
-        
         public static string ErrorType = "Error";
         public static string ErrorTitle = "Error";
 
@@ -29,6 +25,10 @@ namespace ToSic.Eav.DataSources
                 {"Message", message },
                 {"DebugNotes", "There should be more details in the insights logs, see https://r.2sxc.org/insights" }
             };
+
+            // #DebugDataSource
+            // When debugging I usually want to see where this happens. Feel free to comment in/out as needed
+            // System.Diagnostics.Debugger.Break();
 
             var errorEntity = new DataBuilder().Entity(values, titleField: ErrorTitle, typeName: ErrorType);
             return errorEntity;
