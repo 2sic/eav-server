@@ -11,6 +11,10 @@ namespace ToSic.Eav.DataSources
 	/// <summary>
 	/// A DataSource that merges all streams on the `In` into one `Out` stream
 	/// </summary>
+	/// <remarks>
+	/// History
+	/// * v12.10 added new Out streams `Distinct` removes duplicates, `And` keeps items which are in _all_ streams and `Xor` keeps items which are only in one stream
+	/// </remarks>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
         NiceName = "Merge Streams",
@@ -37,10 +41,9 @@ namespace ToSic.Eav.DataSources
         /// <remarks>
         /// New in v12.10
         /// </remarks>
-        public const string DistinctStream = "Distinct";
-
-        public const string AndStream = "And";
-        public const string XorStream = "Xor";
+        [PrivateApi] public const string DistinctStream = "Distinct";
+        [PrivateApi] public const string AndStream = "And";
+        [PrivateApi] public const string XorStream = "Xor";
 
 
         /// <inheritdoc />
