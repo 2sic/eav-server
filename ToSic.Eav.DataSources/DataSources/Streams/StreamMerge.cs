@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
 	/// </summary>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
-        NiceName = "Merge Stream",
+        NiceName = "Merge Streams",
         UiHint = "Combine multiple streams into one",
         Icon = "merge_type",
         Type = DataSourceType.Logic, 
@@ -31,6 +31,17 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
+        /// <summary>
+        /// Name of stream which offers only distinct items (filter duplicates)
+        /// </summary>
+        /// <remarks>
+        /// New in v12.10
+        /// </remarks>
+        public const string DistinctStream = "Distinct";
+
+        public const string AndStream = "And";
+        public const string XorStream = "Xor";
+
 
         /// <inheritdoc />
         /// <summary>
@@ -40,18 +51,90 @@ namespace ToSic.Eav.DataSources
 		public StreamMerge()
 		{
             Provide(GetList);
+            Provide(DistinctStream, GetDistinct);
+            Provide(AndStream, GetAnd);
+            Provide(XorStream, GetXor);
 		}
 
         private ImmutableArray<IEntity> GetList()
         {
-            var streams = In
+            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var streams = GetValidInStreams();
+
+            var result = streams
+                .SelectMany(stm => stm)
+                .ToImmutableArray();
+
+            // 2021-11-09 2dm - old code, believe the new SelectMany is more efficient
+            //return streams
+            //    .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, stream) => current.Concat(stream))
+            //    .ToImmutableArray();
+
+            return wrapLog(result.Length.ToString(), result);
+        }
+
+        private List<IEnumerable<IEntity>> GetValidInStreams()
+        {
+            if (_validInStreams != null) return _validInStreams;
+
+            var wrapLog = Log.Call<List<IEnumerable<IEntity>>>();
+            
+            _validInStreams = In
                 .OrderBy(pair => pair.Key)
                 .Where(v => v.Value?.List != null)
-                .Select(v => v.Value.List);
+                .Select(v => v.Value.List)
+                .ToList();
 
-            return streams
-                .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, stream) => current.Concat(stream))
-                .ToImmutableArray();
+            return wrapLog(_validInStreams.Count.ToString(), _validInStreams);
         }
-	}
+
+        private List<IEnumerable<IEntity>> _validInStreams;
+
+        private ImmutableArray<IEntity> GetDistinct()
+        {
+            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var result = List.Distinct().ToImmutableArray();
+            return wrapLog(result.Length.ToString(), result);
+        }
+
+        private ImmutableArray<IEntity> GetAnd()
+        {
+            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+
+            var streams = GetValidInStreams();
+            var streamCount = streams.Count;
+            var first = streams.FirstOrDefault();
+            var firstList = first?.ToList(); // must be separate, because we 
+            if (streamCount == 0 || firstList == null || !firstList.Any())
+                return wrapLog("no real In", ImmutableArray.Create<IEntity>());
+
+            if (streamCount == 1) return wrapLog("Just 1 In", firstList.ToImmutableArray());
+
+            var others = streams
+                .Skip(1)
+                .ToList();
+
+            var itemsInOthers = others.SelectMany(s => s).Distinct().ToList();
+
+            var final = firstList
+                .Where(e => itemsInOthers.Contains(e))
+                .ToImmutableArray();
+
+            return wrapLog(final.Length.ToString(), final);
+        }
+
+        private ImmutableArray<IEntity> GetXor()
+        {
+            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+
+            var result = List
+                .GroupBy(e => e)
+                .Where(g => g.Count() == 1)
+                .Select(g => g.First())
+                .ToImmutableArray();
+
+            return wrapLog(result.Length.ToString(), result);
+        }
+
+    }
 }

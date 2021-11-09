@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
@@ -75,6 +76,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="fieldName"></param>
         /// <param name="typeName"></param>
         /// <returns></returns>
+        [PrivateApi]
         protected abstract Func<IEntity, IEnumerable<IEntity>> InnerGet(string fieldName, string typeName);
 
     }

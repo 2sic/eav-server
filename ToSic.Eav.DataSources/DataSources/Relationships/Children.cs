@@ -59,6 +59,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="fieldName"></param>
         /// <param name="typeName"></param>
         /// <returns></returns>
+        [PrivateApi]
         protected override Func<IEntity, IEnumerable<IEntity>> InnerGet(string fieldName, string typeName) 
             => o => o.Relationships.FindChildren(fieldName, typeName, Log);
     }
