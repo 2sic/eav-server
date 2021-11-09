@@ -41,6 +41,9 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public bool CacheRefreshOnSourceRefresh { get; set; } = true;
 
+        /// <inheritdoc />
+        public string Scope { get; protected set; } = Constants.ScopeContentFuture; // todo / wip should get from constant
+
         /// <summary>
         /// Provide access to the CacheKey - so it could be overridden if necessary without using the stream underneath it
         /// </summary>

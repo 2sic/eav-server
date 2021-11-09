@@ -87,6 +87,7 @@ namespace ToSic.Eav.DataSources
         public IDataSource Source => UnwrappedContents.Source;
 
         public string Name => UnwrappedContents.Name;
+        public string Scope => UnwrappedContents.Scope;
 
         public DataStreamCacheStatus Caching => UnwrappedContents.Caching;
 

@@ -63,7 +63,6 @@ namespace ToSic.Eav.DataSources
             // because the "real" source already applies filters like published
             var appState = _appStates.Get(this);
             var listOfTypes = appState.ContentTypes;
-            // var dataSourceFactory = new DataSource(Log);
             var showDrafts = GetShowDraftStatus();
             var typeList = "";
             foreach (var contentType in listOfTypes)
@@ -73,12 +72,17 @@ namespace ToSic.Eav.DataSources
                     continue;
                 typeList += typeName + ",";
 
+                var typeScope = Constants.ScopesContent.Contains(contentType.Scope)
+                    ? Constants.ScopeContentFuture
+                    : contentType.Scope;
+
                 var deferredStream = new DataStreamWithCustomCaching(
                     () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState, $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
-                    () => BuildTypeStream(upstreamDataSource, typeName).List /*[Constants.DefaultStreamName].List*/.ToImmutableArray(),
-                    true);
+                    () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableArray(),
+                    true,
+                    typeScope);
                 _out.Add(typeName, deferredStream);
             }
 

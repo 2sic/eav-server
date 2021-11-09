@@ -29,6 +29,8 @@ namespace ToSic.Eav.DataSources.Debug
 
         public Dictionary<string, object> Definition;
 
+        public List<OutDto> Out;
+
         public Connections Connections { get; set; }
 
         public DataSourceInfo(IDataSource ds)
@@ -39,6 +41,13 @@ namespace ToSic.Eav.DataSources.Debug
                 Type = ds.GetType().Name;
                 Connections = (ds as DataSourceBase)?.Connections;
                 Configuration = ds.Configuration.Values;
+
+                try
+                {
+                    Out = ds.Out.Select(o => new OutDto { Name = o.Key, Scope = o.Value.Scope })
+                        .ToList();
+                }
+                catch { /* ignore */ }
             }
             catch (Exception)
             {
@@ -55,5 +64,11 @@ namespace ToSic.Eav.DataSources.Debug
             Definition = partDef.AsDictionary();
             return this;
         }
+    }
+
+    public class OutDto
+    {
+        public string Name { get; set; }
+        public string Scope { get; set; }
     }
 }
