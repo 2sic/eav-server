@@ -1,14 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using ToSic.Eav.DataSources.Queries;
 
 namespace ToSic.Eav.DataSources.Debug
 {
     public class DataSourceInfo
     {
-        public Guid Guid;
-        public string Type;
-        public IDictionary<string, string> Configuration;
-        public bool Error = false;
+        /// <summary>
+        /// DS Guid for identification
+        /// </summary>
+        public Guid Guid { get; }
+
+        /// <summary>
+        /// Internal type
+        /// </summary>
+        public string Type { get; }
+
+        /// <summary>
+        /// The resolved values used from the settings/config of the data source
+        /// </summary>
+        public IDictionary<string, string> Configuration { get; }
+
+        /// <summary>
+        /// Error state
+        /// </summary>
+        public bool Error { get; set; }
+
+        public Dictionary<string, object> Definition;
 
         public Connections Connections { get; set; }
 
@@ -25,6 +44,16 @@ namespace ToSic.Eav.DataSources.Debug
             {
                 Error = true;
             }
+        }
+
+        public DataSourceInfo WithQueryDef(QueryDefinition queryDefinition)
+        {
+            // find this item in the query def
+            var partDef = queryDefinition.Parts.FirstOrDefault(p => p.Guid == Guid);
+            if(partDef is null) return this;
+
+            Definition = partDef.AsDictionary();
+            return this;
         }
     }
 }
