@@ -218,7 +218,7 @@ namespace ToSic.Eav.Api.Api01
 
                 // Handle content-type attributes
                 var attribute = contentType[value.Key];
-                if (attribute != null)
+                if (attribute != null && value.Value != null)
                 {
                     var strValue = value.Value.ToString();
                     AttributeBuilder.AddValue(entity.Attributes, attribute.Name, strValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
