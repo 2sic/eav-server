@@ -20,8 +20,11 @@ namespace ToSic.Eav.DataSources
         {
             get
             {
-                Configuration.Parse();
+                // Use pre-built if already ready and nothing changed RequiresRebuild
                 if (!RequiresRebuildOfOut) return _out;
+
+                // Parse config before we continue, as AppSwitch could be set now
+                Configuration.Parse();
 
                 // if the rebuilt is required because the app or zone are not default, then attach it first
                 if (AppSwitch != 0 || ZoneSwitch != 0)

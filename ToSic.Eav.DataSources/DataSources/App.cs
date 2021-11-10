@@ -25,8 +25,8 @@ namespace ToSic.Eav.DataSources
 	{
 
         #region Configuration-properties
-		private const string AppSwitchKey = "AppSwitch";
-		private const string ZoneSwitchKey = "ZoneSwitch";
+		//private const string AppSwitchKey = "AppSwitch";
+		//private const string ZoneSwitchKey = "ZoneSwitch";
 
         /// <inheritdoc/>
         [PrivateApi]
@@ -38,10 +38,10 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public int AppSwitch
 		{
-			get => Parse(Configuration[AppSwitchKey]);
+			get => Parse(Configuration[nameof(AppSwitch)]);
 		    set
 			{
-				Configuration[AppSwitchKey] = value.ToString();
+				Configuration[nameof(AppSwitch)] = value.ToString();
 				AppId = value;
 				RequiresRebuildOfOut = true;
 			}
@@ -53,10 +53,10 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public int ZoneSwitch
 		{
-			get => Parse(Configuration[ZoneSwitchKey]);
+			get => Parse(Configuration[nameof(ZoneSwitch)]);
 		    set
 			{
-				Configuration[ZoneSwitchKey] = value.ToString();
+				Configuration[nameof(ZoneSwitch)] = value.ToString();
 				ZoneId = value;
 				RequiresRebuildOfOut = true;
 			}
@@ -75,8 +75,10 @@ namespace ToSic.Eav.DataSources
             _out = new StreamDictionary(this, null);
 
 			// Set default switch-keys to 0 = no switch
-			ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
-			ConfigMask(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
+            ConfigMask(nameof(AppSwitch) + "||0");
+			ConfigMask(nameof(ZoneSwitch) + "||0");
+			//ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
+			//ConfigMask(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
         }
         private readonly IAppStates _appStates;
 

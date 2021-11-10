@@ -9,9 +9,9 @@ namespace ToSic.Eav.DataSources
 
         public StreamDictionary() { }
 
-        public StreamDictionary(StreamDictionary original): base(original)
-        {
-        }
+        //public StreamDictionary(StreamDictionary original): base(original)
+        //{
+        //}
 
         /// <summary>
         /// Re-bundle an existing set of streams for the new Source which will provide it
@@ -24,10 +24,16 @@ namespace ToSic.Eav.DataSources
             if (streams == null) return;
 
             foreach (var stream in streams)
-                Add(stream.Key, new DataStream(source, stream.Key, () => stream.Value.List));
+                Add(stream.Key, WrapStream(stream.Key, stream.Value)); // new DataStream(source, stream.Key, () => stream.Value.List));
         }
 
-        public new void Add(string name, IDataStream stream) => 
-            base.Add(name, Source == null ? stream : new DataStream(Source, name, () => stream.List));
+        public new void Add(string name, IDataStream stream) =>
+            base.Add(name, Source == null ? stream : WrapStream(name, stream)); // new DataStream(Source, name, () => stream.List));
+
+        private IDataStream WrapStream(string name, IDataStream stream) =>
+            new DataStream(Source, name, () => stream.List)
+            {
+                Scope = stream.Scope
+            };
     }
 }
