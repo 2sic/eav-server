@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         /// <inheritdoc/>
         public bool WithPublishing { get; private set; }
         
-        [PrivateApi] public ISubEntitySerialization MetadataFor { get; private set; } = new SubEntitySerialization();
+        [PrivateApi] public MetadataForSerialization MetadataFor { get; private set; } = new MetadataForSerialization();
         [PrivateApi] public ISubEntitySerialization Metadata { get; private set; } = new SubEntitySerialization();
 
         /// <inheritdoc/>
@@ -76,7 +76,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         {
             WithGuid = true;
             WithPublishing = true;
-            MetadataFor = new SubEntitySerialization { Serialize = true };
+            MetadataFor = new MetadataForSerialization { Serialize = true };
             Metadata = new SubEntitySerialization { Serialize = true, SerializeId = true, SerializeTitle = true, SerializeGuid = true };
             WithTitle = true;
             WithStats = true;
