@@ -39,5 +39,8 @@ namespace ToSic.Eav.Security
         /// </summary>
         public string Grant => _grant ?? (_grant = Entity.Value<string>(FieldGrant));
         private string _grant;
+
+        [PrivateApi]
+        public static bool IsPermission(IEntity entity) => entity.Type.Is(TypeName);
     }
 }

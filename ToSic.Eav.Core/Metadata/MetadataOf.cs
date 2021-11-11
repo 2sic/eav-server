@@ -95,6 +95,7 @@ namespace ToSic.Eav.Metadata
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
                 if (_metadataWithoutPermissions == null || RequiresReload())
                     _metadataWithoutPermissions = AllWithHidden
+                        // todo: change to use Permission.IsPermission
                         .Where(md => new[] {Permission.TypeName  }.Any(e => e != md.Type.Name && e != md.Type.StaticName))
                         .ToList();
                 return _metadataWithoutPermissions;

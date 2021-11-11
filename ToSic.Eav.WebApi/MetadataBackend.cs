@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.WebApi.Helpers;
@@ -50,7 +51,11 @@ namespace ToSic.Eav.WebApi
             }
 
             if(entityList == null)
-                throw new Exception($"was not able to convert '{key}' to key-type {keyType}, must cancel");
+                throw new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel");
+
+            // When retrieving all items, make sure that permissions are _not_ included
+            if (string.IsNullOrEmpty(contentType))
+                entityList = entityList.Where(e => !Eav.Security.Permission.IsPermission(e));
 
             _converter.WithGuid = true;
             return _converter.Convert(entityList);

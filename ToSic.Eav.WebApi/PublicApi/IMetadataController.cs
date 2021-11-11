@@ -25,7 +25,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="targetType">A key which specifies what target type it is. </param>
         /// <param name="keyType">A string specifying what the key is - can be "string", "guid" "number"</param>
         /// <param name="key">The key (string, guid, number) as a string</param>
-        /// <param name="contentType">A optional parameter to filter only results by a specific type</param>
+        /// <param name="contentType">A optional parameter to filter only results by a specific type - if not provided, will return all except internal ones</param>
         /// <returns></returns>
         IEnumerable<IDictionary<string, object>> Get(int appId, int targetType, string keyType, string key, string contentType = null);
 
