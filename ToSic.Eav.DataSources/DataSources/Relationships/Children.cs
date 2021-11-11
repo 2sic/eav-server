@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Get the item's children",
         Icon = "escalator_warning",
         Type = DataSourceType.Lookup,
-        GlobalName = "ToSic.Eav.DataSources.Children, ToSic.Eav.DataSources",
+        GlobalName = "9f8de7ee-d1aa-4055-9bf9-8f183259cb05", //"ToSic.Eav.DataSources.Children, ToSic.Eav.DataSources",
         In = new[] { Constants.DefaultStreamNameRequired },
         DynamicOut = false,
         ExpectsDataOfType = "832cd470-49f2-4909-a08a-77644457713e",

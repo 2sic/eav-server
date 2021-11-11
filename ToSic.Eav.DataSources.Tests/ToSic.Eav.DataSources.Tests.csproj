@@ -161,9 +161,12 @@
     <Compile Include="LookUps\LookUpsTest.cs" />
     <Compile Include="DataSources\PagingTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RelationshipTests\MetadataTargetsTests.cs" />
+    <Compile Include="RelationshipTests\MetadataTests.cs" />
     <Compile Include="RelationshipTests\ChildParentTestBase.cs" />
     <Compile Include="RelationshipTests\ParentsTests.cs" />
     <Compile Include="RelationshipTests\ChildrenTests.cs" />
+    <Compile Include="RelationshipTests\MetadataTestSpecs.cs" />
     <Compile Include="RelationshipTests\RelationshipTestSpecs.cs" />
     <Compile Include="TestData\DataTableTrivial.cs" />
     <Compile Include="TestData\DataTablePerson.cs" />
