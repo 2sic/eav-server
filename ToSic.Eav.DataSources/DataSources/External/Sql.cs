@@ -251,7 +251,10 @@ namespace ToSic.Eav.DataSources
                 return ErrorHandler.CreateErrorList(source: this, title: "Connection Problem", 
                     message: "The ConnectionString property is empty / has not been initialized");
 
-	        var list = new List<IEntity>();
+			// The content type returned in this query
+			var contentTypeToUse = ContentTypeBuilder.Fake(ContentType);
+
+			var list = new List<IEntity>();
             using (var connection = new SqlConnection(ConnectionString))
 			{
 				connection.Open();
@@ -275,7 +278,6 @@ namespace ToSic.Eav.DataSources
                             title: "Can't read from Database",
                             message: "Something failed trying to read from the Database.");
                     }
-
 
 					var casedTitle = TitleField;
 			        var casedEntityId = EntityIdField;
@@ -309,8 +311,13 @@ namespace ToSic.Eav.DataSources
 			            while (reader.Read())
 			            {
 			                var entityId = casedEntityId == null ? 0 : global::System.Convert.ToInt32(reader[casedEntityId]);
-			                var values = columnsToUse.ToDictionary(c => c, c => reader[c]);
-			                var entity = new Data.Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), values, casedTitle);
+			                var values = columnsToUse.ToDictionary(c => c, c =>
+                            {
+								// This conversion is important, because the DB uses a different kind of null, which would cause trouble
+								var value = reader[c];
+                                return Convert.IsDBNull(value) ? null : value;
+                            });
+			                var entity = new Entity(Constants.TransientAppId, entityId, contentTypeToUse, values, casedTitle);
 			                list.Add(entity);
 			            }
 

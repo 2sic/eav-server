@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
@@ -96,8 +97,8 @@ namespace ToSic.Eav.DataSources
 			Configuration.Parse();
 
             Log.Add("will apply value-sort");
-			var attr = Attributes.Split(',').Select(s => s.Trim()).ToArray();
-			var directions = Directions.Split(',').Select(s => s.Trim()).ToArray();
+			var sortAttributes = Attributes.Split(',').Select(s => s.Trim()).ToArray();
+			var sortDirections = Directions.Split(',').Select(s => s.Trim()).ToArray();
 			var descendingCodes = new[] { "desc","d","0",">" };
 
 			// Languages check - not fully implemented yet, only supports "default" / "current"
@@ -107,35 +108,43 @@ namespace ToSic.Eav.DataSources
                 return wrapLog("error", originals);
 
             // check if no list parameters specified
-		    if (attr.Length == 1 && string.IsNullOrWhiteSpace(attr[0]))
+		    if (sortAttributes.Length == 1 && string.IsNullOrWhiteSpace(sortAttributes[0]))
 		        return wrapLog("no params", originals);
 
-            // only get the entities, that have these attributes (but don't test for id/title, as all have these)
-            var valueAttrs = attr.Where(v => !Data.Attributes.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
-		    var results = valueAttrs.Length == 0
-		        ? originals
-		        : originals.Where(e => e.Attributes.Keys.Where(valueAttrs.Contains).Count() == valueAttrs.Length).ToImmutableArray();
+            // only keep entities that have the expected attributes (but don't test for id/title, as all have these)
+            var valueAttrs = sortAttributes.Where(v => !Data.Attributes.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
+			var results = valueAttrs.Length == 0
+				? originals
+				: originals
+					.Where(e =>
+                    {
+						if(e.Attributes.Keys.Where(valueAttrs.Contains).Count() != valueAttrs.Length) return false;
+						var allNotNull = valueAttrs.All(va => e.GetBestValue(va, LanguageList) != null);
+						return allNotNull;
+                    })
+					.ToImmutableArray();
 
 			// if list is blank, then it didn't find the attribute to sort by - so just return unsorted
 			// note 2020-10-07 this may have been a bug previously, returning an empty list instead
             if (!results.Any()) return wrapLog("sort-attribute not found", originals);
 
+			// Keep entities which cannot sort by the required values (removed previously from results)
             var unsortable = originals.Where(e => !results.Contains(e)).ToImmutableArray();
 
             IOrderedEnumerable<IEntity> ordered = null;
 
-			for (var i = 0; i < attr.Length; i++)
+			for (var i = 0; i < sortAttributes.Length; i++)
 			{
 				// get attribute-name and type; set type=id|title for special cases
-				var a = attr[i];
+				var a = sortAttributes[i];
 			    var aLow = a.ToLowerInvariant();
 				var specAttr = aLow == Data.Attributes.EntityFieldId ? 'i' 
                     : aLow == Data.Attributes.EntityFieldTitle ? 't' 
                     : aLow == Data.Attributes.EntityFieldModified ? 'm'
                     : 'x';
 				var isAscending = true;			// default
-				if (directions.Length - 1 >= i)	// if this value has a direction specified, use that...
-					isAscending = !descendingCodes.Any(directions[i].ToLowerInvariant().Trim().Contains);
+				if (sortDirections.Length - 1 >= i)	// if this value has a direction specified, use that...
+					isAscending = !descendingCodes.Any(sortDirections[i].ToLowerInvariant().Trim().Contains);
 
 				if (ordered == null)
 				{
@@ -153,9 +162,18 @@ namespace ToSic.Eav.DataSources
 				}
 			}
 
-            var final = ordered?.ToImmutableArray() ?? ImmutableArray<IEntity>.Empty;
-            // final = final.AddRange(unsortable);
-			return wrapLog("ok", final.AddRange(unsortable).ToImmutableArray());
+			ImmutableArray<IEntity> final;
+			try
+			{
+				final = ordered?.ToImmutableArray() ?? ImmutableArray<IEntity>.Empty;
+			}
+			catch (Exception e)
+            {
+				return SetError("Error sorting", "Sorting failed - see exception in insights", e);
+            }
+
+            final = final.AddRange(unsortable).ToImmutableArray();
+			return wrapLog("ok", final);
 		}
 
 		private object GetPropertyToSort(IEntity e, string a, char special)

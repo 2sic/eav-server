@@ -8,11 +8,11 @@ namespace ToSic.Eav.DataSourceTests
     [TestClass]
     public class DataSourceTests: TestBaseDiEavFullAndDb
     {
-        public const int EavInstalledDsCount = 42;
+        public const int EavInstalledDsCount = 45;
         public const int TestingAddedDsCount = 1;
         public const int StandardInstalledDSCount = EavInstalledDsCount + TestingAddedDsCount;
 
-        public const int StandardInstalledPipeLineDS = 31;
+        public const int StandardInstalledPipeLineDS = 35;
         public const string SqlFullName = "ToSic.Eav.DataSources.Sql";
         public const string DeferredFullName = "ToSic.Eav.DataSources.DeferredPipelineQuery";
 
