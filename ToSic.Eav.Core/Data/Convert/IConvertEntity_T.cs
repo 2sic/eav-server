@@ -69,5 +69,8 @@ namespace ToSic.Eav.Data
         [PrivateApi("Internal use only")]
         void ConfigureForAdminUse();
         
+
+        [PrivateApi("WIP")]
+        TypeSerialization Type { get; set; }
     }
 }

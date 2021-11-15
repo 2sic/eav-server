@@ -15,6 +15,9 @@
         /// <summary>
         /// The type should be serialized
         /// </summary>
+        /// <remarks>
+        /// As of 2021-11 I believe this setting is passed around, but never used
+        /// </remarks>
         public bool? SerializeType { get; set; }
 
         public static MetadataForSerialization Stabilize(

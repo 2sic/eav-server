@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
@@ -91,6 +92,10 @@ namespace ToSic.Eav.DataFormats.EavLight
             get => _languages ?? (_languages = Deps.ZoneCultureResolver.SafeLanguagePriorityCodes());
             set => _languages = value;
         }
+
+        [PrivateApi("not public ATM")]
+        public TypeSerialization Type { get; set; } = new TypeSerialization();
+
         private string[] _languages;
 
         #endregion
@@ -158,6 +163,8 @@ namespace ToSic.Eav.DataFormats.EavLight
                     entityValues.Add(Attributes.TitleNiceName, entity.GetBestTitle(Languages));
                 
             AddDateInformation(entity, entityValues, rules);
+
+            if (Type.Serialize) entityValues.Add("_Type", new JsonType(entity));
 
             return entityValues;
         }
