@@ -47,6 +47,18 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
         }
 
         [TestMethod]
+        public void StringToDecimal()
+        {
+            ConvT(null, 0m, 0m);
+            ConvT("", 0m, 0m);
+            ConvT("5", 5m, 5m);
+            ConvT("5.2", 5.2m, 5.2m);
+            ConvT("5.9", 5.9m, 5.9m);
+            ConvT("-1", -1m, -1m);
+            ConvT("-99.7", -99.7m, -99.7m);
+        }
+
+        [TestMethod]
         public void StringToFloatNull()
         {
             ConvT<float?>(null, null, null);
@@ -56,6 +68,18 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
             ConvT<float?>("5.9", 5.9f, 5.9f);
             ConvT<float?>("-1", -1f, -1f);
             ConvT<float?>("-99.7", -99.7f, -99.7f);
+        }
+
+        [TestMethod]
+        public void StringToDecimalNull()
+        {
+            ConvT<decimal?>(null, null, null);
+            ConvT<decimal?>("", null, null);
+            ConvT<decimal?>("5", 5m, 5m);
+            ConvT<decimal?>("5.2", 5.2m, 5.2m);
+            ConvT<decimal?>("5.9", 5.9m, 5.9m);
+            ConvT<decimal?>("-1", -1m, -1m);
+            ConvT<decimal?>("-99.7", -99.7m, -99.7m);
         }
     }
 }

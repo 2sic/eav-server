@@ -7,34 +7,24 @@ namespace ToSic.Eav.Metadata
     [PublicApi_Stable_ForUseInYourCode]
     public class Target : ITarget
     {
-        /// <summary>
-        /// Will return true if a target-type was assigned
-        /// </summary>
+        /// <inheritdoc/>
         [Newtonsoft.Json.JsonIgnore]
         public bool IsMetadata => TargetType != (int)TargetTypes.None;
 
-        /// <summary>
-        /// This is the AssignmentObjectTypeId - usually 1 (none), 2 (attribute), 4 (entity)
-        /// </summary>
+        /// <inheritdoc/>
         public int TargetType { get; set; } = (int)TargetTypes.None;
 
-        /// <summary>
-        /// The KeyNumber is null or the int of the key as stored in "Key"
-        /// </summary>
+        /// <inheritdoc/>
         public int? KeyNumber { get; set; }
 
-        /// <summary>
-        /// The KeyGuid is null or the guid of the key as stored in "Key"
-        /// </summary>
+        /// <inheritdoc/>
         public Guid? KeyGuid { get; set; }
 
-        /// <summary>
-        /// The KeyString is null or the string of the key as stored in "Key"
-        /// </summary>
+        /// <inheritdoc/>
         public string KeyString { get; set; }
 
         /// <summary>
-        /// Constructor for a new MetadataFor, which is empty.
+        /// Constructor for a new MetadataTarget, which is empty.
         /// So it's not for anything, or the specs will be added afterwards.
         /// </summary>
         public Target() { }
@@ -49,9 +39,6 @@ namespace ToSic.Eav.Metadata
             KeyString = originalToCopy.KeyString;
             KeyNumber = originalToCopy.KeyNumber;
             KeyGuid = originalToCopy.KeyGuid;
-
         }
-
-
     }
 }

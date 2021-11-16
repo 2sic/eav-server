@@ -23,6 +23,9 @@ namespace ToSic.Eav.Metadata
         /// If this is metadata, then the target could be anything.
         /// This is an ID telling what kind of thing we're enhancing. 
         /// </summary>
+        /// <remarks>
+        /// In 2sxc 8 - 12 this is called AssignmentObjectTypeId in the DB, but will change some day. 
+        /// </remarks>
         /// <returns>An ID from the system which registers all the types of things that can be described. See also <see cref="ITargetTypes"/>.</returns>
         [JsonProperty("Target", NullValueHandling = NullValueHandling.Ignore)]
         int TargetType { get; }
