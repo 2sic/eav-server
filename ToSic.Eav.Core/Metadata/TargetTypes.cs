@@ -25,7 +25,7 @@ namespace ToSic.Eav.Metadata
         /// App metadata. Used to give Apps additional properties. 
         /// </summary>
         /// <remarks>
-        /// The key should always be a string, even though most Apps have a GUID to identify them. 
+        /// The key should always be an int ID of the App.
         /// </remarks>
         App = 3,
 

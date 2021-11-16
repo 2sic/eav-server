@@ -25,7 +25,6 @@ namespace ToSic.Eav.Metadata
 
         /// <summary>
         /// Constructor for a new MetadataTarget, which is empty.
-        /// So it's not for anything, or the specs will be added afterwards.
         /// </summary>
         public Target() { }
 
@@ -33,6 +32,7 @@ namespace ToSic.Eav.Metadata
         /// Constructor to copy an existing MetadataFor object. 
         /// </summary>
         /// <param name="originalToCopy"></param>
+        [PrivateApi("not sure if this should be public, since we don't have a proper cloning standard")]
         public Target(ITarget originalToCopy)
         {
             TargetType = originalToCopy.TargetType;
