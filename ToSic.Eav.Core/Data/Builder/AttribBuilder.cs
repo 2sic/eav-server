@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -52,7 +53,7 @@ namespace ToSic.Eav.Data.Builder
         {
             if (value is DateTime)
                 return DataTypes.DateTime;
-            if (value is decimal || value is int || value is double)
+            if (value.IsNumeric()) // 2021-11-16 2dm changed, because it missed bigint from SQL - original was: // (value is decimal || value is int || value is double)
                 return DataTypes.Number;
             if (value is bool)
                 return DataTypes.Boolean;
