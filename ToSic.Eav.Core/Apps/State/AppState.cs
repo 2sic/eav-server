@@ -17,8 +17,8 @@ namespace ToSic.Eav.Apps
     public partial class AppState: AppBase
     {
 
-        [PrivateApi("constructor, internal use only")]
-        internal AppState(IAppStates appStates, IGlobalTypes globalTypes, IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
+        [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
+        public AppState(IAppStates appStates, IGlobalTypes globalTypes, IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
         {
             _appStates = appStates;
             _globalTypes = globalTypes;

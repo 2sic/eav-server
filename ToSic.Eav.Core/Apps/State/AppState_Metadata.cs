@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="metadataTypes"></param>
         [PrivateApi("internal use only")]
-        internal void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
+        public void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
         {
             if (!Loading)
                 throw new Exception("trying to init metadata, but not in loading state. set that first!");

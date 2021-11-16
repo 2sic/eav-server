@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav
+﻿using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav
 {
     public partial class Constants
     {
@@ -21,6 +23,9 @@
         public const string DataTimelineEntityJson = "e";
 
 
+        [PrivateApi] public static readonly int PresetZoneId = -42;
+        [PrivateApi] public static readonly int PresetAppId = -42;
+        [PrivateApi] public static readonly string PresetName = "Preset";
 
         /// <summary>
         /// Default ZoneId. Used if none is specified on the Context.

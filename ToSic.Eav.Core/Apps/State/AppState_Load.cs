@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
@@ -22,8 +23,8 @@ namespace ToSic.Eav.Apps
         public int DynamicUpdatesCount;
 
 
-
-        internal void Load(Action loader)
+        [PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
+        public void Load(Action loader)
         {
             var wrapLog = Log.Call(message: $"zone/app:{ZoneId}/{AppId}", useTimer: true);
 

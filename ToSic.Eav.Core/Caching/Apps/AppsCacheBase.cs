@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
@@ -38,11 +39,6 @@ namespace ToSic.Eav.Caching
 
         #endregion
 
-        #region EnforceSingleton experimental
-
-        [PrivateApi] public virtual bool EnforceSingleton => false;
-        #endregion
-
         /// <summary>
         /// The repository loader. Must generate a new one on every access, to be sure that it doesn't stay in memory for long. 
         /// </summary>
@@ -52,7 +48,28 @@ namespace ToSic.Eav.Caching
 	    public abstract IReadOnlyDictionary<int, Zone> Zones { get; }
 
         [PrivateApi]
-        protected IReadOnlyDictionary<int, Zone> LoadZones() => GetNewRepoLoader().Zones();
+        protected IReadOnlyDictionary<int, Zone> LoadZones()
+        {
+            var realZones = GetNewRepoLoader().Zones();
+            try
+            {
+                var presetZone = new Zone(Constants.PresetZoneId,
+                                          Constants.PresetAppId,
+                                          new Dictionary<int, string> { { Constants.PresetAppId, Constants.PresetName } },
+                                          new List<Data.DimensionDefinition>() { new Data.DimensionDefinition() {
+                                              Active = true,
+                                              DimensionId = 0,
+                                              EnvironmentKey = "en-us",
+                                              Key = "en-us",
+                                              Name = "English",
+                                              Parent = null } });
+                var opened = realZones.ToDictionary(z => z.Key, z => z.Value);
+                opened.Add(Constants.PresetZoneId, presetZone);
+                return new ReadOnlyDictionary<int, Zone>(opened);
+            }
+            catch { /* ignore */ }
+            return realZones;
+        }
 
         #region Cache-Keys
 
@@ -97,6 +114,9 @@ namespace ToSic.Eav.Caching
         /// </summary>
         [PrivateApi("only important for developers, and they have intellisense")]
 		protected abstract void Remove(string key);
+
+        [PrivateApi]
+        public void Add(AppState appState) => Set(CacheKey(appState), appState);
 
         #endregion
 

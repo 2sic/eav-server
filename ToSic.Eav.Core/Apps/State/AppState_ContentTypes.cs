@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps
@@ -16,12 +17,13 @@ namespace ToSic.Eav.Apps
             => _appTypesFromRepository.Union(_globalTypes.AllContentTypes().Values);
 
 
-	    /// <summary>
-	    /// The second init-command
-	    /// Load content-types
-	    /// </summary>
-	    /// <param name="contentTypes"></param>
-	    internal void InitContentTypes(IList<IContentType> contentTypes)
+		/// <summary>
+		/// The second init-command
+		/// Load content-types
+		/// </summary>
+		/// <param name="contentTypes"></param>
+		[PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
+		public void InitContentTypes(IList<IContentType> contentTypes)
         {
             var wrapLog = Log.Call(message: $"init content types {contentTypes?.Count}", useTimer: true);
 	        if (!Loading)

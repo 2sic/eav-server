@@ -14,15 +14,14 @@ namespace ToSic.Eav.ImportExport
             services.TryAddTransient<IDataSerializer, JsonSerializer>();
             services.TryAddTransient<IDataDeserializer, JsonSerializer>();
 
-            // Here we only register the dependencies, as the final converter must be registered elsewhere
-            //services.TryAddTransient<ConvertToJsonBasicBase.Dependencies>();
-
-
             services.TryAddTransient<JsonSerializer>();
 
             services.TryAddTransient<XmlSerializer>();
 
             services.TryAddTransient<FileSystemLoader>();
+
+            // WIP 12.10+ with Global Types in a normal AppState
+            services.TryAddTransient<FileAppStateLoaderWIP>();
 
             return services;
         }
