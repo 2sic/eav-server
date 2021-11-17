@@ -43,6 +43,7 @@ namespace ToSic.Eav.Data
                 {AppConstants.ScopeApp, "System: App"},
                 {Constants.ScopeSystem, "System: System"},
                 {"System.DataSources", "System: DataSources"},
+                {"System.Decorators", "System: Decorators"},
                 {"System.Fields", "System: Fields"}
             };
 
