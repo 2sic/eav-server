@@ -80,6 +80,9 @@ namespace ToSic.Eav.Apps.Parts
             AddMissingTypes(inputTypes, systemAppInputTypes);
             LogListOfInputTypes("All combined", inputTypes);
 
+            // Sort for better debugging
+            inputTypes = inputTypes.OrderBy(i => i.Type).ToList();
+
             return wrapLog($"found {inputTypes.Count}", inputTypes);
         }
 
@@ -108,7 +111,8 @@ namespace ToSic.Eav.Apps.Parts
                     e.Value<string>(InputTypes.InputTypeAssets),
                     e.Value<bool>(InputTypes.InputTypeDisableI18N),
                     e.Value<string>(InputTypes.InputTypeAngularAssets),
-                    e.Value<bool>(InputTypes.InputTypeUseAdam)
+                    e.Value<bool>(InputTypes.InputTypeUseAdam),
+                    e.Metadata
                 ))
                 .ToList();
 
@@ -154,7 +158,8 @@ namespace ToSic.Eav.Apps.Parts
                     it.Metadata.GetBestValue<string>(InputTypes.InputTypeAssets, InputTypes.TypeForInputTypeDefinition),
                     it.Metadata.GetBestValue<bool>(InputTypes.InputTypeDisableI18N, InputTypes.TypeForInputTypeDefinition),
                     it.Metadata.GetBestValue<string>(InputTypes.InputTypeAngularAssets, InputTypes.TypeForInputTypeDefinition),
-                    it.Metadata.GetBestValue<bool>(InputTypes.InputTypeUseAdam, InputTypes.TypeForInputTypeDefinition)
+                    it.Metadata.GetBestValue<bool>(InputTypes.InputTypeUseAdam, InputTypes.TypeForInputTypeDefinition),
+                    it.Metadata
                 ))
                 .ToList();
             return retyped;

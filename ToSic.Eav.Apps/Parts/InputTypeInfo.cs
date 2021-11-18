@@ -1,4 +1,8 @@
-﻿namespace ToSic.Eav.Apps.Parts
+﻿using Newtonsoft.Json;
+using ToSic.Eav.Metadata;
+using static ToSic.Eav.Types.Decorators;
+
+namespace ToSic.Eav.Apps.Parts
 {
     /// <summary>
     /// Describes an input field type with it's labels, abilities etc. 
@@ -6,7 +10,7 @@
     /// </summary>
     public class InputTypeInfo
     {
-        public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam)
+        public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, IMetadataOf metadata = null)
         {
             Type = type;
             Label = label;
@@ -15,10 +19,27 @@
             DisableI18n = disableI18N;
             AngularAssets = ngAssets;
             UseAdam = useAdam;
+
+            if(metadata == null) return;
+
+            if (metadata.HasType(IsObsoleteDecoratorId))
+            {
+                IsObsolete = true;
+                ObsoleteMessage = metadata.GetBestValue<string>(MessageField, IsObsoleteDecoratorId);
+            }
+            if (metadata.HasType(RecommendedDecoratorId)) IsRecommended = true;
+
+            if (metadata.HasType(IsDefaultDecorator)) IsDefault = true;
         }
+
+        /// <summary>
+        /// The type this input is for, like String etc.
+        /// </summary>
         public string Type { get; }
+
         public string Label { get; }
         public string Description { get; }
+
         public string Assets { get; }
 
         #region new in 2sxc 10 / eav 5
@@ -26,10 +47,39 @@
         // ReSharper disable once InconsistentNaming
         public bool DisableI18n { get; }
 
+        /// <summary>
+        /// Additional resources to load (js/css)
+        /// </summary>
         public string AngularAssets { get; }
 
-
+        /// <summary>
+        /// Activates ADAM in the UI for this input type
+        /// </summary>
         public bool UseAdam { get; }
+
+        /// <summary>
+        /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public bool? IsObsolete { get; }
+
+        /// <summary>
+        /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string ObsoleteMessage { get; }
+
+        /// <summary>
+        /// WIP 12.10 Recommendation status
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public bool? IsRecommended { get; }
+
+        /// <summary>
+        /// WIP 12.10 Default selection status
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public bool? IsDefault { get; }
 
         #endregion
 

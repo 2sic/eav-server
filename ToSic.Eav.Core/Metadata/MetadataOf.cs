@@ -188,6 +188,9 @@ namespace ToSic.Eav.Metadata
             return default;
         }
 
+        [PrivateApi("WIP 12.10")]
+        public bool HasType(string name) => this.Any(e => e.Type.Is(name));
+
         #endregion
 
         #region enumerators

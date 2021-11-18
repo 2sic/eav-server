@@ -116,7 +116,7 @@ namespace ToSic.Eav.Apps.Run
                         $"{AppConstants.AppPathPlaceholder}/{Eav.Constants.FolderAppExtensions}/{name}/{JsFile}", false);
                 })
                 .ToList();
-            return wrapLog(null, types);
+            return wrapLog($"{types.Count}", types);
         }
 
         /// <inheritdoc />

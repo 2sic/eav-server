@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -40,5 +41,8 @@ namespace ToSic.Eav.Metadata
         /// <param name="typeNames">list of type-name in the order to check. if one of the values is null, it will then check all items no matter what type</param>
         /// <returns>A typed value. </returns>
         TVal GetBestValue<TVal>(string name, string[] typeNames);
+
+        [PrivateApi("WIP 12.10 - not public")]
+        bool HasType(string name);
     }
 }
