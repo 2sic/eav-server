@@ -44,5 +44,8 @@ namespace ToSic.Eav.Metadata
 
         [PrivateApi("WIP 12.10 - not public")]
         bool HasType(string name);
+
+        [PrivateApi("WIP 12.10 - not public")]
+        IEnumerable<IEntity> OfType(string name);
     }
 }

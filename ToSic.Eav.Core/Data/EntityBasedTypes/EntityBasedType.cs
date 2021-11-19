@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data
 {
@@ -41,8 +42,11 @@ namespace ToSic.Eav.Data
          /// <inheritdoc />
         public int Id => Entity?.EntityId ?? 0;
 
-         /// <inheritdoc />
+        /// <inheritdoc />
         public Guid Guid => Entity?.EntityGuid ?? Guid.Empty;
+
+        /// <inheritdoc />
+        public IMetadataOf Metadata => Entity?.Metadata;
 
         [PrivateApi]
         protected string[] LookupLanguages { get; } = new string[0];
