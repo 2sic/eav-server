@@ -9,13 +9,9 @@ namespace ToSic.Eav.Apps
 {
     public partial class AppState: IMetadataSource
     {
-        [PrivateApi("probably remove soon, it was only used internally. The public property should be MetadataSource, as Metadata is usually reserved for metadata of this object")]
-        internal IMetadataSource Metadata => _metadataManager;
-        private AppMetadataManager _metadataManager;
-
-        /// <inheritdoc />
-	    public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
-            => _metadataManager.GetMetadata(targetType, key, contentTypeName);
+        // FYI: disabled 2021-11-19, was deprecated since v11.11 #cleanup EOY 2021
+	    //public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
+     //       => _metadataManager.GetMetadata(targetType, key, contentTypeName);
 
         /// <inheritdoc />
 	    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
@@ -36,9 +32,11 @@ namespace ToSic.Eav.Apps
                 ? new AppMetadataManager(this, metadataTypes, Log)
                 : throw new Exception("can't set metadata if content-types are already set");
 
-            AppMetadata = new MetadataOf<int>((int)TargetTypes.App, AppId, this);
+            Metadata = new MetadataOf<int>((int)TargetTypes.App, AppId, this);
         }
+        private AppMetadataManager _metadataManager;
 
-        [PrivateApi] public IMetadataOf AppMetadata { get; private set; }
+        /// <summary>Metadata describing this App</summary>
+        public IMetadataOf Metadata { get; private set; }
     }
 }

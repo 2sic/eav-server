@@ -109,10 +109,10 @@ namespace ToSic.Eav.Apps
             list.Add(newEntity);
         }
 
-
-        /// <inheritdoc />
-        public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
-            => GetMetadata(targetType, key, contentTypeName);
+        // FYI: disabled 2021-11-19, was deprecated since v11.11 #cleanup EOY 2021
+        ///// <inheritdoc />
+        //public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
+        //    => GetMetadata(targetType, key, contentTypeName);
 
         /// <inheritdoc />
         public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)

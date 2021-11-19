@@ -61,8 +61,8 @@ namespace ToSic.Eav.Apps.Security
             var permissions = appIdentity == null
                 ? null
                 : (appIdentity as IApp)?.Metadata.Permissions.ToList()
-                  ?? (appIdentity as AppState)?.AppMetadata.Permissions.ToList()
-                  ??  _appStates.Get(appIdentity).AppMetadata.Permissions.ToList();
+                  ?? (appIdentity as AppState)?.Metadata.Permissions.ToList()
+                  ??  _appStates.Get(appIdentity).Metadata.Permissions.ToList();
             return permissions;
         }
 

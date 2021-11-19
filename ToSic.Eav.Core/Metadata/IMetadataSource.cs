@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -13,12 +12,16 @@ namespace ToSic.Eav.Metadata
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IMetadataSource: ICacheExpiring
     {
-        [Obsolete("Deprecated in 11.11. Use GetMetadata instead. just keeping this till 2sxc 12 for compatibility")]
-        IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null);
+        // FYI: disabled 2021-11-19, was deprecated since v11.11 #cleanup EOY 2021
+        //[Obsolete("Deprecated in 11.11. Use GetMetadata instead. just keeping this till 2sxc 12 for compatibility")]
+        //IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null);
 
         /// <summary>
-        /// Get any metadata of the current data source (usually an app)
+        /// Get any metadata from the current data source (usually an app)
         /// </summary>
+        /// <remarks>
+        /// It does not return metadata describing the source (app), but metadata stored in this app, describing something else.
+        /// </remarks>
         /// <typeparam name="T">Key-Type used - string, int or guid</typeparam>
         /// <param name="targetType">The type-id of the target we're accessing, like 10=cms-object, 4=entity</param>
         /// <param name="key">The key which is used for lookup</param>

@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps
             var wrapLog = Log.Call();
 
             var appState = AppState;
-            Metadata = appState.AppMetadata;
+            Metadata = appState.Metadata;
 
             // Get the content-items describing various aspects of this app
             AppResources = appState.SettingsInApp.Get(AppThingsToStack.Resources).MetadataItem;

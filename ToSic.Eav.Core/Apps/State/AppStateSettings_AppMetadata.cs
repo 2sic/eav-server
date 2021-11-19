@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps
         internal static SynchronizedObject<IEntity> BuildSynchedMetadata(AppState parent, string staticName)
         {
             var synched = new SynchronizedObject<IEntity>(parent,
-                () => parent.AppMetadata.FirstOrDefault(md => md.Type.StaticName == staticName));
+                () => parent.Metadata.FirstOrDefault(md => md.Type.StaticName == staticName));
             return synched;
         }
     }
