@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -14,7 +13,7 @@ namespace ToSic.Eav.Metadata
     /// You can either loop through this object (since it's an `IEnumerable`) or ask for values of the metadata,
     /// no matter on what sub-entity the value is stored on.</remarks>
     [PublicApi_Stable_ForUseInYourCode]
-    public interface IMetadataOf: IEnumerable<IEntity>, IHasPermissions
+    public interface IMetadataOf: IEnumerable<IEntity>, IHasPermissions, IIsMetadataTarget
     {
         /// <summary>
         /// Internal API to override metadata providing, for example when creating new entities before saving.

@@ -7,7 +7,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps
 {
-    public partial class AppState: IMetadataSource
+    public partial class AppState: IMetadataSource, IHasMetadata
     {
         // FYI: disabled 2021-11-19, was deprecated since v11.11 #cleanup EOY 2021
 	    //public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 

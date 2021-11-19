@@ -188,6 +188,9 @@ namespace ToSic.Eav.Metadata
             }
             return default;
         }
+        #endregion
+
+        #region Type Specific Data
 
         [PrivateApi("WIP 12.10")]
         public bool HasType(string name) => this.Any(e => e.Type.Is(name));
@@ -196,6 +199,26 @@ namespace ToSic.Eav.Metadata
         public IEnumerable<IEntity> OfType(string name) => this.Where(e => e.Type.Is(name));
 
         #endregion
+
+        #region Target
+
+        public ITarget MetadataId
+        {
+            get
+            {
+                if (_target != null) return _target;
+                var target = new Target { TargetType = _targetType };
+                if (Key is string stringKey) target.KeyString = stringKey;
+                if (Key is int intKey) target.KeyNumber = intKey;
+                if (Key is Guid guidKey) target.KeyGuid = guidKey;
+                return _target = target;
+            }
+        }
+
+        private ITarget _target;
+
+        #endregion
+
 
         #region enumerators
         [PrivateApi]
