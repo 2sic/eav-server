@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Documentation;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav
 {
@@ -26,6 +27,7 @@ namespace ToSic.Eav
         [PrivateApi] public static readonly int PresetZoneId = -42;
         [PrivateApi] public static readonly int PresetAppId = -42;
         [PrivateApi] public static readonly string PresetName = "Preset";
+        [PrivateApi] public static readonly IAppIdentity PresetIdentity = new AppIdentity(PresetZoneId, PresetAppId);
 
         /// <summary>
         /// Default ZoneId. Used if none is specified on the Context.

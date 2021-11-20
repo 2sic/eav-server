@@ -4,7 +4,6 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -17,8 +16,7 @@ namespace ToSic.Eav.Persistence.Efc
             IServiceProvider serviceProvider,
             IAppInitializedChecker initializedChecker,
             IAppStates appStates,
-            LogHistory logHistory,
-            IGlobalTypes globalTypes
+            LogHistory logHistory
             ) : base("Db.Efc11")
         {
             ServiceProvider = serviceProvider;
@@ -27,7 +25,6 @@ namespace ToSic.Eav.Persistence.Efc
             _initializedChecker = initializedChecker;
             _appStates = appStates;
             _logHistory = logHistory;
-            _globalTypes = globalTypes;
         }
 
         public Efc11Loader UseExistingDb(EavDbContext dbContext)
@@ -42,7 +39,6 @@ namespace ToSic.Eav.Persistence.Efc
         private readonly IAppInitializedChecker _initializedChecker;
         private readonly IAppStates _appStates;
         private readonly LogHistory _logHistory;
-        private readonly IGlobalTypes _globalTypes;
 
         #endregion
     }

@@ -38,7 +38,7 @@ namespace ToSic.Eav.Persistence.File
             var wrapLog = Log.Call<AppState>($"AppId: {appId}");
             var appIdentity = new AppIdentity(Constants.PresetZoneId, Constants.PresetAppId); //  _appStates.Identity(null, appId);
             var appGuidName = Constants.PresetName; // _appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
-            var appState = Update(new AppState(_appStates, new GlobalTypesEmpty(), appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
+            var appState = Update(new AppState(_appStates, new ParentAppState(null, false), appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
 
             return wrapLog("ok", appState);
         }

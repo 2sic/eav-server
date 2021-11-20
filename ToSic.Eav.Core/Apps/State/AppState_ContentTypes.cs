@@ -14,7 +14,8 @@ namespace ToSic.Eav.Apps
 	    /// All ContentTypes in this App
 	    /// </summary>
 	    public IEnumerable<IContentType> ContentTypes 
-            => _appTypesFromRepository.Union(_globalTypes.AllContentTypes().Values);
+            //=> _appTypesFromRepository.Union(_globalTypes.AllContentTypes().Values);
+            => _appTypesFromRepository.Union(ParentApp.ContentTypes);
 
 
 		/// <summary>
@@ -66,10 +67,10 @@ namespace ToSic.Eav.Apps
             wrapLog("ok");
         }
 
-	    private ImmutableArray<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> allTypes)
-	    {
-	        var globTypeNames = _globalTypes.AllContentTypes().Keys;
-	        return allTypes.Where(t =>
+	    private ImmutableArray<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> appTypes)
+        {
+            var globTypeNames = ParentApp.ContentTypes.Select(t => t.StaticName); // _globalTypes.AllContentTypes().Keys;
+	        return appTypes.Where(t =>
 	                !((ContentType) t).AlwaysShareConfiguration // keep all locally defined types
 	                || !globTypeNames.Contains(t.StaticName)    // for non-local: keep all which globally are not overwritten
 	            )
@@ -86,10 +87,10 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="name">name of the type</param>
         /// <returns>a type object or null if not found</returns>
-	    public IContentType GetContentType(string name)
-	        => _appTypesByName.ContainsKey(name)
-	            ? _appTypesByName[name]
-	            : _globalTypes.FindContentType(name); // note: will return null if not found
+        public IContentType GetContentType(string name)
+            => _appTypesByName.ContainsKey(name)
+                ? _appTypesByName[name]
+                : ParentApp.GetContentType(name);// _globalTypes.FindContentType(name); // note: will return null if not found
 
 	    /// <summary>
 	    /// Get a content-type by number / id. Will also check global types if needed.

@@ -18,10 +18,11 @@ namespace ToSic.Eav.Apps
     {
 
         [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-        public AppState(IAppStates appStates, IGlobalTypes globalTypes, IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
+        public AppState(IAppStates appStates, ParentAppState parentApp, IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
         {
             _appStates = appStates;
-            _globalTypes = globalTypes;
+            ParentApp = parentApp;
+            //_globalTypes = globalTypes;
             Log.Add($"AppState for App {app.AppId}");
             Init(app, new CodeRef(), parentLog);
             AppGuidName = appGuidName;
@@ -33,8 +34,8 @@ namespace ToSic.Eav.Apps
         [PrivateApi("Accessor to other apps - replaces the static State object")]
         private readonly IAppStates _appStates;
 
-        private readonly IGlobalTypes _globalTypes;
-
+        [PrivateApi("WIP v13")]
+        public readonly ParentAppState ParentApp;
 
         /// <summary>
         /// Manages all relationships between Entities

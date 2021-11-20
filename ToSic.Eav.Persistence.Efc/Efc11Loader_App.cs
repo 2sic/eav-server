@@ -32,7 +32,14 @@ namespace ToSic.Eav.Persistence.Efc
             var wrapLog = Log.Call<AppState>($"AppId: {appId}");
             var appIdentity =_appStates.Identity(null, appId);
             var appGuidName = _appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
-            var appState = Update(new AppState(_appStates, _globalTypes, appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
+
+            // New v13 - use global app instead
+            var globalApp = _appStates.Get(Constants.PresetIdentity);
+            if (globalApp == null)
+                throw new Exception("Can't find global app - which is required to build any other apps. ");
+            var parent = new ParentAppState(globalApp, true);
+
+            var appState = Update(new AppState(_appStates, parent, appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
 
             return wrapLog("ok", appState);
         }
