@@ -25,8 +25,7 @@ namespace ToSic.Eav.Persistence.File.Tests
 
             var cts = app.ContentTypes;
             var sharedCts = cts.Where(ct => (ct as ContentType).AlwaysShareConfiguration).ToList();
-
-            var fileSysLoader = Build<FileSystemLoader>().Init(ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null, Log);
+            var fileSysLoader = Build<FileSystemLoader>().Init(Constants.PresetAppId, ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null, Log);
 
             var time = Stopwatch.StartNew();
             sharedCts.ForEach(ct => fileSysLoader.SaveContentType(ct));

@@ -157,7 +157,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     : (ContentType) AppState.GetContentType(attributeSetId);  // in case it's the name, not the number
 
                 // skip system/code-types
-                if((set.ParentId ?? 0) == Constants.SystemContentTypeFakeParent)
+                if((set.ParentId ?? 0) == Constants.PresetContentTypeFakeParent)
                     continue;
 
                 var attributes = new XElement(XmlConstants.Attributes);

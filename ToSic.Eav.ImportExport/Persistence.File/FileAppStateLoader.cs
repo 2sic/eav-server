@@ -41,8 +41,6 @@ namespace ToSic.Eav.Persistence.File
             var appState = Update(new AppState(_appStates, new GlobalTypesEmpty(), appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
 
             return wrapLog("ok", appState);
-
-            throw new NotImplementedException();
         }
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null)

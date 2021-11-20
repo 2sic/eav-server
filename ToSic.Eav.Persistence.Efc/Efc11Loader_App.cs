@@ -119,14 +119,19 @@ namespace ToSic.Eav.Persistence.Efc
             var nullTuple = new Tuple<string, string>(null, null);
             try
             {
+                // Get all Entities in the 2SexyContent-App scope
                 var dbEntity = GetRawEntities(new int[0], appId, false, "2SexyContent-App");
                 if (!dbEntity.Any()) return wrapLog("not in db", nullTuple);
+
+                // Get the first one as it should be the one containing the App-Configuration
+                // WARNING: This looks a bit fishy, I think it shouldn't just assume the first one is the right one
                 var json = dbEntity.FirstOrDefault()?.Json;
                 if (string.IsNullOrEmpty(json)) return wrapLog("no json", nullTuple);
 
                 Log.Add("app Entity found - this json: " + json);
                 var serializer = ServiceProvider.Build<IDataDeserializer>();
-                serializer.Initialize(0, ReflectionTypes.FakeCache.Values, null, Log);
+                // TODO: #42
+                serializer.Initialize(appId, ReflectionTypes.FakeCache.Values, null, Log);
                 if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
                     return wrapLog("can't deserialize", nullTuple);
                 var path = appEntity.Value<string>(AppLoadConstants.FieldFolder);

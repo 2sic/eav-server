@@ -78,7 +78,7 @@ namespace ToSic.Eav.ImportExport.Persistence.File
 
 
         internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths
-            .Select(path => _serviceProvider.Build<FileSystemLoader>().Init(path, Source, true, null, Log)).ToList());
+            .Select(path => _serviceProvider.Build<FileSystemLoader>().Init(Constants.PresetAppId, path, Source, true, null, Log)).ToList());
         private List<FileSystemLoader> _loader;
 
 

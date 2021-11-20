@@ -104,7 +104,7 @@ namespace ToSic.Eav.DataSourceTests.Query
             var ser = Serializer();
             var strQuery = ser.Serialize(qdef.Entity, 10);
             var eDef2 = ser.Deserialize(strQuery, true);
-
+            // TODO: #42
             var qdef2 = new QueryDefinition(eDef2, 0, null);
             var query2 = _queryBuilder.GetDataSourceForTesting(qdef2, false).Item1;
             var countDef2 = query2.ListForTests().Count();

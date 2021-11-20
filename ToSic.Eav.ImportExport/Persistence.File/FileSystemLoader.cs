@@ -22,6 +22,9 @@ namespace ToSic.Eav.Persistence.File
         private const string ConfigurationFolder = "configurations\\";
         //private const string ItemFolder = "items\\";
 
+
+        public int AppId = 0;
+
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
@@ -30,10 +33,11 @@ namespace ToSic.Eav.Persistence.File
             _jsonSerializerUnready = jsonSerializerUnready;
         }
 
-        public FileSystemLoader Init(string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
+        public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
         {
             Log.LinkTo(parentLog);
-            Log.Add($"init with path:{path} ignore:{ignoreMissing}");
+            Log.Add($"init with appId:{appId}, path:{path}, ignore:{ignoreMissing}");
+            AppId = appId;
             Path = path + (path.EndsWith("\\") ? "" : "\\");
             RepoType = repoType;
             IgnoreMissingStuff = ignoreMissing;
@@ -56,7 +60,7 @@ namespace ToSic.Eav.Persistence.File
             {
                 if (_ser != null) return _ser;
                 _ser = _jsonSerializerUnready;
-                _ser.Initialize(0, ReflectionTypes.FakeCache.Values, EntitiesSource, Log);
+                _ser.Initialize(AppId, ReflectionTypes.FakeCache.Values, EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
@@ -91,7 +95,10 @@ namespace ToSic.Eav.Persistence.File
 
             // #3.2 load entity-items from folder
             var jsonSerializer = Serializer;
-            var entities = jsons.Select(json => LoadAndBuildEntity(jsonSerializer, json, relationshipsSource)).Where(entity => entity != null).ToList();
+            var entities = jsons
+                .Select(json => LoadAndBuildEntity(jsonSerializer, json, relationshipsSource))
+                .Where(entity => entity != null)
+                .ToList();
 
             // #3.3 Put all found entities into the source
             entitiesForRelationships.AddRange(entities);
@@ -104,7 +111,7 @@ namespace ToSic.Eav.Persistence.File
 
         #region ContentType
 
-        public IList<IContentType> ContentTypes() => ContentTypes(0, null);
+        public IList<IContentType> ContentTypes() => ContentTypes(AppId, null);
 
         /// <inheritdoc />
         /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
@@ -113,7 +120,7 @@ namespace ToSic.Eav.Persistence.File
         public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
         {
             // v11.01 experimental - maybe disable this, as now we're loading from the app folder so we have an AppId
-            if (appId != 0) throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
+            if (appId != Constants.PresetAppId) throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
 
             // #1. check that folder exists
             var pathCt = ContentTypePath;
@@ -149,7 +156,7 @@ namespace ToSic.Eav.Persistence.File
                 var ct = ser.DeserializeContentType(json);
 
                 infoIfError = "couldn't set source/parent";
-                (ct as ContentType).SetSourceAndParent(RepoType, Constants.SystemContentTypeFakeParent, path);
+                (ct as ContentType).SetSourceAndParent(RepoType, Constants.PresetContentTypeFakeParent, path);
                 return ct;
             }
             catch (IOException e)

@@ -24,7 +24,7 @@ namespace ToSic.Eav.Core.Tests.Types
             Attributes = new List<IContentTypeAttribute>();
             //IsInstalledInPrimaryStorage = false;
             RepositoryType = RepositoryTypes.Code;
-            ParentId = Constants.SystemContentTypeFakeParent;  // important that parentid is different, so the GUI regards this as a ghost, and doesn't provide editing features
+            ParentId = Constants.PresetContentTypeFakeParent;  // important that parentid is different, so the GUI regards this as a ghost, and doesn't provide editing features
             //I18nKey = i18nKey;
         }
 

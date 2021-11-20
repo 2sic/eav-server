@@ -79,7 +79,7 @@ namespace ToSic.Eav.ImportExport.Json
 
             var typeIsShared = sharableCt != null && (sharableCt.AlwaysShareConfiguration ||
                                                       sharableCt.ParentId.HasValue && sharableCt.ParentId !=
-                                                      Constants.SystemContentTypeFakeParent);
+                                                      Constants.PresetContentTypeFakeParent);
             if (typeIsShared && !includeSharedTypes)
             {
                 // if it's a shared type, flush definition as we won't include it
