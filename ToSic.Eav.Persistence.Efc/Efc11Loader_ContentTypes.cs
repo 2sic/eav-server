@@ -125,8 +125,7 @@ namespace ToSic.Eav.Persistence.Efc
                 var notGhost = set.IsGhost == null;
 
                 return (IContentType)new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
-                    set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent, // source,
-                    //_appStates,
+                    set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent,
                     () => notGhost ? source : _appStates.Get(new AppIdentity(set.ZoneId, set.AppId))
                 )
                 {

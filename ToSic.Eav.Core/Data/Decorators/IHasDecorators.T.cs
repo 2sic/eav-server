@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Marks objects which have decorator information")]
-    public interface IHasDecorator<T>
+    public interface IHasDecorators<T>
     {
         List<IDecorator<T>> Decorators { get; }
     }

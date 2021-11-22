@@ -89,18 +89,20 @@ namespace ToSic.Eav.Data
         public ContentType(int appId, string name, string staticName, int attributeSetId, string scope,
             string description, int? usesConfigurationOfAttributeSet, 
             int configZoneId, int configAppId,
-            bool configurationIsOmnipresent, 
-            //IHasMetadataSource metaProviderOfThisApp = null, 
+            bool configurationIsOmnipresent,
             Func<IHasMetadataSource> metaSourceFinder = null): this(appId, name, staticName)
         {
             ContentTypeId = attributeSetId;
             Description = description;
             Scope = scope;
+
+            // Shared Content-Types
             ParentId = usesConfigurationOfAttributeSet;
             ParentZoneId = configZoneId;
             ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
-            //_metaOfThisApp = metaProviderOfThisApp;
+
+            // Metadata
             _metaSourceFinder = metaSourceFinder;
         }
 
