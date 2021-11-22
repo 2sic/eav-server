@@ -5,7 +5,7 @@ using ToSic.Eav.Documentation;
 // Old stuff for compatibility with DNN, should not bleed into Oqtane
 namespace ToSic.Eav.Data
 {
-    public partial class EntityDecorator
+    public partial class EntityWrapper
     {
 
         [PrivateApi]

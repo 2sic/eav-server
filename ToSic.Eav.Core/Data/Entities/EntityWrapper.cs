@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data
     /// Everything in the original is passed through invisibly. <br/>
     /// </summary>
     [PrivateApi("this decorator object is for internal use only, no value in publishing it")]
-    public abstract partial class EntityDecorator : IEntity, IEntityWrapper
+    public abstract partial class EntityWrapper : IEntity, IEntityWrapper
     {
         public IEntity Entity { get; }
 
@@ -21,17 +21,7 @@ namespace ToSic.Eav.Data
         /// Initialize the object and store the underlying IEntity.
         /// </summary>
         /// <param name="baseEntity"></param>
-        /// <param name="decorator"></param>
-        protected EntityDecorator(IEntity baseEntity, IDecorator<IEntity> decorator) : this(baseEntity)
-        {
-            if(decorator != null) Decorators.Add(decorator);
-        }
-
-        /// <summary>
-        /// Initialize the object and store the underlying IEntity.
-        /// </summary>
-        /// <param name="baseEntity"></param>
-        protected EntityDecorator(IEntity baseEntity)
+        protected EntityWrapper(IEntity baseEntity)
         {
             Entity = baseEntity;
             EntityForEqualityCheck = Entity;
@@ -41,6 +31,17 @@ namespace ToSic.Eav.Data
                 Decorators.AddRange(wrapper.Decorators);
             }
         }
+
+        /// <summary>
+        /// Initialize the object and store the underlying IEntity. - adding an additional decorator
+        /// </summary>
+        /// <param name="baseEntity"></param>
+        /// <param name="decorator">Additional wrapper to add</param>
+        protected EntityWrapper(IEntity baseEntity, IDecorator<IEntity> decorator) : this(baseEntity)
+        {
+            if(decorator != null) Decorators.Add(decorator);
+        }
+
 
         #region IEntity Implementation
 

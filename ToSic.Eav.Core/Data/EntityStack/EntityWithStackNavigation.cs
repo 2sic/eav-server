@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data
     /// This is a special IEntity-wrapper which will return Stack-Navigation
     /// </summary>
     [PrivateApi]
-    public class EntityWithStackNavigation: EntityDecorator
+    public class EntityWithStackNavigation: EntityWrapper
     {
         public EntityWithStackNavigation(IEntity baseEntity, IPropertyStackLookup parent, string field, int index) : base(baseEntity)
         {
