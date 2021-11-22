@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi.Dto
 {
-    public class ContentTypeDto: IdNameDto
+    public class ContentTypeDto: IdNameDto, IReadOnlyDto
     {
         public string Label { get; set; }
         public string StaticName { get; set; }
@@ -17,5 +18,10 @@ namespace ToSic.Eav.WebApi.Dto
         public IDictionary<string, object> Properties { get; set; }
 
         public HasPermissionsDto Permissions { get; set; }
+
+        //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public bool? IsReadOnly { get; set; }
+
+        public string IsReadOnlyReason { get; set; }
     }
 }

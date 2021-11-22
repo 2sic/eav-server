@@ -5,7 +5,7 @@ using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi.Dto
 {
-    public class ContentTypeFieldDto
+    public class ContentTypeFieldDto: IReadOnlyDto
     {
         public int Id { get; set; }
         public int SortOrder { get; set; }
@@ -34,5 +34,8 @@ namespace ToSic.Eav.WebApi.Dto
         /// New in v12.01
         /// </remarks>
         public bool HasFormulas { get; set; }
+
+        public bool? IsReadOnly { get; set; }
+        public string IsReadOnlyReason { get; set; }
     }
 }
