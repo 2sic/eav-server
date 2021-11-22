@@ -70,8 +70,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <summary>
         /// Load DB content-types into loader-cache
         /// </summary>
-        private ImmutableList<IContentType> LoadContentTypesIntoLocalCache(int appId, 
-            IHasMetadataSource source)
+        private ImmutableList<IContentType> LoadContentTypesIntoLocalCache(int appId, IHasMetadataSource source)
         {
             var wrapLog = Log.Call(useTimer: true);
             // Load from DB
@@ -110,13 +109,17 @@ namespace ToSic.Eav.Persistence.Efc
 
             var shareids = contentTypes.Select(c => c.SharedDefinitionId).ToList();
             sqlTime.Start();
+
             var sharedAttribs = _dbContext.ToSicEavAttributeSets
                 .Include(s => s.ToSicEavAttributesInSets)
                 .ThenInclude(a => a.Attribute)
                 .Where(s => shareids.Contains(s.AttributeSetId))
-                .ToDictionary(s => s.AttributeSetId, s => s.ToSicEavAttributesInSets.Select(a
-                    => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
-                        a.AttributeId, a.SortOrder, parentApp: s.AppId, metaSourceFinder: () => _appStates.Get(s.AppId))));
+                .ToDictionary(
+                    s => s.AttributeSetId,
+                    s => s.ToSicEavAttributesInSets.Select(a
+                        => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
+                            a.AttributeId, a.SortOrder, parentApp: s.AppId,
+                            metaSourceFinder: () => _appStates.Get(s.AppId))));// Must get own MetaSourceFinder since they come from other apps
             sqlTime.Stop();
 
             // Convert to ContentType-Model

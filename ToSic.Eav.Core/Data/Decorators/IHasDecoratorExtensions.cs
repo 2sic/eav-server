@@ -17,11 +17,11 @@ namespace ToSic.Eav.Data
             return parentWithDecorator.GetDecorator<TDecorator, IEntity>();
         }
 
-        //public static TDecorator GetDecorator<TDecorator>(this IContentType parent) where TDecorator : class, IDecorator
-        //{
-        //    if (!(parent is IHasDecorators<IContentType> parentWithDecorator)) return null;
-        //    return parentWithDecorator.GetDecorator<TDecorator, IEntity>();
-        //}
+        public static TDecorator GetDecorator<TDecorator>(this IContentType parent) where TDecorator : class, IDecorator
+        {
+            if (!(parent is IHasDecorators<IContentType> parentWithDecorator)) return null;
+            return parentWithDecorator.GetDecorator<TDecorator, IContentType>();
+        }
 
     }
 }

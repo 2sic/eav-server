@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Shared;
 using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.ImportExport.Json
@@ -54,7 +55,6 @@ namespace ToSic.Eav.ImportExport.Json
 
         public JsonContentType ToJson(IContentType contentType, bool includeSharedTypes)
         {
-            var sharableCt = contentType as IContentTypeShared;
             JsonContentTypeShareable jctShare = null;
 
             var attribs = contentType.Attributes
@@ -77,21 +77,28 @@ namespace ToSic.Eav.ImportExport.Json
                 .ToList()
                 .ForEach(e => e.For = null);
 
-            var typeIsShared = sharableCt != null && (sharableCt.AlwaysShareConfiguration ||
-                                                      sharableCt.ParentId.HasValue && sharableCt.ParentId !=
-                                                      Constants.PresetContentTypeFakeParent);
-            if (typeIsShared && !includeSharedTypes)
+            var sharableCt = contentType as IContentTypeShared;
+            //var typeIsShared = sharableCt != null && (sharableCt.AlwaysShareConfiguration ||
+            //                                          sharableCt.ParentId.HasValue && sharableCt.ParentId !=
+            //                                          Constants.PresetContentTypeFakeParent);
+
+            var ancestorDecorator = contentType.GetDecorator<IAncestor>();
+            var isSharedNew = ancestorDecorator != null &&
+                              ancestorDecorator.Id != Constants.PresetContentTypeFakeParent;
+
+            // Note 2021-11-22 2dm - AFAIK this is skipped when creating a JSON for edit-UI
+            if (isSharedNew /*typeIsShared*/ && !includeSharedTypes)
             {
                 // if it's a shared type, flush definition as we won't include it
-                if (sharableCt.ParentId.HasValue)
-                    attribs = null; 
+                if (ancestorDecorator.Id != 0)// sharableCt.ParentId.HasValue)
+                    attribs = null;
 
                 jctShare = new JsonContentTypeShareable
                 {
                     AlwaysShare = sharableCt.AlwaysShareConfiguration,
-                    ParentAppId = sharableCt.ParentAppId,
-                    ParentZoneId = sharableCt.ParentZoneId,
-                    ParentId = sharableCt.ParentId
+                    ParentAppId = ancestorDecorator.AppId, // sharableCt.ParentAppId,
+                    ParentZoneId = ancestorDecorator.ZoneId, // sharableCt.ParentZoneId,
+                    ParentId = ancestorDecorator.Id, // sharableCt.ParentId
                 };
             }
             var package = new JsonContentType

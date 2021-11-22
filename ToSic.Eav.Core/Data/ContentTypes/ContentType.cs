@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Shared;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
@@ -15,7 +17,7 @@ namespace ToSic.Eav.Data
     // We should actually make it PrivateApi, but other code references this, so we need to change that to IContentType,
     // Otherwise docs won't generate cross-links as needed
     [PrivateApi("2021-09-30 hidden now, was internal_don't use Always use the interface, not this class")]
-    public class ContentType : IContentType, IContentTypeShared
+    public partial class ContentType : IContentType, IContentTypeShared
     {
         #region simple properties
 
@@ -49,6 +51,8 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public bool IsDynamic { get; internal set; }
 
+        #endregion
+
         /// <inheritdoc />
         public bool Is(string name) => Name.Equals(name, InvariantCultureIgnoreCase) || StaticName.Equals(name, InvariantCultureIgnoreCase);
 
@@ -57,24 +61,12 @@ namespace ToSic.Eav.Data
 
 
         #region New DynamicChildren Navigation - new in 12.03
+
+        /// <inheritdoc />
         [PrivateApi("WIP 12.03")]
         // Don't cache the result, as it could change during runtime
         public string DynamicChildrenField => Metadata.GetBestValue<string>(ContentTypes.DynamicChildrenField);
         
-
-        #endregion
-
-        #endregion
-
-        #region Sharing Content Types
-        /// <inheritdoc />
-        public int? ParentId { get; internal set; }
-        /// <inheritdoc />
-        public int ParentAppId { get; }
-        /// <inheritdoc />
-        public int ParentZoneId { get; }
-        /// <inheritdoc />
-        public bool AlwaysShareConfiguration { get; private set; }
 
         #endregion
 
@@ -87,9 +79,11 @@ namespace ToSic.Eav.Data
         /// </summary>
         [PrivateApi]
         public ContentType(int appId, string name, string staticName, int attributeSetId, string scope,
-            string description, int? usesConfigurationOfAttributeSet, 
-            int configZoneId, int configAppId,
-            bool configurationIsOmnipresent,
+            string description, 
+            int? parentTypeId = null, 
+            int configZoneId = 0, 
+            int configAppId = 0,
+            bool configurationIsOmnipresent = false,
             Func<IHasMetadataSource> metaSourceFinder = null): this(appId, name, staticName)
         {
             ContentTypeId = attributeSetId;
@@ -97,10 +91,14 @@ namespace ToSic.Eav.Data
             Scope = scope;
 
             // Shared Content-Types
-            ParentId = usesConfigurationOfAttributeSet;
-            ParentZoneId = configZoneId;
-            ParentAppId = configAppId;
+            //ParentId = parentTypeId;
+            //ParentZoneId = configZoneId;
+            //ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
+
+            if (parentTypeId != null)
+                Decorators.Add(new Ancestor<IContentType>(new AppIdentity(configZoneId, configAppId),
+                    parentTypeId.Value));
 
             // Metadata
             _metaSourceFinder = metaSourceFinder;
@@ -123,43 +121,7 @@ namespace ToSic.Eav.Data
         #endregion
 
 
-        #region Helpers just for creating ContentTypes which will be imported
-        [PrivateApi]
-        public void SetImportParameters(string scope, string staticName, string description, bool alwaysShareDef)
-        {
-            Scope = scope;
-            StaticName = staticName;
-            Description = description;
-            AlwaysShareConfiguration = alwaysShareDef;
-        }
 
-        // special values just needed for import / save 
-        // todo: try to place in a sub-object to un-clutter this ContentType object
-        [PrivateApi]
-        public bool OnSaveSortAttributes { get; set; } = false;
-
-        [PrivateApi]
-        public string OnSaveUseParentStaticName { get; set; }
-
-
-        #endregion
-
-        #region Metadata
-
-
-
-        /// <inheritdoc />
-        public ContentTypeMetadata Metadata
-            => _metadata ?? (_metadata = new ContentTypeMetadata(StaticName, _metaSourceFinder));
-            //=> _metadata ?? (_metadata = ParentAppId == AppId
-            //? new ContentTypeMetadata(StaticName, _metaOfThisApp)
-            //: new ContentTypeMetadata(StaticName, _metaSourceFinder));
-        private ContentTypeMetadata _metadata;
-        //private readonly IHasMetadataSource _metaOfThisApp;
-        private readonly Func<IHasMetadataSource> _metaSourceFinder;
-
-        IMetadataOf IHasMetadata.Metadata => Metadata;
-        #endregion
 
     }
 }
