@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.WebApi.Dto;
-#if NET451
+#if NET472
 using ExportResponse = System.Net.Http.HttpResponseMessage;
 #else
 using ExportResponse = Microsoft.AspNetCore.Mvc.IActionResult;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
-#if NET451
+#if NET472
 using System.Web.Http;
 #else
 using Microsoft.AspNetCore.Mvc;
@@ -40,13 +40,13 @@ namespace ToSic.Eav.WebApi
             return this;
         }
 
-        public Tuple<string, string> ExportContent(IUser user, 
-            string language, 
-            string defaultLanguage, 
+        public Tuple<string, string> ExportContent(IUser user,
+            string language,
+            string defaultLanguage,
             string contentType,
-            ExportSelection exportSelection, 
+            ExportSelection exportSelection,
             ExportResourceReferenceMode exportResourcesReferences,
-            ExportLanguageResolution exportLanguageReferences, 
+            ExportLanguageResolution exportLanguageReferences,
             string selectedIds)
         {
             Log.Add($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");

@@ -3,13 +3,13 @@ namespace ToSic.Eav.Run
 {
     /// <summary>
     /// Goal is that anything on this will be able to provide HttpContext operations as needed
-    /// To abstract .net451 and .net core
+    /// To abstract .net472 and .net core
     /// </summary>
     public interface IServerPaths
     {
         /// <summary>
         /// Get the full path of an app. Depending on the environment this can be in different roots.
-        /// For example, in DNN it's in the normal website, but in Oqtane it's in the special Content. 
+        /// For example, in DNN it's in the normal website, but in Oqtane it's in the special Content.
         /// </summary>
         /// <param name="virtualPath">The full, relative path to the app.</param>
         /// <returns>Full path beginning with drive letter (like c:) or network path (//...)</returns>

@@ -81,9 +81,9 @@ namespace ToSic.Eav.Data.Builder
         public static Dictionary<string, IAttribute> Copy(this IDictionary<string, IAttribute> attributes)
             => attributes.ToDictionary(x => x.Key, x => x.Value.Copy());
 
-#if NET451
+#if NET472
         /// <summary>
-        /// Add a value to the attribute specified. To do so, set the name, type and string of the value, as 
+        /// Add a value to the attribute specified. To do so, set the name, type and string of the value, as
         /// well as some language properties.
         /// </summary>
         [Obsolete("You should now get the AttributeBuilder with Dependency Injection and AddValue there")]
