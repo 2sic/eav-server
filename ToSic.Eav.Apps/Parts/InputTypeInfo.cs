@@ -61,13 +61,13 @@ namespace ToSic.Eav.Apps.Parts
         /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public bool? IsObsolete { get; }
+        public bool? IsObsolete { get; set; }
 
         /// <summary>
         /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string ObsoleteMessage { get; }
+        public string ObsoleteMessage { get; set; }
 
         /// <summary>
         /// WIP 12.10 Recommendation status

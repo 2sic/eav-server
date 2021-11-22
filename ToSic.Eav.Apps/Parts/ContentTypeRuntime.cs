@@ -76,10 +76,11 @@ namespace ToSic.Eav.Apps.Parts
             // Merge input types registered in global metadata-app
             var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Constants.MetaDataAppId, true, Log);
             var systemAppInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
+            systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
             LogListOfInputTypes("System", systemAppInputTypes);
             AddMissingTypes(inputTypes, systemAppInputTypes);
             LogListOfInputTypes("All combined", inputTypes);
-
+            
             // Sort for better debugging
             inputTypes = inputTypes.OrderBy(i => i.Type).ToList();
 
@@ -97,6 +98,22 @@ namespace ToSic.Eav.Apps.Parts
                 if (target.FirstOrDefault(ait => ait.Type == sit.Type) == null)
                     target.Add(sit);
             });
+
+        /// <summary>
+        /// Mark obsolete InputTypes which were previously part of the installation.
+        /// This is important, because the config cannot mark them as obsolete
+        /// </summary>
+        /// <param name="oldGlobalTypes"></param>
+        /// <returns></returns>
+        private List<InputTypeInfo> MarkOldGlobalInputTypesAsObsolete(List<InputTypeInfo> oldGlobalTypes)
+        {
+            return oldGlobalTypes.Select(it =>
+            {
+                it.IsObsolete = true;
+                it.ObsoleteMessage = "Old input type, will default to another one.";
+                return it;
+            }).ToList();
+        }
 
         /// <summary>
         /// Get a list of input-types registered to the current app
