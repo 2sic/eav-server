@@ -29,6 +29,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Extended constructor when also storing the persistence Id
         /// </summary>
+        // TODO: clean up call to this function, as 2 params are not used
         public ContentTypeAttribute(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder, 
             IHasMetadataSource metaProvider = null, int parentApp = 0, 
             Func<IHasMetadataSource> metaSourceFinder = null) : base(name, type)
@@ -44,16 +45,9 @@ namespace ToSic.Eav.Data
         /// Create an attribute definition "from scratch" so for
         /// import-scenarios and code-created attribute definitions
         /// </summary>
-        public ContentTypeAttribute(int appId, string name, /* string niceName, */ string type, /*, string inputType, string notes,
-            bool? visibleInEditUi, object defaultValue,*/ List<IEntity> attributeMetadata)
+        public ContentTypeAttribute(int appId, string name, string type, List<IEntity> attributeMetadata)
             : this(appId, name, type, false, 0, 0)
-            => Metadata.Use(attributeMetadata
-            //    new List<IEntity>
-            //{
-            //    AttDefBuilder.GenerateAttributeMetadata(appId, niceName, notes, visibleInEditUi,
-            //        HelpersToRefactor.SerializeValue(defaultValue), inputType)
-            //}
-                );
+            => Metadata.Use(attributeMetadata);
 
 
         /// <summary>

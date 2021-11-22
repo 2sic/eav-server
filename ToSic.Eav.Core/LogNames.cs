@@ -6,6 +6,8 @@
         /// Most common prefix in EAV systems
         /// </summary>
         public const string Eav = "Eav";
+
+        public const string WebApi = "API";
         
         /// <summary>
         /// Anything using this prefix allows the program to run, but doesn't do anything useful.
