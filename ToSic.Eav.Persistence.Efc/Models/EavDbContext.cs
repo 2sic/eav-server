@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Configuration;
-#if NET451
+#if NETFRAMEWORK
 using Microsoft.EntityFrameworkCore.Metadata;
 #endif
 namespace ToSic.Eav.Persistence.Efc.Models

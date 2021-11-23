@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net451;netstandard2.0;</TargetFrameworks>
+    <TargetFrameworks>net472;netstandard2.0;</TargetFrameworks>
     <Configurations>Debug;Release;efc and WebApi;debug eav only;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RootNamespace>ToSic.Eav</RootNamespace>
     <Version>12.08.02</Version>
@@ -103,7 +103,7 @@
   <PropertyGroup />
 
   <!-- Different DI for .net 4.5 (using .net core 1.1) and .net Standard 2 -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
   </ItemGroup>
@@ -149,7 +149,7 @@
     <PackageReference Include="System.Xml.ReaderWriter" Version="4.3.0" />
     <PackageReference Include="System.Xml.XDocument" Version="4.3.0" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="Newtonsoft.Json" Version="4.5.6" />
   </ItemGroup>
 
@@ -157,7 +157,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Web" />
