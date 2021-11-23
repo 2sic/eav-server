@@ -14,9 +14,10 @@ namespace ToSic.Eav.Persistence.Efc.Diagnostics
         {
             typeof(Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommandBuilderFactory).FullName,
 #if NET472
-            typeof(Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerConnection).FullName
+            // FIX: Error   CS0234  The type or namespace name 'SqlServerConnection' does not exist in the namespace 'Microsoft.EntityFrameworkCore.Storage.Internal' (are you missing an assembly reference?)	ToSic.Eav.Persistence.Efc(net472)
+            //typeof(Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerConnection).FullName
 #endif
-        };
+    };
 
         public ILogger CreateLogger(string categoryName)
         {
