@@ -112,7 +112,9 @@ namespace ToSic.Eav.WebApi
             var result = installedDataSources
                 .Select(dsInfo => new DataSourceDto(dsInfo.Type.Name, dsInfo.VisualQuery)
                 {
+                    TypeNameForUi = dsInfo.Type.FullName,
                     PartAssemblyAndType = dsInfo.Name,
+                    Identifier = dsInfo.Name,
                     Out = dsInfo.VisualQuery?.DynamicOut == true ? null : dsCatalog.GetOutStreamNames(dsInfo)
                 })
                 .ToList();
