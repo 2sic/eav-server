@@ -72,5 +72,11 @@ namespace ToSic.Eav
         [PrivateApi]
         [Obsolete("Use this in all EAV code to ensure we know the APIs to remove in v13")]
         public static T ObsoleteBuild<T>() => GetServiceProvider().Build<T>();
+
+
+        public static void Dummy(object sp)
+        {
+            _serviceCollection = (IServiceCollection)sp;
+        }
     }
 }
