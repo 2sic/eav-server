@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSources.Catalog
     {
         public string TypeNameForUi { get; set; }
 
-        // old, try to deprecate
+        // old, try to deprecate and replace with Identifier
         public string PartAssemblyAndType { get; set; }
 
         public string Identifier { get; set; }
