@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
-using ToSic.Eav.Interfaces;
 using ToSic.Eav.Repositories;
-using ToSic.Testing.Shared;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -29,7 +26,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         private IList<IEntity> LoadAllQueries()
         {
             Trace.WriteLine($"path:'{TestStorageRoot}'");
-            var loader = EavTestBase.Resolve<FileSystemLoader>().Init(TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null, Log);
+            var loader = Build<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null, Log);
             IList<IEntity> cts;
             try
             {

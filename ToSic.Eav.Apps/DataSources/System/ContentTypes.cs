@@ -98,7 +98,7 @@ namespace ToSic.Eav.DataSources.System
             var appId = OfAppId;
 
 	        var scp = OfScope;
-	        if (string.IsNullOrWhiteSpace(scp) || string.Equals(scp, "Default", StringComparison.InvariantCultureIgnoreCase))
+	        if (string.IsNullOrWhiteSpace(scp) || Constants.ScopeContentFuture.Equals(scp, StringComparison.InvariantCultureIgnoreCase))
 	            scp = AppConstants.ScopeContentOld;
 
 	        var types = _appStates.Get(appId).ContentTypes.OfScope(scp);

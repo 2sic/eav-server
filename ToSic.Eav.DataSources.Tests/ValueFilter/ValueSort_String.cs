@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSourceTests
     
 
     [TestClass]
-    public class ValueSort_String: EavTestBase
+    public class ValueSort_String: TestBaseDiEavFullAndDb
     {
         private const int TestVolume = 30;
         private readonly ValueSort _testDataGeneratedOutsideTimer;
@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSourceTests
 
         public ValueSort_String()
         {
-            _valueFilterMaker = Resolve<ValueFilterMaker>();
+            _valueFilterMaker = new ValueFilterMaker(this);
 
             _testDataGeneratedOutsideTimer =
                 _valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume);

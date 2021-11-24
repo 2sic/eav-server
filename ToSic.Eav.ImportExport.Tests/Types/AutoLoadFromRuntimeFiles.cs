@@ -6,24 +6,22 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.ImportExport.Tests.Types
 {
     [TestClass]
-    public class AutoLoadFromRuntimeFiles
+    // Must inherit from FullAndDb because this also preloads the global types
+    public class AutoLoadFromRuntimeFiles: TestBaseDiEavFullAndDb
     {
-        public AutoLoadFromRuntimeFiles()
-        {
-            _globalTypes = EavTestBase.Resolve<GlobalTypes>();
-        }
-        private readonly GlobalTypes _globalTypes;
-
-        public Tuple<int, int> TypesInFilesRuntime = Tuple.Create(50, 65); // use range
+        // status 2021-11-04 is 77 files
+        private int TypesInFileRuntimeMin = 75;
+        private int TypesInFileRuntimeMax = 90;
 
         [TestMethod]
         public void ScanForTypesFileBased()
         {
+            var _globalTypes = Build<IGlobalTypes>();
             var types = _globalTypes.AllContentTypes();
             var count = types.Count;
-            Assert.IsTrue(TypesInFilesRuntime.Item1 < count
-                          && TypesInFilesRuntime.Item2 > count,
-                "expect a fixed about of types at dev time");
+            Assert.IsTrue(TypesInFileRuntimeMin < count
+                          && TypesInFileRuntimeMax > count,
+                $"expect a fixed about of types at dev time - got {count}");
         }
     }
 }

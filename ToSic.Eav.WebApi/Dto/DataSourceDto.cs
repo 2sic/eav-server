@@ -5,19 +5,25 @@ namespace ToSic.Eav.DataSources.Catalog
 {
     public class DataSourceDto
     {
-        public string PartAssemblyAndType;
-        public ICollection<string> In;
-        public ICollection<string> Out;
-        public string ContentType;
-        public string PrimaryType;
-        public string Icon;
-        public bool DynamicOut;
-        public bool DynamicIn;
-        public string HelpLink;
-        public bool EnableConfig;
-        public string Name;
-        public string UiHint;
-        public int Difficulty;
+        public string TypeNameForUi { get; set; }
+
+        // old, try to deprecate and replace with Identifier
+        public string PartAssemblyAndType { get; set; }
+
+        public string Identifier { get; set; }
+
+        public ICollection<string> In { get; set; }
+        public ICollection<string> Out { get; set; }
+        public string ContentType { get; set; }
+        public string PrimaryType { get; set; }
+        public string Icon { get; set; }
+        public bool DynamicOut { get; set; }
+        public bool DynamicIn { get; set; }
+        public string HelpLink { get; set; }
+        public bool EnableConfig { get; set; }
+        public string Name { get; set; }
+        public string UiHint { get; set; }
+        public int Difficulty { get; set; }
 
         public DataSourceDto(string fallbackName, VisualQueryAttribute dsInfo)
         {

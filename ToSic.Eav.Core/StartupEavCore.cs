@@ -22,9 +22,6 @@ namespace ToSic.Eav
     {
         public static IServiceCollection AddEavCore(this IServiceCollection services)
         {
-            // 2020-10-29 New enhancement - lazy loading dependency injection
-            services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
-
             // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
             
@@ -35,11 +32,7 @@ namespace ToSic.Eav
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
             
-            // try to drop this / replace with...
-            //services.TryAddTransient<IFeaturesConfiguration, Features>();
-            // ...with this
             services.TryAddTransient<SystemLoader>();
-            //services.TryAddTransient<Features>();
 
             // Make sure that IFeaturesInternal and IFeatures use the same singleton!
             services.TryAddSingleton<IFeaturesInternal, FeaturesService>();    // this must come first!
@@ -53,16 +46,31 @@ namespace ToSic.Eav
             // Other...
             services.TryAddTransient<AttributeBuilder>();
 
-            // History (very core service)
-            services.TryAddTransient<LogHistory>();
-            services.TryAddSingleton<GlobalTypes>();    // this must be singleton, could cause trouble otherwise
+            // The GlobalTypes must be singleton, could cause trouble otherwise
+            services.TryAddSingleton<IGlobalTypes, GlobalTypes>();
 
-            // Warnings for mock implementations
-            services.TryAddTransient(typeof(WarnUseOfUnknown<>));
 
             // Permissions helper
             services.TryAddTransient<PermissionCheckBase.Dependencies>();
 
+            return services;
+        }
+
+        /// <summary>
+        /// Very basic internal services which are necessary for even the most basic DI to work
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddEavCorePlumbing(this IServiceCollection services)
+        {
+            // Lazy loading dependency injection
+            services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
+
+            // History (very core service)
+            services.TryAddTransient<LogHistory>();
+
+            // Warnings for mock implementations
+            services.TryAddTransient(typeof(WarnUseOfUnknown<>));
             return services;
         }
 
@@ -89,6 +97,10 @@ namespace ToSic.Eav
 
             // Special registration of iisUnknown to verify we see warnings if such a thing is loaded
             services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
+
+            // Unknown-Runtime for loading configuration etc. File-runtime
+            services.TryAddTransient<IRuntime, RuntimeUnknown>();
+
             return services;
         }
 

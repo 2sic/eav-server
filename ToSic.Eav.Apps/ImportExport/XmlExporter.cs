@@ -157,7 +157,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     : (ContentType) AppState.GetContentType(attributeSetId);  // in case it's the name, not the number
 
                 // skip system/code-types
-                if((set.ParentId ?? 0) == Constants.SystemContentTypeFakeParent)
+                if (set.HasPresetAncestor()) // ((set.ParentId ?? 0) == Constants.PresetContentTypeFakeParent)
                     continue;
 
                 var attributes = new XElement(XmlConstants.Attributes);
@@ -187,7 +187,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     attributes);
 
                 // Add Ghost-Info if content type inherits from another content type
-                if (set.ParentId.HasValue)
+                if (set.HasAncestor()) // .ParentId.HasValue)
                 {
                     var parentStaticName = set.StaticName;
                     attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));

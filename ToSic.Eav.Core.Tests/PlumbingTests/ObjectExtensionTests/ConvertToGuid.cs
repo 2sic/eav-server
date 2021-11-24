@@ -6,13 +6,6 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
     [TestClass]
     public class ConvertToGuid: ConvertTestBase
     {
-        //[TestMethod]
-        //public void StringToGuid()
-        //{
-        //    AreEqual(null, (null as string).TestConvertOrDefault<string>());
-        //    AreEqual("", "".TestConvertOrDefault<string>());
-        //    AreEqual("5", "5".TestConvertOrDefault<string>());
-        //}
 
         [TestMethod] public void NullToGuid() => ConvT(null, null as string, null);
         [TestMethod] public void EmptyStringToGuid() => ConvT("", Guid.Empty, Guid.Empty);
@@ -24,9 +17,6 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
         [TestMethod] public void StringEmptyDefaultFallback() => ConvFbQuick<Guid>("", default, default, true, true);
         [TestMethod] public void StringEmptySimpleFallback() => ConvFbQuick("", FbGuid, FbGuid, true, true);
         [TestMethod] public void StringValidSimpleFallback() => ConvFbQuick(StrGuid, FbGuid, ExpGuid, true, true);
-
-        [TestMethod] public void NullToGuidOwnFallback() => ConvFbQuick(ExpGuid, default, true, true);
-        // todo: test fallback!
 
         private const string StrGuid = "23cec5c7-3d54-43ef-a80a-e5e5c1f8a397";
         private static readonly Guid ExpGuid = new Guid(StrGuid);

@@ -4,7 +4,7 @@ using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Types
 {
-    public class GlobalTypes: HasLog
+    public class GlobalTypes: HasLog, IGlobalTypes
     {
         public static string LogHistoryGlobalTypes = "global-types";
 
@@ -21,20 +21,17 @@ namespace ToSic.Eav.Types
         }
 
         /// <summary>
-        /// Careful: this initially doesn't exist which is by design
-        /// WIP: 2021-10-28 trying to fix edge case where DI was re-used
+        /// The Type Loader - must be re-used because it's critical that it's singleton
         /// </summary>
+        /// <remarks>
+        /// It's only public because the insights need to show loading-logs of the TypeLoader
+        /// </remarks>
         public static GlobalTypeLoader TypeLoader;
 
-        /// <summary>
-        /// This starts the loading process - this should only ever be called once!
-        /// </summary>
-        internal void StartUp(ILog targetLogger) => TypeLoader.Init(targetLogger).BuildCache();
+        /// <inheritdoc />
+        public void StartUp(ILog targetLogger) => TypeLoader.Init(targetLogger).BuildCache();
 
-        /// <summary>
-        /// Dictionary of code-provided content-types, caches after first scan
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc />
         public ImmutableDictionary<string, IContentType> AllContentTypes() => TypeLoader.ByStaticName;
 
         public IContentType FindContentType(string name)

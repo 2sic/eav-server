@@ -16,7 +16,7 @@ Last=LastName";
         [TestMethod]
         public void Map1ChangeWithPreserve()
         {
-            var test = new AttributeRenameTester(MapBasic1);
+            var test = new AttributeRenameTester(this).Init(MapBasic1);
             Assert.AreEqual(10, test.CList.Count);
             Assert.AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
 
@@ -29,7 +29,7 @@ Last=LastName";
         [TestMethod]
         public void Map1ChangeWithDropRest()
         {
-            var test = new AttributeRenameTester(MapBasic1, false);
+            var test = new AttributeRenameTester(this).Init(MapBasic1, false);
             Assert.AreEqual(10, test.CList.Count);
             Assert.AreNotEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected a different amount of columns");
             Assert.AreEqual(1, test.CItem.Attributes.Count, "expect only 1 field now");
@@ -50,7 +50,7 @@ Last=LastName";
 
         public void Map3ChangeWithPreserve(string map)
         {
-            var test = new AttributeRenameTester(map);
+            var test = new AttributeRenameTester(this).Init(map);
             Assert.AreEqual(10, test.CList.Count);
             Assert.AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
 
@@ -66,7 +66,7 @@ Last=LastName";
         [TestMethod]
         public void Map3ChangeWithDropRest()
         {
-            var test = new AttributeRenameTester(Map3Fields, false);
+            var test = new AttributeRenameTester(this).Init(Map3Fields, false);
             Assert.AreEqual(10, test.CList.Count);
             Assert.AreEqual(3, test.CItem.Attributes.Count, "expected the same amount of columns");
 

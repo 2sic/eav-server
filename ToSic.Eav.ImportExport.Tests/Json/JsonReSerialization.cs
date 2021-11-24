@@ -1,10 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Persistence.Efc;
-using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Tests;
-using ToSic.Testing.Shared;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests.json
@@ -15,24 +12,24 @@ namespace ToSic.Eav.ImportExport.Tests.json
         private readonly JsonSerializer _jsonSerializer;
         private readonly Efc11Loader _loader;
 
-        public JsonReSerialization(): base()
+        public JsonReSerialization()
         {
-            _jsonSerializer = EavTestBase.Resolve<JsonSerializer>();
-            _loader = EavTestBase.Resolve<Efc11Loader>();
+            _jsonSerializer = Build<JsonSerializer>();
+            _loader = Build<Efc11Loader>();
         }
 
         [TestMethod]
         public void JsonReExportHome()
         {
-            var test = new TestValuesOnPc2Dm();
-            Test_DoubleExportEntity(test.AppId, test.ItemOnHomeId);
+            var test = new SpecsTestExportSerialize();
+            Test_DoubleExportEntity(test.AppId, test.TestItemToSerialize);
         }
 
         [TestMethod]
         public void JsonReExportContentGroup()
         {
-            var test = new TestValuesOnPc2Dm();
-            Test_DoubleExportEntity(test.AppId, test.ContentBlockItemWith9Items);
+            var test = new SpecsTestExportSerialize();
+            Test_DoubleExportEntity(test.AppId, test.ContentBlockWithALotOfItems);
         }
 
         private void Test_DoubleExportEntity(int appId, int eid, JsonSerializer serializer = null)
@@ -58,7 +55,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
         [TestMethod]
         public void Json_ReExportHundredsOfAnApp()
         {
-            var test = new TestValuesOnPc2Dm();
+            var test = new SpecsTestExportSerialize();
             var appId = test.AppId;
 
             Test_DoubleExportAllOfAnApp(appId);

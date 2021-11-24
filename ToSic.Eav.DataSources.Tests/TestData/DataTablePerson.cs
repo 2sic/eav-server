@@ -3,19 +3,23 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Core.Tests.LookUp;
-using ToSic.Eav.DataSources;
+using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.DataSourceTests.TestData
 {
-    public class DataTablePerson
+    public class DataTablePerson: TestServiceBase
     {
-        private static readonly Dictionary<int, DataTable> _cachedDs = new Dictionary<int, DataTable>();
-
-        public static DataTable Generate(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
+        public DataTablePerson(IServiceBuilder serviceProvider) : base(serviceProvider)
         {
-            if (useCacheForSpeed && _cachedDs.ContainsKey(itemsToGenerate))
-                return _cachedDs[itemsToGenerate];
+        }
+
+        private static readonly Dictionary<int, DataTable> CachedDs = new Dictionary<int, DataTable>();
+
+        public DataTable Generate(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
+        {
+            if (useCacheForSpeed && CachedDs.ContainsKey(itemsToGenerate))
+                return CachedDs[itemsToGenerate];
 
             var dataTable = new System.Data.DataTable();
             dataTable.Columns.AddRange(new[]
@@ -46,17 +50,19 @@ namespace ToSic.Eav.DataSourceTests.TestData
                     person.CityOrNull,
                     person.Modified));
 
-            var source = new DataTable(dataTable, PersonSpecs.PersonTypeName, 
+            var source = this.GetTestDataSource<DataTable>(LookUpTestData.AppSetAndRes())
+                .Setup(dataTable, PersonSpecs.PersonTypeName, 
                     titleField: PersonSpecs.FieldFullName, 
                     modifiedField: PersonSpecs.FieldModifiedInternal)
-                .Init(LookUpTestData.AppSetAndRes());
+                //.Init(LookUpTestData.AppSetAndRes())
+                ;
 
             // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             source.ListForTests().LastOrDefault();
 
             if (useCacheForSpeed)
-                _cachedDs.Add(itemsToGenerate, source);
+                CachedDs.Add(itemsToGenerate, source);
             return source;
         }
 

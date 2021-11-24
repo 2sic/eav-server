@@ -84,7 +84,10 @@ namespace ToSic.Eav.Data
 
 
         #region WIP 12.03
-
+        /// <summary>
+        /// This internal property says which of the content-type properties
+        /// should be used for DynamicChildren, enabling Content.Lightbox.xyz instead of Content.Items.Lightbox.xyz
+        /// </summary>
         [PrivateApi("WIP 12.03")] string DynamicChildrenField { get; }
 
 

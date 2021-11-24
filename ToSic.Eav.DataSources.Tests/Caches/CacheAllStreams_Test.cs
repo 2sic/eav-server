@@ -4,13 +4,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Caches
 {
     [TestClass]
-    public class CacheAllStreamsTest
+    public class CacheAllStreamsTest: TestBaseDiEavFullAndDb
     {
         const string FilterIdForManyTests = "1067";
         const string AlternateIdForAlternateTests = "1069";
@@ -73,7 +72,8 @@ namespace ToSic.Eav.DataSourceTests.Caches
         {
             var cacher = new CacheAllStreams();
             cacher.AttachForTests(filtered);
-            ((LookUpEngine)cacher.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
+            cacher.Init(filtered.Configuration.LookUpEngine);
+            // ((LookUpEngine)cacher.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
             return cacher;
         }
 
@@ -81,10 +81,11 @@ namespace ToSic.Eav.DataSourceTests.Caches
         public void CacheAllStreams_CheckInWithLongerChain()
         {
             var filtered = CreateFilterForTesting(100, FilterIdForManyTests);
-            var secondFilter = EavTestBase.Resolve<EntityTypeFilter>();
+            var secondFilter = Build<EntityTypeFilter>();
             secondFilter.AttachForTests(filtered);
             secondFilter.TypeName = "Person";
-            ((LookUpEngine)secondFilter.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
+            secondFilter.Init(filtered.Configuration.LookUpEngine);
+            // ((LookUpEngine)secondFilter.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
 
             var cacher = CreateCacheDS(secondFilter);
             var listCache = new ListCache(null);
@@ -178,9 +179,9 @@ namespace ToSic.Eav.DataSourceTests.Caches
             Assert.AreNotEqual(listFromCacheAfter1Second, originalList, "Second list MUST be Different because 1 second passed");
         }
 
-        public static EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue, bool useCacheForSpeed = true)
+        public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue, bool useCacheForSpeed = true)
         {
-            var ds = DataTablePerson.Generate(testItemsInRootSource, 1001, useCacheForSpeed);
+            var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001, useCacheForSpeed);
             var filtered = new EntityIdFilter()
                 .Init(ds.Configuration.LookUpEngine); //{ConfigurationProvider = ds.ConfigurationProvider};
             filtered.AttachForTests(ds);

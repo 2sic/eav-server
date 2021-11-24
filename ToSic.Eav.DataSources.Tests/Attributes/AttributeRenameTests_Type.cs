@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void TypeChange()
         {
-            var attRen = AttributeRenameTester.CreateRenamer(10);
+            var attRen = new AttributeRenameTester(this).CreateRenamer(10);
             attRen.TypeName = "MyNiceTypeName";
             var result = attRen.ListForTests().ToList();
             Assert.AreEqual(10, result.Count);

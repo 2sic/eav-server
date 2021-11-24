@@ -32,7 +32,11 @@ namespace ToSic.Eav.DataSources
 		/// <returns>The name - which would be used in the Source to get the same stream again.</returns>
 		string Name { get; }
 
-
+		/// <summary>
+		/// A special scope category for the stream. Important to hide system data types to the normal developer
+		/// </summary>
+		[PrivateApi("New / WIP 12.10")]
+		string Scope { get; }
 
         /// <summary>
         /// Provide access to the CacheKey - so it could be overridden if necessary without using the stream underneath it

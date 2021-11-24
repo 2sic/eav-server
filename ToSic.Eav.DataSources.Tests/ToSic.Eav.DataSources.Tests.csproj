@@ -143,21 +143,31 @@
     <Compile Include="Attributes\AttributeRenameTests_Mapped.cs" />
     <Compile Include="Attributes\AttributeRenameTests_NoChanges.cs" />
     <Compile Include="Attributes\AttributeRenameTests.cs" />
+    <Compile Include="BaseClassTests\ConfigMaskTests.cs" />
+    <Compile Include="BaseClassTests\TestDataSourceBase.cs" />
     <Compile Include="Caches\CacheAllStreams_Test.cs" />
     <Compile Include="Caches\QuickCaches_Test.cs" />
-    <Compile Include="EntityFilters\EntityIdFilter_Test.cs" />
-    <Compile Include="EntityFilters\EntityTypeFilter_Test.cs" />
+    <Compile Include="DataSourceErrors.cs" />
+    <Compile Include="DataSources\EntityIdFilterTest.cs" />
+    <Compile Include="DataSources\EntityTypeFilterTest.cs" />
     <Compile Include="ExtensionsForTesting.cs" />
     <Compile Include="ExternalData\CsvDsTst.cs" />
     <Compile Include="ExternalData\DataTableDataSource_Test.cs" />
     <Compile Include="ExternalData\SqlDsTst.cs" />
     <Compile Include="ImportExport %28disabled, refactoring%29\XmlExport_Test.cs" />
     <Compile Include="ImportExport %28disabled, refactoring%29\XmlImport_Test.cs" />
-    <Compile Include="InitializeTests.cs" />
-    <Compile Include="ItemFilterDuplicates\Tst_ItemFilterDuplicates.cs" />
+    <Compile Include="IServiceBuilderExtensions.cs" />
+    <Compile Include="DataSources\ItemFilterDuplicatesTest.cs" />
     <Compile Include="LookUps\LookUpsTest.cs" />
-    <Compile Include="Paging\Paging_Test.cs" />
+    <Compile Include="DataSources\PagingTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RelationshipTests\MetadataTargetsTests.cs" />
+    <Compile Include="RelationshipTests\MetadataTests.cs" />
+    <Compile Include="RelationshipTests\ChildParentTestBase.cs" />
+    <Compile Include="RelationshipTests\ParentsTests.cs" />
+    <Compile Include="RelationshipTests\ChildrenTests.cs" />
+    <Compile Include="RelationshipTests\MetadataTestSpecs.cs" />
+    <Compile Include="RelationshipTests\RelationshipTestSpecs.cs" />
     <Compile Include="TestData\DataTableTrivial.cs" />
     <Compile Include="TestData\DataTablePerson.cs" />
     <Compile Include="TestData\Person.cs" />
@@ -165,14 +175,14 @@
     <Compile Include="TestData\PersonSpecs.cs" />
     <Compile Include="TestData\RandomData.cs" />
     <Compile Include="ValueFilter\ValueFilterMaker.cs" />
-    <Compile Include="x-probably-old-Query\Tst_QueryBasic.cs" />
-    <Compile Include="x-probably-old-Query\Tst_QueryGlobal.cs" />
-    <Compile Include="x-probably-old-Query\ParamsTests.cs" />
-    <Compile Include="RelationshipFilterTests\RelationshipTest.cs" />
-    <Compile Include="RelationshipFilterTests\RelationshipTestBase.cs" />
-    <Compile Include="RelationshipFilterTests\Tst_RelationshipFilterDS_Modes.cs" />
-    <Compile Include="RelationshipFilterTests\Tst_RelationshipFilterDS.cs" />
-    <Compile Include="Shuffle\Shuffle.cs" />
+    <Compile Include="Query\QueryBasicTest.cs" />
+    <Compile Include="Query\QueryGlobalTest.cs" />
+    <Compile Include="Query\ParamsTests.cs" />
+    <Compile Include="RelationshipTests\RelationshipTestCase.cs" />
+    <Compile Include="RelationshipTests\RelationshipTestBase.cs" />
+    <Compile Include="RelationshipTests\RelationshipFilterTest_Modes.cs" />
+    <Compile Include="RelationshipTests\RelationshipFilterTest.cs" />
+    <Compile Include="DataSources\ShuffleTest.cs" />
     <Compile Include="DataSourceTests.cs" />
     <Compile Include="PassThrough\PassThrough_Cache.cs" />
     <Compile Include="Streams\StreamMergeTst.cs" />
@@ -243,8 +253,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="x-probably-old-Query\.data\queries\Query.Eav.Queries.Global.Apps.json" />
-    <None Include="x-probably-old-Query\.data\queries\Query.Eav.Queries.Global.Zones.json" />
+    <None Include="Query\.data\queries\Query.Eav.Queries.Global.Apps.json" />
+    <None Include="Query\.data\queries\Query.Eav.Queries.Global.Zones.json" />
   </ItemGroup>
   <ItemGroup />
   <Choose>

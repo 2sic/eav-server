@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
@@ -102,25 +103,30 @@ namespace ToSic.Eav.WebApi
 	            nameOverride = t.Name;
             var ser = _dataToDictionaryLazy.Value;
 
-	        var shareInfo = (IContentTypeShared) t;
+	        //var shareInfo = (IContentTypeShared) t;
+            var ancestorDecorator = t.GetDecorator<IAncestor>();
 
             var properties = ser.Convert(metadata);
-	        var jsonReady = new ContentTypeDto
-	        {
-	            Id = t.ContentTypeId,
-	            Name = t.Name,
-	            Label = nameOverride,
-	            StaticName = t.StaticName,
-	            Scope = t.Scope,
-	            Description = t.Description,
-	            UsesSharedDef = shareInfo.ParentId != null,
-	            SharedDefId = shareInfo.ParentId,
-	            Items = count,
-	            Fields = t.Attributes.Count,
-	            Metadata = properties,
+            var jsonReady = new ContentTypeDto
+            {
+                Id = t.ContentTypeId,
+                Name = t.Name,
+                Label = nameOverride,
+                StaticName = t.StaticName,
+                Scope = t.Scope,
+                Description = t.Description,
+
+                IsReadOnly = ancestorDecorator != null ? true : (bool?)null,
+                IsReadOnlyReason = ancestorDecorator == null ? null : t.HasPresetAncestor() ? "This is a preset ContentType" : "This is an inherited ContentType",
+                UsesSharedDef = ancestorDecorator != null, // shareInfo.ParentId != null,
+                SharedDefId = ancestorDecorator?.Id, // shareInfo.ParentId,
+
+                Items = count,
+                Fields = t.Attributes.Count,
+                Metadata = properties,
                 Properties = properties,
-                Permissions = new HasPermissionsDto { Count = t.Metadata.Permissions.Count()},
-	        };
+                Permissions = new HasPermissionsDto { Count = t.Metadata.Permissions.Count() },
+            };
 	        return jsonReady;
 	    }
 
@@ -180,6 +186,8 @@ namespace ToSic.Eav.WebApi
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
+            var hasAncestor = type.HasAncestor();
+            var ancestorDecorator = type.GetDecorator<IAncestor>();
 
             var appInputTypes = _appRuntimeLazy.Value.Init(_appId, true, Log).ContentTypes.GetInputTypes();
 
@@ -206,17 +214,37 @@ namespace ToSic.Eav.WebApi
                                     : e.Type.StaticName;
                                 return name.TrimStart('@');
                             },
-                            e => ser.Convert(e)
+                            e => InputMetadata(type, a, e, ancestorDecorator, ser) // ser.Convert(e)
                         ),
                     InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
-                    Permissions = new HasPermissionsDto {Count = a.Metadata.Permissions.Count()},
+                    Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count() },
 
                     // new in 12.01
-                    IsEphemeral = a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral, AttributeMetadata.TypeGeneral),
+                    IsEphemeral = a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral,
+                        AttributeMetadata.TypeGeneral),
                     HasFormulas = HasCalculations(a),
+
+                    // Read-Only new in v13
+                    IsReadOnly = hasAncestor ? true : (bool?)null,
+                    IsReadOnlyReason = !hasAncestor ? null : type.HasPresetAncestor() ? "From Preset" : "Shared Type"
                 };
             });
-            
+        }
+
+        private EavLightEntity InputMetadata(IContentType contentType, IContentTypeAttribute a, IEntity e, IAncestor ancestor, IConvertToEavLight ser)
+        {
+            var result = ser.Convert(e);
+            if (ancestor != null)
+                result.Add("IdHeader", new
+                {
+                    e.EntityId,
+                    Ancestor = true,
+                    IsMetadata = true,
+                    OfContentType = contentType.StaticName,
+                    OfAttribute = a.Name,
+                });
+
+            return result;
         }
 
         /// <summary>

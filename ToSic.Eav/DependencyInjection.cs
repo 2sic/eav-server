@@ -23,7 +23,6 @@ namespace ToSic.Eav
 	    /// <param name="services"></param>
 	    public static IServiceCollection AddEav(this IServiceCollection services)
 	    {
-
             // core things - usually not replaced
             services.TryAddTransient<IRuntime, Runtime>();
             
@@ -40,6 +39,7 @@ namespace ToSic.Eav
                 .AddDataSources()
                 .AddEavWebApi()
                 .AddEavCore()
+                .AddEavCorePlumbing()
                 .AddEavCoreFallbackServices();
 
 

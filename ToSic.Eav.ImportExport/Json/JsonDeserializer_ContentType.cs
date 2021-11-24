@@ -34,7 +34,8 @@ namespace ToSic.Eav.ImportExport.Json
                 var type = new ContentType(AppId, jsonType.Name, jsonType.Id, 0,
                     jsonType.Scope,
                     jsonType.Description,
-                    jsonType.Sharing?.ParentId, jsonType.Sharing?.ParentZoneId ?? 0,
+                    jsonType.Sharing?.ParentId, 
+                    jsonType.Sharing?.ParentZoneId ?? 0,
                     jsonType.Sharing?.ParentAppId ?? 0,
                     jsonType.Sharing?.AlwaysShare ?? false);
 

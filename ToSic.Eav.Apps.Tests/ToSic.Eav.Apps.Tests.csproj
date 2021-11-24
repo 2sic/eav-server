@@ -101,7 +101,6 @@
   <ItemGroup>
     <Compile Include="ImportExport\ValueConversionTests.cs" />
     <Compile Include="ImportExport\XmlTable.cs" />
-    <Compile Include="StartupTestingApps.cs" />
     <Compile Include="ListPairs\ListPairTests_Reorder.cs" />
     <Compile Include="ListPairs\ListPairTests_Replace.cs" />
     <Compile Include="ListPairs\ListPairTests_Move.cs" />

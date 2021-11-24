@@ -4,15 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.DataSources.Tests
+namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
-    public class CheckVisualQueryAttribute
+    public class CheckVisualQueryAttribute: TestBaseDiEavFullAndDb
     {
         [TestMethod]
         public void CheckGlobalNames()
         {
-            var dsCatalog = EavTestBase.Resolve<DataSourceCatalog>().Init(null);
+            var dsCatalog = Build<DataSourceCatalog>().Init(null);
 
             var allDS = DataSourceCatalog.GetAll(true).ToList();
 

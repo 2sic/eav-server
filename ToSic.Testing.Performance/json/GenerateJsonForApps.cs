@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Efc.Tests;
-using ToSic.Testing.Shared;
 using AppState = ToSic.Eav.Apps.AppState;
 
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,8 +10,10 @@ namespace ToSic.Testing.Performance.json
 {
     public class GenerateJsonForApps: Efc11TestBase
     {
-
-        public int TestAppId = 261;
+        public const int EmptyAppId = 3010;
+        public const int HugeAppWith4000Items = 9;
+        public const int OldTestAppOn2dmDnn = 269; // app on 2dms DNN previously - the tractor app on http://2sexycontent.2dm.2sic/owner-filter/tractor-app;
+        public int TestAppId = EmptyAppId;
         public void GenerateJsonForApp261()
         {
             GenerateJsonForAllEntitiesOfApp(TestAppId);
@@ -41,7 +41,7 @@ namespace ToSic.Testing.Performance.json
         public int SerializeAll(int repeat)
         {
             var count = 0;
-            var ser = EavTestBase.Resolve<JsonSerializer>().Init(Package, Log);
+            var ser = Build<JsonSerializer>().Init(Package, Log);
             for (var i = 0; i < repeat; i++)
             {
                 var ents = ser.Deserialize(EntitiesAsJson);
@@ -59,7 +59,7 @@ namespace ToSic.Testing.Performance.json
         private void GenerateJsonForAllEntitiesOfApp(int appid)
         {
             var package = Loader.AppState(appid, false);
-            var ser = EavTestBase.Resolve<JsonSerializer>().Init(package, Log);
+            var ser = Build<JsonSerializer>().Init(package, Log);
             var upd = package.List.ToDictionary(e => e.EntityId, e => ser.Serialize(e));
 
             var dbEnts = Db.ToSicEavEntities.Where(e => e.AttributeSet.AppId == appid).ToList();

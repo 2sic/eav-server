@@ -1,33 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources.Debug
 {
     public class QueryInfo: HasLog
     {
-        public List<StreamInfo> Streams = new List<StreamInfo>();
-        public Dictionary<Guid, DataSourceInfo> Sources = new Dictionary<Guid, DataSourceInfo>();
-
-        public QueryInfo() : base("Qry.Info")
-        {
-        }
+        /// <summary>
+        /// DI Constructor
+        /// </summary>
+        public QueryInfo() : base("Qry.Info") { }
         
-        public QueryInfo Init(IDataSource outStream, ILog parentLog)
+        public QueryInfo BuildQueryInfo(QueryDefinition queryDef, IDataSource queryResult, ILog parentLog)
         {
             Log.LinkTo(parentLog);
-            GetStreamInfosRecursive(outStream as IDataTarget, ref Streams, ref Sources);
+            QueryDefinition = queryDef;
+            GetStreamInfosRecursive(queryResult as IDataTarget, ref Streams, ref Sources);
             return this;
         }
+
+        public QueryDefinition QueryDefinition;
+        public List<StreamInfo> Streams = new List<StreamInfo>();
+        public Dictionary<Guid, DataSourceInfo> Sources = new Dictionary<Guid, DataSourceInfo>();
 
         /// <summary>
         /// Provide an array of infos related to a stream and data source
         /// </summary>
-        public void GetStreamInfosRecursive(IDataTarget target, ref List<StreamInfo> streams, ref Dictionary<Guid, DataSourceInfo> sources)
+        private void GetStreamInfosRecursive(IDataTarget target, ref List<StreamInfo> streams, ref Dictionary<Guid, DataSourceInfo> sources)
         {
             var wrapLog = Log.Call($"{target.Guid}[{target.In.Count}]", useTimer: true);
-            // ReSharper disable EmptyGeneralCatchClause
+
             foreach (var stream in target.In)
             {
                 // First get all the streams (do this first so they stay together)
@@ -48,7 +52,7 @@ namespace ToSic.Eav.DataSources.Debug
                 {
                     var di = new DataSourceInfo(target as IDataSource);
                     if (!sources.ContainsKey(di.Guid))
-                        sources.Add(di.Guid, di);
+                        sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
                 }
                 catch
                 {
@@ -60,7 +64,7 @@ namespace ToSic.Eav.DataSources.Debug
                 {
                     var di = new DataSourceInfo(stream.Value.Source);
                     if (!sources.ContainsKey(di.Guid))
-                        sources.Add(di.Guid, di);
+                        sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
                 }
                 catch
                 {
@@ -77,7 +81,6 @@ namespace ToSic.Eav.DataSources.Debug
                     Log.Add("Error in recursion");
                 }
             }
-            // ReSharper restore EmptyGeneralCatchClause
 
             wrapLog("ok");
         }

@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
     public class ContentTypeRuntime : PartOf<AppRuntime, ContentTypeRuntime>
     {
 
-        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy, GlobalTypes globalTypes) : base("RT.ConTyp")
+        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy, IGlobalTypes globalTypes) : base("RT.ConTyp")
         {
             _lazyMetadataAppRuntime = lazyMetadataAppRuntime;
             _appFileSystemLoaderLazy = appFileSystemLoaderLazy;
@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps.Parts
         }
         private readonly Lazy<AppRuntime> _lazyMetadataAppRuntime;
         private readonly Lazy<IAppFileSystemLoader> _appFileSystemLoaderLazy;
-        private readonly GlobalTypes _globalTypes;
+        private readonly IGlobalTypes _globalTypes;
 
         public IEnumerable<IContentType> All => Parent.AppState.ContentTypes;
 
@@ -76,9 +76,13 @@ namespace ToSic.Eav.Apps.Parts
             // Merge input types registered in global metadata-app
             var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Constants.MetaDataAppId, true, Log);
             var systemAppInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
+            systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
             LogListOfInputTypes("System", systemAppInputTypes);
             AddMissingTypes(inputTypes, systemAppInputTypes);
             LogListOfInputTypes("All combined", inputTypes);
+            
+            // Sort for better debugging
+            inputTypes = inputTypes.OrderBy(i => i.Type).ToList();
 
             return wrapLog($"found {inputTypes.Count}", inputTypes);
         }
@@ -96,6 +100,22 @@ namespace ToSic.Eav.Apps.Parts
             });
 
         /// <summary>
+        /// Mark obsolete InputTypes which were previously part of the installation.
+        /// This is important, because the config cannot mark them as obsolete
+        /// </summary>
+        /// <param name="oldGlobalTypes"></param>
+        /// <returns></returns>
+        private List<InputTypeInfo> MarkOldGlobalInputTypesAsObsolete(List<InputTypeInfo> oldGlobalTypes)
+        {
+            return oldGlobalTypes.Select(it =>
+            {
+                it.IsObsolete = true;
+                it.ObsoleteMessage = "Old input type, will default to another one.";
+                return it;
+            }).ToList();
+        }
+
+        /// <summary>
         /// Get a list of input-types registered to the current app
         /// </summary>
         /// <returns></returns>
@@ -108,7 +128,8 @@ namespace ToSic.Eav.Apps.Parts
                     e.Value<string>(InputTypes.InputTypeAssets),
                     e.Value<bool>(InputTypes.InputTypeDisableI18N),
                     e.Value<string>(InputTypes.InputTypeAngularAssets),
-                    e.Value<bool>(InputTypes.InputTypeUseAdam)
+                    e.Value<bool>(InputTypes.InputTypeUseAdam),
+                    e.Metadata
                 ))
                 .ToList();
 
@@ -154,7 +175,8 @@ namespace ToSic.Eav.Apps.Parts
                     it.Metadata.GetBestValue<string>(InputTypes.InputTypeAssets, InputTypes.TypeForInputTypeDefinition),
                     it.Metadata.GetBestValue<bool>(InputTypes.InputTypeDisableI18N, InputTypes.TypeForInputTypeDefinition),
                     it.Metadata.GetBestValue<string>(InputTypes.InputTypeAngularAssets, InputTypes.TypeForInputTypeDefinition),
-                    it.Metadata.GetBestValue<bool>(InputTypes.InputTypeUseAdam, InputTypes.TypeForInputTypeDefinition)
+                    it.Metadata.GetBestValue<bool>(InputTypes.InputTypeUseAdam, InputTypes.TypeForInputTypeDefinition),
+                    it.Metadata
                 ))
                 .ToList();
             return retyped;

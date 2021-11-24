@@ -21,7 +21,7 @@ namespace ToSic.Eav.Configuration
 
         #region Constructor / DI
 
-        public SystemLoader(GlobalTypes globalTypes, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
+        public SystemLoader(IGlobalTypes globalTypes, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
         {
             _globalTypes = globalTypes;
             _appsCache = appsCache;
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Configuration
 
         private readonly IFingerprint _fingerprint;
         private readonly IRuntime _runtime;
-        private readonly GlobalTypes _globalTypes;
+        private readonly IGlobalTypes _globalTypes;
         private readonly IAppsCache _appsCache;
         private readonly IFeaturesInternal _features;
         private readonly LogHistory _logHistory;

@@ -2,21 +2,22 @@
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.LookUps
 {
     [TestClass]
-    public class LookUpsTest
+    public class LookUpsTest: TestBaseDiEavFullAndDb
     {
         [TestMethod]
         public void DataTargetValueProvider_General()
         {
-            var testSource = new EntityIdFilter();
+            var testSource = this.GetTestDataSource<EntityIdFilter>(); // new EntityIdFilter();
             testSource.EntityIds = "1001";  // needed to ensure 
             // Assemble a simple source-stream with demo data
             const int ItemsToGenerate = 499;
             const string ItemToFilter = "1023";
-            var ds = DataTablePerson.Generate(ItemsToGenerate, 1001);
+            var ds = new DataTablePerson(this).Generate(ItemsToGenerate, 1001);
             var myConfDs = new EntityIdFilter()
                 .Init(ds.Configuration.LookUpEngine);
             //myConfDs.ConfigurationProvider = ds.ConfigurationProvider;

@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Configuration;
+#pragma warning disable 618
 
 namespace ToSic.Eav.ImportExport.Tests.FeatureTests
 {

@@ -112,11 +112,18 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 	    public const string ExtractedParamPrefix = "AutoExtractedParam";
 
-        #endregion
+		#endregion
 
-        // Important: This constructor must come BEFORE the other constructors
-        // because it is the one which the .net Core DI should use!
-        /// <summary>
+        #region Error Constants
+
+        public const string ErrorTitleForbiddenSql = "Forbidden SQL words";
+
+
+		#endregion
+
+		// Important: This constructor must come BEFORE the other constructors
+		// because it is the one which the .net Core DI should use!
+		/// <summary>
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
 		[PrivateApi]
@@ -132,24 +139,28 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(ConnectionStringNameKey, "[Settings:ConnectionStringName]");
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Initializes a new instance of the SqlDataSource class
-        /// </summary>
-        /// <param name="connectionString">Connection String to the DB</param>
-        /// <param name="selectCommand">SQL Query</param>
-        /// <param name="contentType">Name of virtual content-type we'll return</param>
-        /// <param name="entityIdField">ID-field in the DB to use</param>
-        /// <param name="titleField">Title-field in the DB to use</param>
-        public Sql(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
-			: this()
+		/// <summary>
+		/// Initializes a new instance of the SqlDataSource class
+		/// </summary>
+		/// <param name="connectionString">Connection String to the DB</param>
+		/// <param name="selectCommand">SQL Query</param>
+		/// <param name="contentType">Name of virtual content-type we'll return</param>
+		/// <param name="entityIdField">ID-field in the DB to use</param>
+		/// <param name="titleField">Title-field in the DB to use</param>
+		/// <remarks>
+		/// Before 12.09 this was a constructor, but couldn't actually work because it wasn't DI compatible any more.
+        /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
+        /// </remarks>
+        [PrivateApi]
+        public Sql Setup(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
 		{
 			ConnectionString = connectionString;
 			SelectCommand = selectCommand;
 			ContentType = contentType;
 		    EntityIdField = entityIdField ?? Attributes.EntityFieldId;
 			TitleField = titleField ?? Attributes.EntityFieldTitle;
-		}
+            return this;
+        }
 
         /// <inheritdoc />
         /// <summary>
@@ -217,7 +228,7 @@ namespace ToSic.Eav.DataSources
 
             // Check if SQL contains forbidden terms
             if (ForbiddenTermsInSelect.IsMatch(SelectCommand))
-                return ErrorHandler.CreateErrorList(source: this, title: "Forbidden SQL words",
+                return ErrorHandler.CreateErrorList(source: this, title: ErrorTitleForbiddenSql,
                     message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue.");
 
 
@@ -240,7 +251,10 @@ namespace ToSic.Eav.DataSources
                 return ErrorHandler.CreateErrorList(source: this, title: "Connection Problem", 
                     message: "The ConnectionString property is empty / has not been initialized");
 
-	        var list = new List<IEntity>();
+			// The content type returned in this query
+			var contentTypeToUse = ContentTypeBuilder.Fake(ContentType);
+
+			var list = new List<IEntity>();
             using (var connection = new SqlConnection(ConnectionString))
 			{
 				connection.Open();
@@ -264,7 +278,6 @@ namespace ToSic.Eav.DataSources
                             title: "Can't read from Database",
                             message: "Something failed trying to read from the Database.");
                     }
-
 
 					var casedTitle = TitleField;
 			        var casedEntityId = EntityIdField;
@@ -298,8 +311,13 @@ namespace ToSic.Eav.DataSources
 			            while (reader.Read())
 			            {
 			                var entityId = casedEntityId == null ? 0 : global::System.Convert.ToInt32(reader[casedEntityId]);
-			                var values = columnsToUse.ToDictionary(c => c, c => reader[c]);
-			                var entity = new Data.Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), values, casedTitle);
+			                var values = columnsToUse.ToDictionary(c => c, c =>
+                            {
+								// This conversion is important, because the DB uses a different kind of null, which would cause trouble
+								var value = reader[c];
+                                return Convert.IsDBNull(value) ? null : value;
+                            });
+			                var entity = new Entity(Constants.TransientAppId, entityId, contentTypeToUse, values, casedTitle);
 			                list.Add(entity);
 			            }
 

@@ -13,10 +13,12 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class DataStreamWithCustomCaching: DataStream
     {
-        public DataStreamWithCustomCaching(Func<ICacheInfo> cacheInfoDelegate, IDataSource source, string name, GetImmutableListDelegate listDelegate, bool enableAutoCaching) 
+        public DataStreamWithCustomCaching(Func<ICacheInfo> cacheInfoDelegate, IDataSource source, string name, GetImmutableListDelegate listDelegate, 
+            bool enableAutoCaching, string scope)
             : base(source, name, listDelegate, enableAutoCaching)
         {
             CacheInfoDelegate = cacheInfoDelegate;
+            Scope = scope;
         }
 
         /// <summary>

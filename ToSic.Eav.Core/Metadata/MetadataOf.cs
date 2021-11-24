@@ -95,7 +95,9 @@ namespace ToSic.Eav.Metadata
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
                 if (_metadataWithoutPermissions == null || RequiresReload())
                     _metadataWithoutPermissions = AllWithHidden
-                        .Where(md => new[] {Permission.TypeName  }.Any(e => e != md.Type.Name && e != md.Type.StaticName))
+                        // 2021-11-19 changed to use Permission.IsPermission - if stable #cleanup EOY 2021
+                        .Where(md => !Permission.IsPermission(md))
+                        //.Where(md => new[] {Permission.TypeName  }.Any(e => e != md.Type.Name && e != md.Type.StaticName))
                         .ToList();
                 return _metadataWithoutPermissions;
             }
@@ -109,12 +111,13 @@ namespace ToSic.Eav.Metadata
             {
                 if (_permissions == null || RequiresReload())
                     _permissions = AllWithHidden
-                               .Where(md => md.Type.StaticName == Permission.TypeName)
-                               .Select(e => new Permission(e));
+                        // 2021-11-19 changed to use Permission.IsPermission - if stable #cleanup EOY 2021
+                        .Where(Permission.IsPermission)
+                        //.Where(md => md.Type.StaticName == Permission.TypeName)
+                        .Select(e => new Permission(e));
                 return _permissions;
             }
         }
-
         private IEnumerable<Permission> _permissions;
 
         public long CacheTimestamp { get; private set; }
@@ -137,19 +140,18 @@ namespace ToSic.Eav.Metadata
 
         /// <summary>
         /// Find the source of metadata. It may already be set, or it may not be available at all.
-        /// Must be virtual, because <see cref="RemoteMetadataOf{T}"/> re-implements it. 
         /// </summary>
         /// <returns></returns>
         [PrivateApi]
-        protected /*virtual*/ IMetadataSource GetMetadataSource()
+        protected IMetadataSource GetMetadataSource()
         {
             // check if already retrieved
-            if (_alreadyTriedToGetProvider) return _metadataSource;
-            _alreadyTriedToGetProvider = true;
+            if (_alreadyTriedToGetSource) return _metadataSource;
+            _alreadyTriedToGetSource = true;
 
             return _metadataSource = AppMetadataProvider?.MetadataSource;
         }
-        private bool _alreadyTriedToGetProvider;
+        private bool _alreadyTriedToGetSource;
         private IMetadataSource _metadataSource;
 
         /// <summary>
@@ -186,8 +188,37 @@ namespace ToSic.Eav.Metadata
             }
             return default;
         }
+        #endregion
+
+        #region Type Specific Data
+
+        [PrivateApi("WIP 12.10")]
+        public bool HasType(string name) => this.Any(e => e.Type.Is(name));
+
+        [PrivateApi("WIP 12.10")]
+        public IEnumerable<IEntity> OfType(string name) => this.Where(e => e.Type.Is(name));
 
         #endregion
+
+        #region Target
+
+        public ITarget MetadataId
+        {
+            get
+            {
+                if (_target != null) return _target;
+                var target = new Target { TargetType = _targetType };
+                if (Key is string stringKey) target.KeyString = stringKey;
+                if (Key is int intKey) target.KeyNumber = intKey;
+                if (Key is Guid guidKey) target.KeyGuid = guidKey;
+                return _target = target;
+            }
+        }
+
+        private ITarget _target;
+
+        #endregion
+
 
         #region enumerators
         [PrivateApi]

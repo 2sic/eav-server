@@ -9,17 +9,14 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class DataSourceErrorHandling
     {
-        public DataSourceErrorHandling()
-        {
-        }
-        
         public static string ErrorType = "Error";
         public static string ErrorTitle = "Error";
+
         public IEntity CreateErrorEntity(IDataSource source, string stream, string title, string message)
         {
             var values = new Dictionary<string, object>
             {
-                {ErrorTitle, "Error: " + title},
+                {ErrorTitle, GenerateTitle(title)},
                 {"SourceName", source?.Name},
                 {"SourceLabel", source?.Label },
                 {"SourceGuid", source?.Guid },
@@ -29,10 +26,18 @@ namespace ToSic.Eav.DataSources
                 {"DebugNotes", "There should be more details in the insights logs, see https://r.2sxc.org/insights" }
             };
 
-            //var errorEntity = _dataBuilderLazy.Value.Entity(values, titleField: ErrorTitle, typeName: ErrorType);
+            // #DebugDataSource
+            // When debugging I usually want to see where this happens. Feel free to comment in/out as needed
+            // System.Diagnostics.Debugger.Break();
+
             var errorEntity = new DataBuilder().Entity(values, titleField: ErrorTitle, typeName: ErrorType);
             return errorEntity;
         }
+
+        /// <summary>
+        /// This must be public so it can be used/verified in testing
+        /// </summary>
+        public static string GenerateTitle(string title) => "Error: " + title;
 
         public ImmutableArray<IEntity> CreateErrorList(
             string noParamOrder = Parameters.Protector,

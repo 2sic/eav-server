@@ -6,7 +6,6 @@ using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;
-using ToSic.Testing.Shared;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File.Tests
@@ -18,16 +17,15 @@ namespace ToSic.Eav.Persistence.File.Tests
         [TestMethod]
         public void TypeExp_AllSharedFromInstallation()
         {
-            var test = new TestValuesOnPc2Dm();
+            var test = new SpecsTestExportSerialize();
 
-            var loader = EavTestBase.Resolve<Efc11Loader>();
-            var app = loader.AppState(test.RootAppId, false);
+            var loader = Build<Efc11Loader>();
+            var app = loader.AppState(test.AppId, false);
 
 
             var cts = app.ContentTypes;
             var sharedCts = cts.Where(ct => (ct as ContentType).AlwaysShareConfiguration).ToList();
-
-            var fileSysLoader = EavTestBase.Resolve<FileSystemLoader>().Init(ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null, Log);
+            var fileSysLoader = Build<FileSystemLoader>().Init(Constants.PresetAppId, ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null, Log);
 
             var time = Stopwatch.StartNew();
             sharedCts.ForEach(ct => fileSysLoader.SaveContentType(ct));

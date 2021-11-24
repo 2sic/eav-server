@@ -12,11 +12,6 @@ namespace ToSic.Eav.Caching
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IAppsCache
     {
-        #region EnforceSingleton experimental
-        [PrivateApi]
-        bool EnforceSingleton { get; }
-        #endregion
-
         #region Get an App
 
         /// <summary>
@@ -90,6 +85,9 @@ namespace ToSic.Eav.Caching
         /// <param name="log">Log object to log what's happening.</param>
         /// <returns>The updated <see cref="AppState"/> or null, if it wasn't in the cache so didn't need updating.</returns>
         AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log);
+
+        [PrivateApi("wip 12.10+")]
+        void Add(AppState appState);
 
         #endregion
 

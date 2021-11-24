@@ -10,7 +10,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
     {
         public IFeaturesTests()
         {
-            Features = Resolve<IFeaturesService>();
+            Features = Build<IFeaturesService>();
         }
 
         internal readonly IFeaturesService Features;

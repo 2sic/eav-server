@@ -40,7 +40,7 @@ namespace ToSic.Eav.Data
         /// Added in 12.05, was never public
         /// </remarks>
         [PrivateApi]
-        ISubEntitySerialization MetadataFor { get; }
+        MetadataForSerialization MetadataFor { get; }
 
         /// <summary>
         /// Settings to configure the Metadata-serialization
@@ -69,5 +69,8 @@ namespace ToSic.Eav.Data
         [PrivateApi("Internal use only")]
         void ConfigureForAdminUse();
         
+
+        [PrivateApi("WIP")]
+        TypeSerialization Type { get; set; }
     }
 }

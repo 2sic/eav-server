@@ -1,10 +1,9 @@
 ﻿using ToSic.Eav.Plumbing;
-using ToSic.Testing.Shared;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests
 {
-    public class ConvertTestBase: EavTestBase
+    public class ConvertTestBase 
     {
         /// <summary>
         /// Convert Test Basic/Numeric - Test basic conversion and numeric conversion

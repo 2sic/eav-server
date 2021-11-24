@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Catalog;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
@@ -87,6 +88,24 @@ namespace ToSic.Eav.DataSources
         public T GetDataSource<T>(IDataSource upstream) where T : IDataSource
             => GetDataSource<T>(upstream, upstream, upstream.Configuration.LookUpEngine);
 
+        /// <summary>
+        /// Experimental 12.10
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="upstream"></param>
+        /// <returns></returns>
+        [PrivateApi("internal, experimental")]
+        public T GetDataSource<T>(IDataStream upstream) where T : IDataSource
+        {
+            if (upstream.Source == null)
+                throw new Exception("Unexpected source - stream without a real source. can't process; wip");
+            var source = upstream.Source;
+            var ds = GetDataSource<T>(source, null, source.Configuration.LookUpEngine);
+            if (!(ds is IDataTarget target))
+                throw new Exception("error, ds not target; wip");
+            target.Attach(Constants.DefaultStreamName, upstream);
+            return ds;
+        }
 
         public T GetDataSource<T>(IAppIdentity appIdentity, IDataSource upstream, ILookUpEngine lookUps = null) where T : IDataSource
         {

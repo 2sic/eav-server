@@ -13,8 +13,8 @@ namespace ToSic.Eav.DataFormats.EavLight
         {
             // if rules.MetadataFor are not set, then respect WithMetadataFor
             // otherwise the rules should be applied, but default to false
-            var itemForRules = MetadataForSerialization.Stabilize(rules?.SerializeMetadataFor, null);
-            if (itemForRules.Serialize ?? MetadataFor.Serialize ?? false)
+            var itemForRules = MetadataForSerialization.Stabilize(rules?.SerializeMetadataFor, MetadataFor);
+            if (itemForRules.Serialize /*?? MetadataFor.Serialize*/ ?? false)
                 if (entity.MetadataFor.IsMetadata)
                     entityValues.Add(JsonKeyMetadataFor, entity.MetadataFor);
 

@@ -23,14 +23,14 @@ namespace ToSic.Eav.Apps.Parts
     {
         #region Constructor / DI
 
-        public AppInitializer(IServiceProvider serviceProvider, GlobalTypes globalTypes, SystemManager systemManager) : base("Eav.AppBld")
+        public AppInitializer(IServiceProvider serviceProvider, IGlobalTypes globalTypes, SystemManager systemManager) : base("Eav.AppBld")
         {
             _serviceProvider = serviceProvider;
             SystemManager = systemManager.Init(Log);
             _globalTypes = globalTypes;
         }
         private readonly IServiceProvider _serviceProvider;
-        private readonly GlobalTypes _globalTypes;
+        private readonly IGlobalTypes _globalTypes;
         protected readonly SystemManager SystemManager;
 
 

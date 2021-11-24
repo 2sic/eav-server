@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data
 {
@@ -29,5 +30,13 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <returns>The guid, or an empty-guid of no entity available</returns>
         Guid Guid { get; }
+
+        /// <summary>
+        /// Get the Metadata of the underlying Entity
+        /// </summary>
+        /// <remarks>
+        /// Added in v12.10
+        /// </remarks>
+        IMetadataOf Metadata { get; }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Persistence.Efc.Models;
 
-namespace ToSic.Eav.Persistence.EFC11.Tests
+namespace ToSic.Eav.Persistence.Efc.Tests
 {
     [TestClass]
     public class ZoneTests

@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
@@ -15,7 +14,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Repository.Efc.Tests
 {
     [TestClass]
-    public class SaveDataToDbTests: EavTestBase
+    public class SaveDataToDbTests: TestBaseDiEavFullAndDb
     {
         private readonly DbDataController _dbData;
         private readonly Efc11Loader _loader1;
@@ -25,13 +24,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public SaveDataToDbTests()
         {
-            _dbData = Resolve<DbDataController>();
-            _loader1 = Resolve<Efc11Loader>();
-            _loader2 = Resolve<Efc11Loader>();
-            _environment = Resolve<IImportExportEnvironment>();
+            _dbData = Build<DbDataController>();
+            _loader1 = Build<Efc11Loader>();
+            _loader2 = Build<Efc11Loader>();
+            _environment = Build<IImportExportEnvironment>();
         }
-
-        public static ILog Log = new Log("TstSav");
 
         [TestInitialize]
         public void Init()
@@ -42,7 +39,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void LoadOneAndSaveUnchanged()
         {
-            var test = new TestValuesOnPc2Dm();
+            var test = new SpecsDataEditing();
             var so = _environment.SaveOptions(test.ZoneId);
             var dbi = _dbData.Init(test.ZoneId, test.AppId, Log);
             var trans = dbi.SqlDb.Database.BeginTransaction();
@@ -50,7 +47,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // load an entity
             var loader1 = _loader1.UseExistingDb(dbi.SqlDb);
             var app1 = loader1.AppState(test.AppId, false);
-            var itm1 = app1.List.One(test.ItemOnHomeId);
+            var itm1 = app1.List.One(test.ExistingItem);
 
             // save it
             dbi.Save(new List<IEntity> {itm1}, so);
@@ -58,7 +55,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // re-load it
             var loader2 = _loader2.UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppState(test.AppId, false);
-            var itm2 = app2.List.One(test.ItemOnHomeId);
+            var itm2 = app2.List.One(test.ExistingItem);
 
 
             // validate that they are still the same!
@@ -70,7 +67,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void LoadOneChangeABitAndSave()
         {
-            var test = new TestValuesOnPc2Dm();
+            var test = new SpecsDataEditing();
             var so = _environment.SaveOptions(test.ZoneId);
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
@@ -81,12 +78,12 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // todo: load a simple, 1 language entity
             var loader1 = _loader1.UseExistingDb(dbi.SqlDb);
             var app1 = loader1.AppState(test.AppId, false);
-            var itm1 = app1.List.One(test.ItemOnHomeId);
+            var itm1 = app1.List.One(test.ExistingItem);
 
             // todo: make some minor changes
             var itmNewTitle = new Entity(test.AppId, 0, itm1.Type, new Dictionary<string, object>()
             {
-                {"Title", "changed title"}
+                {test.TitleField, "changed title on " + DateTime.Now}
             });
             var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(itm1, itmNewTitle, so);
 
@@ -96,7 +93,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // reload it
             var loader2 = _loader2.UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
             var app2 = loader2.AppState(test.AppId, false);
-            var itm2 = app2.List.One(test.ItemOnHomeId);
+            var itm2 = app2.List.One(test.ExistingItem);
 
 
             // todo: validate that they are almost the same, but clearly different
@@ -109,9 +106,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void CreateNewItemAndSave()
         {
-            var ctName = "Simple Content";
-            var ctTitle = "wonderful new title";
-            var test = new TestValuesOnPc2Dm();
+            var test = new SpecsDataEditing();
+            var ctName = test.ContentTypeName;
+            var ctTitle = "wonderful new title " + DateTime.Now;
             var so = _environment.SaveOptions(test.ZoneId);
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
@@ -126,7 +123,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             var newE = new Entity(test.AppId, Guid.NewGuid(), ct1, new Dictionary<string, object>
             {
-                { "Title", ctTitle }
+                { test.TitleField, ctTitle }
             });
 
             var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(null, newE, so);

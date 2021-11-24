@@ -2,21 +2,22 @@
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests
 {
-    public class ValueFilterMaker
+    public class ValueFilterMaker: TestServiceBase
     {
         private readonly DataSourceFactory _dataSourceFactory;
-        public ValueFilterMaker(DataSourceFactory dataSourceFactory)
+        public ValueFilterMaker(IServiceBuilder parent): base(parent)
         {
-            _dataSourceFactory = dataSourceFactory;
+            _dataSourceFactory = Build<DataSourceFactory>();
         }
 
         public ValueFilter CreateValueFilterForTesting(int itemsToGenerate, bool useDataTable, bool multiLanguage = false)
         {
             var ds = useDataTable
-                ? DataTablePerson.Generate(itemsToGenerate) as IDataSource
+                ? new DataTablePerson(this).Generate(itemsToGenerate) as IDataSource
                 : new PersonsDataSource().Init(itemsToGenerate, multiLanguage: multiLanguage).Init(LookUpTestData.AppSetAndRes());
             var filtered = _dataSourceFactory.GetDataSource<ValueFilter>(new AppIdentity(1, 1), ds);
             return filtered;
@@ -26,7 +27,7 @@ namespace ToSic.Eav.DataSourceTests
         public ValueSort GeneratePersonSourceWithDemoData(int itemsToGenerate, bool useDataTable = true, bool multiLanguage = false)
         {
             var ds = useDataTable
-                ? DataTablePerson.Generate(itemsToGenerate) as IDataSource
+                ? new DataTablePerson(this).Generate(itemsToGenerate) as IDataSource
                 : new PersonsDataSource().Init(itemsToGenerate, multiLanguage: multiLanguage).Init(LookUpTestData.AppSetAndRes());
             var filtered = _dataSourceFactory.GetDataSource<ValueSort>(ds, ds);
             return filtered;

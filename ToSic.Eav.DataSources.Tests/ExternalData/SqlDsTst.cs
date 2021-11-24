@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
@@ -8,7 +7,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
-    public class SqlDsTst
+    public class SqlDsTst: TestBaseDiEavFullAndDb
     {
         private const string ConnectionDummy = "";
         private const string ConnectionName = TestConstants.ConStr;// "Data Source=.\\SQLExpress;Initial Catalog=2flex 2Sexy Content;Integrated Security=True";
@@ -80,29 +79,37 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
 
         #region test bad sql statements like insert / drop etc.
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void SqlDataSource_BadSqlInsert() 
-            => GenerateSqlDataSource(ConnectionDummy, "Insert something into something", ContentTypeName).ListForTests().Any();
+        public void SqlDataSource_BadSqlInsert()
+        {
+            var results = GenerateSqlDataSource(ConnectionDummy, "Insert something into something", ContentTypeName);
+            DataSourceErrors.VerifyStreamIsError(results, Sql.ErrorTitleForbiddenSql);
+        }
+
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void SqlDataSource_BadSqlSelectInsert() 
-            => GenerateSqlDataSource(ConnectionDummy, "Select * from table; Insert something", ContentTypeName).ListForTests().Any();
+        public void SqlDataSource_BadSqlSelectInsert()
+            => DataSourceErrors.VerifyStreamIsError(
+                GenerateSqlDataSource(ConnectionDummy, "Select * from table; Insert something", ContentTypeName),
+                Sql.ErrorTitleForbiddenSql
+            );
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void SqlDataSource_BadSqlSpaceInsert() 
-            => GenerateSqlDataSource(ConnectionDummy, " Insert something into something", ContentTypeName).ListForTests().Any();
+        public void SqlDataSource_BadSqlSpaceInsert()
+            => DataSourceErrors.VerifyStreamIsError(
+                GenerateSqlDataSource(ConnectionDummy, " Insert something into something", ContentTypeName),
+                Sql.ErrorTitleForbiddenSql);
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void SqlDataSource_BadSqlDropInsert() 
-            => GenerateSqlDataSource(ConnectionDummy, "Drop tablename", ContentTypeName).ListForTests().Any();
+        public void SqlDataSource_BadSqlDropInsert()
+            => DataSourceErrors.VerifyStreamIsError(
+                GenerateSqlDataSource(ConnectionDummy, "Drop tablename", ContentTypeName),
+                Sql.ErrorTitleForbiddenSql);
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void SqlDataSource_BadSqlSelectDrop() 
-            => GenerateSqlDataSource(ConnectionDummy, "Select * from Products; Drop tablename", ContentTypeName).ListForTests().Any();
+        public void SqlDataSource_BadSqlSelectDrop()
+            => DataSourceErrors.VerifyStreamIsError(
+                GenerateSqlDataSource(ConnectionDummy, "Select * from Products; Drop tablename", ContentTypeName),
+                Sql.ErrorTitleForbiddenSql);
 
         #endregion
 
@@ -122,10 +129,11 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
 
         #endregion
 
-        public static Sql GenerateSqlDataSource(string connection, string query, string typeName)
+        public Sql GenerateSqlDataSource(string connection, string query, string typeName)
         {
-            var source = new Sql(connection, query, typeName);
-            source.Init(LookUpTestData.AppSetAndRes());
+            var source = this.GetTestDataSource<Sql>(LookUpTestData.AppSetAndRes())
+                .Setup(connection, query, typeName);
+            //source.Init(LookUpTestData.AppSetAndRes());
             //source.ConfigurationProvider = DemoConfigs.AppSetAndRes();
 
             return source;

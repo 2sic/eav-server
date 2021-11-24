@@ -29,6 +29,17 @@ namespace ToSic.Eav.DataSources
                 CacheRelevantConfigurations.Add(key);
         }
 
+        [PrivateApi("WIP v12.10")]
+        protected void ConfigMask(string keyAndMask, bool cacheRelevant = true)
+        {
+            // Key - in future it should detect if the keyAndMask has more than just the key, and extract the key
+            var separator = keyAndMask.IndexOfAny(new[] { '|'}); //, '[' });
+            var key = separator > 0 ? keyAndMask.Substring(0, separator) : keyAndMask;
+            var mask = $"[Settings:{keyAndMask}]";
+            ConfigMask(key, mask, cacheRelevant);
+        }
+
+
         [PrivateApi]
         public ICacheKeyManager CacheKey => _cacheKey ?? (_cacheKey = new CacheKey(this));
         private CacheKey _cacheKey;

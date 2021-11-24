@@ -104,16 +104,22 @@ namespace ToSic.Eav.DataSources
         /// <param name="entityIdField">ID column in the table</param>
         /// <param name="titleField">Title column in the table</param>
         /// <param name="modifiedField">modified column in the table</param>
-        public DataTable(global::System.Data.DataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
-			: this()
-		{
+        /// <remarks>
+        /// Before 12.09 this was a constructor, but couldn't actually work because it wasn't DI compatible any more.
+        /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
+        /// </remarks>
+        [PrivateApi]
+        public DataTable Setup(global::System.Data.DataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
+        {
 			Source = source;
 			ContentType = contentType;
 			TitleField = titleField ?? Attributes.EntityFieldTitle;
 			EntityIdField = entityIdField ?? EntityIdDefaultColumnName;
 			TitleField = titleField ?? EntityTitleDefaultColumnName;
 		    ModifiedField = modifiedField ?? "";
-		}
+
+            return this;
+        }
 
 		private ImmutableArray<IEntity> GetEntities()
 		{

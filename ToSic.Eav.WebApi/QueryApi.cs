@@ -14,7 +14,6 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Dto;
-using ToSic.Eav.WebApi.Helpers;
 using Connection = ToSic.Eav.DataSources.Queries.Connection;
 
 namespace ToSic.Eav.WebApi
@@ -95,7 +94,7 @@ namespace ToSic.Eav.WebApi
             query.Pipeline = qDef.Entity.AsDictionary();
             query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
 
-            foreach (var part in qDef.Parts) 
+            foreach (var part in qDef.Parts)
                 query.DataSources.Add(part.AsDictionary());
 
             #endregion
@@ -113,7 +112,9 @@ namespace ToSic.Eav.WebApi
             var result = installedDataSources
                 .Select(dsInfo => new DataSourceDto(dsInfo.Type.Name, dsInfo.VisualQuery)
                 {
+                    TypeNameForUi = dsInfo.Type.FullName,
                     PartAssemblyAndType = dsInfo.Name,
+                    Identifier = dsInfo.Name,
                     Out = dsInfo.VisualQuery?.DynamicOut == true ? null : dsCatalog.GetOutStreamNames(dsInfo)
                 })
                 .ToList();
@@ -196,7 +197,7 @@ namespace ToSic.Eav.WebApi
             serializeWrap("ok");
 
             // Now get some more debug info
-            var debugInfo = _dependencies.QueryInfoLazy.Value.Init(outSource, Log);
+            var debugInfo = _dependencies.QueryInfoLazy.Value.BuildQueryInfo(qDef, outSource, Log);
 
             wrapLog(null);
             // ...and return the results

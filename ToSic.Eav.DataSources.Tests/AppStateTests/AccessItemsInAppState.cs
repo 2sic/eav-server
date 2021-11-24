@@ -8,7 +8,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.AppStateTests
 {
     [TestClass]
-    public class AccessItemsInAppState
+    public class AccessItemsInAppState: TestBaseDiEavFullAndDb
     {
         public const int ItemToAccess = 17000;
         public const int Repeats = 1000;
@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSourceTests.AppStateTests
             Trace.Write($"Time used: {timer.ElapsedMilliseconds}");
         }
 
-        private static AppState GetAppState() => EavTestBase.Resolve<IAppStates>()/* State*/.Get(new AppIdentity(TestConfig.Zone, TestConfig.AppForBigDataTests));
+        private AppState GetAppState() => Build<IAppStates>().Get(TestConfig.BigDataTestsApp /*new AppIdentity(TestConfig.Zone, TestConfig.AppForBigDataTests)*/);
 
         [TestMethod]
         public void AccessOne1000TimesSame() => AccessOne1000Times(0);

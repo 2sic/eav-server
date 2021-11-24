@@ -116,7 +116,7 @@ namespace ToSic.Eav.Apps.Run
                         $"{AppConstants.AppPathPlaceholder}/{Eav.Constants.FolderAppExtensions}/{name}/{JsFile}", false);
                 })
                 .ToList();
-            return wrapLog(null, types);
+            return wrapLog($"{types.Count}", types);
         }
 
         /// <inheritdoc />
@@ -145,7 +145,7 @@ namespace ToSic.Eav.Apps.Run
         {
             var wrapLog = Log.Call<IList<IContentType>>(extensionPath);
             var fsLoader = Deps.ServiceProvider.Build<FileSystemLoader>()
-                .Init(extensionPath, RepositoryTypes.Folder, true, entitiesSource, Log);
+                .Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource, Log);
             var types = fsLoader.ContentTypes();
             return wrapLog("ok", types);
         }

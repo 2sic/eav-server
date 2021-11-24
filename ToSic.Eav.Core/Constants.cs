@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Documentation;
+
+namespace ToSic.Eav
 {
     public partial class Constants
     {
@@ -21,6 +24,10 @@
         public const string DataTimelineEntityJson = "e";
 
 
+        [PrivateApi] public static readonly int PresetZoneId = -42;
+        [PrivateApi] public static readonly int PresetAppId = -42;
+        [PrivateApi] public static readonly string PresetName = "Preset";
+        [PrivateApi] public static readonly IAppIdentity PresetIdentity = new AppIdentity(PresetZoneId, PresetAppId);
 
         /// <summary>
         /// Default ZoneId. Used if none is specified on the Context.
@@ -70,13 +77,20 @@
 
         public const string ScopeSystem = "System";
 
+        public const string ScopeContentOld = "2SexyContent";
+
+        public const string ScopeContentFuture = "Default";
+
+        public static readonly string[] ScopesContent = { ScopeContentOld, ScopeContentFuture };
+
+
         #endregion
 
 
 
 
         #region special uses of Apps
-        
+
         public const string ContentAppName = "Content";
         public const string ContentAppFolder = "Content";
         public const string AppAssignmentName = "App";
@@ -85,8 +99,16 @@
 
         public const string DynamicType = "dynamic";
 
+        /// <summary>
+        /// A non-existing app. Used to mark Entities which are generated on the fly, to be sure we know they are not real. 
+        /// </summary>
         public const int TransientAppId = -9999999;
-        public const int SystemContentTypeFakeParent = -9203503; // just a very strange, dummy number
+
+        /// <summary>
+        /// Mark system / preset content types as having a parent, so they don't get used / exported in the wrong places
+        /// TODO: rename to Preset...
+        /// </summary>
+        public const int PresetContentTypeFakeParent = -42000001; // just a very strange, dummy number
 
     }
 }
