@@ -26,14 +26,10 @@ namespace ToSic.Eav
 	    {
 	        var sc = _serviceCollection;
 	        configure.Invoke(sc);
-#if NETFRAMEWORK
-            _sp = sc.BuildServiceProvider();
-#endif
 	    }
 
-#if !NETFRAMEWORK
         private static IServiceProvider GetServiceProvider() => _serviceCollection.BuildServiceProvider();
-#endif
+
 
         /// <summary>
         /// Dependency Injection resolver with a known type as a parameter.
