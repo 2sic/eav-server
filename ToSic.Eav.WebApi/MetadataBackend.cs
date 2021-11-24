@@ -90,41 +90,35 @@ namespace ToSic.Eav.WebApi
         {
             var wrapLog = Log.Call<IEnumerable<MetadataRecommendationDto>>($"targetType: {targetType}");
 
+            // If a specific contentType was given, that's the only thing we'll recommend
+            // This is the case for a Permissions dialog
             if (!string.IsNullOrWhiteSpace(contentType))
             {
                 var type = appState.GetContentType(contentType);
                 if (type == null) return wrapLog("existing, not found", null);
-
-                return wrapLog("use existing name", new[]
-                {
-                    new MetadataRecommendationDto
-                    {
-                        Id = type.StaticName,
-                        Name = type.Name,
-                        Count = -1,
-                    }
-                });
+                return wrapLog("use existing name", new[] { new MetadataRecommendationDto(type, -1) });
             }
 
+            // Only support TargetType which is a predefined
             if (!Enum.IsDefined(typeof(TargetTypes), targetType))
                 return wrapLog("invalid target type", null);
 
-            // Find Content-Types carrying pre-configured MetadataFor entities
-            var initialTypes = 
+            // Find Content-Types marked with `MetadataFor` this specific target
+            // For example Types which are marked to decorate an App
+            var initialTypes =
                 (FindSelfDeclaringTypes(appState, targetType, key) ?? new List<IContentType>())
-                .Select(ct => new MetadataRecommendationDto
-                {
-                    Id = ct.StaticName,
-                    Name = ct.Name,
-                    Count = 1,
-                });
+                .Select(ct => new MetadataRecommendationDto(ct, 1));
 
+            // Check if this object-type has a specific list of Content-Types which it expects
+            // For example a attribute which says "I want this kind of Metadata"
+            // Not fully worked out yet...
+            // TODO #metadata
             var attachedRecommendations = GetAttachedRecommendations(appState, targetType, key)
                 ?? new List<MetadataRecommendationDto>();
 
             attachedRecommendations.AddRange(initialTypes);
 
-            // Todo: remove duplicates
+            // Todo: remove duplicates #metadata
 
             return wrapLog("unknown case", attachedRecommendations);
         }
@@ -198,7 +192,7 @@ namespace ToSic.Eav.WebApi
                         // App and ContentType don't need extra specifiers
                         case (int)TargetTypes.ContentType: return true;
                         case (int)TargetTypes.Zone: return true;
-                        // todo: not handled yet
+                        // todo: not handled yet #metadata
                         case (int)TargetTypes.CmsItem: return false;
                         default: return false;
                     }
@@ -217,28 +211,23 @@ namespace ToSic.Eav.WebApi
             var result = config
                 .Split(',')
                 .Select(s => s.Trim())
-                .Select(s => GetRecommendation(appState, s, 1))
+                .Select(s => FindTypeInAppAsRecommendation(appState, s, 1))
                 .ToList();
 
             return wrapLog("found", result);
         }
 
-        private MetadataRecommendationDto GetRecommendation(AppState appState, string name, int count)
+        private MetadataRecommendationDto FindTypeInAppAsRecommendation(AppState appState, string name, int count)
         {
             var wrapLog = Log.Call<MetadataRecommendationDto>(name);
 
-            if (string.IsNullOrWhiteSpace(name)) return wrapLog("empty name", null);
+            if (string.IsNullOrWhiteSpace(name)) 
+                return wrapLog("empty name", null);
             
             var type = appState.GetContentType(name);
-            if (type == null) return wrapLog("name not found", null);
-
-            return wrapLog("use existing name",
-                new MetadataRecommendationDto
-                {
-                    Id = type.StaticName,
-                    Name = type.Name,
-                    Count = count,
-                });
+            return type == null 
+                ? wrapLog("name not found", null) 
+                : wrapLog("use existing name", new MetadataRecommendationDto(type, count));
         }
     }
 }
