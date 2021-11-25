@@ -40,6 +40,8 @@ namespace ToSic.Eav.DataSources.Queries
     //}
 
     // TODO: this is the old untyped implementation - should be replaced with a clean Dto version
+    // Note that the DTO already exists in another file...
+
     // not really easy, because it appears that the EntityGuid is used as a string to send back infos from the UI
     public static class QueryPartDefExtTemp
     {
