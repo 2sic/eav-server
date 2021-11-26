@@ -4,7 +4,7 @@ using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Types
 {
-    public interface IGlobalTypes
+    public interface IGlobalTypes: IHasLog
     {
         /// <summary>
         /// Dictionary of code-provided content-types, caches after first scan
@@ -13,9 +13,6 @@ namespace ToSic.Eav.Types
         ImmutableDictionary<string, IContentType> AllContentTypes();
 
         IContentType FindContentType(string name);
-
-        /// <inheritdoc />
-        ILog Log { get; }
 
         /// <summary>
         /// This is the real initializer - implemented as a virtual method, because some
