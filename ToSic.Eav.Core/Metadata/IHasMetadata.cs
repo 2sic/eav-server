@@ -10,7 +10,7 @@ namespace ToSic.Eav.Metadata
     public interface IHasMetadata
     {
         /// <summary>
-        /// Additional information, specs etc. about this attribute
+        /// Additional information, specs etc. about this thing which has metadata
         /// </summary>
         IMetadataOf Metadata { get; }
     }
