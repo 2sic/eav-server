@@ -27,6 +27,7 @@ namespace ToSic.Eav.WebApi
             _appStates = appStates;
 
             _converter.Type.Serialize = true;
+            _converter.Type.WithDescription = true;
         }
 
         private readonly IConvertToEavLight _converter;

@@ -164,7 +164,7 @@ namespace ToSic.Eav.DataFormats.EavLight
                 
             AddDateInformation(entity, entityValues, rules);
 
-            if (Type.Serialize) entityValues.Add("_Type", new JsonType(entity));
+            if (Type.Serialize) entityValues.Add("_Type", new JsonType(entity, Type.WithDescription));
 
             return entityValues;
         }
