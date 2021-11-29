@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Ui
         public string Name;
         public string StaticName;
         public bool IsHidden;
-        public IDictionary<string, object> Metadata;
+        public IDictionary<string, object> Properties;
         public string Thumbnail;
     }
 }
