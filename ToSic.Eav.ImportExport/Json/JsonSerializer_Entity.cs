@@ -96,10 +96,6 @@ namespace ToSic.Eav.ImportExport.Json
                 Guid = entity.EntityGuid,
                 Version = entity.Version,
                 Type = new JsonType(entity),
-                //{
-                //    Name = entity.Type.Name,
-                //    Id = entity.Type.StaticName,
-                //},
                 Attributes = attribs,
                 Owner = entity.Owner,
                 For = mddic,
