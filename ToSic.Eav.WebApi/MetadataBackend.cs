@@ -97,7 +97,7 @@ namespace ToSic.Eav.WebApi
             {
                 var type = appState.GetContentType(contentType);
                 if (type == null) return wrapLog("existing, not found", null);
-                return wrapLog("use existing name", new[] { new MetadataRecommendationDto(type, -1) });
+                return wrapLog("use existing name", new[] { new MetadataRecommendationDto(type, -1, "Use preset type") });
             }
 
             // Only support TargetType which is a predefined
@@ -108,7 +108,7 @@ namespace ToSic.Eav.WebApi
             // For example Types which are marked to decorate an App
             var initialTypes =
                 (FindSelfDeclaringTypes(appState, targetType, key) ?? new List<IContentType>())
-                .Select(ct => new MetadataRecommendationDto(ct, 1));
+                .Select(ct => new MetadataRecommendationDto(ct, 1, "Self-Declaring"));
 
             // Check if this object-type has a specific list of Content-Types which it expects
             // For example a attribute which says "I want this kind of Metadata"
@@ -119,9 +119,9 @@ namespace ToSic.Eav.WebApi
 
             attachedRecommendations.AddRange(initialTypes);
 
-            // Todo: remove duplicates #metadata
+            var distinct = attachedRecommendations.Distinct();
 
-            return wrapLog("unknown case", attachedRecommendations);
+            return wrapLog("unknown case", distinct);
         }
 
         private List<MetadataRecommendationDto> GetAttachedRecommendations(AppState appState, int targetType, string key)
@@ -138,16 +138,16 @@ namespace ToSic.Eav.WebApi
                     return wrapLog("attributes not supported ATM", null);
                 case (int)TargetTypes.App:
                     // TODO: this won't work - needs another way of finding assignments
-                    return wrapLog("app", GetRecommendationsOfMetadata(appState, appState.Metadata));
+                    return wrapLog("app", GetRecommendationsOfMetadata(appState, appState.Metadata, "attached to App"));
                 case (int)TargetTypes.Entity:
                     if (!Guid.TryParse(key, out var guidKey)) return wrapLog("entity not guid", null);
                     var entity = appState.List.One(guidKey);
                     if (entity == null) return wrapLog("entity not found", null);
-                    return wrapLog("entity", GetRecommendationsOfMetadata(appState, entity.Metadata));
+                    return wrapLog("entity", GetRecommendationsOfMetadata(appState, entity.Metadata, "attached to Entity"));
                 case (int)TargetTypes.ContentType:
                     var ct = appState.GetContentType(key);
                     if (ct == null) return wrapLog("type not found", null);
-                    return wrapLog("content type", GetRecommendationsOfMetadata(appState, ct.Metadata));
+                    return wrapLog("content type", GetRecommendationsOfMetadata(appState, ct.Metadata, "attached to Content-Type"));
                 case (int)TargetTypes.Zone:
                 case (int)TargetTypes.CmsItem:
                     // todo: maybe improve?
@@ -201,7 +201,7 @@ namespace ToSic.Eav.WebApi
             return wrapLog($"{recommendedTypes.Count}", recommendedTypes);
         }
 
-        private List<MetadataRecommendationDto> GetRecommendationsOfMetadata(AppState appState, IMetadataOf md)
+        private List<MetadataRecommendationDto> GetRecommendationsOfMetadata(AppState appState, IMetadataOf md, string debugMessage)
         {
             var wrapLog = Log.Call<List<MetadataRecommendationDto>>();
 
@@ -212,13 +212,13 @@ namespace ToSic.Eav.WebApi
             var result = config
                 .Split(',')
                 .Select(s => s.Trim())
-                .Select(s => FindTypeInAppAsRecommendation(appState, s, 1))
+                .Select(s => FindTypeInAppAsRecommendation(appState, s, 1, debugMessage))
                 .ToList();
 
             return wrapLog("found", result);
         }
 
-        private MetadataRecommendationDto FindTypeInAppAsRecommendation(AppState appState, string name, int count)
+        private MetadataRecommendationDto FindTypeInAppAsRecommendation(AppState appState, string name, int count, string debugMessage)
         {
             var wrapLog = Log.Call<MetadataRecommendationDto>(name);
 
@@ -228,7 +228,7 @@ namespace ToSic.Eav.WebApi
             var type = appState.GetContentType(name);
             return type == null 
                 ? wrapLog("name not found", null) 
-                : wrapLog("use existing name", new MetadataRecommendationDto(type, count));
+                : wrapLog("use existing name", new MetadataRecommendationDto(type, count, debugMessage));
         }
     }
 }
