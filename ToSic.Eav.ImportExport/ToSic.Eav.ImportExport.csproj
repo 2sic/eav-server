@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <!--ATM we're still using v.0.81 which isn't available on nuget-->
     <!--<PackageReference Include="SharpZipLib" Version="0.86.0" />-->
     <Reference Include="SharpZipLib">
@@ -17,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
   </ItemGroup>
 
