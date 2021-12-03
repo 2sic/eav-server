@@ -184,7 +184,6 @@ namespace ToSic.Eav.Repository.Efc
 
             var modifiedCount = baseEvent(acceptAllChangesOnSuccess);
 
-
             if (modifiedCount != 0)
                 PurgeAppCacheIfReady();
 

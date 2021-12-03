@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Configuration;
-#if NET451
+#if NETFRAMEWORK
 using Microsoft.EntityFrameworkCore.Metadata;
 #endif
 namespace ToSic.Eav.Persistence.Efc.Models
@@ -414,7 +414,9 @@ namespace ToSic.Eav.Persistence.Efc.Models
                 entity.HasOne(d => d.ParentEntity)
                     .WithMany(p => p.RelationshipsWithThisAsParent)
                     .HasForeignKey(d => d.ParentEntityId)
-                    .OnDelete(DeleteBehavior.Restrict)
+                    // Commented for efcore 2.1.1 to fix DbUpdateConcurrencyException
+                    // "Database operation expected to affect 1 row(s) but actually affected 0 row(s)."
+                    //.OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities");
             });
 

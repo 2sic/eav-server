@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-#if NET451
+#if NETFRAMEWORK
 using System.Web.Http;
 #else
 using Microsoft.AspNetCore.Mvc;
@@ -47,8 +47,8 @@ namespace ToSic.Eav.WebApi
             Log.Add("eval content - start" + args.DebugInfo);
 
             var import = GetXmlImport(args);
-            return import.ErrorLog.HasErrors 
-                ? new ContentImportResultDto(!import.ErrorLog.HasErrors, import.ErrorLog.Errors) 
+            return import.ErrorLog.HasErrors
+                ? new ContentImportResultDto(!import.ErrorLog.HasErrors, import.ErrorLog.Errors)
                 : new ContentImportResultDto(!import.ErrorLog.HasErrors, new ImportStatisticsDto
                 {
                     AmountOfEntitiesCreated = import.Info_AmountOfEntitiesCreated,
@@ -99,7 +99,7 @@ namespace ToSic.Eav.WebApi
                 var callLog = Log.Call<bool>(null, "import json item" + args.DebugInfo);
                 var deserializer = _jsonSerializerLazy.Value.Init(_appManager.AppState, Log);
                 // Since we're importing directly into this app, we prefer local content-types
-                deserializer.PreferLocalAppTypes = true; 
+                deserializer.PreferLocalAppTypes = true;
 
                 _appManager.Entities.Import(new List<IEntity> {deserializer.Deserialize(args.GetContentString()) });
                 return callLog("ok", true);
