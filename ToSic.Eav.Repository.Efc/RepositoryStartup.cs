@@ -23,7 +23,8 @@ namespace ToSic.Eav.Repository.Efc
             // Transient, or Scoped for optionsLifetime is not working.
             services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Singleton);
 #else
-            services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient);
+            //services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient);
+            services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Singleton);
 #endif
 
             services.TryAddTransient<IRepositoryLoader, Efc11Loader>();

@@ -13,7 +13,10 @@ namespace ToSic.Eav
         /// <summary>
         /// Dictionary key for keeping the Injection Service Provider in the Http-Context
         /// </summary>
-        private const string ServiceProviderKey = "eav-scoped-serviceprovider";
+
+        // we changed key to one used in DNN9DI instead old one "eav-scoped-serviceprovider"
+        private static Type ServiceProviderKey = typeof(IServiceScope); // "eav-scoped-serviceprovider";
+
         private static IServiceProvider _sp;
 
         [PrivateApi("This is just a temporary solution - shouldn't be used long term")]

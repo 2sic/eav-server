@@ -7,15 +7,15 @@ namespace ToSic.Eav.Persistence.Efc.Diagnostics
     // this class helps debug in advanced scenarios
     // hasn't been used since ca. 2017, but keep in case we ever do deep work on the DB again
     // ReSharper disable once UnusedMember.Global
-#if net451
+#if NETFRAMEWORK
     public class EfCoreFilteredLoggerProvider : ILoggerProvider
     {
         private static string[] _categories =
         {
             typeof(Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommandBuilderFactory).FullName,
-#if net451
-            typeof(Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerConnection).FullName
-#endif
+//#if NETFRAMEWORK
+//            typeof(Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerConnection).FullName
+//#endif
         };
 
         public ILogger CreateLogger(string categoryName)
