@@ -10,6 +10,8 @@
 
         public bool? SerializeTitle { get; set; }
 
+        public static ISubEntitySerialization AllTrue()
+            => Stabilize(null, true, true, true, true);
 
         public static ISubEntitySerialization Stabilize(ISubEntitySerialization original,
             bool serialize = false, bool id = false, bool guid = false, bool title = false) =>

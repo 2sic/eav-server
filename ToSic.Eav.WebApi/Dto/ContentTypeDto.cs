@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi.Dto
@@ -14,7 +16,7 @@ namespace ToSic.Eav.WebApi.Dto
         public int? SharedDefId { get; set; }
         public int Items { get; set; }
         public int Fields { get; set; }
-        public IDictionary<string, object> Metadata { get; set; }
+        public IEnumerable<EavLightEntityReference> Metadata { get; set; }
         public IDictionary<string, object> Properties { get; set; }
 
         public HasPermissionsDto Permissions { get; set; }

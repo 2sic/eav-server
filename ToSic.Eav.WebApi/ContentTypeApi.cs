@@ -9,6 +9,7 @@ using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Security;
 
@@ -29,14 +30,14 @@ namespace ToSic.Eav.WebApi
             Lazy<AppManager> appManagerLazy, 
             Lazy<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
-            Lazy<IConvertToEavLight> dataToDictionaryLazy, 
+            Lazy<IConvertToEavLight> convertToEavLight, 
             IAppStates appStates) : base("Api.EavCTC")
         {
             _appRuntimeLazy = appRuntimeLazy;
             _appManagerLazy = appManagerLazy;
             _dbLazy = dbLazy;
             _appInitializedChecker = appInitializedChecker;
-            _dataToDictionaryLazy = dataToDictionaryLazy;
+            _convertToEavLight = convertToEavLight;
             _appStates = appStates;
         }
 
@@ -44,7 +45,7 @@ namespace ToSic.Eav.WebApi
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<DbDataController> _dbLazy;
         private readonly AppInitializedChecker _appInitializedChecker;
-        private readonly Lazy<IConvertToEavLight> _dataToDictionaryLazy;
+        private readonly Lazy<IConvertToEavLight> _convertToEavLight;
         private readonly IAppStates _appStates;
         private AppManager AppManager { get; set; }
 
@@ -96,17 +97,17 @@ namespace ToSic.Eav.WebApi
         private ContentTypeDto ContentTypeForJson(ContentType t, int count = -1)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
-	        var metadata = t.Metadata.Description;
+	        var description = t.Metadata.Description;
 
-	        var nameOverride = metadata?.Value<string>(ContentTypes.ContentTypeMetadataLabel);
+	        var nameOverride = description?.Value<string>(ContentTypes.ContentTypeMetadataLabel);
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
-            var ser = _dataToDictionaryLazy.Value;
+            var ser = _convertToEavLight.Value;
 
-	        //var shareInfo = (IContentTypeShared) t;
             var ancestorDecorator = t.GetDecorator<IAncestor>();
 
-            var properties = ser.Convert(metadata);
+            var properties = ser.Convert(description);
+            
             var jsonReady = new ContentTypeDto
             {
                 Id = t.ContentTypeId,
@@ -118,12 +119,11 @@ namespace ToSic.Eav.WebApi
 
                 IsReadOnly = ancestorDecorator != null ? true : (bool?)null,
                 IsReadOnlyReason = ancestorDecorator == null ? null : t.HasPresetAncestor() ? "This is a preset ContentType" : "This is an inherited ContentType",
-                UsesSharedDef = ancestorDecorator != null, // shareInfo.ParentId != null,
-                SharedDefId = ancestorDecorator?.Id, // shareInfo.ParentId,
-
+                UsesSharedDef = ancestorDecorator != null,
+                SharedDefId = ancestorDecorator?.Id,
                 Items = count,
                 Fields = t.Attributes.Count,
-                Metadata = properties,
+                Metadata = (ser as ConvertToEavLight)?.CreateListOfSubEntities(t.Metadata, SubEntitySerialization.AllTrue()),
                 Properties = properties,
                 Permissions = new HasPermissionsDto { Count = t.Metadata.Permissions.Count() },
             };
@@ -191,7 +191,7 @@ namespace ToSic.Eav.WebApi
 
             var appInputTypes = _appRuntimeLazy.Value.Init(_appId, true, Log).ContentTypes.GetInputTypes();
 
-            var ser = _dataToDictionaryLazy.Value;
+            var ser = _convertToEavLight.Value;
             return fields.Select(a =>
             {
                 var inputType = FindInputType(a);
