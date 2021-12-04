@@ -16,22 +16,22 @@ namespace ToSic.Eav.Data
 
         #region constructors
 
-        /// <summary>
-        /// Used in cases where the metadata-provider is already known
-        /// </summary>
-        /// <param name="typeId">type id / static-name</param>
-        /// <param name="metaProvider">remote / deferred metadata provider</param>
-        public ContentTypeMetadata(string typeId, IHasMetadataSource metaProvider)
-            : base((int)TargetTypes.ContentType, typeId, metaProvider)
-        { }
+        ///// <summary>
+        ///// Used in cases where the metadata-provider is already known
+        ///// </summary>
+        ///// <param name="typeId">type id / static-name</param>
+        ///// <param name="metaProvider">remote / deferred metadata provider</param>
+        //public ContentTypeMetadata(string typeId, IHasMetadataSource metaProvider)
+        //    : base((int)TargetTypes.ContentType, typeId, metaProvider)
+        //{ }
 
         /// <summary>
         /// Used in cases where the metadata-provider is already known
         /// </summary>
         /// <param name="typeId">type id / static-name</param>
         /// <param name="metaSourceFinder">remote / deferred metadata provider</param>
-        public ContentTypeMetadata(string typeId, Func<IHasMetadataSource> metaSourceFinder)
-            : base((int)TargetTypes.ContentType, typeId, metaSourceFinder)
+        public ContentTypeMetadata(string typeId, Func<IHasMetadataSource> metaSourceFinder, string targetIdentifier)
+            : base((int)TargetTypes.ContentType, typeId, metaSourceFinder, targetIdentifier)
         { }
 
         ///// <summary>

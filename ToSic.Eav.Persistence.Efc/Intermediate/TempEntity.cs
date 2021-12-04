@@ -10,7 +10,7 @@ namespace ToSic.Eav.Persistence.Efc.Intermediate
         public int Version;
 
         public int AttributeSetId;
-        public Target Metadata;
+        public Target MetadataFor;
         public bool IsPublished;
         public int? PublishedEntityId;
         public string Owner;

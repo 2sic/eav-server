@@ -61,7 +61,7 @@ namespace ToSic.Eav.Data
         #region Metadata and Permissions
         /// <inheritdoc />
         public IMetadataOf Metadata
-            => _metadata ?? (_metadata = new MetadataOf<int>((int)TargetTypes.Attribute, AttributeId, _metaSourceFinder));
+            => _metadata ?? (_metadata = new MetadataOf<int>((int)TargetTypes.Attribute, AttributeId, _metaSourceFinder, Name + " (" + Type + ")"));
 
         private IMetadataOf _metadata;
         private readonly Func<IHasMetadataSource> _metaSourceFinder;

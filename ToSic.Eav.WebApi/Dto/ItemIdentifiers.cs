@@ -23,12 +23,6 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public string ContentTypeName { get; set; }
 
-        // #2134
-        ///// <summary>
-        ///// Additional Assignment (MetadataFor) information - important for new, assigned entities
-        ///// </summary>
-        //public Metadata Metadata { get; set; }
-
         /// <summary>
         /// Metadata key information
         /// </summary>

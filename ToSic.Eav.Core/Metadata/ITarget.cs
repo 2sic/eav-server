@@ -51,6 +51,8 @@ namespace ToSic.Eav.Metadata
         [JsonProperty("Guid", NullValueHandling = NullValueHandling.Ignore)]
         Guid? KeyGuid { get; }
 
+        [JsonIgnore]
+        [PrivateApi("WIP v13")] string Title { get; set; }
     }
 
 }

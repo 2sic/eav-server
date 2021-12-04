@@ -51,9 +51,8 @@ namespace ToSic.Eav.Persistence.Efc
                     EntityGuid = e.EntityGuid,
                     Version = e.Version,
                     AttributeSetId = e.AttributeSetId,
-                    Metadata = new Metadata.Target
+                    MetadataFor = new Metadata.Target(e.AssignmentObjectTypeId, null)
                     {
-                        TargetType = e.AssignmentObjectTypeId,
                         KeyGuid = e.KeyGuid,
                         KeyNumber = e.KeyNumber,
                         KeyString = e.KeyString
@@ -61,7 +60,7 @@ namespace ToSic.Eav.Persistence.Efc
                     IsPublished = e.IsPublished,
                     PublishedEntityId = e.PublishedEntityId,
                     Owner = e.Owner,
-                    Created = e.ChangeLogCreatedNavigation.Timestamp, // != null ? e.ChangeLogCreatedNavigation.Timestamp : DateTime.MinValue,
+                    Created = e.ChangeLogCreatedNavigation.Timestamp,
                     Modified = e.ChangeLogModifiedNavigation.Timestamp,
                     Json = e.Json,
                 })

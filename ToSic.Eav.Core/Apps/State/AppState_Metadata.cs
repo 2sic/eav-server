@@ -17,6 +17,8 @@ namespace ToSic.Eav.Apps
 	    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
             => _metadataManager.GetMetadata(targetType, key, contentTypeName);
 
+        public IMetadataOf GetMetadataOf<T>(int targetType, T key, string title = null) => new MetadataOf<T>(targetType, key, this, title);
+
 
         /// <summary>
         /// The first init-command to run after creating the package
@@ -32,7 +34,7 @@ namespace ToSic.Eav.Apps
                 ? new AppMetadataManager(this, metadataTypes, Log)
                 : throw new Exception("can't set metadata if content-types are already set");
 
-            Metadata = new MetadataOf<int>((int)TargetTypes.App, AppId, this);
+            Metadata = GetMetadataOf<int>((int)TargetTypes.App, AppId, "App (" + AppId + ") " + Name + " (" + Folder + ")");
         }
         private AppMetadataManager _metadataManager;
 

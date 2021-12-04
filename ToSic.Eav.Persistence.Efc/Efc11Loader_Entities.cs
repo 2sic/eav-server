@@ -142,7 +142,7 @@ namespace ToSic.Eav.Persistence.Efc
                 throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
             newEntity = EntityBuilder.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
-                e.Metadata, contentType, e.IsPublished, app, e.Created, e.Modified, e.Owner,
+                e.MetadataFor, contentType, e.IsPublished, app, e.Created, e.Modified, e.Owner,
                 e.Version);
 
             // Add all Attributes of that Content-Type

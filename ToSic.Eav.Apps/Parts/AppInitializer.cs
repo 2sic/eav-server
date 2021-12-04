@@ -155,7 +155,7 @@ namespace ToSic.Eav.Apps.Parts
             var values = item.Values ?? new Dictionary<string, object>();
 
             var newEnt = new Entity(AppState.AppId, Guid.NewGuid(), ct, values);
-            newEnt.SetMetadata(new Target { KeyNumber = AppState.AppId, TargetType = (int)TargetTypes.App });
+            newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
             AppManager.Entities.Save(newEnt);
 
             wrapLog(null);

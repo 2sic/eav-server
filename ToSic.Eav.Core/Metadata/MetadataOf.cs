@@ -23,7 +23,7 @@ namespace ToSic.Eav.Metadata
         /// <summary>
         /// initialize using an already prepared metadata source
         /// </summary>
-        public MetadataOf(int targetType, T key, IHasMetadataSource metaProvider) : this(targetType, key)
+        public MetadataOf(int targetType, T key, IHasMetadataSource metaProvider, string targetIdentifier) : this(targetType, key, targetIdentifier)
         {
             _appMetadataProvider = metaProvider;
         }
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Metadata
         /// <summary>
         /// initialize using an already prepared metadata source
         /// </summary>
-        public MetadataOf(int targetType, T key, Func<IHasMetadataSource> metaSourceRemote) : this(targetType, key)
+        public MetadataOf(int targetType, T key, Func<IHasMetadataSource> metaSourceRemote, string targetIdentifier) : this(targetType, key, targetIdentifier)
         {
             _metaSourceRemote = metaSourceRemote;
         }
@@ -41,10 +41,11 @@ namespace ToSic.Eav.Metadata
         /// </summary>
         /// <param name="targetType"></param>
         /// <param name="key"></param>
-        protected MetadataOf(int targetType, T key)
+        private MetadataOf(int targetType, T key, string targetIdentifier)
         {
             _targetType = targetType;
             Key = key;
+            _metadataIdentifier = targetIdentifier;
         }
 
         #endregion
@@ -207,7 +208,7 @@ namespace ToSic.Eav.Metadata
             get
             {
                 if (_target != null) return _target;
-                var target = new Target { TargetType = _targetType };
+                var target = new Target(_targetType, _metadataIdentifier);
                 if (Key is string stringKey) target.KeyString = stringKey;
                 if (Key is int intKey) target.KeyNumber = intKey;
                 if (Key is Guid guidKey) target.KeyGuid = guidKey;
@@ -216,6 +217,7 @@ namespace ToSic.Eav.Metadata
         }
 
         private ITarget _target;
+        private readonly string _metadataIdentifier;
 
         #endregion
 

@@ -176,7 +176,7 @@ namespace ToSic.Eav.Apps.Parts
                 else
                 {
                     Tuple<int, Guid> entity = Parent.Entities.Create(Constants.QueryPartTypeName, dataSource,
-                        new Metadata.Target { TargetType = (int)TargetTypes.Entity, KeyGuid = queryEntityGuid });
+                        new Target((int)TargetTypes.Entity, null) { KeyGuid = queryEntityGuid });
                     newDataSources.Add(originalIdentity, entity.Item2);
                 }
             }

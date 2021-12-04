@@ -29,5 +29,8 @@ namespace ToSic.Eav.Metadata
         /// <returns>A list (may be empty) of metadata items found for this target</returns>
         IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null);
 
+
+        //[PrivateApi("experimental")]
+        //IMetadataOf GetMetadataOf<T>(int targetType, T key, string title = null);
     }
 }

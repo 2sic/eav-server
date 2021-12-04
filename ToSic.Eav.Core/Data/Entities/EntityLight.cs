@@ -85,14 +85,13 @@ namespace ToSic.Eav.Data
             LightAttributesForInternalUseOnlyForNow = values;
             try
             {
-                if (titleAttribute != null)
-                    TitleFieldName = titleAttribute;
+                if (titleAttribute != null) TitleFieldName = titleAttribute;
             }
             catch (KeyNotFoundException)
             {
                 throw new KeyNotFoundException($"The Title Attribute with Name \"{titleAttribute}\" doesn't exist in the Entity-Attributes.");
             }
-            MetadataFor = new Metadata.Target();
+            MetadataFor = new Target();
             if (created.HasValue) Created = created.Value;
             if (modified.HasValue) Modified = modified.Value;
             Relationships = new RelationshipManager(this, null, null);
