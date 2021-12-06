@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps
     {
         // 2021-11-22 2dm WIP - not used yet
         // Idea was to be able to get Metadata Targets, but I'm not sure if it's useful at all
-        public static IMetadataOf FindTarget(this AppState appState, int targetType, string key)
+        public static string FindTargetTitle(this AppState appState, int targetType, string key)
         {
 
             if (!Enum.IsDefined(typeof(TargetTypes), targetType)) return null;
@@ -24,14 +24,14 @@ namespace ToSic.Eav.Apps
                 case TargetTypes.Attribute:
                     if (!int.TryParse(key, out var keyInt)) return null;
                     var attr = appState.FindAttribute(keyInt);
-                    return attr?.Item2?.Metadata;
+                    return attr?.Item1?.Metadata?.MetadataId.Title + "/" + attr?.Item2?.Metadata?.MetadataId.Title;
                 case TargetTypes.App:
-                    return appState.Metadata;
+                    return appState.Metadata?.MetadataId.Title;
                 case TargetTypes.Entity:
                     if (!Guid.TryParse(key, out var guidKey)) return null;
-                    return appState.List.One(guidKey)?.Metadata;
+                    return appState.List.One(guidKey)?.Metadata?.MetadataId.Title;
                 case TargetTypes.ContentType:
-                    return appState.GetContentType(key)?.Metadata;
+                    return appState.GetContentType(key)?.Metadata?.MetadataId.Title;
                 case TargetTypes.Zone:
                     return null;
                 case TargetTypes.CmsItem:

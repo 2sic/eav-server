@@ -5,6 +5,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Helpers;
+using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Types;
@@ -21,10 +22,11 @@ namespace ToSic.Eav.WebApi
 	public class MetadataBackend: HasLog<MetadataBackend>
     {
 
-        public MetadataBackend(IConvertToEavLight converter, IAppStates appStates): base($"{LogNames.WebApi}.MetaDT")
+        public MetadataBackend(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets) : base($"{LogNames.WebApi}.MetaDT")
         {
             _converter = converter;
             _appStates = appStates;
+            _metadataTargets = metadataTargets;
 
             _converter.Type.Serialize = true;
             _converter.Type.WithDescription = true;
@@ -32,6 +34,7 @@ namespace ToSic.Eav.WebApi
 
         private readonly IConvertToEavLight _converter;
         private readonly IAppStates _appStates;
+        private readonly ITargetTypes _metadataTargets;
 
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
@@ -43,18 +46,29 @@ namespace ToSic.Eav.WebApi
 
             var appState = _appStates.Get(appId);
 
+            var mdFor = new JsonMetadataFor()
+            {
+                Target = _metadataTargets.GetName(targetType)
+            };
             switch (keyType)
             {
                 case "guid":
-                    if(Guid.TryParse(key, out var guidKey))
+                    if (Guid.TryParse(key, out var guidKey))
+                    {
                         entityList = appState.GetMetadata(targetType, guidKey, contentType);
+                        mdFor.Guid = guidKey;
+                    }
                     break;
                 case "string":
                     entityList = appState.GetMetadata(targetType, key, contentType);
+                    mdFor.String = key;
                     break;
                 case "number":
-                    if(int.TryParse(key, out var keyInt))
+                    if (int.TryParse(key, out var keyInt))
+                    {
                         entityList = appState.GetMetadata(targetType, keyInt, contentType);
+                        mdFor.Number = keyInt;
+                    }
                     break;
                 default:
                     throw new Exception("key type unknown:" + keyType);
@@ -78,12 +92,22 @@ namespace ToSic.Eav.WebApi
                 Log.Exception(e);
             }
 
+            try
+            {
+                var title = appState.FindTargetTitle(targetType, key);
+                mdFor.Title = title;
+            }
+            catch { /* experimental / ignore */ }
+
             _converter.WithGuid = true;
             var result = new MetadataListDto()
             {
+                For = mdFor,
                 Items = _converter.Convert(entityList),
                 Recommendations = recommendations,
             };
+
+
             return wrapLog("ok", result);
         }
 
