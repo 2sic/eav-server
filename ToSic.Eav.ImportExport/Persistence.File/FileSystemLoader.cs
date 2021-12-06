@@ -120,7 +120,8 @@ namespace ToSic.Eav.Persistence.File
         public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
         {
             // v11.01 experimental - maybe disable this, as now we're loading from the app folder so we have an AppId
-            if (appId != Constants.PresetAppId) throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
+            // 2021-12-06 2dm - disabled this - it prevented app-system-folder content-types from loading
+            // if (appId != Constants.PresetAppId) throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
 
             // #1. check that folder exists
             var pathCt = ContentTypePath;
