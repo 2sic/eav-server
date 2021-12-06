@@ -108,9 +108,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\2sxc\Src\Dnn\ToSic.Sxc.Dnn\2sxc Dnn.csproj">
+    <ProjectReference Include="..\..\2sxc\Src\Dnn\ToSic.Sxc.Dnn.Core\ToSic.Sxc.Dnn.Core.csproj">
       <Project>{A94DE6D7-D1E6-4BE2-B5B5-DC4A6A61CD80}</Project>
-      <Name>2sxc Dnn</Name>
+      <Name>ToSic.Sxc.Dnn.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\2sxc\Src\Sxc\ToSic.Sxc\ToSic.Sxc.csproj">
       <Project>{5D87EB0C-BF67-4814-A0FF-D96256C9B852}</Project>
