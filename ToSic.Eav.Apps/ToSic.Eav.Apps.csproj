@@ -6,6 +6,7 @@
     <Version>13.00.00</Version>
     <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RootNamespace>ToSic.Eav.Apps</RootNamespace>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='efc and WebApi|AnyCPU'" />
