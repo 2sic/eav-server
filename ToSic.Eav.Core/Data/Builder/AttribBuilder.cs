@@ -81,21 +81,6 @@ namespace ToSic.Eav.Data.Builder
         public static Dictionary<string, IAttribute> Copy(this IDictionary<string, IAttribute> attributes)
             => attributes.ToDictionary(x => x.Key, x => x.Value.Copy());
 
-#if NETFRAMEWORK
-        /// <summary>
-        /// Add a value to the attribute specified. To do so, set the name, type and string of the value, as
-        /// well as some language properties.
-        /// </summary>
-        [Obsolete("You should now get the AttributeBuilder with Dependency Injection and AddValue there")]
-        public static IValue AddValue(this Dictionary<string, IAttribute> target, string attributeName,
-            object value, string valueType, string language = null, bool languageReadOnly = false,
-            bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null)
-        {
-            var builder = Factory.ObsoleteBuild<AttributeBuilder>();
-            return builder.AddValue(target, attributeName, value, valueType, language, languageReadOnly,
-                resolveHyperlink, allEntitiesForRelationships);
-        }
-#endif
 
         /// <summary>
         /// Get the value of an attribute in the language specified.
