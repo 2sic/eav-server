@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Types
+﻿namespace ToSic.Eav.Metadata
 {
     public class Decorators
     {

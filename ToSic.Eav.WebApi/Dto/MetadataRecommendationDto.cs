@@ -2,6 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.WebApi.Dto
