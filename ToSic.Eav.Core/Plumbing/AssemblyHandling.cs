@@ -19,10 +19,6 @@ namespace ToSic.Eav.Plumbing
             return GetTypes(log).Where(t => type.IsAssignableFrom(t) && (!t.IsAbstract || t.IsInterface) && t != type);
         }
 
-        // 2020-07-31 2dm - never used
-        //public static IEnumerable<Type> FindClassesWithAttribute(Type type, Type attribType, bool includeInherited, ILog log)
-        //    => FindInherited(type, log).Where(d => d.GetCustomAttributes(attribType, includeInherited).Any());
-
         private static IEnumerable<Type> GetTypes(ILog log = null)
         {
             if (_typeCache != null) return _typeCache;

@@ -4,7 +4,7 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSources
 {
-    public class DataSourceInfo: TypeWithMedataBase<VisualQueryAttribute>
+    public class DataSourceInfo: TypeWithMetadataBase<VisualQueryAttribute>
     {
         //public Type Type { get; }
         public VisualQueryAttribute VisualQuery { get; }

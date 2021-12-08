@@ -30,11 +30,6 @@ namespace ToSic.Eav.LookUp
         /// </summary>
         private readonly TokenReplace _reusableTokenReplace;
 
-		///// <summary>
-		///// Constructs a new LookUpEngine
-		///// </summary>
-		//public LookUpEngine(): this(null as ILog) { }
-
         public LookUpEngine(ILog parentLog): base("EAV.LookUp", parentLog, "()")
 		{
 			_reusableTokenReplace = new TokenReplace(this);

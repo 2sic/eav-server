@@ -58,7 +58,6 @@ namespace ToSic.Eav.LookUp
                         return !string.IsNullOrWhiteSpace(format)
                             ? ((DateTime) valueObject).ToString(format, IZoneCultureResolverExtensions.SafeCultureInfo(_dimensions))
                             : Format((DateTime) valueObject);
-                        //((DateTime) valueObject).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
                     case TypeCode.Double:
                     case TypeCode.Single:
                     case TypeCode.Int16:
@@ -69,8 +68,6 @@ namespace ToSic.Eav.LookUp
                         return !string.IsNullOrWhiteSpace(format)
                             ? ((IFormattable) valueObject).ToString(format, IZoneCultureResolverExtensions.SafeCultureInfo(_dimensions))
                             : ((IFormattable) valueObject).ToString("G", CultureInfo.InvariantCulture);
-                        //var outputFormat = string.IsNullOrWhiteSpace(format) ? "g" : format;
-                        //return ((IFormattable)valueObject).ToString(outputFormat, formatProvider);
                     default:
                         return FormatString(valueObject.ToString(), format);
                 }
