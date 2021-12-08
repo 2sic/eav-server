@@ -73,21 +73,6 @@ namespace ToSic.Eav
 
 
 
-        #region Scopes
-
-        public const string ScopeSystem = "System";
-
-        public const string ScopeContentOld = "2SexyContent";
-
-        public const string ScopeContentFuture = "Default";
-
-        public static readonly string[] ScopesContent = { ScopeContentOld, ScopeContentFuture };
-
-
-        #endregion
-
-
-
 
         #region special uses of Apps
 

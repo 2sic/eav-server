@@ -96,7 +96,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             // before var sysAttributeSets = newSetsList.Where(a => a.Scope == Constants.ScopeSystem).ToList();
                             // warning: this may not be enough, we may have to always import the fields-scope first...
                             var sysAttributeSets = newSetsList
-                                .Where(a => a.Scope?.StartsWith(Constants.ScopeSystem) ?? false).ToList();
+                                .Where(a => a.Scope?.StartsWith(Scopes.System) ?? false).ToList();
                             if (sysAttributeSets.Any())
                                 MergeAndSaveContentTypes(appStateTemp, sysAttributeSets);
                             logImpTypes(null);

@@ -129,7 +129,7 @@ namespace ToSic.Eav.Apps.Parts
                 {
                     Log.Add("couldn't find type, will create");
                     // create App-Man if not created yet
-                    AppManager.ContentTypes.Create(item.SetName, item.SetName, item.Label, AppConstants.ScopeApp);
+                    AppManager.ContentTypes.Create(item.SetName, item.SetName, item.Label, Scopes.App);
                     addedTypes = true;
                 }
                 else

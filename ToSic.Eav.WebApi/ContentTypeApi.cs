@@ -74,7 +74,7 @@ namespace ToSic.Eav.WebApi
             // this is important on "Content" apps, because these don't auto-initialize when loading from the DB
             // so for these, we must pre-ensure that the app is initialized as needed, if they 
             // are editing the resources etc. 
-            if (scope == AppConstants.ScopeApp)
+            if (scope == Data.Scopes.App)
             {
                 Log.Add($"is scope {scope}, will do extra processing");
                 var appState = _appStates.Get(AppManager);

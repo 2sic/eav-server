@@ -34,7 +34,7 @@ namespace ToSic.Eav.Data
         public string Description { get; protected set; }
 
         /// <inheritdoc />
-        public string Scope { get; protected set; }
+        public string Scope { get; private set; }
 
         /// <inheritdoc />
         public int ContentTypeId { get; }
@@ -88,7 +88,7 @@ namespace ToSic.Eav.Data
         {
             ContentTypeId = attributeSetId;
             Description = description;
-            Scope = scope;
+            Scope = Scopes.RenameOldScope(scope);
 
             // Shared Content-Types
             //ParentId = parentTypeId;

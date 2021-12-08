@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         public void SetImportParameters(string scope, string staticName, string description, bool alwaysShareDef)
         {
-            Scope = scope;
+            Scope = Scopes.RenameOldScope(scope);
             StaticName = staticName;
             Description = description;
             AlwaysShareConfiguration = alwaysShareDef;

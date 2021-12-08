@@ -98,10 +98,9 @@ namespace ToSic.Eav.DataSources.System
             var appId = OfAppId;
 
 	        var scp = OfScope;
-	        if (string.IsNullOrWhiteSpace(scp) || Constants.ScopeContentFuture.Equals(scp, StringComparison.InvariantCultureIgnoreCase))
-	            scp = AppConstants.ScopeContentOld;
+            if (string.IsNullOrWhiteSpace(scp)) scp = Scopes.Default;
 
-	        var types = _appStates.Get(appId).ContentTypes.OfScope(scp);
+            var types = _appStates.Get(appId).ContentTypes.OfScope(scp);
             
             var builder = DataBuilder;
 	        var list = types.OrderBy(t => t.Name).Select(t =>
