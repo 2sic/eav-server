@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data
         public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks)
         {
             if (_useLightModel)
-                return base.GetBestValue(attributeName, resolveHyperlinks);
+                return base.GetBestValue(attributeName);
 
             var set = FindPropertyInternal(attributeName, languages, null);
             var result = set.Result;
@@ -23,9 +23,7 @@ namespace ToSic.Eav.Data
 
             if (attributeType == Data.Attributes.FieldIsVirtual) return result;
 
-            return resolveHyperlinks && attributeType == DataTypes.Hyperlink && result is string strResult
-                ? TryToResolveLink(EntityGuid, strResult)
-                : result;
+            return result;
         }
 
         [PrivateApi]
@@ -40,13 +38,13 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
         public new object GetBestValue(string attributeName, bool resolveHyperlinks)
-            => GetBestValue(attributeName, new string[0], resolveHyperlinks);
+            => GetBestValue(attributeName, new string[0]);
 
 
         [PrivateApi]
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
         public TVal GetBestValue<TVal>(string name, string[] languages, bool resolveHyperlinks)
-            => GetBestValue(name, languages, resolveHyperlinks).ConvertOrDefault<TVal>();
+            => GetBestValue(name, languages).ConvertOrDefault<TVal>();
 
         // 2020-12-15 Deprecated this
         [PrivateApi]
