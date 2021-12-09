@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -21,10 +19,10 @@ namespace ToSic.Eav.Configuration
 
         #region Constructor / DI
 
-        public SystemLoader(IGlobalTypes globalTypes, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
+        public SystemLoader(IGlobalTypes globalTypes, IFingerprint fingerprint, IRuntime runtime, /*IAppsCache appsCache,*/ IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
         {
             _globalTypes = globalTypes;
-            _appsCache = appsCache;
+            //_appsCache = appsCache;
             _features = features;
             _logHistory = logHistory;
             logHistory.Add(GlobalTypes.LogHistoryGlobalTypes, Log);
@@ -42,7 +40,7 @@ namespace ToSic.Eav.Configuration
         private readonly IFingerprint _fingerprint;
         private readonly IRuntime _runtime;
         private readonly IGlobalTypes _globalTypes;
-        private readonly IAppsCache _appsCache;
+        //private readonly IAppsCache _appsCache;
         private readonly IFeaturesInternal _features;
         private readonly LogHistory _logHistory;
 
@@ -56,11 +54,6 @@ namespace ToSic.Eav.Configuration
             // Prevent multiple Inits
             if (_startupAlreadyRan) throw new Exception("Startup should never be called twice.");
             _startupAlreadyRan = true;
-
-            // Initialize AppState Cache, which could be DI but has a static accessor
-#pragma warning disable 618
-            State.StartUp(_appsCache);
-#pragma warning restore 618
 
             // Build the cache of all system-types. Must happen before everything else
             _globalTypes.StartUp(Log);

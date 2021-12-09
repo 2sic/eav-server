@@ -41,7 +41,6 @@ namespace ToSic.Eav
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
             services.TryAddTransient<IAppStates, AppStates>();
-            services.TryAddTransient<AppsCacheBase.Dependencies>();
 
             // Other...
             services.TryAddTransient<AttributeBuilder>();

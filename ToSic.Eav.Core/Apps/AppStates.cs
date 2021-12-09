@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
@@ -18,27 +19,35 @@ namespace ToSic.Eav.Apps
     public class AppStates: IAppStates
     {
 
-        public AppStates(IAppsCache appsCache) => Cache = appsCache;
-        private readonly IAppsCache Cache;
+        public AppStates(IAppsCache appsCache, IServiceProvider serviceProvider)
+        {
+            _cache = appsCache;
+            _serviceProvider = serviceProvider;
+        }
+
+        private readonly IAppsCache _cache;
+        private readonly IServiceProvider _serviceProvider;
 
         /// <inheritdoc />
-        public AppState Get(IAppIdentity app) => Cache.Get(app);
+        public AppState Get(IAppIdentity app) => _cache.Get(_serviceProvider, app);
 
         /// <inheritdoc />
-        public AppState Get(int appId) => Cache.Get(appId);
+        public AppState Get(int appId) => _cache.Get(_serviceProvider, appId);
 
-        public IAppIdentity Identity(int? zoneId, int? appId) => Cache.GetIdentity(zoneId, appId);
+        public IAppIdentity Identity(int? zoneId, int? appId) => _cache.GetIdentity(_serviceProvider, zoneId, appId);
 
-        public string AppIdentifier(int zoneId, int appId) => Cache.Zones[zoneId].Apps[appId];
+        public string AppIdentifier(int zoneId, int appId) => _cache.Zones(_serviceProvider)[zoneId].Apps[appId];
 
-        public int DefaultAppId(int zoneId) => Cache.Zones[zoneId].DefaultAppId;
+        public int DefaultAppId(int zoneId) => _cache.Zones(_serviceProvider)[zoneId].DefaultAppId;
 
-        public IDictionary<int, string> Apps(int zoneId) => Cache.Zones[zoneId].Apps;
+        public IDictionary<int, string> Apps(int zoneId) => _cache.Zones(_serviceProvider)[zoneId].Apps;
 
-        public List<DimensionDefinition> Languages(int zoneId, bool includeInactive = false) => includeInactive
-            ? Cache.Zones[zoneId].Languages
-            : Cache.Zones[zoneId].Languages.Where(l => l.Active).ToList();
+        public List<DimensionDefinition> Languages(int zoneId, bool includeInactive = false)
+        {
+            var zone = _cache.Zones(_serviceProvider)[zoneId];
+            return includeInactive ? zone.Languages : zone.Languages.Where(l => l.Active).ToList();
+        }
 
-        public IReadOnlyDictionary<int, Zone> Zones => Cache.Zones;
+        public IReadOnlyDictionary<int, Zone> Zones => _cache.Zones(_serviceProvider);
     }
 }

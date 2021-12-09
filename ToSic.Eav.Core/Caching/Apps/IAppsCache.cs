@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -19,14 +20,14 @@ namespace ToSic.Eav.Caching
         /// </summary>
         /// <param name="app">App identifier.</param>
         /// <returns>The <see cref="AppState"/> of the app.</returns>
-        AppState Get(IAppIdentity app);
+        AppState Get(IServiceProvider sp, IAppIdentity app);
 
         /// <summary>
         /// Retrieve an app from the cache
         /// </summary>
         /// <param name="appId">App id if zone unknown.</param>
         /// <returns>The <see cref="AppState"/> of the app.</returns>
-        AppState Get(int appId);
+        AppState Get(IServiceProvider sp, int appId);
 
         #endregion
 
@@ -36,16 +37,19 @@ namespace ToSic.Eav.Caching
         /// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
         /// </summary>
         /// <returns>An <see cref="IAppIdentity"/> with the correct IDs</returns>
-        IAppIdentity GetIdentity(int? zoneId = null, int? appId = null);
+        IAppIdentity GetIdentity(IServiceProvider sp, int? zoneId = null, int? appId = null);
 
         #endregion
 
         #region Zones
 
-        /// <summary>
-        /// The list of zones, which internally contains the list of apps. 
-        /// </summary>
-        IReadOnlyDictionary<int, Zone> Zones { get; }
+        ///// <summary>
+        ///// The list of zones, which internally contains the list of apps. 
+        ///// </summary>
+        //IReadOnlyDictionary<int, Zone> Zones { get; }
+
+        // WIP v13
+        IReadOnlyDictionary<int, Zone> Zones(IServiceProvider sp);
 
         #endregion
 
@@ -84,7 +88,7 @@ namespace ToSic.Eav.Caching
         /// <param name="entities">List of entities which need to be updates.</param>
         /// <param name="log">Log object to log what's happening.</param>
         /// <returns>The updated <see cref="AppState"/> or null, if it wasn't in the cache so didn't need updating.</returns>
-        AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log);
+        AppState Update(IServiceProvider sp, IAppIdentity app, IEnumerable<int> entities, ILog log);
 
         [PrivateApi("wip 12.10+")]
         void Add(AppState appState);
@@ -99,7 +103,7 @@ namespace ToSic.Eav.Caching
         /// </summary>
         /// <param name="app">App identifier.</param>
         /// <param name="primaryLanguage">Primary language, lower case.</param>
-        void Load(IAppIdentity app, string primaryLanguage);
+        void Load(IServiceProvider sp, IAppIdentity app, string primaryLanguage);
 
         #endregion
 
