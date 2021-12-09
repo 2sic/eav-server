@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			}
 
             Log.Add("Purging all Zones");
-            Deps.AppsCache/* State.Cache*/.PurgeZones();
+            Deps.SystemManager.PurgeZoneList();
             return wrapLog("done", ImportXml(zoneId, appId, doc));
 		}
 

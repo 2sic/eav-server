@@ -26,12 +26,10 @@ namespace ToSic.Eav.Apps.ImportExport
                 ITargetTypes metaTargetTypes,
                 SystemManager systemManager,
                 IAppStates appStates,
-                IAppsCache appsCache,
                 IGlobalTypes globalTypes
                 )
             {
                 GlobalTypes = globalTypes;
-                AppsCache = appsCache;
                 _importerLazy = importerLazy;
                 _dbDataForNewApp = dbDataForNewApp;
                 _dbDataForAppImport = dbDataForAppImport;
@@ -40,7 +38,6 @@ namespace ToSic.Eav.Apps.ImportExport
                 AppStates = appStates;
                 SystemManager = systemManager;
             }
-            internal readonly IAppsCache AppsCache;
             internal readonly Lazy<Import> _importerLazy;
             internal readonly Lazy<DbDataController> _dbDataForNewApp;
             internal readonly Lazy<DbDataController> _dbDataForAppImport;

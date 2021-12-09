@@ -193,7 +193,7 @@ namespace ToSic.Eav.Repository.Efc
         private void PurgeAppCacheIfReady()
         {
             Log.Call($"{_purgeAppCacheOnSave}")(null);
-            if(_purgeAppCacheOnSave) _appsCache/* State.Cache*/.Purge(this);
+            if(_purgeAppCacheOnSave) _appsCache.Purge(this);
         }
 
         #endregion
