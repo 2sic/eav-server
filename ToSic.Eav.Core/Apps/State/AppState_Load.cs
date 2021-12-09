@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
@@ -26,7 +25,7 @@ namespace ToSic.Eav.Apps
         [PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
         public void Load(Action loader)
         {
-            var wrapLog = Log.Call(message: $"zone/app:{ZoneId}/{AppId}", useTimer: true);
+            var wrapLog = Log.Call(message: $"zone/app:{ZoneId}/{AppId} - Hash: {GetHashCode()}", useTimer: true);
 
             try
             {
@@ -40,17 +39,21 @@ namespace ToSic.Eav.Apps
                     loader.Invoke();
                     CacheResetTimestamp();
                     EnsureNameAndFolderInitialized();
-                    if(!FirstLoadCompleted) FirstLoadCompleted = true;
+                    if (!FirstLoadCompleted) FirstLoadCompleted = true;
 
                     inLockLog($"done - dynamic load count: {DynamicUpdatesCount}");
                 }
+            }
+            catch (Exception ex)
+            {
+                Log.Add("Error");
+                Log.Exception(ex);
             }
             finally
             {
                 // set loading to false again, to ensure that AppState won't accept changes
                 Loading = false;
 
-                // detach logs again, to prevent memory leaks because the global/cached app-state shouldn't hold on to temporary log objects
                 wrapLog?.Invoke("ok");
             }
         }

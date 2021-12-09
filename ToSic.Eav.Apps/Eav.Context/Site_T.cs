@@ -36,14 +36,12 @@ namespace ToSic.Eav.Context
 
         public abstract string UrlRoot { get; }
 
-        //public virtual bool IsMultiZone => false;
-
         /// <inheritdoc />
         [PrivateApi] public abstract string AppsRootPhysical { get; }
 
         [PrivateApi] public abstract string AppsRootPhysicalFull { get; }
 
-        [PrivateApi] public abstract string AppAssetsLinkTemplate { get; }// => AppsRootPhysical; //  + "/" + LinkPaths.AppFolderPlaceholder;
+        [PrivateApi] public abstract string AppAssetsLinkTemplate { get; }
 
         [PrivateApi]
         public abstract string ContentPath { get; }

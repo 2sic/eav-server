@@ -30,8 +30,7 @@ namespace ToSic.Eav.Apps.Run
         /// <inheritdoc />
         public ISite SiteOfApp(int appId)
         {
-            var wrapLog = Log.Call<ISite>($"{appId}");
-            Log.Add("TenantId not found. Must be in search mode, will try to find correct portalsettings");
+            var wrapLog = Log.Call<ISite>($"{appId}", "Must look for SiteId");
             var appIdentifier = AppStates.Identity(null, appId);
             var tenant = SiteOfZone(appIdentifier.ZoneId);
             return wrapLog(null, tenant);

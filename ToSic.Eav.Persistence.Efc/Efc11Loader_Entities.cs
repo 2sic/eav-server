@@ -66,7 +66,6 @@ namespace ToSic.Eav.Persistence.Efc
             Log.Add($"Found {entityIdsFound.Count} raw entities in {sqlTime.ElapsedMilliseconds}ms - chunked into {entityIdChunks.Count} chunks");
 
             sqlTime.Start();
-            //var chunkedRelationships = entityIdChunks.Select(idList => GetRelationshipChunk(appId, idList));
             // Load relationships in batches / chunks
             var allChunks = entityIdChunks.Select(idList => GetRelationshipChunk(appId, idList))
                 .SelectMany(chunk => chunk)

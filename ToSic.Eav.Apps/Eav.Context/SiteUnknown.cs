@@ -8,8 +8,6 @@ namespace ToSic.Eav.Context
     {
         private const string Unknown = "unknown - please implement the ISite interface to get real values";
 
-        internal const int UnknownSiteId = Constants.NullId;
-
         public SiteUnknown(WarnUseOfUnknown<SiteUnknown> warn) { }
 
         /// <summary>
@@ -17,7 +15,7 @@ namespace ToSic.Eav.Context
         /// </summary>
         internal const int UnknownZoneId = 2;
 
-        public int Id { get; private set; } = UnknownSiteId;
+        public int Id { get; private set; } = Constants.NullId;
 
         public string Url => Unknown;
 

@@ -14,6 +14,7 @@ namespace ToSic.Eav
 
         public const int NullId = -2742;
         public const int IdNotInitialized = -999;
+        public const int SiteIdUnknownWip = IdNotInitialized;
         public const string UrlNotInitialized = "url-not-initialized";
 
         public const string CultureSystemKey = "Culture";
