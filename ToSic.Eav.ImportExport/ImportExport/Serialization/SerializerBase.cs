@@ -60,19 +60,38 @@ namespace ToSic.Eav.Serialization
 
         protected IContentType GetContentType(string staticName)
         {
+            var wrapLog = Log.Call<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}");
+
+            // There is a complex lookup we must protocol, to better detect issues, which is why we assemble a message
+            var msg = "";
+
             // If local type is preferred, use the App accessor,
             // this will also check the global types internally
             // ReSharper disable once InvertIf
             if (PreferLocalAppTypes)
             {
                 var type = App.GetContentType(staticName);
-                if (type != null) return type;
+                if (type != null) return wrapLog(msg + "app: found", type);
+                msg += "app: not found, ";
             }
 
-            return _globalTypes.FindContentType(staticName) // note: will return null if not found
-                       ?? (_types != null
-                           ? _types.FirstOrDefault(t => t.StaticName == staticName)
-                           : App.GetContentType(staticName));
+            var globalType = _globalTypes.FindContentType(staticName); // note: will return null if not found
+            
+            if (globalType != null) return wrapLog(msg + "global: found", globalType);
+            msg += "global: not found, ";
+
+            if (_types != null)
+            {
+                msg += "local-list: ";
+                globalType = _types.FirstOrDefault(t => t.StaticName == staticName);
+            }
+            else
+            {
+                msg += "app: ";
+                globalType = App.GetContentType(staticName);
+            }
+
+            return wrapLog(msg + (globalType == null ? "not " : "") + "found", globalType);
         }
 
 
