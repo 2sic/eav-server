@@ -108,7 +108,7 @@ namespace ToSic.Eav.Caching
         public AppState Get(IServiceProvider sp, IAppIdentity app) => GetOrBuild(sp, app);
 
         /// <inheritdoc />
-        public AppState Get(IServiceProvider sp, int appId) => Get(sp, GetIdentity(sp, appId));
+        public AppState Get(IServiceProvider sp, int appId) => Get(sp, GetIdentity(sp, null, appId));
 
 
         /// <inheritdoc />
