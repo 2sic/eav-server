@@ -127,7 +127,7 @@ namespace ToSic.Eav.Persistence.Efc
             try
             {
                 // Get all Entities in the 2SexyContent-App scope
-                var dbEntity = GetRawEntities(new int[0], appId, false, "2SexyContent-App");
+                var dbEntity = GetRawEntities(Array.Empty<int>(), appId, false, AppLoadConstants.TypeAppConfig);
                 if (!dbEntity.Any()) return wrapLog("not in db", nullTuple);
 
                 // Get the first one as it should be the one containing the App-Configuration
