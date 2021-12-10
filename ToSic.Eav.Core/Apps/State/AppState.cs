@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Types;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps
 {
@@ -18,9 +15,8 @@ namespace ToSic.Eav.Apps
     {
 
         [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-        public AppState(IAppStates appStates, ParentAppState parentApp, IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
+        public AppState(ParentAppState parentApp, IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
         {
-            _appStates = appStates;
             ParentApp = parentApp;
             Log.Add($"AppState for App {app.AppId}");
             Init(app, new CodeRef(), parentLog);
@@ -33,9 +29,6 @@ namespace ToSic.Eav.Apps
 
             Relationships = new AppRelationshipManager(this);
         }
-        [PrivateApi("Accessor to other apps - replaces the static State object")]
-        private readonly IAppStates _appStates;
-
         [PrivateApi("WIP v13")]
         public readonly ParentAppState ParentApp;
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
@@ -20,15 +21,16 @@ namespace ToSic.Eav.Apps
     {
         public readonly AppThingsIdentifiers Target;
 
-        public AppState Parent { get; }
+        private AppState Parent { get; }
+        private AppState Site { get; }
+        private AppState Global { get; }
 
-        private readonly IAppStates _appStates;
-
-        internal AppStateStackCache(AppState parent, AppThingsIdentifiers target, IAppStates appStates)
+        internal AppStateStackCache(AppState parent, AppState site, AppState global, AppThingsIdentifiers target)
         {
             Target = target;
             Parent = parent;
-            _appStates = appStates;
+            Site = site; // appStates.Get(appStates.Identity(Parent.ZoneId, null));
+            Global = global; // appStates.Get(appStates.Identity(null, null));
         }
 
         /// <summary>
@@ -67,29 +69,29 @@ namespace ToSic.Eav.Apps
         /// Get the stack of Settings which applies to this app
         /// </summary>
         /// <returns></returns>
-        internal List<KeyValuePair<string, IPropertyLookup>> FullStack()
-            => (_fullStackSynched ?? (_fullStackSynched = BuildCachedStack())).Value;
+        internal List<KeyValuePair<string, IPropertyLookup>> FullStack(IServiceProvider sp)
+            => (_fullStackSynched ?? (_fullStackSynched = BuildCachedStack(sp))).Value;
         private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> _fullStackSynched;
 
-        private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack()
+        private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack(IServiceProvider sp)
         {
-            var primaryAppState = _appStates.Get(_appStates.Identity(Parent.ZoneId, null));
-            var globalAppState = _appStates.Get(_appStates.Identity(null, null));
+            //var primaryAppState = _appStates.Get(_appStates.Identity(Parent.ZoneId, null));
+            //var globalAppState = _appStates.Get(_appStates.Identity(null, null));
 
             var cachedStack =
                 new SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>(
-                    new CacheExpiringMultiSource(Parent, primaryAppState, globalAppState),
-                    () => RebuildStack(primaryAppState, globalAppState));
+                    new CacheExpiringMultiSource(Parent, Site, Global),
+                    () => RebuildStack(sp, Site, Global));
             return cachedStack;
         }
 
 
-        private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(AppState primaryAppState, AppState globalAppState) //, AppThingsToStack appThingType)
+        private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(IServiceProvider sp, AppState primaryAppState, AppState globalAppState)
         {
             var appThingType = Target.Target;
             var appStack = this;
-            var siteStack = primaryAppState?.SettingsInApp.Get(appThingType);
-            var global = globalAppState?.SettingsInApp.Get(appThingType);
+            var siteStack = primaryAppState?.SettingsInApp(sp).Get(appThingType);
+            var global = globalAppState?.SettingsInApp(sp).Get(appThingType);
             var sources = new List<KeyValuePair<string, IPropertyLookup>>
             {
                 // App level

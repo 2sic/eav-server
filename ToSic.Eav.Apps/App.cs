@@ -27,6 +27,7 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public class AppDependencies
         {
+            internal readonly IServiceProvider ServiceProvider;
             internal readonly IZoneMapper ZoneMapper;
             internal readonly ISite Site;
             internal readonly IAppStates AppStates;
@@ -34,12 +35,14 @@ namespace ToSic.Eav.Apps
             internal readonly Lazy<GlobalQueries> GlobalQueriesLazy;
 
             public AppDependencies(
+                IServiceProvider serviceProvider,
                 IZoneMapper zoneMapper,
                 ISite site,
                 IAppStates appStates,
                 DataSourceFactory dataSourceFactory,
                 Lazy<GlobalQueries> globalQueriesLazy)
             {
+                ServiceProvider = serviceProvider;
                 ZoneMapper = zoneMapper;
                 Site = site;
                 AppStates = appStates;

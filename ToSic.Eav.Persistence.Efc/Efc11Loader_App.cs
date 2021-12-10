@@ -39,7 +39,7 @@ namespace ToSic.Eav.Persistence.Efc
                 throw new Exception("Can't find global app - which is required to build any other apps. ");
             var parent = new ParentAppState(globalApp, true);
 
-            var appState = Update(new AppState(_appStates, parent, appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
+            var appState = Update(new AppState(parent, appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
 
             return wrapLog("ok", appState);
         }

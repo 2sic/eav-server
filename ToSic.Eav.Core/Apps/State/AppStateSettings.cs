@@ -20,8 +20,11 @@ namespace ToSic.Eav.Apps
         {
             Parent = parent;
 
+            var site = appStates.Get(appStates.Identity(Parent.ZoneId, null));
+            var global = appStates.Get(appStates.Identity(null, null));
+
             Stacks = ConfigurationConstants.AppThingsArray
-                .Select(at => new AppStateStackCache(parent, at, appStates))
+                .Select(at => new AppStateStackCache(parent, site, global, at))
                 .ToArray();
         }
 
