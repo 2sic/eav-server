@@ -22,13 +22,15 @@ namespace ToSic.Eav.Apps
         {
             _appStates = appStates;
             ParentApp = parentApp;
-            //_globalTypes = globalTypes;
             Log.Add($"AppState for App {app.AppId}");
             Init(app, new CodeRef(), parentLog);
             AppGuidName = appGuidName;
-            CacheResetTimestamp();  // do this very early, as this number is needed elsewhere
+            
+            // Init the cache when it starts, because this number is needed in other places
+            // Important: we must offset the first time stamp by 1 tick (1/100th nanosecond)
+            // Because very small apps are loaded so quickly that otherwise it won't change the number after loading
+            CacheResetTimestamp("init", offset: -1);  // do this very early, as this number is needed elsewhere
 
-	        Index = new Dictionary<int, IEntity>();
             Relationships = new AppRelationshipManager(this);
         }
         [PrivateApi("Accessor to other apps - replaces the static State object")]

@@ -12,12 +12,12 @@ namespace ToSic.Eav.Apps
         /// The simple list of <em>all</em> entities, used everywhere
         /// </summary>
         public IImmutableList<IEntity> List
-            => _list?.List ?? (_list = new SynchronizedEntityList(this, () => Index.Values.ToImmutableArray())).List;
-        private SynchronizedEntityList _list;
+            => ListSyncInternal?.List ?? (ListSyncInternal = new SynchronizedEntityList(this, () => Index.Values.ToImmutableArray())).List;
+        internal SynchronizedEntityList ListSyncInternal;
 
         IEnumerable<IEntity> IEntitiesSource.List => List;
 
-        internal Dictionary<int, IEntity> Index { get; }
+        internal Dictionary<int, IEntity> Index { get; } = new Dictionary<int, IEntity>();
 
 
 
@@ -32,7 +32,6 @@ namespace ToSic.Eav.Apps
             if (newEntity.RepositoryId == 0)
                 throw new Exception("Entities without real ID not supported yet");
 
-            //CacheResetTimestamp(); 
             RemoveObsoleteDraft(newEntity, log);
             Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
             MapDraftToPublished(newEntity, publishedId, log);
@@ -53,7 +52,6 @@ namespace ToSic.Eav.Apps
                 throw new Exception("trying to init metadata, but not in loading state. set that first!");
             Log.Add("remove all items");
             Index.Clear();
-            //CacheResetTimestamp(); 
             _metadataManager.Reset();
         }
 

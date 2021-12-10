@@ -10,6 +10,12 @@ namespace ToSic.Eav.Apps
 
         public AppState Parent { get; }
 
+        /// <summary>
+        /// TODO: Warning - in rare cases this could be a problem
+        /// Because we're storing an appStates indefinitely, which has a service provider etc. which was created at the time this app was created
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="appStates"></param>
         internal AppStateSettings(AppState parent, IAppStates appStates)
         {
             Parent = parent;

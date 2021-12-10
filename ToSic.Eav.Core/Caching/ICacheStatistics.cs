@@ -9,10 +9,10 @@ namespace ToSic.Eav.Caching
     {
         long FirstTimestamp { get; }
         
-        Stack<long> History { get; }
+        Stack<CacheHistory> History { get; }
         
         int ResetCount { get; }
 
-        void Update(long newTimeStamp);
+        void Update(long newTimeStamp, int itemCount, string message);
     }
 }

@@ -178,6 +178,11 @@ namespace ToSic.Eav.Caching
         /// <inheritdoc />
 		public IAppIdentity GetIdentity(IServiceProvider sp, int? zoneId = null, int? appId = null)
         {
+            // If we're retrieving the preset-id, it could be that data isn't fully loaded
+            // So we must return the identity without trying to index the cache
+            if (zoneId == Constants.PresetZoneId || appId == Constants.PresetAppId)
+                return new AppIdentity(Constants.PresetZoneId, Constants.PresetAppId);
+
             var zones = Zones(sp);
 			var resultZoneId = zoneId ?? (appId.HasValue
 			                       ? zones.Single(z => z.Value.Apps.Any(a => a.Key == appId.Value)).Key

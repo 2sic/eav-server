@@ -14,11 +14,18 @@ namespace ToSic.Eav.Apps
         /// <inheritdoc />
         public long CacheTimestamp { get; private set; }
 
-        private void CacheResetTimestamp()
+        private void CacheResetTimestamp(string message, int offset = 0)
         {
-            CacheTimestamp = DateTime.Now.Ticks;
-            CacheStatistics.Update(CacheTimestamp);
-            Log.Add($"cache reset #{CacheStatistics.ResetCount} to stamp {CacheTimestamp} = {CacheTimestamp.ToReadable()}");
+            // Update time stamp
+            // In very rare, fast cases the timestamp is unmodified
+            // In such cases we must make sure it's incremented by at least 1
+            var prevTimeStamp = CacheTimestamp;
+            CacheTimestamp = DateTime.Now.Ticks + offset;
+            if (prevTimeStamp == CacheTimestamp) CacheTimestamp++;
+
+            CacheStatistics.Update(CacheTimestamp, Index?.Count ?? 0, message);
+            Log.Add($"cache reset to stamp {CacheTimestamp} = {CacheTimestamp.ToReadable()}");
+            Log.Add($"Stats: ItemCount: {Index?.Count}; ResetCount: {CacheStatistics.ResetCount}  Message: '{message}'");
         }
 
 

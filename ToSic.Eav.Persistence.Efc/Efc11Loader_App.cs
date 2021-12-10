@@ -47,7 +47,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <inheritdoc />
         public AppState AppState(int appId, bool ensureInitialized)
         {
-            var wrapLog = Log.Call<AppState>($"{appId}, {ensureInitialized}");
+            var wrapLog = Log.Call<AppState>($"{appId}, {ensureInitialized}", useTimer: true);
 
             var appState = LoadBasicAppState(appId);
             if (!ensureInitialized) return wrapLog("won't check initialized", appState);

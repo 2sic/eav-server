@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps
                     // only if loading is true will the AppState object accept changes
                     Loading = true;
                     loader.Invoke();
-                    CacheResetTimestamp();
+                    CacheResetTimestamp("load complete");
                     EnsureNameAndFolderInitialized();
                     if (!FirstLoadCompleted) FirstLoadCompleted = true;
 
