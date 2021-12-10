@@ -36,13 +36,15 @@ namespace ToSic.Eav.WebApi
             public Lazy<ConvertToEavLight> EntToDicLazy { get; }
             public Lazy<QueryInfo> QueryInfoLazy { get; }
             public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
+            public Lazy<MetadataBackend> MetadataBackendLazy { get; }
 
             public Dependencies(Lazy<AppManager> appManagerLazy,
                 Lazy<AppRuntime> appReaderLazy,
                 QueryBuilder queryBuilder,
                 Lazy<ConvertToEavLight> entToDicLazy,
                 Lazy<QueryInfo> queryInfoLazy,
-                Lazy<DataSourceCatalog> dataSourceCatalogLazy)
+                Lazy<DataSourceCatalog> dataSourceCatalogLazy,
+                Lazy<MetadataBackend> metadataBackendLazy)
             {
                 AppManagerLazy = appManagerLazy;
                 AppReaderLazy = appReaderLazy;
@@ -50,6 +52,7 @@ namespace ToSic.Eav.WebApi
                 EntToDicLazy = entToDicLazy;
                 QueryInfoLazy = queryInfoLazy;
                 DataSourceCatalogLazy = dataSourceCatalogLazy;
+                MetadataBackendLazy = metadataBackendLazy;
             }
         }
 
@@ -89,13 +92,24 @@ namespace ToSic.Eav.WebApi
             var reader = _dependencies.AppReaderLazy.Value.Init(appId, false, Log);
             var qDef = reader.Queries.Get(id.Value);
 
+            var metadataBackend = _dependencies.MetadataBackendLazy.Value;
+
             #region Deserialize some Entity-Values
 
             query.Pipeline = qDef.Entity.AsDictionary();
             query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
 
             foreach (var part in qDef.Parts)
-                query.DataSources.Add(part.AsDictionary());
+            {
+                var partDto = part.AsDictionary();
+                // TODO: STV find, is it acceptable to return "Metadata" as new property of DataSource item.
+                // TODO: STV find, is it acceptable to use hardcoded values "guid", "EntityGuid" for parameters.
+                // TODO: STV find, do we need to remove "For" because of redundant data.
+                var metadata = metadataBackend.Get(appId, 4, "guid", partDto["EntityGuid"].ToString());
+
+                partDto.Add("Metadata", metadata);
+                query.DataSources.Add(partDto);
+            }
 
             #endregion
 
