@@ -42,9 +42,10 @@ namespace ToSic.Eav.WebApi
         public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null)
         {
             var wrapLog = Log.Call<MetadataListDto>();
-            IEnumerable<IEntity> entityList = null;
 
             var appState = _appStates.Get(appId);
+
+            IEnumerable<IEntity> entityList = null;
 
             var mdFor = new JsonMetadataFor()
             {

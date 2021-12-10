@@ -12,6 +12,7 @@ using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Dto;
 using Connection = ToSic.Eav.DataSources.Queries.Connection;
@@ -102,11 +103,8 @@ namespace ToSic.Eav.WebApi
             foreach (var part in qDef.Parts)
             {
                 var partDto = part.AsDictionary();
-                // TODO: STV find, is it acceptable to return "Metadata" as new property of DataSource item.
-                // TODO: STV find, is it acceptable to use hardcoded values "guid", "EntityGuid" for parameters.
-                // TODO: STV find, do we need to remove "For" because of redundant data.
-                var metadata = metadataBackend.Get(appId, 4, "guid", partDto["EntityGuid"].ToString());
 
+                var metadata = reader.AppState.GetMetadata((int) TargetTypes.Entity, part.Guid)?.Select(m => m.AsDictionary());
                 partDto.Add("Metadata", metadata);
                 query.DataSources.Add(partDto);
             }
