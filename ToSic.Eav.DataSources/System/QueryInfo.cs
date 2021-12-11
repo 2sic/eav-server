@@ -45,12 +45,7 @@ namespace ToSic.Eav.DataSources.System
         private const string StreamKey = "Stream";
         private const string StreamField = "StreamName";
 	    private const string QueryStreamsContentType = "EAV_Query_Stream";
-	    
-        // 2dm: this is for a later feature...
-	    // ReSharper disable once UnusedMember.Local
-        private const string QueryCtGuid = "11001010-251c-eafe-2792-00000000000!";
-
-
+        
         /// <summary>
         /// The content-type name
         /// </summary>

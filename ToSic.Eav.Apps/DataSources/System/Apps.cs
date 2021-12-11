@@ -44,11 +44,6 @@ namespace ToSic.Eav.DataSources.System
         private const string ZoneIdField = "ZoneId";
         private const string AppsContentTypeName = "EAV_Apps";
 
-        // 2dm: this is for a later feature...
-	    // ReSharper disable once UnusedMember.Local
-	    private const string AppsCtGuid = "11001010-251c-eafe-2792-000000000002";
-
-
 	    /// <summary>
 	    /// The attribute whose value will be filtered
 	    /// </summary>

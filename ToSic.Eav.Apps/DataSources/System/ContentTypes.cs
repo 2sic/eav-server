@@ -48,10 +48,6 @@ namespace ToSic.Eav.DataSources.System
 	    //private const string TryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
 	    private const string ContentTypeTypeName = "EAV_ContentTypes";
 	    
-        // 2dm: this is for a later feature...
-	    // ReSharper disable once UnusedMember.Local
-        private const string ContentTypeCtGuid = "11001010-251c-eafe-2792-000000000003"; // must check before using
-
 
         /// <summary>
         /// The app id

@@ -40,11 +40,6 @@ namespace ToSic.Eav.DataSources.System
 
 	    private const string ZoneContentTypeName = "EAV_Zones";
 
-	    // 2dm: this is for a later feature...
-	    // ReSharper disable once UnusedMember.Local
-        private const string ZoneCtGuid = "11001010-251c-eafe-2792-000000000001";
-
-        
 		#endregion
 
         /// <inheritdoc />
