@@ -159,7 +159,7 @@ namespace ToSic.Eav.Repository.Efc
                 _appId = appId.Value;
             }
             else
-                _appId = SqlDb.ToSicEavApps.First(a => a.Name == Constants.DefaultAppName).AppId;
+                _appId = SqlDb.ToSicEavApps.First(a => a.Name == Constants.DefaultAppGuid).AppId;
 
             return this;
         }

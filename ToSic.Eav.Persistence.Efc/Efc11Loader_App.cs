@@ -30,7 +30,7 @@ namespace ToSic.Eav.Persistence.Efc
             _logHistory.Add("app-state-loader", Log);
 
             var wrapLog = Log.Call<AppState>($"AppId: {appId}");
-            var appIdentity =_appStates.Identity(null, appId);
+            var appIdentity =_appStates.IdentityOfApp(appId);
             var appGuidName = _appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
 
             // New v13 - use global app instead
@@ -57,7 +57,7 @@ namespace ToSic.Eav.Persistence.Efc
             // So if we initialize it, then things will result in duplicate settings/resources/configuration
             // Note that to ensure the Content app works, we must perform the same check again in the 
             // API Endpoint which will edit this data
-            if (appState.AppGuidName == Constants.DefaultAppName) return wrapLog("default app, don't auto-init", appState);
+            if (appState.AppGuidName == Constants.DefaultAppGuid) return wrapLog("default app, don't auto-init", appState);
 
             var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log)
                 ? LoadBasicAppState(appId)

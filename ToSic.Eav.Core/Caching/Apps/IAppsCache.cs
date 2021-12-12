@@ -22,22 +22,22 @@ namespace ToSic.Eav.Caching
         /// <returns>The <see cref="AppState"/> of the app.</returns>
         AppState Get(IServiceProvider sp, IAppIdentity app);
 
-        /// <summary>
-        /// Retrieve an app from the cache
-        /// </summary>
-        /// <param name="appId">App id if zone unknown.</param>
-        /// <returns>The <see cref="AppState"/> of the app.</returns>
-        AppState Get(IServiceProvider sp, int appId);
+        ///// <summary>
+        ///// Retrieve an app from the cache
+        ///// </summary>
+        ///// <param name="appId">App id if zone unknown.</param>
+        ///// <returns>The <see cref="AppState"/> of the app.</returns>
+        //AppState Get(IServiceProvider sp, int appId);
 
         #endregion
 
         #region Look up IDs
 
-        /// <summary>
-        /// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
-        /// </summary>
-        /// <returns>An <see cref="IAppIdentity"/> with the correct IDs</returns>
-        IAppIdentity GetIdentity(IServiceProvider sp, int? zoneId = null, int? appId = null);
+        ///// <summary>
+        ///// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
+        ///// </summary>
+        ///// <returns>An <see cref="IAppIdentity"/> with the correct IDs</returns>
+        //IAppIdentity GetIdentity(IServiceProvider sp, int/*?*/ zoneId /*= null*/, int/*?*/ appId /*= null*/);
 
         #endregion
 
@@ -49,7 +49,11 @@ namespace ToSic.Eav.Caching
         //IReadOnlyDictionary<int, Zone> Zones { get; }
 
         // WIP v13
+        [PrivateApi]
         IReadOnlyDictionary<int, Zone> Zones(IServiceProvider sp);
+
+        [PrivateApi]
+        int ZoneIdOfApp(IServiceProvider sp, int appId);
 
         #endregion
 

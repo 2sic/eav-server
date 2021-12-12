@@ -25,7 +25,8 @@ namespace ToSic.Eav.WebApi.Dto
 
     public class ContextResourceWithApp: WebResourceDto
     {
-        [JsonProperty(NullValueHandling = Ignore)] public AppIdentity DefaultApp { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public IAppIdentity DefaultApp { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public IAppIdentity PrimaryApp { get; set; }
     }
 
     public class ContextAppDto: WebResourceDto

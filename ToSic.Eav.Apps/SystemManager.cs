@@ -71,7 +71,7 @@ namespace ToSic.Eav.Apps
         public void PurgeApp(int appId)
         {
             var wrapLog = Log.Call($"{appId}");
-            Purge(_appStates.Identity(null, appId));
+            Purge(_appStates.IdentityOfApp(appId));
             wrapLog.Invoke("ok");
         }
 

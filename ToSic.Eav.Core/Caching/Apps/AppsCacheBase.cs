@@ -26,33 +26,38 @@ namespace ToSic.Eav.Caching
         /// </summary>
         private IRepositoryLoader GetNewRepoLoader(IServiceProvider sp) => sp.Build<IRepositoryLoader>();
 
-     //   /// <inheritdoc />
-	    //public abstract IReadOnlyDictionary<int, Zone> Zones { get; }
-
         public abstract IReadOnlyDictionary<int, Zone> Zones(IServiceProvider sp);
 
         [PrivateApi]
         protected IReadOnlyDictionary<int, Zone> LoadZones(IServiceProvider sp)
         {
+            // Load from DB (this will also ensure that Primary Apps are created)
             var realZones = GetNewRepoLoader(sp).Zones();
+
+            // Add the Preset-Zone to the list - still WIP v13
             try
             {
                 var presetZone = new Zone(Constants.PresetZoneId,
-                                          Constants.PresetAppId,
-                                          new Dictionary<int, string> { { Constants.PresetAppId, Constants.PresetName } },
-                                          new List<Data.DimensionDefinition>() { new Data.DimensionDefinition() {
-                                              Active = true,
-                                              DimensionId = 0,
-                                              EnvironmentKey = "en-us",
-                                              Key = "en-us",
-                                              Name = "English",
-                                              Parent = null } });
-                var opened = realZones.ToDictionary(z => z.Key, z => z.Value);
-                opened.Add(Constants.PresetZoneId, presetZone);
-                return new ReadOnlyDictionary<int, Zone>(opened);
+                    Constants.PresetAppId,
+                    Constants.PresetAppId,
+                    new Dictionary<int, string> { { Constants.PresetAppId, Constants.PresetName } },
+                    new List<Data.DimensionDefinition>()
+                    {
+                        new Data.DimensionDefinition()
+                        {
+                            Active = true,
+                            DimensionId = 0,
+                            EnvironmentKey = "en-us",
+                            Key = "en-us",
+                            Name = "English",
+                            Parent = null
+                        }
+                    });
+                realZones.Add(Constants.PresetZoneId, presetZone);
             }
             catch { /* ignore */ }
-            return realZones;
+
+            return new ReadOnlyDictionary<int, Zone>(realZones);
         }
 
         #region Cache-Keys
@@ -107,8 +112,8 @@ namespace ToSic.Eav.Caching
         /// <inheritdoc />
         public AppState Get(IServiceProvider sp, IAppIdentity app) => GetOrBuild(sp, app);
 
-        /// <inheritdoc />
-        public AppState Get(IServiceProvider sp, int appId) => Get(sp, GetIdentity(sp, null, appId));
+        ///// <inheritdoc />
+        //public AppState Get(IServiceProvider sp, int appId) => Get(sp, GetIdentity(sp, null, appId));
 
 
         /// <inheritdoc />
@@ -175,25 +180,33 @@ namespace ToSic.Eav.Caching
 
 
 
-        /// <inheritdoc />
-		public IAppIdentity GetIdentity(IServiceProvider sp, int? zoneId = null, int? appId = null)
+  //      /// <inheritdoc />
+		//public IAppIdentity GetIdentity(IServiceProvider sp, int/*?*/ zoneId /*= null*/, int/*?*/ appId /*= null*/)
+  //      {
+  //          // If we're retrieving the preset-id, it could be that data isn't fully loaded
+  //          // So we must return the identity without trying to index the cache
+  //          if (zoneId == Constants.PresetZoneId || appId == Constants.PresetAppId)
+  //              return new AppIdentity(Constants.PresetZoneId, Constants.PresetAppId);
+
+  //          var zones = Zones(sp);
+		//	var resultZoneId = zoneId;
+  //              //?? (appId.HasValue
+		//	             //          ? ZoneIdOfApp(sp, appId.Value) // zones.Single(z => z.Value.Apps.Any(a => a.Key == appId.Value)).Key
+		//	             //          : Constants.DefaultZoneId);
+
+		//	var resultAppId = appId; 
+  //        //      .HasValue
+		//						  //? zones[resultZoneId].Apps.Single(a => a.Key == appId.Value).Key
+		//						  //: zones[resultZoneId].DefaultAppId;
+
+		//	return new AppIdentity(resultZoneId, resultAppId);
+  //      }
+
+        [PrivateApi]
+        public int ZoneIdOfApp(IServiceProvider sp, int appId)
         {
-            // If we're retrieving the preset-id, it could be that data isn't fully loaded
-            // So we must return the identity without trying to index the cache
-            if (zoneId == Constants.PresetZoneId || appId == Constants.PresetAppId)
-                return new AppIdentity(Constants.PresetZoneId, Constants.PresetAppId);
-
             var zones = Zones(sp);
-			var resultZoneId = zoneId ?? (appId.HasValue
-			                       ? zones.Single(z => z.Value.Apps.Any(a => a.Key == appId.Value)).Key
-			                       : Constants.DefaultZoneId);
-
-			var resultAppId = appId.HasValue
-								  ? zones[resultZoneId].Apps.Single(a => a.Key == appId.Value).Key
-								  : zones[resultZoneId].DefaultAppId;
-
-			return new AppIdentity(resultZoneId, resultAppId);
+            return zones.Single(z => z.Value.Apps.Any(a => a.Key == appId)).Key;
         }
-
     }
 }

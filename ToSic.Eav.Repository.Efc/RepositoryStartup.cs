@@ -27,7 +27,9 @@ namespace ToSic.Eav.Repository.Efc
             services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Singleton);
 #endif
 
-            services.TryAddTransient<IRepositoryLoader, Efc11Loader>();
+            // Inner loader for use of the main RepositoryLoader
+            services.TryAddTransient<Efc11Loader, Efc11Loader>();
+            services.TryAddTransient<IRepositoryLoader, EfcRepositoryLoader>();
 
             services.TryAddTransient<DbDataController>();
 

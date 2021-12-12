@@ -65,9 +65,9 @@ namespace ToSic.Eav.Apps
             // so we must try to fix this now
             if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Folder))
             {
-                // check if it's the default app
-                if (AppGuidName == Constants.DefaultAppName)
-                    Name = Folder = Constants.ContentAppName;
+                // check if it's the default app or the #SiteApp (v13)
+                if (AppGuidName == Constants.DefaultAppGuid) Name = Folder = Constants.ContentAppName;
+                else if (AppGuidName == Constants.PrimaryAppGuid) Name = Folder = Constants.PrimaryAppName;
                 else
                 {
                     Log.Add("Trying to load Name/Folder from App package entity");
@@ -79,8 +79,11 @@ namespace ToSic.Eav.Apps
             
             // if the folder still isn't know (either no data found, or the Name existed)
             // try one last time
-            if (string.IsNullOrEmpty(Folder) && AppGuidName == Constants.DefaultAppName)
-                Folder = Constants.ContentAppName;
+            if (string.IsNullOrEmpty(Folder))
+            {
+                if (AppGuidName == Constants.DefaultAppGuid) Folder = Constants.ContentAppName;
+                else if (AppGuidName == Constants.PrimaryAppGuid) Folder = Constants.PrimaryAppName; // #SiteApp v13
+            }
 
             callLog($"Name: {Name}, Folder:{Folder}");
         }

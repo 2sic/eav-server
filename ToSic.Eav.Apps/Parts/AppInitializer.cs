@@ -69,11 +69,17 @@ namespace ToSic.Eav.Apps.Parts
             var eavAppName = AppState.AppGuidName;
 
             // v10.25 from now on the DefaultApp can also have settings and resources
-            var folder = eavAppName == Constants.DefaultAppName
-                ? Constants.ContentAppFolder
-                : string.IsNullOrEmpty(newAppName)
+            string folder;
+            if (eavAppName == Constants.DefaultAppGuid)
+                folder = Constants.ContentAppFolder;
+            else if (eavAppName == Constants.PrimaryAppGuid || eavAppName == Constants.PrimaryAppName)
+                folder = Constants.PrimaryAppName;
+            else
+                folder = string.IsNullOrEmpty(newAppName)
                     ? eavAppName
-                    : string.IsNullOrEmpty(newAppName) ? eavAppName : RemoveIllegalCharsFromPath(newAppName);
+                    : string.IsNullOrEmpty(newAppName)
+                        ? eavAppName
+                        : RemoveIllegalCharsFromPath(newAppName);
 
             var addList = new List<AddItemTask>();
             if (appConfig == null)

@@ -48,11 +48,11 @@ namespace ToSic.Eav.DataSources.Queries
 
 	        try
             {
-                var app = _appStates.Identity(null, appId);
+                var app = _appStates.IdentityOfApp(appId);
                 var source = _dataSourceFactory.GetPublishing(app);
-                var appEntities = source.List; // [Constants.DefaultStreamName].List;
+                var appEntities = source.List;
 
-	            // use findRepo, as it uses the cache, which gives the list of all items
+                // use findRepo, as it uses the cache, which gives the list of all items
 	            var dataQuery = appEntities.FindRepoId(queryEntityId);
 	            var result = new QueryDefinition(dataQuery, appId, Log);
                 wrapLog(null);
@@ -134,7 +134,7 @@ namespace ToSic.Eav.DataSources.Queries
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
                 var assemblyAndType = dataQueryPart.DataSourceType;
 
-                var appIdentity = _appStates.Identity(null, queryDef.AppId);
+                var appIdentity = _appStates.IdentityOfApp(queryDef.AppId);
                 var dataSource = _dataSourceFactory.GetDataSource(assemblyAndType, appIdentity, lookUps: partConfig);
 	            dataSource.Guid = dataQueryPart.Guid;
 

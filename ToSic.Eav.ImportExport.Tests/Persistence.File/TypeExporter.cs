@@ -19,7 +19,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         {
             var test = new SpecsTestExportSerialize();
 
-            var loader = Build<Efc11Loader>();
+            var loader = Build<IRepositoryLoader>();
             var app = loader.AppState(test.AppId, false);
 
 

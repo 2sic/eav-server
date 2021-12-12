@@ -31,7 +31,7 @@ namespace ToSic.Eav.Apps.Run
         public ISite SiteOfApp(int appId)
         {
             var wrapLog = Log.Call<ISite>($"{appId}", "Must look for SiteId");
-            var appIdentifier = AppStates.Identity(null, appId);
+            var appIdentifier = AppStates.IdentityOfApp(appId);
             var tenant = SiteOfZone(appIdentifier.ZoneId);
             return wrapLog(null, tenant);
         }

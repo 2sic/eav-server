@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Xml;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;
 using ToSic.Testing.Shared;
 
@@ -26,7 +27,7 @@ namespace ToSic.Eav.ImportExport.Tests
         public void Xml_SerializeItemOnHome()
         {
             var test = new SpecsTestExportSerialize();
-            var app = Build<Efc11Loader>().AppState(test.AppId, false);
+            var app = Build<IRepositoryLoader>().AppState(test.AppId, false);
             //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = Build<IAppStates>().Languages(test.ZoneId)
                 .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
@@ -43,7 +44,7 @@ namespace ToSic.Eav.ImportExport.Tests
         {
             var test = new SpecsTestExportSerialize();
             var appId = test.AppId;
-            var app = Build<Efc11Loader>().AppState(appId, false);
+            var app = Build<IRepositoryLoader>().AppState(appId, false);
             var languageMap = Build<IAppStates>().Languages(test.ZoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app, Log);
 

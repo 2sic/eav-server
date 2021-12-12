@@ -183,7 +183,7 @@ namespace ToSic.Eav.Apps.ImportExport
             else
             {
                 Log.Add("will do content import");
-                appId = _initialAppId ?? _appStates.DefaultAppId(_zoneId); // new ZoneRuntime().Init(_zoneId, Log).DefaultAppId;
+                appId = _initialAppId ?? _appStates.DefaultAppId(_zoneId);
 
                 if (importer.IsCompatible(imp.XmlDoc))
                     HandlePortalFilesFolder(appDirectory);

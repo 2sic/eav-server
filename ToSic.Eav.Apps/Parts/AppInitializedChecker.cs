@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps.Parts
                 return callLog("ok", false);
 
             // something is missing, so we must build them
-            ServiceProvider.Build<AppInitializer>() // (ServiceProvider)
+            ServiceProvider.Build<AppInitializer>()
                 .Init(appIdentity, log)
                 .InitializeApp(appName);
             return callLog(null, true);

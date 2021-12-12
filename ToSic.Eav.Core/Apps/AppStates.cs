@@ -32,13 +32,21 @@ namespace ToSic.Eav.Apps
         public AppState Get(IAppIdentity app) => _cache.Get(_serviceProvider, app);
 
         /// <inheritdoc />
-        public AppState Get(int appId) => _cache.Get(_serviceProvider, appId);
+        public AppState Get(int appId) => _cache.Get(_serviceProvider, IdentityOfApp(appId));
 
-        public IAppIdentity Identity(int? zoneId, int? appId) => _cache.GetIdentity(_serviceProvider, zoneId, appId);
+        //public IAppIdentity Identity(int zoneId, int appId) => new AppIdentity(zoneId, appId); // _cache.GetIdentity(_serviceProvider, zoneId, appId);
+
+        public IAppIdentity IdentityOfApp(int appId) =>
+            new AppIdentity(_cache.ZoneIdOfApp(_serviceProvider, appId), appId); // _cache.GetIdentity(_serviceProvider, _cache.ZoneIdOfApp(_serviceProvider, appId), appId);
+        public IAppIdentity IdentityOfPrimary(int zoneId) => new AppIdentity(zoneId, PrimaryAppId(zoneId));
+
+        public IAppIdentity IdentityOfDefault(int zoneId) => new AppIdentity(zoneId, DefaultAppId(zoneId));
 
         public string AppIdentifier(int zoneId, int appId) => _cache.Zones(_serviceProvider)[zoneId].Apps[appId];
 
         public int DefaultAppId(int zoneId) => _cache.Zones(_serviceProvider)[zoneId].DefaultAppId;
+
+        public int PrimaryAppId(int zoneId) => _cache.Zones(_serviceProvider)[zoneId].PrimaryAppId;
 
         public IDictionary<int, string> Apps(int zoneId) => _cache.Zones(_serviceProvider)[zoneId].Apps;
 

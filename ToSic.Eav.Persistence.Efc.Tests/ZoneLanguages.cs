@@ -34,7 +34,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         }
 
 
-        private IReadOnlyDictionary<int, Zone> _zones;
+        private IDictionary<int, Zone> _zones;
         private int _defaultAppId;
         private Dictionary<int, string> _appsInHomeZone;
 

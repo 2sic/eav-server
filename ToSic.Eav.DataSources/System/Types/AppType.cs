@@ -7,5 +7,6 @@
         IsDefault,
         Folder,
         IsHidden,
+        IsPrimary,
     }
 }

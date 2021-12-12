@@ -108,6 +108,7 @@ namespace ToSic.Eav.DataSources.System
                     {AppType.Folder.ToString(), appObj?.Folder ?? "" },
                     {AppType.IsHidden.ToString(), appObj?.Hidden ?? false },
 	                {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
+	                {AppType.IsPrimary.ToString(), app.Key == zone.PrimaryAppId},
 	            };
                 if(error != null)
                     appEnt["Error"] = error;

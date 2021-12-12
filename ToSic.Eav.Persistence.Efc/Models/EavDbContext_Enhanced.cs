@@ -19,9 +19,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
         /// </summary>
 		public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            //realBaseEvent = base.SaveChanges;
             if (AlternateSaveHandler != null)
-                return AlternateSaveHandler(acceptAllChangesOnSuccess, base.SaveChanges /*SaveChangesAndLogEverything*/);
+                return AlternateSaveHandler(acceptAllChangesOnSuccess, base.SaveChanges);
             throw new Exception("the save should never happen without an alternate save handler registered");
         }
 

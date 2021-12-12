@@ -22,7 +22,7 @@ namespace ToSic.Eav.Repositories
         AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null);
 
 
-        IReadOnlyDictionary<int, Zone> Zones();
+        IDictionary<int, Zone> Zones();
 
         string PrimaryLanguage { get; set; }
     }

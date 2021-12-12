@@ -76,6 +76,7 @@ namespace ToSic.Eav.DataSources.System
 	                {ZoneType.TenantId.ToString(), site?.Id},
 	                {ZoneType.TenantName.ToString(), site?.Name},
                     {ZoneType.DefaultAppId.ToString(), zone.DefaultAppId },
+                    {ZoneType.PrimaryAppId.ToString(), zone.PrimaryAppId },
                     {ZoneType.IsCurrent.ToString(), zone.ZoneId == ZoneId },
                     {ZoneType.AppCount.ToString(), zone.Apps.Count }
 	            };

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -13,16 +12,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Add a new App
         /// </summary>
-        internal ToSicEavApps AddApp(ToSicEavZones zone, string name = Constants.DefaultAppName)
+        internal ToSicEavApps AddApp(ToSicEavZones zone, string guidName)
         {
+            // Use provided zone or if null, use the one which was pre-initialized for this DbApp Context
             zone = zone ?? DbContext.SqlDb.ToSicEavZones.SingleOrDefault(z => z.ZoneId == DbContext.ZoneId);
 
             var newApp = new ToSicEavApps 
             {
-                Name = name,
+                Name = guidName,
                 Zone = zone
             };
-            DbContext.DoAndSave(() => DbContext.SqlDb.Add(newApp)); // save is required to ensure AppId is created - required in EnsureSharedAttributeSets();
+            // save is required to ensure AppId is created - required for follow-up changes like EnsureSharedAttributeSets();
+            DbContext.DoAndSave(() => DbContext.SqlDb.Add(newApp)); 
 
             return newApp;
         }
@@ -76,14 +77,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             );
         }
 
-        ///// <summary>
-        ///// Deprecated code since 2020-11-09, use the other call instead. 
-        ///// </summary>
-        ///// <param name="appId"></param>
-        //private void DeleteAppWithStoredProcedure(int appId)
-        //{
-        //    DbContext.SqlDb.Database.ExecuteSqlCommand("ToSIC_EAV_DeleteApp @p0", appId);
-        //}
 
         /// <summary>
         /// Replacement for SQL call to ToSIC_EAV_DeleteApp
