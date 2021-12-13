@@ -18,6 +18,8 @@ namespace ToSic.Eav.WebApi.Dto
 
         public string DeleteWarning { get; set; }
 
+        public string Icon { get; set; }
+
         /// <summary>
         /// Marks the recommendation that it should be created as empty
         /// </summary>
@@ -32,10 +34,12 @@ namespace ToSic.Eav.WebApi.Dto
         {
             Id = type.StaticName;
             Name = type.Name;
+            var typeDescription = type.Metadata.Description;
             // Note: we cannot use GetBestTitle here, because the Content-type of the type is not really known
             // Because it's usually an inherited type (bug/weakness in the shared types model as of v12, WIP)
             // So we must use .Value
-            Title = type.Metadata.Description?.Value<string>(ContentTypes.ContentTypeMetadataLabel) ?? type.Name;
+            Title = typeDescription?.Value<string>(ContentTypes.ContentTypeMetadataLabel) ?? type.Name;
+            Icon = typeDescription?.Value<string>(ContentTypes.ContentTypeMetadataIcon) ?? type.Name;
             Count = count;
             Debug = debugMessage;
             DeleteWarning = recommendation?.Value<string>(Decorators.MetadataForDeleteWarningField);

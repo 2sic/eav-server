@@ -131,7 +131,7 @@ namespace ToSic.Eav.WebApi
             // Find Content-Types marked with `MetadataFor` this specific target
             // For example Types which are marked to decorate an App
             var initialTypes =
-                (FindSelfDeclaringTypes(appState, targetType, key) ?? new List<Tuple<IContentType, IEntity>>())
+                (TypesWhichDeclareTheyAreForTheTarget(appState, targetType, key) ?? new List<Tuple<IContentType, IEntity>>())
                 .Select(set => new MetadataRecommendationDto(set.Item1, set.Item2, 1, "Self-Declaring"));
 
             // Check if this object-type has a specific list of Content-Types which it expects
@@ -182,7 +182,7 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        private List<Tuple<IContentType, IEntity>> FindSelfDeclaringTypes(AppState appState, int targetType, string key)
+        private List<Tuple<IContentType, IEntity>> TypesWhichDeclareTheyAreForTheTarget(AppState appState, int targetType, string key)
         {
             var wrapLog = Log.Call<List<Tuple<IContentType, IEntity>>>();
             // for path comparisons, make sure we have the slashes cleaned
@@ -196,7 +196,6 @@ namespace ToSic.Eav.WebApi
                 })
                 .Where(set =>
                 {
-                    var ct = set.Item1;
                     var decor = set.Item2;
                     if (decor == null) return false;
                     if (decor.GetBestValue<int>(Decorators.MetadataForTargetTypeField, Array.Empty<string>()) != targetType)
