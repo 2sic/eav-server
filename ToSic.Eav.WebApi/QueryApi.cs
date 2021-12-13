@@ -100,11 +100,16 @@ namespace ToSic.Eav.WebApi
             query.Pipeline = qDef.Entity.AsDictionary();
             query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
 
+            var converter = _dependencies.EntToDicLazy.Value;
+            converter.Type.Serialize = true;
+            converter.Type.WithDescription = true;
+            converter.WithGuid = true;
+
             foreach (var part in qDef.Parts)
             {
                 var partDto = part.AsDictionary();
-                var metadata = reader.AppState.GetMetadata((int)TargetTypes.Entity, part.Guid)?.Select(m => m.AsDictionary());
-                partDto.Add("Metadata", metadata);
+                var metadata = reader.AppState.GetMetadata((int)TargetTypes.Entity, part.Guid);
+                partDto.Add("Metadata", converter.Convert(metadata));
                 query.DataSources.Add(partDto);
             }
 
