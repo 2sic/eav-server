@@ -15,8 +15,8 @@ namespace ToSic.Eav.DataFormats.EavLight
             // ...only if these are not already existing with this name in the entity itself as an internal value
             if (rules?.SerializeId ?? true)
             {
-                if (entityValues.ContainsKey(IdField)) entityValues.Remove(IdField);
-                entityValues.Add(IdField, entity.EntityId);
+                if (entityValues.ContainsKey(Attributes.IdNiceName)) entityValues.Remove(Attributes.IdNiceName);
+                entityValues.Add(Attributes.IdNiceName, entity.EntityId);
             }
 
             // if rules.SerializeGuid are not set, then respect WithGuid

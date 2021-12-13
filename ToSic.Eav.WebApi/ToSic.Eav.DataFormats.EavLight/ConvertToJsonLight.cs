@@ -18,10 +18,6 @@ namespace ToSic.Eav.DataFormats.EavLight
     [PrivateApi("Hide Implementation")]
     public partial class ConvertToEavLight : HasLog<ConvertToEavLight>, IConvertToEavLight
     {
-        public static string JsonKeyMetadataFor = "For"; // temp, don't know where to put this ATM
-        public static string JsonKeyMetadata = "Metadata";
-        public static string IdField = "Id";
-
         #region Constructor / DI
 
         public class Dependencies

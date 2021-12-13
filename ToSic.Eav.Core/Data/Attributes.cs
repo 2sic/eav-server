@@ -29,7 +29,16 @@ namespace ToSic.Eav.Data
 
         public const string ModifiedNiceName = "Modified";
         public const string CreatedNiceName = "Created";
+
+        public const string IdNiceName = "Id";
+
+        public const string TargetNiceName = "Target";
         public const string GuidNiceName = "Guid";
+        public const string NumberNiceName = "Number";
+        public const string StringNiceName = "String";
+
+        public const string JsonKeyMetadataFor = "For";
+        public const string JsonKeyMetadata = "Metadata";
 
         #endregion
 
