@@ -34,7 +34,9 @@ namespace ToSic.Eav.Obsolete
                 // Don't log to normal warnings if it's been reported already
                 if (countGeneral > MaxGeneralToLog || countSpecific > MaxSpecificToLog) return;
 
-                Log.Add($"Obsolete: {longId} is deprecated since '{since}' and will be removed in '{till}'");
+                var msg = $"Obsolete: {longId} is deprecated since '{since}' "
+                          + (till == null ? "and has been removed." : $"and will be removed in {till}.");
+                Log.Add(msg);
                 Log.Add($"For further information, check: {link}");
 
                 try
@@ -43,6 +45,11 @@ namespace ToSic.Eav.Obsolete
                     {
                         Log.Add("Additional Info:");
                         addMore.Invoke(Log);
+                    }
+                    else
+                    {
+                        Log.Add(
+                            "No additional info - probably because the code is being called from a static object, which doesn't know about the context.");
                     }
                 }
                 catch (Exception ex)
