@@ -14,17 +14,6 @@ namespace ToSic.Eav.Data
     public class ContentTypeMetadata : MetadataOf<string>
     {
 
-        #region constructors
-
-        ///// <summary>
-        ///// Used in cases where the metadata-provider is already known
-        ///// </summary>
-        ///// <param name="typeId">type id / static-name</param>
-        ///// <param name="metaProvider">remote / deferred metadata provider</param>
-        //public ContentTypeMetadata(string typeId, IHasMetadataSource metaProvider)
-        //    : base((int)TargetTypes.ContentType, typeId, metaProvider)
-        //{ }
-
         /// <summary>
         /// Used in cases where the metadata-provider is already known
         /// </summary>
@@ -33,18 +22,6 @@ namespace ToSic.Eav.Data
         public ContentTypeMetadata(string typeId, Func<IHasMetadataSource> metaSourceFinder, string targetIdentifier)
             : base((int)TargetTypes.ContentType, typeId, metaSourceFinder, targetIdentifier)
         { }
-
-        ///// <summary>
-        ///// Used in cases where the metadata provider isn't known, but the IDs are known
-        ///// </summary>
-        ///// <param name="typeId">type id / static-name</param>
-        ///// <param name="sourceZoneId">the zone which has the metadata</param>
-        ///// <param name="sourceAppId">the app which has the metadata</param>
-        //public ContentTypeMetadata(string typeId, int sourceZoneId, int sourceAppId)
-        //    : base((int)TargetTypes.ContentType, typeId, sourceZoneId, sourceAppId)
-        //{ }
-
-        #endregion
 
         /// <summary>
         /// Description <see cref="IEntity"/> metadata of this content-type.

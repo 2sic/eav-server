@@ -3,13 +3,14 @@ using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.WebApi.Dto
 {
     public class MetadataRecommendationDto: IEquatable<MetadataRecommendationDto>
     {
         public string Id { get; }
+
+        public string Title { get; }
 
         public string Name { get; }
 
@@ -29,10 +30,14 @@ namespace ToSic.Eav.WebApi.Dto
         {
             Id = type.StaticName;
             Name = type.Name;
+            // Note: we cannot use GetBestTitle here, because the Content-type of the type is not really known
+            // Because it's usually an inherited type (bug/weakness in the shared types model as of v12, WIP)
+            // So we must use .Value
+            Title = type.Metadata.Description?.Value<string>(ContentTypes.ContentTypeMetadataLabel) ?? type.Name;
             Count = count;
             Debug = debugMessage;
 
-            // Mark empty if possible
+            // Mark empty if possible - so it has no attributes, and it has a decorator to support this
             if (!type.Attributes.Any() && type.Metadata.HasType(Decorators.SaveEmptyDecoratorId))
                 CreateEmpty = true;
         }
