@@ -9,6 +9,11 @@ namespace ToSic.Eav.Metadata
     public enum TargetTypes
     {
         /// <summary>
+        /// Undefined Type - included for completeness
+        /// </summary>
+        Undefined = 0,
+
+        /// <summary>
         /// Things that are not used as Metadata. This is the default for most Entities.
         /// </summary>
         None = 1,

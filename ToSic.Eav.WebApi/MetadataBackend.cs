@@ -11,6 +11,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Types;
 using ToSic.Eav.WebApi.Dto;
 using static System.StringComparison;
+using static ToSic.Eav.Metadata.Decorators;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
@@ -188,24 +189,35 @@ namespace ToSic.Eav.WebApi
             // for path comparisons, make sure we have the slashes cleaned
             var keyForward = (key ??"").ForwardSlash().Trim();
 
-            var recommendedTypes = appState.ContentTypes
+            var allTypes = appState.ContentTypes;
+            var recommendedTypes = allTypes
                 .Select(ct =>
                 {
-                    var decor = ct.Metadata.OfType(Decorators.MetadataForDecoratorId).FirstOrDefault();
-                    return new Tuple<IContentType, IEntity>(ct, decor);
-                })
+                    var decor = ct.Metadata
+                        .OfType(MetadataForDecoratorId)
+                        .FirstOrDefault(dec => dec.GetBestValue<int>(MetadataForTargetTypeField, Array.Empty<string>()) == targetType);
+                    return new
+                    {
+                        Found = decor != null,
+                        Type = ct, 
+                        Decorator = decor
+                    };
+                });
+
+            // Filter out these without recommendations
+            recommendedTypes = recommendedTypes
+                .Where(set => set.Found);
+
+            recommendedTypes = recommendedTypes
                 .Where(set =>
                 {
-                    var decor = set.Item2;
-                    if (decor == null) return false;
-                    if (decor.GetBestValue<int>(Decorators.MetadataForTargetTypeField, Array.Empty<string>()) != targetType)
-                        return false;
+                    var decor = set.Decorator;
 
-                    var targetName = decor.GetBestValue<string>(Decorators.MetadataForTargetNameField, Array.Empty<string>()) ?? "";
+                    var targetName = decor.GetBestValue<string>(MetadataForTargetNameField, Array.Empty<string>()) ?? "";
 
                     switch (targetType)
                     {
-                        case 0:
+                        case (int)TargetTypes.Undefined:
                         case (int)TargetTypes.None:
                             return false;
                         case (int)TargetTypes.Attribute:
@@ -227,16 +239,21 @@ namespace ToSic.Eav.WebApi
                         default: return false;
                     }
                 }).ToList();
-            return wrapLog($"{recommendedTypes.Count}", recommendedTypes);
+
+            var result = recommendedTypes
+                .Select(set => new Tuple<IContentType, IEntity>(set.Type, set.Decorator))
+                .ToList();
+
+            return wrapLog($"{result.Count}", result);
         }
 
         private List<MetadataRecommendationDto> GetRecommendationsOfMetadata(AppState appState, IMetadataOf md, string debugMessage)
         {
             var wrapLog = Log.Call<List<MetadataRecommendationDto>>();
 
-            var recommendations = md.OfType(Decorators.MetadataExpectedDecoratorId).FirstOrDefault();
+            var recommendations = md.OfType(MetadataExpectedDecoratorId).FirstOrDefault();
             if (recommendations == null) return wrapLog("no recommendations", null);
-            var config = recommendations.GetBestValue<string>(Decorators.MetadataExpectedTypesField, new string[0]);
+            var config = recommendations.GetBestValue<string>(MetadataExpectedTypesField, new string[0]);
             if (string.IsNullOrWhiteSpace(config)) return wrapLog("no values in config", null);
             var result = config
                 .Split(',')
