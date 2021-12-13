@@ -25,6 +25,7 @@
         public static string MetadataForDecoratorId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
         public static string MetadataForTargetTypeField = "TargetType";
         public static string MetadataForTargetNameField = "TargetName";
+        public static string MetadataForDeleteWarningField = "DeleteWarning";
 
         // This marks entities which should allow saving empty
         public static string SaveEmptyDecoratorId = "8c78dabf-e0ad-4c26-b750-48138ecb8a39";

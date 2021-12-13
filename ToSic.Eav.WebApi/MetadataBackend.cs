@@ -121,7 +121,7 @@ namespace ToSic.Eav.WebApi
             {
                 var type = appState.GetContentType(contentType);
                 if (type == null) return wrapLog("existing, not found", null);
-                return wrapLog("use existing name", new[] { new MetadataRecommendationDto(type, -1, "Use preset type") });
+                return wrapLog("use existing name", new[] { new MetadataRecommendationDto(type, null, -1, "Use preset type") });
             }
 
             // Only support TargetType which is a predefined
@@ -131,8 +131,8 @@ namespace ToSic.Eav.WebApi
             // Find Content-Types marked with `MetadataFor` this specific target
             // For example Types which are marked to decorate an App
             var initialTypes =
-                (FindSelfDeclaringTypes(appState, targetType, key) ?? new List<IContentType>())
-                .Select(ct => new MetadataRecommendationDto(ct, 1, "Self-Declaring"));
+                (FindSelfDeclaringTypes(appState, targetType, key) ?? new List<Tuple<IContentType, IEntity>>())
+                .Select(set => new MetadataRecommendationDto(set.Item1, set.Item2, 1, "Self-Declaring"));
 
             // Check if this object-type has a specific list of Content-Types which it expects
             // For example a attribute which says "I want this kind of Metadata"
@@ -182,21 +182,27 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        private List<IContentType> FindSelfDeclaringTypes(AppState appState, int targetType, string key)
+        private List<Tuple<IContentType, IEntity>> FindSelfDeclaringTypes(AppState appState, int targetType, string key)
         {
-            var wrapLog = Log.Call<List<IContentType>>();
+            var wrapLog = Log.Call<List<Tuple<IContentType, IEntity>>>();
             // for path comparisons, make sure we have the slashes cleaned
             var keyForward = (key ??"").ForwardSlash().Trim();
 
             var recommendedTypes = appState.ContentTypes
-                .Where(ct =>
+                .Select(ct =>
                 {
                     var decor = ct.Metadata.OfType(Decorators.MetadataForDecoratorId).FirstOrDefault();
+                    return new Tuple<IContentType, IEntity>(ct, decor);
+                })
+                .Where(set =>
+                {
+                    var ct = set.Item1;
+                    var decor = set.Item2;
                     if (decor == null) return false;
-                    if (decor.GetBestValue<int>(Decorators.MetadataForTargetTypeField, new string[0]) != targetType)
+                    if (decor.GetBestValue<int>(Decorators.MetadataForTargetTypeField, Array.Empty<string>()) != targetType)
                         return false;
 
-                    var targetName = decor.GetBestValue<string>(Decorators.MetadataForTargetNameField, new string[0]) ?? "";
+                    var targetName = decor.GetBestValue<string>(Decorators.MetadataForTargetNameField, Array.Empty<string>()) ?? "";
 
                     switch (targetType)
                     {
@@ -252,7 +258,7 @@ namespace ToSic.Eav.WebApi
             var type = appState.GetContentType(name);
             return type == null 
                 ? wrapLog("name not found", null) 
-                : wrapLog("use existing name", new MetadataRecommendationDto(type, count, debugMessage));
+                : wrapLog("use existing name", new MetadataRecommendationDto(type, null, count, debugMessage));
         }
     }
 }

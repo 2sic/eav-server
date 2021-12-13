@@ -16,6 +16,8 @@ namespace ToSic.Eav.WebApi.Dto
 
         public int Count { get; set; }
 
+        public string DeleteWarning { get; set; }
+
         /// <summary>
         /// Marks the recommendation that it should be created as empty
         /// </summary>
@@ -26,7 +28,7 @@ namespace ToSic.Eav.WebApi.Dto
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Debug { get; set; }
 
-        public MetadataRecommendationDto(IContentType type, int count, string debugMessage)
+        public MetadataRecommendationDto(IContentType type, IEntity recommendation, int count, string debugMessage)
         {
             Id = type.StaticName;
             Name = type.Name;
@@ -36,6 +38,7 @@ namespace ToSic.Eav.WebApi.Dto
             Title = type.Metadata.Description?.Value<string>(ContentTypes.ContentTypeMetadataLabel) ?? type.Name;
             Count = count;
             Debug = debugMessage;
+            DeleteWarning = recommendation?.Value<string>(Decorators.MetadataForDeleteWarningField);
 
             // Mark empty if possible - so it has no attributes, and it has a decorator to support this
             if (!type.Attributes.Any() && type.Metadata.HasType(Decorators.SaveEmptyDecoratorId))
