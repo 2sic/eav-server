@@ -12,9 +12,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var saveJson = UseJson(newEnt);
             var contentTypeId = UseJson(newEnt)
                 ? RepoIdForJsonEntities
-                : newEnt.Type.ContentTypeId > 0
-                    ? newEnt.Type.ContentTypeId
-                    : DbContext.AttribSet.GetId(newEnt.Type.StaticName); // todo: we probably always have the id, so we could drop this only use of GetId
+                : newEnt.Type.ContentTypeId; 
+            
+            // 2021-12-14 2dm disable this, because the comment suggest this is leftover code which does nothing
+            // TODO: IF IT WORKS clean up the code and also remove the GetId as noted below
+            //: newEnt.Type.ContentTypeId > 0
+            //        ? newEnt.Type.ContentTypeId
+            //        : DbContext.AttribSet.GetId(newEnt.Type.StaticName); // todo: we probably always have the id, so we could drop this only use of GetId
 
             List<ToSicEavAttributes> attributes = null;
             if (!saveJson)

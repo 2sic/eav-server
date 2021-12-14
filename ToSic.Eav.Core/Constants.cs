@@ -60,6 +60,7 @@ namespace ToSic.Eav
         /// AppId where MetaData (Entities) are stored.
         /// </summary>
         public static readonly int MetaDataAppId = 1;
+        [PrivateApi] public static readonly IAppIdentity GlobalIdentity = new AppIdentity(DefaultZoneId, MetaDataAppId);
 
 
 

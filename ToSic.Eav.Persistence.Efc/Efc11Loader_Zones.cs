@@ -24,6 +24,7 @@ namespace ToSic.Eav.Persistence.Efc
                     z => z.ZoneId,
                     z =>
                     {
+                        // On the default zone, the primary & default are the same
                         var primary = z.ZoneId == Constants.DefaultZoneId
                             ? Constants.MetaDataAppId
                             : z.ToSicEavApps.FirstOrDefault(a => a.Name == Constants.PrimaryAppGuid)?.AppId ?? -1;

@@ -29,8 +29,8 @@ namespace ToSic.Eav.Apps
         {
             Target = target;
             Parent = parent;
-            Site = site; // appStates.Get(appStates.Identity(Parent.ZoneId, null));
-            Global = global; // appStates.Get(appStates.Identity(null, null));
+            Site = site;
+            Global = global;
         }
 
         /// <summary>
@@ -75,9 +75,6 @@ namespace ToSic.Eav.Apps
 
         private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack(IServiceProvider sp)
         {
-            //var primaryAppState = _appStates.Get(_appStates.Identity(Parent.ZoneId, null));
-            //var globalAppState = _appStates.Get(_appStates.Identity(null, null));
-
             var cachedStack =
                 new SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>(
                     new CacheExpiringMultiSource(Parent, Site, Global),

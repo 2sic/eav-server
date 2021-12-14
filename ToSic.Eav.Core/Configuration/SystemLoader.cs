@@ -11,7 +11,6 @@ using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Configuration
 {
@@ -88,7 +87,7 @@ namespace ToSic.Eav.Configuration
         /// All content-types available in Reflection; will cache on the Global.List after first scan
         /// </summary>
         /// <returns></returns>
-        public void LoadRuntimeConfiguration()
+        private void LoadRuntimeConfiguration()
         {
             var log = new Log($"{LogNames.Eav}.Global");
             log.Add("Load Global Configurations");
