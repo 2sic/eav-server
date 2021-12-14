@@ -27,25 +27,18 @@ namespace ToSic.Eav.Configuration
         {
             _appsCache = appsCache;
             _presetLoader = presetLoader;
-            _features = features;
+            Features = features;
             _logHistory = logHistory;
             logHistory.Add(GlobalTypes.LogHistoryGlobalTypes, Log);
             _fingerprint = fingerprint;
             _runtime = runtime;
-
-#pragma warning disable 618
-#if NETFRAMEWORK
-            if (Features.FeaturesFromDi == null)
-                Features.FeaturesFromDi = features;
-#endif
-#pragma warning restore 618
         }
 
         private readonly IFingerprint _fingerprint;
         private readonly IRuntime _runtime;
         private readonly IAppsCache _appsCache;
         private readonly IPresetLoader _presetLoader;
-        private readonly IFeaturesInternal _features;
+        public readonly IFeaturesInternal Features;
         private readonly LogHistory _logHistory;
 
         #endregion
@@ -60,13 +53,10 @@ namespace ToSic.Eav.Configuration
             _startupAlreadyRan = true;
 
             // Build the cache of all system-types. Must happen before everything else
-            //_globalTypes.StartUp(Log);
-            // TODO: Wip - MUST MOVE UP AFTERWARDS
             LoadPresetApp();
 
             // Now do a normal reload of configuration and features
             Reload();
-
         }
 
         /// <summary>
@@ -164,8 +154,8 @@ namespace ToSic.Eav.Configuration
                 }
             }
             catch { /* ignore */ }
-            _features.Stored = feats ?? new FeatureList();
-            _features.CacheTimestamp = DateTime.Now.Ticks;
+            Features.Stored = feats ?? new FeatureList();
+            Features.CacheTimestamp = DateTime.Now.Ticks;
         }
 
 
