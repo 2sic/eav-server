@@ -9,5 +9,6 @@ namespace ToSic.Eav.Apps.Ui
         public bool IsHidden;
         public IDictionary<string, object> Properties;
         public string Thumbnail;
+        public bool IsDefault; // new, v13
     }
 }

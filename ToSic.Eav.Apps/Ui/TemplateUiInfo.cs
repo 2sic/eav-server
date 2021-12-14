@@ -7,5 +7,6 @@
         public string ContentTypeStaticName;
         public bool IsHidden;
         public string Thumbnail;
+        public bool IsDefault; // new, v13
     }
 }
