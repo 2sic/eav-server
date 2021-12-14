@@ -4,20 +4,21 @@ using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Persistence.File
 {
     // Experimental #PresetInAppState
-    public class FileAppStateLoaderWIP: HasLog<FileAppStateLoaderWIP>
+    public class PresetAppStateLoader: HasLog<IPresetLoader>, IPresetLoader
     {
-        private readonly IAppStates _appStates;
+        //private readonly IAppStates _appStates;
         private readonly IGlobalTypes _globalTypes;
         #region Constructor
-        public FileAppStateLoaderWIP(IAppStates appStates, LogHistory logHistory, IGlobalTypes globalTypes) : base($"{LogNames.Eav}.FasLdr")
+        public PresetAppStateLoader(/*IAppStates appStates,*/ LogHistory logHistory, IGlobalTypes globalTypes) : base($"{LogNames.Eav}.FasLdr")
         {
             logHistory.Add(GlobalTypes.LogHistoryGlobalTypes, Log);
-            _appStates = appStates;
+            //_appStates = appStates;
             _globalTypes = globalTypes;
         }
 
@@ -57,9 +58,8 @@ namespace ToSic.Eav.Persistence.File
                     //_sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app, _dbContext));
                     // TODO: this might fail, as we don't have a list of Metadata
                     app.InitMetadata(new Dictionary<int, string>().ToImmutableDictionary(a => a.Key, a => a.Value));
-                    //var nameAndFolder = PreLoadAppPath(app.AppId);
-                    app.Name = Constants.PresetName; // nameAndFolder?.Item1;
-                    app.Folder = Constants.PresetName; // nameAndFolder?.Item2;
+                    app.Name = Constants.PresetName;
+                    app.Folder = Constants.PresetName;
                 }
                 else
                     Log.Add("skipping metadata load");

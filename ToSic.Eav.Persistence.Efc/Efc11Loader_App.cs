@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Apps;
@@ -138,7 +139,7 @@ namespace ToSic.Eav.Persistence.Efc
                 Log.Add("app Entity found - this json: " + json);
                 var serializer = ServiceProvider.Build<IDataDeserializer>();
                 // TODO: #42
-                serializer.Initialize(appId, ReflectionTypes.FakeCache.Values, null, Log);
+                serializer.Initialize(appId, new List<IContentType>(), null, Log);
                 if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
                     return wrapLog("can't deserialize", nullTuple);
                 var path = appEntity.Value<string>(AppLoadConstants.FieldFolder);

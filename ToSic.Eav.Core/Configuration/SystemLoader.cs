@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Types;
@@ -19,10 +21,13 @@ namespace ToSic.Eav.Configuration
 
         #region Constructor / DI
 
-        public SystemLoader(IGlobalTypes globalTypes, IFingerprint fingerprint, IRuntime runtime, /*IAppsCache appsCache,*/ IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
+        public SystemLoader(IGlobalTypes globalTypes, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache,
+            IPresetLoader presetLoader,
+            IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
         {
             _globalTypes = globalTypes;
-            //_appsCache = appsCache;
+            _appsCache = appsCache;
+            _presetLoader = presetLoader;
             _features = features;
             _logHistory = logHistory;
             logHistory.Add(GlobalTypes.LogHistoryGlobalTypes, Log);
@@ -40,7 +45,8 @@ namespace ToSic.Eav.Configuration
         private readonly IFingerprint _fingerprint;
         private readonly IRuntime _runtime;
         private readonly IGlobalTypes _globalTypes;
-        //private readonly IAppsCache _appsCache;
+        private readonly IAppsCache _appsCache;
+        private readonly IPresetLoader _presetLoader;
         private readonly IFeaturesInternal _features;
         private readonly LogHistory _logHistory;
 
@@ -60,6 +66,21 @@ namespace ToSic.Eav.Configuration
 
             // Now do a normal reload of configuration and features
             Reload();
+
+            // TODO: Wip - MUST MOVE UP AFTERWARDS
+            LoadPresetApp();
+        }
+
+        /// <summary>
+        /// 2021-11-16 2dm - experimental, working on moving global/preset data into a normal AppState #PresetInAppState
+        /// </summary>
+        public void LoadPresetApp()
+        {
+            var wrapLog = Log.Call();
+            Log.Add("Try to load global app-state");
+            var appState = _presetLoader.AppState(Constants.PresetAppId);
+            _appsCache.Add(appState);
+            wrapLog("ok");
         }
 
         private bool _startupAlreadyRan;
@@ -145,8 +166,6 @@ namespace ToSic.Eav.Configuration
                 }
             }
             catch { /* ignore */ }
-            //Features.CacheTimestamp = DateTime.Now.Ticks;
-            //Features.Stored = feats ?? new FeatureList();
             _features.Stored = feats ?? new FeatureList();
             _features.CacheTimestamp = DateTime.Now.Ticks;
         }
