@@ -93,7 +93,7 @@ namespace ToSic.Eav.Apps.Parts
                         {"Folder", folder},
                         {"AllowTokenTemplates", "True"},
                         {"AllowRazorTemplates", "True"},
-                        {"Version", "00.00.11"}, // note: update this to the latest 2sxc version just so it's easy to spot when it was auto-created
+                        {"Version", "00.00.13"}, // note: update this to the latest 2sxc version just so it's easy to spot when it was auto-created
                         {"OriginalId", ""}
                     },
                     false));

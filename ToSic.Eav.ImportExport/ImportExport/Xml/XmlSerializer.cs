@@ -8,7 +8,6 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Types;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace

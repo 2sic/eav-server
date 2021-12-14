@@ -52,18 +52,6 @@ namespace ToSic.Eav.Apps
             wrapLog.Invoke("ok");
         }
 
-        ///// <summary>
-        ///// Purge the cache of one app
-        ///// </summary>
-        ///// <param name="appId"></param>
-        ///// <param name="log">log which will then log that it purged this</param>
-        //public static void Purge(int appId, ILog log)
-        //{
-        //    var wrapLog = log?.Call($"{appId}");
-        //    Purge(SystemRuntime.ZoneIdOfApp(appId), appId, log: log);
-        //    wrapLog?.Invoke("ok");
-        //}
-
         /// <summary>
         /// Purge the cache of one app
         /// </summary>
