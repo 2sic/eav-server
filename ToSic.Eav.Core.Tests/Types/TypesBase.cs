@@ -5,7 +5,7 @@ using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Core.Tests.Types
 {
-    public abstract class TypesBase: ContentType
+    public abstract class TypesBase // : ContentType
     {
         //protected const ValueTypes Str = ValueTypes.String;
         //protected const ValueTypes Bln = ValueTypes.Boolean;
