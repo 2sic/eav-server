@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources.Queries
 
             var log = new Log($"{LogNames.Eav}.Global");
             log.Add("Load Global Queries");
-            _logHistory.Add(Types.GlobalTypes.LogHistoryGlobalTypes, log);
+            _logHistory.Add(LogNames.LogHistoryGlobalTypes, log);
             var wrapLog = log.Call<List<IEntity>>();
 
             var runtime = _runtimeLazy.Value.Init(null);

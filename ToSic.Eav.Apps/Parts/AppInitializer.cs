@@ -180,7 +180,7 @@ namespace ToSic.Eav.Apps.Parts
             // discuss w/2dm if you think you want to change this
             var ct = inAppType
                 ? AppManager.Read.ContentTypes.Get(setName)
-                : PresetApp.GetContentType(setName); // _globalTypes.FindContentType(setName);
+                : PresetApp.GetContentType(setName);
             return ct;
         }
 

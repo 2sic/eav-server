@@ -29,7 +29,7 @@ namespace ToSic.Eav.Configuration
             _presetLoader = presetLoader;
             Features = features;
             _logHistory = logHistory;
-            logHistory.Add(GlobalTypes.LogHistoryGlobalTypes, Log);
+            logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
             _fingerprint = fingerprint;
             _runtime = runtime;
         }
@@ -92,7 +92,7 @@ namespace ToSic.Eav.Configuration
         {
             var log = new Log($"{LogNames.Eav}.Global");
             log.Add("Load Global Configurations");
-            _logHistory.Add(Types.GlobalTypes.LogHistoryGlobalTypes, log);
+            _logHistory.Add(LogNames.LogHistoryGlobalTypes, log);
             var wrapLog = log.Call();
 
             try

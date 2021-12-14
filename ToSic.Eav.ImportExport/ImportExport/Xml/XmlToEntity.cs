@@ -182,9 +182,9 @@ namespace ToSic.Eav.ImportExport.Xml
                 throw new NullReferenceException("trying to import an xml entity but type is null - " + xEntity);
 		    
             // find out if it's a system type, and use that if it exists
-            var globalType = _presetApp.GetContentType(typeName); // _globalTypes.FindContentType(typeName);
-		    var guid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
-		                          throw new NullReferenceException("can't import an entity without a guid identifier"));
+            var globalType = _presetApp.GetContentType(typeName);
+            var guid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
+                                  throw new NullReferenceException("can't import an entity without a guid identifier"));
 		    var attribs = finalAttributes.ToDictionary(x => x.Key, y => (object) y.Value);
 
 		    var targetEntity = globalType != null

@@ -76,8 +76,8 @@ namespace ToSic.Eav.Serialization
                 msg += "app: not found, ";
             }
 
-            var globalType = GlobalApp?.GetContentType(staticName); // _globalTypes.FindContentType(staticName); // note: will return null if not found
-            
+            var globalType = GlobalApp?.GetContentType(staticName);
+
             if (globalType != null) return wrapLog(msg + "global: found", globalType);
             msg += "global: not found, ";
 
