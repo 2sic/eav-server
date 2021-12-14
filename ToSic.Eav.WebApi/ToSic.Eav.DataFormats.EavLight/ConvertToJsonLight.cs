@@ -96,6 +96,13 @@ namespace ToSic.Eav.DataFormats.EavLight
 
         #endregion
 
+        #region Constants
+
+        // TODO: the _Title is probably never used in JS but we must verify
+        public const string InternalTitleField = "_Title";
+        public const string InternalTypeField = "_Type";
+
+        #endregion
 
 
         /// <summary>
@@ -146,7 +153,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             // this internal _Title field is probably not used much any more, so there is no rule for it
             // Probably remove at some time in near future, once verified it's not used in the admin-front-end
             if(WithTitle)
-                try { entityValues.Add("_Title", entity.GetBestTitle(Languages)); }
+                try { entityValues.Add(InternalTitleField, entity.GetBestTitle(Languages)); }
                 catch { /* ignore */ }
 
             // Stats are only used in special cases, so there is no rule for it
@@ -160,7 +167,7 @@ namespace ToSic.Eav.DataFormats.EavLight
                 
             AddDateInformation(entity, entityValues, rules);
 
-            if (Type.Serialize) entityValues.Add("_Type", new JsonType(entity, Type.WithDescription));
+            if (Type.Serialize) entityValues.Add(InternalTypeField, new JsonType(entity, Type.WithDescription));
 
             return entityValues;
         }

@@ -107,6 +107,16 @@ namespace ToSic.Eav.WebApi
                 Recommendations = recommendations,
             };
 
+            // Special case for content-types without fields, ensure there is still a title
+            foreach (var item in result.Items)
+                if (item.TryGetValue(Attributes.TitleNiceName, out var title)
+                    && title == null
+                    && item.TryGetValue(ConvertToEavLight.InternalTypeField, out var typeInfo))
+                {
+                    if (typeInfo is JsonType typeDic && typeDic.Name != null) 
+                        item[Attributes.TitleNiceName] = typeDic.Name;
+                }
+
 
             return wrapLog("ok", result);
         }
