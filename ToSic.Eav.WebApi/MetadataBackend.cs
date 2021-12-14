@@ -8,7 +8,6 @@ using ToSic.Eav.Helpers;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Types;
 using ToSic.Eav.WebApi.Dto;
 using static System.StringComparison;
 using static ToSic.Eav.Metadata.Decorators;
@@ -177,7 +176,7 @@ namespace ToSic.Eav.WebApi
                 case (int)TargetTypes.CmsItem:
                     // todo: maybe improve?
                     return wrapLog("zone or CmsObject not supported", null);
-            };
+            }
             return new List<MetadataRecommendationDto>();
 
         }
@@ -189,6 +188,7 @@ namespace ToSic.Eav.WebApi
             // for path comparisons, make sure we have the slashes cleaned
             var keyForward = (key ??"").ForwardSlash().Trim();
 
+            // Do this #StepByStep to better debug in case of issues
             var allTypes = appState.ContentTypes;
             var recommendedTypes = allTypes
                 .Select(ct =>

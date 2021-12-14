@@ -34,10 +34,9 @@ namespace ToSic.Eav.Apps
         /// <inheritdoc />
         public AppState Get(int appId) => _cache.Get(_serviceProvider, IdentityOfApp(appId));
 
-        //public IAppIdentity Identity(int zoneId, int appId) => new AppIdentity(zoneId, appId); // _cache.GetIdentity(_serviceProvider, zoneId, appId);
-
         public IAppIdentity IdentityOfApp(int appId) =>
-            new AppIdentity(_cache.ZoneIdOfApp(_serviceProvider, appId), appId); // _cache.GetIdentity(_serviceProvider, _cache.ZoneIdOfApp(_serviceProvider, appId), appId);
+            new AppIdentity(_cache.ZoneIdOfApp(_serviceProvider, appId), appId);
+
         public IAppIdentity IdentityOfPrimary(int zoneId) => new AppIdentity(zoneId, PrimaryAppId(zoneId));
 
         public IAppIdentity IdentityOfDefault(int zoneId) => new AppIdentity(zoneId, DefaultAppId(zoneId));

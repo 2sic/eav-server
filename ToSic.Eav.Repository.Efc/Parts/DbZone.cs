@@ -20,7 +20,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             DbContext.App.AddApp(newZone, Constants.DefaultAppGuid);
 
-            // TODO: #AppState v13 - activate this once
             // We reliably auto-init the site-app by default
             DbContext.App.AddApp(newZone, Constants.PrimaryAppGuid);
 

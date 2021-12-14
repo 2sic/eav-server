@@ -60,7 +60,7 @@ namespace ToSic.Eav.Persistence.File
             {
                 if (_ser != null) return _ser;
                 _ser = _jsonSerializerUnready;
-                _ser.Initialize(AppId, ReflectionTypes.FakeCache.Values, EntitiesSource, Log);
+                _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }

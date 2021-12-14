@@ -34,8 +34,7 @@ namespace ToSic.Eav.Types
             // note 2019-01 2dm: as of now, no code-types are actually supported, I believe this 
             // is a leftover of a temporary experiment
             Log.Add($"AllContentTypes starting load at {DateTime.Now}");
-            var codeTypes =
-                new Dictionary<string, IContentType>(ReflectionTypes.FakeCache, StringComparer.InvariantCultureIgnoreCase);
+            var codeTypes = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
             // add runtime stuff
             var runtimeType = ContentTypesInRuntime().ToList();
@@ -49,8 +48,10 @@ namespace ToSic.Eav.Types
             Log.Add($"will return {codeTypes.Count} content-types");
 
             // create the nice-names dictionary, so it always exists when the static-name dic exists
-            ByNiceName = codeTypes
-                .ToImmutableDictionary(t => t.Value.Name, t => t.Value, StringComparer.InvariantCultureIgnoreCase);
+            ByNiceName = codeTypes.ToImmutableDictionary(
+                    t => t.Value.Name,
+                    t => t.Value,
+                    StringComparer.InvariantCultureIgnoreCase);
 
             // make sure it's case insensitive...
             ByStaticName = codeTypes.ToImmutableDictionary(StringComparer.InvariantCultureIgnoreCase);
