@@ -12,7 +12,7 @@ namespace ToSic.Eav.Configuration
         internal static string[] BlacklistKeys = { FieldSettingsIdentifier, FieldItemIdentifier, SysSettingsFieldScope };
 
 
-        public const string SysSettingsScopeValueSite = "site";
+        //public const string SysSettingsScopeValueSite = "site";
 
         public static AppThingsIdentifiers Resources = new AppThingsIdentifiers
         {

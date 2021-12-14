@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File
 {
     public partial class FileSystemLoader: HasLog, IContentTypeLoader
@@ -27,9 +28,10 @@ namespace ToSic.Eav.Persistence.File
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
-        public FileSystemLoader(JsonSerializer jsonSerializerUnready) : base("FSL.Loadr")
+        public FileSystemLoader(/*JsonSerializer jsonSerializerUnready,*/ IServiceProvider serviceProvider) : base(LogNames.Eav + ".FsLoad")
         {
-            _jsonSerializerUnready = jsonSerializerUnready;
+            //_jsonSerializerUnready = jsonSerializerUnready;
+            _serviceProvider = serviceProvider;
         }
 
         public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
@@ -58,25 +60,33 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_ser != null) return _ser;
-                _ser = _jsonSerializerUnready;
+                _ser = _serviceProvider.Build<JsonSerializer>(); // _jsonSerializerUnready;
                 _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
         }
         private JsonSerializer _ser;
-        private readonly JsonSerializer _jsonSerializerUnready;
+        //private readonly JsonSerializer _jsonSerializerUnready;
+        private readonly IServiceProvider _serviceProvider;
+
+        internal void ResetSerializer(AppState appState)
+        {
+            var serializer = _serviceProvider.Build<JsonSerializer>();
+            serializer.Init(appState, Log);
+            _ser = serializer;
+        }
 
         #endregion
 
         #region Queries & Configuration
         private string QueryPath => Path + QueryFolder;
         private string ConfigurationPath => Path + ConfigurationFolder;
-        public IList<IEntity> Queries() => LoadEntitiesFromSubfolder(QueryPath);
+        public IList<IEntity> Queries(int idSeed) => LoadEntitiesFromSubfolder(QueryPath, idSeed);
 
-        public IList<IEntity> Configurations() => LoadEntitiesFromSubfolder(ConfigurationPath);
+        public IList<IEntity> Configurations(int idSeed) => LoadEntitiesFromSubfolder(ConfigurationPath, idSeed);
 
-        private IList<IEntity> LoadEntitiesFromSubfolder(string path)
+        private IList<IEntity> LoadEntitiesFromSubfolder(string path, int seed)
         {
             // #1. check that folder exists
             if (!CheckPathExists(Path) || !CheckPathExists(path))
@@ -95,7 +105,7 @@ namespace ToSic.Eav.Persistence.File
             // #3.2 load entity-items from folder
             var jsonSerializer = Serializer;
             var entities = jsons
-                .Select(json => LoadAndBuildEntity(jsonSerializer, json, relationshipsSource))
+                .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++seed, relationshipsSource))
                 .Where(entity => entity != null)
                 .ToList();
 
@@ -186,28 +196,26 @@ namespace ToSic.Eav.Persistence.File
         /// Try to load an entity (for example a query-definition)
         /// If anything fails, just return a null
         /// </summary>
-        /// <param name="ser"></param>
-        /// <param name="path"></param>
         /// <returns></returns>
-        private IEntity LoadAndBuildEntity(JsonSerializer ser, string path, IEntitiesSource relationshipSource = null)
+        private IEntity LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource relationshipSource = null)
         {
             Log.Add("Loading " + path);
             try
             {
                 var json = System.IO.File.ReadAllText(path);
-                var ct = ser.DeserializeWithRelsWip(json, allowDynamic: true, skipUnknownType: false, relationshipSource);
-                return ct;
+                var entity = ser.DeserializeWithRelsWip(json, id, allowDynamic: true, skipUnknownType: false, relationshipSource);
+                return entity;
             }
             catch (IOException e)
             {
+                Log.Add($"Failed loading type - couldn't read file on '{path}'");
                 Log.Exception(e);
-                Log.Add($"Failed loading type - couldn't read file because of {e}");
                 return null;
             }
             catch (Exception e)
             {
+                Log.Add($"Failed loading type - couldn't deserialize '{path}' for unknown reason.");
                 Log.Exception(e);
-                Log.Add($"Failed loading type - couldn't deserialize or unknown reason: {e}");
                 return null;
             }
         }

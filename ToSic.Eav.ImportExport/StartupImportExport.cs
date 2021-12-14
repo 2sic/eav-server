@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Persistence.Xml;
-using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.ImportExport
@@ -20,10 +19,6 @@ namespace ToSic.Eav.ImportExport
             services.TryAddTransient<XmlSerializer>();
 
             services.TryAddTransient<FileSystemLoader>();
-
-            // WIP 12.10+ with Global Types in a normal AppState
-            services.TryAddTransient<PresetAppStateLoader>();
-            services.TryAddTransient<IPresetLoader, PresetAppStateLoader>();
 
             return services;
         }

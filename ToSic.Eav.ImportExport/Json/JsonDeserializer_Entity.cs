@@ -16,8 +16,13 @@ namespace ToSic.Eav.ImportExport.Json
         public IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false) 
             => Deserialize(UnpackAndTestGenericJsonV1(serialized).Entity, allowDynamic, skipUnknownType);
 
-        internal IEntity DeserializeWithRelsWip(string serialized, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource dynRelationshipsSource = null) 
-            => Deserialize(UnpackAndTestGenericJsonV1(serialized).Entity, allowDynamic, skipUnknownType, dynRelationshipsSource);
+        internal IEntity DeserializeWithRelsWip(string serialized, int id, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource dynRelationshipsSource = null)
+        {
+            var jsonEntity = UnpackAndTestGenericJsonV1(serialized).Entity;
+            jsonEntity.Id = id;
+            var entity = Deserialize(jsonEntity, allowDynamic, skipUnknownType, dynRelationshipsSource);
+            return entity;
+        }
 
         protected JsonFormat UnpackAndTestGenericJsonV1(string serialized)
         {

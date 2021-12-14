@@ -8,7 +8,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 
@@ -21,22 +20,22 @@ namespace ToSic.Eav.Configuration
         #region Constructor / DI
 
         public SystemLoader(IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache,
-            IPresetLoader presetLoader,
+            // IPresetLoader presetLoader,
             IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
         {
             _appsCache = appsCache;
-            _presetLoader = presetLoader;
+            //_presetLoader = presetLoader;
             Features = features;
             _logHistory = logHistory;
             logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
             _fingerprint = fingerprint;
-            _runtime = runtime;
+            _runtime = runtime.Init(Log);
         }
 
         private readonly IFingerprint _fingerprint;
         private readonly IRuntime _runtime;
         private readonly IAppsCache _appsCache;
-        private readonly IPresetLoader _presetLoader;
+        //private readonly IPresetLoader _presetLoader;
         public readonly IFeaturesInternal Features;
         private readonly LogHistory _logHistory;
 
@@ -65,7 +64,7 @@ namespace ToSic.Eav.Configuration
         {
             var wrapLog = Log.Call();
             Log.Add("Try to load global app-state");
-            var appState = _presetLoader.AppState(Constants.PresetAppId);
+            var appState = _runtime.AppState();// _presetLoader.AppState();
             _appsCache.Add(appState);
             wrapLog("ok");
         }
@@ -96,8 +95,8 @@ namespace ToSic.Eav.Configuration
 
             try
             {
-                var runtime = _runtime.Init(log);
-                var list = runtime?.LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();
+                //var runtime = _runtime.Init(log);
+                var list = _runtime?.LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();
                 Global.List = list;
                 wrapLog($"{list.Count}");
             }
