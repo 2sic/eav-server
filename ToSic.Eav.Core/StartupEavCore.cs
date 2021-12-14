@@ -14,7 +14,6 @@ using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav
 {
@@ -25,9 +24,6 @@ namespace ToSic.Eav
             // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
             
-            // Global Content-Types - should only be loaded once ever, and then it's done
-            services.TryAddSingleton<GlobalTypeLoader>();
-
             // Configuration objects
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();

@@ -20,12 +20,20 @@ namespace ToSic.Eav.Data.Builder
         public static void Retarget(this Entity entity, Guid newTarget)
             => entity.SetMetadata(new Metadata.Target(entity.MetadataFor) {KeyGuid = newTarget});
 
-        public static void UpdateType(this Entity entity, IContentType newType)
+        public static void UpdateType(this Entity entity, IContentType newType, bool updateTitleField = false)
         {
-            if (entity.Type.Name != newType.Name)
+            if (entity.Type.Name != newType.Name && entity.Type.StaticName != newType.StaticName)
                 throw new Exception("trying to update the type definition - but the new type is different");
 
             entity.Type = newType;
+            if (!updateTitleField) return;
+
+            try
+            {
+                var titleField = newType.Attributes.FirstOrDefault(a => a.IsTitle)?.Name;
+                if (titleField != null) entity.TitleFieldName = titleField;
+            }
+            catch{ /* ignore */}
         }
 
         public static int? GetPublishedIdForSaving(this Entity entity) => entity.PublishedEntity?.EntityId ?? entity.PublishedEntityId;

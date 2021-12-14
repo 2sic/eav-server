@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
@@ -35,7 +36,7 @@ namespace ToSic.Eav.Apps
 					// will filter out for now, because otherwise we get duplicate keys-errors
 					// believe this shouldn't be an issue, as it only seems to be used in fairly edge-case export/import
 					// situations which the static types shouldn't be used for, as they are json-typed
-                .Where(x => x.ContentTypeId != 0)
+                .Where(x => x.ContentTypeId != 0 && x.ContentTypeId < Global.GlobalContentTypeMin)
                 .ToImmutableDictionary(x => x.ContentTypeId, x => x.StaticName);
 	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 	        // build types by name

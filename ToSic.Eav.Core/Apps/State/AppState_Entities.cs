@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
 {
@@ -24,7 +25,8 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Add an entity to the cache. Should only be used by EAV code
         /// </summary>
-        internal void Add(Entity newEntity, int? publishedId, bool log)
+        [PrivateApi("Only internal use")]
+        public void Add(Entity newEntity, int? publishedId, bool log)
         {
             if (!Loading)
                 throw new Exception("trying to add entity, but not in loading state. set that first!");

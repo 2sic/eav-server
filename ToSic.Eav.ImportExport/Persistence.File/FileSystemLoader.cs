@@ -9,7 +9,6 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Types;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -111,7 +110,11 @@ namespace ToSic.Eav.Persistence.File
 
         #region ContentType
 
+        public int IdSeed = -1;
+
         public IList<IContentType> ContentTypes() => ContentTypes(AppId, null);
+
+        
 
         /// <inheritdoc />
         /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
@@ -132,7 +135,9 @@ namespace ToSic.Eav.Persistence.File
             var jsons = Directory.GetFiles(pathCt, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
 
             // #3 load content-types from folder
-            var cts = jsons.Select(json => LoadAndBuildCt(Serializer, json)).Where(ct => ct != null).ToList();
+            var cts = jsons
+                .Select(json => LoadAndBuildCt(Serializer, json, IdSeed == -1 ? 0 : IdSeed++))
+                .Where(ct => ct != null).ToList();
 
             return cts;
         }
@@ -142,10 +147,8 @@ namespace ToSic.Eav.Persistence.File
         /// <summary>
         /// Try to load a content-type file, but if anything fails, just return a null
         /// </summary>
-        /// <param name="ser"></param>
-        /// <param name="path"></param>
         /// <returns></returns>
-        private IContentType LoadAndBuildCt(JsonSerializer ser, string path)
+        private IContentType LoadAndBuildCt(JsonSerializer ser, string path, int id)
         {
             Log.Add("Loading " + path);
             var infoIfError = "couldn't read type-file";
@@ -157,7 +160,7 @@ namespace ToSic.Eav.Persistence.File
                 var ct = ser.DeserializeContentType(json);
 
                 infoIfError = "couldn't set source/parent";
-                (ct as ContentType).SetSourceAndParent(RepoType, Constants.PresetContentTypeFakeParent, path);
+                (ct as ContentType).SetSourceParentAndId(RepoType, Constants.PresetContentTypeFakeParent, path, id);
                 return ct;
             }
             catch (IOException e)

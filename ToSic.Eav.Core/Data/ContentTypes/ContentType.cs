@@ -37,7 +37,7 @@ namespace ToSic.Eav.Data
         public string Scope { get; private set; }
 
         /// <inheritdoc />
-        public int ContentTypeId { get; }
+        public int ContentTypeId { get; internal set; }
 
         /// <inheritdoc />
         public IList<IContentTypeAttribute> Attributes { get; set; }

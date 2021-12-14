@@ -1,25 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Configuration;
+using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Types;
+using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Persistence.File
 {
     // Experimental #PresetInAppState
     public class PresetAppStateLoader: HasLog<IPresetLoader>, IPresetLoader
     {
-        private readonly GlobalTypeLoader _globalTypeLoader;
-
         #region Constructor
-        public PresetAppStateLoader(LogHistory logHistory, GlobalTypeLoader globalTypeLoader) : base($"{LogNames.Eav}.FasLdr")
+        public PresetAppStateLoader(LogHistory logHistory, IRuntime runtimeLoader) : base($"{LogNames.Eav}.FasLdr")
         {
             logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
-            _globalTypeLoader = globalTypeLoader;
+            _runtimeLoader = runtimeLoader.Init(Log);
+            LoadLog = Log;
         }
+
+        public static ILog LoadLog = null;
+
+        private readonly IRuntime _runtimeLoader;
 
         #endregion
 
@@ -71,7 +77,7 @@ namespace ToSic.Eav.Persistence.File
                 {
                     var typeTimer = Stopwatch.StartNew();
                     // Just attach all global content-types to this app, as they belong here
-                    var dbTypes = _globalTypeLoader.LoadTypes().ToList();
+                    var dbTypes = _runtimeLoader.LoadGlobalContentTypes(Global.GlobalContentTypeMin);
                     app.InitContentTypes(dbTypes);
                     typeTimer.Stop();
                     Log.Add($"timers types:{typeTimer.Elapsed}");
@@ -82,6 +88,14 @@ namespace ToSic.Eav.Persistence.File
                 // load data
                 if (startAt <= AppStateLoadSequence.ItemLoad)
                 {
+                    //var configs = LoadConfigItems(Global.GroupConfiguration);
+                    //var queries = LoadConfigItems(Global.GroupQuery);
+                    //const int zeroPaddings = 10000000;
+                    //var fakeIdCount = int.MaxValue / zeroPaddings * zeroPaddings;
+                    //foreach (var config in configs)
+                    //{
+                    //    app.Add(config as Entity, null, true);
+                    //}
                     //LoadEntities(app, entityIds);
                 }
                 else
@@ -92,6 +106,23 @@ namespace ToSic.Eav.Persistence.File
             });
 
             return outerWrapLog("ok", app);
+        }
+
+        private List<IEntity> LoadConfigItems(string identifier)
+        {
+            var wrapLog = Log.Call<List<IEntity>>(identifier);
+
+            try
+            {
+                var list = _runtimeLoader.LoadGlobalItems(identifier)?.ToList() ?? new List<IEntity>();
+                return wrapLog($"{list.Count}", list);
+            }
+            catch (Exception e)
+            {
+                Log.Exception(e);
+                return wrapLog("error", new List<IEntity>());
+            }
+
         }
     }
 }

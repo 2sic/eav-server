@@ -36,10 +36,10 @@ namespace ToSic.Eav.Data.Builder
             type.RepositoryType = repoType;
         }
 
-        public static void SetSourceAndParent(this ContentType type, RepositoryTypes repoType, int parentId, string address)
+        public static void SetSourceParentAndId(this ContentType type, RepositoryTypes repoType, int parentId, string address, int id = -1)
         {
+            if (id != -1) type.ContentTypeId = id;
             type.RepositoryType = repoType;
-            //type.ParentId = parentId;
             type.RepositoryAddress = address;
             var ancestorDecorator = type.GetDecorator<IAncestor>();
             if (ancestorDecorator != null) ancestorDecorator.Id = parentId;

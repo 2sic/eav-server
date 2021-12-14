@@ -7,7 +7,7 @@ namespace ToSic.Eav.Run
     public interface IRuntime: IHasLog<IRuntime>
     {
 
-        IEnumerable<IContentType> LoadGlobalContentTypes();
+        List<IContentType> LoadGlobalContentTypes(int typeIdSeed);
 
         IEnumerable<Data.IEntity> LoadGlobalItems(string groupIdentifier);
 

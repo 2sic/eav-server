@@ -15,7 +15,7 @@ namespace ToSic.Eav.Run.Unknown
             return this;
         }
 
-        public IEnumerable<IContentType> LoadGlobalContentTypes() => new List<IContentType>();
+        public List<IContentType> LoadGlobalContentTypes(int seed) => new List<IContentType>();
 
         public IEnumerable<IEntity> LoadGlobalItems(string groupIdentifier) => new List<IEntity>();
 

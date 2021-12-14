@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -10,6 +11,10 @@ namespace ToSic.Eav.Configuration
     {
         public const string GroupQuery = "query";
         public const string GroupConfiguration = "configuration";
+
+        private const int ContentTypeZeroMaker = 10000000;
+        public const int GlobalContentTypeMin = int.MaxValue / ContentTypeZeroMaker * ContentTypeZeroMaker;
+        public const int GlobalContentTypeSourceSkip = 1000;
 
         /// <summary>
         /// The list is set by the ConfigurationLoader. That must run at application start.
