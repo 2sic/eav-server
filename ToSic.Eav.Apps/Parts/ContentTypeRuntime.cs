@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Data;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -13,15 +12,15 @@ namespace ToSic.Eav.Apps.Parts
     public class ContentTypeRuntime : PartOf<AppRuntime, ContentTypeRuntime>
     {
 
-        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy, IGlobalTypes globalTypes) : base("RT.ConTyp")
+        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy, IAppStates appStates) : base("RT.ConTyp")
         {
             _lazyMetadataAppRuntime = lazyMetadataAppRuntime;
             _appFileSystemLoaderLazy = appFileSystemLoaderLazy;
-            _globalTypes = globalTypes;
+            _appStates = appStates;
         }
         private readonly Lazy<AppRuntime> _lazyMetadataAppRuntime;
         private readonly Lazy<IAppFileSystemLoader> _appFileSystemLoaderLazy;
-        private readonly IGlobalTypes _globalTypes;
+        private readonly IAppStates _appStates;
 
         public IEnumerable<IContentType> All => Parent.AppState.ContentTypes;
 
@@ -142,7 +141,7 @@ namespace ToSic.Eav.Apps.Parts
             var wrapLog = Log.Call<List<InputTypeInfo>>();
             try
             {
-                var appState = Parent.AppState; // State.Get(Parent);
+                var appState = Parent.AppState;
                 var appLoader = _appFileSystemLoaderLazy.Value.Init(appState.AppId, appState.Folder, Log);
                 var inputTypes = appLoader.InputTypes();
                 return wrapLog(null, inputTypes);
@@ -162,9 +161,9 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         private List<InputTypeInfo> GetGlobalInputTypesBasedOnContentTypes()
         {
-            var types = _globalTypes.AllContentTypes()
-                .Where(p => p.Key.StartsWith(FieldTypePrefix))
-                .Select(p => p.Value).ToList();
+            var types = _appStates.Get(Eav.Constants.PresetIdentity).ContentTypes
+                .Where(p => p.StaticName.StartsWith(FieldTypePrefix))
+                .Select(p => p).ToList();
 
             // try to access metadata, if it has any
             var typesToCheckInThisOrder = new[] { InputTypes.TypeForInputTypeDefinition, ContentTypes.ContentTypeTypeName, null };
