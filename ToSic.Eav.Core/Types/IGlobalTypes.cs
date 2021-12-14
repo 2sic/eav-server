@@ -12,7 +12,7 @@ namespace ToSic.Eav.Types
         /// <returns></returns>
         ImmutableDictionary<string, IContentType> AllContentTypes();
 
-        IContentType FindContentType(string name);
+        //IContentType FindContentType(string name);
 
         /// <summary>
         /// This is the real initializer - implemented as a virtual method, because some

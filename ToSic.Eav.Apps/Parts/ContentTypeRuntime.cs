@@ -161,7 +161,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         private List<InputTypeInfo> GetGlobalInputTypesBasedOnContentTypes()
         {
-            var types = _appStates.Get(Eav.Constants.PresetIdentity).ContentTypes
+            var types = _appStates.GetPresetApp().ContentTypes
                 .Where(p => p.StaticName.StartsWith(FieldTypePrefix))
                 .Select(p => p).ToList();
 

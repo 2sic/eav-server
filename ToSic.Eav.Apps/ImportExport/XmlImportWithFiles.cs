@@ -8,7 +8,6 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -16,8 +15,6 @@ namespace ToSic.Eav.Apps.ImportExport
 	{
         public class Dependencies
         {
-            public IGlobalTypes GlobalTypes { get; }
-
             public Dependencies(
                 Lazy<Import> importerLazy,
                 Lazy<DbDataController> dbDataForNewApp,
@@ -25,17 +22,16 @@ namespace ToSic.Eav.Apps.ImportExport
                 IImportExportEnvironment importExportEnvironment,
                 ITargetTypes metaTargetTypes,
                 SystemManager systemManager,
-                IAppStates appStates,
-                IGlobalTypes globalTypes
+                IAppStates appStates
                 )
             {
-                GlobalTypes = globalTypes;
                 _importerLazy = importerLazy;
                 _dbDataForNewApp = dbDataForNewApp;
                 _dbDataForAppImport = dbDataForAppImport;
                 _environment = importExportEnvironment;
                 _metaTargetTypes = metaTargetTypes;
                 AppStates = appStates;
+                GlobalApp = appStates.GetPresetApp();
                 SystemManager = systemManager;
             }
             internal readonly Lazy<Import> _importerLazy;
@@ -46,6 +42,7 @@ namespace ToSic.Eav.Apps.ImportExport
             internal readonly IAppStates AppStates;
             internal readonly SystemManager SystemManager;
 
+            internal readonly AppState GlobalApp;
         }
 
         private List<DimensionDefinition> _targetDimensions;

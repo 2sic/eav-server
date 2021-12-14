@@ -21,11 +21,10 @@ namespace ToSic.Eav.Configuration
 
         #region Constructor / DI
 
-        public SystemLoader(IGlobalTypes globalTypes, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache,
+        public SystemLoader(IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache,
             IPresetLoader presetLoader,
             IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
         {
-            _globalTypes = globalTypes;
             _appsCache = appsCache;
             _presetLoader = presetLoader;
             _features = features;
@@ -44,7 +43,6 @@ namespace ToSic.Eav.Configuration
 
         private readonly IFingerprint _fingerprint;
         private readonly IRuntime _runtime;
-        private readonly IGlobalTypes _globalTypes;
         private readonly IAppsCache _appsCache;
         private readonly IPresetLoader _presetLoader;
         private readonly IFeaturesInternal _features;
@@ -62,13 +60,13 @@ namespace ToSic.Eav.Configuration
             _startupAlreadyRan = true;
 
             // Build the cache of all system-types. Must happen before everything else
-            _globalTypes.StartUp(Log);
+            //_globalTypes.StartUp(Log);
+            // TODO: Wip - MUST MOVE UP AFTERWARDS
+            LoadPresetApp();
 
             // Now do a normal reload of configuration and features
             Reload();
 
-            // TODO: Wip - MUST MOVE UP AFTERWARDS
-            LoadPresetApp();
         }
 
         /// <summary>

@@ -29,31 +29,31 @@ namespace ToSic.Eav.Types
         public static GlobalTypeLoader TypeLoader;
 
         /// <inheritdoc />
-        public void StartUp(ILog targetLogger) => TypeLoader.Init(targetLogger).BuildCache();
+        public void StartUp(ILog targetLogger) => TypeLoader.Init(targetLogger).LoadTypes();
 
         /// <inheritdoc />
         public ImmutableDictionary<string, IContentType> AllContentTypes() => TypeLoader.ByStaticName;
 
-        public IContentType FindContentType(string name)
-        {
-            // use the types which have been loaded
-            // this is to enable lookup of system types, while in the background we're still building the json-types
-            // this is important, because the deserializer for json will also call this
-            // when trying to load the first file-system based content-types (while initializing the types)
-            if (TypeLoader == null || !TypeLoader.Ready)
-            {
-                Log.Add($"FindContentType({name}) used before global types have been loaded = null");
-                return null;
-            }
+        //public IContentType FindContentType(string name)
+        //{
+        //    // use the types which have been loaded
+        //    // this is to enable lookup of system types, while in the background we're still building the json-types
+        //    // this is important, because the deserializer for json will also call this
+        //    // when trying to load the first file-system based content-types (while initializing the types)
+        //    if (TypeLoader == null || !TypeLoader.Ready)
+        //    {
+        //        Log.Add($"FindContentType({name}) used before global types have been loaded = null");
+        //        return null;
+        //    }
 
-            if (TypeLoader.ByStaticName.ContainsKey(name))
-                return TypeLoader.ByStaticName[name];
+        //    if (TypeLoader.ByStaticName.ContainsKey(name))
+        //        return TypeLoader.ByStaticName[name];
 
-            // now also try with nice-name
-            return TypeLoader.ByNiceName.ContainsKey(name)
-                ? TypeLoader.ByNiceName[name]
-                : null;
-        }
+        //    // now also try with nice-name
+        //    return TypeLoader.ByNiceName.ContainsKey(name)
+        //        ? TypeLoader.ByNiceName[name]
+        //        : null;
+        //}
 
     }
 }

@@ -12,12 +12,12 @@ namespace ToSic.Eav.Types
     [PrivateApi]
     public class GlobalTypeLoader: HasLog<GlobalTypeLoader>
     {
-        /// <summary>
-        /// Determines if the types have been fully loaded.
-        /// This is important because during loading some code may already try to access some types, in which case it should
-        /// be skipped. 
-        /// </summary>
-        public bool Ready = false;
+        ///// <summary>
+        ///// Determines if the types have been fully loaded.
+        ///// This is important because during loading some code may already try to access some types, in which case it should
+        ///// be skipped. 
+        ///// </summary>
+        //public bool Ready = false;
 
         public GlobalTypeLoader(IRuntime runtime) : base("Eav.GlTLdr", initialMessage: "Start Loading")
         {
@@ -27,9 +27,9 @@ namespace ToSic.Eav.Types
 
 
 
-        internal void BuildCache()
+        public IEnumerable<IContentType> LoadTypes()
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Call<IEnumerable<IContentType>>();
             // copy the code-types dictionary...
             // note 2019-01 2dm: as of now, no code-types are actually supported, I believe this 
             // is a leftover of a temporary experiment
@@ -48,19 +48,19 @@ namespace ToSic.Eav.Types
             Log.Add($"will return {codeTypes.Count} content-types");
 
             // create the nice-names dictionary, so it always exists when the static-name dic exists
-            ByNiceName = codeTypes.ToImmutableDictionary(
-                    t => t.Value.Name,
-                    t => t.Value,
-                    StringComparer.InvariantCultureIgnoreCase);
+            //ByNiceName = codeTypes.ToImmutableDictionary(
+            //        t => t.Value.Name,
+            //        t => t.Value,
+            //        StringComparer.InvariantCultureIgnoreCase);
 
             // make sure it's case insensitive...
             ByStaticName = codeTypes.ToImmutableDictionary(StringComparer.InvariantCultureIgnoreCase);
-            Ready = true;
-            wrapLog("done");
+            //Ready = true;
+            return wrapLog("done", codeTypes.Values);
         }
 
         internal ImmutableDictionary<string, IContentType> ByStaticName;
-        internal ImmutableDictionary<string, IContentType> ByNiceName;
+        //internal ImmutableDictionary<string, IContentType> ByNiceName;
 
         /// <summary>
         /// All content-types available in Reflection; will cache after first scan

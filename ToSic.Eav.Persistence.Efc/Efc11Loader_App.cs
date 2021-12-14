@@ -35,7 +35,7 @@ namespace ToSic.Eav.Persistence.Efc
             var appGuidName = _appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
 
             // New v13 - use global app instead
-            var globalApp = _appStates.Get(Constants.PresetIdentity);
+            var globalApp = _appStates.GetPresetApp();
             if (globalApp == null)
                 throw new Exception("Can't find global app - which is required to build any other apps. ");
             var parent = new ParentAppState(globalApp, true);

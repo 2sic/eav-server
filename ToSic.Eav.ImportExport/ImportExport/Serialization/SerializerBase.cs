@@ -5,7 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Types;
-using AppState = ToSic.Eav.Apps.AppState;
+using ToSic.Eav.Apps;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -18,12 +18,13 @@ namespace ToSic.Eav.Serialization
         /// <summary>
         /// Constructor for inheriting classes
         /// </summary>
-        protected SerializerBase(ITargetTypes metadataTargets, IGlobalTypes globalTypes, string logName): base(logName)
+        protected SerializerBase(ITargetTypes metadataTargets, IAppStates appStates, string logName): base(logName)
         {
-            _globalTypes = globalTypes;
             MetadataTargets = metadataTargets;
+            GlobalApp = appStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
         }
-        private readonly IGlobalTypes _globalTypes;
+
+        private readonly AppState GlobalApp;
 
         public ITargetTypes MetadataTargets { get; }
 
@@ -75,7 +76,7 @@ namespace ToSic.Eav.Serialization
                 msg += "app: not found, ";
             }
 
-            var globalType = _globalTypes.FindContentType(staticName); // note: will return null if not found
+            var globalType = GlobalApp?.GetContentType(staticName); // _globalTypes.FindContentType(staticName); // note: will return null if not found
             
             if (globalType != null) return wrapLog(msg + "global: found", globalType);
             msg += "global: not found, ";

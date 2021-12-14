@@ -12,14 +12,15 @@ namespace ToSic.Eav.Persistence.File
     // Experimental #PresetInAppState
     public class PresetAppStateLoader: HasLog<IPresetLoader>, IPresetLoader
     {
-        //private readonly IAppStates _appStates;
-        private readonly IGlobalTypes _globalTypes;
+        //private readonly IGlobalTypes _globalTypes;
+        private readonly GlobalTypeLoader _globalTypeLoader;
+
         #region Constructor
-        public PresetAppStateLoader(/*IAppStates appStates,*/ LogHistory logHistory, IGlobalTypes globalTypes) : base($"{LogNames.Eav}.FasLdr")
+        public PresetAppStateLoader(LogHistory logHistory, /*IGlobalTypes globalTypes,*/ GlobalTypeLoader globalTypeLoader) : base($"{LogNames.Eav}.FasLdr")
         {
             logHistory.Add(GlobalTypes.LogHistoryGlobalTypes, Log);
-            //_appStates = appStates;
-            _globalTypes = globalTypes;
+            //_globalTypes = globalTypes;
+            _globalTypeLoader = globalTypeLoader;
         }
 
         #endregion
@@ -72,7 +73,7 @@ namespace ToSic.Eav.Persistence.File
                 {
                     var typeTimer = Stopwatch.StartNew();
                     // Just attach all global content-types to this app, as they belong here
-                    var dbTypes = _globalTypes.AllContentTypes().Select(p => p.Value).ToList();
+                    var dbTypes = _globalTypeLoader.LoadTypes().ToList(); // _globalTypes.AllContentTypes().Select(p => p.Value).ToList();
                     app.InitContentTypes(dbTypes);
                     typeTimer.Stop();
                     Log.Add($"timers types:{typeTimer.Elapsed}");

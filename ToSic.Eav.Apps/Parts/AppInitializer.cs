@@ -8,7 +8,6 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -23,14 +22,14 @@ namespace ToSic.Eav.Apps.Parts
     {
         #region Constructor / DI
 
-        public AppInitializer(IServiceProvider serviceProvider, IGlobalTypes globalTypes, SystemManager systemManager) : base("Eav.AppBld")
+        public AppInitializer(IServiceProvider serviceProvider, SystemManager systemManager, IAppStates appStates) : base("Eav.AppBld")
         {
             _serviceProvider = serviceProvider;
             SystemManager = systemManager.Init(Log);
-            _globalTypes = globalTypes;
+            _appStates = appStates;
         }
         private readonly IServiceProvider _serviceProvider;
-        private readonly IGlobalTypes _globalTypes;
+        private readonly IAppStates _appStates;
         protected readonly SystemManager SystemManager;
 
 
@@ -42,6 +41,9 @@ namespace ToSic.Eav.Apps.Parts
         }
 
         private AppState AppState { get; set; }
+
+        private AppState PresetApp => _presetApp ?? (_presetApp = _appStates.GetPresetApp());
+        private AppState _presetApp;
 
         /// <summary>
         /// The App Manager must be re-created during initialization
@@ -178,7 +180,7 @@ namespace ToSic.Eav.Apps.Parts
             // discuss w/2dm if you think you want to change this
             var ct = inAppType
                 ? AppManager.Read.ContentTypes.Get(setName)
-                : _globalTypes.FindContentType(setName);
+                : PresetApp.GetContentType(setName); // _globalTypes.FindContentType(setName);
             return ct;
         }
 

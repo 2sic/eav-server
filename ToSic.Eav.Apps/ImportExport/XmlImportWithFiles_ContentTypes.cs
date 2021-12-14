@@ -51,7 +51,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     var attribute = new ContentTypeAttribute(AppId, name, /* null, */ fieldTypeName, /* 
                         null, null, null, null, */ attributeMetadata: new List<IEntity>
                         {
-                            AttDefBuilder.GenerateAttributeMetadata(Deps.GlobalTypes, AppId, null, null, null,
+                            AttDefBuilder.GenerateAttributeMetadata(Deps.GlobalApp, AppId, null, null, null,
                                 string.Empty, null)
                         });
                     var md = xmlField.Elements(XmlConstants.Entity).ToList();

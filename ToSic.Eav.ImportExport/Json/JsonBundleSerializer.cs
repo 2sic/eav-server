@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Newtonsoft.Json;
+using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Metadata;
@@ -9,7 +10,7 @@ namespace ToSic.Eav.ImportExport.Json
 {
     public class JsonBundleSerializer: JsonSerializer
     {
-        public JsonBundleSerializer(ITargetTypes metadataTargets, IGlobalTypes globalTypes) : base(metadataTargets, globalTypes, "Ser.Bundle") { }
+        public JsonBundleSerializer(ITargetTypes metadataTargets, IAppStates appStates) : base(metadataTargets, appStates, "Ser.Bundle") { }
 
         public string Serialize(BundleEntityWithAssets bundle, int metadataDepth)
         {
