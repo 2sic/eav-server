@@ -1,9 +1,6 @@
 ﻿// 2018-03-09 2dm disabled various tests related to code-based content-types, which ATM are never in use
 
-using System;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Core.Tests.Types
 {
