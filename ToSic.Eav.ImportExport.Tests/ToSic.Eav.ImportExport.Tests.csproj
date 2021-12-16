@@ -19,6 +19,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -111,8 +112,8 @@
     <Compile Include="XmlSerializationTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <Content Include="Json\ContentTypes\System.Config ToSic.Eav.DataSources.SqlDataSource.json" />
+    <None Include="app.config" />
     <None Include="Persistence.File\.data\readme.md" />
   </ItemGroup>
   <ItemGroup>
