@@ -54,7 +54,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
             var count = _globalAppState.ContentTypes.Count();
             time.Stop();
             
-            Assert.IsTrue(count >= 80 && count <= 120, $"expected between 80 and 120, actually is {count}");
+            Assert.IsTrue(count >= 80 && count <= 130, $"expected between 80 and 120, actually is {count}");
             Trace.WriteLine("time used: " + time.Elapsed);
         }
 
