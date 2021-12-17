@@ -76,7 +76,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         [PrivateApi]
         internal EntityLight(int appId, int entityId, Guid? guid, IContentType contentType, Dictionary<string, object> values, string titleAttribute = null, 
-            DateTime? created = null, DateTime? modified = null)
+            DateTime? created = null, DateTime? modified = null, string owner = null)
         {
             AppId = appId;
             EntityId = entityId;
@@ -94,6 +94,7 @@ namespace ToSic.Eav.Data
             MetadataFor = new Target();
             if (created.HasValue) Created = created.Value;
             if (modified.HasValue) Modified = modified.Value;
+            if (!string.IsNullOrEmpty(owner)) Owner = owner;
             Relationships = new RelationshipManager(this, null, null);
         }
 

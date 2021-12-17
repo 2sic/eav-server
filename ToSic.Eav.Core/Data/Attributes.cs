@@ -53,6 +53,7 @@ namespace ToSic.Eav.Data
         public const string EntityFieldIsPublished = "ispublished";
         public const string EntityFieldCreated = "created";
         public const string EntityFieldModified = "modified";
+        public const string EntityFieldOwner = "owner";
 
         #endregion
 

@@ -119,8 +119,17 @@ namespace ToSic.Eav.Api.Api01
                 values.Add(Attributes.EntityFieldGuid, Guid.NewGuid());
             }
 
+            // Get owner form value dictionary (and remove it from values) because we need to provided it in entity constructor.
+            string owner = null;
+            if (values.Any(v => v.Key.ToLowerInvariant() == Attributes.EntityFieldOwner))
+            {
+                Log.Add("Get owner, when is provided.");
+                owner = values[Attributes.EntityFieldOwner].ToString();
+                values.Remove(Attributes.EntityFieldOwner);
+            }
+
             var eGuid = Guid.Parse(values[Attributes.EntityFieldGuid].ToString());
-            var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>());
+            var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>(), owner);
             if (target != null)
             {
                 Log.Add("Set metadata target which was provided.");
