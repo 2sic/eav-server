@@ -105,7 +105,13 @@ namespace ToSic.Eav.Persistence.File
                 // load data
                 try
                 {
-                    Log.Add("Update Loaders to have the latest AppState with Content-Types");
+                    // IMPORTANT for whoever may need to debug preloaded data
+                    // The Entities have one specialty: Their Metadata is _not_ loaded the normal way (from the AppState)
+                    // But it's directly-attached-metadata
+                    // That's because it's loaded from the JSON, where the metadata is part of the json-file.
+                    // This should probably not cause any problems, but it's important to know
+                    // We may optimize / change this some day
+                    Log.Add("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
                     Loaders.ForEach(l => l.ResetSerializer(appState.ContentTypes.ToList()));
 
                     Log.Add("Load config items");

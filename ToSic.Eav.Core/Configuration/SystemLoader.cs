@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 
@@ -19,14 +16,10 @@ namespace ToSic.Eav.Configuration
 
         #region Constructor / DI
 
-        public SystemLoader(IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache,
-            // IPresetLoader presetLoader,
-            IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
+        public SystemLoader(IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
         {
             _appsCache = appsCache;
-            //_presetLoader = presetLoader;
             Features = features;
-            _logHistory = logHistory;
             logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
             _fingerprint = fingerprint;
             _runtime = runtime.Init(Log);
@@ -35,9 +28,7 @@ namespace ToSic.Eav.Configuration
         private readonly IFingerprint _fingerprint;
         private readonly IRuntime _runtime;
         private readonly IAppsCache _appsCache;
-        //private readonly IPresetLoader _presetLoader;
         public readonly IFeaturesInternal Features;
-        private readonly LogHistory _logHistory;
 
         #endregion
 
@@ -60,11 +51,11 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// 2021-11-16 2dm - experimental, working on moving global/preset data into a normal AppState #PresetInAppState
         /// </summary>
-        public void LoadPresetApp()
+        private void LoadPresetApp()
         {
             var wrapLog = Log.Call();
             Log.Add("Try to load global app-state");
-            var appState = _runtime.AppState();// _presetLoader.AppState();
+            var appState = _runtime.AppState();
             _appsCache.Add(appState);
             wrapLog("ok");
         }
@@ -77,44 +68,12 @@ namespace ToSic.Eav.Configuration
         [PrivateApi]
         public void Reload()
         {
-            // Reset global data which stores the features
-            LoadRuntimeConfiguration();
-            LoadFeatures();
-        }
-
-        /// <summary>
-        /// All content-types available in Reflection; will cache on the Global.List after first scan
-        /// </summary>
-        /// <returns></returns>
-        private void LoadRuntimeConfiguration()
-        {
-            var log = new Log($"{LogNames.Eav}.Global");
-            log.Add("Load Global Configurations");
-            _logHistory.Add(LogNames.LogHistoryGlobalTypes, log);
-            var wrapLog = log.Call();
-
-            try
-            {
-                //var runtime = _runtime.Init(log);
-                var list = _runtime?.LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();
-                Global.List = list;
-                wrapLog($"{list.Count}");
-            }
-            catch (Exception e)
-            {
-                log.Exception(e);
-                Global.List = new List<IEntity>();
-                wrapLog("error");
-            }
-        }
-
-
-        private void LoadFeatures()
-        {
             FeatureListWithFingerprint feats = null;
             try
             {
-                var entity = Global.For(FeatureConstants.TypeName);
+                var presetApp = _appsCache.Get(null, Constants.PresetIdentity);
+
+                var entity = presetApp.List.FirstOrDefaultOfType(FeatureConstants.TypeName);
                 var featStr = entity?.Value<string>(FeatureConstants.FeaturesField);
                 var signature = entity?.Value<string>(FeatureConstants.SignatureField);
 
@@ -155,7 +114,5 @@ namespace ToSic.Eav.Configuration
             Features.Stored = feats ?? new FeatureList();
             Features.CacheTimestamp = DateTime.Now.Ticks;
         }
-
-
     }
 }
