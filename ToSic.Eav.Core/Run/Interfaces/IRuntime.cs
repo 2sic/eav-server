@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 
@@ -6,6 +7,7 @@ namespace ToSic.Eav.Run
 {
     public interface IRuntime: IHasLog<IRuntime>
     {
+        AppState AppState();
 
         List<IContentType> LoadGlobalContentTypes(int typeIdSeed);
 

@@ -12,9 +12,12 @@ namespace ToSic.Eav.Configuration
         public const string GroupQuery = "query";
         public const string GroupConfiguration = "configuration";
 
-        private const int ContentTypeZeroMaker = 10000000;
-        public const int GlobalContentTypeMin = int.MaxValue / ContentTypeZeroMaker * ContentTypeZeroMaker;
+        private const int MagicZeroMaker = 10000000;
+        public const int GlobalContentTypeMin = int.MaxValue / MagicZeroMaker * MagicZeroMaker;
         public const int GlobalContentTypeSourceSkip = 1000;
+
+        public const int GlobalEntityIdMin = int.MaxValue / MagicZeroMaker * MagicZeroMaker;
+        public const int GlobalEntitySourceSkip = 10000;
 
         /// <summary>
         /// The list is set by the ConfigurationLoader. That must run at application start.
@@ -31,9 +34,9 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// WIP / Experimental
         /// </summary>
-        public static IEntity SystemSettings => List.FirstOrDefault(e => e.Type.Is(ConfigurationConstants.Settings.SystemType));
+        //public static IEntity SystemSettings => List.FirstOrDefault(e => e.Type.Is(ConfigurationConstants.Settings.SystemType));
 
-        public static IEntity SystemResources => List.FirstOrDefault(e => e.Type.Is(ConfigurationConstants.Resources.SystemType));
+        //public static IEntity SystemResources => List.FirstOrDefault(e => e.Type.Is(ConfigurationConstants.Resources.SystemType));
 
         public static object Value(string typeName, string key) => For(typeName)?.Value(key);
 

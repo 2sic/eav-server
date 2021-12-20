@@ -20,14 +20,15 @@ namespace ToSic.Eav.Data
             // If path is empty, use Name as base path
             if (string.IsNullOrEmpty(path)) path = Name ?? "";
 
-            var result = SourcesReal
+            var sources = SourcesReal
                 // .Where(s => s.Value != null)
                 .Select((s, i) => new
                 {
                     s.Key, 
                     Source = s.Value, 
                     Index = i
-                })
+                });
+            var result = sources
                 .SelectMany(s =>
                 {
                     var sourceDump = s.Source._Dump(languages, path, parentLogOrNull);

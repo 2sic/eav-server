@@ -1,26 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
-using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
 {
-    public class GlobalQueries
+    public class GlobalQueries: HasLog
     {
         public const string GlobalEavQueryPrefix = "Eav.Queries.Global.";
         public const string GlobalQueryPrefix = "Global.";
 
         #region Constructor / DI
 
-        public GlobalQueries(Lazy<IRuntime> runtimeLazy, LogHistory logHistory)
+        public GlobalQueries(/*Lazy<IRuntime> runtimeLazy,*/ IAppStates appStates, LogHistory logHistory): base(LogNames.Eav + ".GlbQry")
         {
-            _runtimeLazy = runtimeLazy;
+            //_runtimeLazy = runtimeLazy;
+            _appStates = appStates;
             _logHistory = logHistory;
         }
-        private readonly Lazy<IRuntime> _runtimeLazy;
+        //private readonly Lazy<IRuntime> _runtimeLazy;
+        private readonly IAppStates _appStates;
         private readonly LogHistory _logHistory;
 
         #endregion
@@ -51,13 +51,15 @@ namespace ToSic.Eav.DataSources.Queries
         {
             if (_runtimeCache != null) return _runtimeCache;
 
-            var log = new Log($"{LogNames.Eav}.Global");
-            log.Add("Load Global Queries");
-            _logHistory.Add(LogNames.LogHistoryGlobalTypes, log);
-            var wrapLog = log.Call<List<IEntity>>();
+            Log.Add("Load Global Queries");
+            _logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
+            var wrapLog = Log.Call<List<IEntity>>();
 
-            var runtime = _runtimeLazy.Value.Init(null);
-            _runtimeCache = runtime?.LoadGlobalItems("query")?.ToList() ?? new List<IEntity>();
+            var globalApp = _appStates.Get(Constants.PresetIdentity);
+            var queries = globalApp.List.Where(e => e.Type.Is(Constants.QueryTypeName)).ToList();
+            _runtimeCache = queries;
+            //var runtime = _runtimeLazy.Value.Init(Log);
+            //_runtimeCache = runtime?.LoadGlobalItems("query")?.ToList() ?? new List<IEntity>();
             return wrapLog($"{_runtimeCache?.Count}", _runtimeCache);
         }
 
