@@ -106,7 +106,7 @@ namespace ToSic.Eav.Persistence.File
                 try
                 {
                     Log.Add("Update Loaders to have the latest AppState with Content-Types");
-                    //Loaders.ForEach(l => l.ResetSerializer(appState));
+                    Loaders.ForEach(l => l.ResetSerializer(appState.ContentTypes.ToList()));
 
                     Log.Add("Load config items");
                     var configs = LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();

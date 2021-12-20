@@ -76,6 +76,12 @@ namespace ToSic.Eav.Persistence.File
             serializer.Init(appState, Log);
             _ser = serializer;
         }
+        internal void ResetSerializer(List<IContentType> types)
+        {
+            var serializer = _serviceProvider.Build<JsonSerializer>();
+            serializer.Initialize(AppId, types, null, Log);
+            _ser = serializer;
+        }
 
         #endregion
 
