@@ -73,7 +73,7 @@ namespace ToSic.Eav.Apps
             ITarget target = null)
         {
             var wrapLog = Log.Call<IEntity>(contentTypeName);
-            if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName);
+            if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
             var ids = DataController().Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
             var id = ids.FirstOrDefault();
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
@@ -83,11 +83,11 @@ namespace ToSic.Eav.Apps
             return wrapLog(null, created);
         }
 
-        private static void ProvideOwnerInValues(Dictionary<string, object> values, string userName)
+        private static void ProvideOwnerInValues(Dictionary<string, object> values, string userIdentityToken)
         {
+            // userIdentityToken is not simple 'userName' string, but 2sxc user IdentityToken structure (eg 'dnn:user=N')
             if (values.Any(v => v.Key.ToLowerInvariant() == Attributes.EntityFieldOwner)) return;
-            string owner = userName; // TODO: convert from username to user identifier
-            values.Add(Attributes.EntityFieldOwner, owner);
+            values.Add(Attributes.EntityFieldOwner, userIdentityToken);
         }
 
         /// <inheritdoc />
@@ -99,7 +99,7 @@ namespace ToSic.Eav.Apps
             
             if (!string.IsNullOrEmpty(userName))
                 foreach (var values in multiValues)
-                    ProvideOwnerInValues(values, userName);
+                    ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
 
             var ids = DataController().Create(contentTypeName, multiValues);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
@@ -112,7 +112,7 @@ namespace ToSic.Eav.Apps
         public void Update(int entityId, Dictionary<string, object> values, string userName = null)
         {
             var wrapLog = Log.Call($"app update i:{entityId}");
-            if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName);
+            // userName is not used (to change owner of updated entity).
             DataController().Update(entityId, values);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
@@ -124,7 +124,7 @@ namespace ToSic.Eav.Apps
         public void Delete(int entityId, string userName = null)
         {
             var wrapLog = Log.Call($"app delete i:{entityId}");
-            // TODO: userName is not used, to change owner of deleted entity.
+            // userName is not used (to change owner of deleted entity).
             DataController().Delete(entityId);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
