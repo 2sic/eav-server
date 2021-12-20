@@ -14,16 +14,20 @@ namespace ToSic.Eav.Apps
     [PrivateApi]
     public class AppStateStackCache
     {
-        internal AppStateStackCache(AppState parent, AppState site, AppState global, AppState preset, AppThingsIdentifiers target)
+        internal AppStateStackCache(AppState owner, AppState siteOrNull, AppState global, AppState preset, AppThingsIdentifiers target)
         {
-            Parent = parent;
-            Site = site;
+            Owner = owner;
+            SiteOrNull = siteOrNull;
             Global = global;
             Preset = preset;
             Target = target;
         }
-        private AppState Parent { get; }
-        private AppState Site { get; }
+        private AppState Owner { get; }
+
+        /// <summary>
+        /// Site can be null, if we're on the global App, which doesn't have a site-app...
+        /// </summary>
+        private AppState SiteOrNull { get; }
         private AppState Global { get; }
         private AppState Preset { get; }
         public readonly AppThingsIdentifiers Target;
@@ -40,35 +44,40 @@ namespace ToSic.Eav.Apps
 
         private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack()
         {
+            var cacheExpires = SiteOrNull == null
+                ? new ICacheExpiring[] { Owner, Global }
+                : new ICacheExpiring[] { Owner, SiteOrNull, Global };
             var cachedStack =
                 new SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>(
-                    new CacheExpiringMultiSource(Parent, Site, Global),
-                    () => RebuildStack(Site, Global, Preset));
+                    new CacheExpiringMultiSource(cacheExpires), RebuildStack);
             return cachedStack;
         }
 
 
-        private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(AppState siteApp, AppState globalApp, AppState presetApp)
+        private List<KeyValuePair<string, IPropertyLookup>> RebuildStack()
         {
-            var appThingType = Target.Target;
-            var appStack = Parent.ThingInApp(appThingType);
-            var siteStack = siteApp?.ThingInApp(appThingType);
-            var global = globalApp?.ThingInApp(appThingType);
-            var preset = presetApp?.ThingInApp(appThingType);
+            var thingType = Target.Target;
+            var appStack = Owner.ThingInApp(thingType);
+            var siteOrNull = SiteOrNull?.ThingInApp(thingType);
+            var global = Global?.ThingInApp(thingType);
+            var preset = Preset.ThingInApp(thingType);
 
             var sources = new List<KeyValuePair<string, IPropertyLookup>>
             {
                 // App level
                 new KeyValuePair<string, IPropertyLookup>(PartApp, appStack.MetadataItem),
                 new KeyValuePair<string, IPropertyLookup>(PartAppSystem, appStack.ScopeAny),
+
                 // Site level
-                new KeyValuePair<string, IPropertyLookup>(PartSite, siteStack?.Custom),
-                new KeyValuePair<string, IPropertyLookup>(PartSiteSystem, siteStack?.ScopeAny),
+                new KeyValuePair<string, IPropertyLookup>(PartSite, siteOrNull?.Custom),
+                new KeyValuePair<string, IPropertyLookup>(PartSiteSystem, siteOrNull?.ScopeAny),
+
                 // Global
                 new KeyValuePair<string, IPropertyLookup>(PartGlobal, global?.Custom),
                 new KeyValuePair<string, IPropertyLookup>(PartGlobalSystem, global?.ScopeAny),
+
                 // System Presets
-                new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, preset?.ScopeAny)
+                new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, preset.ScopeAny)
 
                 //new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, appThingType == AppThingsToStack.Resources 
                 //    ? Configuration.Global.SystemResources 

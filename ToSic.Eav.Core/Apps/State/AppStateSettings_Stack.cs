@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Plumbing;
@@ -33,11 +32,14 @@ namespace ToSic.Eav.Apps
 
             // Not yet, so we must build the stack
             var appStates = sp.Build<IAppStates>();
-            var site = appStates.Get(appStates.IdentityOfPrimary(Parent.ZoneId));
+
+            // Site should be skipped on the global zone
+            var site = Owner.ZoneId == Constants.DefaultZoneId ? null : appStates.Get(appStates.IdentityOfPrimary(Owner.ZoneId));
             var global = appStates.Get(Constants.GlobalIdentity);
+
             var preset = appStates.Get(Constants.PresetIdentity);
 
-            _stackCache = new AppStateStackCache(Parent, site, global, preset, Target);
+            _stackCache = new AppStateStackCache(Owner, site, global, preset, Target);
 
             return _stackCache;
         }

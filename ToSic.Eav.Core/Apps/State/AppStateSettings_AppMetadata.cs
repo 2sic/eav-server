@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps
     {
 
         public IEntity AppConfiguration
-            => (_appConfigSynched ?? (_appConfigSynched = BuildSynchedMetadata(Parent, TypeAppConfig))).Value;
+            => (_appConfigSynched ?? (_appConfigSynched = BuildSynchedMetadata(Owner, TypeAppConfig))).Value;
         private SynchronizedObject<IEntity> _appConfigSynched;
         
         internal static SynchronizedObject<IEntity> BuildSynchedMetadata(AppState parent, string staticName)

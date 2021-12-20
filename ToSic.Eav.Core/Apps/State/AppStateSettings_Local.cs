@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The App-Settings or App-Resources
         /// </summary>
-        public IEntity MetadataItem => (_appItemSynced ?? (_appItemSynced = AppStateSettings.BuildSynchedMetadata(Parent, Target.AppType))).Value;
+        public IEntity MetadataItem => (_appItemSynced ?? (_appItemSynced = AppStateSettings.BuildSynchedMetadata(Owner, Target.AppType))).Value;
         private SynchronizedObject<IEntity> _appItemSynced;
 
         ///// <summary>
@@ -56,7 +56,7 @@ namespace ToSic.Eav.Apps
         private SynchronizedEntityList _sysSettingEntities;
 
         private SynchronizedEntityList MakeSyncListOfType(string typeName)
-            => new SynchronizedEntityList(Parent, () => Parent.Index.Values.Where(e => e.Type.Is(typeName)).ToImmutableArray());
+            => new SynchronizedEntityList(Owner, () => Owner.Index.Values.Where(e => e.Type.Is(typeName)).ToImmutableArray());
 
 
         #endregion
