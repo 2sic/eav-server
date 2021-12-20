@@ -29,7 +29,7 @@ namespace ToSic.Eav
         /// - The next block is used to create a topic group, 1 is a guid for an app for now
         /// - The last number block is used to write the number, we'll use 1 for the primary-app
         /// </summary>
-        public const string PrimaryAppGuid = "251c0000-eafe-2592-0001-000000000001";
+        public const string PrimaryAppGuid = "251c0000-eafe-2792-0001-000000000001";
         public const string PrimaryAppName = "Primary";
 
         public const int AppIdEmpty = 0;
