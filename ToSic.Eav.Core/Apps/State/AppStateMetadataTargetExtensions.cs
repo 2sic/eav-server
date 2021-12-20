@@ -24,14 +24,14 @@ namespace ToSic.Eav.Apps
                 case TargetTypes.Attribute:
                     if (!int.TryParse(key, out var keyInt)) return null;
                     var attr = appState.FindAttribute(keyInt);
-                    return attr?.Item1?.Metadata?.MetadataId.Title + "/" + attr?.Item2?.Metadata?.MetadataId.Title;
+                    return attr?.Item1?.Metadata?.Target.Title + "/" + attr?.Item2?.Metadata?.Target.Title;
                 case TargetTypes.App:
-                    return appState.Metadata?.MetadataId.Title;
+                    return appState.Metadata?.Target.Title;
                 case TargetTypes.Entity:
                     if (!Guid.TryParse(key, out var guidKey)) return null;
-                    return appState.List.One(guidKey)?.Metadata?.MetadataId.Title;
+                    return appState.List.One(guidKey)?.Metadata?.Target.Title;
                 case TargetTypes.ContentType:
-                    return appState.GetContentType(key)?.Metadata?.MetadataId.Title;
+                    return appState.GetContentType(key)?.Metadata?.Target.Title;
                 case TargetTypes.Zone:
                     return null;
                 case TargetTypes.CmsItem:

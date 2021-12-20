@@ -51,6 +51,7 @@ namespace ToSic.Eav.Apps
             return null;
         }
 
+        // TODO: USE Parent App!
         private Query GetGlobalQuery(string name)
         {
             var qent = _dependencies.GlobalQueriesLazy.Value.FindQuery(name) 

@@ -203,7 +203,7 @@ namespace ToSic.Eav.Metadata
 
         #region Target
 
-        public ITarget MetadataId
+        public ITarget Target
         {
             get
             {
