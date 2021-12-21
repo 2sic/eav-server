@@ -88,7 +88,9 @@ namespace ToSic.Eav.Apps.Parts
         public bool Delete(int id)
         {
             Log.Add($"delete a#{Parent.AppId}, id:{id}");
-            var canDeleteResult = Parent.Entities.CanDeleteEntityBasedOnDbRelationships(id);
+            // Commented in v13, new implementation is based on AppState.Relationships
+            //var canDeleteResult = Parent.Entities.CanDeleteEntityBasedOnDbRelationships(id);
+            var canDeleteResult = Parent.Entities.CanDeleteEntityBasedOnAppStateRelationships(id);
             if (!canDeleteResult.Item1)
                 throw new Exception(canDeleteResult.Item2);
 

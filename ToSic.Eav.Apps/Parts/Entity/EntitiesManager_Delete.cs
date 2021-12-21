@@ -35,11 +35,16 @@ namespace ToSic.Eav.Apps.Parts
 
         private Dictionary<int, Tuple<bool, string>> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant)
         {
-            var canDeleteList = Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(ids);
+            // Commented in v13, new implementation is based on AppState.Relationships that knows about
+            // relationships with json types (that are missing in db relationships).
+            //var canDeleteList = Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(ids);
+            var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationships(ids);
+
             foreach (var canDelete in canDeleteList)
                 if (!canDelete.Value.Item1 && !force && !skipIfCant)
                     throw new InvalidOperationException(
                         Log.Add($"Can't delete Item {canDelete.Key}. It is used by others: {canDelete.Value.Item2}"));
+
             return canDeleteList;
         }
 
@@ -53,8 +58,39 @@ namespace ToSic.Eav.Apps.Parts
             }
         }
 
-        internal Tuple<bool, string> CanDeleteEntityBasedOnDbRelationships(int entityId) 
-            => Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(new[] {entityId}).First().Value;
+        // Commented in v13, new implementation is based on AppState.Relationships.
+        //internal Tuple<bool, string> CanDeleteEntityBasedOnDbRelationships(int entityId) 
+        //    => Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(new[] {entityId}).First().Value;
+
+        internal Tuple<bool, string> CanDeleteEntityBasedOnAppStateRelationships(int entityId) 
+            => CanDeleteEntitiesBasedOnAppStateRelationships(new[] {entityId}).First().Value;
+
+        private Dictionary<int, Tuple<bool, string>> CanDeleteEntitiesBasedOnAppStateRelationships(int[] ids)
+        {
+            var canDeleteList = new Dictionary<int, Tuple<bool, string>>();
+
+            var relationships = Parent.Read.AppState.Relationships;
+            foreach (var entityId in ids)
+            {
+                var messages = new List<string>();
+
+                var parents = relationships.List.Where(r => r.Child.EntityId == entityId).ToList();
+                if (parents.Any())
+                    messages.Add(
+                        $"found {parents.Count} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
+
+                var children = relationships.List.Where(r => r.Parent.EntityId == entityId).ToList();
+                if (children.Any())
+                    messages.Add(
+                        $"found {children.Count} entities which are metadata for this, assigned children (like in a pipeline) or assigned for other reasons: {string.Join(", ", children)}.");
+
+                canDeleteList.Add(entityId, Tuple.Create(!messages.Any(), string.Join(" ", messages)));
+            }
+
+            if (canDeleteList.Count != ids.Length)
+                throw new Exception("Delete check failed, results doesn't match request");
+            return canDeleteList;
+        }
 
         public bool Delete(Guid guid)
         {
@@ -71,5 +107,19 @@ namespace ToSic.Eav.Apps.Parts
             return callLog(result.ToString(), result);
         }
 
+        private class TempEntityAndTypeInfos
+        {
+            internal int Target;
+
+
+            internal int EntityId;
+            internal int TypeId;
+            internal string TypeName = "";
+
+            public override string ToString() => EntityId + " (" + TypeName + ")";
+
+        }
+
     }
+
 }

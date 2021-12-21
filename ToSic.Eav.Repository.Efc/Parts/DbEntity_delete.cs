@@ -133,68 +133,68 @@ namespace ToSic.Eav.Repository.Efc.Parts
             Log.Add("/DeleteRelationships(...)");
         }
 
+        // Commented in v13, new implementation is based on AppState.Relationships.
+        //internal Dictionary<int, Tuple<bool, string>> CanDeleteEntityBasedOnDbRelationships(int[] entityIds)
+        //{
+        //    var callLog = Log.Call($"can delete entity i:{entityIds.Length}", useTimer: true);
+        //    var entities = GetDbEntities(entityIds);
 
-        internal Dictionary<int, Tuple<bool, string>> CanDeleteEntityBasedOnDbRelationships(int[] entityIds)
-        {
-            var callLog = Log.Call($"can delete entity i:{entityIds.Length}", useTimer: true);
-            var entities = GetDbEntities(entityIds);
+        //    var result = new Dictionary<int, Tuple<bool, string>>();
 
-            var result = new Dictionary<int, Tuple<bool, string>>();
+        //    foreach (var e in entities)
+        //        if (!e.IsPublished && e.PublishedEntityId == null) // always allow Deleting Draft-Only Entity 
+        //            result.Add(e.EntityId, new Tuple<bool, string>(true, null));
+        //    //return new Tuple<bool, string>(true, null);
 
-            foreach (var e in entities)
-                if (!e.IsPublished && e.PublishedEntityId == null) // always allow Deleting Draft-Only Entity 
-                    result.Add(e.EntityId, new Tuple<bool, string>(true, null));
-            //return new Tuple<bool, string>(true, null);
+        //    var rest = entities.Where(e => !result.ContainsKey(e.EntityId)).ToList();
+        //    var restIds = rest.Select(r => r.EntityId).Cast<int?>().ToList();
 
-            var rest = entities.Where(e => !result.ContainsKey(e.EntityId)).ToList();
-            var restIds = rest.Select(r => r.EntityId).Cast<int?>().ToList();
+        //    var allParents = DbContext.SqlDb.ToSicEavEntityRelationships
+        //        .Where(r => restIds.Contains(r.ChildEntityId))
+        //        .Select(r => new TempEntityAndTypeInfos
+        //        {
+        //            Target = r.ChildEntityId ?? -1,
+        //            EntityId = r.ParentEntityId,
+        //            TypeId = r.ParentEntity.AttributeSetId
+        //        })
+        //        .ToList();
+        //    foreach (var entity in rest)
+        //    {
+        //        var entityId = entity.EntityId;
+        //        var messages = new List<string>();
 
-            var allParents = DbContext.SqlDb.ToSicEavEntityRelationships
-                .Where(r => restIds.Contains(r.ChildEntityId))
-                .Select(r => new TempEntityAndTypeInfos
-                {
-                    Target = r.ChildEntityId ?? -1,
-                    EntityId = r.ParentEntityId,
-                    TypeId = r.ParentEntity.AttributeSetId
-                })
-                .ToList();
-            foreach (var entity in rest)
-            {
-                var entityId = entity.EntityId;
-                var messages = new List<string>();
+        //        #region check if there are relationships where this is a child
+        //        //var parents = DbContext.SqlDb.ToSicEavEntityRelationships
+        //        //    .Where(r => r.ChildEntityId == entityId)
+        //        //    .Select(r => new TempEntityAndTypeInfos { EntityId = r.ParentEntityId, TypeId = r.ParentEntity.AttributeSetId })
+        //        //    .ToList();
+        //        var parents = allParents.Where(p => p.Target == entityId).ToList();
+        //        if (parents.Any())
+        //        {
+        //            TryToGetMoreInfosAboutDependencies(parents, messages);
+        //            messages.Add($"found {parents.Count} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
+        //        }
+        //        #endregion
 
-                #region check if there are relationships where this is a child
-                //var parents = DbContext.SqlDb.ToSicEavEntityRelationships
-                //    .Where(r => r.ChildEntityId == entityId)
-                //    .Select(r => new TempEntityAndTypeInfos { EntityId = r.ParentEntityId, TypeId = r.ParentEntity.AttributeSetId })
-                //    .ToList();
-                var parents = allParents.Where(p => p.Target == entityId).ToList();
-                if (parents.Any())
-                {
-                    TryToGetMoreInfosAboutDependencies(parents, messages);
-                    messages.Add($"found {parents.Count} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
-                }
-                #endregion
+        //        // TODO: This doesn't look right - entity-assignments should always be guid, not int - so this is probably wrong
+        //        // Must verify and then change to use the guid instead
 
-                // TODO: This doesn't look right - entity-assignments should always be guid, not int - so this is probably wrong
-                // Must verify and then change to use the guid instead
-
-                var entitiesAssignedToThis = GetAssignedEntities((int)TargetTypes.Entity, entityId)
-                    .Select(e => new TempEntityAndTypeInfos { EntityId = e.EntityId, TypeId = e.AttributeSetId })
-                    .ToList();
-                if (entitiesAssignedToThis.Any())
-                {
-                    TryToGetMoreInfosAboutDependencies(entitiesAssignedToThis, messages);
-                    messages.Add($"found {entitiesAssignedToThis.Count} entities which are metadata for this, assigned children (like in a pipeline) or assigned for other reasons: {string.Join(", ", entitiesAssignedToThis)}.");
-                }
-                result.Add(entityId, Tuple.Create(!messages.Any(), string.Join(" ", messages)));
-            }
-            // var entityId = entityIds.First();
-            if (result.Count != entityIds.Length)
-                throw new Exception("Delete check failed, results doesn't match request");
-            callLog("ok");
-            return result;
-        }
+        //        var entitiesAssignedToThis = GetAssignedEntities((int)TargetTypes.Entity, entityId)
+        //            .Select(e => new TempEntityAndTypeInfos { EntityId = e.EntityId, TypeId = e.AttributeSetId })
+        //            .ToList();
+        //        if (entitiesAssignedToThis.Any())
+        //        {
+        //            TryToGetMoreInfosAboutDependencies(entitiesAssignedToThis, messages);
+        //            messages.Add($"found {entitiesAssignedToThis.Count} entities which are metadata for this, assigned children (like in a pipeline) or assigned for other reasons: {string.Join(", ", entitiesAssignedToThis)}.");
+        //        }
+        //        result.Add(entityId, Tuple.Create(!messages.Any(), string.Join(" ", messages)));
+        //    }
+        //    // var entityId = entityIds.First();
+        //    if (result.Count != entityIds.Length)
+        //        throw new Exception("Delete check failed, results doesn't match request");
+        //    callLog("ok");
+        //    return result;
+        //}
 
         private void TryToGetMoreInfosAboutDependencies(IEnumerable<TempEntityAndTypeInfos> dependencies, List<string> messages)
         {
