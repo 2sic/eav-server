@@ -41,11 +41,25 @@ namespace ToSic.Eav.Metadata
         /// <returns>A typed value. </returns>
         TVal GetBestValue<TVal>(string name, string[] typeNames);
 
-        [PrivateApi("WIP 12.10 - not public")]
-        bool HasType(string name);
+        /// <summary>
+        /// Determine if something has metadata of the specified type
+        /// </summary>
+        /// <param name="typeName">Type Name</param>
+        /// <returns>True if there is at least one item of this type</returns>
+        /// <remarks>
+        /// Added in v13
+        /// </remarks>
+        bool HasType(string typeName);
 
-        [PrivateApi("WIP 12.10 - not public")]
-        IEnumerable<IEntity> OfType(string name);
+        /// <summary>
+        /// Get all Metadata items of a specific type
+        /// </summary>
+        /// <param name="typeName">Type Name</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Added in v13
+        /// </remarks>
+        IEnumerable<IEntity> OfType(string typeName);
 
         /// <summary>
         /// The identifier which was used to retrieve the Metadata.

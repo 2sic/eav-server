@@ -193,11 +193,9 @@ namespace ToSic.Eav.Metadata
 
         #region Type Specific Data
 
-        [PrivateApi("WIP 12.10")]
-        public bool HasType(string name) => this.Any(e => e.Type.Is(name));
+        public bool HasType(string typeName) => this.Any(e => e.Type.Is(typeName));
 
-        [PrivateApi("WIP 12.10")]
-        public IEnumerable<IEntity> OfType(string name) => MetadataWithoutPermissions.OfType(name);
+        public IEnumerable<IEntity> OfType(string typeName) => MetadataWithoutPermissions.OfType(typeName);
 
         #endregion
 
