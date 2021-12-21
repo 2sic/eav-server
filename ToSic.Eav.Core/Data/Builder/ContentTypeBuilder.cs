@@ -6,18 +6,6 @@ namespace ToSic.Eav.Data.Builder
 {
     public static class ContentTypeBuilder
     {
-        // 2021-11-22 2dm removed, seems unused - #cleanup EOY 2021
-        ///// <summary>
-        ///// Shortcut go get a new AttributeSet with Scope=System and Name=StaticName
-        ///// </summary>
-        //public static ContentType SystemAttributeSet(int appId, string staticName, string description,
-        //    List<IContentTypeAttribute> attributes, bool alwaysShareConfiguration = false)
-        //    => new ContentType(appId, staticName, staticName, 0, Constants.ScopeSystem, description, null, 0, 0,
-        //        alwaysShareConfiguration)
-        //    {
-        //        Attributes = attributes
-        //    };
-
         public const int DynTypeId = 1;
         public const string DynTypeDefDescription = "Dynamic content type";
 

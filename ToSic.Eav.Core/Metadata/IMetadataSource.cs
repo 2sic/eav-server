@@ -12,10 +12,6 @@ namespace ToSic.Eav.Metadata
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IMetadataSource: ICacheExpiring
     {
-        // FYI: disabled 2021-11-19, was deprecated since v11.11 #cleanup EOY 2021
-        //[Obsolete("Deprecated in 11.11. Use GetMetadata instead. just keeping this till 2sxc 12 for compatibility")]
-        //IEnumerable<IEntity> Get<T>(int targetType, T key, string contentTypeName = null);
-
         /// <summary>
         /// Get any metadata from the current data source (usually an app)
         /// </summary>
@@ -28,9 +24,5 @@ namespace ToSic.Eav.Metadata
         /// <param name="contentTypeName">Optional content-type name, to only retrieve metadata of that type</param>
         /// <returns>A list (may be empty) of metadata items found for this target</returns>
         IEnumerable<IEntity> GetMetadata<T>(int targetType, T key, string contentTypeName = null);
-
-
-        //[PrivateApi("experimental")]
-        //IMetadataOf GetMetadataOf<T>(int targetType, T key, string title = null);
     }
 }
