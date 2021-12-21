@@ -195,7 +195,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 if(newAttribute.Metadata.Permissions.Any())
                     newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
 
-                newAttribute.Metadata.Use(newMetaList);
+                ((IMetadataInternals)newAttribute.Metadata).Use(newMetaList);
             }
 
             // check if the content-type has metadata, which needs merging

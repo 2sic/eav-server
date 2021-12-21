@@ -47,7 +47,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public ContentTypeAttribute(int appId, string name, string type, List<IEntity> attributeMetadata)
             : this(appId, name, type, false, 0, 0)
-            => Metadata.Use(attributeMetadata);
+            => MetadataInternal.Use(attributeMetadata);
 
 
         /// <summary>
@@ -59,11 +59,13 @@ namespace ToSic.Eav.Data
 
 
         #region Metadata and Permissions
-        /// <inheritdoc />
-        public IMetadataOf Metadata
-            => _metadata ?? (_metadata = new MetadataOf<int>((int)TargetTypes.Attribute, AttributeId, _metaSourceFinder, Name + " (" + Type + ")"));
 
-        private IMetadataOf _metadata;
+        /// <inheritdoc />
+        public IMetadataOf Metadata => MetadataInternal;
+
+        private MetadataOf<int> MetadataInternal 
+            => _metadata ?? (_metadata = new MetadataOf<int>((int)TargetTypes.Attribute, AttributeId, _metaSourceFinder, Name + " (" + Type + ")"));
+        private MetadataOf<int> _metadata;
         private readonly Func<IHasMetadataSource> _metaSourceFinder;
 
         /// <inheritdoc />

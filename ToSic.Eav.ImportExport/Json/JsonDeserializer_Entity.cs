@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Json
@@ -81,7 +82,7 @@ namespace ToSic.Eav.ImportExport.Json
                 var mdItems = jEnt.Metadata
                     .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
                     .ToList();
-                newEntity.Metadata.Use(mdItems);
+                ((IMetadataInternals)newEntity.Metadata).Use(mdItems);
             }
 
             // build attributes - based on type definition

@@ -117,7 +117,7 @@ namespace ToSic.Eav.Apps
         /// <inheritdoc />
         public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
         {
-            if(key == null) return new IEntity[0];
+            if(key == null) return Array.Empty<IEntity>();
             var type = typeof(TMetadataKey);
             type = Nullable.GetUnderlyingType(type) ?? type;
 
@@ -143,7 +143,7 @@ namespace ToSic.Eav.Apps
                 return contentTypeName == null
                     ? entities
                     : entities.Where(e => e.Type.Is(contentTypeName));
-            return new List<IEntity>();
+            return Array.Empty<IEntity>();
         }
     }
 }

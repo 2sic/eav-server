@@ -23,24 +23,18 @@ namespace ToSic.Eav.Metadata
         /// <summary>
         /// initialize using an already prepared metadata source
         /// </summary>
-        public MetadataOf(int targetType, T key, IHasMetadataSource metaProvider, string targetIdentifier) : this(targetType, key, targetIdentifier)
-        {
-            _appMetadataProvider = metaProvider;
-        }
+        public MetadataOf(int targetType, T key, IHasMetadataSource metaProvider, string targetIdentifier) : this(targetType, key, targetIdentifier) 
+            => _appMetadataProvider = metaProvider;
 
         /// <summary>
         /// initialize using an already prepared metadata source
         /// </summary>
-        public MetadataOf(int targetType, T key, Func<IHasMetadataSource> metaSourceRemote, string targetIdentifier) : this(targetType, key, targetIdentifier)
-        {
-            _metaSourceRemote = metaSourceRemote;
-        }
+        public MetadataOf(int targetType, T key, Func<IHasMetadataSource> metaSourceRemote, string targetIdentifier) : this(targetType, key, targetIdentifier) 
+            => _metaSourceRemote = metaSourceRemote;
 
         /// <summary>
         /// Inner constructor, primarily needed by this and inheriting classes
         /// </summary>
-        /// <param name="targetType"></param>
-        /// <param name="key"></param>
         private MetadataOf(int targetType, T key, string targetIdentifier)
         {
             _targetType = targetType;
@@ -67,7 +61,7 @@ namespace ToSic.Eav.Metadata
         /// <summary>
         /// The key which identifies the item we're enriching with metadata
         /// </summary>
-        public T Key { get; }
+        protected T Key { get; }
 
         /// <summary>
         /// All entities is internal - because it contains everything
@@ -96,9 +90,7 @@ namespace ToSic.Eav.Metadata
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
                 if (_metadataWithoutPermissions == null || RequiresReload())
                     _metadataWithoutPermissions = AllWithHidden
-                        // 2021-11-19 changed to use Permission.IsPermission - if stable #cleanup EOY 2021
                         .Where(md => !Permission.IsPermission(md))
-                        //.Where(md => new[] {Permission.TypeName  }.Any(e => e != md.Type.Name && e != md.Type.StaticName))
                         .ToList();
                 return _metadataWithoutPermissions;
             }
@@ -112,9 +104,7 @@ namespace ToSic.Eav.Metadata
             {
                 if (_permissions == null || RequiresReload())
                     _permissions = AllWithHidden
-                        // 2021-11-19 changed to use Permission.IsPermission - if stable #cleanup EOY 2021
                         .Where(Permission.IsPermission)
-                        //.Where(md => md.Type.StaticName == Permission.TypeName)
                         .Select(e => new Permission(e));
                 return _permissions;
             }

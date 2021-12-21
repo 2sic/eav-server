@@ -15,12 +15,6 @@ namespace ToSic.Eav.Metadata
     [PublicApi_Stable_ForUseInYourCode]
     public interface IMetadataOf: IEnumerable<IEntity>, IHasPermissions
     {
-        /// <summary>
-        /// Internal API to override metadata providing, for example when creating new entities before saving.
-        /// </summary>
-        /// <param name="items"></param>
-        [PrivateApi]
-        void Use(List<IEntity> items);
 
         /// <summary>
         /// Get the best matching value in ALL the metadata items.

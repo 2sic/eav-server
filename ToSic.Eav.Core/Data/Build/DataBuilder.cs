@@ -24,6 +24,8 @@ namespace ToSic.Eav.Data
 
         #endregion
 
+        public const int DefaultAppId = 0;
+        public const int DefaultEntityId = 0;
         public const string DefaultTypeName = "unspecified";
 
         /// <inheritdoc />
@@ -31,8 +33,8 @@ namespace ToSic.Eav.Data
         public IEntity Entity(
             Dictionary<string, object> values = null,
             string noParamOrder = Parameters.Protector,
-            int appId = 0,
-            int id = 0,
+            int appId = DefaultAppId,
+            int id = DefaultEntityId,
             string titleField = null,
             string typeName = DefaultTypeName,
             ContentType type = null,
