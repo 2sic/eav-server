@@ -173,7 +173,7 @@ namespace ToSic.Eav.Metadata
         /// <inheritdoc />
         public TVal GetBestValue<TVal>(string name, string typeName = null)
         {
-            var list = typeName == null ? this : this.Where(md => md.Type.Is(typeName));
+            var list = typeName == null ? MetadataWithoutPermissions : OfType(typeName);
             var found = list.FirstOrDefault(md => md.Attributes.ContainsKey(name));
             return found == null ? default : found.GetBestValue<TVal>(name, null);
         }
@@ -197,7 +197,7 @@ namespace ToSic.Eav.Metadata
         public bool HasType(string name) => this.Any(e => e.Type.Is(name));
 
         [PrivateApi("WIP 12.10")]
-        public IEnumerable<IEntity> OfType(string name) => this.Where(e => e.Type.Is(name));
+        public IEnumerable<IEntity> OfType(string name) => MetadataWithoutPermissions.OfType(name);
 
         #endregion
 

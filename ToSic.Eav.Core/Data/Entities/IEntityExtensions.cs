@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Documentation;
 
@@ -92,10 +91,10 @@ namespace ToSic.Eav.Data
 
         // Todo #OptimizeOfType
 
-        public static IEnumerable<IEntity> OfContentType(this IEnumerable<IEntity> list, IContentType type)
+        public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, IContentType type)
             => list.Where(e => e.Type == type);
 
-        public static IEnumerable<IEntity> OfContentType(this IEnumerable<IEntity> list, string typeName)
+        public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, string typeName)
         {
 #if DEBUG
             countOneOfContentType++;

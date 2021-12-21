@@ -88,7 +88,7 @@ namespace ToSic.Eav.DataSources.Queries
         }
 
         public static IImmutableList<IEntity> QueryEntities(AppState appState)
-            => appState.List.OfContentType(Constants.QueryTypeName).ToImmutableList();
+            => appState.List.OfType(Constants.QueryTypeName).ToImmutableList();
 
         //public static IEntity FindByName(IImmutableList<IEntity> queries, string name) 
         //    => queries.FirstOrDefault(e => e.Value<string>("Name") == name);

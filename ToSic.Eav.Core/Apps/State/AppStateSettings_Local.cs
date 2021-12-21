@@ -56,8 +56,7 @@ namespace ToSic.Eav.Apps
         private SynchronizedEntityList _sysSettingEntities;
 
         private SynchronizedEntityList MakeSyncListOfType(string typeName) 
-            => new SynchronizedEntityList(Owner,
-                () => Owner.List.OfContentType(typeName)/*.Where(e => e.Type.Is(typeName))*/.ToImmutableArray());
+            => new SynchronizedEntityList(Owner, () => Owner.List.OfType(typeName).ToImmutableArray());
 
 
         #endregion

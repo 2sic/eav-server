@@ -99,7 +99,7 @@ namespace ToSic.Eav.Data
 
             // Optionally filter by type
 	        if (!string.IsNullOrEmpty(type) && rels.Any())
-	            rels = rels.Where(e => e.Type.Is(type)).ToList();
+	            rels = rels.OfType(type).ToList();
 	        wrap?.Invoke(rels.Count.ToString());
 	        return rels;
 	    }
