@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -74,12 +75,16 @@ namespace ToSic.Eav.Apps.Parts
             {
                 var messages = new List<string>();
 
-                var parents = relationships.List.Where(r => r.Child.EntityId == entityId).ToList();
+                var parents = relationships.List.Where(r => r.Child.EntityId == entityId)
+                    .Select(r => TryToGetMoreInfosAboutDependency(r.Parent)).ToList();
+
                 if (parents.Any())
                     messages.Add(
                         $"found {parents.Count} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
 
-                var children = relationships.List.Where(r => r.Parent.EntityId == entityId).ToList();
+                var children = relationships.List.Where(r => r.Parent.EntityId == entityId)
+                    .Select(r => TryToGetMoreInfosAboutDependency(r.Child)).ToList();
+
                 if (children.Any())
                     messages.Add(
                         $"found {children.Count} entities which are metadata for this, assigned children (like in a pipeline) or assigned for other reasons: {string.Join(", ", children)}.");
@@ -90,6 +95,18 @@ namespace ToSic.Eav.Apps.Parts
             if (canDeleteList.Count != ids.Length)
                 throw new Exception("Delete check failed, results doesn't match request");
             return canDeleteList;
+        }
+
+        private string TryToGetMoreInfosAboutDependency(IEntity dependency)
+        {
+            try
+            {
+                return dependency.Type.Name;
+            }
+            catch
+            {
+                return "Relationships but was not able to look up more details to show a nicer error.";
+            }
         }
 
         public bool Delete(Guid guid)
@@ -105,19 +122,6 @@ namespace ToSic.Eav.Apps.Parts
             var result = Delete(ids.ToArray(), null, false, true);
             //var result = ids.Aggregate(true, (current, entityId) => current && Delete(entityId, null, false, true));
             return callLog(result.ToString(), result);
-        }
-
-        private class TempEntityAndTypeInfos
-        {
-            internal int Target;
-
-
-            internal int EntityId;
-            internal int TypeId;
-            internal string TypeName = "";
-
-            public override string ToString() => EntityId + " (" + TypeName + ")";
-
         }
 
     }

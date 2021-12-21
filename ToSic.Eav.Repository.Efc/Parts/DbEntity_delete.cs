@@ -196,31 +196,31 @@ namespace ToSic.Eav.Repository.Efc.Parts
         //    return result;
         //}
 
-        private void TryToGetMoreInfosAboutDependencies(IEnumerable<TempEntityAndTypeInfos> dependencies, List<string> messages)
-        {
-            try
-            {
-                // try to get more infos about the parents
-                foreach (var dependency in dependencies)
-                    dependency.TypeName = DbContext.AttribSet.GetDbAttribSet(dependency.TypeId).Name;
-            }
-            catch
-            {
-                messages.Add("Relationships but was not able to look up more details to show a nicer error.");
-            }
-        }
+        //private void TryToGetMoreInfosAboutDependencies(IEnumerable<TempEntityAndTypeInfos> dependencies, List<string> messages)
+        //{
+        //    try
+        //    {
+        //        // try to get more infos about the parents
+        //        foreach (var dependency in dependencies)
+        //            dependency.TypeName = DbContext.AttribSet.GetDbAttribSet(dependency.TypeId).Name;
+        //    }
+        //    catch
+        //    {
+        //        messages.Add("Relationships but was not able to look up more details to show a nicer error.");
+        //    }
+        //}
 
-        private class TempEntityAndTypeInfos
-        {
-            internal int Target;
+        //private class TempEntityAndTypeInfos
+        //{
+        //    internal int Target;
 
 
-            internal int EntityId;
-            internal int TypeId;
-            internal string TypeName = "";
+        //    internal int EntityId;
+        //    internal int TypeId;
+        //    internal string TypeName = "";
 
-            public override string ToString() => EntityId + " (" + TypeName + ")";
+        //    public override string ToString() => EntityId + " (" + TypeName + ")";
 
-        }
+        //}
     }
 }
