@@ -72,7 +72,7 @@ namespace ToSic.Eav.DataSources
                     if (!GetRequiredInList(out var originals))
                         return wrapLog("error", originals);
 
-                    return wrapLog("fast", originals.OfType(foundType).ToImmutableArray());
+                    return wrapLog("fast", originals.OfContentType(foundType).ToImmutableArray());
                 }
 	        }
 	        catch { /* ignore */ }
@@ -82,7 +82,7 @@ namespace ToSic.Eav.DataSources
             if (!GetRequiredInList(out var originals2))
                 return wrapLog("error", originals2);
             
-	        return wrapLog("slower", originals2.OfType(TypeName).ToImmutableArray());
+	        return wrapLog("slower", originals2.OfContentType(TypeName).ToImmutableArray());
 	    }
 
 	}

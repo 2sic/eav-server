@@ -11,5 +11,15 @@
         internal const string V3To4DataSourceDllNew = ", ToSic.Eav.DataSources";
 
         #endregion
+
+        /// <summary>
+        /// Global queries must start with this prefix
+        /// </summary>
+        public const string GlobalEavQueryPrefix = "Eav.Queries.Global.";
+
+        /// <summary>
+        /// Unsure what this is for, and if there are actually any queries that match this!
+        /// </summary>
+        public const string GlobalQueryPrefix = "Global.";
     }
 }

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace ToSic.Eav.Data
 {
     public class LazyFastAccess
     {
-        public LazyFastAccess(IEnumerable<IEntity> list) => _list = list;
+        public LazyFastAccess(IImmutableList<IEntity> list) => _list = list;
 
         public IEntity Get(int id)
         {
@@ -53,11 +54,26 @@ namespace ToSic.Eav.Data
             return result;
         }
 
+        public IImmutableList<IEntity> OfType(string name)
+        {
+#if DEBUG
+            IEntityExtensions.countOneOfContentTypeOpt++;
+#endif
+            if (_ofType.TryGetValue(name, out var found)) return found;
+
+            var newEntry = _list.Where(e => e.Type.Is(name)).ToImmutableArray();
+            _ofType.TryAdd(name, newEntry);
+            return newEntry;
+        }
+
         private readonly IEnumerable<IEntity> _list;
 
         private readonly ConcurrentDictionary<int, IEntity> _byInt = new ConcurrentDictionary<int, IEntity>();
         private readonly ConcurrentDictionary<int, IEntity> _byRepoId = new ConcurrentDictionary<int, IEntity>();
         private readonly ConcurrentDictionary<Guid, IEntity> _byGuid = new ConcurrentDictionary<Guid, IEntity>();
         private readonly ConcurrentDictionary<int, bool> _has = new ConcurrentDictionary<int, bool>();
+
+        private readonly ConcurrentDictionary<string, IImmutableList<IEntity>> _ofType =
+            new ConcurrentDictionary<string, IImmutableList<IEntity>>(StringComparer.InvariantCultureIgnoreCase);
     }
 }

@@ -138,11 +138,11 @@ namespace ToSic.Eav.Apps
         private static IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, List<IEntity>>> list, int targetType, T key, string contentTypeName)
         {
             // ReSharper disable once CollectionNeverUpdated.Local
-            if (list.TryGetValue(targetType, out var keyDict))
-                if (keyDict.TryGetValue(key, out var entities))
-                    return contentTypeName == null
-                        ? entities
-                        : entities.Where(e => e.Type.Is(contentTypeName));
+            if (list.TryGetValue(targetType, out var keyDict)
+                && keyDict.TryGetValue(key, out var entities))
+                return contentTypeName == null
+                    ? entities
+                    : entities.Where(e => e.Type.Is(contentTypeName));
             return new List<IEntity>();
         }
     }

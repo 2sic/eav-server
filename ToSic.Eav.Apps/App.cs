@@ -1,7 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
@@ -32,22 +31,19 @@ namespace ToSic.Eav.Apps
             internal readonly ISite Site;
             internal readonly IAppStates AppStates;
             internal readonly DataSourceFactory DataSourceFactory;
-            internal readonly Lazy<GlobalQueries> GlobalQueriesLazy;
 
             public AppDependencies(
                 IServiceProvider serviceProvider,
                 IZoneMapper zoneMapper,
                 ISite site,
                 IAppStates appStates,
-                DataSourceFactory dataSourceFactory,
-                Lazy<GlobalQueries> globalQueriesLazy)
+                DataSourceFactory dataSourceFactory)
             {
                 ServiceProvider = serviceProvider;
                 ZoneMapper = zoneMapper;
                 Site = site;
                 AppStates = appStates;
                 DataSourceFactory = dataSourceFactory;
-                GlobalQueriesLazy = globalQueriesLazy;
             }
         }
         [PrivateApi]
