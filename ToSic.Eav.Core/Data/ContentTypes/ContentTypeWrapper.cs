@@ -48,10 +48,7 @@ namespace ToSic.Eav.Data
 
         public ContentTypeMetadata Metadata => GetContents().Metadata;
 
-        public bool Is(string name)
-        {
-            return GetContents().Is(name);
-        }
+        public bool Is(string name) => GetContents().Is(name);
 
         public string DynamicChildrenField => GetContents().DynamicChildrenField;
 

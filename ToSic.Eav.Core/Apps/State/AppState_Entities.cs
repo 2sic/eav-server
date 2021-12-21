@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
@@ -13,14 +15,12 @@ namespace ToSic.Eav.Apps
         /// The simple list of <em>all</em> entities, used everywhere
         /// </summary>
         public IImmutableList<IEntity> List
-            => ListSyncInternal?.List ?? (ListSyncInternal = new SynchronizedEntityList(this, () => Index.Values.ToImmutableArray())).List;
-        internal SynchronizedEntityList ListSyncInternal;
+            => (ListCache ?? (ListCache = new SynchronizedEntityList(this, () => Index.Values.ToImmutableArray()))).List;
+        internal SynchronizedEntityList ListCache;
 
         IEnumerable<IEntity> IEntitiesSource.List => List;
 
         internal Dictionary<int, IEntity> Index { get; } = new Dictionary<int, IEntity>();
-
-
 
         /// <summary>
         /// Add an entity to the cache. Should only be used by EAV code

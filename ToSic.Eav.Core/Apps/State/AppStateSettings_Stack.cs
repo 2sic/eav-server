@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps
             var site = Owner.ZoneId == Constants.DefaultZoneId ? null : appStates.Get(appStates.IdentityOfPrimary(Owner.ZoneId));
             var global = appStates.Get(Constants.GlobalIdentity);
 
-            var preset = appStates.Get(Constants.PresetIdentity);
+            var preset = appStates.GetPresetApp();
 
             _stackCache = new AppStateStackCache(Owner, site, global, preset, Target);
 
