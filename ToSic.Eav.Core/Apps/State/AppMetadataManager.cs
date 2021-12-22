@@ -130,6 +130,9 @@ namespace ToSic.Eav.Apps
             }
         }
 
+        public IEnumerable<IEntity> GetMetadata<T>(TargetTypes targetType, T key, string contentTypeName = null) 
+            => GetMetadata<T>((int)targetType, key, contentTypeName);
+
         private static IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, List<IEntity>>> list, int targetType, T key, string contentTypeName)
         {
             // ReSharper disable once CollectionNeverUpdated.Local

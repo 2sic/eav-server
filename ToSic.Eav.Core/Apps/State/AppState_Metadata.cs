@@ -13,6 +13,10 @@ namespace ToSic.Eav.Apps
 	    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
             => _metadataManager.GetMetadata(targetType, key, contentTypeName);
 
+        /// <inheritdoc />
+        public IEnumerable<IEntity> GetMetadata<TKey>(TargetTypes targetType, TKey key, string contentTypeName = null)
+            => _metadataManager.GetMetadata(targetType, key, contentTypeName);
+
         public IMetadataOf GetMetadataOf<T>(int targetType, T key, string title = null) => new MetadataOf<T>(targetType, key, this, title);
 
 

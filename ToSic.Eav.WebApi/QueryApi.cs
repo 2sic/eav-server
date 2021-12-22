@@ -108,7 +108,7 @@ namespace ToSic.Eav.WebApi
             foreach (var part in qDef.Parts)
             {
                 var partDto = part.AsDictionary();
-                var metadata = reader.AppState.GetMetadata((int)TargetTypes.Entity, part.Guid);
+                var metadata = reader.AppState.GetMetadata(TargetTypes.Entity, part.Guid);
                 partDto.Add("Metadata", converter.Convert(metadata));
                 query.DataSources.Add(partDto);
             }

@@ -44,7 +44,7 @@ namespace ToSic.Eav.Data
             // add the guid metadata on entity if it has a real guid
             // this is kind of wrong, because it should use the type MetadataForContentType
             // but this slipped in a long time ago, and we cannot change it any more
-            var additional = GetMetadataSource()?.GetMetadata((int)TargetTypes.Entity, ctGuid)
+            var additional = GetMetadataSource()?.GetMetadata(TargetTypes.Entity, ctGuid)
                                  .ToList()
                              ?? new List<IEntity>();
             Use(AllWithHidden.Concat(additional).ToList());

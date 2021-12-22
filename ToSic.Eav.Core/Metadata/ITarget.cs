@@ -24,7 +24,8 @@ namespace ToSic.Eav.Metadata
         /// This is an ID telling what kind of thing we're enhancing. 
         /// </summary>
         /// <remarks>
-        /// In 2sxc 8 - 12 this is called AssignmentObjectTypeId in the DB, but will change some day. 
+        /// - In 2sxc 8 - 12 this is called AssignmentObjectTypeId in the DB, but will change some day.
+        /// - It must be an int, not a <see cref="TargetTypes"/> enum, because the DB could hold values which are not in the enum
         /// </remarks>
         /// <returns>An ID from the system which registers all the types of things that can be described. See also <see cref="ITargetTypes"/>.</returns>
         [JsonProperty("Target", NullValueHandling = NullValueHandling.Ignore)]
