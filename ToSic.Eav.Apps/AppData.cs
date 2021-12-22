@@ -151,14 +151,8 @@ namespace ToSic.Eav.Apps
         public IEnumerable<IEntity> GetMetadata<TKey>(TargetTypes targetType, TKey key, string contentTypeName = null) 
             => AppState.GetMetadata(targetType, key, contentTypeName);
 
-        /// <summary>
-        /// Get metadata of TargetType.Custom - which is the most common way your code will need Metadata.
-        /// </summary>
-        /// <typeparam name="TKey">Key data type</typeparam>
-        /// <param name="key">The target identifier - a number, string or Guid</param>
-        /// <param name="contentTypeName">Optional name of Content-Type, if you only want items of a specific type</param>
-        /// <returns></returns>
-        public  IEnumerable<IEntity> GetCustomMetadata<TKey>(TKey key, string contentTypeName = null)
+        /// <inheritdoc />
+        public IEnumerable<IEntity> GetCustomMetadata<TKey>(TKey key, string contentTypeName = null)
             => AppState.GetMetadata(TargetTypes.Custom, key, contentTypeName);
     }
 }

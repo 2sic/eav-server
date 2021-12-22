@@ -61,5 +61,14 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         [Obsolete("This shouldn't be available any more, will be removed ca. v14")]
         IMetadataSource Metadata { get; }
+
+        /// <summary>
+        /// Get metadata of TargetType.Custom - which is the most common way your code will need Metadata.
+        /// </summary>
+        /// <typeparam name="TKey">Key data type</typeparam>
+        /// <param name="key">The target identifier - a number, string or Guid</param>
+        /// <param name="contentTypeName">Optional name of Content-Type, if you only want items of a specific type</param>
+        /// <returns></returns>
+        IEnumerable<IEntity> GetCustomMetadata<TKey>(TKey key, string contentTypeName = null);
     }
 }
