@@ -37,8 +37,8 @@ namespace ToSic.Eav.Apps
             Metadata = appState.Metadata;
 
             // Get the content-items describing various aspects of this app
-            AppResources = appState.ResourcesInApp.MetadataItem; //.Get(_dependencies.ServiceProvider, AppThingsToStack.Resources).MetadataItem;
-            AppSettings = appState.SettingsInApp.MetadataItem; // .Get(_dependencies.ServiceProvider, AppThingsToStack.Settings).MetadataItem;
+            AppResources = appState.ResourcesInApp.MetadataItem;
+            AppSettings = appState.SettingsInApp.MetadataItem;
             AppConfiguration = appState.SettingsInApp.AppConfiguration;
             // in some cases these things may be null, if the app was created not allowing side-effects
             // This can usually happen when new apps are being created

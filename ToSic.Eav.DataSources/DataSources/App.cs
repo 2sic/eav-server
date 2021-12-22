@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps;
+﻿using System;
+using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
@@ -93,7 +94,12 @@ namespace ToSic.Eav.DataSources
             Attach(Constants.DefaultStreamName, newDs);
 		}
 
-        protected AppState AppState => _appState ?? (_appState = _appStates.Get(this));
+		[PrivateApi]
+		[Obsolete("Will probably be removed in v14")]
+		// TODO: cause obsolete warning when used! #Deprecated
+        public IMetadataSource Metadata => AppState;
+
+		protected AppState AppState => _appState ?? (_appState = _appStates.Get(this));
         private AppState _appState;
     }
 

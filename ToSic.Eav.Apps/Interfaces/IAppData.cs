@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
@@ -57,6 +58,8 @@ namespace ToSic.Eav.Apps
         /// So the App DataSource automatically provides direct access to the metadata system.
         /// This allows users of the App to query metadata directly through this object. 
         /// </summary>
-        IMetadataOf Metadata { get; }
+        [PrivateApi]
+        [Obsolete("This shouldn't be available any more, will be removed ca. v14")]
+        IMetadataSource Metadata { get; }
     }
 }

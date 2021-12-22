@@ -144,10 +144,6 @@ namespace ToSic.Eav.Apps
         }
 
         /// <inheritdoc />
-        public IMetadataOf Metadata => AppState.Metadata;
-
-
-        /// <inheritdoc />
         public IEnumerable<IEntity> GetMetadata<TKey>(int targetType, TKey key, string contentTypeName = null) 
             => AppState.GetMetadata(targetType, key, contentTypeName);
 
