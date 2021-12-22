@@ -56,13 +56,53 @@ namespace ToSic.Eav.Metadata
         Zone = 6,
 
         /// <summary>
-        /// Item / Object of the Platform, like a User, File etc. (10)
+        /// Item / Object of the Platform, like a File or Folder etc. (10)
         /// </summary>
         /// <remarks>
         /// * The key is usually a string to further specify what it's describing, like "file:72"
         /// * The text equivalent is CmsObject
         /// </remarks>
         CmsItem = 10,
+
+        /// <summary>
+        /// The entire system / platform - so Metadata for the current Dnn/Oqtane installation (11).
+        /// </summary>
+        /// <remarks>
+        /// This is not in use as of now, just added for completeness sakes.
+        /// New in v13
+        /// </remarks>
+        System = 11,
+
+        /// <summary>A Site - like the current site (12)</summary>
+        /// <remarks>New in v13</remarks>
+        Site = 12,
+
+        /// <summary>A Site - like the current site (13)</summary>
+        /// <remarks>New in v13 / beta</remarks>
+        [PrivateApi]
+        SiteVariant = 13,
+
+        /// <summary>A Page - like the current page (14)</summary>
+        /// <remarks>New in v13</remarks>
+        Page = 14,
+
+        /// <summary>A Page - like the current page (15)</summary>
+        /// <remarks>New in v13 / beta</remarks>
+        [PrivateApi]
+        PageVariant = 15,
+
+        /// <summary>A Module - like a module containing some content (16)</summary>
+        /// <remarks>New in v13</remarks>
+        Module = 16,
+
+        /// <summary>A Module - like a module containing some content (17)</summary>
+        /// <remarks>New in v13 / beta</remarks>
+        [PrivateApi]
+        ModuleVariant = 17,
+
+        /// <summary>A User - like the admin-user (18)</summary>
+        /// <remarks>New in v13</remarks>
+        User = 18,
 
         /// <summary>
         /// Custom target (90). This is what you should use for basic apps which have a custom target that's none of the other defaults.
