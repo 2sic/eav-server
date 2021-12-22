@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSources
 
             // now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
             // because the "real" source already applies filters like published
-            var appState = _appStates.Get(this);
+            var appState = AppState;
             var listOfTypes = appState.ContentTypes;
             var showDrafts = GetShowDraftStatus();
             var typeList = "";
