@@ -124,8 +124,8 @@ namespace ToSic.Eav.WebApi
         /// <param name="force">try to force-delete</param>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        public void Delete(string contentType, int id, bool force = false) 
-            => _appManagerLazy.Value.Init(AppRead, AppRead.Log).Entities.Delete(id, contentType, force);
+        public void Delete(string contentType, int id, bool force = false, int? parentId = null, string parentField = null) 
+            => _appManagerLazy.Value.Init(AppRead, AppRead.Log).Entities.Delete(id, contentType, force, false, parentId, parentField);
 
         /// <summary>
         /// Delete the entity specified by GUID.
@@ -135,8 +135,8 @@ namespace ToSic.Eav.WebApi
         /// <param name="force"></param>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        public void Delete(string contentType, Guid entityGuid, bool force = false) 
-            => Delete(contentType, AppRead.Entities.Get(entityGuid).EntityId, force);
+        public void Delete(string contentType, Guid entityGuid, bool force = false, int? parentId = null, string parentField = null) 
+            => Delete(contentType, AppRead.Entities.Get(entityGuid).EntityId, force, parentId, parentField);
 
 
         /// <summary>

@@ -30,7 +30,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// Needs edit-permissions, as the item-list can also be accessed from the toolbar in certain cases.
         /// Will do permission checks internally.
         /// </remarks>
-        void Delete(string contentType, int id, int appId, bool force = false);
+        void Delete(string contentType, int id, int appId, bool force = false, int? parentId = null, string parentField = null);
 
         /// <summary>
         /// Delete an item from the admin-UI
@@ -43,7 +43,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// Needs edit-permissions, as the item-list can also be accessed from the toolbar in certain cases.
         /// Will do permission checks internally.
         /// </remarks>
-        void Delete(string contentType, Guid guid, int appId, bool force = false);
+        void Delete(string contentType, Guid guid, int appId, bool force = false, int? parentId = null, string parentField = null);
 
         /// <summary>
         /// Used to be GET ContentExport/DownloadEntityAsJson

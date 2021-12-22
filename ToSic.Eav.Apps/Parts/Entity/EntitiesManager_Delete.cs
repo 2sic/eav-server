@@ -7,8 +7,8 @@ namespace ToSic.Eav.Apps.Parts
 {
     public partial class EntitiesManager
     {
-        public bool Delete(int id, string contentType = null, bool force = false, bool skipIfCant = false) 
-            => Delete(new[] {id}, contentType, force, skipIfCant);
+        public bool Delete(int id, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null) 
+            => Delete(new[] {id}, contentType, force, skipIfCant, parentId, parentField);
 
         /// <summary>
         /// delete an entity
@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="skipIfCant">skip deleting if relationships exist and force is false</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool Delete(int[] ids, string contentType = null, bool force = false, bool skipIfCant = false)
+        public bool Delete(int[] ids, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null)
         {
             var callLog = Log.Call<bool>($"delete id:{ids.Length}, type:{contentType}, force:{force}", useTimer: true);
 
@@ -27,19 +27,19 @@ namespace ToSic.Eav.Apps.Parts
             BatchCheckTypesMatch(ids, contentType);
 
             // check if we can delete, or throw exception
-            var oks = BatchCheckCanDelete(ids, force, skipIfCant);
+            var oks = BatchCheckCanDelete(ids, force, skipIfCant, parentId, parentField);
 
             var ok = Parent.DataController.Entities.DeleteEntity(ids, true, true);
             SystemManager.PurgeApp(Parent.AppId);
             return callLog(ok.ToString(), ok);
         }
 
-        private Dictionary<int, Tuple<bool, string>> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant)
+        private Dictionary<int, Tuple<bool, string>> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant, int? parentId = null, string parentField = null)
         {
             // Commented in v13, new implementation is based on AppState.Relationships that knows about
             // relationships with json types (that are missing in db relationships).
             //var canDeleteList = Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(ids);
-            var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationships(ids);
+            var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationships(ids, parentId, parentField);
 
             foreach (var canDelete in canDeleteList)
                 if (!canDelete.Value.Item1 && !force && !skipIfCant)
@@ -63,10 +63,10 @@ namespace ToSic.Eav.Apps.Parts
         //internal Tuple<bool, string> CanDeleteEntityBasedOnDbRelationships(int entityId) 
         //    => Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(new[] {entityId}).First().Value;
 
-        internal Tuple<bool, string> CanDeleteEntityBasedOnAppStateRelationships(int entityId) 
-            => CanDeleteEntitiesBasedOnAppStateRelationships(new[] {entityId}).First().Value;
+        internal Tuple<bool, string> CanDeleteEntityBasedOnAppStateRelationships(int entityId, int? parentId = null, string parentField = null) 
+            => CanDeleteEntitiesBasedOnAppStateRelationships(new[] {entityId}, parentId, parentField).First().Value;
 
-        private Dictionary<int, Tuple<bool, string>> CanDeleteEntitiesBasedOnAppStateRelationships(int[] ids)
+        private Dictionary<int, Tuple<bool, string>> CanDeleteEntitiesBasedOnAppStateRelationships(int[] ids, int? parentId = null, string parentField = null)
         {
             var canDeleteList = new Dictionary<int, Tuple<bool, string>>();
 
@@ -75,19 +75,29 @@ namespace ToSic.Eav.Apps.Parts
             {
                 var messages = new List<string>();
 
-                var parents = relationships.List.Where(r => r.Child.EntityId == entityId)
-                    .Select(r => TryToGetMoreInfosAboutDependency(r.Parent)).ToList();
+                var parents = relationships.List.Where(r => r.Child.EntityId == entityId).ToList();
 
-                if (parents.Any())
+                // when have it, ignore first relation with part
+                if (parentId.HasValue && !string.IsNullOrEmpty(parentField))
+                {
+                    var parentToIgnore = parents.FirstOrDefault(r => r.Parent.EntityId == parentId && r.Parent.Attributes.ContainsKey(parentField));
+                    if (parentToIgnore != null) parents.Remove(parentToIgnore);
+                }
+
+                var parentsInfoForMessages = parents.Select(r => TryToGetMoreInfosAboutDependency(r.Parent)).ToList();
+
+                if (parentsInfoForMessages.Any())
                     messages.Add(
-                        $"found {parents.Count} relationships where this is a child - the parents are: {string.Join(", ", parents)}.");
+                        $"found {parentsInfoForMessages.Count} relationships where this is a child - the parents are: {string.Join(", ", parentsInfoForMessages)}.");
 
                 var children = relationships.List.Where(r => r.Parent.EntityId == entityId)
                     .Select(r => TryToGetMoreInfosAboutDependency(r.Child)).ToList();
 
                 if (children.Any())
                     messages.Add(
-                        $"found {children.Count} entities which are metadata for this, assigned children (like in a pipeline) or assigned for other reasons: {string.Join(", ", children)}.");
+                        $"found {children.Count} entities which are assigned children: {string.Join(", ", children)}.");
+
+                // TODO: stv - check metadeta
 
                 canDeleteList.Add(entityId, Tuple.Create(!messages.Any(), string.Join(" ", messages)));
             }
