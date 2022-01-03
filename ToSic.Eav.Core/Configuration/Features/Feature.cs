@@ -11,7 +11,26 @@ namespace ToSic.Eav.Configuration
         /// Feature GUID
         /// </summary>
         [JsonProperty("id")]
-        public Guid Id;
+        public Guid Id { get; }
+
+        /// <summary>
+        /// Feature String ID
+        /// </summary>
+        [JsonProperty("sid")]
+        public string Sid { get; }
+
+        /// <summary>
+        /// A nice name / title for showing in UIs
+        /// </summary>
+        [JsonProperty("name")]
+        public string Name { get; }
+
+        /// <summary>
+        /// A nice description
+        /// </summary>
+        [JsonProperty("description")]
+        public string Description { get; }
+
 
         /// <summary>
         /// Feature is enabled and hasn't expired yet
@@ -52,13 +71,36 @@ namespace ToSic.Eav.Configuration
         public bool? Public { get; set; }
 
 
-        public Feature() { }
-
         public Feature(Guid id, bool? ui, bool? isPublic)
         {
             Id = id;
             Ui = ui;
             Public = isPublic;
+        }
+
+        public Feature(string sid, Guid guid,  string name, bool isPublic, bool ui, string description = "")
+        {
+            Id = guid;
+            Sid = sid;
+            Name = name;
+            Public = isPublic;
+            Ui = ui;
+            Description = description;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="original">This can be null!</param>
+        /// <param name="guidIfUnknown">The feature guid, in case it's a feature which isn't known</param>
+        public Feature(Feature original, Guid guidIfUnknown)
+        {
+            Id = original?.Id ?? guidIfUnknown;
+            Sid = original?.Sid;
+            Name = original?.Name;
+            Public = original?.Public;
+            Ui = original?.Ui;
+            Description = original?.Description;
         }
     }
 }

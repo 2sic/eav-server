@@ -56,7 +56,7 @@ namespace ToSic.Eav.Configuration
         #region Static Caches
 
         [PrivateApi]
-        public FeatureList Stored
+        public FeatureListWithFingerprint Stored
         {
             get => _stored;
             set
@@ -65,26 +65,22 @@ namespace ToSic.Eav.Configuration
                 _all = null;
             }
         }
-        private static FeatureList _stored;
+        private static FeatureListWithFingerprint _stored;
 
 
-        private static FeatureList Merge(FeatureList config, FeatureList cat)
+        private static FeatureList Merge(FeatureListWithFingerprint config, FeatureList cat)
         {
             var feats = config.Features.Select(f =>
             {
                 var inCat = cat.Features.FirstOrDefault(c => c.Id == f.Id);
-                return new Feature
+                return new Feature(inCat, f.Id)
                 {
-                    Id = f.Id,
                     Enabled = f.Enabled,
                     Expires = f.Expires,
-                    Public = f.Public ?? inCat?.Public,
-                    Ui = f.Ui ?? inCat?.Ui
                 };
             }).ToList();
 
             return new FeatureList(feats);
-
         }
 
 
