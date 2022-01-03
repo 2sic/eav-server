@@ -13,7 +13,9 @@ namespace ToSic.Eav.Configuration
             "Paste from Clipboard",
             true,
             true,
-            "Enable paste image from clipboard into a wysiwyg or file field.");
+            "Enable paste image from clipboard into a wysiwyg or file field.",
+            new FeatureSecurity(0, "Should not affect security profile")
+        );
 
         public static readonly Feature WysiwygPasteFormatted = new Feature(
             "WysiwygPasteFormatted",
@@ -21,7 +23,10 @@ namespace ToSic.Eav.Configuration
             "Paste Formatted Text",
             true,
             true,
-            "Paste formatted text into WYSIWYG TinyMCE");
+            "Paste formatted text into WYSIWYG TinyMCE",
+            new FeatureSecurity(2,
+                "Should not affect security, unless a TinyMCE bug allows adding script tags or similar which could result in XSS.")
+        );
 
         public static readonly Feature PublicEditForm = new Feature(
             "PublicEditForm",
@@ -30,7 +35,9 @@ namespace ToSic.Eav.Configuration
             true,
             false,
             "Allows non-editors to use the Edit-Form to edit/create data. <br>" +
-            "This is for commands like @Edit.Enable(...) or certain IPageService.Activate(...)");
+            "This is for commands like @Edit.Enable(...) or certain IPageService.Activate(...)",
+            new FeatureSecurity(4, "Could affect security if a bug would allow saving data without permission checks.")
+        );
 
 
         public static readonly Feature PublicUploadFiles = new Feature(
@@ -41,7 +48,9 @@ namespace ToSic.Eav.Configuration
             false,
             "Allow non-editors to upload files. <br>" +
             "With this enabled, public forms will allow file-upload with ADAM. Otherwise it will be disabled. <br>" +
-            "Note that each of these fields must also have the permissions set allowing an upload. This is to prevent uploads on fields which were just meant to hold a link. ");
+            "Note that each of these fields must also have the permissions set allowing an upload. This is to prevent uploads on fields which were just meant to hold a link.",
+            new FeatureSecurity(4, "Could affect security if a bug allows saving files with bad extensions.")
+        );
 
         public static readonly Feature SaveInAdamApi = new Feature(
             "SaveInAdamApi",
@@ -49,7 +58,8 @@ namespace ToSic.Eav.Configuration
             "SaveInAdam API",
             false,
             false,
-            "Enable the SaveInAdam command in Razor / C#. Otherwise, SaveInAdam(...) will be refused, and custom WebAPIs trying to do this (like Mobius forms with Upload) will throw an error."
+            "Enable the SaveInAdam command in Razor / C#. Otherwise, SaveInAdam(...) will be refused, and custom WebAPIs trying to do this (like Mobius forms with Upload) will throw an error.",
+            new FeatureSecurity(4, "Could affect security if a bug allows saving files with bad extensions.")
         );
 
         public static readonly Feature PermissionCheckUsers = new Feature(
@@ -58,7 +68,9 @@ namespace ToSic.Eav.Configuration
             "Permission Check based on User",
             true,
             false,
-            "Enable permission checks by user (User ID)");
+            "Enable permission checks by user (User ID)",
+            new FeatureSecurity(1, "Could affect security if a bug in security checks doesn't correctly match IDs.")
+        );
 
         public static readonly Feature PermissionCheckGroups = new Feature(
             "PermissionCheckGroups",
@@ -66,7 +78,9 @@ namespace ToSic.Eav.Configuration
             "Permission Check based on Group",
             true,
             false,
-            "Enable permission checks to use the Groups a user belongs to based on the Group/Role-ID");
+            "Enable permission checks to use the Groups a user belongs to based on the Group/Role-ID",
+            new FeatureSecurity(1, "Could affect security if a bug in security checks doesn't correctly match IDs.")
+        );
 
         // TODO: Probably change how this setting is used, so it's "Enable..." and defaults to true ?
         // ATM only used in azing, so still easy to change
@@ -77,7 +91,9 @@ namespace ToSic.Eav.Configuration
             "BlockFileResolveOutsideOfEntityAdam (BETA, not final)",
             false,
             false,
-            "If enabled, then links like 'file:72' will only work if the file is inside the ADAM of the current Entity.");
+            "If enabled, then links like 'file:72' will only work if the file is inside the ADAM of the current Entity.",
+            new FeatureSecurity(0, "Actually increases security.")
+        );
 
 
         public static readonly Feature WebFarmCache = new Feature(
@@ -86,7 +102,9 @@ namespace ToSic.Eav.Configuration
             "Web Farm Cache",
             false,
             false,
-            "Enables WebFarm Cache use in Dnn");
+            "Enables WebFarm Cache use in Dnn",
+            new FeatureSecurity(0, "Not expected to affect security.")
+        );
 
         /// <summary>
         /// The catalog contains known features, and knows if they are used in the UI

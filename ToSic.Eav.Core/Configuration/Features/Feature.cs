@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
@@ -10,7 +9,6 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// Feature GUID
         /// </summary>
-        //[JsonProperty("id")]
         public Guid Guid { get; }
 
         /// <summary>
@@ -54,8 +52,7 @@ namespace ToSic.Eav.Configuration
         /// <remarks>
         /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
         /// </remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public bool? Ui { get; set; }
+        public bool Ui { get; }
 
         /// <summary>
         /// If true, this feature will be provided to the Ui
@@ -64,22 +61,21 @@ namespace ToSic.Eav.Configuration
         /// <remarks>
         /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
         /// </remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public bool? Public { get; set; }
+        public bool Public { get; }
 
 
-        public Feature(Guid guid, bool? ui, bool? isPublic)
-        {
-            Guid = guid;
-            Ui = ui;
-            Public = isPublic;
-        }
+        /// <summary>
+        /// If true, this feature has security implications
+        /// If null or false, it's either unknown or doesn't have security implications
+        /// </summary>
+        public FeatureSecurity Security { get; }
 
-        public Feature(string nameId, Guid guid,  string name, bool isPublic, bool ui, string description = "")
+        public Feature(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security)
         {
             Guid = guid;
             NameId = nameId;
             Name = name;
+            Security = security;
             Public = isPublic;
             Ui = ui;
             Description = description;
@@ -93,11 +89,13 @@ namespace ToSic.Eav.Configuration
         public Feature(Feature original, Guid guidIfUnknown)
         {
             Guid = original?.Guid ?? guidIfUnknown;
-            NameId = original?.NameId;
-            Name = original?.Name;
-            Public = original?.Public;
-            Ui = original?.Ui;
-            Description = original?.Description;
+            if(original == null) return;
+            Description = original.Description;
+            Name = original.Name;
+            NameId = original.NameId;
+            Public = original.Public;
+            Security = original.Security;
+            Ui = original.Ui;
         }
     }
 }
