@@ -19,7 +19,7 @@ namespace ToSic.Eav.Configuration
     }
 
     [PrivateApi("no good reason to publish this")]
-    public class FeatureListWithFingerprint
+    public class FeatureListStored
     {
         [JsonProperty("features")]
         public List<FeatureConfig> Features;

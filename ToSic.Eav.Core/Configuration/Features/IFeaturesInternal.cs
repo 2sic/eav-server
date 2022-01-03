@@ -33,7 +33,7 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         string InfoLinkRoot { get; }
 
-        FeatureListWithFingerprint Stored { get; set; }
+        FeatureListStored Stored { get; set; }
         long CacheTimestamp { get; set; }
     }
 }

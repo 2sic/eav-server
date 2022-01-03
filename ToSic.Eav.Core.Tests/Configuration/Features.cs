@@ -12,25 +12,25 @@ namespace ToSic.Eav.Core.Tests.Configuration
         [TestMethod]
         public void Features_Export_Test()
         {
-            var x = new FeatureList();
-            x.Features.Add(new Feature(new Guid(), null, null)
+            var x = new FeatureListStored();
+            x.Features.Add(new FeatureConfig
             {
+                Id = new Guid(),
                 Enabled = true,
-                //Id = new Guid(),
                 Expires = DateTime.Today
             });
 
-            x.Features.Add(new Feature(new Guid(), null, null)
+            x.Features.Add(new FeatureConfig
             {
+                Id = new Guid(),
                 Enabled = false,
-                //Id = new Guid(),
                 Expires = DateTime.Today
             });
 
-            x.Features.Add(new Feature(new Guid(), null, null)
+            x.Features.Add(new FeatureConfig
             {
+                Id = new Guid(),
                 Enabled = false,
-                //Id = new Guid(),
                 Expires = DateTime.Today.AddDays(-1)
             });
 

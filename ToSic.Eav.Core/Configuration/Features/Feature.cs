@@ -10,25 +10,22 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// Feature GUID
         /// </summary>
-        [JsonProperty("id")]
-        public Guid Id { get; }
+        //[JsonProperty("id")]
+        public Guid Guid { get; }
 
         /// <summary>
         /// Feature String ID
         /// </summary>
-        [JsonProperty("sid")]
-        public string Sid { get; }
+        public string NameId { get; }
 
         /// <summary>
         /// A nice name / title for showing in UIs
         /// </summary>
-        [JsonProperty("name")]
         public string Name { get; }
 
         /// <summary>
         /// A nice description
         /// </summary>
-        [JsonProperty("description")]
         public string Description { get; }
 
 
@@ -36,7 +33,7 @@ namespace ToSic.Eav.Configuration
         /// Feature is enabled and hasn't expired yet
         /// </summary>
         /// <remarks>by default all features are disabled</remarks>
-        [JsonProperty("enabled")]
+        //[JsonProperty("enabled")]
         public bool Enabled
         {
             get => _enabled && Expires > DateTime.Now;
@@ -47,7 +44,7 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// Expiry of this feature
         /// </summary>
-        [JsonProperty("expires")]
+        //[JsonProperty("expires")]
         public DateTime Expires { get; set; } = DateTime.MaxValue;
 
         /// <summary>
@@ -57,7 +54,7 @@ namespace ToSic.Eav.Configuration
         /// <remarks>
         /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
         /// </remarks>
-        [JsonProperty("ui", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool? Ui { get; set; }
 
         /// <summary>
@@ -67,21 +64,21 @@ namespace ToSic.Eav.Configuration
         /// <remarks>
         /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
         /// </remarks>
-        [JsonProperty("public", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool? Public { get; set; }
 
 
-        public Feature(Guid id, bool? ui, bool? isPublic)
+        public Feature(Guid guid, bool? ui, bool? isPublic)
         {
-            Id = id;
+            Guid = guid;
             Ui = ui;
             Public = isPublic;
         }
 
-        public Feature(string sid, Guid guid,  string name, bool isPublic, bool ui, string description = "")
+        public Feature(string nameId, Guid guid,  string name, bool isPublic, bool ui, string description = "")
         {
-            Id = guid;
-            Sid = sid;
+            Guid = guid;
+            NameId = nameId;
             Name = name;
             Public = isPublic;
             Ui = ui;
@@ -95,8 +92,8 @@ namespace ToSic.Eav.Configuration
         /// <param name="guidIfUnknown">The feature guid, in case it's a feature which isn't known</param>
         public Feature(Feature original, Guid guidIfUnknown)
         {
-            Id = original?.Id ?? guidIfUnknown;
-            Sid = original?.Sid;
+            Guid = original?.Guid ?? guidIfUnknown;
+            NameId = original?.NameId;
             Name = original?.Name;
             Public = original?.Public;
             Ui = original?.Ui;

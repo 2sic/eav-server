@@ -13,7 +13,7 @@ namespace ToSic.Eav.Configuration
 
         public IEnumerable<Feature> Ui => All.Where(f => f.Enabled && f.Ui == true);
 
-        public bool Enabled(Guid guid) => All.Any(f => f.Id == guid && f.Enabled);
+        public bool Enabled(Guid guid) => All.Any(f => f.Guid == guid && f.Enabled);
 
         public bool Enabled(IEnumerable<Guid> guids) => guids.All(Enabled);
 
@@ -56,7 +56,7 @@ namespace ToSic.Eav.Configuration
         #region Static Caches
 
         [PrivateApi]
-        public FeatureListWithFingerprint Stored
+        public FeatureListStored Stored
         {
             get => _stored;
             set
@@ -65,14 +65,14 @@ namespace ToSic.Eav.Configuration
                 _all = null;
             }
         }
-        private static FeatureListWithFingerprint _stored;
+        private static FeatureListStored _stored;
 
 
-        private static FeatureList Merge(FeatureListWithFingerprint config, FeatureList cat)
+        private static FeatureList Merge(FeatureListStored config, FeatureList cat)
         {
             var feats = config.Features.Select(f =>
             {
-                var inCat = cat.Features.FirstOrDefault(c => c.Id == f.Id);
+                var inCat = cat.Features.FirstOrDefault(c => c.Guid == f.Id);
                 return new Feature(inCat, f.Id)
                 {
                     Enabled = f.Enabled,

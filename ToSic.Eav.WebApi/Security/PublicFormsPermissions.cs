@@ -16,7 +16,7 @@ namespace ToSic.Sxc.WebApi.Security
             var userIsRestricted = !mpa.UserMayOnAll(GrantSets.WritePublished);
 
             // 2. check if feature is enabled
-            var feats = new[] { FeaturesCatalog.PublicEditForm.Id };
+            var feats = new[] { FeaturesCatalog.PublicEditForm.Guid };
             var sysFeatures = sp.Build<IFeaturesInternal>();
             if (userIsRestricted && !sysFeatures.Enabled(feats))
             {

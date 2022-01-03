@@ -75,7 +75,7 @@ namespace ToSic.Eav.Configuration
         public void LoadFeatures()
         {
             var wrapLog = Log.Call();
-            FeatureListWithFingerprint feats = null;
+            FeatureListStored feats = null;
             try
             {
                 var presetApp = _appsCache.Get(null, Constants.PresetIdentity);
@@ -105,7 +105,7 @@ namespace ToSic.Eav.Configuration
                     if (FeaturesService.ValidInternal || FeatureConstants.AllowUnsignedFeatures)
                     {
                         var feats2 = featStr.StartsWith("{") 
-                            ? JsonConvert.DeserializeObject<FeatureListWithFingerprint>(featStr) 
+                            ? JsonConvert.DeserializeObject<FeatureListStored>(featStr) 
                             : null;
 
                         if (feats2 != null)
@@ -126,7 +126,7 @@ namespace ToSic.Eav.Configuration
                 Log.Exception(ex);
             }
 
-            Features.Stored = feats ?? new FeatureListWithFingerprint();
+            Features.Stored = feats ?? new FeatureListStored();
             Features.CacheTimestamp = DateTime.Now.Ticks;
             wrapLog("ok");
         }
