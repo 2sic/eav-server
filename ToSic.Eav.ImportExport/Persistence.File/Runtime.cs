@@ -75,7 +75,7 @@ namespace ToSic.Eav.Persistence.File
         private List<FileSystemLoader> _loader;
 
 
-        public AppState AppState()
+        public AppState LoadFullAppState()
         {
 
             var outerWrapLog = Log.Call<AppState>();
@@ -134,6 +134,39 @@ namespace ToSic.Eav.Persistence.File
             });
 
             return outerWrapLog("ok", appState);
+        }
+
+        /// <summary>
+        /// Reload App Configuration Items from the File System
+        /// </summary>
+        public void UpdateConfig()
+        {
+            var mainWrap = Log.Call();
+            var appStates = _serviceProvider.Build<IAppStates>();
+            var appState = appStates.GetPresetApp();
+
+            appState.Load(() =>
+            {
+                var wrapLog = Log.Call(message: "Inside loader");
+                try
+                {
+                    Log.Add("Load config items");
+                    var configs = LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();
+                    Log.Add($"Found {configs.Count} items");
+                    var featuresOnly = configs.Where(e => e.Type.Is(FeatureConstants.TypeName)).ToList();
+                    Log.Add($"Found {featuresOnly.Count} items which are {FeatureConstants.TypeName}");
+                    foreach (var c in featuresOnly) appState.Add(c as Entity, null, true);
+                }
+                catch (Exception ex)
+                {
+                    Log.Add("Error updating config");
+                    Log.Exception(ex);
+                }
+
+                wrapLog("done");
+            });
+
+            mainWrap("ok");
         }
     }
 }

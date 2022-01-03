@@ -22,13 +22,19 @@ namespace ToSic.Eav.Configuration
             Features = features;
             logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
             _fingerprint = fingerprint;
-            _runtime = runtime.Init(Log);
+            _appStateLoader = runtime.Init(Log);
         }
 
         private readonly IFingerprint _fingerprint;
-        private readonly IRuntime _runtime;
+        private readonly IRuntime _appStateLoader;
         private readonly IAppsCache _appsCache;
         public readonly IFeaturesInternal Features;
+
+        public SystemLoader Init(ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            return this;
+        }
 
         #endregion
 
@@ -45,7 +51,7 @@ namespace ToSic.Eav.Configuration
             LoadPresetApp();
 
             // Now do a normal reload of configuration and features
-            Reload();
+            LoadFeatures();
         }
 
         /// <summary>
@@ -55,7 +61,7 @@ namespace ToSic.Eav.Configuration
         {
             var wrapLog = Log.Call();
             Log.Add("Try to load global app-state");
-            var appState = _runtime.AppState();
+            var appState = _appStateLoader.LoadFullAppState();
             _appsCache.Add(appState);
             wrapLog("ok");
         }
@@ -63,11 +69,12 @@ namespace ToSic.Eav.Configuration
         private bool _startupAlreadyRan;
 
         /// <summary>
-        /// Reset the features to force reloading of the features
+        /// Pre-Load enabled / disabled global features
         /// </summary>
         [PrivateApi]
-        public void Reload()
+        public void LoadFeatures()
         {
+            var wrapLog = Log.Call();
             FeatureListWithFingerprint feats = null;
             try
             {
@@ -81,26 +88,29 @@ namespace ToSic.Eav.Configuration
                 if (!string.IsNullOrWhiteSpace(featStr))
                 {
                     if (!string.IsNullOrWhiteSpace(signature))
-                    {
                         try
                         {
                             var data = new UnicodeEncoding().GetBytes(featStr);
-                            FeaturesService.ValidInternal = new Sha256().VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930, signature, data);
+                            FeaturesService.ValidInternal =
+                                new Sha256().VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930,
+                                    signature, data);
                         }
-                        catch { /* ignore */ }
-                    }
+                        catch (Exception ex)
+                        {
+                            // Just log, and ignore
+                            Log.Exception(ex);
+                        }
 
                     // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                     if (FeaturesService.ValidInternal || FeatureConstants.AllowUnsignedFeatures)
                     {
-                        FeatureListWithFingerprint feats2 = null;
-                        if (featStr.StartsWith("{"))
-                            feats2 = JsonConvert.DeserializeObject<FeatureListWithFingerprint>(featStr);
+                        var feats2 = featStr.StartsWith("{") 
+                            ? JsonConvert.DeserializeObject<FeatureListWithFingerprint>(featStr) 
+                            : null;
 
                         if (feats2 != null)
                         {
-                            var fingerprint = feats2.Fingerprint;
-                            if (fingerprint != _fingerprint.GetSystemFingerprint()) 
+                            if (feats2.Fingerprint != _fingerprint.GetSystemFingerprint())
                                 FeaturesService.ValidInternal = false;
 
                             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
@@ -110,9 +120,25 @@ namespace ToSic.Eav.Configuration
                     }
                 }
             }
-            catch { /* ignore */ }
-            Features.Stored = feats ?? new FeatureList();
+            catch (Exception ex)
+            {
+                // Just log and ignore
+                Log.Exception(ex);
+            }
+
+            Features.Stored = feats ?? new FeatureListWithFingerprint();
             Features.CacheTimestamp = DateTime.Now.Ticks;
+            wrapLog("ok");
+        }
+
+        /// <summary>
+        /// Reset the features to force reloading of the features
+        /// </summary>
+        [PrivateApi]
+        public void ReloadFeatures()
+        {
+            _appStateLoader.UpdateConfig();
+            LoadFeatures();
         }
     }
 }

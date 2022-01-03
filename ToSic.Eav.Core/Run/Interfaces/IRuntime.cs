@@ -1,17 +1,12 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Run
 {
     public interface IRuntime: IHasLog<IRuntime>
     {
-        AppState AppState();
+        AppState LoadFullAppState();
 
-        List<IContentType> LoadGlobalContentTypes(int typeIdSeed);
-
-        IEnumerable<Data.IEntity> LoadGlobalItems(string groupIdentifier);
-
+        void UpdateConfig();
     }
 }

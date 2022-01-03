@@ -23,7 +23,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
         {
             // Make sure that features are ready to use
             var sysLoader = Build<SystemLoader>();
-            sysLoader.Reload();
+            sysLoader.LoadFeatures();
         }
     }
 }
