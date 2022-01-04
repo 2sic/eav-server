@@ -92,7 +92,7 @@ namespace ToSic.Eav.Data
         // Todo #OptimizeOfType
 
         public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, IContentType type)
-            => list.Where(e => Equals(e.Type, type));
+            => list.Where(e => type.Equals(e.Type));
 
         public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, string typeName)
         {

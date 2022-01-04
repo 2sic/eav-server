@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps
 	        if (!Loading)
 	            throw new Exception("trying to set content-types, but not in loading state. set that first!");
 
-            if (_metadataManager == null || List.Any())
+            if (_metadataManager == null || Index.Any())
 	            throw new Exception("can't set content types before setting Metadata manager, or after entities-list already exists");
 
 	        _appTypeMap = contentTypes

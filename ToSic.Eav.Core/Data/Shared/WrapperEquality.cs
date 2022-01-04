@@ -1,4 +1,5 @@
-﻿namespace ToSic.Eav.Data
+﻿
+namespace ToSic.Eav.Data
 {
     /// <summary>
     /// Contains comparison methods for all Entity Wrappers
@@ -40,6 +41,8 @@
         {
             if (obj is null) return false;
             if (ReferenceEquals(parent, obj)) return true;
+            // This is a check if it's exactly that type, but it could be an inherited type, so false must fall to the next check
+            if (obj is T && parent.RootContentsForEqualityCheck.Equals(obj)) return true;
             return obj is IMultiWrapper<T> wrapper && EqualsWrapper(parent, wrapper);
         }
 

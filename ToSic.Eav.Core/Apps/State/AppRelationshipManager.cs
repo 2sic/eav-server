@@ -25,14 +25,15 @@ namespace ToSic.Eav.Apps
             // will have multiple lookups - first to find the json, then to add to relationship index
 
             var cache = new List<EntityRelationship>();
-
+            Dictionary<int, IEntity> index = appState.Index;
             foreach (var entity in appState.List)
-                foreach (var attribute in entity.Attributes.Select(a => a.Value)
-                    .Where(a => a is IAttribute<IEnumerable<IEntity>>)
-                    .Cast<IAttribute<IEnumerable<IEntity>>>()
+                foreach (var attribute in entity.Attributes
+                             .Select(a => a.Value)
+                             .Where(a => a is IAttribute<IEnumerable<IEntity>>)
+                             .Cast<IAttribute<IEnumerable<IEntity>>>()
                 )
-                foreach (var val in ((LazyEntities) attribute.Typed[0].TypedContents).EntityIds.Where(e => e != null))
-                    Add(appState, cache, entity.EntityId, val);
+                foreach (var val in ((LazyEntities)attribute.Typed[0].TypedContents).EntityIds.Where(e => e != null))
+                    Add(index, cache, entity.EntityId, val);
 
             return cache.ToImmutableArray();
         }
@@ -47,9 +48,9 @@ namespace ToSic.Eav.Apps
                 (attrib.TypedContents as LazyEntities).AttachLookupList(_upstreamApp);
         }
 
-        private static void Add(AppState appState, List<EntityRelationship> list, int parent, int? child)
+        private static void Add(IReadOnlyDictionary<int, IEntity> lookup, List<EntityRelationship> list, int parent, int? child)
         {
-            var lookup = appState.Index;
+            //var lookup = appState.Index;
             if (lookup.ContainsKey(parent) &&
                 (!child.HasValue || lookup.ContainsKey(child.Value)))
                 list.Add(new EntityRelationship(lookup[parent],

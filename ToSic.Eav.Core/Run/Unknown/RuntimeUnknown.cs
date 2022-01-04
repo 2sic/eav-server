@@ -14,7 +14,7 @@ namespace ToSic.Eav.Run.Unknown
             return this;
         }
 
-        public AppState LoadFullAppState() => new AppState(new ParentAppState(null, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogNames.NotImplemented));
+        public AppState LoadFullAppState() => new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogNames.NotImplemented));
 
         public void UpdateConfig() { /* do nothing */ }
     }

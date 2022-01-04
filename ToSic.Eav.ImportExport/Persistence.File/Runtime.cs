@@ -80,7 +80,7 @@ namespace ToSic.Eav.Persistence.File
 
             var outerWrapLog = Log.Call<AppState>();
 
-            var appState = new AppState(new ParentAppState(null, false), Constants.PresetIdentity, Constants.PresetName, Log);
+            var appState = new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);
 
             appState.Load(() =>
             {

@@ -23,9 +23,9 @@ namespace ToSic.Eav.Apps
             CacheTimestamp = DateTime.Now.Ticks + offset;
             if (prevTimeStamp == CacheTimestamp) CacheTimestamp++;
 
-            CacheStatistics.Update(CacheTimestamp, Index?.Count ?? 0, message);
+            CacheStatistics.Update(CacheTimestamp, Index.Count, message);
             Log.Add($"cache reset to stamp {CacheTimestamp} = {CacheTimestamp.ToReadable()}");
-            Log.Add($"Stats: ItemCount: {Index?.Count}; ResetCount: {CacheStatistics.ResetCount}  Message: '{message}'");
+            Log.Add($"Stats: ItemCount: {Index.Count}; ResetCount: {CacheStatistics.ResetCount}  Message: '{message}'");
         }
 
 

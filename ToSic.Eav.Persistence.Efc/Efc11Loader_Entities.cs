@@ -40,7 +40,7 @@ namespace ToSic.Eav.Persistence.Efc
             #region Prepare & Extend EntityIds
 
             if (entityIds == null)
-                entityIds = new int[0];
+                entityIds = Array.Empty<int>();
 
             var filterByEntityIds = entityIds.Any();
 

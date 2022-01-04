@@ -19,6 +19,7 @@ namespace ToSic.Eav.Apps
         {
             ParentApp = parentApp;
             Log.Add($"AppState for App {app.AppId}");
+            Log.Add($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");
             Init(app, new CodeRef(), parentLog);
             AppGuidName = appGuidName;
             

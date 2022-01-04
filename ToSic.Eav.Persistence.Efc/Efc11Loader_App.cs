@@ -42,7 +42,7 @@ namespace ToSic.Eav.Persistence.Efc
             {
                 // todo: pre-load the real parent
                 var testParentApp = _appStates.Get(ancestorAppId);
-                parent = new ParentAppState(testParentApp, true);
+                parent = new ParentAppState(testParentApp, true, true);
             }
             else
             {
@@ -50,7 +50,7 @@ namespace ToSic.Eav.Persistence.Efc
                 var globalApp = _appStates.GetPresetApp();
                 if (globalApp == null)
                     throw new Exception("Can't find global app - which is required to build any other apps. ");
-                parent = new ParentAppState(globalApp, true);
+                parent = new ParentAppState(globalApp, true, false);
             }
 
 

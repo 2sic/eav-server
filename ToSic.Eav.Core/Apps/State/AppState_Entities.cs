@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -14,9 +13,17 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The simple list of <em>all</em> entities, used everywhere
         /// </summary>
-        public IImmutableList<IEntity> List
-            => (ListCache ?? (ListCache = new SynchronizedEntityList(this, () => Index.Values.ToImmutableArray()))).List;
+        public IImmutableList<IEntity> List => (ListCache ?? (ListCache = new SynchronizedEntityList(this, BuildList()))).List;
         internal SynchronizedEntityList ListCache;
+
+        private Func<IImmutableList<IEntity>> BuildList()
+        {
+            // todo: check if feature is enabled #SharedAppFeatureEnabled
+            return !ParentApp.InheritEntities
+                ? (Func<IImmutableList<IEntity>>)(() => Index.Values.ToImmutableArray())
+                : () => Index.Values.Concat(ParentApp.Entities).ToImmutableArray();
+        }
+
 
         IEnumerable<IEntity> IEntitiesSource.List => List;
 
