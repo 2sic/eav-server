@@ -5,7 +5,8 @@
         // nodes which are actually 2sxc-specific, and should be refactored some time
         public const string Root = "SexyContentData";
         public const string Root97 = "ContentData"; // import supports new name in 2sxc 9.7, but we won't export it with this name yet
-        public const string CtTemplate = "2SexyContent-Template-ContentTypes"; // old name, for old import/export format
+        // Keep this commented till End of June 2022 #cleanUp #oldTemplates #2631
+        //public const string CtTemplate = "2SexyContent-Template-ContentTypes"; // old name, for old import/export format
 
         public const string EntityGuid = Data.Attributes.GuidNiceName;
 

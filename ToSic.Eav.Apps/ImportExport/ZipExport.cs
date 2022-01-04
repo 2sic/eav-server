@@ -161,11 +161,21 @@ namespace ToSic.Eav.Apps.ImportExport
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
             var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
-            var templateTypeId = _metaTargetTypes.GetId(Settings.TemplateContentType);
-            var entities =
-                DataSourceFactory.GetPublishing(runtime, false).Out[Constants.DefaultStreamName].List.Where(
-                    e => e.MetadataFor.TargetType != templateTypeId
-                         && e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
+
+            // 2022-01-04 2dm Cleaned up
+            // This was for a very old way of storing Template information, probably 2sxc 1-4 or something
+            // I'll completely disable this, as I believe it's not in use at all 
+            // Keep this commented till End of June 2022 #cleanUp #oldTemplates #2631
+            //var templateTypeId = 15; // _metaTargetTypes.GetId(Settings.TemplateContentType);
+            //var entities =
+            //    DataSourceFactory.GetPublishing(runtime, false).List.Where(
+            //        e => e.MetadataFor.TargetType != templateTypeId
+            //             && e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
+
+            // 2022-01-04 2dm - new code, simplified
+            // Get all entities except Attribute/Field Metadata, which is exported in a different way
+            var entities = DataSourceFactory.GetPublishing(runtime, false).List
+                    .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
 
             if (!includeContentGroups)
                 entities = entities.Where(p => p.Type.StaticName != SexyContentContentGroupName).ToList();
