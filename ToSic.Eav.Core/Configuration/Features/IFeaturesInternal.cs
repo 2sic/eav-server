@@ -5,7 +5,7 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi("Internal stuff only")]
-    public interface IFeaturesInternal: IFeaturesService
+    public interface IFeaturesInternal: IFeaturesService // note: needs the full name because Configuration namespace has the same interface
     {
         [PrivateApi]
         IEnumerable<Feature> All { get; }

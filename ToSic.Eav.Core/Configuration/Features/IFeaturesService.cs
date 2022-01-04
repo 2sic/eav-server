@@ -11,7 +11,7 @@ namespace ToSic.Eav.Configuration
     /// <remarks>
     /// This replaces the older static Features accessor - please only use this from now on
     /// </remarks>
-    [PublicApi]
+    [PrivateApi("was published in previous versions of 2sxc, so we must keep this available, but don't plan on providing it any more")]
     public interface IFeaturesService
     {
         /// <summary>
@@ -22,11 +22,33 @@ namespace ToSic.Eav.Configuration
         bool Enabled(Guid guid);
 
         /// <summary>
+        /// Checks if a feature is enabled
+        /// </summary>
+        /// <param name="nameId">The feature name ID</param>
+        /// <returns>true if the feature is enabled</returns>
+        /// <remarks>
+        /// Added in v13.01
+        /// </remarks>
+        [PrivateApi("Hide - was never public on this interface")]
+        bool Enabled(string nameId);
+
+        /// <summary>
         /// Checks if a list of features are enabled, in case you need many features to be activated.
         /// </summary>
         /// <param name="guids">list/array of Guids</param>
         /// <returns>true if all features are enabled, false if any one of them is not</returns>
         bool Enabled(IEnumerable<Guid> guids);
+
+        /// <summary>
+        /// Checks if a list of features are enabled, in case you need many features to be activated.
+        /// </summary>
+        /// <param name="nameIds">list/array of name IDs</param>
+        /// <returns>true if all features are enabled, false if any one of them is not</returns>
+        /// <remarks>
+        /// Added in v13.01
+        /// </remarks>
+        [PrivateApi("Hide - was never public on this interface")]
+        bool Enabled(IEnumerable<string> nameIds);
 
         /// <summary>
         /// Informs you if the enabled features are valid or not - meaning if they have been countersigned by the 2sxc features system.

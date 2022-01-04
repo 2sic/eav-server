@@ -14,8 +14,12 @@ namespace ToSic.Eav.Configuration
         public IEnumerable<Feature> Ui => All.Where(f => f.Enabled && f.Ui == true);
 
         public bool Enabled(Guid guid) => All.Any(f => f.Guid == guid && f.Enabled);
+        
+        public bool Enabled(string nameId) => All.Any(f => f.NameId == nameId && f.Enabled);
 
         public bool Enabled(IEnumerable<Guid> guids) => guids.All(Enabled);
+
+        public bool Enabled(IEnumerable<string> nameIds) => nameIds.All(Enabled);
 
         public bool Valid => ValidInternal;
         public static bool ValidInternal;
