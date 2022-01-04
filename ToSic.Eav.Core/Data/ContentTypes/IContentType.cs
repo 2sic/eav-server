@@ -92,5 +92,12 @@ namespace ToSic.Eav.Data
 
 
         #endregion
+
+        #region WIP v13 Shared Content Types should be passed around in IContentType defs
+
+        [PrivateApi("very internal functionality")]
+        bool AlwaysShareConfiguration { get; }
+
+        #endregion
     }
 }

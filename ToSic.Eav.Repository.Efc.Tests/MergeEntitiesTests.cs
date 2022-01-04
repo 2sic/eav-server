@@ -117,7 +117,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         #region Test Data ML
 
-        private readonly ContentType _ctMlProduct = new ContentType(-1, "Product")
+        private readonly IContentType _ctMlProduct = new ContentType(-1, "Product")
         {
             Attributes = new List<IContentTypeAttribute>
             {

@@ -176,7 +176,7 @@ namespace ToSic.Eav.Persistence.File
                 var ct = ser.DeserializeContentType(json);
 
                 infoIfError = "couldn't set source/parent";
-                (ct as ContentType).SetSourceParentAndId(RepoType, Constants.PresetContentTypeFakeParent, path, id);
+                (ct as ContentType).SetSourceParentAndIdForPresetTypes(RepoType, Constants.PresetContentTypeFakeParent, path, id);
                 return ct;
             }
             catch (IOException e)

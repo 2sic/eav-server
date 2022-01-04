@@ -24,10 +24,10 @@ namespace ToSic.Eav.Data
         protected EntityWrapper(IEntity baseEntity)
         {
             Entity = baseEntity;
-            EntityForEqualityCheck = Entity;
+            RootContentsForEqualityCheck = Entity;
             if (Entity is IEntityWrapper wrapper)
             {
-                EntityForEqualityCheck = wrapper.EntityForEqualityCheck ?? Entity;
+                RootContentsForEqualityCheck = wrapper.RootContentsForEqualityCheck ?? Entity;
                 Decorators.AddRange(wrapper.Decorators);
             }
         }

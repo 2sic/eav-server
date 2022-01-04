@@ -6,7 +6,6 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serialization;
@@ -21,9 +20,7 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public partial class ContentTypeApi : HasLog<ContentTypeApi>
     {
-
         #region Constructor / DI
-
 
         public ContentTypeApi(
             Lazy<AppRuntime> appRuntimeLazy, 
@@ -89,12 +86,12 @@ namespace ToSic.Eav.WebApi
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
-                .Select(t => ContentTypeForJson(t as ContentType, appMan.Read.Entities.Get(t.Name).Count()));
+                .Select(t => ContentTypeAsDto(t, appMan.Read.Entities.Get(t.Name).Count()));
             wrapLog("ok");
             return filteredType;
 	    }
 
-        private ContentTypeDto ContentTypeForJson(ContentType t, int count = -1)
+        private ContentTypeDto ContentTypeAsDto(IContentType t, int count = -1)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var description = t.Metadata.Description;
@@ -137,7 +134,7 @@ namespace ToSic.Eav.WebApi
 
             var ct = appState.GetContentType(contentTypeStaticName);
             wrapLog(null);
-            return ContentTypeForJson(ct as ContentType);
+            return ContentTypeAsDto(ct);
 	    }
 
 	    public bool Delete(string staticName)
@@ -182,7 +179,7 @@ namespace ToSic.Eav.WebApi
         {
             Log.Add($"get fields a#{_appId}, type:{staticName}");
             var appState = _appStates.Get(_appId);
-            if (!(appState.GetContentType(staticName) is ContentType type))
+            if (!(appState.GetContentType(staticName) is IContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 

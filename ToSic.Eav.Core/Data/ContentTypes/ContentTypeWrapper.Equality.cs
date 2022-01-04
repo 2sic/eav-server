@@ -2,23 +2,26 @@
 
 namespace ToSic.Eav.Data
 {
-    public  partial class ContentTypeWrapper : IEquatable<ContentTypeWrapper>
+    public  partial class ContentTypeWrapper : IEquatable<ContentTypeWrapper>, IEquatable<IMultiWrapper<IContentType>>
     {
-        public bool Equals(ContentTypeWrapper other)
-        {
-            if (ReferenceEquals(null, other?.GetContents())) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(GetContents(), other.GetContents());
-        }
+        public IContentType RootContentsForEqualityCheck { get; }
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ContentTypeWrapper)obj);
-        }
+        public static bool operator ==(ContentTypeWrapper d1, ContentTypeWrapper d2) => WrapperEquality.IsEqual(d1, d2);
 
-        public override int GetHashCode() => (GetContents() != null ? GetContents().GetHashCode() : 0);
+        public static bool operator !=(ContentTypeWrapper d1, ContentTypeWrapper d2) => !WrapperEquality.IsEqual(d1, d2);
+
+        public static bool operator ==(ContentTypeWrapper d1, IMultiWrapper<IContentType> d2) => WrapperEquality.IsEqual(d1, d2);
+
+        public static bool operator !=(ContentTypeWrapper d1, IMultiWrapper<IContentType> d2) => !WrapperEquality.IsEqual(d1, d2);
+
+
+        public bool Equals(ContentTypeWrapper other) => WrapperEquality.EqualsObj(this, other);
+
+        public bool Equals(IMultiWrapper<IContentType> other) => WrapperEquality.IsEqual(this, other);
+
+        public override bool Equals(object other) => WrapperEquality.EqualsObj(this, other);
+
+        public override int GetHashCode() => WrapperEquality.GetHashCode(this);
+
     }
 }

@@ -32,11 +32,27 @@ namespace ToSic.Eav.Persistence.Efc
             var appIdentity =_appStates.IdentityOfApp(appId);
             var appGuidName = _appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
 
-            // New v13 - use global app instead
-            var globalApp = _appStates.GetPresetApp();
-            if (globalApp == null)
-                throw new Exception("Can't find global app - which is required to build any other apps. ");
-            var parent = new ParentAppState(globalApp, true);
+            // Test IDs on 2dms PC to develop App-Sharing
+            var descendantAppGuid = "1d15f824-3f73-41f8-9753-f8414937b15a";
+            var ancestorAppId = 1739;
+
+            // This will contain the parent reference - in most cases it's the -42 App
+            ParentAppState parent;
+            if (appGuidName == descendantAppGuid)
+            {
+                // todo: pre-load the real parent
+                var testParentApp = _appStates.Get(ancestorAppId);
+                parent = new ParentAppState(testParentApp, true);
+            }
+            else
+            {
+                // New v13 - use global app by default to share content-types
+                var globalApp = _appStates.GetPresetApp();
+                if (globalApp == null)
+                    throw new Exception("Can't find global app - which is required to build any other apps. ");
+                parent = new ParentAppState(globalApp, true);
+            }
+
 
             var appState = Update(new AppState(parent, appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
 

@@ -37,7 +37,7 @@ namespace ToSic.Eav.Data
             int id = DefaultEntityId,
             string titleField = null,
             string typeName = DefaultTypeName,
-            ContentType type = null,
+            IContentType type = null,
             Guid? guid = null,
             DateTime? created = null,
             DateTime? modified = null
@@ -51,7 +51,7 @@ namespace ToSic.Eav.Data
             int appId = 0,
             string titleField = null,
             string typeName = DefaultTypeName,
-            ContentType type = null
+            IContentType type = null
             )
             => itemValues.Select(values => Entity(values,
                 appId: appId,

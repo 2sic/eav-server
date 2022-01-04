@@ -69,7 +69,7 @@ namespace ToSic.Eav.Apps
         {
             var globTypeNames = ParentApp.ContentTypes.Select(t => t.StaticName);
             return appTypes.Where(t =>
-	                !((ContentType) t).AlwaysShareConfiguration // keep all locally defined types
+	                !t.AlwaysShareConfiguration // keep all locally defined types
 	                || !globTypeNames.Contains(t.StaticName)    // for non-local: keep all which globally are not overwritten
 	            )
 	            .ToImmutableArray();
@@ -101,7 +101,12 @@ namespace ToSic.Eav.Apps
             if (found != null) return found;
 
             var name = _appTypeMap.FirstOrDefault(x => x.Key == contentTypeId).Value;
-	        return name == null ? null : GetContentType(name);
-	    }
+            if (name != null) return GetContentType(name);
+
+			// TODO: ONLY do this if #SharedAppFeatureEnabled
+			// Try to find in parent
+            var parentType = ParentApp.ContentTypes.FirstOrDefault(t => t.ContentTypeId == contentTypeId);
+            return parentType;
+        }
     }
 }

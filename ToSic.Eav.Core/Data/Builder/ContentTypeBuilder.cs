@@ -9,10 +9,10 @@ namespace ToSic.Eav.Data.Builder
         public const int DynTypeId = 1;
         public const string DynTypeDefDescription = "Dynamic content type";
 
-        public static ContentType Fake(string typeName)
+        public static IContentType Fake(string typeName)
             => DynamicContentType(Constants.TransientAppId, typeName, typeName);
 
-        public static ContentType DynamicContentType(int appId, string typeName, string typeIdentifier, string scope = null)
+        public static IContentType DynamicContentType(int appId, string typeName, string typeIdentifier, string scope = null)
             => new ContentType(appId, typeName, typeIdentifier, DynTypeId, scope ?? Scopes.System, DynTypeDefDescription)
             {
                 Attributes = new List<IContentTypeAttribute>(),
@@ -24,7 +24,7 @@ namespace ToSic.Eav.Data.Builder
             type.RepositoryType = repoType;
         }
 
-        public static void SetSourceParentAndId(this ContentType type, RepositoryTypes repoType, int parentId, string address, int id = -1)
+        public static void SetSourceParentAndIdForPresetTypes(this ContentType type, RepositoryTypes repoType, int parentId, string address, int id = -1)
         {
             if (id != -1) type.ContentTypeId = id;
             type.RepositoryType = repoType;

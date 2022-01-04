@@ -69,7 +69,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        public void ImportIntoDb(IList<ContentType> newTypes, IList<Entity> newEntities)
+        public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities)
         {
             var callLog = Log.Call($"types: {newTypes?.Count}; entities: {newEntities?.Count}", useTimer: true);
             Storage.DoWithDelayedCacheInvalidation(() =>
@@ -145,7 +145,7 @@ namespace ToSic.Eav.Apps.ImportExport
             callLog("done");
         }
 
-        private void MergeAndSaveContentTypes(AppState appState, List<ContentType> contentTypes)
+        private void MergeAndSaveContentTypes(AppState appState, List<IContentType> contentTypes)
         {
             var callLog = Log.Call(useTimer: true);
             // Here's the problem! #badmergeofmetadata

@@ -4,13 +4,13 @@
     /// Contains comparison methods for all Entity Wrappers
     /// This is important, because otherwise == or GroupBy see the various wrappers as different objects
     /// </summary>
-    public static class EntityWrapperEquality
+    public static class WrapperEquality
     {
         /// <summary>
         /// This is used for a fast-compare if objects might be the same.
         /// It's usually just an initial check, followed by Equals checks
         /// </summary>
-        public static int GetHashCode(IEntityWrapper parent) => parent.EntityForEqualityCheck?.GetHashCode() ?? 0;
+        public static int GetHashCode<T>(IMultiWrapper<T> parent) => parent.RootContentsForEqualityCheck?.GetHashCode() ?? 0;
 
         /// <summary>
         /// Check if two wrappers are holding the same entity
@@ -18,14 +18,14 @@
         /// <param name="parent"></param>
         /// <param name="dynObj"></param>
         /// <returns></returns>
-        public static bool EqualsWrapper(IEntityWrapper parent, IEntityWrapper dynObj)
+        public static bool EqualsWrapper<T>(IMultiWrapper<T> parent, IMultiWrapper<T> dynObj) where T : class
         {
             // first ensure that neither parent nor the sub-item are null
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (parent?.EntityForEqualityCheck is null) return false;
+            if (parent?.RootContentsForEqualityCheck is null) return false;
 
             // then verify that the underlying entities have the same reference
-            return ReferenceEquals(parent.EntityForEqualityCheck, dynObj?.EntityForEqualityCheck);
+            return ReferenceEquals(parent.RootContentsForEqualityCheck, dynObj?.RootContentsForEqualityCheck);
         }
 
         /// <summary>
@@ -36,11 +36,11 @@
         /// <param name="parent"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static bool EqualsObj(IEntityWrapper parent, object obj)
+        public static bool EqualsObj<T>(IMultiWrapper<T> parent, object obj) where T : class
         {
             if (obj is null) return false;
             if (ReferenceEquals(parent, obj)) return true;
-            return obj is IEntityWrapper wrapper && EqualsWrapper(parent, wrapper);
+            return obj is IMultiWrapper<T> wrapper && EqualsWrapper(parent, wrapper);
         }
 
         /// <summary>
@@ -53,8 +53,8 @@
         /// But we can't use != null, because that would call the != operator and be recursive.
         /// </remarks>
         /// <returns></returns>
-        public static bool IsEqual(IEntityWrapper d1, IEntityWrapper d2)
+        public static bool IsEqual<T>(IMultiWrapper<T> d1, IMultiWrapper<T> d2) where T : class
             // check most basic case - they are really the same object or both null
-            => !(d1 is null) && (ReferenceEquals(d1, d2) || Equals(d1?.EntityForEqualityCheck, d2?.EntityForEqualityCheck));
+            => !(d1 is null) && (ReferenceEquals(d1, d2) || Equals(d1.RootContentsForEqualityCheck, d2?.RootContentsForEqualityCheck));
     }
 }

@@ -153,8 +153,8 @@ namespace ToSic.Eav.Apps.ImportExport
             foreach (var attributeSetId in AttributeSetNamesOrIds)
             {
                 var set = int.TryParse(attributeSetId, out var id)
-                    ? (ContentType) AppState.GetContentType(id)
-                    : (ContentType) AppState.GetContentType(attributeSetId);  // in case it's the name, not the number
+                    ? AppState.GetContentType(id)
+                    : AppState.GetContentType(attributeSetId);  // in case it's the name, not the number
 
                 // skip system/code-types
                 if (set.HasPresetAncestor()) // ((set.ParentId ?? 0) == Constants.PresetContentTypeFakeParent)

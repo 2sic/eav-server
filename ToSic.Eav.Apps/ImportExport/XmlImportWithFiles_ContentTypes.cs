@@ -15,13 +15,13 @@ namespace ToSic.Eav.Apps.ImportExport
     public partial class XmlImportWithFiles
     {
 
-		private List<ContentType> GetImportContentTypes(IEnumerable<XElement> xmlContentTypes)
+		private List<IContentType> GetImportContentTypes(IEnumerable<XElement> xmlContentTypes)
 		{
             var wrap = Log.Call();
             var list = xmlContentTypes.ToList();
             Log.Add($"items: {list.Count}");
 
-            var importAttributeSets = new List<ContentType>();
+            var importAttributeSets = new List<IContentType>();
 
 			// Loop through AttributeSets
 			foreach (var attributeSet in list)
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			return importAttributeSets;
 		}
 
-	    private ContentType BuildContentTypeFromXml(XElement xmlContentType)
+	    private IContentType BuildContentTypeFromXml(XElement xmlContentType)
 	    {
 	        var ctElement = xmlContentType.Element(XmlConstants.Attributes);
 	        var typeName = xmlContentType.Attribute(XmlConstants.Name).Value;
