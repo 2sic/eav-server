@@ -18,11 +18,11 @@ namespace ToSic.Eav.Persistence.File
     {
         #region Constructor and DI
 
-        public Runtime(IServiceProvider sp, LogHistory logHistory) : base("Eav.RunTme")
+        public Runtime(IServiceProvider sp) : base("Eav.RunTme")
         {
             _serviceProvider = sp;
-            logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
-            LoadLog = Log;
+            // Only add the first time it's really used
+            if (LoadLog == null) LoadLog = Log;
         }
 
         private readonly IServiceProvider _serviceProvider;
@@ -145,6 +145,9 @@ namespace ToSic.Eav.Persistence.File
             var appStates = _serviceProvider.Build<IAppStates>();
             var appState = appStates.GetPresetApp();
 
+            var previousConfig = appState.List.FirstOrDefaultOfType(FeatureConstants.TypeName);
+            var prevId = previousConfig?.EntityId;
+
             appState.Load(() =>
             {
                 var wrapLog = Log.Call(message: "Inside loader");
@@ -153,8 +156,10 @@ namespace ToSic.Eav.Persistence.File
                     Log.Add("Load config items");
                     var configs = LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();
                     Log.Add($"Found {configs.Count} items");
-                    var featuresOnly = configs.Where(e => e.Type.Is(FeatureConstants.TypeName)).ToList();
-                    Log.Add($"Found {featuresOnly.Count} items which are {FeatureConstants.TypeName}");
+                    var featuresOnly = configs.OfType(FeatureConstants.TypeName).ToList();
+                    Log.Add($"Found {featuresOnly.Count} items which are {FeatureConstants.TypeName} - expected: 1");
+                    Log.Add("Ids of previous and new should match, otherwise we may run into problems. " +
+                            $"Prev: {prevId}, New: {featuresOnly.FirstOrDefault()?.EntityId}");
                     foreach (var c in featuresOnly) appState.Add(c as Entity, null, true);
                 }
                 catch (Exception ex)
