@@ -13,15 +13,19 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The simple list of <em>all</em> entities, used everywhere
         /// </summary>
-        public IImmutableList<IEntity> List => (ListCache ?? (ListCache = new SynchronizedEntityList(this, BuildList()))).List;
+        public IImmutableList<IEntity> List => (ListCache ?? (ListCache = BuildList())).List;
         internal SynchronizedEntityList ListCache;
 
-        private Func<IImmutableList<IEntity>> BuildList()
+        private SynchronizedEntityList BuildList()
         {
             // todo: check if feature is enabled #SharedAppFeatureEnabled
-            return !ParentApp.InheritEntities
-                ? (Func<IImmutableList<IEntity>>)(() => Index.Values.ToImmutableArray())
-                : () => Index.Values.Concat(ParentApp.Entities).ToImmutableArray();
+            var buildFn = ParentApp.InheritEntities
+                ? () => Index.Values.Concat(ParentApp.Entities).ToImmutableArray()
+                : (Func<IImmutableList<IEntity>>)(() => Index.Values.ToImmutableArray());
+
+            var syncList = new SynchronizedEntityList(this, buildFn);
+
+            return syncList;
         }
 
 

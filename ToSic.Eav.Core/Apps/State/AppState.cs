@@ -15,12 +15,15 @@ namespace ToSic.Eav.Apps
     {
 
         [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-        public AppState(ParentAppState parentApp, IAppIdentity app, string appGuidName, ILog parentLog): base($"App.St-{app.AppId}", new CodeRef())
+        public AppState(ParentAppState parentApp, IAppIdentity id, string appGuidName, ILog parentLog): base($"App.St-{id.AppId}", new CodeRef())
         {
+            Log.Add($"AppState for App {id.AppId}");
+            Init(id, new CodeRef(), parentLog);
+
             ParentApp = parentApp;
-            Log.Add($"AppState for App {app.AppId}");
             Log.Add($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");
-            Init(app, new CodeRef(), parentLog);
+            CacheExpiryDelegate = CreateExpiryProvider();
+
             AppGuidName = appGuidName;
             
             // Init the cache when it starts, because this number is needed in other places

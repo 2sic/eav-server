@@ -14,14 +14,6 @@ namespace ToSic.Eav.Caching
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class SynchronizedList<T>: SynchronizedObject<IImmutableList<T>>, IEnumerable<T>, ICacheDependent, ICacheExpiring
     {
-        ///// <summary>
-        ///// Upstream source which implements <see cref="ICacheExpiring"/> to tell this object when the data must be refreshed
-        ///// </summary>
-        //protected readonly ICacheExpiring Upstream;
-
-        //private IImmutableList<T> _immutableCache;
-        //private readonly Func<IImmutableList<T>> _rebuildImmutable;
-
         /// <summary>
         /// Initialized a new list which depends on another source
         /// </summary>
@@ -30,9 +22,8 @@ namespace ToSic.Eav.Caching
         [Obsolete("You should prefer the Func<Immutable> signature")]
         public SynchronizedList(ICacheExpiring upstream, Func<List<T>> rebuild): base(upstream, () => rebuild().ToImmutableArray())
         {
-            //Upstream = upstream;
-            //_rebuildImmutable = () => rebuild().ToImmutableArray();
         }
+
         /// <summary>
         /// Initialized a new list which depends on another source
         /// </summary>
@@ -40,8 +31,6 @@ namespace ToSic.Eav.Caching
         /// <param name="rebuild">the method which rebuilds the list</param>
         public SynchronizedList(ICacheExpiring upstream, Func<IImmutableList<T>> rebuild): base(upstream, rebuild)
         {
-            //Upstream = upstream;
-            //_rebuildImmutable = rebuild;
         }
 
 
@@ -49,32 +38,13 @@ namespace ToSic.Eav.Caching
         /// Retrieves the list - either the cache one, or if timestamp has changed, rebuild and return that
         /// </summary>
         [PrivateApi("Experimental, trying to lower memory footprint")]
-        public virtual IImmutableList<T> List
-        {
-            get
-            {
-                return Value;
-                //if (_cache != null && !CacheChanged()) return _cache;
-
-                //_cache = _rebuildImmutable();
-                //CacheTimestamp = Upstream.CacheTimestamp;
-                //return _immutableCache;
-            }
-        }
+        public virtual IImmutableList<T> List => Value;
 
         /// <inheritdoc />
         public IEnumerator<T> GetEnumerator() => List.GetEnumerator();
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        ///// <inheritdoc />
-        //public long CacheTimestamp { get; private set; }
-
-        ///// <inheritdoc />
-        //public bool CacheChanged(long newCacheTimeStamp) => Upstream.CacheChanged(newCacheTimeStamp);
-
-        ///// <inheritdoc />
-        //public bool CacheChanged() => Upstream.CacheChanged(CacheTimestamp);
+        
     }
 }

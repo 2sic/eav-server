@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 
@@ -41,20 +43,18 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The inherited entities
         /// </summary>
-        public IEnumerable<IEntity> Entities => _entities ?? (_entities = GetInheritedEntities());
-        private IEnumerable<IEntity> _entities;
-
-
-
-        private IEnumerable<IEntity> GetInheritedEntities()
+        public IEnumerable<IEntity> Entities
         {
-            if (!InheritEntities || AppState == null) return new List<IEntity>(0);
-            
-            var entities = AppState.List;
-            // todo: maybe make it synced/attached?
-            return entities.Select(WrapUnwrappedEntity);
+            get
+            {
+                if (!InheritEntities || AppState == null) return new List<IEntity>(0);
+                if (_entitiesCache != null) return _entitiesCache.List;
+                _entitiesCache = new SynchronizedEntityList(AppState,
+                    () => AppState.List.Select(WrapUnwrappedEntity).ToImmutableList());
+                return _entitiesCache.List;
+            }
         }
-
+        private SynchronizedEntityList _entitiesCache;
 
 
         public IContentType GetContentType(string name) => InheritContentTypes ? WrapUnwrappedContentType(AppState.GetContentType(name)) : null;

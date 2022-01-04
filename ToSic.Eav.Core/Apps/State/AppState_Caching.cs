@@ -4,7 +4,7 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
 {
-    public partial class AppState: ICacheExpiring
+    public partial class AppState: ICacheExpiring, ICacheExpiringDelegated
     {
         /// <summary>
         /// Helper object to keep track of cache changes
@@ -32,5 +32,19 @@ namespace ToSic.Eav.Apps
         /// <inheritdoc />
         public bool CacheChanged(long newCacheTimeStamp) => CacheTimestamp != newCacheTimeStamp;
 
+        /// <summary>
+        /// The App can itself be the master of expiry, or it can be that a parent-app must be included
+        /// So the expiry-provider is this object, which must be initialized on AppState creation
+        /// </summary>
+        [PrivateApi]
+        public ICacheExpiring CacheExpiryDelegate { get; }
+
+        private ICacheExpiring CreateExpiryProvider()
+        {
+            // todo: check if feature is enabled #SharedAppFeatureEnabled
+            return ParentApp.InheritEntities && ParentApp.AppState != null
+                ? new CacheExpiringMultiSource(this, ParentApp.AppState)
+                : this as ICacheExpiring;
+        }
     }
 }
