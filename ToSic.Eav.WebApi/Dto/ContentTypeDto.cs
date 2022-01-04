@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
 using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi.Dto
 {
-    public class ContentTypeDto: IdNameDto, IReadOnlyDto
+    public class ContentTypeDto: IdNameDto
     {
         public string Label { get; set; }
         public string StaticName { get; set; }
@@ -21,9 +19,7 @@ namespace ToSic.Eav.WebApi.Dto
 
         public HasPermissionsDto Permissions { get; set; }
 
-        //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public bool? IsReadOnly { get; set; }
+        public EditInfoDto EditInfo { get; set; }
 
-        public string IsReadOnlyReason { get; set; }
     }
 }

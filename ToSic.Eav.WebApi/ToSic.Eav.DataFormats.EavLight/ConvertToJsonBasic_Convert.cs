@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataFormats.EavLight;
-
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight

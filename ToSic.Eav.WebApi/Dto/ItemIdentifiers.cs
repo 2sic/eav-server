@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using ToSic.Eav.ImportExport.Json.V1;
+using ToSic.Eav.WebApi.Dto;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.Formats
@@ -79,6 +80,13 @@ namespace ToSic.Eav.WebApi.Formats
         public bool ListAdd() => Group?.Add ?? Add ?? false;
 
         #endregion
+
+        #region New EditInfo for v13 / Shared Apps
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public EditInfoDto EditInfo { get; set; }
+
+        #endregion
     }
 
     public class BundleWithHeader
@@ -86,15 +94,11 @@ namespace ToSic.Eav.WebApi.Formats
         public ItemIdentifier Header { get; set; }     
     }
 
-    public class BundleWithHeader<T>: BundleWithHeader
+    public class BundleWithHeader<TEntity>: BundleWithHeader
     {
-        public T Entity { get; set; }
+        public TEntity Entity { get; set; }
 
     }
-
-    public class BundleIEntity: BundleWithHeader<IEntity> { }
-
-
 
     public class GroupAssignment
     {

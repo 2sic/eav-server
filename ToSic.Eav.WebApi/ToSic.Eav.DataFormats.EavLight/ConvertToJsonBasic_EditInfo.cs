@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Shared;
+using ToSic.Eav.WebApi.Dto;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight
@@ -16,12 +18,16 @@ namespace ToSic.Eav.DataFormats.EavLight
                 entityValues.Add("_Uses", entity.Children().Count);
                 entityValues.Add("_Permissions", new { Count = entity.Metadata.Permissions.Count() });
             }
-            catch
-            {
-                /* ignore */
-            }
+            catch { /* ignore */ }
         }
 
-
+        private static void AddEditInfo(IEntity entity, IDictionary<string, object> entityValues)
+        {
+            try
+            {
+                entityValues.Add("_EditInfo", new EditInfoDto(entity));
+            }
+            catch { /* ignore */ }
+        }
     }
 }

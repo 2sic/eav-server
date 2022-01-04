@@ -104,7 +104,7 @@ namespace ToSic.Eav.WebApi
             var ancestorDecorator = t.GetDecorator<IAncestor>();
 
             var properties = ser.Convert(description);
-            
+
             var jsonReady = new ContentTypeDto
             {
                 Id = t.ContentTypeId,
@@ -113,14 +113,13 @@ namespace ToSic.Eav.WebApi
                 StaticName = t.StaticName,
                 Scope = t.Scope,
                 Description = t.Description,
-
-                IsReadOnly = ancestorDecorator != null ? true : (bool?)null,
-                IsReadOnlyReason = ancestorDecorator == null ? null : t.HasPresetAncestor() ? "This is a preset ContentType" : "This is an inherited ContentType",
+                EditInfo = new EditInfoDto(t),
                 UsesSharedDef = ancestorDecorator != null,
                 SharedDefId = ancestorDecorator?.Id,
                 Items = count,
                 Fields = t.Attributes.Count,
-                Metadata = (ser as ConvertToEavLight)?.CreateListOfSubEntities(t.Metadata, SubEntitySerialization.AllTrue()),
+                Metadata = (ser as ConvertToEavLight)?.CreateListOfSubEntities(t.Metadata,
+                    SubEntitySerialization.AllTrue()),
                 Properties = properties,
                 Permissions = new HasPermissionsDto { Count = t.Metadata.Permissions.Count() },
             };
@@ -211,8 +210,7 @@ namespace ToSic.Eav.WebApi
                                     : e.Type.StaticName;
                                 return name.TrimStart('@');
                             },
-                            e => InputMetadata(type, a, e, ancestorDecorator, ser) // ser.Convert(e)
-                        ),
+                            e => InputMetadata(type, a, e, ancestorDecorator, ser)),
                     InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
                     Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count() },
 
@@ -222,8 +220,7 @@ namespace ToSic.Eav.WebApi
                     HasFormulas = HasCalculations(a),
 
                     // Read-Only new in v13
-                    IsReadOnly = hasAncestor ? true : (bool?)null,
-                    IsReadOnlyReason = !hasAncestor ? null : type.HasPresetAncestor() ? "From Preset" : "Shared Type"
+                    EditInfo = new EditInfoDto(type),
                 };
             });
         }

@@ -63,10 +63,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         [PrivateApi] public MetadataForSerialization MetadataFor { get; private set; } = new MetadataForSerialization();
         [PrivateApi] public ISubEntitySerialization Metadata { get; private set; } = new SubEntitySerialization();
 
-        /// <inheritdoc/>
-        public bool WithTitle { get; private set; }
-
-        private bool WithStats { get; set; }
+        private bool WithEditInfos { get; set; }
 
         /// <inheritdoc/>
         public void ConfigureForAdminUse()
@@ -75,8 +72,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             WithPublishing = true;
             MetadataFor = new MetadataForSerialization { Serialize = true };
             Metadata = new SubEntitySerialization { Serialize = true, SerializeId = true, SerializeTitle = true, SerializeGuid = true };
-            WithTitle = true;
-            WithStats = true;
+            WithEditInfos = true;
         }
 
         #endregion
@@ -150,14 +146,17 @@ namespace ToSic.Eav.DataFormats.EavLight
 
             AddMetadataAndFor(entity, entityValues, rules);
 
-            // this internal _Title field is probably not used much any more, so there is no rule for it
-            // Probably remove at some time in near future, once verified it's not used in the admin-front-end
-            if(WithTitle)
+            // Special edit infos - _Title (old, maybe not needed), Stats, EditInfo for read-only etc.
+            if (WithEditInfos)
+            {
+                // this internal _Title field is probably not used much any more, so there is no rule for it
+                // Probably remove at some time in near future, once verified it's not used in the admin-front-end
                 try { entityValues.Add(InternalTitleField, entity.GetBestTitle(Languages)); }
                 catch { /* ignore */ }
 
-            // Stats are only used in special cases, so there is no rule for it
-            if(WithStats) AddStatistics(entity, entityValues);
+                AddStatistics(entity, entityValues);
+                AddEditInfo(entity, entityValues);
+            }
 
 
             // Include title field, if there is not already one in the dictionary
