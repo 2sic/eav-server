@@ -11,15 +11,13 @@ namespace ToSic.Eav.Configuration
         public IEnumerable<Feature> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial))).Features;
         private static FeatureList _all;
 
-        public IEnumerable<Feature> Ui => All.Where(f => f.Enabled && f.Ui == true);
+        public IEnumerable<Feature> Ui => All.Where(f => f.Enabled && f.Ui);
 
         public bool Enabled(Guid guid) => All.Any(f => f.Guid == guid && f.Enabled);
         
-        public bool Enabled(string nameId) => All.Any(f => f.NameId == nameId && f.Enabled);
-
         public bool Enabled(IEnumerable<Guid> guids) => guids.All(Enabled);
 
-        public bool Enabled(IEnumerable<string> nameIds) => nameIds.All(Enabled);
+        public bool Enabled(params string[] nameIds) => nameIds.All(name => All.Any(f => f.NameId == name && f.Enabled));
 
         public bool Valid => ValidInternal;
         public static bool ValidInternal;
