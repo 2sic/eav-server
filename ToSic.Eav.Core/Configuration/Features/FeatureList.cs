@@ -22,7 +22,7 @@ namespace ToSic.Eav.Configuration
     public class FeatureListStored
     {
         [JsonProperty("features")]
-        public List<FeatureConfig> Features;
+        public List<FeatureConfig> Features = new List<FeatureConfig>();
 
         [JsonProperty("fingerprint")]
         public string Fingerprint;
