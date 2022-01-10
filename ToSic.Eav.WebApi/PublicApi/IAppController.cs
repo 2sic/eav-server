@@ -13,6 +13,8 @@ namespace ToSic.Eav.WebApi.PublicApi
     {
         List<AppDto> List(int zoneId);
 
+        List<AppDto> InheritableApps();
+
         ExportResponse Export(int appId, int zoneId, bool includeContentGroups, bool resetAppGuid);
         bool SaveData(int appId, int zoneId, bool includeContentGroups, bool resetAppGuid);
         AppExportInfoDto Statistics(int appId, int zoneId);

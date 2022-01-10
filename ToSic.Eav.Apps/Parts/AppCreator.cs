@@ -43,13 +43,13 @@ namespace ToSic.Eav.Apps.Parts
         /// app-definition
         /// </summary>
         /// <returns></returns>
-        public void Create(string appName, string appGuid = null)
+        public void Create(string appName, string appGuid = null, int? inheritAppId = null)
         {
             // check if invalid app-name which should never be created like this
             if (appName == Constants.ContentAppName || appName == Constants.DefaultAppGuid || string.IsNullOrEmpty(appName) || !Regex.IsMatch(appName, "^[0-9A-Za-z -_]+$"))
                 throw new ArgumentOutOfRangeException("appName '" + appName + "' not allowed");
 
-            var appId = CreateInDb(appGuid ?? Guid.NewGuid().ToString());
+            var appId = CreateInDb(appGuid ?? Guid.NewGuid().ToString(), inheritAppId);
 
             // must get app from DB directly, not from cache, so no State.Get(...)
             var appState = RepositoryLoader.AppState(appId, false);
@@ -59,10 +59,10 @@ namespace ToSic.Eav.Apps.Parts
                 .InitializeApp(appName);
         }
 
-        private int CreateInDb(string appGuid)
+        private int CreateInDb(string appGuid, int? inheritAppId)
         {
             Log.Add("create new app");
-            var app = _db.Init(_zoneId, null, Log).App.AddApp(null, appGuid);
+            var app = _db.Init(_zoneId, null, Log).App.AddApp(null, appGuid, inheritAppId);
 
             SystemManager.PurgeZoneList();
             Log.Add($"app created a:{app.AppId}, guid:{appGuid}");

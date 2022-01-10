@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Add a new App
         /// </summary>
-        internal ToSicEavApps AddApp(ToSicEavZones zone, string guidName)
+        internal ToSicEavApps AddApp(ToSicEavZones zone, string guidName, int? inheritAppId = null)
         {
             // Use provided zone or if null, use the one which was pre-initialized for this DbApp Context
             zone = zone ?? DbContext.SqlDb.ToSicEavZones.SingleOrDefault(z => z.ZoneId == DbContext.ZoneId);
@@ -22,6 +23,23 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 Name = guidName,
                 Zone = zone
             };
+
+            // New v13 Inherited Apps - wrap in try catch because if something fails, many things could break too early for people to be able to fix
+            try
+            {
+                if (inheritAppId > 0)
+                {
+                    var sysSettings = new AppSysSettings()
+                    {
+                        Inherit = true,
+                        AncestorAppId = inheritAppId.Value
+                    };
+                    var asJson = JsonConvert.SerializeObject(sysSettings);
+                    newApp.SysSettings = asJson;
+                }
+            }
+            catch { /* ignore */ }
+
             // save is required to ensure AppId is created - required for follow-up changes like EnsureSharedAttributeSets();
             DbContext.DoAndSave(() => DbContext.SqlDb.Add(newApp)); 
 

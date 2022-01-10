@@ -34,6 +34,8 @@ namespace ToSic.Eav.Apps
         /// <inheritdoc />
         public AppState Get(int appId) => Cache.Get(_serviceProvider, IdentityOfApp(appId));
 
+        public bool IsCached(IAppIdentity appId) => Cache.Has(appId);
+
         public IAppIdentity IdentityOfApp(int appId) =>
             new AppIdentity(Cache.ZoneIdOfApp(_serviceProvider, appId), appId);
 
