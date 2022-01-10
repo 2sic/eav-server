@@ -45,6 +45,20 @@ namespace ToSic.Eav.WebApi.Dto
         /// But this tells the UI where to go work with things that need the App-API
         /// </summary>
         public string Api { get; set; }
+
+        /// <summary>
+        /// Determines if this App is global, meaning it shouldn't have files in the site etc. just global
+        /// </summary>
+        /// <remarks>New in 13.0</remarks>
+        [JsonProperty(NullValueHandling = Ignore)]
+        public bool? IsGlobal { get; set; }
+
+        /// <summary>
+        /// Determines if this app was inherited from another App
+        /// </summary>
+        [JsonProperty(NullValueHandling = Ignore)]
+        public bool? IsInherited { get; set; }
+
     }
 
     public class ContextEnableDto

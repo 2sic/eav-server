@@ -13,5 +13,16 @@
         public int Items { get; set; }
         public string Thumbnail { get; set; }
         public string Version { get; set; }
+
+        /// <summary>
+        /// Determines if the App is global / should only use templates/resources in the global storage
+        /// </summary>
+        /// <remarks>New in 13.0</remarks>
+        public bool IsGlobal { get; set; }
+
+        /// <summary>
+        /// Determines if this app was inherited from another App
+        /// </summary>
+        public bool IsInherited { get; set; }
     }
 }
