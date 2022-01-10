@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
@@ -24,7 +25,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// </summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
         /// <returns>An object with everything which an app has, usually for caching</returns>
-        public AppState LoadBasicAppState(int appId)
+        private AppState LoadBasicAppState(int appId)
         {
             _logHistory.Add("app-state-loader", Log);
 
@@ -32,15 +33,13 @@ namespace ToSic.Eav.Persistence.Efc
             var appIdentity =_appStates.IdentityOfApp(appId);
             var appGuidName = _appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
 
-            // Test IDs on 2dms PC to develop App-Sharing
-            var descendantAppGuid = "1d15f824-3f73-41f8-9753-f8414937b15a";
-            var ancestorAppId = 1739;
-
             // This will contain the parent reference - in most cases it's the -42 App
             ParentAppState parent;
-            if (appGuidName == descendantAppGuid)
+
+            var ancestorAppId = GetAncestorAppIdOrZero(appId);
+
+            if (ancestorAppId != 0)
             {
-                // todo: pre-load the real parent
                 var testParentApp = _appStates.Get(ancestorAppId);
                 parent = new ParentAppState(testParentApp, true, true);
             }
@@ -57,6 +56,29 @@ namespace ToSic.Eav.Persistence.Efc
             var appState = Update(new AppState(parent, appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
 
             return wrapLog("ok", appState);
+        }
+
+        private int GetAncestorAppIdOrZero(int appId)
+        {
+            var wrapLog = Log.Call<int>($"{nameof(appId)}:{appId}");
+            // Prefetch this App (new in v13 for ancestor apps)
+            var appInDb = _dbContext.ToSicEavApps.FirstOrDefault(a => a.AppId == appId);
+            var appSysSettings = appInDb?.SysSettings;
+            if (string.IsNullOrWhiteSpace(appSysSettings))
+                return wrapLog("none found", 0);
+
+            var sysSettings = JsonConvert.DeserializeObject<AppSysSettings>(appInDb.SysSettings);
+            if (!sysSettings.Inherit || sysSettings.AncestorAppId == 0) 
+                return wrapLog("data found but inherit not active", 0);
+
+            if (sysSettings.AncestorAppId == appId)
+            {
+                Log.Add($"Error: Got an {nameof(sysSettings.AncestorAppId)} of {appId}. " +
+                        "It's the same as the app itself - this should never happen. Stop.");
+                return wrapLog("error", 0);
+            }
+
+            return wrapLog($"found {sysSettings.AncestorAppId}", sysSettings.AncestorAppId);
         }
 
         /// <inheritdoc />
@@ -152,7 +174,6 @@ namespace ToSic.Eav.Persistence.Efc
 
                 Log.Add("app Entity found - this json: " + json);
                 var serializer = ServiceProvider.Build<IDataDeserializer>();
-                // TODO: #42
                 serializer.Initialize(appId, new List<IContentType>(), null, Log);
                 if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
                     return wrapLog("can't deserialize", nullTuple);
