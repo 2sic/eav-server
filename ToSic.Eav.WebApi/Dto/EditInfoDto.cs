@@ -14,6 +14,11 @@ namespace ToSic.Eav.WebApi.Dto
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string ReadOnlyMessage { get; set; }
 
+        /// <summary>
+        /// Empty Constructor for deserialization - important
+        /// </summary>
+        public EditInfoDto() {}
+
 
         public EditInfoDto(IContentType contentType)
         {
