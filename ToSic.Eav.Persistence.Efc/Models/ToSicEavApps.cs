@@ -22,5 +22,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
         // 2017-10-10 2dm new with entity > app mapping
         public virtual ICollection<ToSicEavEntities> ToSicEavEntities { get; set; }
 
+        // wip stv
+        //public string SysSettings { get; set; } = null;
     }
 }
