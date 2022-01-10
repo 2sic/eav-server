@@ -106,6 +106,34 @@ namespace ToSic.Eav.Configuration
             new FeatureSecurity(0, "Not expected to affect security.")
         );
 
+        // WIP / Beta in v13
+        public static readonly Feature ImageServiceMultiFormat = new Feature(
+            "ImageServiceMultiFormat",
+            new Guid("4262df94-3877-4a5a-ac86-20b4f9b38e87"),
+            "Image Service Activates Multiple Formats",
+            false,
+            false,
+            "Enables the ImageService to also provide WebP as better alternatives to Jpg and Png",
+            new FeatureSecurity(0, "Not expected to affect security.")
+        );
+
+        // WIP / Beta in v13
+        // todo: mention decorator in the settings?
+        public static readonly Feature GlobalAppsWIP = new Feature(
+            "GlobalAppsEnabled-BETA",
+            new Guid("bb6656ef-fb81-4943-bf88-297e516d2616"),
+            "Apps can be shared globally",
+            false,
+            false,
+            "todo",
+            new FeatureSecurity(1, "Not expected to affect security.")
+        );
+
+        // TODO: MAYBE SUB-FEATURES FOR global apps
+        // - Inherit views - auto-on if global on
+        // - Inherit data - auto-on if global on
+        // - Inherit queries
+
         /// <summary>
         /// The catalog contains known features, and knows if they are used in the UI
         /// This is important, because the installation specific list often won't know about
@@ -131,6 +159,9 @@ namespace ToSic.Eav.Configuration
 
             // 2sxc 10.24+
             WebFarmCache,
+
+            // 2sxc 13 - for Patreons
+            ImageServiceMultiFormat,
         });
     }
 }
