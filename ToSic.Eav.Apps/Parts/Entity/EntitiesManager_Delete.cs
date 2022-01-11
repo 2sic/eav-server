@@ -39,12 +39,12 @@ namespace ToSic.Eav.Apps.Parts
             // Commented in v13, new implementation is based on AppState.Relationships that knows about
             // relationships with json types (that are missing in db relationships).
             //var canDeleteList = Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(ids);
-            var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationships(ids, parentId, parentField);
+            var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(ids, parentId, parentField);
 
             foreach (var canDelete in canDeleteList)
                 if (!canDelete.Value.Item1 && !force && !skipIfCant)
                     throw new InvalidOperationException(
-                        Log.Add($"Can't delete Item {canDelete.Key}. It is used by others: {canDelete.Value.Item2}"));
+                        Log.Add($"Can't delete Item {canDelete.Key}. It is used by others. {canDelete.Value.Item2}"));
 
             return canDeleteList;
         }
@@ -63,14 +63,15 @@ namespace ToSic.Eav.Apps.Parts
         //internal Tuple<bool, string> CanDeleteEntityBasedOnDbRelationships(int entityId) 
         //    => Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(new[] {entityId}).First().Value;
 
-        internal Tuple<bool, string> CanDeleteEntityBasedOnAppStateRelationships(int entityId, int? parentId = null, string parentField = null) 
-            => CanDeleteEntitiesBasedOnAppStateRelationships(new[] {entityId}, parentId, parentField).First().Value;
+        internal Tuple<bool, string> CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(int entityId, int? parentId = null, string parentField = null) 
+            => CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(new[] {entityId}, parentId, parentField).First().Value;
 
-        private Dictionary<int, Tuple<bool, string>> CanDeleteEntitiesBasedOnAppStateRelationships(int[] ids, int? parentId = null, string parentField = null)
+        private Dictionary<int, Tuple<bool, string>> CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(int[] ids, int? parentId = null, string parentField = null)
         {
             var canDeleteList = new Dictionary<int, Tuple<bool, string>>();
 
             var relationships = Parent.Read.AppState.Relationships;
+
             foreach (var entityId in ids)
             {
                 var messages = new List<string>();
@@ -88,22 +89,31 @@ namespace ToSic.Eav.Apps.Parts
 
                 if (parentsInfoForMessages.Any())
                     messages.Add(
-                        $"found {parentsInfoForMessages.Count} relationships where this is a child - the parents are: {string.Join(", ", parentsInfoForMessages)}.");
+                        $"Found {parentsInfoForMessages.Count} relationships where this is a child - the parents are: {string.Join(", ", parentsInfoForMessages)}.");
 
                 var children = relationships.List.Where(r => r.Parent.EntityId == entityId)
                     .Select(r => TryToGetMoreInfosAboutDependency(r.Child)).ToList();
 
                 if (children.Any())
                     messages.Add(
-                        $"found {children.Count} entities which are assigned children: {string.Join(", ", children)}.");
+                        $"Found {children.Count} entities which are assigned children: {string.Join(", ", children)}.");
 
-                // TODO: stv - check metadeta
+                var entity = Parent.Read.Entities.Get(entityId);
+
+                // check if entity has metadata
+                if (entity.Metadata.Any())
+                    messages.Add($"Found {entity.Metadata.Count()} metadata which are assigned.");
+
+                // check if entity is metadata
+                if (entity.MetadataFor?.IsMetadata ?? false)
+                    messages.Add($"Entity is metadata of other entity.");
 
                 canDeleteList.Add(entityId, Tuple.Create(!messages.Any(), string.Join(" ", messages)));
             }
 
             if (canDeleteList.Count != ids.Length)
                 throw new Exception("Delete check failed, results doesn't match request");
+
             return canDeleteList;
         }
 
