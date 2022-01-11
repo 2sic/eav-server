@@ -11,7 +11,7 @@ namespace ToSic.Eav.ImportExport.Tests.Types
     {
         // status 2021-11-04 is 77 files
         private int TypesInFileRuntimeMin = 75;
-        private int TypesInFileRuntimeMax = 130;
+        private int TypesInFileRuntimeMax = 140;
 
         [TestMethod]
         public void ScanForTypesFileBased()
