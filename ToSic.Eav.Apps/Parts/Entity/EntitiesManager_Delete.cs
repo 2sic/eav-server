@@ -26,12 +26,36 @@ namespace ToSic.Eav.Apps.Parts
             // do optional type-check and if necessary, throw error
             BatchCheckTypesMatch(ids, contentType);
 
-            // check if we can delete, or throw exception
-            var oks = BatchCheckCanDelete(ids, force, skipIfCant, parentId, parentField);
+            // get related metadata ids
+            var metaDataIds = new List<int>();             
+            foreach (var id in ids)
+            {
+                CollectMetaDataIdsRecursively(id, ref metaDataIds);
+            }
 
-            var ok = Parent.DataController.Entities.DeleteEntity(ids, true, true);
+            var deleteIds = ids.ToList<int>();
+            if (metaDataIds.Any()) deleteIds.AddRange(metaDataIds);
+
+            // check if we can delete entities with metadata, or throw exception
+            var oks = BatchCheckCanDelete(deleteIds.ToArray(), force, skipIfCant, parentId, parentField);
+
+            // than delete entities with metadata
+            var ok = Parent.DataController.Entities.DeleteEntity(deleteIds.ToArray(), true, true);
+
             SystemManager.PurgeApp(Parent.AppId);
+
             return callLog(ok.ToString(), ok);
+        }
+
+        private void CollectMetaDataIdsRecursively(int id, ref List<int> metaDataIds)
+        {
+            var childrenMetaDataIds = Parent.Read.Entities.Get(id).Metadata.Select(metdata => metdata.EntityId);
+            if (!childrenMetaDataIds.Any()) return;
+            foreach (var childrenMetadataId in childrenMetaDataIds)
+            {
+                CollectMetaDataIdsRecursively(childrenMetadataId, ref metaDataIds);
+            }
+            metaDataIds.AddRange(childrenMetaDataIds);
         }
 
         private Dictionary<int, Tuple<bool, string>> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant, int? parentId = null, string parentField = null)
@@ -104,9 +128,9 @@ namespace ToSic.Eav.Apps.Parts
                 if (entity.Metadata.Any())
                     messages.Add($"Found {entity.Metadata.Count()} metadata which are assigned.");
 
-                // check if entity is metadata
-                if (entity.MetadataFor?.IsMetadata ?? false)
-                    messages.Add($"Entity is metadata of other entity.");
+                //// check if entity is metadata
+                //if (entity.MetadataFor?.IsMetadata ?? false)
+                //    messages.Add($"Entity is metadata of other entity.");
 
                 canDeleteList.Add(entityId, Tuple.Create(!messages.Any(), string.Join(" ", messages)));
             }
