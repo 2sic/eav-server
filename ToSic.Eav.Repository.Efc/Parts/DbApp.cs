@@ -108,71 +108,34 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var db = DbContext.SqlDb;
             var appContentTypes = db.ToSicEavAttributeSets.Where(a => a.AppId == appId).ToList();
             var contentTypeIds = appContentTypes.Select(ct => ct.AttributeSetId).ToArray();
-            var appEntities = db.ToSicEavEntities.Where(e => appContentTypes.Contains(e.AttributeSet));
-            //appEntities = alsoDeleteAppEntry
-            //    ? appEntities
-            //    : appEntities.Where(entity => entity.ContentType != ImpExpConstants.TypeAppConfig);
+            
+            // WIP v13 - now with Inherited Apps, we have entities which point to a content-type which doesn't belong to the App itself
+            const bool useV12Method = false;
+            var appEntities = useV12Method
+                ? db.ToSicEavEntities.Where(e => appContentTypes.Contains(e.AttributeSet))
+                : db.ToSicEavEntities.Where(e => e.AppId == appId);
+
             var entityIds = appEntities.Select(e => e.EntityId).ToArray();
 
-	        //-- Delete Value-Dimensions
-	        //DELETE FROM ToSIC_EAV_ValuesDimensions
-	        //FROM            ToSIC_EAV_Values INNER JOIN
-	        //						 ToSIC_EAV_Entities ON ToSIC_EAV_Values.EntityID = ToSIC_EAV_Entities.EntityID INNER JOIN
-	        //						 ToSIC_EAV_AttributeSets ON ToSIC_EAV_Entities.AttributeSetID = ToSIC_EAV_AttributeSets.AttributeSetID INNER JOIN
-	        //						 ToSIC_EAV_ValuesDimensions ON ToSIC_EAV_Values.ValueID = ToSIC_EAV_ValuesDimensions.ValueID
-	        //WHERE        (ToSIC_EAV_AttributeSets.AppID = @AppID)
-	        //-- Delete Values
-	        //DELETE FROM ToSIC_EAV_Values
-	        //FROM            ToSIC_EAV_Values INNER JOIN
-	        //						 ToSIC_EAV_Entities ON ToSIC_EAV_Values.EntityID = ToSIC_EAV_Entities.EntityID INNER JOIN
-	        //						 ToSIC_EAV_AttributeSets ON ToSIC_EAV_Entities.AttributeSetID = ToSIC_EAV_AttributeSets.AttributeSetID
-	        //WHERE        (ToSIC_EAV_AttributeSets.AppID = @AppID)
-
+	        // Delete Value-Dimensions
             var appValues = db.ToSicEavValues.Where(v => entityIds.Contains(v.EntityId));
             var appValueIds = appValues.Select(a => a.ValueId).ToList();
             var valDimensions = db.ToSicEavValuesDimensions.Where(vd => appValueIds.Contains(vd.ValueId));
-
-            //var valueDimensions = appValues
-            //    .Include(av => av.ToSicEavValuesDimensions)
-            //    .SelectMany(v => v.ToSicEavValuesDimensions).ToList();
-            //var valueDimensions = appv
             db.RemoveRange(valDimensions);
             db.RemoveRange(appValues.ToList());
 
 
-	        //-- Delete Parent-EntityRelationships
-	        //DELETE FROM ToSIC_EAV_EntityRelationships
-	        //FROM            ToSIC_EAV_Entities INNER JOIN
-	        //						 ToSIC_EAV_AttributeSets ON ToSIC_EAV_Entities.AttributeSetID = ToSIC_EAV_AttributeSets.AttributeSetID INNER JOIN
-	        //						 ToSIC_EAV_EntityRelationships ON ToSIC_EAV_Entities.EntityID = ToSIC_EAV_EntityRelationships.ParentEntityID
-	        //WHERE        (ToSIC_EAV_AttributeSets.AppID = @AppID)
-
-	        //-- Delete Child-EntityRelationships
-	        //DELETE FROM ToSIC_EAV_EntityRelationships
-	        //FROM            ToSIC_EAV_Entities INNER JOIN
-	        //						 ToSIC_EAV_AttributeSets ON ToSIC_EAV_Entities.AttributeSetID = ToSIC_EAV_AttributeSets.AttributeSetID INNER JOIN
-	        //						 ToSIC_EAV_EntityRelationships ON ToSIC_EAV_Entities.EntityID = ToSIC_EAV_EntityRelationships.ChildEntityID
-	        //WHERE        (ToSIC_EAV_AttributeSets.AppID = @AppID)
-
+	        // Delete Parent-EntityRelationships & Child-EntityRelationships
             var dbRelTable = db.ToSicEavEntityRelationships;
             var relationshipsWithAppParents = dbRelTable.Where(rel => entityIds.Contains(rel.ParentEntityId));
             db.RemoveRange(relationshipsWithAppParents.ToList());
             var relationshipsWithAppChildren = dbRelTable.Where(rel => entityIds.Contains(rel.ChildEntityId ?? -1));
             db.RemoveRange(relationshipsWithAppChildren.ToList());
 
-	        //-- Delete Entities
-	        //DELETE FROM ToSIC_EAV_Entities
-	        //FROM            ToSIC_EAV_Entities INNER JOIN
-	        //						 ToSIC_EAV_AttributeSets ON ToSIC_EAV_Entities.AttributeSetID = ToSIC_EAV_AttributeSets.AttributeSetID
-	        //WHERE        (ToSIC_EAV_AttributeSets.AppID = @AppId)
+	        // Delete Entities
             db.RemoveRange(appEntities);
 
-	        //-- Delete Attributes
-	        //DELETE FROM ToSIC_EAV_Attributes
-	        //FROM            ToSIC_EAV_Attributes INNER JOIN
-	        //						 ToSIC_EAV_AttributesInSets ON ToSIC_EAV_Attributes.AttributeID = ToSIC_EAV_AttributesInSets.AttributeID INNER JOIN
-	        //						 ToSIC_EAV_AttributeSets ON ToSIC_EAV_AttributesInSets.AttributeSetID = ToSIC_EAV_AttributeSets.AttributeSetID
-	        //WHERE        (ToSIC_EAV_AttributeSets.AppID = @AppID)
+	        // Delete Attributes
             var attributeSetMappings =
                 db.ToSicEavAttributesInSets.Where(aInS => contentTypeIds.Contains(aInS.AttributeSetId));
             var attributes = attributeSetMappings.Select(asm => asm.Attribute);
@@ -188,19 +151,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // note: we'll skip this for now, I don't think it's relevant...?
 
-	        //-- Delete Attribute-In-Sets
-	        //DELETE FROM ToSIC_EAV_AttributesInSets
-	        //FROM            ToSIC_EAV_AttributeSets INNER JOIN
-	        //						 ToSIC_EAV_AttributesInSets ON ToSIC_EAV_AttributeSets.AttributeSetID = ToSIC_EAV_AttributesInSets.AttributeSetID
-	        //WHERE        (ToSIC_EAV_AttributeSets.AppID = @AppId)
+	        // Delete Attribute-In-Sets
             db.RemoveRange(attributeSetMappings);
 
-	        //-- Delete AttributeSets
-	        //DELETE FROM ToSIC_EAV_AttributeSets WHERE AppID = @AppId
+	        // Delete AttributeSets
             db.RemoveRange(appContentTypes);
 
-	        //-- Delete App
-	        //DELETE FROM ToSIC_EAV_Apps WHERE AppID = @AppId
+	        // Delete App
             if (alsoDeleteAppEntry)
                 db.ToSicEavApps.Remove(db.ToSicEavApps.First(a => a.AppId == appId));
         }
