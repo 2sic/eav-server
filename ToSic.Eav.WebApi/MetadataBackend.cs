@@ -41,7 +41,7 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null)
         {
-            var wrapLog = Log.Call<MetadataListDto>();
+            var wrapLog = Log.Call<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
             IEnumerable<IEntity> entityList = null;
 
             var appState = _appStates.Get(appId);
@@ -50,32 +50,44 @@ namespace ToSic.Eav.WebApi
             {
                 Target = _metadataTargets.GetName(targetType)
             };
+            Log.Add($"target:{mdFor.Target}");
             switch (keyType)
             {
                 case "guid":
                     if (Guid.TryParse(key, out var guidKey))
                     {
-                        entityList = appState.GetMetadata(targetType, guidKey, contentType);
+                        Log.Add($"guid:{guidKey}");
                         mdFor.Guid = guidKey;
+                        entityList = appState.GetMetadata(targetType, guidKey, contentType);
                     }
+                    else
+                        Log.Add($"error: invalid guid:{key}");
                     break;
                 case "string":
-                    entityList = appState.GetMetadata(targetType, key, contentType);
+                    Log.Add($"string:{key}");
                     mdFor.String = key;
+                    entityList = appState.GetMetadata(targetType, key, contentType);
                     break;
                 case "number":
                     if (int.TryParse(key, out var keyInt))
                     {
+                        Log.Add($"number:{keyInt}");
+                        mdFor.Number = keyInt;   
                         entityList = appState.GetMetadata(targetType, keyInt, contentType);
-                        mdFor.Number = keyInt;
                     }
+                    else
+                        Log.Add($"error: invalid number:{key}");
                     break;
                 default:
+                    Log.Add($"error: key type unknown");
                     throw new Exception("key type unknown:" + keyType);
             }
 
             if(entityList == null)
+            {
+                Log.Add($"error: entityList is null");
                 throw new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel");
+            }
 
             // When retrieving all items, make sure that permissions are _not_ included
             if (string.IsNullOrEmpty(contentType))
@@ -96,6 +108,7 @@ namespace ToSic.Eav.WebApi
             {
                 var title = appState.FindTargetTitle(targetType, key);
                 mdFor.Title = title;
+                Log.Add($"title:{title}");
             }
             catch { /* experimental / ignore */ }
 
