@@ -33,6 +33,7 @@ namespace ToSic.Eav.Persistence.Interfaces
         //todo: this is now available ein the normal IEnvironment, try to move all use cases to that
         string DefaultLanguage { get; }
         string TemplatesRoot(int zoneId, int appId);
+        string GlobalTemplatesRoot(int zoneId, int appId);
         string TargetPath(string folder);
         void MapExistingFilesToImportSet(Dictionary<int, string> filesAndPaths, Dictionary<int, int> fileIdMap);
         void CreateFoldersAndMapToImportIds(Dictionary<int, string> foldersAndPath, Dictionary<int, int> folderIdCorrectionList, List<Message> importLog);

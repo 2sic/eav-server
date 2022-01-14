@@ -76,6 +76,6 @@ namespace ToSic.Eav.ImportExport
         /// </summary>
         /// <returns></returns>
         public IEnumerable<string> AllFiles => _allFiles ??
-                                               (_allFiles = Directory.EnumerateFiles(_sourceFolder, "*.*", SearchOption.AllDirectories));
+            (_allFiles = Directory.Exists(_sourceFolder) ? Directory.EnumerateFiles(_sourceFolder, "*.*", SearchOption.AllDirectories) : new List<string>());
     }
 }

@@ -44,6 +44,8 @@ namespace ToSic.Eav.Apps.Run
 
         public abstract string TemplatesRoot(int zoneId, int appId);
 
+        public abstract string GlobalTemplatesRoot(int zoneId, int appId);
+
         public string TargetPath(string folder)
         {
             var appPath = Path.Combine(Site.AppsRootPhysicalFull, folder);

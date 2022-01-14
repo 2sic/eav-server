@@ -193,6 +193,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             importMessages.AddRange(importer.Messages);
             CopyAppFiles(importMessages, appId, appDirectory);
+            CopyAppGlobalFiles(importMessages, appId, appDirectory);
 
             // New in V11 - now that we just imported content types into the /system folder
             // the App must be refreshed to ensure these are available for working
@@ -216,6 +217,23 @@ namespace ToSic.Eav.Apps.ImportExport
             var appTemplateRoot = Path.Combine(tempFolder, "2sexy");
             if (Directory.Exists(appTemplateRoot))
                 new FileManager(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
+            wrapLog("ok");
+        }
+
+        /// <summary>
+        /// Copy all files in 2sexyGlobal folder to global 2sexy folder
+        /// </summary>
+        /// <param name="importMessages"></param>
+        /// <param name="appId"></param>
+        /// <param name="tempFolder"></param>
+        /// <remarks>The zip file still uses the "2sexyGlobal" folder name instead of "2sxcGlobal"</remarks>
+        private void CopyAppGlobalFiles(List<Message> importMessages, int appId, string tempFolder)
+        {
+            var wrapLog = Log.Call($"..., {appId}, {tempFolder}");
+            var globalTemplatesRoot = Env.GlobalTemplatesRoot(_zoneId, appId);
+            var appTemplateRoot = Path.Combine(tempFolder, "2sexyGlobal");
+            if (Directory.Exists(appTemplateRoot))
+                new FileManager(appTemplateRoot).CopyAllFiles(globalTemplatesRoot, false, importMessages);
             wrapLog("ok");
         }
 

@@ -26,6 +26,8 @@ namespace ToSic.Eav.Apps.Run
 
         public override string TemplatesRoot(int zoneId, int appId) => "/templates-root-not-defined/";
 
+        public override string GlobalTemplatesRoot(int zoneId, int appId) => "/global-templates-root-not-defined/";
+
         public override void MapExistingFilesToImportSet(Dictionary<int, string> filesAndPaths, Dictionary<int, int> fileIdMap)
         {
             // don't do anything

@@ -13,5 +13,7 @@ namespace ToSic.Eav.WebApi.Dto
         public bool HasTokenTemplates;
         public int FilesCount;
         public int TransferableFilesCount;
+        public int GlobalFilesCount;
+        public int TransferableGlobalFilesCount;
     }
 }

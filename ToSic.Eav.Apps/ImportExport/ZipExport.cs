@@ -27,12 +27,16 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly string _blankGuid = Guid.Empty.ToString();
         private const string ZipFolderForPortalFiles = "PortalFiles";
         private const string ZipFolderForAppStuff = "2sexy";
+        private const string ZipFolderForGlobalAppStuff = "2sexyGlobal";
         private const string AppXmlFileName = "App.xml";
         private const string InstructionsFolder = "ImportExport\\Instructions";
 
         public FileManager FileManager;
         private string _physicalAppPath;
         private string _appFolder;
+
+        public FileManager FileManagerGlobal;
+        private string _physicalPathGlobal;
 
         protected ILog Log;
 
@@ -60,14 +64,16 @@ namespace ToSic.Eav.Apps.ImportExport
         private AppRuntime AppRuntime { get; }
         public DataSourceFactory DataSourceFactory { get; }
 
-        public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, ILog parentLog)
+        public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, string physicalPathGlobal, ILog parentLog)
         {
             _appId = appId;
             _zoneId = zoneId;
             _appFolder = appFolder;
             _physicalAppPath = physicalAppPath;
+            _physicalPathGlobal = physicalPathGlobal;
             Log = new Log("Zip.Exp", parentLog);
             FileManager = new FileManager(_physicalAppPath);
+            FileManagerGlobal = new FileManager(physicalPathGlobal);
             AppRuntime.Init(new AppIdentity(_zoneId, _appId), true, Log);
             return this;
         }
@@ -90,7 +96,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             // generate the XML
             var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
-
+    
             #region Copy needed files to temporary directory
 
             var messages = new List<Message>();
@@ -107,14 +113,18 @@ namespace ToSic.Eav.Apps.ImportExport
             var appDirectory = tempDirectory.CreateSubdirectory("Apps/" + _appFolder + "/");
             
             var sexyDirectory = appDirectory.CreateSubdirectory(ZipFolderForAppStuff);
-            
+            var globalSexyDirectory = appDirectory.CreateSubdirectory(ZipFolderForGlobalAppStuff);
             var portalFilesDirectory = appDirectory.CreateSubdirectory(ZipFolderForPortalFiles);
 
             // Copy app folder
             if (Directory.Exists(_physicalAppPath))
-            {
                 FileManager.CopyAllFiles(sexyDirectory.FullName, false, messages);
-            }
+
+            // Copy global app folder only for ParentApp
+            var parentAppGuid = xmlExport.AppState.ParentApp.AppState?.AppGuidName;
+            if (parentAppGuid == null || parentAppGuid == Constants.PresetName)
+                if (Directory.Exists(_physicalPathGlobal))
+                    FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
 
             // Copy PortalFiles
             foreach (var file in xmlExport.ReferencedFiles)
