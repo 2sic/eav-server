@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		/// <summary>
 		/// Do the import
 		/// </summary>
-		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
+		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true, int? parentAppId = null)
         {
             var wrapLog = Log.Call<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
 		    _eavContext = Deps._dbDataForAppImport.Value.Init(zoneId, appId, Log);
@@ -71,6 +71,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
 
 			var import = Deps._importerLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true, Log);
+
+			import.Storage.ParentAppId = parentAppId;
+
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
 
             Log.Add($"Purging {ZoneId}/{AppId}");

@@ -91,6 +91,8 @@ namespace ToSic.Eav.Repository.Efc
 
         //public ILog Log { get; private set; }
 
+        public int? ParentAppId { get; set; }
+
         #endregion
 
         #region Constructor and Init
@@ -126,7 +128,7 @@ namespace ToSic.Eav.Repository.Efc
         /// <summary>
         /// Set ZoneId and AppId on current context.
         /// </summary>
-        public DbDataController Init(int? zoneId, int? appId, ILog parentLog)
+        public DbDataController Init(int? zoneId, int? appId, ILog parentLog, string ancestorAppGuid = null)
         {
             Log.LinkTo(parentLog);
             // If nothing is supplied, use defaults
@@ -160,6 +162,8 @@ namespace ToSic.Eav.Repository.Efc
             }
             else
                 _appId = SqlDb.ToSicEavApps.First(a => a.Name == Constants.DefaultAppGuid).AppId;
+
+            ParentAppId = SqlDb.ToSicEavApps.SingleOrDefault(a => a.Name == ancestorAppGuid)?.AppId;
 
             return this;
         }

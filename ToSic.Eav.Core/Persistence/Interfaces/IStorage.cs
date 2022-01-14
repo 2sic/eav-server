@@ -74,5 +74,7 @@ namespace ToSic.Eav.Persistence.Interfaces
         void Save(List<IContentType> contentTypes, SaveOptions saveOptions);
 
         #endregion
+
+        int? ParentAppId { get; set; }
     }
 }

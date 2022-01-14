@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
@@ -160,6 +161,10 @@ namespace ToSic.Eav.Apps.ImportExport
             var attributeSets = runtime.ContentTypes.All.OfScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
+            // Exclude ParentApp attributeSets
+            // TODO: option to include ParentApp attributeSets
+            attributeSets = attributeSets.Where(p => !p.HasAncestor());
+
             var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
 
             // 2022-01-04 2dm Cleaned up
@@ -180,9 +185,12 @@ namespace ToSic.Eav.Apps.ImportExport
             if (!includeContentGroups)
                 entities = entities.Where(p => p.Type.StaticName != SexyContentContentGroupName).ToList();
 
+            // Exclude ParentApp entities
+            // TODO: option to include ParentApp entities
+            entities = entities.Where(p => !p.HasAncestor()).ToList();
+
             var entityIds = entities
                 .Select(e => e.EntityId.ToString()).ToArray();
-
 
             var xmlExport = _xmlExporter.Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds, Log);
 

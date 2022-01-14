@@ -21,7 +21,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
             appId = 0;
 
-			if (!IsCompatible(doc))
+            int? parentAppId = null;
+
+            if (!IsCompatible(doc))
 			{
 				Messages.Add(new Message(Log.Add("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
 				return false;
@@ -45,9 +47,17 @@ namespace ToSic.Eav.Apps.ImportExport
                 if (string.IsNullOrEmpty(appGuid) || appGuid == new Guid().ToString())
                     appGuid = Guid.NewGuid().ToString();
 
+                // ParentApp
+                var xParentApp = xmlSource?.Element(XmlConstants.Header)?.Element(XmlConstants.ParentApp);
+                var parentAppGuid = xParentApp?.Attribute(XmlConstants.Guid)?.Value;
+
                 // Adding app to EAV
-                var eavDc = Deps._dbDataForNewApp.Value.Init(zoneId, null, Log);
-                var app = eavDc.App.AddApp(null, appGuid);
+                var eavDc = Deps._dbDataForNewApp.Value.Init(zoneId, null, Log, parentAppGuid);
+
+                parentAppId = eavDc.ParentAppId;
+
+                var app = eavDc.App.AddApp(null, appGuid, parentAppId);
+
                 eavDc.SqlDb.SaveChanges();
 
                 appId = app.AppId;
@@ -63,7 +73,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             Log.Add("Purging all Zones");
             Deps.SystemManager.PurgeZoneList();
-            return wrapLog("done", ImportXml(zoneId, appId, doc));
+            return wrapLog("done", ImportXml(zoneId, appId, doc, true, parentAppId));
 		}
 
 

@@ -128,9 +128,14 @@ namespace ToSic.Eav.Apps.ImportExport
             #region Header
 
             var dimensions = _appStates.Languages(ZoneId); // new ZoneRuntime().Init(ZoneId, Log).Languages();
+            var parentAppGuid = AppState.ParentApp.AppState?.AppGuidName;
             var header = new XElement(XmlConstants.Header,
                 _isAppExport && _appStaticName != XmlConstants.AppContentGuid 
                     ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, _appStaticName))
+                    : null,
+                // ParentApp
+                (_isAppExport && _appStaticName != XmlConstants.AppContentGuid && !string.IsNullOrEmpty(parentAppGuid) && parentAppGuid != Constants.PresetName)
+                    ? new XElement(XmlConstants.ParentApp, new XAttribute(XmlConstants.Guid, parentAppGuid))
                     : null,
                 // Default Language of this site
                 new XElement(XmlConstants.Language, new XAttribute(XmlConstants.LangDefault, defaultLanguage)),
