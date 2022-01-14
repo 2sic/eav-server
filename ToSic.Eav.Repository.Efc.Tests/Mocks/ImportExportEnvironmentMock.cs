@@ -45,7 +45,10 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 
         public string TemplatesRoot(int zoneId, int appId) => BasePath + @"Destination\" + appId + @"Views";
 
+        public string GlobalTemplatesRoot(int zoneId, int appId) => BasePath + @"DestinationGlobal\" + appId + @"Views";
+
         public string TargetPath(string folder) => BasePath + @"Destination\" + folder;
+
 
         public void MapExistingFilesToImportSet(Dictionary<int, string> filesAndPaths, Dictionary<int, int> fileIdMap)
         {
