@@ -6,25 +6,12 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("no good reason to publish this")]
     public class Feature
     {
-        /// <summary>
-        /// Feature GUID
-        /// </summary>
-        public Guid Guid { get; }
+        private FeatureDefinition _featureDefinition;
 
-        /// <summary>
-        /// Feature String ID
-        /// </summary>
-        public string NameId { get; }
-
-        /// <summary>
-        /// A nice name / title for showing in UIs
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        /// A nice description
-        /// </summary>
-        public string Description { get; }
+        public Guid Guid => _featureDefinition.Guid;
+        public string NameId => _featureDefinition.NameId;
+        public string Name => _featureDefinition.Name;
+        public string Description => _featureDefinition.Description;
 
 
         /// <summary>
@@ -45,57 +32,44 @@ namespace ToSic.Eav.Configuration
         //[JsonProperty("expires")]
         public DateTime Expires { get; set; } = DateTime.MaxValue;
 
-        /// <summary>
-        /// If true, this feature will be provided to the Ui
-        /// If null or false, it won't be given to the Ui
-        /// </summary>
-        /// <remarks>
-        /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
-        /// </remarks>
-        public bool Ui { get; }
 
-        /// <summary>
-        /// If true, this feature will be provided to the Ui
-        /// If null or false, it won't be given to the Ui
-        /// </summary>
-        /// <remarks>
-        /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
-        /// </remarks>
-        public bool Public { get; }
+        public bool Ui => _featureDefinition.Ui;
+        public bool Public => _featureDefinition.Public;
+        public FeatureSecurity Security => _featureDefinition.Security;
 
 
-        /// <summary>
-        /// If true, this feature has security implications
-        /// If null or false, it's either unknown or doesn't have security implications
-        /// </summary>
-        public FeatureSecurity Security { get; }
-
-        public Feature(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security)
+        public Feature(FeatureDefinition definition)
         {
-            Guid = guid;
-            NameId = nameId;
-            Name = name;
-            Security = security;
-            Public = isPublic;
-            Ui = ui;
-            Description = description;
+            _featureDefinition = definition;
         }
+        //public Feature(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security)
+        //    : base(nameId, guid, name, isPublic, ui, description, security)
+        //{
+        //    //Guid = guid;
+        //    //NameId = nameId;
+        //    //Name = name;
+        //    //Security = security;
+        //    //Public = isPublic;
+        //    //Ui = ui;
+        //    //Description = description;
+        //}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="original">This can be null!</param>
-        /// <param name="guidIfUnknown">The feature guid, in case it's a feature which isn't known</param>
-        public Feature(Feature original, Guid guidIfUnknown)
-        {
-            Guid = original?.Guid ?? guidIfUnknown;
-            if(original == null) return;
-            Description = original.Description;
-            Name = original.Name;
-            NameId = original.NameId;
-            Public = original.Public;
-            Security = original.Security;
-            Ui = original.Ui;
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="original">This can be null!</param>
+        ///// <param name="guidIfUnknown">The feature guid, in case it's a feature which isn't known</param>
+        //public Feature(FeatureBase original, Guid guidIfUnknown)
+        //    : base(original, guidIfUnknown)
+        //{
+        //    //Guid = original?.Guid ?? guidIfUnknown;
+        //    //if(original == null) return;
+        //    //Description = original.Description;
+        //    //Name = original.Name;
+        //    //NameId = original.NameId;
+        //    //Public = original.Public;
+        //    //Security = original.Security;
+        //    //Ui = original.Ui;
+        //}
     }
 }

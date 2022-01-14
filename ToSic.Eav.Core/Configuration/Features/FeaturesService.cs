@@ -8,8 +8,8 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("hide implementation")]
     public class FeaturesService: IFeaturesInternal
     {
-        public IEnumerable<Feature> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial))).Features;
-        private static FeatureList _all;
+        public IEnumerable<Feature> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial)));//.Features;
+        private static List<Feature> _all;
 
         public IEnumerable<Feature> Ui => All.Where(f => f.Enabled && f.Ui);
 
@@ -70,19 +70,20 @@ namespace ToSic.Eav.Configuration
         private static FeatureListStored _stored;
 
 
-        private static FeatureList Merge(FeatureListStored config, FeatureList cat)
+        private static List<Feature> Merge(FeatureListStored config, IReadOnlyCollection<FeatureDefinition> cat)
         {
             var feats = config.Features.Select(f =>
             {
-                var inCat = cat.Features.FirstOrDefault(c => c.Guid == f.Id);
-                return new Feature(inCat, f.Id)
+                var inCat = cat.FirstOrDefault(c => c.Guid == f.Id)
+                    ?? new FeatureDefinition(f.Id);
+                return new Feature(inCat)
                 {
                     Enabled = f.Enabled,
                     Expires = f.Expires,
                 };
             }).ToList();
 
-            return new FeatureList(feats);
+            return feats;
         }
 
 
