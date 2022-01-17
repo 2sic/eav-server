@@ -56,12 +56,12 @@ namespace ToSic.Eav.Metadata
         Zone = 6,
 
         /// <summary>
-        /// WIP
+        /// Scope metadata (7) - for data-scopes like "System" or "System-Configuration" etc.
         /// </summary>
         Scope = 7,
 
         /// <summary>
-        /// WIP
+        /// Dimension Metadata (8) - for languages and similar data-dimensions
         /// </summary>
         Dimension = 8,
 
