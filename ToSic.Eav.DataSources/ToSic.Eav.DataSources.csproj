@@ -4,7 +4,7 @@
     <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
     <AssemblyName>ToSic.Eav.DataSources</AssemblyName>
     <RootNamespace>ToSic.Eav.DataSources</RootNamespace>
-    <Version>13.00.01</Version>
+    <Version>13.01.00</Version>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <Deterministic>true</Deterministic>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>

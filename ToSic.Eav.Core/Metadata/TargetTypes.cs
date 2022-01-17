@@ -56,6 +56,17 @@ namespace ToSic.Eav.Metadata
         Zone = 6,
 
         /// <summary>
+        /// WIP
+        /// </summary>
+        Scope = 7,
+
+        /// <summary>
+        /// WIP
+        /// </summary>
+        Dimension = 8,
+
+
+        /// <summary>
         /// Item / Object of the Platform, like a File or Folder etc. (10)
         /// </summary>
         /// <remarks>
