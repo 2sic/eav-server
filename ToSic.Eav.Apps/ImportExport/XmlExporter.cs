@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps.ImportExport
     // this has a minimal risk of being different!
     // should all get it from cache only!
 
-    public abstract class XmlExporter: HasLog
+    public abstract class XmlExporter : HasLog
     {
 
         #region simple properties
@@ -75,7 +75,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private void EnsureThisIsInitialized()
         {
-            if(Serializer == null || string.IsNullOrEmpty(_appStaticName))
+            if (Serializer == null || string.IsNullOrEmpty(_appStaticName))
                 throw new Exception("Xml Exporter is not initialized - this is required before trying to export");
         }
 
@@ -128,26 +128,23 @@ namespace ToSic.Eav.Apps.ImportExport
             #region Header
 
             var dimensions = _appStates.Languages(ZoneId); // new ZoneRuntime().Init(ZoneId, Log).Languages();
-            var parentAppGuid = AppState.ParentApp.AppState?.AppGuidName;
+
             var header = new XElement(XmlConstants.Header,
-                _isAppExport && _appStaticName != XmlConstants.AppContentGuid 
-                    ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, _appStaticName))
-                    : null,
-                // ParentApp
-                (_isAppExport && _appStaticName != XmlConstants.AppContentGuid && !string.IsNullOrEmpty(parentAppGuid) && parentAppGuid != Constants.PresetName)
-                    ? new XElement(XmlConstants.ParentApp, new XAttribute(XmlConstants.Guid, parentAppGuid))
-                    : null,
-                // Default Language of this site
-                new XElement(XmlConstants.Language, new XAttribute(XmlConstants.LangDefault, defaultLanguage)),
-                // All languages of this site/export
-                new XElement(XmlConstants.DimensionDefinition, dimensions.Select(d => new XElement(XmlConstants.DimensionDefElement,
-                    new XAttribute(XmlConstants.DimId, d.DimensionId),
-                    new XAttribute(XmlConstants.Name, d.Name),
-                    new XAttribute(XmlConstants.CultureSysKey, d.Key ?? string.Empty),
-                    new XAttribute(XmlConstants.CultureExtKey, d.EnvironmentKey ?? string.Empty),
-                    new XAttribute(XmlConstants.CultureIsActiveAttrib, d.Active)
-                    )))
-                );
+               _isAppExport && _appStaticName != XmlConstants.AppContentGuid
+                   ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, _appStaticName))
+                   : null,
+                GetParentAppXElement(),
+               // Default Language of this site
+               new XElement(XmlConstants.Language, new XAttribute(XmlConstants.LangDefault, defaultLanguage)),
+               // All languages of this site/export
+               new XElement(XmlConstants.DimensionDefinition, dimensions.Select(d => new XElement(XmlConstants.DimensionDefElement,
+                   new XAttribute(XmlConstants.DimId, d.DimensionId),
+                   new XAttribute(XmlConstants.Name, d.Name),
+                   new XAttribute(XmlConstants.CultureSysKey, d.Key ?? string.Empty),
+                   new XAttribute(XmlConstants.CultureExtKey, d.EnvironmentKey ?? string.Empty),
+                   new XAttribute(XmlConstants.CultureIsActiveAttrib, d.Active)
+                   )))
+               );
 
             #endregion
 
@@ -236,6 +233,19 @@ namespace ToSic.Eav.Apps.ImportExport
                 GetFoldersXElements()));
         }
 
+        private XElement GetParentAppXElement()
+        {
+            if (_isAppExport && _appStaticName != XmlConstants.AppContentGuid)
+            {
+                if (AppState.HasParentApp())
+                    return new XElement(XmlConstants.ParentApp,
+                        new XAttribute(XmlConstants.Guid, AppState.ParentApp.AppState?.AppGuidName),
+                        new XAttribute(XmlConstants.AppId, AppState.ParentApp.AppState?.AppId)
+                    );
+            }
+            return null;
+        }
+
         public abstract void AddFilesToExportQueue();
 
         /// <summary>
@@ -313,7 +323,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private XElement GetFoldersXElements()
         {
-            return  new XElement(XmlConstants.FolderGroup,
+            return new XElement(XmlConstants.FolderGroup,
                     ReferencedFolderIds.Distinct().Select(GetFolderXElement)
                 );
         }
@@ -344,7 +354,7 @@ namespace ToSic.Eav.Apps.ImportExport
             {
                 return new XElement(XmlConstants.Folder,
                         new XAttribute(XmlConstants.FolderNodeId, folderId),
-                        new XAttribute(XmlConstants.FolderNodePath, path) 
+                        new XAttribute(XmlConstants.FolderNodePath, path)
                     );
             }
 
