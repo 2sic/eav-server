@@ -34,6 +34,13 @@ namespace ToSic.Eav.Configuration
             set => _globalSiteFolder = value;
         }
 
+        /// <inheritdoc />
+        public string AssetsFolder
+        {
+            get => _assetsFolder ?? throw new Exception(ErrorMessage(nameof(AssetsFolder)));
+            set => _assetsFolder = CorrectFolderOrErrorIfInvalid(value, nameof(AssetsFolder));
+        }
+
         private static string CorrectFolderOrErrorIfInvalid(string value, string fieldName) 
             => value?.Backslash().TrimLastSlash() ?? throw new Exception(ErrorMessage(fieldName));
 
@@ -44,5 +51,6 @@ namespace ToSic.Eav.Configuration
         private static string _temporaryFolder;
         private static string _globalFolder;
         private static string _globalSiteFolder;
+        private static string _assetsFolder;
     }
 }
