@@ -72,6 +72,19 @@ namespace ToSic.Eav.Persistence.Efc
         /// </summary>
         private ImmutableList<IContentType> LoadContentTypesIntoLocalCache(int appId, IHasMetadataSource source)
         {
+            // WARNING: 2022-01-18 2dm
+            // I believe there is an issue which can pop up from time to time, but I'm not sure if it's only in dev setup
+            // The problem is that content-types and attributes get get metadata from another app
+            // That app is retrieved once needed - but the object retrieving it is given here (the AppState)
+            // There seem to be cases where the following happens much later on:
+            // 1. The remote MD comes from an App which hasn't been loaded yet
+            // 2. The AppState has a ServiceProvider which has been destroyed
+            // 3. It fails to load the App later, because the ServiceProvider is missing
+            // I'm not sure if this is an issue we need to fix, but we must keep an eye on it
+            // If it happens in the wild, this would probably be the solution:
+            // 1. Collect AppIds used in content-types and attributes here
+            // 2. After loading the types, access the app-state of each of these IDs to ensure it's loaded already
+
             var wrapLog = Log.Call(useTimer: true);
             // Load from DB
             var sqlTime = Stopwatch.StartNew();
@@ -129,7 +142,7 @@ namespace ToSic.Eav.Persistence.Efc
 
                 return (IContentType)new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
                     set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent,
-                    () => notGhost ? source : _appStates.Get(new AppIdentity(set.ZoneId, set.AppId))
+                    metaSourceFinder: () => notGhost ? source : _appStates.Get(new AppIdentity(set.ZoneId, set.AppId))
                 )
                 {
                     Attributes = (set.SharedDefinitionId.HasValue

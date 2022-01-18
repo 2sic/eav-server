@@ -90,10 +90,6 @@ namespace ToSic.Eav.Data
             Description = description;
             Scope = Scopes.RenameOldScope(scope);
 
-            // Shared Content-Types
-            //ParentId = parentTypeId;
-            //ParentZoneId = configZoneId;
-            //ParentAppId = configAppId;
             AlwaysShareConfiguration = configurationIsOmnipresent;
 
             if (parentTypeId != null)
