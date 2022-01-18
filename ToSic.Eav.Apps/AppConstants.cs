@@ -4,6 +4,11 @@
     {
         public const string AppIconFile = "app-icon.png";
 
+        /// <summary>
+        /// This is used in rare cases where the Zone should be auto-retrieved from the current context zone
+        /// </summary>
+        public const int AutoLookupZone = -1;
+
 
         #region App Configuration Fields
 

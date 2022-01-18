@@ -65,10 +65,6 @@ namespace ToSic.Eav.Apps
 
         #endregion
 
-
-        [PrivateApi]
-        public const int AutoLookupZone = -1;
-
         /// <inheritdoc />
         public string Name { get; private set; }
         /// <inheritdoc />
@@ -82,10 +78,6 @@ namespace ToSic.Eav.Apps
         /// <inheritdoc />
         public bool ShowDrafts { get; private set; }
 
-        [PrivateApi]
-        protected const string IconFile = "/" + AppConstants.AppIconFile;
-
-        
         protected internal App Init(IAppIdentity appIdentity, Func<App, IAppDataConfiguration> buildConfiguration, ILog parentLog)
         {
             // Env / Tenant must be re-checked here
@@ -97,7 +89,7 @@ namespace ToSic.Eav.Apps
                 Site = _dependencies.ZoneMapper.SiteOfApp(appIdentity.AppId);
 
             // if zone is missing, try to find it - but always assume current context
-            if (appIdentity.ZoneId == AutoLookupZone)
+            if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
                 appIdentity = new AppIdentity(Site.ZoneId, appIdentity.AppId);
 
             Init(appIdentity, new CodeRef(), parentLog);
