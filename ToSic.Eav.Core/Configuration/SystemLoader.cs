@@ -6,6 +6,8 @@ using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 
@@ -21,6 +23,7 @@ namespace ToSic.Eav.Configuration
         {
             _appsCache = appsCache;
             Features = features;
+            _logHistory = logHistory;
             logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
             _fingerprint = fingerprint;
             _appStateLoader = runtime.Init(Log);
@@ -30,6 +33,7 @@ namespace ToSic.Eav.Configuration
         private readonly IRuntime _appStateLoader;
         private readonly IAppsCache _appsCache;
         public readonly IFeaturesInternal Features;
+        private readonly LogHistory _logHistory;
 
         public SystemLoader Init(ILog parentLog)
         {
@@ -48,12 +52,17 @@ namespace ToSic.Eav.Configuration
             if (_startupAlreadyRan) throw new Exception("Startup should never be called twice.");
             _startupAlreadyRan = true;
 
+            // Pre-Load the Assembly list into memory to log separately
+            var assemblyLoadLog = new Log(LogNames.Eav + "AssLdr", null, "Load Assemblies");
+            _logHistory.Add(LogNames.LogHistoryGlobalTypes, assemblyLoadLog);
+            AssemblyHandling.GetTypes(assemblyLoadLog);
+
             // Build the cache of all system-types. Must happen before everything else
             LoadPresetApp();
 
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_appsCache, _fingerprint, Log).LoadLicenses();
+            new LicenseLoader(_appsCache, _fingerprint, _logHistory, Log).LoadLicenses();
             
 
             // Now do a normal reload of configuration and features
@@ -81,58 +90,7 @@ namespace ToSic.Eav.Configuration
         public void LoadFeatures()
         {
             var wrapLog = Log.Call();
-            FeatureListStored feats = null;
-            try
-            {
-                var presetApp = _appsCache.Get(null, Constants.PresetIdentity);
-
-                var entity = presetApp.List.FirstOrDefaultOfType(FeatureConstants.TypeName);
-                var featStr = entity?.Value<string>(FeatureConstants.FeaturesField);
-                var signature = entity?.Value<string>(FeatureConstants.SignatureField);
-
-                // Verify signature from security-system
-                if (!string.IsNullOrWhiteSpace(featStr))
-                {
-                    if (!string.IsNullOrWhiteSpace(signature))
-                        try
-                        {
-                            var data = new UnicodeEncoding().GetBytes(featStr);
-                            FeaturesService.ValidInternal =
-                                new Sha256().VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930,
-                                    signature, data);
-                        }
-                        catch (Exception ex)
-                        {
-                            // Just log, and ignore
-                            Log.Exception(ex);
-                        }
-
-                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                    if (FeaturesService.ValidInternal || FeatureConstants.AllowUnsignedFeatures)
-                    {
-                        var feats2 = featStr.StartsWith("{") 
-                            ? JsonConvert.DeserializeObject<FeatureListStored>(featStr) 
-                            : null;
-
-                        if (feats2 != null)
-                        {
-                            if (feats2.Fingerprint != _fingerprint.GetSystemFingerprint())
-                                FeaturesService.ValidInternal = false;
-
-                            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                            if (FeaturesService.ValidInternal || FeatureConstants.AllowUnsignedFeatures)
-                                feats = feats2;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Just log and ignore
-                Log.Exception(ex);
-            }
-
-            Features.Stored = feats ?? new FeatureListStored();
+            Features.Stored = new FeaturesLoader(_appsCache, _fingerprint, _logHistory, Log).LoadFeatures();
             Features.CacheTimestamp = DateTime.Now.Ticks;
             wrapLog("ok");
         }

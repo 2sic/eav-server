@@ -15,18 +15,16 @@ namespace ToSic.Eav.Configuration.Licenses
     /// <summary>
     /// Will check the loaded licenses and prepare validity information for use during system runtime
     /// </summary>
-    internal sealed class LicenseLoader: HasLog<LicenseLoader>
+    internal sealed class LicenseLoader: HasLog
     {
         /// <summary>
         /// Constructor - not meant for DI
         /// </summary>
-        /// <param name="appsCache"></param>
-        /// <param name="fingerprint"></param>
-        /// <param name="parentLog"></param>
-        internal LicenseLoader(IAppsCache appsCache, IFingerprint fingerprint, ILog parentLog) : base(LogNames.Eav + "LicLdr", parentLog)
+        internal LicenseLoader(IAppsCache appsCache, IFingerprint fingerprint, LogHistory logHistory, ILog parentLog) : base(LogNames.Eav + "LicLdr", parentLog, "Load Licenses")
         {
             _appsCache = appsCache;
             _fingerprint = fingerprint;
+            logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
         }
         private readonly IAppsCache _appsCache;
         private readonly IFingerprint _fingerprint;
