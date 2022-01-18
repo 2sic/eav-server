@@ -20,7 +20,6 @@ namespace ToSic.Eav.Apps.ImportExport
             var wrapLog = Log.Call<bool>($"zone:{zoneId}");
 
             appId = 0;
-
             int? parentAppId = null;
 
             if (!IsCompatible(doc))
@@ -47,14 +46,11 @@ namespace ToSic.Eav.Apps.ImportExport
                 if (string.IsNullOrEmpty(appGuid) || appGuid == new Guid().ToString())
                     appGuid = Guid.NewGuid().ToString();
 
-                // ParentApp
-                var xParentApp = xmlSource?.Element(XmlConstants.Header)?.Element(XmlConstants.ParentApp);
-                var parentAppGuid = xParentApp?.Attribute(XmlConstants.Guid)?.Value;
-
                 // Adding app to EAV
-                var eavDc = Deps._dbDataForNewApp.Value.Init(zoneId, null, Log, parentAppGuid);
+                var eavDc = Deps._dbDataForNewApp.Value.Init(zoneId, null, Log);
 
-                parentAppId = eavDc.ParentAppId;
+                // ParentApp
+                parentAppId = GetParentAppId(xmlSource, eavDc);
 
                 var app = eavDc.App.AddApp(null, appGuid, parentAppId);
 
@@ -73,10 +69,24 @@ namespace ToSic.Eav.Apps.ImportExport
 
             Log.Add("Purging all Zones");
             Deps.SystemManager.PurgeZoneList();
-            return wrapLog("done", ImportXml(zoneId, appId, doc, true, parentAppId));
+            return wrapLog("done", ImportXml(zoneId, appId, doc));
 		}
 
+        private static int? GetParentAppId(XElement xmlSource, Repository.Efc.DbDataController eavDc)
+        {
+            var parentAppXElement = xmlSource?.Element(XmlConstants.Header)?.Element(XmlConstants.ParentApp);
+            if (parentAppXElement != null)
+            {
+                var parentAppGuidOrName = parentAppXElement?.Attribute(XmlConstants.Guid)?.Value;
+                if (!string.IsNullOrEmpty(parentAppGuidOrName) && parentAppGuidOrName != XmlConstants.ParentApp)
+                {
+                    if (int.TryParse(parentAppXElement?.Attribute(XmlConstants.AppId)?.Value, out int parAppId))
+                        return eavDc.GetParentAppId(parentAppGuidOrName, parAppId);
+                }
+            }
+            return null;
+        }
 
-	}
+    }
 
 }

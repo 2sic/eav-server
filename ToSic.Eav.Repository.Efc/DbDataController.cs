@@ -128,7 +128,7 @@ namespace ToSic.Eav.Repository.Efc
         /// <summary>
         /// Set ZoneId and AppId on current context.
         /// </summary>
-        public DbDataController Init(int? zoneId, int? appId, ILog parentLog, string ancestorAppGuid = null)
+        public DbDataController Init(int? zoneId, int? appId, ILog parentLog)
         {
             Log.LinkTo(parentLog);
             // If nothing is supplied, use defaults
@@ -162,8 +162,6 @@ namespace ToSic.Eav.Repository.Efc
             }
             else
                 _appId = SqlDb.ToSicEavApps.First(a => a.Name == Constants.DefaultAppGuid).AppId;
-
-            ParentAppId = SqlDb.ToSicEavApps.SingleOrDefault(a => a.Name == ancestorAppGuid)?.AppId;
 
             return this;
         }
@@ -282,5 +280,27 @@ namespace ToSic.Eav.Repository.Efc
             => ContentType.ExtendSaveContentTypes(contentTypes, saveOptions);
 
         #endregion
+
+        public int? GetParentAppId(string parentAppGuid, int parentAppId)
+        {
+            switch (SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid))
+            {
+                case 0:
+                    throw new ArgumentException($"ParentApp is missing. Can't find app with guid:{parentAppGuid}. Please import ParentApp first.");
+                case 1:
+                    return SqlDb.ToSicEavApps.Single(a => a.Name == parentAppGuid).AppId;
+            }
+
+            // we have more apps with requested guid
+            switch (SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid && a.AppId == parentAppId))
+            {
+                case 0:
+                    throw new ArgumentException($"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} but nither has AppId:{parentAppId}. Can't import.");
+                case 1:
+                    return SqlDb.ToSicEavApps.Single(a => a.Name == parentAppGuid && a.AppId == parentAppId).AppId;
+            }
+
+            throw new ArgumentException($"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} and AppId:{parentAppId}. Can't import.");
+        }
     }
 }

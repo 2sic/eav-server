@@ -42,19 +42,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         .Where(s => s.Name == name)
                         .ToList();
 
-                // if not found try ParentApp
-                if (found.Count == 0)
-                    found = GetSetCoreQuery(DbContext.ParentAppId)
-                        .Where(s => s.StaticName == name)
-                        .ToList();
-
-                // if not found try ParentApp
-                if (found.Count == 0)
-                    found = GetSetCoreQuery(DbContext.ParentAppId)
-                        .Where(s => s.Name == name)
-                        .ToList();
-
-
                 if (found.Count != 1)
                     throw new Exception($"too many or too few content types found for the content-type {name} - found {found.Count}");
 

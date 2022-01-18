@@ -35,6 +35,7 @@
         public const string CultureExtKey = "ExternalKey";
         public const string CultureIsActiveAttrib = "Active";
         public const string App = "App";
+        public const string AppId = "AppId";
         public const string ParentApp = "ParentApp";
         public const string AppContentGuid = "Default";
         public const string Guid = Data.Attributes.GuidNiceName;
