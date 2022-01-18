@@ -35,10 +35,10 @@ namespace ToSic.Eav.Configuration
         }
 
         /// <inheritdoc />
-        public string AssetsFolder
+        public string AssetsVirtualUrl
         {
-            get => _assetsFolder ?? throw new Exception(ErrorMessage(nameof(AssetsFolder)));
-            set => _assetsFolder = CorrectFolderOrErrorIfInvalid(value, nameof(AssetsFolder));
+            get => _assetsVirtualUrl ?? throw new Exception(ErrorMessage(nameof(AssetsVirtualUrl)));
+            set => _assetsVirtualUrl = CorrectFolderOrErrorIfInvalid(value, nameof(AssetsVirtualUrl));
         }
 
         private static string CorrectFolderOrErrorIfInvalid(string value, string fieldName) 
@@ -51,6 +51,6 @@ namespace ToSic.Eav.Configuration
         private static string _temporaryFolder;
         private static string _globalFolder;
         private static string _globalSiteFolder;
-        private static string _assetsFolder;
+        private static string _assetsVirtualUrl;
     }
 }

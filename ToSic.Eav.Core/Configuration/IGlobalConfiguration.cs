@@ -25,9 +25,11 @@
         string GlobalSiteFolder { get; set; }
 
         /// <summary>
-        /// The assets folder (virtual) in main global folder where assets are stored
+        /// The assets virtual url to main module global folder where assets are stored.
+        /// Eg: "~/DesktopModules/ToSic_SexyContent/assets/" in DNN,
+        /// "~/Modules/ToSic.Sxc/assets/" in Oqtane.
         /// </summary>
         /// <returns>The folder, can be null if it was never set</returns>
-        string AssetsFolder { get; set; }
+        string AssetsVirtualUrl { get; set; }
     }
 }
