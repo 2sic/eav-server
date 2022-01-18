@@ -90,7 +90,11 @@ namespace ToSic.Eav.Configuration.Licenses
                                SystemInformation.Version.Major == licVersion;
             Log.Add($"Version: {validVersion}");
 
-            var validDate = DateTime.TryParse(infoRaw.Expires, out var expires) && DateTime.Now.CompareTo(expires) <= 0;
+            var dateOk = DateTime.TryParse(infoRaw.Expires, out var expires);
+            if(!dateOk)
+                expires = DateTime.MinValue;
+
+            var validDate = dateOk && DateTime.Now.CompareTo(expires) <= 0;
             Log.Add($"Expired: {validDate}");
 
             var licenses = infoRaw.Licenses.SplitNewLine().TrimmedAndWithoutEmpty() ?? Array.Empty<string>();
@@ -98,9 +102,11 @@ namespace ToSic.Eav.Configuration.Licenses
 
             var licenseStates = licenses.Select(l => new LicenseState
                 {
+                    Title = infoRaw.Name,
                     License = LicenseTypes.Find(l),
                     EntityGuid = infoRaw.Guid,
                     LicenseKey = infoRaw.Key,
+                    Expiration = expires,
                     ValidExpired = validDate,
                     ValidFingerprint = validFp,
                     ValidSignature = validSig,

@@ -7,6 +7,7 @@ namespace ToSic.Eav.Configuration.Licenses
 {
     public class LicenseInfoRaw
     {
+        public string Name { get; set; }
         public Guid Guid { get; set; }
         public string Key { get; set; }
         
@@ -29,6 +30,7 @@ namespace ToSic.Eav.Configuration.Licenses
         public LicenseInfoRaw(IEntity entity)
         {
             Guid = entity.EntityGuid;
+            Name = entity.Value<string>(LicenseConstants.FieldTitle);
             Key = entity.Value<string>(LicenseConstants.FieldKey);
             Licenses = entity.Value<string>(LicenseConstants.FieldLicenses);
             Fingerprints = entity.Value<string>(LicenseConstants.FieldFingerprint);

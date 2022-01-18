@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    internal class Licenses
+    public class Licenses
     {
         public static List<LicenseState> All { get; internal set; } = new List<LicenseState>();
 

@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Text;
-using Newtonsoft.Json;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
-using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
-using ToSic.Eav.Security.Encryption;
 
 namespace ToSic.Eav.Configuration
 {
