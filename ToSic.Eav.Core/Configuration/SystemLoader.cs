@@ -2,6 +2,7 @@
 using System.Text;
 using Newtonsoft.Json;
 using ToSic.Eav.Caching;
+using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -49,6 +50,11 @@ namespace ToSic.Eav.Configuration
 
             // Build the cache of all system-types. Must happen before everything else
             LoadPresetApp();
+
+            // V13 - Load Licenses
+            // Avoid using DI, as otherwise someone could inject a different license loader
+            new LicenseLoader(_appsCache, _fingerprint, Log).LoadLicenses();
+            
 
             // Now do a normal reload of configuration and features
             LoadFeatures();

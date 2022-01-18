@@ -8,7 +8,7 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("hide implementation")]
     public class FeaturesService: IFeaturesInternal
     {
-        public IEnumerable<Feature> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial)));//.Features;
+        public IEnumerable<Feature> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial)));
         private static List<Feature> _all;
 
         public IEnumerable<Feature> Ui => All.Where(f => f.Enabled && f.Ui);
