@@ -5,7 +5,7 @@ namespace ToSic.Eav.WebApi.PublicApi
 {
     public interface IFeatureController
     {
-        IEnumerable<Feature> List(bool reload = false);
+        IEnumerable<FeatureState> List(bool reload = false);
 
         string RemoteManageUrl();
     }

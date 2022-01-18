@@ -37,7 +37,7 @@ namespace ToSic.Eav.WebApi.Dto
         /// <summary>
         /// List of system features the UI should know about
         /// </summary>
-        public List<Feature> Features;
+        public List<FeatureState> Features;
 
         /// <summary>
         /// Experimental additional data for configuration

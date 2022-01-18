@@ -4,7 +4,7 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi("no good reason to publish this")]
-    public class Feature
+    public class FeatureState
     {
         private FeatureDefinition _featureDefinition;
 
@@ -18,19 +18,24 @@ namespace ToSic.Eav.Configuration
         /// Feature is enabled and hasn't expired yet
         /// </summary>
         /// <remarks>by default all features are disabled</remarks>
-        //[JsonProperty("enabled")]
-        public bool Enabled
-        {
-            get => _enabled && Expires > DateTime.Now;
-            set => _enabled = value;
-        }
-        private bool _enabled;
+        public bool Enabled => _enabled && Expires > DateTime.Now;
+        private readonly bool _enabled;
+
+
+        /// <summary>
+        /// Reason why it was enabled
+        /// </summary>
+        public string EnabledReason { get; }
+
+        /// <summary>
+        /// More detailed reason
+        /// </summary>
+        public string EnabledReasonDetailed { get; }
 
         /// <summary>
         /// Expiry of this feature
         /// </summary>
-        //[JsonProperty("expires")]
-        public DateTime Expires { get; set; } = DateTime.MaxValue;
+        public DateTime Expires { get; }
 
 
         public bool Ui => _featureDefinition.Ui;
@@ -38,38 +43,13 @@ namespace ToSic.Eav.Configuration
         public FeatureSecurity Security => _featureDefinition.Security;
 
 
-        public Feature(FeatureDefinition definition)
+        public FeatureState(FeatureDefinition definition, DateTime expires, bool enabled, string msgShort, string msgLong)
         {
             _featureDefinition = definition;
+            Expires = expires;
+            _enabled = enabled;
+            EnabledReason = msgShort;
+            EnabledReasonDetailed = msgLong;
         }
-        //public Feature(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security)
-        //    : base(nameId, guid, name, isPublic, ui, description, security)
-        //{
-        //    //Guid = guid;
-        //    //NameId = nameId;
-        //    //Name = name;
-        //    //Security = security;
-        //    //Public = isPublic;
-        //    //Ui = ui;
-        //    //Description = description;
-        //}
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="original">This can be null!</param>
-        ///// <param name="guidIfUnknown">The feature guid, in case it's a feature which isn't known</param>
-        //public Feature(FeatureBase original, Guid guidIfUnknown)
-        //    : base(original, guidIfUnknown)
-        //{
-        //    //Guid = original?.Guid ?? guidIfUnknown;
-        //    //if(original == null) return;
-        //    //Description = original.Description;
-        //    //Name = original.Name;
-        //    //NameId = original.NameId;
-        //    //Public = original.Public;
-        //    //Security = original.Security;
-        //    //Ui = original.Ui;
-        //}
     }
 }

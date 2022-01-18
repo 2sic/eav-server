@@ -8,10 +8,10 @@ namespace ToSic.Eav.Configuration
     public interface IFeaturesInternal: IFeaturesService // note: needs the full name because Configuration namespace has the same interface
     {
         [PrivateApi]
-        IEnumerable<Feature> All { get; }
+        IEnumerable<FeatureState> All { get; }
 
         [PrivateApi]
-        IEnumerable<Feature> Ui { get; }
+        IEnumerable<FeatureState> Ui { get; }
 
 
         [PrivateApi]

@@ -8,10 +8,10 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("hide implementation")]
     public class FeaturesService: IFeaturesInternal
     {
-        public IEnumerable<Feature> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial)));
-        private static List<Feature> _all;
+        public IEnumerable<FeatureState> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial)));
+        private static List<FeatureState> _all;
 
-        public IEnumerable<Feature> Ui => All.Where(f => f.Enabled && f.Ui);
+        public IEnumerable<FeatureState> Ui => All.Where(f => f.Enabled && f.Ui);
 
         public bool Enabled(Guid guid) => All.Any(f => f.Guid == guid && f.Enabled);
         
@@ -70,20 +70,45 @@ namespace ToSic.Eav.Configuration
         private static FeatureListStored _stored;
 
 
-        private static List<Feature> Merge(FeatureListStored config, IReadOnlyCollection<FeatureDefinition> cat)
+        private static List<FeatureState> Merge(FeatureListStored config, IReadOnlyCollection<FeatureDefinition> cat)
         {
-            var feats = config.Features.Select(f =>
+            var enabledLicenses = Licenses.Licenses.Enabled;
+
+            var allFeats = cat.Select(f =>
             {
-                var inCat = cat.FirstOrDefault(c => c.Guid == f.Id)
-                    ?? new FeatureDefinition(f.Id);
-                return new Feature(inCat)
+                var enabled = false;
+                var msgShort = "default";
+                var message = " by default";
+                var expiry = DateTime.MinValue;
+                var licenses = f.LicenseRules.FirstOrDefault(lr => Licenses.Licenses.IsEnabled(lr.LicenseType.Guid));
+                if (licenses != null)
                 {
-                    Enabled = f.Enabled,
-                    Expires = f.Expires,
-                };
+                    enabled = licenses.DefaultEnabled;
+                    msgShort = licenses.LicenseType.Name;
+                    message = $" by default with license {licenses.LicenseType.Name}";
+                    expiry = enabledLicenses.TryGetValue(licenses.LicenseType.Guid, out var lic) 
+                        ? lic.Expiration 
+                        : new DateTime(2099, 12, 31);
+                }
+
+                var inConfig = config.Features.FirstOrDefault(cf => cf.Id == f.Guid);
+                if (inConfig != null)
+                {
+                    enabled = inConfig.Enabled;
+                    expiry = inConfig.Expires;
+                    msgShort = "configuration";
+                    message = " by configuration";
+                }
+                return new FeatureState(f, expiry, enabled, msgShort, (enabled ? "Enabled" : "Disabled") + message);
             }).ToList();
 
-            return feats;
+            // Find additional, un matching features
+            var missingFeatures = config.Features
+                .Where(f => cat.All(fd => fd.Guid != f.Id))
+                .Select(f => new FeatureState(new FeatureDefinition(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually"));
+
+            var final = allFeats.Union(missingFeatures).ToList();
+            return final;
         }
 
 

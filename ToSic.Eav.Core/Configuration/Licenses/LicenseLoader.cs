@@ -43,8 +43,7 @@ namespace ToSic.Eav.Configuration.Licenses
                 var licenseEntities = presetApp.List.OfType(LicenseConstants.TypeName).ToList();
                 Log.Add($"Found {licenseEntities.Count} license entities");
                 var licenses = licenseEntities.SelectMany(LicensesInOneEntity).ToList();
-                Licenses.All = licenses;
-                Licenses.CacheTimestamp = DateTime.Now.Ticks;
+                Licenses.Update(licenses);
                 Log.Add($"Found {licenses.Count} licenses");
                 wrapLog("ok");
             }

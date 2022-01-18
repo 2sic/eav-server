@@ -10,9 +10,10 @@ namespace ToSic.Eav.Configuration
     {
         internal static FeatureSecurity Security0 = new FeatureSecurity(0, "Actually increases security.");
 
-        internal static FeatureLicenseRule ForPatreon = new FeatureLicenseRule(LicenseTypes.Patreon, true);
-        internal static List<FeatureLicenseRule> ForPatreons = new List<FeatureLicenseRule>() { ForPatreon };
-
+        internal static List<FeatureLicenseRule> ForPatreons = new List<FeatureLicenseRule>
+        {
+            new FeatureLicenseRule(LicenseTypes.PatreonSupporter, true)
+        };
         internal static List<FeatureLicenseRule> ForAll = new List<FeatureLicenseRule>
         {
             new FeatureLicenseRule(LicenseTypes.CoreFree, false)
@@ -127,7 +128,7 @@ namespace ToSic.Eav.Configuration
             false,
             "Enables WebFarm Cache use in Dnn",
             Security0,
-            new List<FeatureLicenseRule>() { new FeatureLicenseRule(LicenseTypes.WebFarm, false) }
+            new List<FeatureLicenseRule> { new FeatureLicenseRule(LicenseTypes.WebFarm, false) }
         );
 
         // WIP / Beta in v13
@@ -145,7 +146,7 @@ namespace ToSic.Eav.Configuration
         // WIP / Beta in v13
         // todo: mention decorator in the settings?
         public static readonly FeatureDefinition GlobalAppsWIP = new FeatureDefinition(
-            "GlobalAppsEnabled-BETA",
+            "GlobalAppsEnabled-WIP",
             new Guid("bb6656ef-fb81-4943-bf88-297e516d2616"),
             "Apps can be shared globally",
             false,
@@ -188,6 +189,9 @@ namespace ToSic.Eav.Configuration
 
             // 2sxc 13 - for Patreons
             ImageServiceMultiFormat,
+
+            // 2sxc 13 - Global Apps
+            GlobalAppsWIP,
         };
     }
 }
