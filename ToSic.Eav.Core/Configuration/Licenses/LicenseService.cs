@@ -9,11 +9,14 @@ namespace ToSic.Eav.Configuration.Licenses
     {
         #region Public APIs
 
+        /// <inheritdoc />
         public List<LicenseState> All => AllCache;
 
+        /// <inheritdoc />
         public IImmutableDictionary<LicenseDefinition, LicenseState> Enabled => EnabledCache;
 
-        public bool IsEnabled(LicenseDefinition licenseId) => EnabledCache.ContainsKey(licenseId);
+        /// <inheritdoc />
+        public bool IsEnabled(LicenseDefinition license) => EnabledCache.ContainsKey(license);
 
         #endregion
 
