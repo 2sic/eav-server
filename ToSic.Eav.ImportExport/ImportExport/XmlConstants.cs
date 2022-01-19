@@ -55,7 +55,8 @@
         public const string AttributeSetParentDef = "UsesConfigurationOfAttributeSet";
 
         // Keys for metadata
-        public const string KeyTargetType = "AssignmentObjectType";
+        public const string KeyTargetTypeNameOld = "AssignmentObjectType";
+        public const string KeyTargetType = "TargetType"; // #TargetTypeIdInsteadOfTarget
         public const string KeyGuid = "KeyGuid";
         public const string KeyNumber = "KeyNumber";
         public const string KeyString = "KeyString";

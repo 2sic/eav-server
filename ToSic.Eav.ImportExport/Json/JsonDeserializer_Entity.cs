@@ -60,12 +60,12 @@ namespace ToSic.Eav.ImportExport.Json
                                        );
 
             // Metadata
-            var ismeta = new Metadata.Target();
+            var ismeta = new Target();
             if (jEnt.For != null)
             {
                 var md = jEnt.For;
-                Log.Add($"this is metadata; will construct 'For' object. Type: {md.Target}");
-                ismeta.TargetType = MetadataTargets.GetId(md.Target);
+                Log.Add($"this is metadata; will construct 'For' object. Type: {md.Target} ({md.TargetType})");
+                ismeta.TargetType = md.TargetType != 0 ? md.TargetType : MetadataTargets.GetId(md.Target); // #TargetTypeIdInsteadOfTarget
                 ismeta.KeyGuid = md.Guid;
                 ismeta.KeyNumber = md.Number;
                 ismeta.KeyString = md.String;

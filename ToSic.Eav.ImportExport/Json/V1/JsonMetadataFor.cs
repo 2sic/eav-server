@@ -6,7 +6,16 @@ namespace ToSic.Eav.ImportExport.Json.V1
 {
     public class JsonMetadataFor
     {
+        /// <summary>
+        /// The target type as a name - should be deprecated soon!
+        /// </summary>
         public string Target;
+
+        // #TargetTypeIdInsteadOfTarget
+        /// <summary>
+        /// The target type ID should replace the target soon, ATM they should co-exist
+        /// </summary>
+        public int TargetType;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string String;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public Guid? Guid;

@@ -48,9 +48,11 @@ namespace ToSic.Eav.WebApi
 
             var mdFor = new JsonMetadataFor()
             {
-                Target = _metadataTargets.GetName(targetType)
+                // #TargetTypeIdInsteadOfTarget
+                Target = _metadataTargets.GetName(targetType),
+                TargetType = targetType,
             };
-            Log.Add($"target:{mdFor.Target}");
+            Log.Add($"Target: {mdFor.Target} ({targetType})");
             switch (keyType)
             {
                 case "guid":
