@@ -2,15 +2,22 @@
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    public class LicenseType
+    /// <summary>
+    /// Defines a license - name, guid etc.
+    /// </summary>
+    public class LicenseDefinition
     {
-        public LicenseType(string name, Guid guid)
+        public LicenseDefinition(int priority, string name, Guid guid)
         {
+            Priority = priority;
             Name = name;
             Guid = guid;
         }
 
-        public string Name;
-        public Guid Guid;
+        public readonly int Priority;
+
+        public readonly string Name;
+        public readonly Guid Guid;
+        public bool AutoEnable = false;
     }
 }

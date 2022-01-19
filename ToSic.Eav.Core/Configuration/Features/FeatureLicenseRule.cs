@@ -4,14 +4,14 @@ namespace ToSic.Eav.Configuration
 {
     internal class FeatureLicenseRule
     {
-        public FeatureLicenseRule(LicenseType licenseType, bool enabled)
+        public FeatureLicenseRule(LicenseDefinition licenseDefinition, bool enabled)
         {
-            LicenseType = licenseType;
-            DefaultEnabled = enabled;
+            LicenseDefinition = licenseDefinition;
+            EnableFeatureByDefault = enabled;
         }
 
-        public LicenseType LicenseType { get; }
+        public LicenseDefinition LicenseDefinition { get; }
 
-        public bool DefaultEnabled { get; } = true;
+        public bool EnableFeatureByDefault { get; } = true;
     }
 }

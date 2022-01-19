@@ -5,22 +5,35 @@ using System.Linq;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    public class Licenses
+    public class LicenseService
     {
-        public static List<LicenseState> All { get; private set; } = new List<LicenseState>();
+        #region Public APIs
 
-        public static IImmutableDictionary<Guid, LicenseState> Enabled { get; private set; } =
-            new Dictionary<Guid, LicenseState>().ToImmutableDictionary();
+        public List<LicenseState> All => AllCache;
+
+        public IImmutableDictionary<LicenseDefinition, LicenseState> Enabled => EnabledCache;
+
+        public bool IsEnabled(LicenseDefinition licenseId) => EnabledCache.ContainsKey(licenseId);
+
+        #endregion
+
+        #region Internal stuff, caching, static
+
+        private static List<LicenseState> AllCache { get; set; } = new List<LicenseState>();
+
+
+        private static IImmutableDictionary<LicenseDefinition, LicenseState> EnabledCache { get; set; } =
+            new Dictionary<LicenseDefinition, LicenseState>().ToImmutableDictionary();
 
         public static long CacheTimestamp;
 
-        public static bool IsEnabled(Guid licenseId) => Enabled.ContainsKey(licenseId);
 
         internal static void Update(List<LicenseState> licenses)
         {
-            All = licenses;
-            Enabled = licenses.Where(l => l.Enabled).ToImmutableDictionary(l => l.License.Guid, l => l);
+            AllCache = licenses;
+            EnabledCache = licenses.Where(l => l.Enabled).ToImmutableDictionary(l => l.License, l => l); ;
             CacheTimestamp = DateTime.Now.Ticks;
         }
+        #endregion
     }
 }

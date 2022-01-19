@@ -12,15 +12,15 @@ namespace ToSic.Eav.Configuration
 
         internal static List<FeatureLicenseRule> ForPatreons = new List<FeatureLicenseRule>
         {
-            new FeatureLicenseRule(LicenseTypes.PatreonSupporter, true)
+            new FeatureLicenseRule(LicenseCatalog.PatreonSupporter, true)
         };
         internal static List<FeatureLicenseRule> ForAll = new List<FeatureLicenseRule>
         {
-            new FeatureLicenseRule(LicenseTypes.CoreFree, false)
+            new FeatureLicenseRule(LicenseCatalog.CoreFree, false)
         };
         internal static List<FeatureLicenseRule> ForBeta = new List<FeatureLicenseRule>
         {
-            new FeatureLicenseRule(LicenseTypes.CoreBeta, false)
+            new FeatureLicenseRule(LicenseCatalog.CoreBeta, false)
         };
 
         public static readonly FeatureDefinition PasteImageFromClipboard = new FeatureDefinition(
@@ -128,7 +128,7 @@ namespace ToSic.Eav.Configuration
             false,
             "Enables WebFarm Cache use in Dnn",
             Security0,
-            new List<FeatureLicenseRule> { new FeatureLicenseRule(LicenseTypes.WebFarm, false) }
+            new List<FeatureLicenseRule> { new FeatureLicenseRule(LicenseCatalog.WebFarm, false) }
         );
 
         // WIP / Beta in v13
@@ -153,7 +153,7 @@ namespace ToSic.Eav.Configuration
             false,
             "todo",
             Security0,
-            new List<FeatureLicenseRule>() { new FeatureLicenseRule(LicenseTypes.SitesFarm, true) }
+            new List<FeatureLicenseRule>() { new FeatureLicenseRule(LicenseCatalog.SitesFarm, true) }
         );
 
         // TODO: MAYBE SUB-FEATURES FOR global apps

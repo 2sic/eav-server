@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
@@ -6,12 +7,14 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("no good reason to publish this")]
     public class FeatureState
     {
-        private FeatureDefinition _featureDefinition;
+        private readonly FeatureDefinition _featureDefinition;
 
         public Guid Guid => _featureDefinition.Guid;
         public string NameId => _featureDefinition.NameId;
         public string Name => _featureDefinition.Name;
         public string Description => _featureDefinition.Description;
+
+        public string License => _featureDefinition?.LicenseRules.FirstOrDefault()?.LicenseDefinition.Name;
 
 
         /// <summary>

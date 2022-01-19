@@ -9,7 +9,7 @@ namespace ToSic.Eav.Configuration.Licenses
 
         public Guid EntityGuid { get; internal set; }
 
-        public LicenseType License { get; internal set; }
+        public LicenseDefinition License { get; internal set; }
 
         public bool Enabled => EnabledState && Valid;
 

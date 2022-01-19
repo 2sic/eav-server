@@ -23,11 +23,11 @@ namespace ToSic.Eav.Configuration.Licenses
         internal LicenseLoader(IAppsCache appsCache, IFingerprint fingerprint, LogHistory logHistory, ILog parentLog) : base(LogNames.Eav + "LicLdr", parentLog, "Load Licenses")
         {
             _appsCache = appsCache;
-            _fingerprint = fingerprint;
+            _fingerprint = fingerprint.GetSystemFingerprint();
             logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
         }
         private readonly IAppsCache _appsCache;
-        private readonly IFingerprint _fingerprint;
+        private readonly string _fingerprint;
 
 
         /// <summary>
@@ -42,8 +42,9 @@ namespace ToSic.Eav.Configuration.Licenses
                 var presetApp = _appsCache.Get(null, Constants.PresetIdentity);
                 var licenseEntities = presetApp.List.OfType(LicenseConstants.TypeName).ToList();
                 Log.Add($"Found {licenseEntities.Count} license entities");
+                var autoEnabled = AutoEnabledLicenses();
                 var licenses = licenseEntities.SelectMany(LicensesInOneEntity).ToList();
-                Licenses.Update(licenses);
+                LicenseService.Update(autoEnabled.Union(licenses).ToList());
                 Log.Add($"Found {licenses.Count} licenses");
                 wrapLog("ok");
             }
@@ -80,7 +81,7 @@ namespace ToSic.Eav.Configuration.Licenses
             Log.Add($"Signature: {validSig}");
 
             // Check fingerprints
-            var myFingerprint = _fingerprint.GetSystemFingerprint();
+            var myFingerprint = _fingerprint;
             var fps = infoRaw.Fingerprints.SplitNewLine().TrimmedAndWithoutEmpty();
             var validFp = fps.Any(fp => myFingerprint.Equals(fp));
             Log.Add($"Fingerprint: {validFp}");
@@ -102,7 +103,7 @@ namespace ToSic.Eav.Configuration.Licenses
             var licenseStates = licenses.Select(l => new LicenseState
                 {
                     Title = infoRaw.Name,
-                    License = LicenseTypes.Find(l),
+                    License = LicenseCatalog.Find(l),
                     EntityGuid = infoRaw.Guid,
                     LicenseKey = infoRaw.Key,
                     Expiration = expires,
@@ -115,5 +116,24 @@ namespace ToSic.Eav.Configuration.Licenses
 
             return wrapLog(licenseStates.Count.ToString(), licenseStates);
         }
+
+        private List<LicenseState> AutoEnabledLicenses()
+        {
+            var licenseStates = LicenseCatalog.Licenses.Where(l => l.AutoEnable).Select(l => new LicenseState
+                {
+                    Title = l.Name,
+                    License = l,
+                    EntityGuid = Guid.Empty,
+                    LicenseKey = "always enabled",
+                    Expiration = LicenseCatalog.UnlimitedExpiry,
+                    ValidExpired = true,
+                    ValidFingerprint = true,
+                    ValidSignature = true,
+                    ValidVersion = true,
+                })
+                .ToList();
+            return licenseStates;
+        }
+
     }
 }

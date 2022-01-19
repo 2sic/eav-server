@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
@@ -72,32 +73,37 @@ namespace ToSic.Eav.Configuration
 
         private static List<FeatureState> Merge(FeatureListStored config, IReadOnlyCollection<FeatureDefinition> cat)
         {
-            var enabledLicenses = Licenses.Licenses.Enabled;
+            var licService = new LicenseService();
 
             var allFeats = cat.Select(f =>
             {
                 var enabled = false;
+                var allowed = false;
                 var msgShort = "default";
                 var message = " by default";
                 var expiry = DateTime.MinValue;
-                var licenses = f.LicenseRules.FirstOrDefault(lr => Licenses.Licenses.IsEnabled(lr.LicenseType.Guid));
-                if (licenses != null)
+
+                // Check if the required license is active
+                var enabledRule = f.LicenseRules.FirstOrDefault(lr => licService.IsEnabled(lr.LicenseDefinition));
+                if (enabledRule != null)
                 {
-                    enabled = licenses.DefaultEnabled;
-                    msgShort = licenses.LicenseType.Name;
-                    message = $" by default with license {licenses.LicenseType.Name}";
-                    expiry = enabledLicenses.TryGetValue(licenses.LicenseType.Guid, out var lic) 
-                        ? lic.Expiration 
-                        : new DateTime(2099, 12, 31);
+                    licService.Enabled.TryGetValue(enabledRule.LicenseDefinition, out var licenseState);
+                    var specialExpiry = licenseState?.Expiration;
+                    enabled = enabledRule.EnableFeatureByDefault || enabledRule.LicenseDefinition.AutoEnable;
+                    allowed = true; // The license is active, so it's allowed to enable this
+                    msgShort = enabledRule.LicenseDefinition.Name;
+                    message = $" by default with license {enabledRule.LicenseDefinition.Name}";
+                    expiry = specialExpiry ?? LicenseCatalog.UnlimitedExpiry;
                 }
 
+                // Check if the configuration would enable this feature
                 var inConfig = config.Features.FirstOrDefault(cf => cf.Id == f.Guid);
                 if (inConfig != null)
                 {
-                    enabled = inConfig.Enabled;
+                    enabled = allowed && inConfig.Enabled;
                     expiry = inConfig.Expires;
-                    msgShort = "configuration";
-                    message = " by configuration";
+                    msgShort = allowed ? "configuration" : "unlicensed";
+                    message = allowed ? " by configuration" : " - requires license";
                 }
                 return new FeatureState(f, expiry, enabled, msgShort, (enabled ? "Enabled" : "Disabled") + message);
             }).ToList();
@@ -119,5 +125,6 @@ namespace ToSic.Eav.Configuration
         public long CacheTimestamp { get; set; }
 
         #endregion
+        
     }
 }
