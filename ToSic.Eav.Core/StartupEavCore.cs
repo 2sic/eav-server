@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -43,6 +44,8 @@ namespace ToSic.Eav
 
             // Permissions helper
             services.TryAddTransient<PermissionCheckBase.Dependencies>();
+
+            services.TryAddTransient<ILicenseService, LicenseService>();
 
             return services;
         }

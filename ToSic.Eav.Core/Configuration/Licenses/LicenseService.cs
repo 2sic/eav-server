@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    public class LicenseService
+    public class LicenseService : ILicenseService
     {
         #region Public APIs
 
