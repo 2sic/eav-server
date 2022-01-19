@@ -53,20 +53,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private int? GetOrCreateContentType(ContentType contentType)
         {
-            var destinationSet = DbContext.AttribSet.GetDbAttribSet(contentType.StaticName);
+            var destinationSet = DbContext.AttribSet.GetDbAttribSet(contentType.NameId);
 
             // add new AttributeSet, do basic configuration if possible, then save
             if (destinationSet == null)
                 destinationSet = DbContext.AttribSet.PrepareDbAttribSet(contentType.Name, contentType.Description,
-                    contentType.StaticName, contentType.Scope, false, null);
+                    contentType.NameId, contentType.Scope, false, null);
 
             // to use existing attribute Set, do some minimal conflict-checking
             else
             {
-                DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information, $"AttributeSet already exists{contentType.StaticName}|{contentType.Name}"));
+                DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information, $"AttributeSet already exists{contentType.NameId}|{contentType.Name}"));
                 if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
                 {
-                    DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet: " + contentType.StaticName));
+                    DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet: " + contentType.NameId));
                     return null;
                 }
             }
@@ -107,7 +107,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // 2dm 2021-04-08 Metadata wasn't saved before v11.14+
             if (contentType.Metadata.Any())
-                SaveTypeMetadata(contentType.StaticName, contentType.Metadata, saveOptions);
+                SaveTypeMetadata(contentType.NameId, contentType.Metadata, saveOptions);
 
             // append all Attributes
             foreach (var newAtt in contentType.Attributes.Cast<ContentTypeAttribute>())

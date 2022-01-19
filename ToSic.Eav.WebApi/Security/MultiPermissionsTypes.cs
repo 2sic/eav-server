@@ -55,7 +55,7 @@ namespace ToSic.Eav.WebApi.Security
             var typeNames = items.Select(item =>
                 !string.IsNullOrEmpty(item.ContentTypeName) || item.EntityId == 0
                     ? item.ContentTypeName
-                    : appData.FindRepoId(item.EntityId).Type.StaticName);
+                    : appData.FindRepoId(item.EntityId).Type.NameId);
 
             return typeNames;
         }

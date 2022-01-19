@@ -36,7 +36,7 @@ namespace ToSic.Eav.Persistence.File
             try
             {
                 var typeDic = EliminateDuplicateTypes(types)
-                    .ToDictionary(t => t.StaticName, t => t);
+                    .ToDictionary(t => t.NameId, t => t);
 
                 var entitiesToRetype = types.SelectMany(t => t.Metadata).ToList();
                 Log.Add($"Metadata found to retype: {entitiesToRetype.Count}");
@@ -58,12 +58,12 @@ namespace ToSic.Eav.Persistence.File
         {
             var wrapLog = Log.Call<IEnumerable<IContentType>>();
             // In rare cases there can be a mistake and the same type may be duplicate!
-            var typesGrouped = types.GroupBy(t => t.StaticName).ToList();
+            var typesGrouped = types.GroupBy(t => t.NameId).ToList();
 
             foreach (var badGroups in typesGrouped.Where(g => g.Count() > 1))
             {
                 Log.Add("Warning: This type exists more than once - possibly defined in more plugins: " +
-                     $"'{badGroups.First().StaticName}' / '{badGroups.First().Name}'");
+                     $"'{badGroups.First().NameId}' / '{badGroups.First().Name}'");
                 foreach (var bad in badGroups)
                     Log.Add($"Source: {bad.RepositoryAddress}");
             }
@@ -79,14 +79,14 @@ namespace ToSic.Eav.Persistence.File
             foreach (var entity in entitiesToRetype)
                 if (entity.Type.IsDynamic)
                 {
-                    typeDic.TryGetValue(entity.Type.StaticName, out var realType);
+                    typeDic.TryGetValue(entity.Type.NameId, out var realType);
                     if (realType == null)
                     {
-                        Log.Add("TypeUnchanged:" + entity.Type.StaticName);
+                        Log.Add("TypeUnchanged:" + entity.Type.NameId);
                         continue;
                     }
                     changeCount++;
-                    Log.Add($"TypeChange:{entity.Type.StaticName} - {realType.Name}");
+                    Log.Add($"TypeChange:{entity.Type.NameId} - {realType.Name}");
                     (entity as Entity).UpdateType(realType, true);
                 }
 

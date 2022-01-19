@@ -15,7 +15,7 @@ namespace ToSic.Eav.Persistence.File
         {
             var json = Serializer.Serialize(type);
 
-            var cleanName = (type.Scope + "." + type.StaticName)
+            var cleanName = (type.Scope + "." + type.NameId)
                 .RemoveNonFilenameCharacters();
 
             System.IO.Directory.CreateDirectory(ContentTypePath);

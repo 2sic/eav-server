@@ -27,7 +27,7 @@ namespace ToSic.Eav.Data
         /// Description <see cref="IEntity"/> metadata of this content-type.
         /// </summary>
         public IEntity Description => this
-            .FirstOrDefault(md => md.Type.StaticName == ContentTypes.ContentTypeTypeName);
+            .FirstOrDefault(md => md.Type.NameId == ContentTypes.ContentTypeTypeName);
 
         /// <summary>
         /// Load / initialize - needed when building the cache.

@@ -99,7 +99,7 @@ namespace ToSic.Eav.WebApi
 
             // Update header with ContentTypeName in case it wasn't there before
             foreach (var itm in list.Where(i => i.Header.ContentTypeName == null && i.Entity != null))
-                itm.Header.ContentTypeName = itm.Entity.Type.StaticName;
+                itm.Header.ContentTypeName = itm.Entity.Type.NameId;
 
             // Add EditInfo for read-only data
             foreach (var bundle in list) 
@@ -162,8 +162,8 @@ namespace ToSic.Eav.WebApi
                     items.Remove(itm);
                     continue;
                 }
-                if (ct.StaticName != itm.ContentTypeName) // not using the static name...fix
-                    itm.ContentTypeName = ct.StaticName;
+                if (ct.NameId != itm.ContentTypeName) // not using the static name...fix
+                    itm.ContentTypeName = ct.NameId;
             }
         }
 

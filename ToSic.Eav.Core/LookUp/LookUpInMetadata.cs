@@ -56,7 +56,7 @@ namespace ToSic.Eav.LookUp
                      _metaDataSource.GetMetadata(TargetTypes.Entity, _objectToProvideSettingsTo);
 
             // make sure we get the settings, but not the pipeline-parts, which may also be assigned
-			Data = md.FirstOrDefault(e => e.Type.StaticName != Constants.QueryPartTypeName);
+			Data = md.FirstOrDefault(e => e.Type.NameId != Constants.QueryPartTypeName);
 			_initialized = true;
 		}
         private bool _initialized;

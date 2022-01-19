@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps
 					// believe this shouldn't be an issue, as it only seems to be used in fairly edge-case export/import
 					// situations which the static types shouldn't be used for, as they are json-typed
                 .Where(x => x.ContentTypeId != 0 && x.ContentTypeId < Global.GlobalContentTypeMin)
-                .ToImmutableDictionary(x => x.ContentTypeId, x => x.StaticName);
+                .ToImmutableDictionary(x => x.ContentTypeId, x => x.NameId);
 	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 	        // build types by name
 	        BuildCacheForTypesByName(_appTypesFromRepository);
@@ -55,8 +55,8 @@ namespace ToSic.Eav.Apps
 
 	        // add with static name - as the primary key
 	        foreach (var type in keepTypes)
-	            if (!_appTypesByName.ContainsKey(type.StaticName))
-	                _appTypesByName.Add(type.StaticName, type);
+	            if (!_appTypesByName.ContainsKey(type.NameId))
+	                _appTypesByName.Add(type.NameId, type);
 
 	        // add with nice name, if not already added
 	        foreach (var type in keepTypes)
@@ -67,10 +67,10 @@ namespace ToSic.Eav.Apps
 
 	    private ImmutableArray<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> appTypes)
         {
-            var globTypeNames = ParentApp.ContentTypes.Select(t => t.StaticName);
+            var globTypeNames = ParentApp.ContentTypes.Select(t => t.NameId);
             return appTypes.Where(t =>
 	                !t.AlwaysShareConfiguration // keep all locally defined types
-	                || !globTypeNames.Contains(t.StaticName)    // for non-local: keep all which globally are not overwritten
+	                || !globTypeNames.Contains(t.NameId)    // for non-local: keep all which globally are not overwritten
 	            )
 	            .ToImmutableArray();
 	    }

@@ -44,7 +44,7 @@ namespace ToSic.Eav.Persistence.Xml
                 // #TargetTypeIdInsteadOfTarget
                 new XAttribute(XmlConstants.KeyTargetType, entity.MetadataFor.TargetType),
                 new XAttribute(XmlConstants.KeyTargetTypeNameOld, MetadataTargets.GetName(entity.MetadataFor.TargetType)),
-                new XAttribute(XmlConstants.AttSetStatic, entity.Type.StaticName),
+                new XAttribute(XmlConstants.AttSetStatic, entity.Type.NameId),
                 new XAttribute(XmlConstants.AttSetNiceName, entity.Type.Name),
                 new XAttribute(XmlConstants.GuidNode, entity.EntityGuid),
                 valuesXElement);

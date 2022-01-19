@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
@@ -12,7 +13,6 @@ namespace ToSic.Eav.Data
 	[PublicApi_Stable_ForUseInYourCode]
 	public interface IContentType: IAppIdentityLight, IHasMetadata
 	{
-
         /// <summary>
         /// Gets the Display Name of the Content Type
         /// </summary>
@@ -20,8 +20,16 @@ namespace ToSic.Eav.Data
 
         /// <summary>
         /// Static name - can be a GUID or a system-term for special types
-		/// </summary>
+        /// </summary>
+        /// <remarks>being deprecated in V13, to be replaced with NameId</remarks>
+        [Obsolete("Deprecated in v13, please use NameId instead")]
         string StaticName { get; }
+
+        /// <summary>
+        /// A unique id/name of the content-type. Previously called StaticName.
+        /// </summary>
+        /// <remarks>New in v13</remarks>
+        string NameId { get; }
 
         /// <summary>
         /// The content-type description

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data
         #region Metadata
 
         /// <inheritdoc />
-        public ContentTypeMetadata Metadata => _metadata ?? (_metadata = new ContentTypeMetadata(StaticName, _metaSourceFinder, Name));
+        public ContentTypeMetadata Metadata => _metadata ?? (_metadata = new ContentTypeMetadata(NameId, _metaSourceFinder, Name));
 
         private ContentTypeMetadata _metadata;
         private readonly Func<IHasMetadataSource> _metaSourceFinder;

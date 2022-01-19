@@ -22,7 +22,7 @@ namespace ToSic.Eav.Data.Builder
 
         public static void UpdateType(this Entity entity, IContentType newType, bool updateTitleField = false)
         {
-            if (entity.Type.Name != newType.Name && entity.Type.StaticName != newType.StaticName)
+            if (entity.Type.Name != newType.Name && entity.Type.NameId != newType.NameId)
                 throw new Exception("trying to update the type definition - but the new type is different");
 
             entity.Type = newType;

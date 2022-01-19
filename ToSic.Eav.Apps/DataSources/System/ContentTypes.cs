@@ -104,7 +104,7 @@ namespace ToSic.Eav.DataSources.System
 	            Guid? guid = null;
 	            try
 	            {
-	                if (Guid.TryParse(t.StaticName, out Guid g)) guid = g;
+	                if (Guid.TryParse(t.NameId, out Guid g)) guid = g;
 	            }
 	            catch
 	            {
@@ -126,7 +126,7 @@ namespace ToSic.Eav.DataSources.System
 	    private static Dictionary<string, object> BuildDictionary(IContentType t) => new Dictionary<string, object>
 	    {
 	        {ContentTypeType.Name.ToString(), t.Name},
-	        {ContentTypeType.StaticName.ToString(), t.StaticName},
+	        {ContentTypeType.StaticName.ToString(), t.NameId},
 	        {ContentTypeType.Description.ToString(), t.Description},
 	        {ContentTypeType.IsDynamic.ToString(), t.IsDynamic},
 

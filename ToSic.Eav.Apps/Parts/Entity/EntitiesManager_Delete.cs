@@ -78,7 +78,7 @@ namespace ToSic.Eav.Apps.Parts
             foreach (var id in ids)
             {
                 var found = Parent.Read.Entities.Get(id);
-                if (contentType != null && found.Type.Name != contentType && found.Type.StaticName != contentType)
+                if (contentType != null && found.Type.Name != contentType && found.Type.NameId != contentType)
                     throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
             }
         }

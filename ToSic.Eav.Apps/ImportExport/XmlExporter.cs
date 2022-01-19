@@ -174,7 +174,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         new XAttribute(XmlConstants.IsTitle, x.IsTitle),
                         // Add Attribute MetaData
                         from c in AppState.GetMetadata(TargetTypes.Attribute, x.AttributeId).ToList()
-                        select GetEntityXElement(c.EntityId, c.Type.StaticName)
+                        select GetEntityXElement(c.EntityId, c.Type.NameId)
                     );
 
                     attributes.Add(attribute);
@@ -182,7 +182,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 // Add AttributeSet / Content Type
                 var attributeSet = new XElement(XmlConstants.AttributeSet,
-                    new XAttribute(XmlConstants.Static, set.StaticName),
+                    new XAttribute(XmlConstants.Static, set.NameId),
                     new XAttribute(XmlConstants.Name, set.Name),
                     new XAttribute(XmlConstants.Description, set.Description),
                     new XAttribute(XmlConstants.Scope, set.Scope),
@@ -192,7 +192,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 // Add Ghost-Info if content type inherits from another content type
                 if (set.HasAncestor()) // .ParentId.HasValue)
                 {
-                    var parentStaticName = set.StaticName;
+                    var parentStaticName = set.NameId;
                     attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));
                 }
 
@@ -212,7 +212,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 // Get the entity and ContentType from ContentContext add Add it to ContentItems
                 var entity = AppState.List.FindRepoId(id);
-                entities.Add(GetEntityXElement(entity.EntityId, entity.Type.StaticName));
+                entities.Add(GetEntityXElement(entity.EntityId, entity.Type.NameId));
             }
 
             #endregion

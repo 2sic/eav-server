@@ -32,7 +32,7 @@ namespace ToSic.Eav.WebApi.Dto
 
         public MetadataRecommendationDto(IContentType type, IEntity recommendation, int count, string debugMessage)
         {
-            Id = type.StaticName;
+            Id = type.NameId;
             Name = type.Name;
             var typeDescription = type.Metadata.Description;
             // Note: we cannot use GetBestTitle here, because the Content-type of the type is not really known

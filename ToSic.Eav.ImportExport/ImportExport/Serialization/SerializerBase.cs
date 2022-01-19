@@ -83,7 +83,7 @@ namespace ToSic.Eav.Serialization
             if (_types != null)
             {
                 msg += "local-list: ";
-                globalType = _types.FirstOrDefault(t => t.StaticName == staticName);
+                globalType = _types.FirstOrDefault(t => t.NameId == staticName);
             }
             else
             {

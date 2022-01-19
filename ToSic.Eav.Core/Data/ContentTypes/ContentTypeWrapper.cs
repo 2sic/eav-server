@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 
@@ -30,7 +31,10 @@ namespace ToSic.Eav.Data
 
         public string Name => _contents.Name;
 
+        [Obsolete("Deprecated in v13, please use NameId instead")]
         public string StaticName => _contents.StaticName;
+
+        public string NameId => _contents.NameId;
 
         public string Description => _contents.Description;
 

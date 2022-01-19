@@ -28,7 +28,11 @@ namespace ToSic.Eav.Data
         public string Name { get; }
 
         /// <inheritdoc />
-        public string StaticName { get; private set; }
+        [Obsolete("Deprecated in v13, please use NameId instead")]
+        public string StaticName => NameId;
+
+        /// <inheritdoc />
+        public string NameId { get; private set; }
 
         /// <inheritdoc />
         public string Description { get; protected set; }
@@ -54,7 +58,7 @@ namespace ToSic.Eav.Data
         #endregion
 
         /// <inheritdoc />
-        public bool Is(string name) => Name.Equals(name, InvariantCultureIgnoreCase) || StaticName.Equals(name, InvariantCultureIgnoreCase);
+        public bool Is(string name) => Name.Equals(name, InvariantCultureIgnoreCase) || NameId.Equals(name, InvariantCultureIgnoreCase);
 
         /// <inheritdoc />
         public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => string.Equals(a.Name, fieldName, OrdinalIgnoreCase));
@@ -78,13 +82,13 @@ namespace ToSic.Eav.Data
         /// Initializes a new ContentType - usually when building the cache
         /// </summary>
         [PrivateApi]
-        public ContentType(int appId, string name, string staticName, int attributeSetId, string scope,
+        public ContentType(int appId, string name, string nameId, int attributeSetId, string scope,
             string description, 
             int? parentTypeId = null, 
             int configZoneId = 0, 
             int configAppId = 0,
             bool configurationIsOmnipresent = false,
-            Func<IHasMetadataSource> metaSourceFinder = null): this(appId, name, staticName)
+            Func<IHasMetadataSource> metaSourceFinder = null): this(appId, name, nameId)
         {
             ContentTypeId = attributeSetId;
             Description = description;
@@ -107,11 +111,11 @@ namespace ToSic.Eav.Data
         /// Overload for in-memory entities
         /// </remarks>
         [PrivateApi]
-        public ContentType(int appId, string name, string staticName = null)
+        public ContentType(int appId, string name, string nameId = null)
         {
             AppId = appId;
             Name = name;
-            StaticName = staticName ?? name;
+            NameId = nameId ?? name;
         }
 
         #endregion

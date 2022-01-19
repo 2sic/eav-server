@@ -92,7 +92,7 @@ namespace ToSic.Eav.WebApi
             var serializer = _appManager.ServiceProvider.Build<JsonSerializer>().Init(_appManager.AppState, Log);
 
             return Download.BuildDownload(serializer.Serialize(type),
-                (type.Scope + "." + type.StaticName + ImpExpConstants.Extension(ImpExpConstants.Files.json))
+                (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                      .RemoveNonFilenameCharacters());
         }
 

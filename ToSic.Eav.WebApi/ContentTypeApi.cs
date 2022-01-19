@@ -110,7 +110,7 @@ namespace ToSic.Eav.WebApi
                 Id = t.ContentTypeId,
                 Name = t.Name,
                 Label = nameOverride,
-                StaticName = t.StaticName,
+                StaticName = t.NameId,
                 Scope = t.Scope,
                 Description = t.Description,
                 EditInfo = new EditInfoDto(t),
@@ -205,9 +205,9 @@ namespace ToSic.Eav.WebApi
                             e =>
                             {
                                 // if the static name is a GUID, then use the normal name as name-giver
-                                var name = Guid.TryParse(e.Type.StaticName, out _)
+                                var name = Guid.TryParse(e.Type.NameId, out _)
                                     ? e.Type.Name
-                                    : e.Type.StaticName;
+                                    : e.Type.NameId;
                                 return name.TrimStart('@');
                             },
                             e => InputMetadata(type, a, e, ancestorDecorator, ser)),
@@ -234,7 +234,7 @@ namespace ToSic.Eav.WebApi
                     e.EntityId,
                     Ancestor = true,
                     IsMetadata = true,
-                    OfContentType = contentType.StaticName,
+                    OfContentType = contentType.NameId,
                     OfAttribute = a.Name,
                 });
 

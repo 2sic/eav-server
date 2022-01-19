@@ -71,7 +71,7 @@ namespace ToSic.Eav.Apps
                 else
                 {
                     Log.Add("Trying to load Name/Folder from App package entity");
-                    var config = List.FirstOrDefault(md => md.Type.StaticName == AppLoadConstants.TypeAppConfig);
+                    var config = List.FirstOrDefault(md => md.Type.NameId == AppLoadConstants.TypeAppConfig);
                     Name = config?.Value<string>(AppLoadConstants.FieldName);
                     Folder = config?.Value<string>(AppLoadConstants.FieldFolder);
                 }

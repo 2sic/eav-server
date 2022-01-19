@@ -18,7 +18,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         {
             var cts = LoadAllTypes();
             Assert.AreEqual(3, cts.Count, "test case has 3 content-types to deserialize");
-            var sqlType = cts.FirstOrDefault(ct => ct.StaticName.Contains("Sql"));
+            var sqlType = cts.FirstOrDefault(ct => ct.NameId.Contains("Sql"));
             Assert.IsNotNull(sqlType, "should find the sql type");
             Assert.AreEqual("System", sqlType.Scope, "scope should be system");
         }
@@ -27,7 +27,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         public void FLoader_SqlType()
         {
             var cts = LoadAllTypes();
-            var sqlType = cts.FirstOrDefault(ct => ct.StaticName.Contains("Sql"));
+            var sqlType = cts.FirstOrDefault(ct => ct.NameId.Contains("Sql"));
             Assert.IsNotNull(sqlType, "should find the sql type");
             Assert.AreEqual("System", sqlType.Scope, "scope should be system");
         }
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         public void FLoader_CheckDynamicAttributes()
         {
             var cts = LoadAllTypes();
-            var sqlType = cts.First(ct => ct.StaticName.Contains("Sql"));
+            var sqlType = cts.First(ct => ct.NameId.Contains("Sql"));
             Assert.AreEqual(9, sqlType.Attributes.Count, "sql type should have x attributes");
 
             var conStrName = "ConnectionString";
@@ -65,7 +65,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         public void FLoader_CheckTypeMetadata()
         {
             var cts = LoadAllTypes();
-            var sqlType = cts.First(ct => ct.StaticName.Contains("Sql"));
+            var sqlType = cts.First(ct => ct.NameId.Contains("Sql"));
             Assert.AreEqual(9, sqlType.Attributes.Count, "sql type should have x attributes");
             
 

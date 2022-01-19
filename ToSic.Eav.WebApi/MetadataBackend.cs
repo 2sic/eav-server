@@ -248,7 +248,7 @@ namespace ToSic.Eav.WebApi
                         case (int)TargetTypes.Attribute:
                             if (targetName.Equals(key, InvariantCultureIgnoreCase)) return true;
                             var attr = appState.FindAttribute(key);
-                            return string.Equals(keyForward, attr.Item1.StaticName + "/" + attr.Item2.Name, InvariantCultureIgnoreCase)
+                            return string.Equals(keyForward, attr.Item1.NameId + "/" + attr.Item2.Name, InvariantCultureIgnoreCase)
                                    || string.Equals(keyForward, attr.Item1.Name + "/" + attr.Item2.Name, InvariantCultureIgnoreCase);
                         // App and ContentType don't need extra specifiers
                         case (int)TargetTypes.App: return true;

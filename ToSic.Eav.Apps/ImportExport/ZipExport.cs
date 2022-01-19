@@ -175,7 +175,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // TODO: option to include ParentApp attributeSets
             attributeSets = attributeSets.Where(p => !p.HasAncestor());
 
-            var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
+            var contentTypeNames = attributeSets.Select(p => p.NameId).ToArray();
 
             // 2022-01-04 2dm Cleaned up
             // This was for a very old way of storing Template information, probably 2sxc 1-4 or something
@@ -193,7 +193,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
 
             if (!includeContentGroups)
-                entities = entities.Where(p => p.Type.StaticName != SexyContentContentGroupName).ToList();
+                entities = entities.Where(p => p.Type.NameId != SexyContentContentGroupName).ToList();
 
             // Exclude ParentApp entities
             // TODO: option to include ParentApp entities

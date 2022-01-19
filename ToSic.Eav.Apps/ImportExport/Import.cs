@@ -162,7 +162,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private bool MergeContentTypeUpdateWithExisting(AppState appState, IContentType contentType)
         {
             var callLog = Log.Call<bool>();
-            var existing = appState.GetContentType(contentType.StaticName);
+            var existing = appState.GetContentType(contentType.NameId);
 
             Log.Add("New CT, must reset attributes");
             // must ensure that attribute Metadata is officially seen as new
@@ -200,7 +200,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // check if the content-type has metadata, which needs merging
             var merged = contentType.Metadata
-                .Select(impMd => MergeOneMd(appState, (int)TargetTypes.ContentType, contentType.StaticName, impMd))
+                .Select(impMd => MergeOneMd(appState, (int)TargetTypes.ContentType, contentType.NameId, impMd))
                 .ToList();
             merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
             contentType.Metadata.Use(merged);
@@ -210,7 +210,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private IEntity MergeOneMd<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)
         {
-            var existingMetadata = appState.GetMetadata(mdType, key, newMd.Type.StaticName).FirstOrDefault();
+            var existingMetadata = appState.GetMetadata(mdType, key, newMd.Type.NameId).FirstOrDefault();
             IEntity metadataToUse;
             if (existingMetadata == null)
             {
@@ -237,11 +237,11 @@ namespace ToSic.Eav.Apps.ImportExport
             var callLog = Log.Call<Entity>();
             #region try to get AttributeSet or otherwise cancel & log error
 
-            var dbAttrSet = appState.GetContentType(update.Type.StaticName); 
+            var dbAttrSet = appState.GetContentType(update.Type.NameId); 
 
             if (dbAttrSet == null) // AttributeSet not Found
             {
-                Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, "ContentType not found for " + update.Type.StaticName));
+                Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, "ContentType not found for " + update.Type.NameId));
                 return callLog("error", null);
             }
 

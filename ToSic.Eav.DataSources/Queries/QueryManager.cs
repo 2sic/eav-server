@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources.Queries
 			try
 			{
 			    var queryEntity = dataSource.List.FindRepoId(entityId);
-                if (queryEntity.Type.StaticName != Constants.QueryTypeName)
+                if (queryEntity.Type.NameId != Constants.QueryTypeName)
                     throw new ArgumentException("Entity is not an DataQuery Entity", nameof(entityId));
 			    return wrapLog("ok", queryEntity);
 			}

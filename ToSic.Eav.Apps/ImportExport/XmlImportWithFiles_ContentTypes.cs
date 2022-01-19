@@ -99,7 +99,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	            scope: xmlContentType.Attributes(XmlConstants.Scope).Any()
 	                ? xmlContentType.Attribute(XmlConstants.Scope).Value
 	                : Deps._environment.FallbackContentTypeScope,
-	            staticName: xmlContentType.Attribute(XmlConstants.Static).Value,
+	            nameId: xmlContentType.Attribute(XmlConstants.Static).Value,
 	            description: xmlContentType.Attribute(XmlConstants.Description).Value,
 	            AllowUpdateOnSharedTypes && isSharedType
 	        );

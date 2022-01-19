@@ -37,7 +37,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
             var jsonDynamic = ChangeTypeOfJson(specs, json, "something-dynamic");
             ent = serializer.Deserialize(jsonDynamic, true); // should work too
             Assert.IsTrue(ent.Type.IsDynamic, "should be dynamic");
-            Assert.AreEqual("something-dynamic", ent.Type.StaticName, "name should be dynamic");
+            Assert.AreEqual("something-dynamic", ent.Type.NameId, "name should be dynamic");
             Assert.AreEqual(specs.TestItemAttributeCount, ent.Attributes.Count, "dynamic entity should also have 4 attribs");
 
             jsonDynamic = Add2FieldsToJson(jsonDynamic);

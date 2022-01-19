@@ -162,13 +162,13 @@ namespace ToSic.Eav.Apps.Parts
         private List<InputTypeInfo> GetGlobalInputTypesBasedOnContentTypes()
         {
             var types = _appStates.GetPresetApp().ContentTypes
-                .Where(p => p.StaticName.StartsWith(FieldTypePrefix))
+                .Where(p => p.NameId.StartsWith(FieldTypePrefix))
                 .Select(p => p).ToList();
 
             // try to access metadata, if it has any
             var typesToCheckInThisOrder = new[] { InputTypes.TypeForInputTypeDefinition, ContentTypes.ContentTypeTypeName, null };
             var retyped = types.Select(it => new InputTypeInfo(
-                    it.StaticName.TrimStart(FieldTypePrefix[0]),
+                    it.NameId.TrimStart(FieldTypePrefix[0]),
                     it.Metadata.GetBestValue<string>(InputTypes.InputTypeLabel, typesToCheckInThisOrder),
                     it.Metadata.GetBestValue<string>(InputTypes.InputTypeDescription, typesToCheckInThisOrder),
                     it.Metadata.GetBestValue<string>(InputTypes.InputTypeAssets, InputTypes.TypeForInputTypeDefinition),

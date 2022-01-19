@@ -85,7 +85,7 @@ namespace ToSic.Eav.Security
             Log.LinkTo(parentLog);
             var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
 
-            var wrapLog = Log.Call($"type:{targetType?.StaticName}, " +
+            var wrapLog = Log.Call($"type:{targetType?.NameId}, " +
                                             $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
                                             $"permList1: {permissions1?.Count()}, " +
                                             $"permList2: {permList2?.Count}");
