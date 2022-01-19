@@ -7,11 +7,12 @@ namespace ToSic.Eav.Configuration.Licenses
     /// </summary>
     public class LicenseDefinition
     {
-        public LicenseDefinition(int priority, string name, Guid guid)
+        public LicenseDefinition(int priority, string name, Guid guid, string description)
         {
             Priority = priority;
             Name = name;
             Guid = guid;
+            Description = description;
         }
 
         public readonly int Priority;
@@ -19,5 +20,7 @@ namespace ToSic.Eav.Configuration.Licenses
         public readonly string Name;
         public readonly Guid Guid;
         public bool AutoEnable = false;
+
+        public string Description = "";
     }
 }
