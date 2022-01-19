@@ -12,7 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var saveJson = UseJson(newEnt);
             var contentTypeId = UseJson(newEnt)
                 ? RepoIdForJsonEntities
-                : newEnt.Type.ContentTypeId; 
+                : newEnt.Type.Id; 
             
             // 2021-12-14 2dm disable this, because the comment suggest this is leftover code which does nothing
             // TODO: IF IT WORKS clean up the code and also remove the GetId as noted below

@@ -41,7 +41,11 @@ namespace ToSic.Eav.Data
         public string Scope { get; private set; }
 
         /// <inheritdoc />
-        public int ContentTypeId { get; internal set; }
+        public int Id { get; internal set; }
+
+        /// <inheritdoc />
+        [Obsolete("Deprecated in V13, please use Id instead.")]
+        public int ContentTypeId => Id;
 
         /// <inheritdoc />
         public IList<IContentTypeAttribute> Attributes { get; set; }
@@ -90,7 +94,7 @@ namespace ToSic.Eav.Data
             bool configurationIsOmnipresent = false,
             Func<IHasMetadataSource> metaSourceFinder = null): this(appId, name, nameId)
         {
-            ContentTypeId = attributeSetId;
+            Id = attributeSetId;
             Description = description;
             Scope = Scopes.RenameOldScope(scope);
 

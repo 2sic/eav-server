@@ -32,7 +32,7 @@ namespace ToSic.Eav.Data
         public string Name => _contents.Name;
 
         [Obsolete("Deprecated in v13, please use NameId instead")]
-        public string StaticName => _contents.StaticName;
+        public string StaticName => _contents.NameId;
 
         public string NameId => _contents.NameId;
 
@@ -40,7 +40,10 @@ namespace ToSic.Eav.Data
 
         public string Scope => _contents.Scope;
 
-        public int ContentTypeId => _contents.ContentTypeId;
+        public int Id => _contents.Id;
+
+        [Obsolete("Deprecated in V13, please use Id instead.")]
+        public int ContentTypeId => _contents.Id;
 
         public IList<IContentTypeAttribute> Attributes
         {

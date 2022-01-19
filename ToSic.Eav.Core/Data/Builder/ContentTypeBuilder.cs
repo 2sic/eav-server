@@ -26,7 +26,7 @@ namespace ToSic.Eav.Data.Builder
 
         public static void SetSourceParentAndIdForPresetTypes(this ContentType type, RepositoryTypes repoType, int parentId, string address, int id = -1)
         {
-            if (id != -1) type.ContentTypeId = id;
+            if (id != -1) type.Id = id;
             type.RepositoryType = repoType;
             type.RepositoryAddress = address;
             var ancestorDecorator = type.GetDecorator<IAncestor>();

@@ -113,7 +113,7 @@ namespace ToSic.Eav.DataSources.System
 
                 return builder.Entity(BuildDictionary(t),
                     appId:OfAppId, 
-                    id:t.ContentTypeId, 
+                    id:t.Id, 
                     titleField: ContentTypeType.Name.ToString(),
                     typeName: ContentTypeTypeName,
                     guid: guid);

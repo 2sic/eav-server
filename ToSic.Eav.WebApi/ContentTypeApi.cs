@@ -107,7 +107,7 @@ namespace ToSic.Eav.WebApi
 
             var jsonReady = new ContentTypeDto
             {
-                Id = t.ContentTypeId,
+                Id = t.Id,
                 Name = t.Name,
                 Label = nameOverride,
                 StaticName = t.NameId,

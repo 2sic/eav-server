@@ -71,7 +71,7 @@ namespace ToSic.Eav.Apps
         private IContentType WrapUnwrappedContentType(IContentType t)
         {
             if (t == null || t.HasAncestor()) return t;
-            return new ContentTypeWrapper(t, new Ancestor<IContentType>(new AppIdentity(AppState), t.ContentTypeId));
+            return new ContentTypeWrapper(t, new Ancestor<IContentType>(new AppIdentity(AppState), t.Id));
         }
         private IEntity WrapUnwrappedEntity(IEntity e)
         {

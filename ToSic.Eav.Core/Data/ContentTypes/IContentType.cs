@@ -44,7 +44,15 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Get the id of the Content Type - you usually don't need this!
         /// </summary>
+        int Id { get; }
+
+        /// <summary>
+        /// Old name for Id, please use Id instead
+        /// </summary>
+        /// <remarks>Deprecated in v13</remarks>
+        [Obsolete("Deprecated in V13, please use Id instead.")]
         int ContentTypeId { get; }
+
 
         /// <summary>
         /// Dictionary with all Attribute Definitions

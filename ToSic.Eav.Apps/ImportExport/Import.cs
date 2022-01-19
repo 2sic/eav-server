@@ -253,7 +253,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 existingEntities = appState.List.Where(e => e.EntityGuid == update.EntityGuid).ToList();
 
             // set type only if is not set yet 
-            if (update.Type.ContentTypeId == 0)
+            if (update.Type.Id == 0)
                 update.UpdateType(dbAttrSet);
 
             // Simplest case - nothing existing to update: return entity
