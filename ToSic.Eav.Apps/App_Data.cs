@@ -61,9 +61,9 @@ namespace ToSic.Eav.Apps
             // Note: ModulePermissionController does not work when indexing, return false for search
             var initialSource = DataSourceFactory.GetPublishing(this, ShowDrafts, ConfigurationProvider);
 
-            var xData = DataSourceFactory.GetDataSource<AppData>(initialSource).Init(_dependencies.ZoneMapper, _dependencies.Site);
+            var appDataWithCreate = DataSourceFactory.GetDataSource<AppData>(initialSource);
 
-            return wrapLog("ok", xData);
+            return wrapLog("ok", appDataWithCreate);
         }
 
         #endregion

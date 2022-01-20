@@ -37,6 +37,6 @@ namespace ToSic.Eav.Apps.Run
         }
 
         /// <inheritdoc />
-        public abstract List<TempTempCulture> CulturesWithState(int siteId, int zoneId);
+        public abstract List<TempTempCulture> CulturesWithState(ISite site);
     }
 }

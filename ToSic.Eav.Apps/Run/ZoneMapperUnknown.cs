@@ -20,6 +20,6 @@ namespace ToSic.Eav.Apps.Run
 
         public override ISite SiteOfZone(int zoneId) => _sp.Build<ISite>().Init(zoneId);
 
-        public override List<TempTempCulture> CulturesWithState(int siteId, int zoneId) => new List<TempTempCulture>();
+        public override List<TempTempCulture> CulturesWithState(ISite site) => new List<TempTempCulture>();
     }
 }
