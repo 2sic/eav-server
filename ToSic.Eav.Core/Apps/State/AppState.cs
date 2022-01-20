@@ -42,6 +42,7 @@ namespace ToSic.Eav.Apps
         public AppRelationshipManager Relationships { get; }
 
         [PrivateApi]
+        // TODO: RENAME TO NameId
         public string AppGuidName { get; }
 
         /// <summary>

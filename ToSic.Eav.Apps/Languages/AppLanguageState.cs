@@ -2,7 +2,7 @@
 {
     public class AppUserLanguageState: SiteLanguageState
     {
-        public AppUserLanguageState(string code, string text, bool isEnabled, bool isAllowed) : base(code, text, isEnabled)
+        public AppUserLanguageState(string code, string culture, bool isEnabled, bool isAllowed) : base(code, culture, isEnabled)
         {
             IsAllowed = isAllowed;
         }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
@@ -62,6 +63,9 @@ namespace ToSic.Eav.Apps
             services.TryAddScoped<ImportListXml>();
             services.TryAddTransient<ExportImportValueConversion>();
             services.TryAddTransient<XmlImportWithFiles.Dependencies>();
+
+            // V13 Language Checks
+            services.TryAddTransient<AppUserLanguageCheck>();
 
             return services;
         }

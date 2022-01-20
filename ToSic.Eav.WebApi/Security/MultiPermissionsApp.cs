@@ -11,6 +11,9 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.Security
 {
+    /// <summary>
+    /// Do consolidated permission checks on a set of permissions
+    /// </summary>
     public class MultiPermissionsApp: MultiPermissionsBase
     {
         private readonly IZoneMapper _zoneMapper;

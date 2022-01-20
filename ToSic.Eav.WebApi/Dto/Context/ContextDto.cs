@@ -76,14 +76,9 @@ namespace ToSic.Eav.WebApi.Dto
         public string Current { get; set; }
         public Dictionary<string, string> All { get; set; }
 
-        public Dictionary<string, ContextLanguageDetailsDto> All2 { get; set; }
+        public List<SiteLanguageDto> List { get; set; }
     }
 
-    public class ContextLanguageDetailsDto
-    {
-        public string Name { get; set; }
-        public bool AllowEdit { get; set; }
-    }
 
     /// <summary>
     /// Will be enhanced later

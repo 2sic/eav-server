@@ -2,10 +2,10 @@
 {
     public class SiteLanguageState: ISiteLanguageState
     {
-        public SiteLanguageState(string code, string text, bool isEnabled)
+        public SiteLanguageState(string code, string culture, bool isEnabled)
         {
             Code = code;
-            Culture = text;
+            Culture = culture;
             IsEnabled = isEnabled;
         }
 

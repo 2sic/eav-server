@@ -8,6 +8,9 @@ using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Apps.Security
 {
+    /// <summary>
+    /// Check permissions on something inside an App, like a specific Entity, Content-Type etc.
+    /// </summary>
     public abstract class AppPermissionCheck: PermissionCheckBase
     {
         #region Constructor & DI
@@ -35,6 +38,12 @@ namespace ToSic.Eav.Apps.Security
         {
             Init(ctx, appIdentity, parentLog, permissions: attribute.Permissions);
             // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
+            return Log.Call<AppPermissionCheck>()("ok", this);
+        }
+
+        public AppPermissionCheck ForCustom(IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<Permission> permissions, ILog parentLog)
+        {
+            Init(ctx, appIdentity, parentLog, permissions: permissions);
             return Log.Call<AppPermissionCheck>()("ok", this);
         }
 
@@ -79,20 +88,19 @@ namespace ToSic.Eav.Apps.Security
         /// Initialize this object so it can then give information regarding the permissions of an entity.
         /// Uses a GUID as identifier because that survives export/import. 
         /// </summary>
-        private AppPermissionCheck Init(
+        private void Init(
             IContextOfSite ctx,
             IAppIdentity appIdentity,
             ILog parentLog,
             IContentType targetType = null, // optional type to check
             IEntity targetItem = null, // optional entity to check
-            IEnumerable<Permission> permissions = null
-            )
+            IEnumerable<Permission> permissions = null)
         {
             Init(parentLog, targetType ?? targetItem?.Type, targetItem, permissions);
-            var logWrap = Log.Call<AppPermissionCheck>($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
+            var logWrap = Log.Call($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
             Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
             AppIdentity = appIdentity;
-            return logWrap(null, this);
+            logWrap(null);
         }
 
         protected IContextOfSite Context { get; private set; }
