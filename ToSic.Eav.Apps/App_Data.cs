@@ -51,9 +51,9 @@ namespace ToSic.Eav.Apps
         private IAppData _data;
 
         [PrivateApi]
-        protected virtual AppData BuildData()
+        protected virtual IAppData BuildData()
         {
-            var wrapLog = Log.Call<AppData>();
+            var wrapLog = Log.Call<IAppData>();
             if (ConfigurationProvider == null)
                 throw new Exception("Cannot provide Data for the object App as crucial information is missing. " +
                                     "Please call InitData first to provide this data.");
