@@ -69,7 +69,7 @@ namespace ToSic.Eav.Api.Api01
 
         private string GetDefaultLanguage()
         {
-            var usesLanguages = _zoneMapper.CulturesWithState(_site).Any(c => c.Active);
+            var usesLanguages = _zoneMapper.CulturesWithState(_site).Any(c => c.IsEnabled);
             return usesLanguages ? _site.DefaultCultureCode : "";
         }
 

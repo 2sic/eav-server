@@ -32,6 +32,6 @@ namespace ToSic.Eav.Run
         /// the zone is necessary to determine what is enabled/disabled
         /// </summary>
         /// <returns></returns>
-        List<TempTempCulture> CulturesWithState(ISite site);
+        List<ISiteLanguageState> CulturesWithState(ISite site);
     }
 }
