@@ -1,13 +1,12 @@
-﻿// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Run
+﻿namespace ToSic.Eav.Apps.Languages
 {
     public class SiteLanguageState: ISiteLanguageState
     {
-        public SiteLanguageState(string code, string text, bool active)
+        public SiteLanguageState(string code, string text, bool isEnabled)
         {
             Code = code;
             Culture = text;
-            IsEnabled = active;
+            IsEnabled = isEnabled;
         }
 
         public string Code { get;  }
