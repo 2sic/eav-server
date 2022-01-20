@@ -66,6 +66,7 @@ namespace ToSic.Eav.Apps
         ISite Site { get; }
 
         [PrivateApi]
+        // TODO: MARK as #Deprecated and log access
         ILookUpEngine ConfigurationProvider { get; }
 
         [PrivateApi]
