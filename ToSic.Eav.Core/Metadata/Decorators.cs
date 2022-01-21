@@ -31,7 +31,7 @@
         public static string SaveEmptyDecoratorId = "8c78dabf-e0ad-4c26-b750-48138ecb8a39";
 
         // Marks Metadata to be global 13.00
-        public static string IsGlobalDecoratorId = "18d2b1db-e1ed-45bc-8746-cd8885651063";
+        public static string IsSharedDecoratorId = "18d2b1db-e1ed-45bc-8746-cd8885651063";
 
         // Marks Requirements Metadata 13.00
         public static string RequirementsDecoratorId = "19655377-6626-4986-aea0-ec3c187186ad";
