@@ -21,10 +21,10 @@ namespace ToSic.Eav.Configuration.Licenses
             "The core, free, open-source license covers 99% of all features in 2sxc. Most of the features are not even listed, as they are always enabled."
         ) { AutoEnable = true };
 
-        public static readonly LicenseDefinition PatreonSupporter = new LicenseDefinition(101, 
-            "PatreonSupporter",
+        public static readonly LicenseDefinition Patron = new LicenseDefinition(101, 
+            "Patron/Supporter",
             new Guid("61d0bf11-187c-4ae8-9b76-a2c3d4beaad7"),
-            "Patreons of 2sxc get some additional features as a thank you for supporting 2sxc."
+            "Patrons / supporters of 2sxc get some additional features as a thank you for supporting 2sxc."
         );
 
         public static readonly LicenseDefinition WebFarmCache = new LicenseDefinition(301, 
@@ -56,7 +56,7 @@ namespace ToSic.Eav.Configuration.Licenses
             {
                 CoreFree,
                 CoreBeta,
-                PatreonSupporter,
+                Patron,
                 WebFarmCache,
                 LightSpeed,
                 EnterpriseCms,
