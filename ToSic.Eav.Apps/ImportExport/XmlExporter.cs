@@ -239,7 +239,7 @@ namespace ToSic.Eav.Apps.ImportExport
             {
                 if (AppState.HasParentApp())
                     return new XElement(XmlConstants.ParentApp,
-                        new XAttribute(XmlConstants.Guid, AppState.ParentApp.AppState?.AppGuidName),
+                        new XAttribute(XmlConstants.Guid, AppState.ParentApp.AppState?.NameId),
                         new XAttribute(XmlConstants.AppId, AppState.ParentApp.AppState?.AppId)
                     );
             }

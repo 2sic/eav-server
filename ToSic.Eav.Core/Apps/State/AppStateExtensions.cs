@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps
 
         public static bool HasParentApp(this AppState states)
         {
-            var parentAppGuid = states?.ParentApp?.AppState?.AppGuidName;
+            var parentAppGuid = states?.ParentApp?.AppState?.NameId;
             return (!string.IsNullOrEmpty(parentAppGuid) && parentAppGuid != Constants.PresetName);
         }
     }

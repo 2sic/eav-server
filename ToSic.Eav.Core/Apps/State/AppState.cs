@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
     {
 
         [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-        public AppState(ParentAppState parentApp, IAppIdentity id, string appGuidName, ILog parentLog): base($"App.St-{id.AppId}", new CodeRef())
+        public AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base($"App.St-{id.AppId}", new CodeRef())
         {
             Log.Add($"AppState for App {id.AppId}");
             Init(id, new CodeRef(), parentLog);
@@ -24,7 +24,7 @@ namespace ToSic.Eav.Apps
             Log.Add($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");
             CacheExpiryDelegate = CreateExpiryProvider();
 
-            AppGuidName = appGuidName;
+            NameId = nameId;
             
             // Init the cache when it starts, because this number is needed in other places
             // Important: we must offset the first time stamp by 1 tick (1/100th nanosecond)
@@ -41,9 +41,11 @@ namespace ToSic.Eav.Apps
         /// </summary>
         public AppRelationshipManager Relationships { get; }
 
+        /// <summary>
+        /// The official name identifier of the app, usually a Guid as a string, but often also "Default" for Content-Apps
+        /// </summary>
         [PrivateApi]
-        // TODO: RENAME TO NameId
-        public string AppGuidName { get; }
+        public string NameId { get; }
 
         /// <summary>
         /// The app-folder, which is pre-initialized very early on.

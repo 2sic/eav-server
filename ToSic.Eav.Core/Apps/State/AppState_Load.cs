@@ -60,14 +60,14 @@ namespace ToSic.Eav.Apps
 
         private void EnsureNameAndFolderInitialized()
         {
-            var callLog = Log.Call($"Name: {Name}, Folder: {Folder}, AppGuidName: {AppGuidName}");
+            var callLog = Log.Call($"Name: {Name}, Folder: {Folder}, AppGuidName: {NameId}");
             // If the loader wasn't able to fill name/folder, then the data was not a json
             // so we must try to fix this now
             if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Folder))
             {
                 // check if it's the default app or the #SiteApp (v13)
-                if (AppGuidName == Constants.DefaultAppGuid) Name = Folder = Constants.ContentAppName;
-                else if (AppGuidName == Constants.PrimaryAppGuid) Name = Folder = Constants.PrimaryAppName;
+                if (NameId == Constants.DefaultAppGuid) Name = Folder = Constants.ContentAppName;
+                else if (NameId == Constants.PrimaryAppGuid) Name = Folder = Constants.PrimaryAppName;
                 else
                 {
                     Log.Add("Trying to load Name/Folder from App package entity");
@@ -81,8 +81,8 @@ namespace ToSic.Eav.Apps
             // try one last time
             if (string.IsNullOrEmpty(Folder))
             {
-                if (AppGuidName == Constants.DefaultAppGuid) Folder = Constants.ContentAppName;
-                else if (AppGuidName == Constants.PrimaryAppGuid) Folder = Constants.PrimaryAppName; // #SiteApp v13
+                if (NameId == Constants.DefaultAppGuid) Folder = Constants.ContentAppName;
+                else if (NameId == Constants.PrimaryAppGuid) Folder = Constants.PrimaryAppName; // #SiteApp v13
             }
 
             callLog($"Name: {Name}, Folder:{Folder}");

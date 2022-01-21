@@ -39,7 +39,7 @@ namespace ToSic.Eav.Apps.Languages
             var hasPermissions = set.Any(s => s.Permissions.Any());
 
             // Find primary app, or stop if we're already there
-            if (!hasPermissions && appState.AppGuidName != Constants.PrimaryAppGuid)
+            if (!hasPermissions && appState.NameId != Constants.PrimaryAppGuid)
             {
                 Log.Add("No permissions, and not primary app - will try that");
                 var primaryId = _appStatesLazy.Value.PrimaryAppId(appState.ZoneId);

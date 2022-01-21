@@ -68,7 +68,7 @@ namespace ToSic.Eav.Apps.Parts
                 return wrapLog("ok", true);
 
             // Get appName from cache - stop if it's a "Default" app
-            var eavAppName = AppState.AppGuidName;
+            var eavAppName = AppState.NameId;
 
             // v10.25 from now on the DefaultApp can also have settings and resources
             string folder;

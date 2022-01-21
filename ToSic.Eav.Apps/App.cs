@@ -98,7 +98,7 @@ namespace ToSic.Eav.Apps
             // Look up name in cache
             // 2020-11-25 changed to use State.Get. before it was this...
             //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
-            AppGuid = _dependencies.AppStates.Get(this).AppGuidName;
+            AppGuid = _dependencies.AppStates.Get(this).NameId;
 
             InitializeResourcesSettingsAndMetadata();
 

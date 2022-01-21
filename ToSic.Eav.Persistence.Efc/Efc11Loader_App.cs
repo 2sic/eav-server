@@ -94,7 +94,7 @@ namespace ToSic.Eav.Persistence.Efc
             // So if we initialize it, then things will result in duplicate settings/resources/configuration
             // Note that to ensure the Content app works, we must perform the same check again in the 
             // API Endpoint which will edit this data
-            if (appState.AppGuidName == Constants.DefaultAppGuid) return wrapLog("default app, don't auto-init", appState);
+            if (appState.NameId == Constants.DefaultAppGuid) return wrapLog("default app, don't auto-init", appState);
 
             var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log)
                 ? LoadBasicAppState(appId)
