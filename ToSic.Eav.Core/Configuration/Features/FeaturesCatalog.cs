@@ -8,6 +8,10 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class FeaturesCatalog
     {
+        // IMPORTANT
+        // The guids of these licenses must match the ones in the 2sxc.org features list
+        // So always create the definition there first, then use the GUID of that definition here
+
         internal static FeatureSecurity Security0 = new FeatureSecurity(0, "Actually increases security.");
 
         internal static List<FeatureLicenseRule> ForPatreons = new List<FeatureLicenseRule>
@@ -128,7 +132,7 @@ namespace ToSic.Eav.Configuration
             false,
             "Enables WebFarm Cache use in Dnn",
             Security0,
-            new List<FeatureLicenseRule> { new FeatureLicenseRule(LicenseCatalog.WebFarm, false) }
+            new List<FeatureLicenseRule> { new FeatureLicenseRule(LicenseCatalog.WebFarmCache, false) }
         );
 
         // WIP / Beta in v13
@@ -144,16 +148,26 @@ namespace ToSic.Eav.Configuration
         );
 
         // WIP / Beta in v13
-        // todo: mention decorator in the settings?
-        public static readonly FeatureDefinition GlobalAppsWIP = new FeatureDefinition(
-            "GlobalAppsEnabled-WIP",
+        public static readonly FeatureDefinition SharedApps = new FeatureDefinition(
+            "SharedApps",
             new Guid("bb6656ef-fb81-4943-bf88-297e516d2616"),
-            "Apps can be shared globally",
+            "Share Apps to Reuse on Many Sites",
             false,
             false,
-            "todo",
+            "Allows you to define shared global Apps which can be inherited and re-used on many Sites.",
             Security0,
-            new List<FeatureLicenseRule>() { new FeatureLicenseRule(LicenseCatalog.SitesFarm, true) }
+            new List<FeatureLicenseRule> { new FeatureLicenseRule(LicenseCatalog.EnterpriseCms, true) }
+        );
+
+        public static readonly FeatureDefinition PermissionsByLanguage = new FeatureDefinition(
+            "PermissionsByLanguage",
+            new Guid("fc1efaaa-89a0-446d-83de-89e20b3ce0d7"),
+            "Edit-Permissions by Language",
+            false,
+            false,
+            "Configure who can edit what language in the Edit UI.",
+            Security0,
+            new List<FeatureLicenseRule> { new FeatureLicenseRule(LicenseCatalog.EnterpriseCms, true) }
         );
 
         // TODO: MAYBE SUB-FEATURES FOR global apps
@@ -191,7 +205,8 @@ namespace ToSic.Eav.Configuration
             ImageServiceMultiFormat,
 
             // 2sxc 13 - Global Apps
-            GlobalAppsWIP,
+            SharedApps,
+            PermissionsByLanguage,
         };
     }
 }
