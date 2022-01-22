@@ -6,6 +6,5 @@
         /// Db Connection String used in the Eav-Connector
         /// </summary>
         string ConnectionString { get; set; }
-
     }
 }

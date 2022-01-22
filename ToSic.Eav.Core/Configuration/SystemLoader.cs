@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
@@ -6,26 +7,26 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
+using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi]
-    public class SystemLoader: HasLog
+    public class SystemLoader: LoaderBase
     {
-
         #region Constructor / DI
 
-        public SystemLoader(IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
+        public SystemLoader(SystemFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) 
+            : base(/*fingerprint,*/ logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
+            Fingerprint = fingerprint;
             _appsCache = appsCache;
-            Features = features;
             _logHistory = logHistory;
             logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
-            _fingerprint = fingerprint;
             _appStateLoader = runtime.Init(Log);
+            Features = features;
         }
-
-        private readonly IFingerprint _fingerprint;
+        public SystemFingerprint Fingerprint { get; }
         private readonly IRuntime _appStateLoader;
         private readonly IAppsCache _appsCache;
         public readonly IFeaturesInternal Features;
@@ -54,28 +55,18 @@ namespace ToSic.Eav.Configuration
             AssemblyHandling.GetTypes(assemblyLoadLog);
 
             // Build the cache of all system-types. Must happen before everything else
-            LoadPresetApp();
+            Log.Add("Try to load global app-state");
+            var presetApp = _appStateLoader.LoadFullAppState();
+            _appsCache.Add(presetApp);
 
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_appsCache, _fingerprint, _logHistory, Log).LoadLicenses();
-            
+            new LicenseLoader(/*Fingerprint,*/ _logHistory, Log).Init(Fingerprint.GetFingerprint()).LoadLicenses(presetApp);
 
             // Now do a normal reload of configuration and features
-            LoadFeatures();
+            LoadFeatures(presetApp);
         }
-
-        /// <summary>
-        /// 2021-11-16 2dm - experimental, working on moving global/preset data into a normal AppState #PresetInAppState
-        /// </summary>
-        private void LoadPresetApp()
-        {
-            var wrapLog = Log.Call();
-            Log.Add("Try to load global app-state");
-            var appState = _appStateLoader.LoadFullAppState();
-            _appsCache.Add(appState);
-            wrapLog("ok");
-        }
+        
 
         private bool _startupAlreadyRan;
 
@@ -83,10 +74,11 @@ namespace ToSic.Eav.Configuration
         /// Pre-Load enabled / disabled global features
         /// </summary>
         [PrivateApi]
-        public void LoadFeatures()
+        public void LoadFeatures(AppState presetApp = null)
         {
             var wrapLog = Log.Call();
-            Features.Stored = new FeaturesLoader(_appsCache, _fingerprint, _logHistory, Log).LoadFeatures();
+            presetApp = presetApp ?? _appsCache.Get(null, Constants.PresetIdentity);
+            Features.Stored = new FeaturesLoader(/*Fingerprint,*/ _logHistory, Log).LoadFeatures(presetApp, Fingerprint.GetFingerprint());
             Features.CacheTimestamp = DateTime.Now.Ticks;
             wrapLog("ok");
         }
@@ -97,7 +89,7 @@ namespace ToSic.Eav.Configuration
         [PrivateApi]
         public void ReloadFeatures()
         {
-            _appStateLoader.UpdateConfig();
+            _appStateLoader.ReloadConfigEntities();
             LoadFeatures();
         }
     }

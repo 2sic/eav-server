@@ -1,42 +1,52 @@
-﻿using System;
+﻿/*
+ * Copyright 2022 by 2sic internet solutions in Switzerland - www.2sic.com
+ *
+ * This file and the code IS COPYRIGHTED.
+ * 1. You may not change it.
+ * 2. You may not copy the code to reuse in another way.
+ *
+ * Copying this or creating a similar service, 
+ * especially when used to circumvent licensing features in EAV and 2sxc
+ * is a copyright infringement.
+ *
+ * Please remember that 2sic has sponsored more than 10 years of work,
+ * and paid more than 1 Million USD in wages for its development.
+ * So asking for support to finance advanced features is not asking for much. 
+ *
+ */
+using System;
 using System.Text;
 using Newtonsoft.Json;
-using ToSic.Eav.Caching;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
+using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav.Configuration
 {
-    internal class FeaturesLoader: HasLog
+    internal class FeaturesLoader: LoaderBase
     {
         /// <summary>
         /// Constructor - not meant for DI
         /// </summary>
-        internal FeaturesLoader(IAppsCache appsCache, IFingerprint fingerprint, LogHistory logHistory, ILog parentLog) : base(LogNames.Eav + "LicLdr", parentLog, "Load Features")
+        internal FeaturesLoader(/*SystemFingerprint fingerprint,*/ LogHistory logHistory, ILog parentLog) 
+            : base(/*fingerprint,*/ logHistory, parentLog, LogNames.Eav + "LicLdr", "Load Features")
         {
-            _appsCache = appsCache;
-            _fingerprint = fingerprint;
-            logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
         }
-        private readonly IAppsCache _appsCache;
-        private readonly IFingerprint _fingerprint;
 
 
         /// <summary>
         /// Pre-Load enabled / disabled global features
         /// </summary>
         [PrivateApi]
-        public FeatureListStored LoadFeatures()
+        internal FeatureListStored LoadFeatures(AppState presetApp, string fingerprint)
         {
             var wrapLog = Log.Call<FeatureListStored>();
             FeatureListStored feats = null;
             try
             {
-                var presetApp = _appsCache.Get(null, Constants.PresetIdentity);
-
                 var entity = presetApp.List.FirstOrDefaultOfType(FeatureConstants.TypeName);
                 var featStr = entity?.Value<string>(FeatureConstants.FeaturesField);
                 var signature = entity?.Value<string>(FeatureConstants.SignatureField);
@@ -67,7 +77,7 @@ namespace ToSic.Eav.Configuration
 
                         if (feats2 != null)
                         {
-                            if (feats2.Fingerprint != _fingerprint.GetSystemFingerprint())
+                            if (feats2.Fingerprint != fingerprint)
                                 FeaturesService.ValidInternal = false;
 
                             // ReSharper disable once ConditionIsAlwaysTrueOrFalse

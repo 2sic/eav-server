@@ -7,6 +7,6 @@ namespace ToSic.Eav.Run
     {
         AppState LoadFullAppState();
 
-        void UpdateConfig();
+        void ReloadConfigEntities();
     }
 }

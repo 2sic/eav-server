@@ -14,29 +14,17 @@
  * So asking for support to finance advanced features is not asking for much. 
  *
  */
-using System;
+using ToSic.Eav.Documentation;
 
-namespace ToSic.Eav.Configuration.Licenses
+namespace ToSic.Eav.Security.Fingerprint
 {
     /// <summary>
-    /// Defines a license - name, guid etc.
+    /// Defines all classes which can provide fingerprints.
+    /// For example a system fingerprint or a service fingerprint
     /// </summary>
-    public class LicenseDefinition
+    [PrivateApi("internal, no need to publish this")]
+    public interface IFingerprint
     {
-        public LicenseDefinition(int priority, string name, Guid guid, string description)
-        {
-            Priority = priority;
-            Name = name;
-            Guid = guid;
-            Description = description;
-        }
-
-        public readonly int Priority;
-
-        public readonly string Name;
-        public readonly Guid Guid;
-        public bool AutoEnable = false;
-
-        public string Description = "";
+        string GetFingerprint();
     }
 }

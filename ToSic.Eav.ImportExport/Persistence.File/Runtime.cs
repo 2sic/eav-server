@@ -128,8 +128,6 @@ namespace ToSic.Eav.Persistence.File
                     Log.Exception(ex);
                 }
 
-
-                //Log.Add($"timers sql:sqlAll:{_sqlTotalTime}");
                 wrapLog("ok");
             });
 
@@ -139,7 +137,7 @@ namespace ToSic.Eav.Persistence.File
         /// <summary>
         /// Reload App Configuration Items from the File System
         /// </summary>
-        public void UpdateConfig()
+        public void ReloadConfigEntities()
         {
             var mainWrap = Log.Call();
             var appStates = _serviceProvider.Build<IAppStates>();

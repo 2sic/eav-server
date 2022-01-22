@@ -15,6 +15,7 @@ using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
+using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav
 {
@@ -46,6 +47,12 @@ namespace ToSic.Eav
             services.TryAddTransient<PermissionCheckBase.Dependencies>();
 
             services.TryAddTransient<ILicenseService, LicenseService>();
+
+            // Fingerprinting: Because fo security, we are not injecting the interface
+            // As that would allow replacing the fingerprinter with something else
+            // We actually only use the direct object in DI
+            //services.TryAddTransient<IFingerprint, Fingerprint>();
+            services.TryAddTransient<SystemFingerprint>();
 
             return services;
         }
@@ -80,7 +87,6 @@ namespace ToSic.Eav
         public static IServiceCollection AddEavCoreFallbackServices(this IServiceCollection services)
         {
             // very basic stuff - normally overriden by the platform
-            services.TryAddTransient<IFingerprint, FingerprintUnknown>();
             services.TryAddTransient<IValueConverter, ValueConverterUnknown>();
 
             services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
@@ -94,6 +100,7 @@ namespace ToSic.Eav
 
             // Unknown-Runtime for loading configuration etc. File-runtime
             services.TryAddTransient<IRuntime, RuntimeUnknown>();
+            services.TryAddTransient<PlatformInformationBase, PlatformUnknown>();
 
             return services;
         }

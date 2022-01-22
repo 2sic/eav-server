@@ -1,45 +1,64 @@
-﻿using System;
+﻿/*
+ * Copyright 2022 by 2sic internet solutions in Switzerland - www.2sic.com
+ *
+ * This file and the code IS COPYRIGHTED.
+ * 1. You may not change it.
+ * 2. You may not copy the code to reuse in another way.
+ *
+ * Copying this or creating a similar service, 
+ * especially when used to circumvent licensing features in EAV and 2sxc
+ * is a copyright infringement.
+ *
+ * Please remember that 2sic has sponsored more than 10 years of work,
+ * and paid more than 1 Million USD in wages for its development.
+ * So asking for support to finance advanced features is not asking for much. 
+ *
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ToSic.Eav.Caching;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
+using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
     /// <summary>
     /// Will check the loaded licenses and prepare validity information for use during system runtime
     /// </summary>
-    internal sealed class LicenseLoader: HasLog
+    internal sealed class LicenseLoader: LoaderBase
     {
         /// <summary>
         /// Constructor - not meant for DI
         /// </summary>
-        internal LicenseLoader(IAppsCache appsCache, IFingerprint fingerprint, LogHistory logHistory, ILog parentLog) : base(LogNames.Eav + "LicLdr", parentLog, "Load Licenses")
+        internal LicenseLoader(/*SystemFingerprint fingerprint,*/ LogHistory logHistory, ILog parentLog)
+            : base(/*fingerprint,*/ logHistory, parentLog, LogNames.Eav + "LicLdr", "Load Licenses")
         {
-            _appsCache = appsCache;
-            _fingerprint = fingerprint.GetSystemFingerprint();
-            logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
         }
-        private readonly IAppsCache _appsCache;
-        private readonly string _fingerprint;
 
+        private string _fingerprint;
+
+        public LicenseLoader Init(string fingerprint)
+        {
+            _fingerprint = fingerprint;
+            return this;
+        }
 
         /// <summary>
         /// Pre-Load enabled / disabled global features
         /// </summary>
         [PrivateApi]
-        public void LoadLicenses()
+        internal void LoadLicenses(AppState presetApp)
         {
             var wrapLog = Log.Call();
             try
             {
-                var presetApp = _appsCache.Get(null, Constants.PresetIdentity);
                 var licenseEntities = presetApp.List.OfType(LicenseConstants.TypeName).ToList();
                 Log.Add($"Found {licenseEntities.Count} license entities");
                 var autoEnabled = AutoEnabledLicenses();
@@ -81,9 +100,9 @@ namespace ToSic.Eav.Configuration.Licenses
             Log.Add($"Signature: {validSig}");
 
             // Check fingerprints
-            var myFingerprint = _fingerprint;
+            //var myFingerprint = Fingerprint;
             var fps = infoRaw.Fingerprints.SplitNewLine().TrimmedAndWithoutEmpty();
-            var validFp = fps.Any(fp => myFingerprint.Equals(fp));
+            var validFp = fps.Any(fp => _fingerprint.Equals(fp));
             Log.Add($"Fingerprint: {validFp}");
 
             var validVersion = int.TryParse(infoRaw.Version, out var licVersion) &&

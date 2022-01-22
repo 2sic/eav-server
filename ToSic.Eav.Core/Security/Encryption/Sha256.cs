@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Security.Encryption
@@ -8,6 +9,23 @@ namespace ToSic.Eav.Security.Encryption
     [PrivateApi]
     public class Sha256
     {
+        /// <summary>
+        /// Compute a safe hash which hides what's inside, but is unique for each system.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string Hash(string value)
+        {
+            var hash = new StringBuilder();
+            using (var crypt = new SHA256Managed())
+            {
+                var crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(value));
+                foreach (var theByte in crypto)
+                    hash.Append(theByte.ToString("x2"));
+            }
+            return hash.ToString();
+        }
+
         public string SignBase64(string certificateBase64, byte[] data)
         {
             var certificate = new X509Certificate2(Convert.FromBase64String(certificateBase64),
