@@ -18,6 +18,7 @@
 using System;
 using System.Reflection;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 
@@ -48,7 +49,7 @@ namespace ToSic.Eav.Security.Fingerprint
             var nameId = platform.Name.ToLowerInvariant();      // usually "dnn" or "oqt"
             var systemGuid = platform.Identity;                 // unique id of an installation
             var sysVersion = platform.Version;                        // Major version, fingerprint should change with each
-            var dbConnection = _dbConfig.Value.ConnectionString;
+            var dbConnection = GetDbName();
             var versionEav = Assembly.GetExecutingAssembly().GetName().Version;
 
             fingerprintKey = $"guid={systemGuid}&platform={nameId}&sys={sysVersion.Major}&eav={versionEav.Major}&db={dbConnection}";
@@ -62,16 +63,12 @@ namespace ToSic.Eav.Security.Fingerprint
         /// </summary>
         private static string fingerprintKey;
 
-        //private string GetDbName()
-        //{
-        //    var dbConnection = _dbConfig.Value.ConnectionString;
-        //    const string key = "initial catalog=";
-        //    var posInitialCatalog = dbConnection.IndexOf(key, StringComparison.InvariantCultureIgnoreCase);
-        //    if (posInitialCatalog == -1) return dbConnection;
-        //    var end = dbConnection.Substring(posInitialCatalog + key.Length).IndexOf(';');
-        //    if (end == -1) end = dbConnection.Length;
-
-        //    var 
-        //}
+        private string GetDbName()
+        {
+            var dbConnection = _dbConfig.Value.ConnectionString;
+            const string key = "initial catalog=";
+            var dbName = dbConnection.Between(key, ";", true) ?? dbConnection;
+            return dbName.ToLowerInvariant();
+        }
     }
 }
