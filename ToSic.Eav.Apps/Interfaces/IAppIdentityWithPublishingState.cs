@@ -6,8 +6,5 @@ namespace ToSic.Eav.Apps
     {
         [PrivateApi]
         bool ShowDrafts { get; }
-        //[PrivateApi]
-        //bool ForceDraft { get; }
-
     }
 }

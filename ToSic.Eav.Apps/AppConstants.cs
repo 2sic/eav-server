@@ -29,5 +29,6 @@
 
         // Placeholders / Tokens - probably should move somewhere else someday
         public static string AppPathPlaceholder = "[App:Path]";
+        public static string AppPathSharedPlaceholder = "[App:PathShared]";
     }
 }
