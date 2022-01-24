@@ -13,6 +13,7 @@ namespace ToSic.Eav
         // TODO: 2DM - CONFUSING - is the app called "Default" or "Content" - this seems to be unclear
         public const string ContentAppName = "Content";
         public const string ContentAppFolder = "Content";
+        public const string ErrorAppName = "Error"; // it is name of empty Content app (before content templates are installed)
 
 
         // Auto-configure IDs for use in the getting-started dialogs
