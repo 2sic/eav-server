@@ -63,23 +63,17 @@ namespace ToSic.Eav.Apps
             var callLog = Log.Call($"Name: {Name}, Folder: {Folder}, AppGuidName: {NameId}");
             // If the loader wasn't able to fill name/folder, then the data was not a json
             // so we must try to fix this now
-            if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Folder))
+            if (string.IsNullOrWhiteSpace(Name) && string.IsNullOrWhiteSpace(Folder))
             {
-                // check if it's the default app or the #SiteApp (v13)
-                if (NameId == Constants.DefaultAppGuid) Name = Folder = Constants.ContentAppName;
-                else if (NameId == Constants.PrimaryAppGuid) Name = Folder = Constants.PrimaryAppName;
-                else
-                {
-                    Log.Add("Trying to load Name/Folder from App package entity");
-                    var config = List.FirstOrDefault(md => md.Type.NameId == AppLoadConstants.TypeAppConfig);
-                    Name = config?.Value<string>(AppLoadConstants.FieldName);
-                    Folder = config?.Value<string>(AppLoadConstants.FieldFolder);
-                }
+                Log.Add("Trying to load Name/Folder from App package entity");
+                var config = List.FirstOrDefault(md => md.Type.NameId == AppLoadConstants.TypeAppConfig);
+                Name = config?.Value<string>(AppLoadConstants.FieldName);
+                Folder = config?.Value<string>(AppLoadConstants.FieldFolder);
             } 
             
             // if the folder still isn't know (either no data found, or the Name existed)
             // try one last time
-            if (string.IsNullOrEmpty(Folder))
+            if (string.IsNullOrWhiteSpace(Folder))
             {
                 if (NameId == Constants.DefaultAppGuid) Folder = Constants.ContentAppName;
                 else if (NameId == Constants.PrimaryAppGuid) Folder = Constants.PrimaryAppName; // #SiteApp v13

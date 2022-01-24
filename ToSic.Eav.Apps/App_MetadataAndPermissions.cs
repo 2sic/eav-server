@@ -46,6 +46,7 @@ namespace ToSic.Eav.Apps
             // resolve some values for easier access
             Name = appState.Name ?? "Error";
             Folder = appState.Folder ?? "Error";
+
             Hidden = AppConfiguration?.Value<bool>(AppConstants.FieldHidden) ?? false;
             Log.Add($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
             wrapLog(null);

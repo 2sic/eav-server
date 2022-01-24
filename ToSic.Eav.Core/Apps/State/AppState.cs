@@ -54,12 +54,7 @@ namespace ToSic.Eav.Apps
         public string Folder
         {
             get => _folder;
-            set
-            {
-                if (!Loading)
-                    throw new Exception("Can't set AppState.Folder when not in loading state");
-                _folder = value;
-            }
+            set => _folder = ValueOrExceptionIfNotInLoadingState(value, nameof(Folder));
         }
         private string _folder;
 
@@ -71,12 +66,14 @@ namespace ToSic.Eav.Apps
         public string Name
         {
             get => _name;
-            set
-            {
-                if (!Loading) throw new Exception("Can't set AppState.Name when not in loading state");
-                _name = value;
-            }
+            set => _name = ValueOrExceptionIfNotInLoadingState(value, nameof(Name));
         }
         private string _name;
+
+        private string ValueOrExceptionIfNotInLoadingState(string value, string property)
+        {
+            if (!Loading) throw new Exception($"Can't set AppState.{property} when not in loading state");
+            return value;
+        }
     }
 }

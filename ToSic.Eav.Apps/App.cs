@@ -102,10 +102,6 @@ namespace ToSic.Eav.Apps
 
             InitializeResourcesSettingsAndMetadata();
 
-            // do this after initializing resources to certainly set the content-name
-            if (AppGuid == Constants.DefaultAppGuid) Name = Folder = Constants.ContentAppName;
-            else if (AppGuid == Constants.PrimaryAppGuid) Name = Folder = Constants.PrimaryAppName; // Check #SiteApp v13
-
             // for deferred initialization as needed
             _dataConfigurationBuilder = buildConfiguration;
 
