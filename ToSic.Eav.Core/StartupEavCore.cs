@@ -100,7 +100,7 @@ namespace ToSic.Eav
 
             // Unknown-Runtime for loading configuration etc. File-runtime
             services.TryAddTransient<IRuntime, RuntimeUnknown>();
-            services.TryAddTransient<PlatformInformationBase, PlatformUnknown>();
+            services.TryAddTransient<IPlatformInfo, PlatformUnknown>();
 
             return services;
         }

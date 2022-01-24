@@ -2,15 +2,15 @@
 
 namespace ToSic.Eav.Run.Unknown
 {
-    public class PlatformUnknown: PlatformInformationBase
+    public class PlatformUnknown: IPlatformInfo
     {
         public PlatformUnknown(WarnUseOfUnknown<PlatformUnknown> warn)  { }
 
-        public override string Name => "Unk";
+        public string Name => "Unk";
 
-        public override Version Version => new Version(0, 0);
+        public Version Version => new Version(0, 0);
 
-        public override string Identity => new Random().Next().ToString();
+        public string Identity => new Random().Next().ToString();
 
     }
 }

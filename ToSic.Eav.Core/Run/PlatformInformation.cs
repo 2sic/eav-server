@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Run
 {
-    public abstract class PlatformInformationBase
+    public abstract class PlatformInformationBase: IPlatformInfo
     {
         public abstract string Name { get; }
 

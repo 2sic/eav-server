@@ -32,13 +32,14 @@ namespace ToSic.Eav.Security.Fingerprint
         /// <summary>
         /// Constructor - gets Lazy PlatformInfo, because it's only used once for initial generation
         /// </summary>
-        public SystemFingerprint(Lazy<PlatformInformationBase> platform, Lazy<IDbConfiguration> dbConfigLazy)
+        public SystemFingerprint(Lazy<IPlatformInfo> platform, Lazy<IDbConfiguration> dbConfigLazy)
         {
             _platform = platform;
+
             _dbConfig = dbConfigLazy;
         }
 
-        private readonly Lazy<PlatformInformationBase> _platform;
+        private readonly Lazy<IPlatformInfo> _platform;
         private readonly Lazy<IDbConfiguration> _dbConfig;
 
         public string GetFingerprint()
@@ -46,9 +47,9 @@ namespace ToSic.Eav.Security.Fingerprint
             if (_fingerprintCache != null) return _fingerprintCache;
 
             var platform = _platform.Value;
-            var nameId = platform.Name.ToLowerInvariant();      // usually "dnn" or "oqt"
-            var systemGuid = platform.Identity;                 // unique id of an installation
-            var sysVersion = platform.Version;                        // Major version, fingerprint should change with each
+            var nameId = platform.Name.ToLowerInvariant();          // usually "dnn" or "oqt"
+            var systemGuid = platform.Identity.ToLowerInvariant();  // unique id of an installation
+            var sysVersion = platform.Version;                            // Major version, fingerprint should change with each
             var dbConnection = GetDbName();
             var versionEav = Assembly.GetExecutingAssembly().GetName().Version;
 
