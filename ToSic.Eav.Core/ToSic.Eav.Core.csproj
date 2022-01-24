@@ -4,6 +4,9 @@
     <Configurations>Debug;Release;efc and WebApi;debug eav only;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RootNamespace>ToSic.Eav</RootNamespace>
     <Version>13.02.00</Version>
+	  <Company>2sic Internet Solutions GmbH</Company>
+	  <Authors>2sic Internet Solutions GmbH</Authors>
+	  <Copyright>Copyright AGPL © 2sic 2022</Copyright>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>

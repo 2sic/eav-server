@@ -5,6 +5,9 @@
     <AssemblyName>ToSic.Eav.DataSources</AssemblyName>
     <RootNamespace>ToSic.Eav.DataSources</RootNamespace>
     <Version>13.02.00</Version>
+	  <Company>2sic Internet Solutions GmbH</Company>
+	  <Authors>2sic Internet Solutions GmbH</Authors>
+	  <Copyright>Copyright AGPL © 2sic 2022</Copyright>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <Deterministic>true</Deterministic>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
