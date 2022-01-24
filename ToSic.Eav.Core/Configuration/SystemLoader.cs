@@ -17,7 +17,7 @@ namespace ToSic.Eav.Configuration
         #region Constructor / DI
 
         public SystemLoader(SystemFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) 
-            : base(/*fingerprint,*/ logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
+            : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
             Fingerprint = fingerprint;
             _appsCache = appsCache;
@@ -61,7 +61,7 @@ namespace ToSic.Eav.Configuration
 
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(/*Fingerprint,*/ _logHistory, Log).Init(Fingerprint.GetFingerprint()).LoadLicenses(presetApp);
+            new LicenseLoader(_logHistory, Log).Init(Fingerprint.GetFingerprint()).LoadLicenses(presetApp);
 
             // Now do a normal reload of configuration and features
             LoadFeatures(presetApp);
@@ -78,7 +78,7 @@ namespace ToSic.Eav.Configuration
         {
             var wrapLog = Log.Call();
             presetApp = presetApp ?? _appsCache.Get(null, Constants.PresetIdentity);
-            Features.Stored = new FeaturesLoader(/*Fingerprint,*/ _logHistory, Log).LoadFeatures(presetApp, Fingerprint.GetFingerprint());
+            Features.Stored = new FeaturesLoader(_logHistory, Log).LoadFeatures(presetApp, Fingerprint.GetFingerprint());
             Features.CacheTimestamp = DateTime.Now.Ticks;
             wrapLog("ok");
         }
