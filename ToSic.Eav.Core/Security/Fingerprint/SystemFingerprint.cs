@@ -54,7 +54,6 @@ namespace ToSic.Eav.Security.Fingerprint
             var versionEav = Assembly.GetExecutingAssembly().GetName().Version;
 
             fingerprintKey = $"guid={systemGuid}&platform={nameId}&sys={sysVersion.Major}&eav={versionEav.Major}&db={dbConnection}";
-
             return _fingerprintCache = Sha256.Hash(fingerprintKey);
         }
         private static string _fingerprintCache;
