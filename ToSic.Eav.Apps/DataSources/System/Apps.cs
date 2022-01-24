@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Plumbing;
@@ -79,7 +78,7 @@ namespace ToSic.Eav.DataSources.System
             var builder = DataBuilder;
 
             // try to load the content-type - if it fails, return empty list
-            var zones = _appStates.Zones;// State.Zones;
+            var zones = _appStates.Zones;
             if (!zones.ContainsKey(OfZoneId)) return ImmutableArray<IEntity>.Empty;
             var zone = zones[OfZoneId];
 
@@ -123,7 +122,7 @@ namespace ToSic.Eav.DataSources.System
             });
 
             var final = list.ToImmutableArray();
-            return wrapLog($"{final.Length}", final); //  list.ToImmutableArray();// .ToList();
+            return wrapLog($"{final.Length}", final);
         }
 
 	}
