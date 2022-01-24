@@ -28,21 +28,29 @@ namespace ToSic.Eav.Apps.Languages
         private readonly IServiceProvider _checkGenerator;
         private readonly Lazy<IAppStates> _appStatesLazy;
 
-        public List<AppUserLanguageState> LanguagesWithPermissions(AppState appState)
+        public List<AppUserLanguageState> LanguagesWithPermissions(AppState appStateOrNull)
         {
             var wrapLog = Log.Call<List<AppUserLanguageState>>();
 
             var languages = _zoneMapperLazy.Value.CulturesWithState(_ctx.Site);
 
-            var set = GetLanguagePermissions(appState, languages);
+            if (appStateOrNull == null)
+            {
+                var noAppResult = languages
+                    .Select(l => new AppUserLanguageState(l, true))
+                    .ToList();
+                return wrapLog($"no-app {noAppResult.Count}", noAppResult);
+            }
+
+            var set = GetLanguagePermissions(appStateOrNull, languages);
             Log.Add($"Found {set.Count} sets");
             var hasPermissions = set.Any(s => s.Permissions.Any());
 
             // Find primary app, or stop if we're already there
-            if (!hasPermissions && appState.NameId != Constants.PrimaryAppGuid)
+            if (!hasPermissions && appStateOrNull.NameId != Constants.PrimaryAppGuid)
             {
                 Log.Add("No permissions, and not primary app - will try that");
-                var primaryId = _appStatesLazy.Value.PrimaryAppId(appState.ZoneId);
+                var primaryId = _appStatesLazy.Value.PrimaryAppId(appStateOrNull.ZoneId);
                 var primaryApp = _appStatesLazy.Value.Get(primaryId);
                 set = GetLanguagePermissions(primaryApp, languages);
                 hasPermissions = set.Any(s => s.Permissions.Any());
@@ -58,7 +66,7 @@ namespace ToSic.Eav.Apps.Languages
                 {
                     var pChecker = _checkGenerator.Build<AppPermissionCheck>();
                     var permissions = s.Permissions.Select(p => new Permission(p));
-                    pChecker.ForCustom(_ctx, appState, permissions, Log);
+                    pChecker.ForCustom(_ctx, appStateOrNull, permissions, Log);
                     ok = pChecker.PermissionsAllow(GrantSets.WriteSomething);
                 }
 
@@ -70,16 +78,23 @@ namespace ToSic.Eav.Apps.Languages
             });
 
             var result = newSet
-                .Select(s => new AppUserLanguageState(s.Language.Code, s.Language.Culture, s.Language.IsEnabled, s.Allowed))
+                .Select(s => new AppUserLanguageState(s.Language, s.Allowed))
                 .ToList();
-            return wrapLog("ok", result);
+            return wrapLog($"ok {result.Count}", result);
         }
 
-        private static List<LanguagePermission> GetLanguagePermissions(AppState appState, List<ISiteLanguageState> languages)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="appStateOrNull">The AppState which could hold permissions - or null if the app isn't there yet (like adding new module)</param>
+        /// <param name="languages"></param>
+        /// <returns></returns>
+        private static List<LanguagePermission> GetLanguagePermissions(AppState appStateOrNull, List<ISiteLanguageState> languages)
         {
             var set = languages.Select(l => new LanguagePermission
             {
-                Permissions = appState.GetMetadata(TargetTypes.Dimension, l.Code?.ToLowerInvariant(), Permission.TypeName),
+                Permissions = appStateOrNull?.GetMetadata(TargetTypes.Dimension, l.Code?.ToLowerInvariant(), Permission.TypeName)
+                    ?? Array.Empty<IEntity>(),
                 Language = l,
                 Allowed = true,
             }).ToList();
