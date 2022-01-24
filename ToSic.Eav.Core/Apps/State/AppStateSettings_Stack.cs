@@ -34,12 +34,16 @@ namespace ToSic.Eav.Apps
             var appStates = sp.Build<IAppStates>();
 
             // Site should be skipped on the global zone
-            var site = Owner.ZoneId == Constants.DefaultZoneId ? null : appStates.Get(appStates.IdentityOfPrimary(Owner.ZoneId));
+            var site = Owner.ZoneId == Constants.DefaultZoneId ? null : appStates.GetPrimaryApp(Owner.ZoneId);
             var global = appStates.Get(Constants.GlobalIdentity);
 
             var preset = appStates.GetPresetApp();
 
-            _stackCache = new AppStateStackCache(Owner, site, global, preset, Target);
+            // Find the ancestor, but only use it if it's not the preset
+            var ancestor = Owner.ParentApp.AppState;
+            var useAncestor = (ancestor != null && ancestor.AppId != Constants.PresetAppId) ? ancestor : null;
+
+            _stackCache = new AppStateStackCache(Owner, useAncestor, site, global, preset, Target);
 
             return _stackCache;
         }

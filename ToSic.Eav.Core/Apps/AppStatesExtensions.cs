@@ -10,5 +10,8 @@ namespace ToSic.Eav.Apps
                 : null;
 
         public static AppState GetPresetApp(this IAppStates states) => states.Get(PresetIdentity);
+
+        public static AppState GetPrimaryApp(this IAppStates appStates, int zoneId) =>
+            appStates.Get(appStates.IdentityOfPrimary(zoneId));
     }
 }

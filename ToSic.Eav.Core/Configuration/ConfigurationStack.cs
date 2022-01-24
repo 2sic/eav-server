@@ -13,6 +13,9 @@ namespace ToSic.Eav.Configuration
 
         public const string PartApp = "AppCustom";
         public const string PartAppSystem = "AppSystem";
+
+        public const string PartAncestor = "AncestorCustom";
+        public const string PartAncestorSystem = "AncestorSystem";
         
         public const string PartSite = "SiteCustom";
         public const string PartSiteSystem = "SiteSystem";
@@ -22,8 +25,5 @@ namespace ToSic.Eav.Configuration
         
         public const string PartPreset = "PresetCustom"; // not in use
         public const string PartPresetSystem = "PresetSystem";
-        
-        
-
     }
 }

@@ -14,15 +14,17 @@ namespace ToSic.Eav.Apps
     [PrivateApi]
     public class AppStateStackCache
     {
-        internal AppStateStackCache(AppState owner, AppState siteOrNull, AppState global, AppState preset, AppThingsIdentifiers target)
+        internal AppStateStackCache(AppState owner, AppState ancestor, AppState siteOrNull, AppState global, AppState preset, AppThingsIdentifiers target)
         {
             Owner = owner;
+            Ancestor = ancestor;
             SiteOrNull = siteOrNull;
             Global = global;
             Preset = preset;
             Target = target;
         }
         private AppState Owner { get; }
+        private AppState Ancestor { get; }
 
         /// <summary>
         /// Site can be null, if we're on the global App, which doesn't have a site-app...
@@ -58,31 +60,42 @@ namespace ToSic.Eav.Apps
         {
             var thingType = Target.Target;
             var appStack = Owner.ThingInApp(thingType);
+            var ancestorOrNull = Ancestor?.ThingInApp(thingType);
             var siteOrNull = SiteOrNull?.ThingInApp(thingType);
             var global = Global?.ThingInApp(thingType);
             var preset = Preset.ThingInApp(thingType);
 
+            // Current App level
             var sources = new List<KeyValuePair<string, IPropertyLookup>>
             {
-                // App level
                 new KeyValuePair<string, IPropertyLookup>(PartApp, appStack.MetadataItem),
                 new KeyValuePair<string, IPropertyLookup>(PartAppSystem, appStack.ScopeAny),
-
-                // Site level
-                new KeyValuePair<string, IPropertyLookup>(PartSite, siteOrNull?.Custom),
-                new KeyValuePair<string, IPropertyLookup>(PartSiteSystem, siteOrNull?.ScopeAny),
-
-                // Global
-                new KeyValuePair<string, IPropertyLookup>(PartGlobal, global?.Custom),
-                new KeyValuePair<string, IPropertyLookup>(PartGlobalSystem, global?.ScopeAny),
-
-                // System Presets
-                new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, preset.ScopeAny)
-
-                //new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, appThingType == AppThingsToStack.Resources 
-                //    ? Configuration.Global.SystemResources 
-                //    : Configuration.Global.SystemSettings)
             };
+
+            // Ancestor Level (only for inherited apps, v13)
+            if (ancestorOrNull != null)
+            {
+                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartAncestor, ancestorOrNull.MetadataItem));
+                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartAncestorSystem, ancestorOrNull.ScopeAny));
+            }
+
+            // Site level
+            if (siteOrNull != null)
+            {
+                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartSite, siteOrNull.MetadataItem));
+                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartSiteSystem, siteOrNull.ScopeAny));
+            }
+
+
+            // Global
+            if (global != null)
+            {
+                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartGlobal, global.MetadataItem));
+                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartGlobalSystem, global.ScopeAny));
+            }
+
+            // System Presets
+            sources.Add(new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, preset.ScopeAny));
             return sources;
         }
 
