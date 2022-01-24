@@ -50,7 +50,7 @@ namespace ToSic.Eav.Security.Fingerprint
             var nameId = platform.Name.ToLowerInvariant();          // usually "dnn" or "oqt"
             var systemGuid = platform.Identity.ToLowerInvariant();  // unique id of an installation
             var sysVersion = platform.Version;                            // Major version, fingerprint should change with each
-            var dbConnection = GetDbName();
+            var dbConnection = GetDbName().ToLowerInvariant();      // Database name
             var versionEav = Assembly.GetExecutingAssembly().GetName().Version;
 
             fingerprintKey = $"guid={systemGuid}&platform={nameId}&sys={sysVersion.Major}&eav={versionEav.Major}&db={dbConnection}";
@@ -69,7 +69,7 @@ namespace ToSic.Eav.Security.Fingerprint
             var dbConnection = _dbConfig.Value.ConnectionString;
             const string key = "initial catalog=";
             var dbName = dbConnection.Between(key, ";", true) ?? dbConnection;
-            return dbName.ToLowerInvariant();
+            return dbName;
         }
     }
 }
