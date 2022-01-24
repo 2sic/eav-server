@@ -12,13 +12,28 @@ namespace ToSic.Eav.Configuration
         public IEnumerable<FeatureState> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial)));
         private static List<FeatureState> _all;
 
-        public IEnumerable<FeatureState> Ui => All.Where(f => f.Enabled && f.Ui);
+        /// <summary>
+        /// List of all enabled features with their guids and nameIds
+        /// </summary>
+        public HashSet<string> EnabledFeatures => _enabledFeatures ?? (_enabledFeatures = new HashSet<string>(All
+                .Where(f => f.Enabled)
+                .SelectMany(f => new string[] { f.NameId, f.Guid.ToString() })
+                .Distinct(StringComparer.InvariantCultureIgnoreCase),
+                StringComparer.InvariantCultureIgnoreCase)
+            );
+        private HashSet<string> _enabledFeatures;
+
+        public IEnumerable<FeatureState> EnabledUi => All.Where(f => f.Enabled && f.Ui);
 
         public bool Enabled(Guid guid) => All.Any(f => f.Guid == guid && f.Enabled);
         
         public bool Enabled(IEnumerable<Guid> guids) => guids.All(Enabled);
 
-        public bool Enabled(params string[] nameIds) => nameIds.All(name => All.Any(f => f.NameId == name && f.Enabled));
+        public bool IsEnabled(params string[] nameIds)
+        {
+            if (nameIds == null || nameIds.Length == 0) return true;
+            return nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
+        }
 
         public bool Valid => ValidInternal;
         public static bool ValidInternal;
@@ -39,20 +54,10 @@ namespace ToSic.Eav.Configuration
         #region Links
 
         /// <inheritdoc />
-        public string HelpLink
-        {
-            get => _helpLink;
-            set => _helpLink = value;
-        }
-        private static string _helpLink = "https://2sxc.org/help?tag=features";
+        public string HelpLink => "https://2sxc.org/help?tag=features";
 
         /// <inheritdoc />
-        public string InfoLinkRoot
-        {
-            get => _infoLinkRoot;
-            set => _infoLinkRoot = value;
-        }
-        private static string _infoLinkRoot = "https://2sxc.org/r/f/";
+        public string InfoLinkRoot => "https://2sxc.org/r/f/";
 
         #endregion
 

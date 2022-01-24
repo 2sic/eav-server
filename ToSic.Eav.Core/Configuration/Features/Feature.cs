@@ -4,6 +4,10 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
 {
+    /// <summary>
+    /// Information about an enabled feature
+    /// Note that this is also used as a DTO for the edit-UI, so don't just rename fields or anything.
+    /// </summary>
     [PrivateApi("no good reason to publish this")]
     public class FeatureState
     {

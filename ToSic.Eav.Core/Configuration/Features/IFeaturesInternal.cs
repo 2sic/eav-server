@@ -11,7 +11,7 @@ namespace ToSic.Eav.Configuration
         IEnumerable<FeatureState> All { get; }
 
         [PrivateApi]
-        IEnumerable<FeatureState> Ui { get; }
+        IEnumerable<FeatureState> EnabledUi { get; }
 
 
         [PrivateApi]

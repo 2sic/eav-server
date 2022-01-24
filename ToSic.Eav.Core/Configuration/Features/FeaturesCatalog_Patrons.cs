@@ -11,7 +11,7 @@ namespace ToSic.Eav.Configuration
         public static readonly FeatureDefinition PasteImageFromClipboard = new FeatureDefinition(
             "PasteImageFromClipboard",
             new Guid("f6b8d6da-4744-453b-9543-0de499aa2352"),
-            "Paste from Clipboard",
+            "Paste Image from Clipboard",
             true,
             true,
             "Enable paste image from clipboard into a wysiwyg or file field.",
