@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.Documentation;
+using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps
 {
@@ -58,28 +59,36 @@ namespace ToSic.Eav.Apps
             }
         }
 
-        private void EnsureNameAndFolderInitialized()
+        private bool EnsureNameAndFolderInitialized()
         {
-            var callLog = Log.Call($"Name: {Name}, Folder: {Folder}, AppGuidName: {NameId}");
+            var callLog = Log.Call<bool>($"Name: {Name}, Folder: {Folder}, AppGuidName: {NameId}");
+
+            // Only do something if Name or Folder are still invalid
+            if (!string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Folder))
+                return callLog($"No change. Name: {Name}, Folder:{Folder}", false);
+
             // If the loader wasn't able to fill name/folder, then the data was not a json
             // so we must try to fix this now
-            if (string.IsNullOrWhiteSpace(Name) && string.IsNullOrWhiteSpace(Folder))
-            {
-                Log.Add("Trying to load Name/Folder from App package entity");
-                var config = List.FirstOrDefault(md => md.Type.NameId == AppLoadConstants.TypeAppConfig);
-                Name = config?.Value<string>(AppLoadConstants.FieldName);
-                Folder = config?.Value<string>(AppLoadConstants.FieldFolder);
-            } 
-            
+            var config = List.FirstOrDefault(md => md.Type.NameId == AppLoadConstants.TypeAppConfig);
+
+            Log.Add("Trying to load Name/Folder from App package entity");
+            if (string.IsNullOrWhiteSpace(Name)) Name = config?.Value<string>(AppLoadConstants.FieldName);
+            if (string.IsNullOrWhiteSpace(Folder)) Folder = config?.Value<string>(AppLoadConstants.FieldFolder);
+
             // if the folder still isn't know (either no data found, or the Name existed)
             // try one last time
             if (string.IsNullOrWhiteSpace(Folder))
             {
-                if (NameId == Constants.DefaultAppGuid) Folder = Constants.ContentAppName;
-                else if (NameId == Constants.PrimaryAppGuid) Folder = Constants.PrimaryAppName; // #SiteApp v13
+                if (NameId == DefaultAppGuid) Folder = ContentAppFolder;
+                else if (NameId == PrimaryAppGuid) Folder = PrimaryAppFolder; // #SiteApp v13
+            }
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                if (NameId == DefaultAppGuid) Name = ContentAppName;
+                else if (NameId == PrimaryAppGuid) Name = PrimaryAppName; // #SiteApp v13
             }
 
-            callLog($"Name: {Name}, Folder:{Folder}");
+            return callLog($"Name: {Name}, Folder:{Folder}", true);
         }
     }
 }

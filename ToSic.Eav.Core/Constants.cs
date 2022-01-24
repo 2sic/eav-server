@@ -31,6 +31,7 @@ namespace ToSic.Eav
         /// </summary>
         public const string PrimaryAppGuid = "251c0000-eafe-2792-0001-000000000001";
         public const string PrimaryAppName = "Primary";
+        public const string PrimaryAppFolder = "Primary";
 
         public const int AppIdEmpty = 0;
 
