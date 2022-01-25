@@ -88,19 +88,16 @@ namespace ToSic.Eav.Persistence.File
                 var wrapLog = Log.Call(message: msg, useTimer: true);
 
                 // Prepare metadata lists & relationships etc.
-                // TODO: this might fail, as we don't have a list of Metadata
                 appState.InitMetadata(new Dictionary<int, string>().ToImmutableDictionary(a => a.Key, a => a.Value));
                 appState.Name = Constants.PresetName;
                 appState.Folder = Constants.PresetName;
 
-
                 // prepare content-types
-                var typeTimer = Stopwatch.StartNew();
+                var wrapLoadTypes = Log.Call(useTimer: true);
                 // Just attach all global content-types to this app, as they belong here
-                var dbTypes = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
-                appState.InitContentTypes(dbTypes);
-                typeTimer.Stop();
-                Log.Add($"timers types:{typeTimer.Elapsed}");
+                var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
+                appState.InitContentTypes(types);
+                wrapLoadTypes($"types loaded");
 
                 // load data
                 try
@@ -112,7 +109,8 @@ namespace ToSic.Eav.Persistence.File
                     // This should probably not cause any problems, but it's important to know
                     // We may optimize / change this some day
                     Log.Add("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
-                    Loaders.ForEach(l => l.ResetSerializer(appState.ContentTypes.ToList()));
+                    var appTypes = appState.ContentTypes.ToList();
+                    Loaders.ForEach(l => l.ResetSerializer(appTypes));
 
                     Log.Add("Load items");
                     foreach (var entityItemFolder in FsDataConstants.EntityItemFolders)
@@ -120,14 +118,7 @@ namespace ToSic.Eav.Persistence.File
                         Log.Add($"Load {entityItemFolder} items");
                         var configs = LoadGlobalItems(entityItemFolder)?.ToList() ?? new List<IEntity>();
                         foreach (var c in configs) appState.Add(c as Entity, null, true);
-                        
                     }
-                    //var configs = LoadGlobalItems(FsDataConstants.ConfigFolder)?.ToList() ?? new List<IEntity>();
-                    //foreach (var c in configs) appState.Add(c as Entity, null, true);
-
-                    //Log.Add("Add queries");
-                    //var queries = LoadGlobalItems(FsDataConstants.QueriesFolder)?.ToList() ?? new List<IEntity>();
-                    //foreach (var q in queries) appState.Add(q as Entity, null, true);
                 }
                 catch (Exception ex)
                 {
