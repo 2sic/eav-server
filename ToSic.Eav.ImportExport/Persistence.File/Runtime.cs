@@ -97,7 +97,7 @@ namespace ToSic.Eav.Persistence.File
                 // prepare content-types
                 var typeTimer = Stopwatch.StartNew();
                 // Just attach all global content-types to this app, as they belong here
-                var dbTypes = LoadGlobalContentTypes(Global.GlobalContentTypeMin);
+                var dbTypes = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
                 appState.InitContentTypes(dbTypes);
                 typeTimer.Stop();
                 Log.Add($"timers types:{typeTimer.Elapsed}");
@@ -114,13 +114,20 @@ namespace ToSic.Eav.Persistence.File
                     Log.Add("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
                     Loaders.ForEach(l => l.ResetSerializer(appState.ContentTypes.ToList()));
 
-                    Log.Add("Load config items");
-                    var configs = LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();
-                    foreach (var c in configs) appState.Add(c as Entity, null, true);
+                    Log.Add("Load items");
+                    foreach (var entityItemFolder in FsDataConstants.EntityItemFolders)
+                    {
+                        Log.Add($"Load {entityItemFolder} items");
+                        var configs = LoadGlobalItems(entityItemFolder)?.ToList() ?? new List<IEntity>();
+                        foreach (var c in configs) appState.Add(c as Entity, null, true);
+                        
+                    }
+                    //var configs = LoadGlobalItems(FsDataConstants.ConfigFolder)?.ToList() ?? new List<IEntity>();
+                    //foreach (var c in configs) appState.Add(c as Entity, null, true);
 
-                    Log.Add("Add queries");
-                    var queries = LoadGlobalItems(Global.GroupQuery)?.ToList() ?? new List<IEntity>();
-                    foreach (var q in queries) appState.Add(q as Entity, null, true);
+                    //Log.Add("Add queries");
+                    //var queries = LoadGlobalItems(FsDataConstants.QueriesFolder)?.ToList() ?? new List<IEntity>();
+                    //foreach (var q in queries) appState.Add(q as Entity, null, true);
                 }
                 catch (Exception ex)
                 {
@@ -152,7 +159,7 @@ namespace ToSic.Eav.Persistence.File
                 try
                 {
                     Log.Add("Load config items");
-                    var configs = LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();
+                    var configs = LoadGlobalItems(FsDataConstants.ConfigFolder)?.ToList() ?? new List<IEntity>();
                     Log.Add($"Found {configs.Count} items");
                     var featuresOnly = configs.OfType(FeatureConstants.TypeName).ToList();
                     Log.Add($"Found {featuresOnly.Count} items which are {FeatureConstants.TypeName} - expected: 1");

@@ -3,10 +3,13 @@
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi]
-    public class Global
+    public class FsDataConstants
     {
-        public const string GroupQuery = "query";
-        public const string GroupConfiguration = "configuration";
+        public const string TypesFolder = "contenttypes";
+        public const string QueriesFolder = "queries";
+        public const string ConfigFolder = "configurations";
+        public const string EntitiesFolder = "entities";
+        public static string[] EntityItemFolders = { QueriesFolder, ConfigFolder, EntitiesFolder };
 
         private const int MagicZeroMaker = 10000000;
         public const int GlobalContentTypeMin = int.MaxValue / MagicZeroMaker * MagicZeroMaker;

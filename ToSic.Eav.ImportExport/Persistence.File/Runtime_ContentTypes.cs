@@ -19,7 +19,7 @@ namespace ToSic.Eav.Persistence.File
             {
                 l.IdSeed = typeIdSeed;
                 types.AddRange(l.ContentTypes());
-                typeIdSeed = (l.IdSeed / Global.GlobalContentTypeSourceSkip + 1) * Global.GlobalContentTypeSourceSkip;
+                typeIdSeed = (l.IdSeed / FsDataConstants.GlobalContentTypeSourceSkip + 1) * FsDataConstants.GlobalContentTypeSourceSkip;
             });
 
             types = SetInternalTypes(types);

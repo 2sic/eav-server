@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using ToSic.Eav.Configuration;
-using ToSic.Eav.Persistence.File;
 using ToSic.Eav.WebApi.Validation;
 
 namespace ToSic.Eav.WebApi.Features
@@ -64,7 +63,7 @@ namespace ToSic.Eav.WebApi.Features
             var wrapLog = Log.Call<bool>();
             try
             {
-                var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Eav.Constants.FolderDataCustom, FileSystemLoader.ConfigurationFolder);
+                var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
 
                 if (!Directory.Exists(configurationsPath)) 
                     Directory.CreateDirectory(configurationsPath);

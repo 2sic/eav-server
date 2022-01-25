@@ -16,7 +16,8 @@ namespace ToSic.Eav.LookUp
     {
         #region RegEx - the core formula
         // Commented Regular Expression which doesn't capture non-tokens
-	    private const string RegExFindAllTokens = @"
+        // language=regex
+        private const string RegExFindAllTokens = @"
 
 # start by defining a group, but don't give it an own capture-name
 (?:
