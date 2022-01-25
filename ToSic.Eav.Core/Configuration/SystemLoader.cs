@@ -1,50 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Data;
+using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
-using ToSic.Eav.Security.Encryption;
-using ToSic.Eav.Types;
+using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi]
-    public class SystemLoader: HasLog
+    public class SystemLoader: LoaderBase
     {
-
         #region Constructor / DI
 
-        public SystemLoader(IGlobalTypes globalTypes, IFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) : base($"{LogNames.Eav}SysLdr")
+        public SystemLoader(SystemFingerprint fingerprint, IRuntime runtime, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) 
+            : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
-            _globalTypes = globalTypes;
+            Fingerprint = fingerprint;
             _appsCache = appsCache;
-            _features = features;
             _logHistory = logHistory;
-            logHistory.Add(GlobalTypes.LogHistoryGlobalTypes, Log);
-            _fingerprint = fingerprint;
-            _runtime = runtime;
-
-#pragma warning disable 618
-#if NETFRAMEWORK
-            if (Features.FeaturesFromDi == null)
-                Features.FeaturesFromDi = features;
-#endif
-#pragma warning restore 618
+            logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
+            _appStateLoader = runtime.Init(Log);
+            Features = features;
         }
-
-        private readonly IFingerprint _fingerprint;
-        private readonly IRuntime _runtime;
-        private readonly IGlobalTypes _globalTypes;
+        public SystemFingerprint Fingerprint { get; }
+        private readonly IRuntime _appStateLoader;
         private readonly IAppsCache _appsCache;
-        private readonly IFeaturesInternal _features;
+        public readonly IFeaturesInternal Features;
         private readonly LogHistory _logHistory;
+
+        public SystemLoader Init(ILog parentLog)
+        {
+            Log.LinkTo(parentLog);
+            return this;
+        }
 
         #endregion
 
@@ -57,107 +49,48 @@ namespace ToSic.Eav.Configuration
             if (_startupAlreadyRan) throw new Exception("Startup should never be called twice.");
             _startupAlreadyRan = true;
 
-            // Initialize AppState Cache, which could be DI but has a static accessor
-#pragma warning disable 618
-            State.StartUp(_appsCache);
-#pragma warning restore 618
+            // Pre-Load the Assembly list into memory to log separately
+            var assemblyLoadLog = new Log(LogNames.Eav + "AssLdr", null, "Load Assemblies");
+            _logHistory.Add(LogNames.LogHistoryGlobalTypes, assemblyLoadLog);
+            AssemblyHandling.GetTypes(assemblyLoadLog);
 
             // Build the cache of all system-types. Must happen before everything else
-            _globalTypes.StartUp(Log);
+            Log.Add("Try to load global app-state");
+            var presetApp = _appStateLoader.LoadFullAppState();
+            _appsCache.Add(presetApp);
+
+            // V13 - Load Licenses
+            // Avoid using DI, as otherwise someone could inject a different license loader
+            new LicenseLoader(_logHistory, Log).Init(Fingerprint.GetFingerprint()).LoadLicenses(presetApp);
 
             // Now do a normal reload of configuration and features
-            Reload();
+            LoadFeatures(presetApp);
         }
+        
 
         private bool _startupAlreadyRan;
+
+        /// <summary>
+        /// Pre-Load enabled / disabled global features
+        /// </summary>
+        [PrivateApi]
+        public void LoadFeatures(AppState presetApp = null)
+        {
+            var wrapLog = Log.Call();
+            presetApp = presetApp ?? _appsCache.Get(null, Constants.PresetIdentity);
+            Features.Stored = new FeaturesLoader(_logHistory, Log).LoadFeatures(presetApp, Fingerprint.GetFingerprint());
+            Features.CacheTimestamp = DateTime.Now.Ticks;
+            wrapLog("ok");
+        }
 
         /// <summary>
         /// Reset the features to force reloading of the features
         /// </summary>
         [PrivateApi]
-        public void Reload()
+        public void ReloadFeatures()
         {
-            // Reset global data which stores the features
-            LoadRuntimeConfiguration();
+            _appStateLoader.ReloadConfigEntities();
             LoadFeatures();
         }
-
-        /// <summary>
-        /// All content-types available in Reflection; will cache on the Global.List after first scan
-        /// </summary>
-        /// <returns></returns>
-        public void LoadRuntimeConfiguration()
-        {
-            var log = new Log($"{LogNames.Eav}.Global");
-            log.Add("Load Global Configurations");
-            _logHistory.Add(Types.GlobalTypes.LogHistoryGlobalTypes, log);
-            var wrapLog = log.Call();
-
-            try
-            {
-                var runtime = _runtime.Init(log);
-                var list = runtime?.LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();
-                Global.List = list;
-                wrapLog($"{list.Count}");
-            }
-            catch (Exception e)
-            {
-                log.Exception(e);
-                Global.List = new List<IEntity>();
-                wrapLog("error");
-            }
-        }
-
-
-        private void LoadFeatures()
-        {
-            FeatureListWithFingerprint feats = null;
-            try
-            {
-                var entity = Global.For(FeatureConstants.TypeName);
-                var featStr = entity?.Value<string>(FeatureConstants.FeaturesField);
-                var signature = entity?.Value<string>(FeatureConstants.SignatureField);
-
-                // Verify signature from security-system
-                if (!string.IsNullOrWhiteSpace(featStr))
-                {
-                    if (!string.IsNullOrWhiteSpace(signature))
-                    {
-                        try
-                        {
-                            var data = new UnicodeEncoding().GetBytes(featStr);
-                            FeaturesService.ValidInternal = new Sha256().VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930, signature, data);
-                        }
-                        catch { /* ignore */ }
-                    }
-
-                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                    if (FeaturesService.ValidInternal || FeatureConstants.AllowUnsignedFeatures)
-                    {
-                        FeatureListWithFingerprint feats2 = null;
-                        if (featStr.StartsWith("{"))
-                            feats2 = JsonConvert.DeserializeObject<FeatureListWithFingerprint>(featStr);
-
-                        if (feats2 != null)
-                        {
-                            var fingerprint = feats2.Fingerprint;
-                            if (fingerprint != _fingerprint.GetSystemFingerprint()) 
-                                FeaturesService.ValidInternal = false;
-
-                            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                            if (FeaturesService.ValidInternal || FeatureConstants.AllowUnsignedFeatures)
-                                feats = feats2;
-                        }
-                    }
-                }
-            }
-            catch { /* ignore */ }
-            //Features.CacheTimestamp = DateTime.Now.Ticks;
-            //Features.Stored = feats ?? new FeatureList();
-            _features.Stored = feats ?? new FeatureList();
-            _features.CacheTimestamp = DateTime.Now.Ticks;
-        }
-
-
     }
 }

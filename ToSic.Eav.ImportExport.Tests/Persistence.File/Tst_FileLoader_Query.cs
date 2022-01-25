@@ -30,7 +30,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             IList<IEntity> cts;
             try
             {
-                cts = loader.Queries();
+                cts = loader.Queries(0);
             }
             finally
             {

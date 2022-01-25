@@ -20,5 +20,7 @@
         /// support anything more advanced / specific to a platform. It's usually fallback implementation.
         /// </summary>
         public const string Basic = "BAS";
+
+        public static string LogHistoryGlobalTypes = "global-types";
     }
 }

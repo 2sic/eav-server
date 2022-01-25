@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps.Parts
                 return callLog("ok", false);
 
             // something is missing, so we must build them
-            ServiceProvider.Build<AppInitializer>() // (ServiceProvider)
+            ServiceProvider.Build<AppInitializer>()
                 .Init(appIdentity, log)
                 .InitializeApp(appName);
             return callLog(null, true);
@@ -60,9 +60,9 @@ namespace ToSic.Eav.Apps.Parts
             ILog log)
         {
             var callLogFindParts = log.Call<bool>();
-            appConfig = appIdentity.GetMetadata((int)TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppConfig).FirstOrDefault();
-            appResources = appIdentity.GetMetadata((int)TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppResources).FirstOrDefault();
-            appSettings = appIdentity.GetMetadata((int)TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppSettings).FirstOrDefault();
+            appConfig = appIdentity.GetMetadata(TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppConfig).FirstOrDefault();
+            appResources = appIdentity.GetMetadata(TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppResources).FirstOrDefault();
+            appSettings = appIdentity.GetMetadata(TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppSettings).FirstOrDefault();
 
 
             // if nothing must be done, return now

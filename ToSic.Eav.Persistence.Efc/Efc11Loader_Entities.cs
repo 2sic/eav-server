@@ -40,7 +40,7 @@ namespace ToSic.Eav.Persistence.Efc
             #region Prepare & Extend EntityIds
 
             if (entityIds == null)
-                entityIds = new int[0];
+                entityIds = Array.Empty<int>();
 
             var filterByEntityIds = entityIds.Any();
 
@@ -66,7 +66,6 @@ namespace ToSic.Eav.Persistence.Efc
             Log.Add($"Found {entityIdsFound.Count} raw entities in {sqlTime.ElapsedMilliseconds}ms - chunked into {entityIdChunks.Count} chunks");
 
             sqlTime.Start();
-            //var chunkedRelationships = entityIdChunks.Select(idList => GetRelationshipChunk(appId, idList));
             // Load relationships in batches / chunks
             var allChunks = entityIdChunks.Select(idList => GetRelationshipChunk(appId, idList))
                 .SelectMany(chunk => chunk)
@@ -142,7 +141,7 @@ namespace ToSic.Eav.Persistence.Efc
                 throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
             newEntity = EntityBuilder.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
-                e.Metadata, contentType, e.IsPublished, app, e.Created, e.Modified, e.Owner,
+                e.MetadataFor, contentType, e.IsPublished, app, e.Created, e.Modified, e.Owner,
                 e.Version);
 
             // Add all Attributes of that Content-Type

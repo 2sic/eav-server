@@ -60,7 +60,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             _targetDimensions = Deps.AppStates.Languages(zoneId, true);
 
-            _xmlBuilder = new XmlToEntity(Deps.GlobalTypes, AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage, Log);
+            _xmlBuilder = new XmlToEntity(Deps.GlobalApp, AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage, Log);
             #endregion
 
             var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);
@@ -71,6 +71,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 
 			var import = Deps._importerLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true, Log);
+
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
 
             Log.Add($"Purging {ZoneId}/{AppId}");

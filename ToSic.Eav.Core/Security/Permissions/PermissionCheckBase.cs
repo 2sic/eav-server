@@ -74,7 +74,7 @@ namespace ToSic.Eav.Security
         /// Initialize this object so it can then give information regarding the permissions of an entity.
         /// Uses a GUID as identifier because that survives export/import. 
         /// </summary>
-        protected PermissionCheckBase Init(
+        protected void Init(
             ILog parentLog,
             IContentType targetType = null, // optional type to check
             IEntity targetItem = null,      // optional entity to check
@@ -85,7 +85,7 @@ namespace ToSic.Eav.Security
             Log.LinkTo(parentLog);
             var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
 
-            var wrapLog = Log.Call($"type:{targetType?.StaticName}, " +
+            var wrapLog = Log.Call($"type:{targetType?.NameId}, " +
                                             $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
                                             $"permList1: {permissions1?.Count()}, " +
                                             $"permList2: {permList2?.Count}");
@@ -99,7 +99,6 @@ namespace ToSic.Eav.Security
 
             GrantedBecause = Conditions.Undefined;
             wrapLog("ready");
-            return this;
         }
 
         #endregion
@@ -114,7 +113,7 @@ namespace ToSic.Eav.Security
         {
             var wrapLog = Log.Call(() => $"[{string.Join(",", grants)}]");
             GrantedBecause = Conditions.Undefined;
-            var result = EnvironmentAllows(grants) || DoesPermissionsListAllow(grants);
+            var result = EnvironmentAllows(grants) || PermissionsAllow(grants);
             wrapLog($"{result} ({GrantedBecause})");
             return result;
         }
@@ -125,11 +124,11 @@ namespace ToSic.Eav.Security
         /// </summary>
         /// <param name="grants">The desired action like c, r, u, d etc.</param>
         /// <returns></returns>
-        private bool DoesPermissionsListAllow(List<Grants> grants)
+        public bool PermissionsAllow(IReadOnlyCollection<Grants> grants)
         {
             var wrapLog = Log.Call(() => $"[{string.Join(", ", grants)}]", () => $"for {PermissionList.Count()} permission items");
             var result = PermissionList.Any(
-                perm => DoesPermissionAllow(perm,
+                perm => PermissionAllows(perm,
                     grants.Select(g => (char) g).ToArray()));
             wrapLog($"{result}");
             return result;
@@ -141,7 +140,7 @@ namespace ToSic.Eav.Security
         /// <param name="permissionEntity">The entity describing a permission</param>
         /// <param name="desiredActionCode">A key like r (for read), u (for update) etc. which is the level you want to check</param>
         /// <returns></returns>
-        private bool DoesPermissionAllow(Permission permissionEntity, char[] desiredActionCode)
+        private bool PermissionAllows(Permission permissionEntity, char[] desiredActionCode)
         {
             var wrapLog = Log.Call($"{new string(desiredActionCode)}");
             // Check if it's a grant for the desired action - otherwise stop here

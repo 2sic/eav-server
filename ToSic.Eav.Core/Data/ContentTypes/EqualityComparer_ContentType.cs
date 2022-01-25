@@ -6,9 +6,9 @@ namespace ToSic.Eav.Data
     public class EqualityComparer_ContentType: IEqualityComparer<IContentType>
     {
         public bool Equals(IContentType x, IContentType y) 
-            => x != null && x.StaticName == y?.StaticName;
+            => x != null && x.NameId == y?.NameId;
 
         public int GetHashCode(IContentType obj) 
-            => obj.StaticName.GetHashCode();
+            => obj.NameId.GetHashCode();
     }
 }

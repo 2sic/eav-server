@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Json
@@ -53,7 +54,7 @@ namespace ToSic.Eav.ImportExport.Json
                     var mdEntities = attr.Metadata?.Select(m => Deserialize(m, AssumeUnknownTypesAreDynamic, false, relationshipsSource)).ToList() ??
                              new List<IEntity>();
                     allEntities.AddRange(mdEntities);
-                    attDef.Metadata.Use(mdEntities);
+                    ((IMetadataInternals)attDef.Metadata).Use(mdEntities);
                     return (IContentTypeAttribute) attDef;
                 }).ToList();
 

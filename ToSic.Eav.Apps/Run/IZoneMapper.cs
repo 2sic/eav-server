@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -31,9 +32,7 @@ namespace ToSic.Eav.Run
         /// The cultures available on this tenant/zone combination
         /// the zone is necessary to determine what is enabled/disabled
         /// </summary>
-        /// <param name="siteId">The site ID of the environment</param>
-        /// <param name="zoneId">The zone-id which it's mapped to</param>
         /// <returns></returns>
-        List<TempTempCulture> CulturesWithState(int siteId, int zoneId);
+        List<ISiteLanguageState> CulturesWithState(ISite site);
     }
 }

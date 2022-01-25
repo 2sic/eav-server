@@ -19,12 +19,12 @@ namespace ToSic.Eav.Persistence.File.Tests
         {
             var test = new SpecsTestExportSerialize();
 
-            var loader = Build<Efc11Loader>();
+            var loader = Build<IRepositoryLoader>();
             var app = loader.AppState(test.AppId, false);
 
 
             var cts = app.ContentTypes;
-            var sharedCts = cts.Where(ct => (ct as ContentType).AlwaysShareConfiguration).ToList();
+            var sharedCts = cts.Where(ct => ct.AlwaysShareConfiguration).ToList();
             var fileSysLoader = Build<FileSystemLoader>().Init(Constants.PresetAppId, ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null, Log);
 
             var time = Stopwatch.StartNew();

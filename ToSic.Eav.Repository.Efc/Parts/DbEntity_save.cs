@@ -102,7 +102,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     {
                         var wrapSaveJson = Log.Call($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
                         dbEnt.Json = jsonExport ;
-                        dbEnt.ContentType = newEnt.Type.StaticName;
+                        dbEnt.ContentType = newEnt.Type.NameId;
                         DbContext.SqlDb.SaveChanges();
                         wrapSaveJson("ok");
                     }
@@ -150,7 +150,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     {
                         dbEnt.Json = jsonExport;
                         dbEnt.AttributeSetId = contentTypeId;       // in case the previous entity wasn't json stored yet
-                        dbEnt.ContentType = newEnt.Type.StaticName; // in case the previous entity wasn't json stored yet
+                        dbEnt.ContentType = newEnt.Type.NameId; // in case the previous entity wasn't json stored yet
                     }
                     // super exotic case - maybe it was a json before, but isn't any more...
                     // this probably only happens on the master system, where we maintain the 

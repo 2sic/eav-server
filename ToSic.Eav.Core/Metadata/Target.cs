@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Metadata
@@ -8,7 +9,7 @@ namespace ToSic.Eav.Metadata
     public class Target : ITarget
     {
         /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public bool IsMetadata => TargetType != (int)TargetTypes.None;
 
         /// <inheritdoc/>
@@ -23,10 +24,21 @@ namespace ToSic.Eav.Metadata
         /// <inheritdoc/>
         public string KeyString { get; set; }
 
+
         /// <summary>
         /// Constructor for a new MetadataTarget, which is empty.
         /// </summary>
         public Target() { }
+
+        /// <summary>
+        /// Constructor for a new MetadataTarget, which is empty.
+        /// </summary>
+        [PrivateApi]
+        public Target(int targetType, string identifier)
+        {
+            TargetType = targetType;
+            Title = identifier;
+        }
 
         /// <summary>
         /// Constructor to copy an existing MetadataFor object. 
@@ -39,6 +51,10 @@ namespace ToSic.Eav.Metadata
             KeyString = originalToCopy.KeyString;
             KeyNumber = originalToCopy.KeyNumber;
             KeyGuid = originalToCopy.KeyGuid;
+            Title = originalToCopy.Title;
         }
+
+        [JsonIgnore]
+        [PrivateApi("WIP v13")] public string Title { get; set; }
     }
 }

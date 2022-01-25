@@ -8,7 +8,6 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -23,14 +22,14 @@ namespace ToSic.Eav.Apps.Parts
     {
         #region Constructor / DI
 
-        public AppInitializer(IServiceProvider serviceProvider, IGlobalTypes globalTypes, SystemManager systemManager) : base("Eav.AppBld")
+        public AppInitializer(IServiceProvider serviceProvider, SystemManager systemManager, IAppStates appStates) : base("Eav.AppBld")
         {
             _serviceProvider = serviceProvider;
             SystemManager = systemManager.Init(Log);
-            _globalTypes = globalTypes;
+            _appStates = appStates;
         }
         private readonly IServiceProvider _serviceProvider;
-        private readonly IGlobalTypes _globalTypes;
+        private readonly IAppStates _appStates;
         protected readonly SystemManager SystemManager;
 
 
@@ -42,6 +41,9 @@ namespace ToSic.Eav.Apps.Parts
         }
 
         private AppState AppState { get; set; }
+
+        private AppState PresetApp => _presetApp ?? (_presetApp = _appStates.GetPresetApp());
+        private AppState _presetApp;
 
         /// <summary>
         /// The App Manager must be re-created during initialization
@@ -66,14 +68,20 @@ namespace ToSic.Eav.Apps.Parts
                 return wrapLog("ok", true);
 
             // Get appName from cache - stop if it's a "Default" app
-            var eavAppName = AppState.AppGuidName;
+            var eavAppName = AppState.NameId;
 
             // v10.25 from now on the DefaultApp can also have settings and resources
-            var folder = eavAppName == Constants.DefaultAppName
-                ? Constants.ContentAppFolder
-                : string.IsNullOrEmpty(newAppName)
+            string folder;
+            if (eavAppName == Constants.DefaultAppGuid)
+                folder = Constants.ContentAppFolder;
+            else if (eavAppName == Constants.PrimaryAppGuid || eavAppName == Constants.PrimaryAppName)
+                folder = Constants.PrimaryAppName;
+            else
+                folder = string.IsNullOrEmpty(newAppName)
                     ? eavAppName
-                    : string.IsNullOrEmpty(newAppName) ? eavAppName : RemoveIllegalCharsFromPath(newAppName);
+                    : string.IsNullOrEmpty(newAppName)
+                        ? eavAppName
+                        : RemoveIllegalCharsFromPath(newAppName);
 
             var addList = new List<AddItemTask>();
             if (appConfig == null)
@@ -85,7 +93,7 @@ namespace ToSic.Eav.Apps.Parts
                         {"Folder", folder},
                         {"AllowTokenTemplates", "True"},
                         {"AllowRazorTemplates", "True"},
-                        {"Version", "00.00.11"}, // note: update this to the latest 2sxc version just so it's easy to spot when it was auto-created
+                        {"Version", "00.00.13"}, // note: update this to the latest 2sxc version just so it's easy to spot when it was auto-created
                         {"OriginalId", ""}
                     },
                     false));
@@ -129,7 +137,7 @@ namespace ToSic.Eav.Apps.Parts
                 {
                     Log.Add("couldn't find type, will create");
                     // create App-Man if not created yet
-                    AppManager.ContentTypes.Create(item.SetName, item.SetName, item.Label, AppConstants.ScopeApp);
+                    AppManager.ContentTypes.Create(item.SetName, item.SetName, item.Label, Scopes.App);
                     addedTypes = true;
                 }
                 else
@@ -155,7 +163,7 @@ namespace ToSic.Eav.Apps.Parts
             var values = item.Values ?? new Dictionary<string, object>();
 
             var newEnt = new Entity(AppState.AppId, Guid.NewGuid(), ct, values);
-            newEnt.SetMetadata(new Target { KeyNumber = AppState.AppId, TargetType = (int)TargetTypes.App });
+            newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
             AppManager.Entities.Save(newEnt);
 
             wrapLog(null);
@@ -172,7 +180,7 @@ namespace ToSic.Eav.Apps.Parts
             // discuss w/2dm if you think you want to change this
             var ct = inAppType
                 ? AppManager.Read.ContentTypes.Get(setName)
-                : _globalTypes.FindContentType(setName);
+                : PresetApp.GetContentType(setName);
             return ct;
         }
 

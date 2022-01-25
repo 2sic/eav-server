@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
@@ -37,16 +36,17 @@ namespace ToSic.Eav.Apps
             Metadata = appState.Metadata;
 
             // Get the content-items describing various aspects of this app
-            AppResources = appState.SettingsInApp.Get(AppThingsToStack.Resources).MetadataItem;
-            AppSettings = appState.SettingsInApp.Get(AppThingsToStack.Settings).MetadataItem;
+            AppResources = appState.ResourcesInApp.MetadataItem;
+            AppSettings = appState.SettingsInApp.MetadataItem;
             AppConfiguration = appState.SettingsInApp.AppConfiguration;
             // in some cases these things may be null, if the app was created not allowing side-effects
             // This can usually happen when new apps are being created
             Log.Add($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppConfiguration != null}");
 
             // resolve some values for easier access
-            Name = appState.Name ?? "Error";
-            Folder = appState.Folder ?? "Error";
+            Name = appState.Name ?? Constants.ErrorAppName;
+            Folder = appState.Folder ?? Constants.ErrorAppName;
+
             Hidden = AppConfiguration?.Value<bool>(AppConstants.FieldHidden) ?? false;
             Log.Add($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
             wrapLog(null);

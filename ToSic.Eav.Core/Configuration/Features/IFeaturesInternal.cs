@@ -5,13 +5,13 @@ using ToSic.Eav.Documentation;
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi("Internal stuff only")]
-    public interface IFeaturesInternal: IFeaturesService
+    public interface IFeaturesInternal: IFeaturesService // note: needs the full name because Configuration namespace has the same interface
     {
         [PrivateApi]
-        IEnumerable<Feature> All { get; }
+        IEnumerable<FeatureState> All { get; }
 
         [PrivateApi]
-        IEnumerable<Feature> Ui { get; }
+        IEnumerable<FeatureState> EnabledUi { get; }
 
 
         [PrivateApi]
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         string InfoLinkRoot { get; }
 
-        FeatureList Stored { get; set; }
+        FeatureListStored Stored { get; set; }
         long CacheTimestamp { get; set; }
     }
 }

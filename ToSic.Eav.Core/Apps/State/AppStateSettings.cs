@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using ToSic.Eav.Configuration;
+﻿using ToSic.Eav.Configuration;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
@@ -7,21 +6,20 @@ namespace ToSic.Eav.Apps
     [PrivateApi]
     public partial class AppStateSettings
     {
-
-        public AppState Parent { get; }
-
-        internal AppStateSettings(AppState parent, IAppStates appStates)
+        /// <summary>
+        /// TODO: Warning - in rare cases this could be a problem
+        /// Because we're storing an appStates indefinitely, which has a service provider etc. which was created at the time this app was created
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="target"></param>
+        internal AppStateSettings(AppState owner, AppThingsIdentifiers target)
         {
-            Parent = parent;
-
-            Stacks = ConfigurationConstants.AppThingsArray
-                .Select(at => new AppStateStackCache(parent, at, appStates))
-                .ToArray();
+            Owner = owner;
+            Target = target;
         }
 
-        public AppStateStackCache[] Stacks;
-
-        public AppStateStackCache Get(AppThingsToStack target) => Stacks.First(s => s.Target.Target == target);
+        private AppState Owner { get; }
+        private AppThingsIdentifiers Target { get; }
 
     }
 }

@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Types;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File
 {
     public partial class FileSystemLoader: HasLog, IContentTypeLoader
@@ -28,9 +28,10 @@ namespace ToSic.Eav.Persistence.File
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
-        public FileSystemLoader(JsonSerializer jsonSerializerUnready) : base("FSL.Loadr")
+        public FileSystemLoader(/*JsonSerializer jsonSerializerUnready,*/ IServiceProvider serviceProvider) : base(LogNames.Eav + ".FsLoad")
         {
-            _jsonSerializerUnready = jsonSerializerUnready;
+            //_jsonSerializerUnready = jsonSerializerUnready;
+            _serviceProvider = serviceProvider;
         }
 
         public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
@@ -59,25 +60,39 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_ser != null) return _ser;
-                _ser = _jsonSerializerUnready;
-                _ser.Initialize(AppId, ReflectionTypes.FakeCache.Values, EntitiesSource, Log);
+                _ser = _serviceProvider.Build<JsonSerializer>(); // _jsonSerializerUnready;
+                _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
         }
         private JsonSerializer _ser;
-        private readonly JsonSerializer _jsonSerializerUnready;
+        //private readonly JsonSerializer _jsonSerializerUnready;
+        private readonly IServiceProvider _serviceProvider;
+
+        internal void ResetSerializer(AppState appState)
+        {
+            var serializer = _serviceProvider.Build<JsonSerializer>();
+            serializer.Init(appState, Log);
+            _ser = serializer;
+        }
+        internal void ResetSerializer(List<IContentType> types)
+        {
+            var serializer = _serviceProvider.Build<JsonSerializer>();
+            serializer.Initialize(AppId, types, null, Log);
+            _ser = serializer;
+        }
 
         #endregion
 
         #region Queries & Configuration
         private string QueryPath => Path + QueryFolder;
         private string ConfigurationPath => Path + ConfigurationFolder;
-        public IList<IEntity> Queries() => LoadEntitiesFromSubfolder(QueryPath);
+        public IList<IEntity> Queries(int idSeed) => LoadEntitiesFromSubfolder(QueryPath, idSeed);
 
-        public IList<IEntity> Configurations() => LoadEntitiesFromSubfolder(ConfigurationPath);
+        public IList<IEntity> Configurations(int idSeed) => LoadEntitiesFromSubfolder(ConfigurationPath, idSeed);
 
-        private IList<IEntity> LoadEntitiesFromSubfolder(string path)
+        private IList<IEntity> LoadEntitiesFromSubfolder(string path, int seed)
         {
             // #1. check that folder exists
             if (!CheckPathExists(Path) || !CheckPathExists(path))
@@ -96,7 +111,7 @@ namespace ToSic.Eav.Persistence.File
             // #3.2 load entity-items from folder
             var jsonSerializer = Serializer;
             var entities = jsons
-                .Select(json => LoadAndBuildEntity(jsonSerializer, json, relationshipsSource))
+                .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++seed, relationshipsSource))
                 .Where(entity => entity != null)
                 .ToList();
 
@@ -111,7 +126,11 @@ namespace ToSic.Eav.Persistence.File
 
         #region ContentType
 
+        public int IdSeed = -1;
+
         public IList<IContentType> ContentTypes() => ContentTypes(AppId, null);
+
+        
 
         /// <inheritdoc />
         /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
@@ -120,7 +139,8 @@ namespace ToSic.Eav.Persistence.File
         public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
         {
             // v11.01 experimental - maybe disable this, as now we're loading from the app folder so we have an AppId
-            if (appId != Constants.PresetAppId) throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
+            // 2021-12-06 2dm - disabled this - it prevented app-system-folder content-types from loading
+            // if (appId != Constants.PresetAppId) throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
 
             // #1. check that folder exists
             var pathCt = ContentTypePath;
@@ -131,7 +151,9 @@ namespace ToSic.Eav.Persistence.File
             var jsons = Directory.GetFiles(pathCt, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
 
             // #3 load content-types from folder
-            var cts = jsons.Select(json => LoadAndBuildCt(Serializer, json)).Where(ct => ct != null).ToList();
+            var cts = jsons
+                .Select(json => LoadAndBuildCt(Serializer, json, IdSeed == -1 ? 0 : IdSeed++))
+                .Where(ct => ct != null).ToList();
 
             return cts;
         }
@@ -141,10 +163,8 @@ namespace ToSic.Eav.Persistence.File
         /// <summary>
         /// Try to load a content-type file, but if anything fails, just return a null
         /// </summary>
-        /// <param name="ser"></param>
-        /// <param name="path"></param>
         /// <returns></returns>
-        private IContentType LoadAndBuildCt(JsonSerializer ser, string path)
+        private IContentType LoadAndBuildCt(JsonSerializer ser, string path, int id)
         {
             Log.Add("Loading " + path);
             var infoIfError = "couldn't read type-file";
@@ -156,7 +176,7 @@ namespace ToSic.Eav.Persistence.File
                 var ct = ser.DeserializeContentType(json);
 
                 infoIfError = "couldn't set source/parent";
-                (ct as ContentType).SetSourceAndParent(RepoType, Constants.PresetContentTypeFakeParent, path);
+                (ct as ContentType).SetSourceParentAndIdForPresetTypes(RepoType, Constants.PresetContentTypeFakeParent, path, id);
                 return ct;
             }
             catch (IOException e)
@@ -182,28 +202,26 @@ namespace ToSic.Eav.Persistence.File
         /// Try to load an entity (for example a query-definition)
         /// If anything fails, just return a null
         /// </summary>
-        /// <param name="ser"></param>
-        /// <param name="path"></param>
         /// <returns></returns>
-        private IEntity LoadAndBuildEntity(JsonSerializer ser, string path, IEntitiesSource relationshipSource = null)
+        private IEntity LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource relationshipSource = null)
         {
             Log.Add("Loading " + path);
             try
             {
                 var json = System.IO.File.ReadAllText(path);
-                var ct = ser.DeserializeWithRelsWip(json, allowDynamic: true, skipUnknownType: false, relationshipSource);
-                return ct;
+                var entity = ser.DeserializeWithRelsWip(json, id, allowDynamic: true, skipUnknownType: false, relationshipSource);
+                return entity;
             }
             catch (IOException e)
             {
+                Log.Add($"Failed loading type - couldn't read file on '{path}'");
                 Log.Exception(e);
-                Log.Add($"Failed loading type - couldn't read file because of {e}");
                 return null;
             }
             catch (Exception e)
             {
+                Log.Add($"Failed loading type - couldn't deserialize '{path}' for unknown reason.");
                 Log.Exception(e);
-                Log.Add($"Failed loading type - couldn't deserialize or unknown reason: {e}");
                 return null;
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Apps
     /// An App-DataSource which also provides direct commands to edit/update/delete data.
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public interface IAppData: IDataSource, IDataTarget
+    public interface IAppData: IDataSource, IDataTarget, IMetadataSource
     {
         /// <summary>
         /// Create a new entity in the storage.
@@ -35,7 +36,6 @@ namespace ToSic.Eav.Apps
         /// You can't create items which are metadata with this, for that, please use the Create-one overload <br/>
         /// Changed in 2sxc 10.30 - now returns the id of the created items
         /// </remarks>
-        // ReSharper disable once UnusedMember.Global
         IEnumerable<IEntity> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, string userName = null);
 
         /// <summary>
@@ -51,7 +51,6 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="entityId">The item ID</param>
         /// <param name="userName">the current user name - will be logged as the author of the change</param>
-        // ReSharper disable once UnusedMember.Global
         void Delete(int entityId, string userName = null);
 
         /// <summary>
@@ -59,7 +58,17 @@ namespace ToSic.Eav.Apps
         /// So the App DataSource automatically provides direct access to the metadata system.
         /// This allows users of the App to query metadata directly through this object. 
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
+        [PrivateApi]
+        [Obsolete("This shouldn't be available any more, will be removed ca. v14")]
         IMetadataSource Metadata { get; }
+
+        /// <summary>
+        /// Get metadata of TargetType.Custom - which is the most common way your code will need Metadata.
+        /// </summary>
+        /// <typeparam name="TKey">Key data type</typeparam>
+        /// <param name="key">The target identifier - a number, string or Guid</param>
+        /// <param name="contentTypeName">Optional name of Content-Type, if you only want items of a specific type</param>
+        /// <returns></returns>
+        IEnumerable<IEntity> GetCustomMetadata<TKey>(TKey key, string contentTypeName = null);
     }
 }

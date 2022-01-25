@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
@@ -8,14 +9,31 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("hide implementation")]
     public class FeaturesService: IFeaturesInternal
     {
-        public IEnumerable<Feature> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial))).Features;
-        private static FeatureList _all;
+        public IEnumerable<FeatureState> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial)));
+        private static List<FeatureState> _all;
 
-        public IEnumerable<Feature> Ui => All.Where(f => f.Enabled && f.Ui == true);
+        /// <summary>
+        /// List of all enabled features with their guids and nameIds
+        /// </summary>
+        public HashSet<string> EnabledFeatures => _enabledFeatures ?? (_enabledFeatures = new HashSet<string>(All
+                .Where(f => f.Enabled)
+                .SelectMany(f => new string[] { f.NameId, f.Guid.ToString() })
+                .Distinct(StringComparer.InvariantCultureIgnoreCase),
+                StringComparer.InvariantCultureIgnoreCase)
+            );
+        private HashSet<string> _enabledFeatures;
 
-        public bool Enabled(Guid guid) => All.Any(f => f.Id == guid && f.Enabled);
+        public IEnumerable<FeatureState> EnabledUi => All.Where(f => f.Enabled && f.Ui);
 
+        public bool Enabled(Guid guid) => All.Any(f => f.Guid == guid && f.Enabled);
+        
         public bool Enabled(IEnumerable<Guid> guids) => guids.All(Enabled);
+
+        public bool IsEnabled(params string[] nameIds)
+        {
+            if (nameIds == null || nameIds.Length == 0) return true;
+            return nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
+        }
 
         public bool Valid => ValidInternal;
         public static bool ValidInternal;
@@ -36,27 +54,17 @@ namespace ToSic.Eav.Configuration
         #region Links
 
         /// <inheritdoc />
-        public string HelpLink
-        {
-            get => _helpLink;
-            set => _helpLink = value;
-        }
-        private static string _helpLink = "https://2sxc.org/help?tag=features";
+        public string HelpLink => "https://2sxc.org/help?tag=features";
 
         /// <inheritdoc />
-        public string InfoLinkRoot
-        {
-            get => _infoLinkRoot;
-            set => _infoLinkRoot = value;
-        }
-        private static string _infoLinkRoot = "https://2sxc.org/r/f/";
+        public string InfoLinkRoot => "https://2sxc.org/r/f/";
 
         #endregion
 
         #region Static Caches
 
         [PrivateApi]
-        public FeatureList Stored
+        public FeatureListStored Stored
         {
             get => _stored;
             set
@@ -65,26 +73,53 @@ namespace ToSic.Eav.Configuration
                 _all = null;
             }
         }
-        private static FeatureList _stored;
+        private static FeatureListStored _stored;
 
 
-        private static FeatureList Merge(FeatureList config, FeatureList cat)
+        private static List<FeatureState> Merge(FeatureListStored config, IReadOnlyCollection<FeatureDefinition> cat)
         {
-            var feats = config.Features.Select(f =>
+            var licService = new LicenseService();
+
+            var allFeats = cat.Select(f =>
             {
-                var inCat = cat.Features.FirstOrDefault(c => c.Id == f.Id);
-                return new Feature
+                var enabled = false;
+                var allowed = false;
+                var msgShort = "default";
+                var message = " by default";
+                var expiry = DateTime.MinValue;
+
+                // Check if the required license is active
+                var enabledRule = f.LicenseRules.FirstOrDefault(lr => licService.IsEnabled(lr.LicenseDefinition));
+                if (enabledRule != null)
                 {
-                    Id = f.Id,
-                    Enabled = f.Enabled,
-                    Expires = f.Expires,
-                    Public = f.Public ?? inCat?.Public,
-                    Ui = f.Ui ?? inCat?.Ui
-                };
+                    licService.Enabled.TryGetValue(enabledRule.LicenseDefinition, out var licenseState);
+                    var specialExpiry = licenseState?.Expiration;
+                    enabled = enabledRule.EnableFeatureByDefault || enabledRule.LicenseDefinition.AutoEnable;
+                    allowed = true; // The license is active, so it's allowed to enable this
+                    msgShort = enabledRule.LicenseDefinition.Name;
+                    message = $" by default with license {enabledRule.LicenseDefinition.Name}";
+                    expiry = specialExpiry ?? LicenseCatalog.UnlimitedExpiry;
+                }
+
+                // Check if the configuration would enable this feature
+                var inConfig = config.Features.FirstOrDefault(cf => cf.Id == f.Guid);
+                if (inConfig != null)
+                {
+                    enabled = allowed && inConfig.Enabled;
+                    expiry = inConfig.Expires;
+                    msgShort = allowed ? "configuration" : "unlicensed";
+                    message = allowed ? " by configuration" : " - requires license";
+                }
+                return new FeatureState(f, expiry, enabled, msgShort, (enabled ? "Enabled" : "Disabled") + message);
             }).ToList();
 
-            return new FeatureList(feats);
+            // Find additional, un matching features
+            var missingFeatures = config.Features
+                .Where(f => cat.All(fd => fd.Guid != f.Id))
+                .Select(f => new FeatureState(new FeatureDefinition(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually"));
 
+            var final = allFeats.Union(missingFeatures).ToList();
+            return final;
         }
 
 
@@ -95,5 +130,6 @@ namespace ToSic.Eav.Configuration
         public long CacheTimestamp { get; set; }
 
         #endregion
+        
     }
 }

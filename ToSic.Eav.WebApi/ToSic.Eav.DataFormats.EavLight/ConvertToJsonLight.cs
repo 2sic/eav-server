@@ -18,10 +18,6 @@ namespace ToSic.Eav.DataFormats.EavLight
     [PrivateApi("Hide Implementation")]
     public partial class ConvertToEavLight : HasLog<ConvertToEavLight>, IConvertToEavLight
     {
-        public static string JsonKeyMetadataFor = "For"; // temp, don't know where to put this ATM
-        public static string JsonKeyMetadata = "Metadata";
-        public static string IdField = "Id";
-
         #region Constructor / DI
 
         public class Dependencies
@@ -67,10 +63,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         [PrivateApi] public MetadataForSerialization MetadataFor { get; private set; } = new MetadataForSerialization();
         [PrivateApi] public ISubEntitySerialization Metadata { get; private set; } = new SubEntitySerialization();
 
-        /// <inheritdoc/>
-        public bool WithTitle { get; private set; }
-
-        private bool WithStats { get; set; }
+        private bool WithEditInfos { get; set; }
 
         /// <inheritdoc/>
         public void ConfigureForAdminUse()
@@ -79,8 +72,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             WithPublishing = true;
             MetadataFor = new MetadataForSerialization { Serialize = true };
             Metadata = new SubEntitySerialization { Serialize = true, SerializeId = true, SerializeTitle = true, SerializeGuid = true };
-            WithTitle = true;
-            WithStats = true;
+            WithEditInfos = true;
         }
 
         #endregion
@@ -100,6 +92,13 @@ namespace ToSic.Eav.DataFormats.EavLight
 
         #endregion
 
+        #region Constants
+
+        // TODO: the _Title is probably never used in JS but we must verify
+        public const string InternalTitleField = "_Title";
+        public const string InternalTypeField = "_Type";
+
+        #endregion
 
 
         /// <summary>
@@ -147,14 +146,17 @@ namespace ToSic.Eav.DataFormats.EavLight
 
             AddMetadataAndFor(entity, entityValues, rules);
 
-            // this internal _Title field is probably not used much any more, so there is no rule for it
-            // Probably remove at some time in near future, once verified it's not used in the admin-front-end
-            if(WithTitle)
-                try { entityValues.Add("_Title", entity.GetBestTitle(Languages)); }
+            // Special edit infos - _Title (old, maybe not needed), Stats, EditInfo for read-only etc.
+            if (WithEditInfos)
+            {
+                // this internal _Title field is probably not used much any more, so there is no rule for it
+                // Probably remove at some time in near future, once verified it's not used in the admin-front-end
+                try { entityValues.Add(InternalTitleField, entity.GetBestTitle(Languages)); }
                 catch { /* ignore */ }
 
-            // Stats are only used in special cases, so there is no rule for it
-            if(WithStats) AddStatistics(entity, entityValues);
+                AddStatistics(entity, entityValues);
+                AddEditInfo(entity, entityValues);
+            }
 
 
             // Include title field, if there is not already one in the dictionary
@@ -164,7 +166,7 @@ namespace ToSic.Eav.DataFormats.EavLight
                 
             AddDateInformation(entity, entityValues, rules);
 
-            if (Type.Serialize) entityValues.Add("_Type", new JsonType(entity, Type.WithDescription));
+            if (Type.Serialize) entityValues.Add(InternalTypeField, new JsonType(entity, Type.WithDescription));
 
             return entityValues;
         }

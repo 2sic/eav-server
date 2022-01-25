@@ -5,6 +5,7 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Persistence.Efc;
+using ToSic.Eav.Repositories;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Apps.Tests.ImportExport
@@ -30,7 +31,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         private ExportListXml BuildExporter(int appId, string ctName)
         {
-            var loader = Build<Efc11Loader>();
+            var loader = Build<IRepositoryLoader>();
             var appPackage = loader.AppState(appId, false);
             var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
             return Build<ExportListXml>().Init(appPackage, type, Log);

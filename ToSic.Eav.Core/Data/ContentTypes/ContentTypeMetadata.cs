@@ -14,43 +14,20 @@ namespace ToSic.Eav.Data
     public class ContentTypeMetadata : MetadataOf<string>
     {
 
-        #region constructors
-
-        /// <summary>
-        /// Used in cases where the metadata-provider is already known
-        /// </summary>
-        /// <param name="typeId">type id / static-name</param>
-        /// <param name="metaProvider">remote / deferred metadata provider</param>
-        public ContentTypeMetadata(string typeId, IHasMetadataSource metaProvider)
-            : base((int)TargetTypes.ContentType, typeId, metaProvider)
-        { }
-
         /// <summary>
         /// Used in cases where the metadata-provider is already known
         /// </summary>
         /// <param name="typeId">type id / static-name</param>
         /// <param name="metaSourceFinder">remote / deferred metadata provider</param>
-        public ContentTypeMetadata(string typeId, Func<IHasMetadataSource> metaSourceFinder)
-            : base((int)TargetTypes.ContentType, typeId, metaSourceFinder)
+        public ContentTypeMetadata(string typeId, Func<IHasMetadataSource> metaSourceFinder, string targetIdentifier)
+            : base((int)TargetTypes.ContentType, typeId, metaSourceFinder, targetIdentifier)
         { }
-
-        ///// <summary>
-        ///// Used in cases where the metadata provider isn't known, but the IDs are known
-        ///// </summary>
-        ///// <param name="typeId">type id / static-name</param>
-        ///// <param name="sourceZoneId">the zone which has the metadata</param>
-        ///// <param name="sourceAppId">the app which has the metadata</param>
-        //public ContentTypeMetadata(string typeId, int sourceZoneId, int sourceAppId)
-        //    : base((int)TargetTypes.ContentType, typeId, sourceZoneId, sourceAppId)
-        //{ }
-
-        #endregion
 
         /// <summary>
         /// Description <see cref="IEntity"/> metadata of this content-type.
         /// </summary>
         public IEntity Description => this
-            .FirstOrDefault(md => md.Type.StaticName == ContentTypes.ContentTypeTypeName);
+            .FirstOrDefault(md => md.Type.NameId == ContentTypes.ContentTypeTypeName);
 
         /// <summary>
         /// Load / initialize - needed when building the cache.
@@ -67,7 +44,7 @@ namespace ToSic.Eav.Data
             // add the guid metadata on entity if it has a real guid
             // this is kind of wrong, because it should use the type MetadataForContentType
             // but this slipped in a long time ago, and we cannot change it any more
-            var additional = GetMetadataSource()?.GetMetadata((int)TargetTypes.Entity, ctGuid)
+            var additional = GetMetadataSource()?.GetMetadata(TargetTypes.Entity, ctGuid)
                                  .ToList()
                              ?? new List<IEntity>();
             Use(AllWithHidden.Concat(additional).ToList());

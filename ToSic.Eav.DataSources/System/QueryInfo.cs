@@ -32,7 +32,6 @@ namespace ToSic.Eav.DataSources.System
 	{
         public QueryBuilder QueryBuilder { get; }
         private readonly Lazy<QueryManager> _queryManagerLazy;
-        private readonly Lazy<GlobalQueries> _globalQueriesLazy;
         private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value.Init(Log));
         private QueryManager _queryManager;
 
@@ -45,12 +44,7 @@ namespace ToSic.Eav.DataSources.System
         private const string StreamKey = "Stream";
         private const string StreamField = "StreamName";
 	    private const string QueryStreamsContentType = "EAV_Query_Stream";
-	    
-        // 2dm: this is for a later feature...
-	    // ReSharper disable once UnusedMember.Local
-        private const string QueryCtGuid = "11001010-251c-eafe-2792-00000000000!";
-
-
+        
         /// <summary>
         /// The content-type name
         /// </summary>
@@ -71,11 +65,10 @@ namespace ToSic.Eav.DataSources.System
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public QueryInfo(Lazy<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, Lazy<GlobalQueries> globalQueriesLazy)
+		public QueryInfo(Lazy<QueryManager> queryManagerLazy, QueryBuilder queryBuilder)
 		{
             QueryBuilder = queryBuilder.Init(Log);
             _queryManagerLazy = queryManagerLazy;
-            _globalQueriesLazy = globalQueriesLazy;
             Provide(GetStreams);
 			Provide("Attributes", GetAttributes);
 		    ConfigMask(QueryKey, $"[Settings:{QueryNameField}||{DefQuery}]");
@@ -138,11 +131,13 @@ namespace ToSic.Eav.DataSources.System
                 return;
 
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
-            var found = qName.StartsWith(GlobalQueries.GlobalEavQueryPrefix)
-                ? _globalQueriesLazy.Value.FindQuery(qName)
-                : QueryManager.AllQueryItems(this)
-                    .FirstOrDefault(q => string.Equals(q.Value<string>("Name"), qName, InvariantCultureIgnoreCase)
-                                         || string.Equals(q.EntityGuid.ToString(), qName, InvariantCultureIgnoreCase));
+            var found = qName.StartsWith(DataSourceConstants.GlobalEavQueryPrefix)
+                ? QueryManager.FindQuery(Constants.PresetIdentity, qName) 
+                : QueryManager.FindQuery(this, qName);
+            //? _globalQueriesLazy.Value.FindQuery(qName))
+            //: QueryManager.AllQueryItems(this)
+            //    .FirstOrDefault(q => string.Equals(q.Value<string>("Name"), qName, InvariantCultureIgnoreCase)
+            //                         || string.Equals(q.EntityGuid.ToString(), qName, InvariantCultureIgnoreCase));
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{qName}'");
 

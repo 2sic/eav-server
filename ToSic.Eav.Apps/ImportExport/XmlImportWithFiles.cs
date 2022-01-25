@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Logging;
@@ -8,7 +7,6 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -16,8 +14,6 @@ namespace ToSic.Eav.Apps.ImportExport
 	{
         public class Dependencies
         {
-            public IGlobalTypes GlobalTypes { get; }
-
             public Dependencies(
                 Lazy<Import> importerLazy,
                 Lazy<DbDataController> dbDataForNewApp,
@@ -25,22 +21,18 @@ namespace ToSic.Eav.Apps.ImportExport
                 IImportExportEnvironment importExportEnvironment,
                 ITargetTypes metaTargetTypes,
                 SystemManager systemManager,
-                IAppStates appStates,
-                IAppsCache appsCache,
-                IGlobalTypes globalTypes
+                IAppStates appStates
                 )
             {
-                GlobalTypes = globalTypes;
-                AppsCache = appsCache;
                 _importerLazy = importerLazy;
                 _dbDataForNewApp = dbDataForNewApp;
                 _dbDataForAppImport = dbDataForAppImport;
                 _environment = importExportEnvironment;
                 _metaTargetTypes = metaTargetTypes;
                 AppStates = appStates;
+                GlobalApp = appStates.GetPresetApp();
                 SystemManager = systemManager;
             }
-            internal readonly IAppsCache AppsCache;
             internal readonly Lazy<Import> _importerLazy;
             internal readonly Lazy<DbDataController> _dbDataForNewApp;
             internal readonly Lazy<DbDataController> _dbDataForAppImport;
@@ -49,6 +41,7 @@ namespace ToSic.Eav.Apps.ImportExport
             internal readonly IAppStates AppStates;
             internal readonly SystemManager SystemManager;
 
+            internal readonly AppState GlobalApp;
         }
 
         private List<DimensionDefinition> _targetDimensions;
@@ -71,41 +64,14 @@ namespace ToSic.Eav.Apps.ImportExport
         /// constructor, not DI
         /// </summary>
         protected XmlImportWithFiles(
-            Dependencies dependencies,
-            //Lazy<Import> importerLazy, 
-            //Lazy<DbDataController> dbDataForNewApp,
-            //Lazy<DbDataController> dbDataForAppImport,
-            //IImportExportEnvironment importExportEnvironment,
-            //ITargetTypes metaTargetTypes,
-            //SystemManager systemManager,
-            //IAppStates appStates,
-            string logName = null) : base(logName ?? "Xml.ImpFil")
+            Dependencies dependencies, string logName = null) : base(logName ?? "Xml.ImpFil")
         {
-             // todo: finish switch to dependencies
-
-            //_importerLazy = importerLazy;
-            //_dbDataForNewApp = dbDataForNewApp;
-            //_dbDataForAppImport = dbDataForAppImport;
-            //_environment = importExportEnvironment;
-            //_metaTargetTypes = metaTargetTypes;
-            //AppStates = appStates;
-
-
-            //SystemManager = systemManager.Init(Log);
-            //_environment.LinkLog(Log);
             Deps = dependencies;
             dependencies.SystemManager.Init(Log);
             dependencies._environment.LinkLog(Log);
         }
 
         protected Dependencies Deps;
-        //private readonly Lazy<Import> _importerLazy;
-        //private readonly Lazy<DbDataController> _dbDataForNewApp;
-        //private readonly Lazy<DbDataController> _dbDataForAppImport;
-        //private readonly IImportExportEnvironment _environment;
-        //private readonly ITargetTypes _metaTargetTypes;
-        //protected readonly IAppStates AppStates;
-        //protected readonly SystemManager SystemManager;
 
 
         /// <summary>

@@ -4,7 +4,6 @@ using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps
 {
@@ -67,10 +66,14 @@ namespace ToSic.Eav.Apps
         ISite Site { get; }
 
         [PrivateApi]
+        // TODO: MARK as #Deprecated and log access
         ILookUpEngine ConfigurationProvider { get; }
 
         [PrivateApi]
         Query GetQuery(string name);
+
+        [PrivateApi]
+        AppState AppState { get; }
 
         #endregion
     }

@@ -36,13 +36,12 @@ namespace ToSic.Eav.Data.Builder
 
         [Obsolete("Unclear where this is used or actually needed - will probably remove soon")]
         public static Entity EntityTemplate(int appId, Guid entityGuid, int entityId,
-            int repositoryId, IContentType type /*, bool isPublished = true,
-            DateTime? modified = null, string owner = "", int version = 1*/)
+            int repositoryId, IContentType type)
         {
             var ent = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId, 
                 type, true, DateTime.MinValue, DateTime.Now, "", 1);
 
-            ent.MetadataFor = new Metadata.Target();
+            ent.MetadataFor = new Target();
 
             var titleAttrib = ent.GenerateAttributesOfContentType(type);
             if (titleAttrib != null)

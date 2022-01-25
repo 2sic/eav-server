@@ -9,13 +9,16 @@ namespace ToSic.Eav.Apps
 {
     public partial class AppState: IMetadataSource, IHasMetadata
     {
-        // FYI: disabled 2021-11-19, was deprecated since v11.11 #cleanup EOY 2021
-	    //public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
-     //       => _metadataManager.GetMetadata(targetType, key, contentTypeName);
-
         /// <inheritdoc />
 	    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
             => _metadataManager.GetMetadata(targetType, key, contentTypeName);
+
+        /// <inheritdoc />
+        public IEnumerable<IEntity> GetMetadata<TKey>(TargetTypes targetType, TKey key, string contentTypeName = null)
+            => _metadataManager.GetMetadata(targetType, key, contentTypeName);
+        
+        [PrivateApi]
+        public IMetadataOf GetMetadataOf<T>(TargetTypes targetType, T key, string title = null) => new MetadataOf<T>((int)targetType, key, this, title);
 
 
         /// <summary>
@@ -32,7 +35,7 @@ namespace ToSic.Eav.Apps
                 ? new AppMetadataManager(this, metadataTypes, Log)
                 : throw new Exception("can't set metadata if content-types are already set");
 
-            Metadata = new MetadataOf<int>((int)TargetTypes.App, AppId, this);
+            Metadata = GetMetadataOf(TargetTypes.App, AppId, "App (" + AppId + ") " + Name + " (" + Folder + ")");
         }
         private AppMetadataManager _metadataManager;
 

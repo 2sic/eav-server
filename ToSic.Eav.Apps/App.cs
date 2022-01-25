@@ -1,7 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
@@ -27,24 +26,24 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public class AppDependencies
         {
+            internal readonly IServiceProvider ServiceProvider;
             internal readonly IZoneMapper ZoneMapper;
             internal readonly ISite Site;
             internal readonly IAppStates AppStates;
             internal readonly DataSourceFactory DataSourceFactory;
-            internal readonly Lazy<GlobalQueries> GlobalQueriesLazy;
 
             public AppDependencies(
+                IServiceProvider serviceProvider,
                 IZoneMapper zoneMapper,
                 ISite site,
                 IAppStates appStates,
-                DataSourceFactory dataSourceFactory,
-                Lazy<GlobalQueries> globalQueriesLazy)
+                DataSourceFactory dataSourceFactory)
             {
+                ServiceProvider = serviceProvider;
                 ZoneMapper = zoneMapper;
                 Site = site;
                 AppStates = appStates;
                 DataSourceFactory = dataSourceFactory;
-                GlobalQueriesLazy = globalQueriesLazy;
             }
         }
         [PrivateApi]
@@ -66,10 +65,6 @@ namespace ToSic.Eav.Apps
 
         #endregion
 
-
-        [PrivateApi]
-        public const int AutoLookupZone = -1;
-
         /// <inheritdoc />
         public string Name { get; private set; }
         /// <inheritdoc />
@@ -83,10 +78,6 @@ namespace ToSic.Eav.Apps
         /// <inheritdoc />
         public bool ShowDrafts { get; private set; }
 
-        [PrivateApi]
-        protected const string IconFile = "/" + AppConstants.AppIconFile;
-
-        
         protected internal App Init(IAppIdentity appIdentity, Func<App, IAppDataConfiguration> buildConfiguration, ILog parentLog)
         {
             // Env / Tenant must be re-checked here
@@ -98,7 +89,7 @@ namespace ToSic.Eav.Apps
                 Site = _dependencies.ZoneMapper.SiteOfApp(appIdentity.AppId);
 
             // if zone is missing, try to find it - but always assume current context
-            if (appIdentity.ZoneId == AutoLookupZone)
+            if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
                 appIdentity = new AppIdentity(Site.ZoneId, appIdentity.AppId);
 
             Init(appIdentity, new CodeRef(), parentLog);
@@ -107,13 +98,9 @@ namespace ToSic.Eav.Apps
             // Look up name in cache
             // 2020-11-25 changed to use State.Get. before it was this...
             //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
-            AppGuid = _dependencies.AppStates.Get(this).AppGuidName;
+            AppGuid = _dependencies.AppStates.Get(this).NameId;
 
             InitializeResourcesSettingsAndMetadata();
-
-            // do this after initializing resources to certainly set the content-name
-            if(AppGuid == Constants.DefaultAppName)
-                Name = Folder = Constants.ContentAppName;
 
             // for deferred initialization as needed
             _dataConfigurationBuilder = buildConfiguration;

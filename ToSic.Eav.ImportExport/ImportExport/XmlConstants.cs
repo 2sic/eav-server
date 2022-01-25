@@ -5,7 +5,8 @@
         // nodes which are actually 2sxc-specific, and should be refactored some time
         public const string Root = "SexyContentData";
         public const string Root97 = "ContentData"; // import supports new name in 2sxc 9.7, but we won't export it with this name yet
-        public const string CtTemplate = "2SexyContent-Template-ContentTypes"; // old name, for old import/export format
+        // Keep this commented till End of June 2022 #cleanUp #oldTemplates #2631
+        //public const string CtTemplate = "2SexyContent-Template-ContentTypes"; // old name, for old import/export format
 
         public const string EntityGuid = Data.Attributes.GuidNiceName;
 
@@ -34,6 +35,8 @@
         public const string CultureExtKey = "ExternalKey";
         public const string CultureIsActiveAttrib = "Active";
         public const string App = "App";
+        public const string AppId = "AppId";
+        public const string ParentApp = "ParentApp";
         public const string AppContentGuid = "Default";
         public const string Guid = Data.Attributes.GuidNiceName;
         public const string GuidNode = "EntityGUID";
@@ -52,7 +55,8 @@
         public const string AttributeSetParentDef = "UsesConfigurationOfAttributeSet";
 
         // Keys for metadata
-        public const string KeyTargetType = "AssignmentObjectType";
+        public const string KeyTargetTypeNameOld = "AssignmentObjectType";
+        public const string KeyTargetType = "TargetType"; // #TargetTypeIdInsteadOfTarget
         public const string KeyGuid = "KeyGuid";
         public const string KeyNumber = "KeyNumber";
         public const string KeyString = "KeyString";

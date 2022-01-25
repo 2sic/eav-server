@@ -5,9 +5,11 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;
 using ToSic.Eav.WebApi.Security;
@@ -65,7 +67,7 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<IDictionary<string, object>> GetEntities(string contentType) 
             => EntityToDic.Convert(AppRead.Entities.Get(contentType));
 
-        public List<BundleIEntity> GetEntitiesForEditing(List<ItemIdentifier> items)
+        public List<BundleWithHeader<IEntity>> GetEntitiesForEditing(List<ItemIdentifier> items)
         {
             ReplaceSimpleTypeNames(items);
 
@@ -74,7 +76,7 @@ namespace ToSic.Eav.WebApi
                 var ent = p.EntityId != 0 || p.DuplicateEntity.HasValue
                         ? GetEditableEditionAndMaybeCloneIt(p)
                         : null;
-                return new BundleIEntity
+                return new BundleWithHeader<IEntity>()
                 {
                     Header = p,
                     Entity = ent
@@ -84,19 +86,24 @@ namespace ToSic.Eav.WebApi
             // make sure the header has the right "new" guid as well - as this is the primary one to work with
             // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
             var itemsToCorrect = list.Where(i => i.Header.Guid == Guid.Empty).ToArray(); // must do toArray, to prevent re-checking after setting the guid
-            foreach (var i in itemsToCorrect)
+            foreach (var bundle in itemsToCorrect)
             {
-                var hasEntity = i.Entity != null;
-                var useExistingGuid = hasEntity && i.Entity.EntityGuid != Guid.Empty;
-                i.Header.Guid = useExistingGuid
-                    ? i.Entity.EntityGuid
+                var hasEntity = bundle.Entity != null;
+                var useExistingGuid = hasEntity && bundle.Entity.EntityGuid != Guid.Empty;
+                bundle.Header.Guid = useExistingGuid
+                    ? bundle.Entity.EntityGuid
                     : Guid.NewGuid();
                 if (hasEntity && !useExistingGuid)
-                    (i.Entity as Entity).SetGuid(i.Header.Guid);
+                    (bundle.Entity as Entity).SetGuid(bundle.Header.Guid);
             }
 
+            // Update header with ContentTypeName in case it wasn't there before
             foreach (var itm in list.Where(i => i.Header.ContentTypeName == null && i.Entity != null))
-                itm.Header.ContentTypeName = itm.Entity.Type.StaticName;
+                itm.Header.ContentTypeName = itm.Entity.Type.NameId;
+
+            // Add EditInfo for read-only data
+            foreach (var bundle in list) 
+                bundle.Header.EditInfo = new EditInfoDto(bundle.Entity);
 
             return list;
         }
@@ -124,8 +131,8 @@ namespace ToSic.Eav.WebApi
         /// <param name="force">try to force-delete</param>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        public void Delete(string contentType, int id, bool force = false) 
-            => _appManagerLazy.Value.Init(AppRead, AppRead.Log).Entities.Delete(id, contentType, force);
+        public void Delete(string contentType, int id, bool force = false, int? parentId = null, string parentField = null) 
+            => _appManagerLazy.Value.Init(AppRead, AppRead.Log).Entities.Delete(id, contentType, force, false, parentId, parentField);
 
         /// <summary>
         /// Delete the entity specified by GUID.
@@ -135,8 +142,8 @@ namespace ToSic.Eav.WebApi
         /// <param name="force"></param>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        public void Delete(string contentType, Guid entityGuid, bool force = false) 
-            => Delete(contentType, AppRead.Entities.Get(entityGuid).EntityId, force);
+        public void Delete(string contentType, Guid entityGuid, bool force = false, int? parentId = null, string parentField = null) 
+            => Delete(contentType, AppRead.Entities.Get(entityGuid).EntityId, force, parentId, parentField);
 
 
         /// <summary>
@@ -155,8 +162,8 @@ namespace ToSic.Eav.WebApi
                     items.Remove(itm);
                     continue;
                 }
-                if (ct.StaticName != itm.ContentTypeName) // not using the static name...fix
-                    itm.ContentTypeName = ct.StaticName;
+                if (ct.NameId != itm.ContentTypeName) // not using the static name...fix
+                    itm.ContentTypeName = ct.NameId;
             }
         }
 

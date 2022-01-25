@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Shared;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Eav.ImportExport.Xml;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.Apps.ImportExport
     // this has a minimal risk of being different!
     // should all get it from cache only!
 
-    public abstract class XmlExporter: HasLog
+    public abstract class XmlExporter : HasLog
     {
 
         #region simple properties
@@ -74,7 +75,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private void EnsureThisIsInitialized()
         {
-            if(Serializer == null || string.IsNullOrEmpty(_appStaticName))
+            if (Serializer == null || string.IsNullOrEmpty(_appStaticName))
                 throw new Exception("Xml Exporter is not initialized - this is required before trying to export");
         }
 
@@ -127,21 +128,23 @@ namespace ToSic.Eav.Apps.ImportExport
             #region Header
 
             var dimensions = _appStates.Languages(ZoneId); // new ZoneRuntime().Init(ZoneId, Log).Languages();
+
             var header = new XElement(XmlConstants.Header,
-                _isAppExport && _appStaticName != XmlConstants.AppContentGuid 
-                    ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, _appStaticName))
-                    : null,
-                // Default Language of this site
-                new XElement(XmlConstants.Language, new XAttribute(XmlConstants.LangDefault, defaultLanguage)),
-                // All languages of this site/export
-                new XElement(XmlConstants.DimensionDefinition, dimensions.Select(d => new XElement(XmlConstants.DimensionDefElement,
-                    new XAttribute(XmlConstants.DimId, d.DimensionId),
-                    new XAttribute(XmlConstants.Name, d.Name),
-                    new XAttribute(XmlConstants.CultureSysKey, d.Key ?? string.Empty),
-                    new XAttribute(XmlConstants.CultureExtKey, d.EnvironmentKey ?? string.Empty),
-                    new XAttribute(XmlConstants.CultureIsActiveAttrib, d.Active)
-                    )))
-                );
+               _isAppExport && _appStaticName != XmlConstants.AppContentGuid
+                   ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, _appStaticName))
+                   : null,
+                GetParentAppXElement(),
+               // Default Language of this site
+               new XElement(XmlConstants.Language, new XAttribute(XmlConstants.LangDefault, defaultLanguage)),
+               // All languages of this site/export
+               new XElement(XmlConstants.DimensionDefinition, dimensions.Select(d => new XElement(XmlConstants.DimensionDefElement,
+                   new XAttribute(XmlConstants.DimId, d.DimensionId),
+                   new XAttribute(XmlConstants.Name, d.Name),
+                   new XAttribute(XmlConstants.CultureSysKey, d.Key ?? string.Empty),
+                   new XAttribute(XmlConstants.CultureExtKey, d.EnvironmentKey ?? string.Empty),
+                   new XAttribute(XmlConstants.CultureIsActiveAttrib, d.Active)
+                   )))
+               );
 
             #endregion
 
@@ -153,8 +156,8 @@ namespace ToSic.Eav.Apps.ImportExport
             foreach (var attributeSetId in AttributeSetNamesOrIds)
             {
                 var set = int.TryParse(attributeSetId, out var id)
-                    ? (ContentType) AppState.GetContentType(id)
-                    : (ContentType) AppState.GetContentType(attributeSetId);  // in case it's the name, not the number
+                    ? AppState.GetContentType(id)
+                    : AppState.GetContentType(attributeSetId);  // in case it's the name, not the number
 
                 // skip system/code-types
                 if (set.HasPresetAncestor()) // ((set.ParentId ?? 0) == Constants.PresetContentTypeFakeParent)
@@ -170,8 +173,8 @@ namespace ToSic.Eav.Apps.ImportExport
                         new XAttribute(XmlConstants.Type, x.Type),
                         new XAttribute(XmlConstants.IsTitle, x.IsTitle),
                         // Add Attribute MetaData
-                        from c in AppState.GetMetadata((int)TargetTypes.Attribute, x.AttributeId).ToList()
-                        select GetEntityXElement(c.EntityId, c.Type.StaticName)
+                        from c in AppState.GetMetadata(TargetTypes.Attribute, x.AttributeId).ToList()
+                        select GetEntityXElement(c.EntityId, c.Type.NameId)
                     );
 
                     attributes.Add(attribute);
@@ -179,7 +182,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 // Add AttributeSet / Content Type
                 var attributeSet = new XElement(XmlConstants.AttributeSet,
-                    new XAttribute(XmlConstants.Static, set.StaticName),
+                    new XAttribute(XmlConstants.Static, set.NameId),
                     new XAttribute(XmlConstants.Name, set.Name),
                     new XAttribute(XmlConstants.Description, set.Description),
                     new XAttribute(XmlConstants.Scope, set.Scope),
@@ -189,7 +192,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 // Add Ghost-Info if content type inherits from another content type
                 if (set.HasAncestor()) // .ParentId.HasValue)
                 {
-                    var parentStaticName = set.StaticName;
+                    var parentStaticName = set.NameId;
                     attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));
                 }
 
@@ -209,7 +212,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 // Get the entity and ContentType from ContentContext add Add it to ContentItems
                 var entity = AppState.List.FindRepoId(id);
-                entities.Add(GetEntityXElement(entity.EntityId, entity.Type.StaticName));
+                entities.Add(GetEntityXElement(entity.EntityId, entity.Type.NameId));
             }
 
             #endregion
@@ -228,6 +231,19 @@ namespace ToSic.Eav.Apps.ImportExport
                 entities,
                 GetFilesXElements(),
                 GetFoldersXElements()));
+        }
+
+        private XElement GetParentAppXElement()
+        {
+            if (_isAppExport && _appStaticName != XmlConstants.AppContentGuid)
+            {
+                if (AppState.HasParentApp())
+                    return new XElement(XmlConstants.ParentApp,
+                        new XAttribute(XmlConstants.Guid, AppState.ParentApp.AppState?.NameId),
+                        new XAttribute(XmlConstants.AppId, AppState.ParentApp.AppState?.AppId)
+                    );
+            }
+            return null;
         }
 
         public abstract void AddFilesToExportQueue();
@@ -257,23 +273,27 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 if (string.IsNullOrEmpty(valueString)) continue;
 
-                // Special cases for Template ContentTypes
-                if (contentTypeName == XmlConstants.CtTemplate)
-                {
-                    switch (valueKey)
-                    {
-                        case XmlConstants.TemplateContentTypeId:
-                            var eid = int.Parse(valueString);
-                            var attributeSet = AppState.GetContentType(eid);
-                            value.Attribute(XmlConstants.ValueAttr)?.SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
-                            break;
-                        case XmlConstants.TemplateDemoItemId:
-                            eid = int.Parse(valueString);
-                            var demoEntity = AppState.List.FindRepoId(eid);
-                            value.Attribute(XmlConstants.ValueAttr)?.SetValue(demoEntity?.EntityGuid.ToString() ?? string.Empty);
-                            break;
-                    }
-                }
+                // 2022-01-04 2dm Disabled this, as it's for super-old way of storing template information
+                // I'm pretty sure nothing in use has this in a way that would ever need exporting again, 
+                // And nothing in use could handle an upgrade to the current version
+                // Keep this commented till End of June 2022 #cleanUp #oldTemplates #2631
+                //// Special cases for Template ContentTypes
+                //if (contentTypeName == XmlConstants.CtTemplate)
+                //{
+                //    switch (valueKey)
+                //    {
+                //        case XmlConstants.TemplateContentTypeId:
+                //            var eid = int.Parse(valueString);
+                //            var attributeSet = AppState.GetContentType(eid);
+                //            value.Attribute(XmlConstants.ValueAttr)?.SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
+                //            break;
+                //        case XmlConstants.TemplateDemoItemId:
+                //            eid = int.Parse(valueString);
+                //            var demoEntity = AppState.List.FindRepoId(eid);
+                //            value.Attribute(XmlConstants.ValueAttr)?.SetValue(demoEntity?.EntityGuid.ToString() ?? string.Empty);
+                //            break;
+                //    }
+                //}
 
                 // Collect all referenced files for adding a file list to the xml later
                 if (valueType == XmlConstants.ValueTypeLink)
@@ -303,7 +323,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private XElement GetFoldersXElements()
         {
-            return  new XElement(XmlConstants.FolderGroup,
+            return new XElement(XmlConstants.FolderGroup,
                     ReferencedFolderIds.Distinct().Select(GetFolderXElement)
                 );
         }
@@ -334,7 +354,7 @@ namespace ToSic.Eav.Apps.ImportExport
             {
                 return new XElement(XmlConstants.Folder,
                         new XAttribute(XmlConstants.FolderNodeId, folderId),
-                        new XAttribute(XmlConstants.FolderNodePath, path) 
+                        new XAttribute(XmlConstants.FolderNodePath, path)
                     );
             }
 

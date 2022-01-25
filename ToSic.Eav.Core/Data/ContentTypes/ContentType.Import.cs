@@ -7,10 +7,10 @@ namespace ToSic.Eav.Data
 
         #region Helpers just for creating ContentTypes which will be imported
         [PrivateApi]
-        public void SetImportParameters(string scope, string staticName, string description, bool alwaysShareDef)
+        public void SetImportParameters(string scope, string nameId, string description, bool alwaysShareDef)
         {
-            Scope = scope;
-            StaticName = staticName;
+            Scope = Scopes.RenameOldScope(scope);
+            NameId = nameId;
             Description = description;
             AlwaysShareConfiguration = alwaysShareDef;
         }

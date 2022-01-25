@@ -4,8 +4,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Types;
-using AppState = ToSic.Eav.Apps.AppState;
+using ToSic.Eav.Apps;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -18,12 +17,13 @@ namespace ToSic.Eav.Serialization
         /// <summary>
         /// Constructor for inheriting classes
         /// </summary>
-        protected SerializerBase(ITargetTypes metadataTargets, IGlobalTypes globalTypes, string logName): base(logName)
+        protected SerializerBase(ITargetTypes metadataTargets, IAppStates appStates, string logName): base(logName)
         {
-            _globalTypes = globalTypes;
             MetadataTargets = metadataTargets;
+            GlobalApp = appStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
         }
-        private readonly IGlobalTypes _globalTypes;
+
+        private readonly AppState GlobalApp;
 
         public ITargetTypes MetadataTargets { get; }
 
@@ -60,19 +60,38 @@ namespace ToSic.Eav.Serialization
 
         protected IContentType GetContentType(string staticName)
         {
+            var wrapLog = Log.Call<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}");
+
+            // There is a complex lookup we must protocol, to better detect issues, which is why we assemble a message
+            var msg = "";
+
             // If local type is preferred, use the App accessor,
             // this will also check the global types internally
             // ReSharper disable once InvertIf
             if (PreferLocalAppTypes)
             {
                 var type = App.GetContentType(staticName);
-                if (type != null) return type;
+                if (type != null) return wrapLog(msg + "app: found", type);
+                msg += "app: not found, ";
             }
 
-            return _globalTypes.FindContentType(staticName) // note: will return null if not found
-                       ?? (_types != null
-                           ? _types.FirstOrDefault(t => t.StaticName == staticName)
-                           : App.GetContentType(staticName));
+            var globalType = GlobalApp?.GetContentType(staticName);
+
+            if (globalType != null) return wrapLog(msg + "global: found", globalType);
+            msg += "global: not found, ";
+
+            if (_types != null)
+            {
+                msg += "local-list: ";
+                globalType = _types.FirstOrDefault(t => t.NameId == staticName);
+            }
+            else
+            {
+                msg += "app: ";
+                globalType = App.GetContentType(staticName);
+            }
+
+            return wrapLog(msg + (globalType == null ? "not " : "") + "found", globalType);
         }
 
 

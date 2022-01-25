@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.LookUp;
@@ -64,7 +65,7 @@ namespace ToSic.Eav.DataSources
 
             // now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
             // because the "real" source already applies filters like published
-            var appState = _appStates.Get(this);
+            var appState = AppState;
             var listOfTypes = appState.ContentTypes;
             var showDrafts = GetShowDraftStatus();
             var typeList = "";
@@ -75,17 +76,13 @@ namespace ToSic.Eav.DataSources
                     continue;
                 typeList += typeName + ",";
 
-                var typeScope = Constants.ScopesContent.Contains(contentType.Scope)
-                    ? Constants.ScopeContentFuture
-                    : contentType.Scope;
-
                 var deferredStream = new DataStreamWithCustomCaching(
                     () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState, $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
                     () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableArray(),
                     true,
-                    typeScope);
+                    contentType.Scope);
                 _out.Add(typeName, deferredStream);
             }
 

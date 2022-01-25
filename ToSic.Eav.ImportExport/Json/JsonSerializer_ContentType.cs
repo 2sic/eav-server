@@ -103,7 +103,7 @@ namespace ToSic.Eav.ImportExport.Json
             }
             var package = new JsonContentType
             {
-                Id = contentType.StaticName,
+                Id = contentType.NameId,
                 Name = contentType.Name,
                 Scope = contentType.Scope,
                 Description = contentType.Description,

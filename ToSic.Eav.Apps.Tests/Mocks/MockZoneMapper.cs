@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Apps.Tests.Mocks
         public ISite SiteOfZone(int zoneId) => new MockSite();
         public ISite SiteOfApp(int appId) => new MockSite();
 
-        public List<TempTempCulture> CulturesWithState(int siteId, int zoneId) => new List<TempTempCulture>();
+        public List<ISiteLanguageState> CulturesWithState(ISite site) => new List<ISiteLanguageState>();
 
         public MockZoneMapper() : base("Tst.MckZM") { }
 

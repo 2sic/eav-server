@@ -6,9 +6,9 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Security;
 
@@ -20,23 +20,21 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public partial class ContentTypeApi : HasLog<ContentTypeApi>
     {
-
         #region Constructor / DI
-
 
         public ContentTypeApi(
             Lazy<AppRuntime> appRuntimeLazy, 
             Lazy<AppManager> appManagerLazy, 
             Lazy<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
-            Lazy<IConvertToEavLight> dataToDictionaryLazy, 
+            Lazy<IConvertToEavLight> convertToEavLight, 
             IAppStates appStates) : base("Api.EavCTC")
         {
             _appRuntimeLazy = appRuntimeLazy;
             _appManagerLazy = appManagerLazy;
             _dbLazy = dbLazy;
             _appInitializedChecker = appInitializedChecker;
-            _dataToDictionaryLazy = dataToDictionaryLazy;
+            _convertToEavLight = convertToEavLight;
             _appStates = appStates;
         }
 
@@ -44,7 +42,7 @@ namespace ToSic.Eav.WebApi
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<DbDataController> _dbLazy;
         private readonly AppInitializedChecker _appInitializedChecker;
-        private readonly Lazy<IConvertToEavLight> _dataToDictionaryLazy;
+        private readonly Lazy<IConvertToEavLight> _convertToEavLight;
         private readonly IAppStates _appStates;
         private AppManager AppManager { get; set; }
 
@@ -73,7 +71,7 @@ namespace ToSic.Eav.WebApi
             // this is important on "Content" apps, because these don't auto-initialize when loading from the DB
             // so for these, we must pre-ensure that the app is initialized as needed, if they 
             // are editing the resources etc. 
-            if (scope == AppConstants.ScopeApp)
+            if (scope == Data.Scopes.App)
             {
                 Log.Add($"is scope {scope}, will do extra processing");
                 var appState = _appStates.Get(AppManager);
@@ -88,42 +86,40 @@ namespace ToSic.Eav.WebApi
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
-                .Select(t => ContentTypeForJson(t as ContentType, appMan.Read.Entities.Get(t.Name).Count()));
+                .Select(t => ContentTypeAsDto(t, appMan.Read.Entities.Get(t.Name).Count()));
             wrapLog("ok");
             return filteredType;
 	    }
 
-        private ContentTypeDto ContentTypeForJson(ContentType t, int count = -1)
+        private ContentTypeDto ContentTypeAsDto(IContentType t, int count = -1)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
-	        var metadata = t.Metadata.Description;
+	        var description = t.Metadata.Description;
 
-	        var nameOverride = metadata?.Value<string>(ContentTypes.ContentTypeMetadataLabel);
+	        var nameOverride = description?.Value<string>(ContentTypes.ContentTypeMetadataLabel);
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
-            var ser = _dataToDictionaryLazy.Value;
+            var ser = _convertToEavLight.Value;
 
-	        //var shareInfo = (IContentTypeShared) t;
             var ancestorDecorator = t.GetDecorator<IAncestor>();
 
-            var properties = ser.Convert(metadata);
+            var properties = ser.Convert(description);
+
             var jsonReady = new ContentTypeDto
             {
-                Id = t.ContentTypeId,
+                Id = t.Id,
                 Name = t.Name,
                 Label = nameOverride,
-                StaticName = t.StaticName,
+                StaticName = t.NameId,
                 Scope = t.Scope,
                 Description = t.Description,
-
-                IsReadOnly = ancestorDecorator != null ? true : (bool?)null,
-                IsReadOnlyReason = ancestorDecorator == null ? null : t.HasPresetAncestor() ? "This is a preset ContentType" : "This is an inherited ContentType",
-                UsesSharedDef = ancestorDecorator != null, // shareInfo.ParentId != null,
-                SharedDefId = ancestorDecorator?.Id, // shareInfo.ParentId,
-
+                EditInfo = new EditInfoDto(t),
+                UsesSharedDef = ancestorDecorator != null,
+                SharedDefId = ancestorDecorator?.Id,
                 Items = count,
                 Fields = t.Attributes.Count,
-                Metadata = properties,
+                Metadata = (ser as ConvertToEavLight)?.CreateListOfSubEntities(t.Metadata,
+                    SubEntitySerialization.AllTrue()),
                 Properties = properties,
                 Permissions = new HasPermissionsDto { Count = t.Metadata.Permissions.Count() },
             };
@@ -137,7 +133,7 @@ namespace ToSic.Eav.WebApi
 
             var ct = appState.GetContentType(contentTypeStaticName);
             wrapLog(null);
-            return ContentTypeForJson(ct as ContentType);
+            return ContentTypeAsDto(ct);
 	    }
 
 	    public bool Delete(string staticName)
@@ -182,7 +178,7 @@ namespace ToSic.Eav.WebApi
         {
             Log.Add($"get fields a#{_appId}, type:{staticName}");
             var appState = _appStates.Get(_appId);
-            if (!(appState.GetContentType(staticName) is ContentType type))
+            if (!(appState.GetContentType(staticName) is IContentType type))
                 throw new Exception("type should be a ContentType - something broke");
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
@@ -191,7 +187,7 @@ namespace ToSic.Eav.WebApi
 
             var appInputTypes = _appRuntimeLazy.Value.Init(_appId, true, Log).ContentTypes.GetInputTypes();
 
-            var ser = _dataToDictionaryLazy.Value;
+            var ser = _convertToEavLight.Value;
             return fields.Select(a =>
             {
                 var inputType = FindInputType(a);
@@ -209,13 +205,12 @@ namespace ToSic.Eav.WebApi
                             e =>
                             {
                                 // if the static name is a GUID, then use the normal name as name-giver
-                                var name = Guid.TryParse(e.Type.StaticName, out _)
+                                var name = Guid.TryParse(e.Type.NameId, out _)
                                     ? e.Type.Name
-                                    : e.Type.StaticName;
+                                    : e.Type.NameId;
                                 return name.TrimStart('@');
                             },
-                            e => InputMetadata(type, a, e, ancestorDecorator, ser) // ser.Convert(e)
-                        ),
+                            e => InputMetadata(type, a, e, ancestorDecorator, ser)),
                     InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
                     Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count() },
 
@@ -225,8 +220,7 @@ namespace ToSic.Eav.WebApi
                     HasFormulas = HasCalculations(a),
 
                     // Read-Only new in v13
-                    IsReadOnly = hasAncestor ? true : (bool?)null,
-                    IsReadOnlyReason = !hasAncestor ? null : type.HasPresetAncestor() ? "From Preset" : "Shared Type"
+                    EditInfo = new EditInfoDto(type),
                 };
             });
         }
@@ -240,7 +234,7 @@ namespace ToSic.Eav.WebApi
                     e.EntityId,
                     Ancestor = true,
                     IsMetadata = true,
-                    OfContentType = contentType.StaticName,
+                    OfContentType = contentType.NameId,
                     OfAttribute = a.Name,
                 });
 

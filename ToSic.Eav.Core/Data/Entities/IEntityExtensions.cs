@@ -14,76 +14,94 @@ namespace ToSic.Eav.Data
         private static int countOneGuid;
         private static int countOneHas;
         private static int countOneRepo;
+        private static int countOneOfContentType;
 
         internal static int CountOneIdOpt;
         internal static int CountOneRepoOpt;
         internal static int CountOneHasOpt;
         internal static int CountOneGuidOpt;
+        internal static int countOneOfContentTypeOpt;
 #endif
         /// <summary>
         /// Get an entity with an entity-id
         /// </summary>
-        /// <param name="entities"></param>
+        /// <param name="list"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static IEntity One(this IEnumerable<IEntity> entities, int id)
+        public static IEntity One(this IEnumerable<IEntity> list, int id)
         {
 #if DEBUG
             countOneId++;
 #endif
-            return entities is ImmutableSmartList fastList
+            return list is ImmutableSmartList fastList
                 ? fastList.Fast.Get(id)
-                : entities.FirstOrDefault(e => e.EntityId == id);
+                : list.FirstOrDefault(e => e.EntityId == id);
         }
 
         /// <summary>
         /// get an entity based on the guid
         /// </summary>
-        /// <param name="entities"></param>
+        /// <param name="list"></param>
         /// <param name="guid"></param>
         /// <returns></returns>
-        public static IEntity One(this IEnumerable<IEntity> entities, Guid guid)
+        public static IEntity One(this IEnumerable<IEntity> list, Guid guid)
         {
 #if DEBUG
             countOneGuid++;
 #endif
-            return entities is ImmutableSmartList fastList
+            return list is ImmutableSmartList fastList
                 ? fastList.Fast.Get(guid)
-                : entities.FirstOrDefault(e => e.EntityGuid == guid);
+                : list.FirstOrDefault(e => e.EntityGuid == guid);
         }
 
 
         /// <summary>
         /// Get an entity based on the repo-id - mainly used for internal APIs and saving/versioning
         /// </summary>
-        /// <param name="entities"></param>
+        /// <param name="list"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static IEntity FindRepoId(this IEnumerable<IEntity> entities, int id)
+        public static IEntity FindRepoId(this IEnumerable<IEntity> list, int id)
         {
 #if DEBUG
             countOneRepo++;
 #endif
-            return entities is ImmutableSmartList fastList
+            return list is ImmutableSmartList fastList
                 ? fastList.Fast.GetRepo(id)
-                : entities.FirstOrDefault(e => e.RepositoryId == id);
+                : list.FirstOrDefault(e => e.RepositoryId == id);
         }
 
         /// <summary>
         /// Check if an entity is available. 
         /// Mainly used in special cases where published/unpublished are hidden/visible
         /// </summary>
-        /// <param name="entities"></param>
+        /// <param name="list"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static bool Has(this IEnumerable<IEntity> entities, int id)
+        public static bool Has(this IEnumerable<IEntity> list, int id)
         {
 #if DEBUG
             countOneHas++;
 #endif
-            return entities is ImmutableSmartList fastList
+            return list is ImmutableSmartList fastList
                 ? fastList.Fast.Has(id)
-                : entities.Any(e => e.EntityId == id || e.RepositoryId == id);
+                : list.Any(e => e.EntityId == id || e.RepositoryId == id);
+        }
+
+
+        // Todo #OptimizeOfType
+
+        public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, IContentType type)
+            => list.Where(e => type.Equals(e.Type));
+
+        public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, string typeName)
+        {
+#if DEBUG
+            countOneOfContentType++;
+#endif            
+            return list is ImmutableSmartList fastList
+                ? fastList.Fast.OfType(typeName)
+                : list.Where(e => e.Type.Is(typeName));
         }
 
 
@@ -101,6 +119,5 @@ namespace ToSic.Eav.Data
                 throw new KeyNotFoundException("Can't find " + identifier + "of type '" + contentType + "'");
             return item;
         }
-
     }
 }

@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Core.Tests.Types;
-using ToSic.Eav.ImportExport.Persistence.File;
+using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Run;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 {
@@ -15,10 +15,10 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         public RuntimeLoaderTest()
         {
             _runtime = Build<IRuntime>();
-            _globalTypes = Build<IGlobalTypes>();
+            _globalAppState = Build<IAppStates>().GetPresetApp();
         }
         private readonly IRuntime _runtime;
-        private readonly IGlobalTypes _globalTypes;
+        private readonly AppState _globalAppState;
 
         private int expectedTypesSysAndJson = 5;
         [Ignore("currently work in progress - as sys/json types keep changing and testing isn't updated yet")]
@@ -29,15 +29,15 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
             // set loader root path, based on test environment
             TestGlobalFolderRepository.PathToUse = TestStorageRoot;
 
-            var all = _globalTypes.AllContentTypes();
-            Assert.AreEqual(expectedTypesSysAndJson, all.Count);
+            var all = _globalAppState.ContentTypes;
+            Assert.AreEqual(expectedTypesSysAndJson, all.Count());
 
-            var hasCodeSql = all.Values.FirstOrDefault(t => t.Name.Contains("SqlData"));
+            var hasCodeSql = all.FirstOrDefault(t => t.Name.Contains("SqlData"));
             Assert.IsNotNull(hasCodeSql, "should find code sql");
 
             Assert.IsTrue(hasCodeSql is TypesBase, "sql should come from code, and not from json, as code has higher priority");
 
-            var whateverType = all.Values.FirstOrDefault(t => t.Name == "Whatever");
+            var whateverType = all.FirstOrDefault(t => t.Name == "Whatever");
             Assert.IsNotNull(whateverType, "should find whatever type from json");
             //var dummy = all.First();
             //Assert.AreEqual(DemoType.CTypeName, dummy.Key);
@@ -51,10 +51,10 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 
             var time = Stopwatch.StartNew();
             TestGlobalFolderRepository.PathToUse = TestingPath40;
-            var count = _globalTypes.AllContentTypes().Count;
+            var count = _globalAppState.ContentTypes.Count();
             time.Stop();
             
-            Assert.IsTrue(count >= 60 && count <= 80, $"expected between 40 and 60, actually is {count}");
+            Assert.IsTrue(count >= 75 && count <= 140, $"expected between 75 and 140, actually is {count}");
             Trace.WriteLine("time used: " + time.Elapsed);
         }
 
@@ -65,8 +65,8 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
             int res1 = 0, res2 = 0;
             TestGlobalFolderRepository.PathToUse = TestingPath40;
 
-            var t1 = new Thread(() => res1 = _globalTypes.AllContentTypes().Count);
-            var t2 = new Thread(() => res2 = _globalTypes.AllContentTypes().Count);
+            var t1 = new Thread(() => res1 = _globalAppState.ContentTypes.Count());
+            var t2 = new Thread(() => res2 = _globalAppState.ContentTypes.Count());
 
             t1.Start();
             t2.Start();

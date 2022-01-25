@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Logging;
-using IEntity = ToSic.Eav.Data.IEntity;
+using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Run.Unknown
 {
@@ -15,9 +14,8 @@ namespace ToSic.Eav.Run.Unknown
             return this;
         }
 
-        public IEnumerable<IContentType> LoadGlobalContentTypes() => new List<IContentType>();
+        public AppState LoadFullAppState() => new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogNames.NotImplemented));
 
-        public IEnumerable<IEntity> LoadGlobalItems(string groupIdentifier) => new List<IEntity>();
-
+        public void ReloadConfigEntities() { /* do nothing */ }
     }
 }

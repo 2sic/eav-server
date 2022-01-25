@@ -52,12 +52,6 @@ namespace ToSic.Eav.Data
         ISubEntitySerialization Metadata { get; }
 
         /// <summary>
-        /// Include the title in a special field _Title
-        /// </summary>
-        [PrivateApi("this is really internal, and will be removed some day")]
-        bool WithTitle { get; }
-
-        /// <summary>
         /// Languages to prefer when looking up the values
         /// </summary>
         string[] Languages { get; set; }

@@ -8,16 +8,24 @@ namespace ToSic.Eav.Caching
         
         public long FirstTimestamp { get; private set; }
         
-        public Stack<long> History { get; } = new Stack<long>();
+        public Stack<CacheHistory> History { get; } = new Stack<CacheHistory>();
 
         public int ResetCount { get; private set; }
 
-        public void Update(long newTimeStamp)
+        public void Update(long newTimeStamp, int itemCount, string message)
         {
             CacheTimestamp = newTimeStamp;
-            History.Push(newTimeStamp);
             if (FirstTimestamp == 0) FirstTimestamp = newTimeStamp;
             else ResetCount++;
+            History.Push(new CacheHistory { Timestamp = newTimeStamp, ResetCount = ResetCount, ItemCount = itemCount, Message = message });
         }
+    }
+
+    public struct CacheHistory
+    {
+        public long Timestamp;
+        public int ItemCount;
+        public int ResetCount;
+        public string Message;
     }
 }

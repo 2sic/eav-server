@@ -38,7 +38,8 @@ namespace ToSic.Eav.Caching
         /// <param name="rebuild">the method which rebuilds the list</param>
         public SynchronizedObject(ICacheExpiring upstream, Func<T> rebuild)
         {
-            Upstream = upstream;
+            // If upstream has a more complex cache expiry, use that, otherwise just use the upstream
+            Upstream = (upstream as ICacheExpiringDelegated)?.CacheExpiryDelegate ?? upstream;
             RebuildCache = rebuild;
         }
 

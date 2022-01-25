@@ -42,7 +42,7 @@ namespace ToSic.Eav.Data
             int id = 0,
             string titleField = null,
             string typeName = DataBuilder.DefaultTypeName,
-            ContentType type = null,
+            IContentType type = null,
             Guid? guid = null,
             DateTime? created = null,
             DateTime? modified = null
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Data
             int appId = 0,
             string titleField = null,
             string typeName = DataBuilder.DefaultTypeName,
-            ContentType type = null
+            IContentType type = null
         );
 
         /// <summary>

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // This is the simple API used to quickly create/edit/delete entities
@@ -23,54 +25,52 @@ namespace ToSic.Eav.Api.Api01
     /// </summary>
     public class SimpleDataController: HasLog
     {
-        private readonly Lazy<AppManager> _appManagerLazy;
-        private readonly DbDataController _dbData;
+        #region Constructor / DI
 
-        public AttributeBuilder AttributeBuilder
+        /// <summary>
+        /// Used for DI - must always call Init to use
+        /// </summary>
+        public SimpleDataController(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbDataLazy, IZoneMapper zoneMapper, ISite site): base("Dta.Simple")
         {
-            get
-            {
-                if (_attributeBuilder != null) return _attributeBuilder;
-                return _attributeBuilder = _lazyAttributeBuilder.Value.Init(Log);
-            }
+            _appManagerLazy = appManagerLazy;
+            _dbDataLazy = dbDataLazy;
+            _zoneMapper = zoneMapper.Init(Log);
+            _site = site;
+            _lazyAttributeBuilder = lazyAttributeBuilder;
         }
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly Lazy<DbDataController> _dbDataLazy;
+        private readonly IZoneMapper _zoneMapper;
+        private readonly ISite _site;
 
+        public AttributeBuilder AttributeBuilder => _attributeBuilder ?? (_attributeBuilder = _lazyAttributeBuilder.Value.Init(Log));
         private AttributeBuilder _attributeBuilder;
         private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
         private DbDataController _context;
-
         private AppManager _appManager;
-
         private string _defaultLanguageCode;
 
         private int _appId;
 
-        #region Constructor / DI
-
-        /// <summary>
-        /// Create a simple data controller to create, update and delete entities.
-        /// Used for DI - must always call Init afterwards
-        /// </summary>
-        public SimpleDataController(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, DbDataController dbData): base("Dta.Simple")
-        {
-            _appManagerLazy = appManagerLazy;
-            _dbData = dbData;
-            _lazyAttributeBuilder = lazyAttributeBuilder;
-        }
-
         /// <param name="zoneId">Zone ID</param>
         /// <param name="appId">App ID</param>
-        /// <param name="defaultLanguageCode">Default language of system</param>
         /// <param name="parentLog"></param>
-        internal SimpleDataController Init(int zoneId, int appId, string defaultLanguageCode, ILog parentLog)
+        internal SimpleDataController Init(int zoneId, int appId, ILog parentLog)
         {
             Log.LinkTo(parentLog);
-            var wrapLog = Log.Call<SimpleDataController>($"{zoneId}, {appId}, {defaultLanguageCode}");
+            var wrapLog = Log.Call<SimpleDataController>($"{zoneId}, {appId}");
             _appId = appId;
-            _defaultLanguageCode = defaultLanguageCode;
-            _context = _dbData.Init(zoneId, appId, Log);
+            _defaultLanguageCode = GetDefaultLanguage();
+            _context = _dbDataLazy.Value.Init(zoneId, appId, Log);
             _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId), Log);
+            Log.Add($"Default language:{_defaultLanguageCode}");
             return wrapLog(null, this);
+        }
+
+        private string GetDefaultLanguage()
+        {
+            var usesLanguages = _zoneMapper.CulturesWithState(_site).Any(c => c.IsEnabled);
+            return usesLanguages ? _site.DefaultCultureCode : "";
         }
 
         #endregion
@@ -119,8 +119,17 @@ namespace ToSic.Eav.Api.Api01
                 values.Add(Attributes.EntityFieldGuid, Guid.NewGuid());
             }
 
+            // Get owner form value dictionary (and remove it from values) because we need to provided it in entity constructor.
+            string owner = null;
+            if (values.Any(v => v.Key.ToLowerInvariant() == Attributes.EntityFieldOwner))
+            {
+                Log.Add("Get owner, when is provided.");
+                owner = values[Attributes.EntityFieldOwner].ToString();
+                values.Remove(Attributes.EntityFieldOwner);
+            }
+
             var eGuid = Guid.Parse(values[Attributes.EntityFieldGuid].ToString());
-            var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>());
+            var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>(), owner);
             if (target != null)
             {
                 Log.Add("Set metadata target which was provided.");
@@ -128,8 +137,7 @@ namespace ToSic.Eav.Api.Api01
             }
 
             var preparedValues = ConvertEntityRelations(values);
-            AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false,
-                true);
+            AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false, true);
             return wrapLog(null, importEntity);
         }
 

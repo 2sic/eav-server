@@ -19,22 +19,20 @@ namespace ToSic.Eav.Plumbing
             return GetTypes(log).Where(t => type.IsAssignableFrom(t) && (!t.IsAbstract || t.IsInterface) && t != type);
         }
 
-        // 2020-07-31 2dm - never used
-        //public static IEnumerable<Type> FindClassesWithAttribute(Type type, Type attribType, bool includeInherited, ILog log)
-        //    => FindInherited(type, log).Where(d => d.GetCustomAttributes(attribType, includeInherited).Any());
-
-        private static IEnumerable<Type> GetTypes(ILog log = null)
+        internal static List<Type> GetTypes(ILog log = null)
         {
             if (_typeCache != null) return _typeCache;
-            var asms = AppDomain.CurrentDomain.GetAssemblies();
-            log?.Add($"GetTypes() - found {asms.Length} assemblies");
+            
+            var wrapLog = log.SafeCall<List<Type>>();
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            log.SafeAdd($"GetTypes() - found {assemblies.Length} assemblies");
 
-            _typeCache = asms.SelectMany(a => GetLoadableTypes(a, log));
+            _typeCache = assemblies.SelectMany(a => GetLoadableTypes(a, log)).ToList();
 
-            return _typeCache;
+            return wrapLog($"{_typeCache.Count}", _typeCache);
         }
 
-        private static IEnumerable<Type> _typeCache;
+        private static List<Type> _typeCache;
 
         /// <summary>
         /// Get Loadable Types from an assembly

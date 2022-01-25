@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ToSic.Eav.Core")]
-[assembly: AssemblyCopyright("Copyright © 2sic 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -31,7 +30,7 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("12.11.00")]
+[assembly: AssemblyVersion("13.02.00")]
 
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Repository.EF4")]

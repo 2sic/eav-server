@@ -42,7 +42,7 @@ namespace ToSic.Eav.Data
                 {
                     FieldType = DataTypes.Entity,
                     Name = field,
-                    Result = new List<IEntity> {dynEntityWithTitle},
+                    Result = new List<IEntity> { dynEntityWithTitle },
                     Source = parentDynEntity,
                     SourceIndex = 0
                 };

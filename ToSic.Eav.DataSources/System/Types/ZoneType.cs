@@ -8,6 +8,7 @@
         TenantName,
         IsCurrent,
         DefaultAppId,
+        PrimaryAppId,
         AppCount
     }
 

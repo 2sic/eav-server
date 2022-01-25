@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ToSic.Eav.Metadata;
-using static ToSic.Eav.Types.Decorators;
+using static ToSic.Eav.Metadata.Decorators;
 
 namespace ToSic.Eav.Apps.Parts
 {

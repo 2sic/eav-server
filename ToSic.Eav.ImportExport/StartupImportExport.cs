@@ -20,9 +20,6 @@ namespace ToSic.Eav.ImportExport
 
             services.TryAddTransient<FileSystemLoader>();
 
-            // WIP 12.10+ with Global Types in a normal AppState
-            services.TryAddTransient<FileAppStateLoaderWIP>();
-
             return services;
         }
 

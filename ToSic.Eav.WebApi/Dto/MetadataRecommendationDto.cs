@@ -2,7 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
-using ToSic.Eav.Types;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.WebApi.Dto
 {
@@ -10,9 +10,15 @@ namespace ToSic.Eav.WebApi.Dto
     {
         public string Id { get; }
 
+        public string Title { get; }
+
         public string Name { get; }
 
         public int Count { get; set; }
+
+        public string DeleteWarning { get; set; }
+
+        public string Icon { get; set; }
 
         /// <summary>
         /// Marks the recommendation that it should be created as empty
@@ -24,14 +30,21 @@ namespace ToSic.Eav.WebApi.Dto
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Debug { get; set; }
 
-        public MetadataRecommendationDto(IContentType type, int count, string debugMessage)
+        public MetadataRecommendationDto(IContentType type, IEntity recommendation, int count, string debugMessage)
         {
-            Id = type.StaticName;
+            Id = type.NameId;
             Name = type.Name;
+            var typeDescription = type.Metadata.Description;
+            // Note: we cannot use GetBestTitle here, because the Content-type of the type is not really known
+            // Because it's usually an inherited type (bug/weakness in the shared types model as of v12, WIP)
+            // So we must use .Value
+            Title = typeDescription?.Value<string>(ContentTypes.ContentTypeMetadataLabel) ?? type.Name;
+            Icon = typeDescription?.Value<string>(ContentTypes.ContentTypeMetadataIcon) ?? type.Name;
             Count = count;
             Debug = debugMessage;
+            DeleteWarning = recommendation?.Value<string>(Decorators.MetadataForDeleteWarningField);
 
-            // Mark empty if possible
+            // Mark empty if possible - so it has no attributes, and it has a decorator to support this
             if (!type.Attributes.Any() && type.Metadata.HasType(Decorators.SaveEmptyDecoratorId))
                 CreateEmpty = true;
         }

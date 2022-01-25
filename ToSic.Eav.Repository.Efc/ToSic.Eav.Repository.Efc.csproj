@@ -1,9 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net451;netstandard2.0</TargetFrameworks>
-    <Version>12.11.00</Version>
+    <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
+    <Version>13.02.00</Version>
+	  <Company>2sic Internet Solutions GmbH</Company>
+	  <Authors>2sic Internet Solutions GmbH</Authors>
+	  <Copyright>Copyright AGPL © 2sic 2022</Copyright>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
+    <Deterministic>true</Deterministic>
+    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <ItemGroup>

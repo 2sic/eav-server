@@ -32,40 +32,43 @@ namespace ToSic.Eav.Logging
             set
             {
                 _pause = value;
-                _count = 0;
+                Count = 0;
             }
         }
         private static bool _pause;
 
         #endregion
 
-        public int Count => _count;
-        private static int _count;
+        public int Count { get; private set; }
 
         #region Add
 
-        public void Add(string key, ILog log)
-        {
-            // only add if not paused
-            if (Pause) return;
+        public void Add(string key, ILog log) => AddInternal(key, log, false);
 
-            // don't keep in journal if it shouldn't be preserved
-            if (!log.Preserve) return;
+        public void ForceAdd(string key, ILog log) => AddInternal(key, log, true);
+
+        private void AddInternal(string key, ILog log, bool force)
+        {
+            // Check exit clauses if not forced
+            if (!force)
+            {
+                // only add if not paused
+                if (Pause) return;
+
+                // don't keep in journal if it shouldn't be preserved
+                if (!log.Preserve) return;
+            }
 
             // auto-pause after 1000 logs were run through this, till someone decides to unpause again
-            if (_count++ > MaxCollect) Pause = true;
+            if (Count++ > MaxCollect) Pause = true;
 
             // make sure we have a queue
             if (!Logs.ContainsKey(key))
                 Logs.TryAdd(key, new FixedSizedQueue<ILog>(Size));
 
-            // add the current item
-            if (Logs.TryGetValue(key, out var queue))
-            {
-                // add if it's already in the queue
-                if (!queue.ToArray().Contains(log))
-                    queue.Enqueue(log);
-            }
+            // add the current item if it's not already in the queue
+            if (Logs.TryGetValue(key, out var queue) && !queue.ToArray().Contains(log)) 
+                queue.Enqueue(log);
         }
 
 

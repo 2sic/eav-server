@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data
     /// Everything in the original is passed through invisibly. <br/>
     /// </summary>
     [PrivateApi("this decorator object is for internal use only, no value in publishing it")]
-    public abstract partial class EntityWrapper : IEntity, IEntityWrapper
+    public partial class EntityWrapper : IEntity, IEntityWrapper
     {
         public IEntity Entity { get; }
 
@@ -24,10 +24,10 @@ namespace ToSic.Eav.Data
         protected EntityWrapper(IEntity baseEntity)
         {
             Entity = baseEntity;
-            EntityForEqualityCheck = Entity;
+            RootContentsForEqualityCheck = Entity;
             if (Entity is IEntityWrapper wrapper)
             {
-                EntityForEqualityCheck = wrapper.EntityForEqualityCheck ?? Entity;
+                RootContentsForEqualityCheck = wrapper.RootContentsForEqualityCheck ?? Entity;
                 Decorators.AddRange(wrapper.Decorators);
             }
         }
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="baseEntity"></param>
         /// <param name="decorator">Additional wrapper to add</param>
-        protected EntityWrapper(IEntity baseEntity, IDecorator<IEntity> decorator) : this(baseEntity)
+        public EntityWrapper(IEntity baseEntity, IDecorator<IEntity> decorator) : this(baseEntity)
         {
             if(decorator != null) Decorators.Add(decorator);
         }

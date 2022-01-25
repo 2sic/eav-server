@@ -36,11 +36,6 @@ namespace ToSic.Eav.DataSources.System
 	    private const string TryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
 	    private const string AttribContentTypeName = "EAV_Attribute";
 	    
-        // 2dm: this is for a later feature...
-	    // ReSharper disable once UnusedMember.Local
-        private const string AttribCtGuid = "11001010-251c-eafe-2792-000000000004";
-
-
         /// <summary>
         /// The content-type name
         /// </summary>

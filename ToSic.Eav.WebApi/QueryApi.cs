@@ -12,6 +12,7 @@ using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Dto;
 using Connection = ToSic.Eav.DataSources.Queries.Connection;
@@ -36,13 +37,15 @@ namespace ToSic.Eav.WebApi
             public Lazy<ConvertToEavLight> EntToDicLazy { get; }
             public Lazy<QueryInfo> QueryInfoLazy { get; }
             public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
+            public Lazy<MetadataBackend> MetadataBackendLazy { get; }
 
             public Dependencies(Lazy<AppManager> appManagerLazy,
                 Lazy<AppRuntime> appReaderLazy,
                 QueryBuilder queryBuilder,
                 Lazy<ConvertToEavLight> entToDicLazy,
                 Lazy<QueryInfo> queryInfoLazy,
-                Lazy<DataSourceCatalog> dataSourceCatalogLazy)
+                Lazy<DataSourceCatalog> dataSourceCatalogLazy,
+                Lazy<MetadataBackend> metadataBackendLazy)
             {
                 AppManagerLazy = appManagerLazy;
                 AppReaderLazy = appReaderLazy;
@@ -50,6 +53,7 @@ namespace ToSic.Eav.WebApi
                 EntToDicLazy = entToDicLazy;
                 QueryInfoLazy = queryInfoLazy;
                 DataSourceCatalogLazy = dataSourceCatalogLazy;
+                MetadataBackendLazy = metadataBackendLazy;
             }
         }
 
@@ -89,13 +93,25 @@ namespace ToSic.Eav.WebApi
             var reader = _dependencies.AppReaderLazy.Value.Init(appId, false, Log);
             var qDef = reader.Queries.Get(id.Value);
 
+            var metadataBackend = _dependencies.MetadataBackendLazy.Value;
+
             #region Deserialize some Entity-Values
 
             query.Pipeline = qDef.Entity.AsDictionary();
             query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
 
+            var converter = _dependencies.EntToDicLazy.Value;
+            converter.Type.Serialize = true;
+            converter.Type.WithDescription = true;
+            converter.WithGuid = true;
+
             foreach (var part in qDef.Parts)
-                query.DataSources.Add(part.AsDictionary());
+            {
+                var partDto = part.AsDictionary();
+                var metadata = reader.AppState.GetMetadata(TargetTypes.Entity, part.Guid);
+                partDto.Add("Metadata", converter.Convert(metadata));
+                query.DataSources.Add(partDto);
+            }
 
             #endregion
 

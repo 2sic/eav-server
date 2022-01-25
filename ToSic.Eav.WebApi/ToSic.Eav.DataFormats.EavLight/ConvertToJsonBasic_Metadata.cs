@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.Serialization;
 
 // ReSharper disable once CheckNamespace
@@ -16,13 +15,13 @@ namespace ToSic.Eav.DataFormats.EavLight
             var itemForRules = MetadataForSerialization.Stabilize(rules?.SerializeMetadataFor, MetadataFor);
             if (itemForRules.Serialize /*?? MetadataFor.Serialize*/ ?? false)
                 if (entity.MetadataFor.IsMetadata)
-                    entityValues.Add(JsonKeyMetadataFor, entity.MetadataFor);
+                    entityValues.Add(Attributes.JsonKeyMetadataFor, entity.MetadataFor);
 
             var itemMdRules = SubEntitySerialization.Stabilize(rules?.SerializeMetadata, Metadata);
             
             if (itemMdRules.Serialize != true || !entity.Metadata.Any()) return;
 
-            entityValues.Add(JsonKeyMetadata, CreateListOfSubEntities(entity.Metadata, itemMdRules));
+            entityValues.Add(Attributes.JsonKeyMetadata, CreateListOfSubEntities(entity.Metadata, itemMdRules));
         }
 
 

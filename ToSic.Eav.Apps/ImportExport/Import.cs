@@ -69,7 +69,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        public void ImportIntoDb(IList<ContentType> newTypes, IList<Entity> newEntities)
+        public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities)
         {
             var callLog = Log.Call($"types: {newTypes?.Count}; entities: {newEntities?.Count}", useTimer: true);
             Storage.DoWithDelayedCacheInvalidation(() =>
@@ -96,7 +96,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             // before var sysAttributeSets = newSetsList.Where(a => a.Scope == Constants.ScopeSystem).ToList();
                             // warning: this may not be enough, we may have to always import the fields-scope first...
                             var sysAttributeSets = newSetsList
-                                .Where(a => a.Scope?.StartsWith(Constants.ScopeSystem) ?? false).ToList();
+                                .Where(a => a.Scope?.StartsWith(Scopes.System) ?? false).ToList();
                             if (sysAttributeSets.Any())
                                 MergeAndSaveContentTypes(appStateTemp, sysAttributeSets);
                             logImpTypes(null);
@@ -145,7 +145,7 @@ namespace ToSic.Eav.Apps.ImportExport
             callLog("done");
         }
 
-        private void MergeAndSaveContentTypes(AppState appState, List<ContentType> contentTypes)
+        private void MergeAndSaveContentTypes(AppState appState, List<IContentType> contentTypes)
         {
             var callLog = Log.Call(useTimer: true);
             // Here's the problem! #badmergeofmetadata
@@ -162,7 +162,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private bool MergeContentTypeUpdateWithExisting(AppState appState, IContentType contentType)
         {
             var callLog = Log.Call<bool>();
-            var existing = appState.GetContentType(contentType.StaticName);
+            var existing = appState.GetContentType(contentType.NameId);
 
             Log.Add("New CT, must reset attributes");
             // must ensure that attribute Metadata is officially seen as new
@@ -195,12 +195,12 @@ namespace ToSic.Eav.Apps.ImportExport
                 if(newAttribute.Metadata.Permissions.Any())
                     newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
 
-                newAttribute.Metadata.Use(newMetaList);
+                ((IMetadataInternals)newAttribute.Metadata).Use(newMetaList);
             }
 
             // check if the content-type has metadata, which needs merging
             var merged = contentType.Metadata
-                .Select(impMd => MergeOneMd(appState, (int)TargetTypes.ContentType, contentType.StaticName, impMd))
+                .Select(impMd => MergeOneMd(appState, (int)TargetTypes.ContentType, contentType.NameId, impMd))
                 .ToList();
             merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
             contentType.Metadata.Use(merged);
@@ -210,7 +210,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private IEntity MergeOneMd<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)
         {
-            var existingMetadata = appState.GetMetadata(mdType, key, newMd.Type.StaticName).FirstOrDefault();
+            var existingMetadata = appState.GetMetadata(mdType, key, newMd.Type.NameId).FirstOrDefault();
             IEntity metadataToUse;
             if (existingMetadata == null)
             {
@@ -237,11 +237,11 @@ namespace ToSic.Eav.Apps.ImportExport
             var callLog = Log.Call<Entity>();
             #region try to get AttributeSet or otherwise cancel & log error
 
-            var dbAttrSet = appState.GetContentType(update.Type.StaticName); 
+            var dbAttrSet = appState.GetContentType(update.Type.NameId); 
 
             if (dbAttrSet == null) // AttributeSet not Found
             {
-                Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, "ContentType not found for " + update.Type.StaticName));
+                Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, "ContentType not found for " + update.Type.NameId));
                 return callLog("error", null);
             }
 
@@ -251,6 +251,10 @@ namespace ToSic.Eav.Apps.ImportExport
             List<IEntity> existingEntities = null;
             if (update.EntityGuid != Guid.Empty)
                 existingEntities = appState.List.Where(e => e.EntityGuid == update.EntityGuid).ToList();
+
+            // set type only if is not set yet 
+            if (update.Type.Id == 0)
+                update.UpdateType(dbAttrSet);
 
             // Simplest case - nothing existing to update: return entity
 

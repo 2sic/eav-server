@@ -1,64 +1,62 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Linq;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
 {
+    /// <summary>
+    /// Information about an enabled feature
+    /// Note that this is also used as a DTO for the edit-UI, so don't just rename fields or anything.
+    /// </summary>
     [PrivateApi("no good reason to publish this")]
-    public class Feature
+    public class FeatureState
     {
-        /// <summary>
-        /// Feature GUID
-        /// </summary>
-        [JsonProperty("id")]
-        public Guid Id;
+        private readonly FeatureDefinition _featureDefinition;
+
+        public Guid Guid => _featureDefinition.Guid;
+        public string NameId => _featureDefinition.NameId;
+        public string Name => _featureDefinition.Name;
+        public string Description => _featureDefinition.Description;
+
+        public string License => _featureDefinition?.LicenseRules.FirstOrDefault()?.LicenseDefinition.Name;
+
 
         /// <summary>
         /// Feature is enabled and hasn't expired yet
         /// </summary>
         /// <remarks>by default all features are disabled</remarks>
-        [JsonProperty("enabled")]
-        public bool Enabled
-        {
-            get => _enabled && Expires > DateTime.Now;
-            set => _enabled = value;
-        }
-        private bool _enabled;
+        public bool Enabled => _enabled && Expires > DateTime.Now;
+        private readonly bool _enabled;
+
+
+        /// <summary>
+        /// Reason why it was enabled
+        /// </summary>
+        public string EnabledReason { get; }
+
+        /// <summary>
+        /// More detailed reason
+        /// </summary>
+        public string EnabledReasonDetailed { get; }
 
         /// <summary>
         /// Expiry of this feature
         /// </summary>
-        [JsonProperty("expires")]
-        public DateTime Expires { get; set; } = DateTime.MaxValue;
-
-        /// <summary>
-        /// If true, this feature will be provided to the Ui
-        /// If null or false, it won't be given to the Ui
-        /// </summary>
-        /// <remarks>
-        /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
-        /// </remarks>
-        [JsonProperty("ui", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? Ui { get; set; }
-
-        /// <summary>
-        /// If true, this feature will be provided to the Ui
-        /// If null or false, it won't be given to the Ui
-        /// </summary>
-        /// <remarks>
-        /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
-        /// </remarks>
-        [JsonProperty("public", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? Public { get; set; }
+        public DateTime Expires { get; }
 
 
-        public Feature() { }
+        public bool Ui => _featureDefinition.Ui;
+        public bool Public => _featureDefinition.Public;
+        public FeatureSecurity Security => _featureDefinition.Security;
 
-        public Feature(Guid id, bool? ui, bool? isPublic)
+
+        public FeatureState(FeatureDefinition definition, DateTime expires, bool enabled, string msgShort, string msgLong)
         {
-            Id = id;
-            Ui = ui;
-            Public = isPublic;
+            _featureDefinition = definition;
+            Expires = expires;
+            _enabled = enabled;
+            EnabledReason = msgShort;
+            EnabledReasonDetailed = msgLong;
         }
     }
 }

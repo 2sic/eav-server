@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace ToSic.Eav.Plumbing
 {
-    public abstract class TypeWithMedataBase<T> where T: class
+    public abstract class TypeWithMetadataBase<T> where T: class
     {
-        public TypeWithMedataBase(Type dsType)
+        protected TypeWithMetadataBase(Type dsType)
         {
             Type = dsType;
 

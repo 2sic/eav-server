@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources
             if (FilterDuplicates) relationships = relationships.Distinct();
 
             if (!string.IsNullOrWhiteSpace(typeName))
-                relationships = relationships.Where(r => r.Type.Is(typeName));
+                relationships = relationships.OfType(typeName);
 
             return relationships;
         }

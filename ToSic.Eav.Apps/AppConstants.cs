@@ -3,20 +3,13 @@
     public static class AppConstants
     {
         public const string AppIconFile = "app-icon.png";
+        public const string AppPrimaryIconFile = "app-primary.png";
 
-        #region List / Content / Presentation capabilities
+        /// <summary>
+        /// This is used in rare cases where the Zone should be auto-retrieved from the current context zone
+        /// </summary>
+        public const int AutoLookupZone = -1;
 
-        // App and Content Scopes
-        public const string ScopeApp = "2SexyContent-App";
-        public const string ScopeContentFuture = Constants.ScopeContentFuture; // "Default";
-        public const string ScopeContentOld = Constants.ScopeContentOld; // "2SexyContent";
-        public static string ScopeConfiguration = "System.Configuration";
-        public static readonly string[] ScopesContent = Constants.ScopesContent; // {ScopeContentOld, ScopeContentFuture };
-        public static readonly string[] ScopesContentAndConfiguration = { ScopeContentOld, ScopeContentFuture, ScopeConfiguration };
-
-        public const string ScopeContentSystem = "2SexyContent-System";
-
-        #endregion
 
         #region App Configuration Fields
 
@@ -36,5 +29,6 @@
 
         // Placeholders / Tokens - probably should move somewhere else someday
         public static string AppPathPlaceholder = "[App:Path]";
+        public static string AppPathSharedPlaceholder = "[App:PathShared]";
     }
 }

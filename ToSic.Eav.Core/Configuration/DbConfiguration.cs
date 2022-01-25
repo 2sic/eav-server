@@ -15,31 +15,17 @@ namespace ToSic.Eav.Configuration
         {
             get => _conStr 
                    ?? throw new Exception("Couldn't load Connection String as SetConnectionString must have been forgotten");
-            set => _conStr = value;
+            set
+            {
+				// Make sure the connection string is only set once
+				// And never updated
+				// Important to avoid problems and have changing system fingerprints during runtime
+				// If you plan on changing this, make sure you discuss w/2dm as it can have far, complex consequences
+                if (_conStr == null) _conStr = value;
+            }
         }
 
-     //   /// <inheritdoc />
-	    //public string FeaturesHelpLink => _featuresHelpLink;
-
-	    ///// <inheritdoc />
-	    //public string FeatureInfoLinkRoot => _featureInfoLinkRoot;
-
-
-	    private static string _featuresHelpLink;
-	    private static string _featureInfoLinkRoot;
-
-	    /// <summary>
-	    /// TODO
-	    /// </summary>
-	    /// <param name="helpLink"></param>
-	    /// <param name="infoLink"></param>
-	    public static void SetFeaturesHelpLink(string helpLink, string infoLink)
-	    {
-	        _featuresHelpLink = helpLink;
-	        _featureInfoLinkRoot = infoLink;
-	    }
-
-	    #endregion
+        #endregion
 
 	}
 }

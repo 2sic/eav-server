@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
@@ -18,27 +19,44 @@ namespace ToSic.Eav.Apps
     public class AppStates: IAppStates
     {
 
-        public AppStates(IAppsCache appsCache) => Cache = appsCache;
-        private readonly IAppsCache Cache;
+        public AppStates(IAppsCache appsCache, IServiceProvider serviceProvider)
+        {
+            Cache = appsCache;
+            _serviceProvider = serviceProvider;
+        }
+
+        internal readonly IAppsCache Cache;
+        private readonly IServiceProvider _serviceProvider;
 
         /// <inheritdoc />
-        public AppState Get(IAppIdentity app) => Cache.Get(app);
+        public AppState Get(IAppIdentity app) => Cache.Get(_serviceProvider, app);
 
         /// <inheritdoc />
-        public AppState Get(int appId) => Cache.Get(appId);
+        public AppState Get(int appId) => Cache.Get(_serviceProvider, IdentityOfApp(appId));
 
-        public IAppIdentity Identity(int? zoneId, int? appId) => Cache.GetIdentity(zoneId, appId);
+        public bool IsCached(IAppIdentity appId) => Cache.Has(appId);
 
-        public string AppIdentifier(int zoneId, int appId) => Cache.Zones[zoneId].Apps[appId];
+        public IAppIdentity IdentityOfApp(int appId) =>
+            new AppIdentity(Cache.ZoneIdOfApp(_serviceProvider, appId), appId);
 
-        public int DefaultAppId(int zoneId) => Cache.Zones[zoneId].DefaultAppId;
+        public IAppIdentity IdentityOfPrimary(int zoneId) => new AppIdentity(zoneId, PrimaryAppId(zoneId));
 
-        public IDictionary<int, string> Apps(int zoneId) => Cache.Zones[zoneId].Apps;
+        public IAppIdentity IdentityOfDefault(int zoneId) => new AppIdentity(zoneId, DefaultAppId(zoneId));
 
-        public List<DimensionDefinition> Languages(int zoneId, bool includeInactive = false) => includeInactive
-            ? Cache.Zones[zoneId].Languages
-            : Cache.Zones[zoneId].Languages.Where(l => l.Active).ToList();
+        public string AppIdentifier(int zoneId, int appId) => Cache.Zones(_serviceProvider)[zoneId].Apps[appId];
 
-        public IReadOnlyDictionary<int, Zone> Zones => Cache.Zones;
+        public int DefaultAppId(int zoneId) => Cache.Zones(_serviceProvider)[zoneId].DefaultAppId;
+
+        public int PrimaryAppId(int zoneId) => Cache.Zones(_serviceProvider)[zoneId].PrimaryAppId;
+
+        public IDictionary<int, string> Apps(int zoneId) => Cache.Zones(_serviceProvider)[zoneId].Apps;
+
+        public List<DimensionDefinition> Languages(int zoneId, bool includeInactive = false)
+        {
+            var zone = Cache.Zones(_serviceProvider)[zoneId];
+            return includeInactive ? zone.Languages : zone.Languages.Where(l => l.Active).ToList();
+        }
+
+        public IReadOnlyDictionary<int, Zone> Zones => Cache.Zones(_serviceProvider);
     }
 }

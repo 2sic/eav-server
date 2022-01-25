@@ -19,56 +19,45 @@ namespace ToSic.Eav.Caching
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public abstract class AppsCacheBase : IAppsCache
     {
-
-        #region Dependency Injection
         // TODO: WILL PROBABLY need an update on the farm cache which doesn't have these dependencies yet
-        public class Dependencies
-        {
-            public IServiceProvider ServiceProvider { get; }
-            public Dependencies(IServiceProvider serviceProvider)
-            {
-                ServiceProvider = serviceProvider;
-            }
-        }
-
-        protected AppsCacheBase(Dependencies dependencies)
-        {
-            Deps = dependencies;
-        }
-        protected Dependencies Deps { get; }
-
-        #endregion
 
         /// <summary>
         /// The repository loader. Must generate a new one on every access, to be sure that it doesn't stay in memory for long. 
         /// </summary>
-        private IRepositoryLoader GetNewRepoLoader() => Deps.ServiceProvider.Build<IRepositoryLoader>();
+        private IRepositoryLoader GetNewRepoLoader(IServiceProvider sp) => sp.Build<IRepositoryLoader>();
 
-        /// <inheritdoc />
-	    public abstract IReadOnlyDictionary<int, Zone> Zones { get; }
+        public abstract IReadOnlyDictionary<int, Zone> Zones(IServiceProvider sp);
 
         [PrivateApi]
-        protected IReadOnlyDictionary<int, Zone> LoadZones()
+        protected IReadOnlyDictionary<int, Zone> LoadZones(IServiceProvider sp)
         {
-            var realZones = GetNewRepoLoader().Zones();
+            // Load from DB (this will also ensure that Primary Apps are created)
+            var realZones = GetNewRepoLoader(sp).Zones();
+
+            // Add the Preset-Zone to the list - still WIP v13
             try
             {
                 var presetZone = new Zone(Constants.PresetZoneId,
-                                          Constants.PresetAppId,
-                                          new Dictionary<int, string> { { Constants.PresetAppId, Constants.PresetName } },
-                                          new List<Data.DimensionDefinition>() { new Data.DimensionDefinition() {
-                                              Active = true,
-                                              DimensionId = 0,
-                                              EnvironmentKey = "en-us",
-                                              Key = "en-us",
-                                              Name = "English",
-                                              Parent = null } });
-                var opened = realZones.ToDictionary(z => z.Key, z => z.Value);
-                opened.Add(Constants.PresetZoneId, presetZone);
-                return new ReadOnlyDictionary<int, Zone>(opened);
+                    Constants.PresetAppId,
+                    Constants.PresetAppId,
+                    new Dictionary<int, string> { { Constants.PresetAppId, Constants.PresetName } },
+                    new List<Data.DimensionDefinition>()
+                    {
+                        new Data.DimensionDefinition()
+                        {
+                            Active = true,
+                            DimensionId = 0,
+                            EnvironmentKey = "en-us",
+                            Key = "en-us",
+                            Name = "English",
+                            Parent = null
+                        }
+                    });
+                realZones.Add(Constants.PresetZoneId, presetZone);
             }
             catch { /* ignore */ }
-            return realZones;
+
+            return new ReadOnlyDictionary<int, Zone>(realZones);
         }
 
         #region Cache-Keys
@@ -121,17 +110,14 @@ namespace ToSic.Eav.Caching
         #endregion
 
         /// <inheritdoc />
-        public AppState Get(IAppIdentity app) => GetOrBuild(app);
-
-        /// <inheritdoc />
-        public AppState Get(int appId) => Get(GetIdentity(null, appId));
+        public AppState Get(IServiceProvider sp, IAppIdentity app) => GetOrBuild(sp, app);
 
 
         /// <inheritdoc />
-        public void Load(IAppIdentity app, string primaryLanguage) => GetOrBuild(app, primaryLanguage);
+        public void Load(IServiceProvider sp, IAppIdentity app, string primaryLanguage) => GetOrBuild(sp, app, primaryLanguage);
 
 
-        private AppState GetOrBuild(IAppIdentity appIdentity, string primaryLanguage = null)
+        private AppState GetOrBuild(IServiceProvider sp, IAppIdentity appIdentity, string primaryLanguage = null)
         {
             if (appIdentity.ZoneId == 0 || appIdentity.AppId == Constants.AppIdEmpty)
                 return null;
@@ -148,7 +134,7 @@ namespace ToSic.Eav.Caching
                 if (Has(cacheKey)) return Get(cacheKey);
 
                 // Init EavSqlStore once
-                var loader = GetNewRepoLoader();
+                var loader = GetNewRepoLoader(sp);
                 if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
                 var appState = loader.AppState(appIdentity.AppId, true);
                 Set(cacheKey, appState);
@@ -176,34 +162,24 @@ namespace ToSic.Eav.Caching
         #region Update
 
         /// <inheritdoc />
-        public virtual AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log)
+        public virtual AppState Update(IServiceProvider sp, IAppIdentity app, IEnumerable<int> entities, ILog log)
         {
             var wrapLog = log.Call<AppState>();
             // if it's not cached yet, ignore the request as partial update won't be necessary
             if (!Has(app)) return wrapLog("not cached, won't update", null);
-            var appState = Get(app);
-            GetNewRepoLoader().Init(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
+            var appState = Get(sp, app);
+            GetNewRepoLoader(sp).Init(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
             return wrapLog("ok", appState);
         }
 
         #endregion
 
 
-
-
-        /// <inheritdoc />
-		public IAppIdentity GetIdentity(int? zoneId = null, int? appId = null) 
-		{
-			var resultZoneId = zoneId ?? (appId.HasValue
-			                       ? Zones.Single(z => z.Value.Apps.Any(a => a.Key == appId.Value)).Key
-			                       : Constants.DefaultZoneId);
-
-			var resultAppId = appId.HasValue
-								  ? Zones[resultZoneId].Apps.Single(a => a.Key == appId.Value).Key
-								  : Zones[resultZoneId].DefaultAppId;
-
-			return new AppIdentity(resultZoneId, resultAppId);
+        [PrivateApi]
+        public int ZoneIdOfApp(IServiceProvider sp, int appId)
+        {
+            var zones = Zones(sp);
+            return zones.Single(z => z.Value.Apps.Any(a => a.Key == appId)).Key;
         }
-
     }
 }

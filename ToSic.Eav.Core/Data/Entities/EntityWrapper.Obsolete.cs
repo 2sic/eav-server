@@ -11,17 +11,17 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
         public object GetBestValue(string attributeName, bool resolveHyperlinks)
-            => Entity.GetBestValue(attributeName, resolveHyperlinks);
+            => Entity.GetBestValue(attributeName);
 
         [PrivateApi]
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
         public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks)
-            => Entity.GetBestValue(attributeName, languages, resolveHyperlinks);
+            => Entity.GetBestValue(attributeName, languages);
 
         [PrivateApi]
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
         public T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks)
-            => Entity.GetBestValue<T>(attributeName, languages, resolveHyperlinks);
+            => Entity.GetBestValue<T>(attributeName, languages);
 
 
         [PrivateApi]

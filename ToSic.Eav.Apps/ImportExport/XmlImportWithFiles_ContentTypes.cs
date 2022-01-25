@@ -15,13 +15,13 @@ namespace ToSic.Eav.Apps.ImportExport
     public partial class XmlImportWithFiles
     {
 
-		private List<ContentType> GetImportContentTypes(IEnumerable<XElement> xmlContentTypes)
+		private List<IContentType> GetImportContentTypes(IEnumerable<XElement> xmlContentTypes)
 		{
             var wrap = Log.Call();
             var list = xmlContentTypes.ToList();
             Log.Add($"items: {list.Count}");
 
-            var importAttributeSets = new List<ContentType>();
+            var importAttributeSets = new List<IContentType>();
 
 			// Loop through AttributeSets
 			foreach (var attributeSet in list)
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			return importAttributeSets;
 		}
 
-	    private ContentType BuildContentTypeFromXml(XElement xmlContentType)
+	    private IContentType BuildContentTypeFromXml(XElement xmlContentType)
 	    {
 	        var ctElement = xmlContentType.Element(XmlConstants.Attributes);
 	        var typeName = xmlContentType.Attribute(XmlConstants.Name).Value;
@@ -48,14 +48,13 @@ namespace ToSic.Eav.Apps.ImportExport
                 {
                     var name = xmlField.Attribute(XmlConstants.Static).Value;
                     var fieldTypeName = xmlField.Attribute(XmlConstants.EntityTypeAttribute).Value;
-                    var attribute = new ContentTypeAttribute(AppId, name, /* null, */ fieldTypeName, /* 
-                        null, null, null, null, */ attributeMetadata: new List<IEntity>
+                    var attribute = new ContentTypeAttribute(AppId, name, fieldTypeName, attributeMetadata: new List<IEntity>
                         {
-                            AttDefBuilder.GenerateAttributeMetadata(Deps.GlobalTypes, AppId, null, null, null,
+                            AttDefBuilder.GenerateAttributeMetadata(Deps.GlobalApp, AppId, null, null, null,
                                 string.Empty, null)
                         });
                     var md = xmlField.Elements(XmlConstants.Entity).ToList();
-                    attribute.Metadata.Use(BuildEntities(md, (int)TargetTypes.Attribute));
+                    ((IMetadataInternals)attribute.Metadata).Use(BuildEntities(md, (int)TargetTypes.Attribute));
                     attributes.Add(attribute);
 
                     Log.Add($"Attribute: {name} ({fieldTypeName}) with {md.Count} metadata items");
@@ -100,7 +99,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	            scope: xmlContentType.Attributes(XmlConstants.Scope).Any()
 	                ? xmlContentType.Attribute(XmlConstants.Scope).Value
 	                : Deps._environment.FallbackContentTypeScope,
-	            staticName: xmlContentType.Attribute(XmlConstants.Static).Value,
+	            nameId: xmlContentType.Attribute(XmlConstants.Static).Value,
 	            description: xmlContentType.Attribute(XmlConstants.Description).Value,
 	            AllowUpdateOnSharedTypes && isSharedType
 	        );

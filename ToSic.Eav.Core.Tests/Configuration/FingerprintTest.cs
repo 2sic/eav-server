@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Run;
+using ToSic.Eav.Security.Fingerprint;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Core.Tests.Configuration
@@ -10,10 +11,10 @@ namespace ToSic.Eav.Core.Tests.Configuration
         [TestMethod]
         public void FingerprintExistsAndStaysTheSame()
         {
-            var fingerprint = Build<IFingerprint>().GetSystemFingerprint();
+            var fingerprint = Build<SystemFingerprint>().GetFingerprint();
             Assert.IsNotNull(fingerprint);
             Assert.IsTrue(fingerprint.Length > 10);
-            var fingerprint2 = Build<IFingerprint>().GetSystemFingerprint();
+            var fingerprint2 = Build<SystemFingerprint>().GetFingerprint();
 
             Assert.AreEqual(fingerprint, fingerprint2, "the fingerprint should stay the same");
         }

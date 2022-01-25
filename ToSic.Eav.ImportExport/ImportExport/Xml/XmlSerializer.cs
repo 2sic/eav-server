@@ -8,7 +8,6 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Types;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -18,7 +17,7 @@ namespace ToSic.Eav.Persistence.Xml
     {
         private Dictionary<string, int> _dimensions;
 
-        public XmlSerializer(ITargetTypes targetTypes, IGlobalTypes globalTypes): base(targetTypes, globalTypes, "IEx.XmlSer") { }
+        public XmlSerializer(ITargetTypes targetTypes, IAppStates appStates): base(targetTypes, appStates, "IEx.XmlSer") { }
 
         public XmlSerializer Init(Dictionary<string, int> dimensionMapping, AppState appState, ILog parentLog)
         {
@@ -42,8 +41,10 @@ namespace ToSic.Eav.Persistence.Xml
 
             // create Entity-XElement
             var entityXElement = new XElement(XmlConstants.Entity,
-                new XAttribute(XmlConstants.KeyTargetType, MetadataTargets.GetName(entity.MetadataFor.TargetType)),
-                new XAttribute(XmlConstants.AttSetStatic, entity.Type.StaticName),
+                // #TargetTypeIdInsteadOfTarget
+                new XAttribute(XmlConstants.KeyTargetType, entity.MetadataFor.TargetType),
+                new XAttribute(XmlConstants.KeyTargetTypeNameOld, MetadataTargets.GetName(entity.MetadataFor.TargetType)),
+                new XAttribute(XmlConstants.AttSetStatic, entity.Type.NameId),
                 new XAttribute(XmlConstants.AttSetNiceName, entity.Type.Name),
                 new XAttribute(XmlConstants.GuidNode, entity.EntityGuid),
                 valuesXElement);

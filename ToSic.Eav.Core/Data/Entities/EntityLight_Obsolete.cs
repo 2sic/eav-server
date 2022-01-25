@@ -8,24 +8,8 @@ namespace ToSic.Eav.Data
     {
         /// <inheritdoc />
         [PrivateApi]
-        [Obsolete("Deprecated. Do not use any more, as it cannot reliably resolve hyperlinks.")]
-        public object GetBestValue(string attributeName, bool resolveHyperlinks)
-        {
-            var result = GetBestValue(attributeName);
-
-            if (resolveHyperlinks && result is string strResult)
-                result = TryToResolveLink(EntityGuid, strResult);
-
-            return result;
-        }
-
-        [PrivateApi]
-        [Obsolete("Deprecated. Do not use any more, as it cannot reliably resolve hyperlinks.")]
-        protected static string TryToResolveLink(Guid itemGuid, string result)
-        {
-            if (!ValueConverterBase.CouldBeReference(result)) return result;
-            return Factory.ObsoleteBuild<IValueConverter>().ToValue(result, itemGuid);
-        }
+        [Obsolete("Deprecated. Do not use any more. Hyperlinks won't be resolved")]
+        public object GetBestValue(string attributeName, bool resolveHyperlinks) => GetBestValue(attributeName);
     }
 }
 #endif

@@ -88,7 +88,9 @@ namespace ToSic.Eav.Apps.Parts
         public bool Delete(int id)
         {
             Log.Add($"delete a#{Parent.AppId}, id:{id}");
-            var canDeleteResult = Parent.Entities.CanDeleteEntityBasedOnDbRelationships(id);
+            // Commented in v13, new implementation is based on AppState.Relationships
+            //var canDeleteResult = Parent.Entities.CanDeleteEntityBasedOnDbRelationships(id);
+            var canDeleteResult = Parent.Entities.CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(id);
             if (!canDeleteResult.Item1)
                 throw new Exception(canDeleteResult.Item2);
 
@@ -176,7 +178,7 @@ namespace ToSic.Eav.Apps.Parts
                 else
                 {
                     Tuple<int, Guid> entity = Parent.Entities.Create(Constants.QueryPartTypeName, dataSource,
-                        new Metadata.Target { TargetType = (int)TargetTypes.Entity, KeyGuid = queryEntityGuid });
+                        new Target((int)TargetTypes.Entity, null) { KeyGuid = queryEntityGuid });
                     newDataSources.Add(originalIdentity, entity.Item2);
                 }
             }

@@ -11,28 +11,17 @@ namespace ToSic.Eav.Caching
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public class AppsCache: AppsCacheBase
     {
-        #region Constructor
 
-        // It's important that
-        // - this object has no constructor (or an empty one) because of DI
-        // - that it doesn't keep a log or similar inside it, because this object can sometimes be static-cached forever. 
-        public AppsCache(Dependencies dependencies) : base(dependencies) { }
-
-        #endregion
-
-        /// <inheritdoc />
-        public override IReadOnlyDictionary<int, Zone> Zones
+        public override IReadOnlyDictionary<int, Zone> Zones(IServiceProvider sp)
         {
-            get
-            {
-                // ensure it's only loaded once, even if multiple threads are trying this at the same time
-                if (ZoneAppCache != null) return ZoneAppCache;
-                lock (ZoneAppLoadLock)
-                    if (ZoneAppCache == null)
-                        ZoneAppCache = LoadZones();
-                return ZoneAppCache;
-            }
+            // ensure it's only loaded once, even if multiple threads are trying this at the same time
+            if (ZoneAppCache != null) return ZoneAppCache;
+            lock (ZoneAppLoadLock)
+                if (ZoneAppCache == null)
+                    ZoneAppCache = LoadZones(sp);
+            return ZoneAppCache;
         }
+
 
         // note: this object must be volatile!
         [PrivateApi] protected static volatile IReadOnlyDictionary<int, Zone> ZoneAppCache;

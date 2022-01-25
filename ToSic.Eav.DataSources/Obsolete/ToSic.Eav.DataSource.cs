@@ -16,28 +16,28 @@ namespace ToSic.Eav
 	[Obsolete]
 	public class DataSource: HasLog
 	{
-        private readonly DataSourceFactory _dsFactory;
-
         [Obsolete("Use DataSourceFactory with proper DI, this is only left over for compatibility in case it's used will remove in v12")]
         public DataSource(ILog parentLog = null) : base($"{DataSourceConstants.LogPrefix}.OldFct", parentLog)
         {
-            _dsFactory = Factory.ObsoleteBuild<DataSourceFactory>().Init(Log);
+            throw new Exception($"The {nameof(DataSource)} object is obsolete. Please fix using these instructions: https://r.2sxc.org/brc-13-datasource");
         }
+
+        // The following methods are still included, to ensure the constructor can be called
+        // Otherwise there is the risk that a compiler breaks before the constructor is called.
 
         [Obsolete("Use DataSourceFactory with proper DI")]
         public IDataSource GetDataSource(string sourceName, IAppIdentity app, IDataSource upstream = null,
-            ILookUpEngine configLookUp = null)
-            => _dsFactory.GetDataSource(sourceName, app, upstream, configLookUp);
+            ILookUpEngine configLookUp = null) => null;
 
         [Obsolete("Use DataSourceFactory with proper DI")]
         public T GetDataSource<T>(IDataSource upstream) where T : IDataSource
-            => _dsFactory.GetDataSource<T>(upstream);
+            => throw new NotSupportedException();
 
 
         [Obsolete("Use DataSourceFactory with proper DI")]
         public T GetDataSource<T>(IAppIdentity appIdentity, IDataSource upstream, ILookUpEngine configLookUp = null)
             where T : IDataSource
-            => _dsFactory.GetDataSource<T>(appIdentity, upstream, configLookUp);
+            => throw new NotSupportedException();
 
 
         [Obsolete("Use DataSourceFactory with proper DI")]
@@ -45,7 +45,7 @@ namespace ToSic.Eav
             IAppIdentity app,
             bool showDrafts = false,
             ILookUpEngine configProvider = null)
-            => _dsFactory.GetPublishing(app, showDrafts, configProvider);
+            => throw new NotSupportedException();
     }
 
 }

@@ -20,11 +20,11 @@ namespace ToSic.Eav.Persistence.Logging
         
         private readonly ResourceManager _resourceManager;
         
-        public LocalizedDescriptionAttribute(string resourceKey, Type resourceType)
-        {
-            _resourceManager = new ResourceManager(resourceType.FullName, resourceType.Assembly);
-            _resourceKey = resourceKey;
-        }
+        //public LocalizedDescriptionAttribute(string resourceKey, Type resourceType)
+        //{
+        //    _resourceManager = new ResourceManager(resourceType.FullName, resourceType.Assembly);
+        //    _resourceKey = resourceKey;
+        //}
 
         public LocalizedDescriptionAttribute(string resourceKey, Type resourceType, string resourceFolder)
         {

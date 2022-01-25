@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Data
 {
-    public partial class ContentTypeWrapper: Wrapper<IContentType>, IContentType, IHasDecorators<IContentType>
+    public partial class ContentTypeWrapper: Wrapper<IContentType>, IContentType, IHasDecorators<IContentType>, IMultiWrapper<IContentType>
     {
         public List<IDecorator<IContentType>> Decorators { get; } = new List<IDecorator<IContentType>>();
 
@@ -13,48 +14,59 @@ namespace ToSic.Eav.Data
         /// In case we're re-wrapping another wrapper, make sure we use the real, underlying contentType for the Contents
         /// </summary>
         /// <param name="contentType"></param>
-        public ContentTypeWrapper(IContentType contentType) : base((contentType as ContentTypeWrapper)?.GetContents() ?? contentType)
+        public ContentTypeWrapper(IContentType contentType) : base((contentType as ContentTypeWrapper)?._contents ?? contentType)
         {
-            if (contentType is ContentTypeWrapper wrapper) 
-                Decorators.AddRange(wrapper.Decorators);
+            RootContentsForEqualityCheck = contentType;
+            if (contentType is IMultiWrapper<IContentType> wrapper)
+                RootContentsForEqualityCheck = wrapper.RootContentsForEqualityCheck ?? RootContentsForEqualityCheck;
 
+            if(contentType is IHasDecorators<IContentType> hasDecorators)
+                Decorators.AddRange(hasDecorators.Decorators);
         }
 
-        public int AppId => GetContents().AppId;
+        public ContentTypeWrapper(IContentType contentType, IDecorator<IContentType> decorator) : this(contentType) 
+            => Decorators.Add(decorator);
 
-        public string Name => GetContents().Name;
+        public int AppId => _contents.AppId;
 
-        public string StaticName => GetContents().StaticName;
+        public string Name => _contents.Name;
 
-        public string Description => GetContents().Description;
+        [Obsolete("Deprecated in v13, please use NameId instead")]
+        public string StaticName => _contents.NameId;
 
-        public string Scope => GetContents().Scope;
+        public string NameId => _contents.NameId;
 
-        public int ContentTypeId => GetContents().ContentTypeId;
+        public string Description => _contents.Description;
+
+        public string Scope => _contents.Scope;
+
+        public int Id => _contents.Id;
+
+        [Obsolete("Deprecated in V13, please use Id instead.")]
+        public int ContentTypeId => _contents.Id;
 
         public IList<IContentTypeAttribute> Attributes
         {
-            get => GetContents().Attributes;
-            set => GetContents().Attributes = value;
+            get => _contents.Attributes;
+            set => _contents.Attributes = value;
         }
 
-        public IContentTypeAttribute this[string fieldName] => GetContents()[fieldName];
+        public IContentTypeAttribute this[string fieldName] => _contents[fieldName];
 
-        public RepositoryTypes RepositoryType => GetContents().RepositoryType;
+        public RepositoryTypes RepositoryType => _contents.RepositoryType;
 
-        public string RepositoryAddress => GetContents().RepositoryAddress;
+        public string RepositoryAddress => _contents.RepositoryAddress;
 
-        public bool IsDynamic => GetContents().IsDynamic;
+        public bool IsDynamic => _contents.IsDynamic;
 
-        public ContentTypeMetadata Metadata => GetContents().Metadata;
+        public ContentTypeMetadata Metadata => _contents.Metadata;
 
-        public bool Is(string name)
-        {
-            return GetContents().Is(name);
-        }
+        public bool Is(string name) => _contents.Is(name);
 
-        public string DynamicChildrenField => GetContents().DynamicChildrenField;
+        public string DynamicChildrenField => _contents.DynamicChildrenField;
 
-        IMetadataOf IHasMetadata.Metadata => ((IHasMetadata)GetContents()).Metadata;
+        public bool AlwaysShareConfiguration => _contents.AlwaysShareConfiguration;
+
+        IMetadataOf IHasMetadata.Metadata => ((IHasMetadata)_contents).Metadata;
     }
 }

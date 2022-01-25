@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.Apps
 {
@@ -13,9 +13,7 @@ namespace ToSic.Eav.Apps
 	    /// <summary>
 	    /// All ContentTypes in this App
 	    /// </summary>
-	    public IEnumerable<IContentType> ContentTypes 
-            //=> _appTypesFromRepository.Union(_globalTypes.AllContentTypes().Values);
-            => _appTypesFromRepository.Union(ParentApp.ContentTypes);
+	    public IEnumerable<IContentType> ContentTypes => _appTypesFromRepository.Union(ParentApp.ContentTypes);
 
 
 		/// <summary>
@@ -30,7 +28,7 @@ namespace ToSic.Eav.Apps
 	        if (!Loading)
 	            throw new Exception("trying to set content-types, but not in loading state. set that first!");
 
-            if (_metadataManager == null || List.Any())
+            if (_metadataManager == null || Index.Any())
 	            throw new Exception("can't set content types before setting Metadata manager, or after entities-list already exists");
 
 	        _appTypeMap = contentTypes
@@ -38,8 +36,8 @@ namespace ToSic.Eav.Apps
 					// will filter out for now, because otherwise we get duplicate keys-errors
 					// believe this shouldn't be an issue, as it only seems to be used in fairly edge-case export/import
 					// situations which the static types shouldn't be used for, as they are json-typed
-                .Where(x => x.ContentTypeId != 0)
-                .ToImmutableDictionary(x => x.ContentTypeId, x => x.StaticName);
+                .Where(x => x.Id != 0 && x.Id < Global.GlobalContentTypeMin)
+                .ToImmutableDictionary(x => x.Id, x => x.NameId);
 	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 	        // build types by name
 	        BuildCacheForTypesByName(_appTypesFromRepository);
@@ -57,8 +55,8 @@ namespace ToSic.Eav.Apps
 
 	        // add with static name - as the primary key
 	        foreach (var type in keepTypes)
-	            if (!_appTypesByName.ContainsKey(type.StaticName))
-	                _appTypesByName.Add(type.StaticName, type);
+	            if (!_appTypesByName.ContainsKey(type.NameId))
+	                _appTypesByName.Add(type.NameId, type);
 
 	        // add with nice name, if not already added
 	        foreach (var type in keepTypes)
@@ -69,10 +67,10 @@ namespace ToSic.Eav.Apps
 
 	    private ImmutableArray<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> appTypes)
         {
-            var globTypeNames = ParentApp.ContentTypes.Select(t => t.StaticName); // _globalTypes.AllContentTypes().Keys;
-	        return appTypes.Where(t =>
-	                !((ContentType) t).AlwaysShareConfiguration // keep all locally defined types
-	                || !globTypeNames.Contains(t.StaticName)    // for non-local: keep all which globally are not overwritten
+            var globTypeNames = ParentApp.ContentTypes.Select(t => t.NameId);
+            return appTypes.Where(t =>
+	                !t.AlwaysShareConfiguration // keep all locally defined types
+	                || !globTypeNames.Contains(t.NameId)    // for non-local: keep all which globally are not overwritten
 	            )
 	            .ToImmutableArray();
 	    }
@@ -90,7 +88,7 @@ namespace ToSic.Eav.Apps
         public IContentType GetContentType(string name)
             => _appTypesByName.ContainsKey(name)
                 ? _appTypesByName[name]
-                : ParentApp.GetContentType(name);// _globalTypes.FindContentType(name); // note: will return null if not found
+                : ParentApp.GetContentType(name);
 
 	    /// <summary>
 	    /// Get a content-type by number / id. Will also check global types if needed.
@@ -99,15 +97,16 @@ namespace ToSic.Eav.Apps
 	    /// <returns>a type object or null if not found</returns>
 	    public IContentType GetContentType(int contentTypeId)
 	    {
-            var found = _appTypesFromRepository.FirstOrDefault(c => c.ContentTypeId == contentTypeId);
+            var found = _appTypesFromRepository.FirstOrDefault(c => c.Id == contentTypeId);
             if (found != null) return found;
 
             var name = _appTypeMap.FirstOrDefault(x => x.Key == contentTypeId).Value;
-	        return name == null ? null : GetContentType(name);
-	    }
+            if (name != null) return GetContentType(name);
 
-        
-     //   [PrivateApi]
-	    //public bool ContentTypesShouldBeReloaded = true;
-	}
+			// TODO: ONLY do this if #SharedAppFeatureEnabled
+			// Try to find in parent
+            var parentType = ParentApp.ContentTypes.FirstOrDefault(t => t.Id == contentTypeId);
+            return parentType;
+        }
+    }
 }

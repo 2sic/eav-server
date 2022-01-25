@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Json
@@ -16,8 +17,13 @@ namespace ToSic.Eav.ImportExport.Json
         public IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false) 
             => Deserialize(UnpackAndTestGenericJsonV1(serialized).Entity, allowDynamic, skipUnknownType);
 
-        internal IEntity DeserializeWithRelsWip(string serialized, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource dynRelationshipsSource = null) 
-            => Deserialize(UnpackAndTestGenericJsonV1(serialized).Entity, allowDynamic, skipUnknownType, dynRelationshipsSource);
+        internal IEntity DeserializeWithRelsWip(string serialized, int id, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource dynRelationshipsSource = null)
+        {
+            var jsonEntity = UnpackAndTestGenericJsonV1(serialized).Entity;
+            jsonEntity.Id = id;
+            var entity = Deserialize(jsonEntity, allowDynamic, skipUnknownType, dynRelationshipsSource);
+            return entity;
+        }
 
         protected JsonFormat UnpackAndTestGenericJsonV1(string serialized)
         {
@@ -54,12 +60,12 @@ namespace ToSic.Eav.ImportExport.Json
                                        );
 
             // Metadata
-            var ismeta = new Metadata.Target();
+            var ismeta = new Target();
             if (jEnt.For != null)
             {
                 var md = jEnt.For;
-                Log.Add($"this is metadata; will construct 'For' object. Type: {md.Target}");
-                ismeta.TargetType = MetadataTargets.GetId(md.Target);
+                Log.Add($"this is metadata; will construct 'For' object. Type: {md.Target} ({md.TargetType})");
+                ismeta.TargetType = md.TargetType != 0 ? md.TargetType : MetadataTargets.GetId(md.Target); // #TargetTypeIdInsteadOfTarget
                 ismeta.KeyGuid = md.Guid;
                 ismeta.KeyNumber = md.Number;
                 ismeta.KeyString = md.String;
@@ -76,7 +82,7 @@ namespace ToSic.Eav.ImportExport.Json
                 var mdItems = jEnt.Metadata
                     .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
                     .ToList();
-                newEntity.Metadata.Use(mdItems);
+                ((IMetadataInternals)newEntity.Metadata).Use(mdItems);
             }
 
             // build attributes - based on type definition

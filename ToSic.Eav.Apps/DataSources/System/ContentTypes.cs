@@ -48,10 +48,6 @@ namespace ToSic.Eav.DataSources.System
 	    //private const string TryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
 	    private const string ContentTypeTypeName = "EAV_ContentTypes";
 	    
-        // 2dm: this is for a later feature...
-	    // ReSharper disable once UnusedMember.Local
-        private const string ContentTypeCtGuid = "11001010-251c-eafe-2792-000000000003"; // must check before using
-
 
         /// <summary>
         /// The app id
@@ -98,10 +94,9 @@ namespace ToSic.Eav.DataSources.System
             var appId = OfAppId;
 
 	        var scp = OfScope;
-	        if (string.IsNullOrWhiteSpace(scp) || Constants.ScopeContentFuture.Equals(scp, StringComparison.InvariantCultureIgnoreCase))
-	            scp = AppConstants.ScopeContentOld;
+            if (string.IsNullOrWhiteSpace(scp)) scp = Scopes.Default;
 
-	        var types = _appStates.Get(appId).ContentTypes.OfScope(scp);
+            var types = _appStates.Get(appId).ContentTypes.OfScope(scp);
             
             var builder = DataBuilder;
 	        var list = types.OrderBy(t => t.Name).Select(t =>
@@ -109,7 +104,7 @@ namespace ToSic.Eav.DataSources.System
 	            Guid? guid = null;
 	            try
 	            {
-	                if (Guid.TryParse(t.StaticName, out Guid g)) guid = g;
+	                if (Guid.TryParse(t.NameId, out Guid g)) guid = g;
 	            }
 	            catch
 	            {
@@ -118,7 +113,7 @@ namespace ToSic.Eav.DataSources.System
 
                 return builder.Entity(BuildDictionary(t),
                     appId:OfAppId, 
-                    id:t.ContentTypeId, 
+                    id:t.Id, 
                     titleField: ContentTypeType.Name.ToString(),
                     typeName: ContentTypeTypeName,
                     guid: guid);
@@ -131,7 +126,7 @@ namespace ToSic.Eav.DataSources.System
 	    private static Dictionary<string, object> BuildDictionary(IContentType t) => new Dictionary<string, object>
 	    {
 	        {ContentTypeType.Name.ToString(), t.Name},
-	        {ContentTypeType.StaticName.ToString(), t.StaticName},
+	        {ContentTypeType.StaticName.ToString(), t.NameId},
 	        {ContentTypeType.Description.ToString(), t.Description},
 	        {ContentTypeType.IsDynamic.ToString(), t.IsDynamic},
 

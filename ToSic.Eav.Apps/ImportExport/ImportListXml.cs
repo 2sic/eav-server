@@ -50,7 +50,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="appMan"></param>
         /// <param name="contentType">content-type</param>
         /// <param name="dataStream">Xml data stream to import</param>
-        /// <param name="languages">Languages that can be imported (2SexyContent languages enabled)</param>
+        /// <param name="languages">Languages that can be imported (2sxc languages enabled)</param>
         /// <param name="documentLanguageFallback">Fallback document language</param>
         /// <param name="deleteSetting">How to handle entities already in the repository</param>
         /// <param name="resolveLinkMode">How value references to files and pages are handled</param>

@@ -20,8 +20,9 @@ namespace ToSic.Eav.Apps.ImportExport
             var wrapLog = Log.Call<bool>($"zone:{zoneId}");
 
             appId = 0;
+            int? parentAppId = null;
 
-			if (!IsCompatible(doc))
+            if (!IsCompatible(doc))
 			{
 				Messages.Add(new Message(Log.Add("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
 				return false;
@@ -47,7 +48,12 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 // Adding app to EAV
                 var eavDc = Deps._dbDataForNewApp.Value.Init(zoneId, null, Log);
-                var app = eavDc.App.AddApp(null, appGuid);
+
+                // ParentApp
+                parentAppId = GetParentAppId(xmlSource, eavDc);
+
+                var app = eavDc.App.AddApp(null, appGuid, parentAppId);
+
                 eavDc.SqlDb.SaveChanges();
 
                 appId = app.AppId;
@@ -62,11 +68,25 @@ namespace ToSic.Eav.Apps.ImportExport
 			}
 
             Log.Add("Purging all Zones");
-            Deps.AppsCache/* State.Cache*/.PurgeZones();
+            Deps.SystemManager.PurgeZoneList();
             return wrapLog("done", ImportXml(zoneId, appId, doc));
 		}
 
+        private static int? GetParentAppId(XElement xmlSource, Repository.Efc.DbDataController eavDc)
+        {
+            var parentAppXElement = xmlSource?.Element(XmlConstants.Header)?.Element(XmlConstants.ParentApp);
+            if (parentAppXElement != null)
+            {
+                var parentAppGuidOrName = parentAppXElement?.Attribute(XmlConstants.Guid)?.Value;
+                if (!string.IsNullOrEmpty(parentAppGuidOrName) && parentAppGuidOrName != XmlConstants.ParentApp)
+                {
+                    if (int.TryParse(parentAppXElement?.Attribute(XmlConstants.AppId)?.Value, out int parAppId))
+                        return eavDc.GetParentAppId(parentAppGuidOrName, parAppId);
+                }
+            }
+            return null;
+        }
 
-	}
+    }
 
 }

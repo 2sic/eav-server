@@ -26,18 +26,21 @@ namespace ToSic.Eav.Apps.Parts
             Lazy<Import> importLazy, 
             Lazy<IImportExportEnvironment> environmentLazy, 
             SystemManager systemManager,
+            IServiceProvider serviceProvider,
             IAppsCache appsCache // Note: Singleton
             ) : base("App.EntMan")
         {
             _lazyImportListXml = lazyImportListXml;
             _importLazy = importLazy;
             _environmentLazy = environmentLazy;
+            _serviceProvider = serviceProvider;
             _appsCache = appsCache;
             SystemManager = systemManager.Init(Log);
         }
         private readonly Lazy<ImportListXml> _lazyImportListXml;
         private readonly Lazy<Import> _importLazy;
         private readonly Lazy<IImportExportEnvironment> _environmentLazy;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IAppsCache _appsCache;
         protected readonly SystemManager SystemManager;
 
@@ -94,7 +97,7 @@ namespace ToSic.Eav.Apps.Parts
                 dc.DoButSkipAppCachePurge(() => intIds = dc.Save(entities, saveOptions));
 
                 // Tell the cache to do a partial update
-                _appsCache/* State.Cache*/.Update(Parent, intIds, Log);
+                _appsCache.Update(_serviceProvider, Parent, intIds, Log);
                 return intIds;
             }
 

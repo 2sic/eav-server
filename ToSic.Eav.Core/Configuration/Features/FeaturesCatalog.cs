@@ -1,11 +1,24 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi]
-    internal class FeaturesCatalog
+    public partial class FeaturesCatalog
     {
+        // IMPORTANT
+        // The guids of these licenses must match the ones in the 2sxc.org features list
+        // So always create the definition there first, then use the GUID of that definition here
+
+        // Todo: Lightspeed Cache
+
+
+        // TODO: MAYBE SUB-FEATURES FOR global apps
+        // - Inherit views - auto-on if global on
+        // - Inherit data - auto-on if global on
+        // - Inherit queries
+
         /// <summary>
         /// The catalog contains known features, and knows if they are used in the UI
         /// This is important, because the installation specific list often won't know about
@@ -16,27 +29,39 @@ namespace ToSic.Eav.Configuration
         /// so later on this must be injected or something
         /// </remarks>
         [PrivateApi]
-        public static FeatureList Initial = new FeatureList(new List<Feature>
+        public static List<FeatureDefinition> Initial => _initial ?? (_initial = BuildFeatureDefinitions());
+        private static List<FeatureDefinition> _initial;
+
+        private static List<FeatureDefinition> BuildFeatureDefinitions() =>
+            new List<FeatureDefinition>
+            {
+                // Released features since the dawn of features
+                PublicEditForm,
+                PublicUploadFiles,
+                SaveInAdamApi,
+                PermissionCheckUsers,
+                PermissionCheckGroups,
+
+                // Beta features - meant for Patreons
+                PasteImageFromClipboard,
+                WysiwygPasteFormatted,
+                NoSponsoredByToSic,
+
+                // 2sxc 10.24+
+                WebFarmCache,
+
+                // 2sxc 13 - for Patreons
+                ImageServiceMultiFormat,
+
+                // 2sxc 13 - Global Apps
+                SharedApps,
+                PermissionsByLanguage,
+            };
+
+
+        internal static List<FeatureLicenseRule> BuildRule(LicenseDefinition licDef) => new List<FeatureLicenseRule>
         {
-            // released features
-            new Feature(FeatureIds.PublicForms, true, false),
-            new Feature(FeatureIds.PublicUpload, true, false),
-            new Feature(FeatureIds.UseAdamInWebApi, false, false),
-
-            new Feature(FeatureIds.PermissionCheckUserId, true, false),
-            new Feature(FeatureIds.PermissionCheckGroups, true, false),
-
-            // Beta features
-            new Feature(FeatureIds.PasteImageClipboard, true, true),
-            //new Feature(FeatureIds.Angular5Ui, false,false),
-            new Feature(FeatureIds.WysiwygPasteFormatted, true, true),
-
-            // 2sxc 9.43+
-            new Feature(FeatureIds.EditFormPreferAngularJs, true, true),
-            new Feature(FeatureIds.WebApiOptionsAllowLocal, true, false),
-
-            // 2sxc 10.24+
-            new Feature(FeatureIds.WebFarm, false, false),
-        });
+            new FeatureLicenseRule(licDef, true)
+        };
     }
 }

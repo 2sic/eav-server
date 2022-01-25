@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
-#if NET451
+#if NETFRAMEWORK
 using System.Web.Http;
 #else
 using Microsoft.AspNetCore.Mvc;
@@ -40,13 +40,13 @@ namespace ToSic.Eav.WebApi
             return this;
         }
 
-        public Tuple<string, string> ExportContent(IUser user, 
-            string language, 
-            string defaultLanguage, 
+        public Tuple<string, string> ExportContent(IUser user,
+            string language,
+            string defaultLanguage,
             string contentType,
-            ExportSelection exportSelection, 
+            ExportSelection exportSelection,
             ExportResourceReferenceMode exportResourcesReferences,
-            ExportLanguageResolution exportLanguageReferences, 
+            ExportLanguageResolution exportLanguageReferences,
             string selectedIds)
         {
             Log.Add($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
@@ -92,7 +92,7 @@ namespace ToSic.Eav.WebApi
             var serializer = _appManager.ServiceProvider.Build<JsonSerializer>().Init(_appManager.AppState, Log);
 
             return Download.BuildDownload(serializer.Serialize(type),
-                (type.Scope + "." + type.StaticName + ImpExpConstants.Extension(ImpExpConstants.Files.json))
+                (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                      .RemoveNonFilenameCharacters());
         }
 

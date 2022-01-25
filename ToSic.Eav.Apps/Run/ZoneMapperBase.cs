@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
@@ -30,14 +31,13 @@ namespace ToSic.Eav.Apps.Run
         /// <inheritdoc />
         public ISite SiteOfApp(int appId)
         {
-            var wrapLog = Log.Call<ISite>($"{appId}");
-            Log.Add("TenantId not found. Must be in search mode, will try to find correct portalsettings");
-            var appIdentifier = AppStates.Identity(null, appId);
+            var wrapLog = Log.Call<ISite>($"{appId}", "Must look for SiteId");
+            var appIdentifier = AppStates.IdentityOfApp(appId);
             var tenant = SiteOfZone(appIdentifier.ZoneId);
             return wrapLog(null, tenant);
         }
 
         /// <inheritdoc />
-        public abstract List<TempTempCulture> CulturesWithState(int siteId, int zoneId);
+        public abstract List<ISiteLanguageState> CulturesWithState(ISite site);
     }
 }

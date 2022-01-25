@@ -11,29 +11,27 @@ namespace ToSic.Eav.Configuration
 
         internal static string[] BlacklistKeys = { FieldSettingsIdentifier, FieldItemIdentifier, SysSettingsFieldScope };
 
-
-        public const string SysSettingsScopeValueSite = "site";
-
         public static AppThingsIdentifiers Resources = new AppThingsIdentifiers
         {
             AppType = AppLoadConstants.TypeAppResources, 
-            CustomType = "ResourcesCustom",
+            //CustomType = "ResourcesCustom",
             SystemType = "ResourcesSystem",
             Target = AppThingsToStack.Resources
         };
+
         public static AppThingsIdentifiers Settings = new AppThingsIdentifiers
         {
             AppType = AppLoadConstants.TypeAppSettings, 
-            CustomType = "SettingsCustom",
+            //CustomType = "SettingsCustom",
             SystemType = "SettingsSystem",
             Target = AppThingsToStack.Settings
         };
 
-        public static AppThingsIdentifiers[] AppThingsArray =
-        {
-            Resources,
-            Settings
-        };
+        //public static AppThingsIdentifiers[] AppThingsArray =
+        //{
+        //    Resources,
+        //    Settings
+        //};
 
         public static string WebResourcesNode = "WebResources";
         public static string WebResourceEnabledField = "Enabled";
@@ -51,7 +49,7 @@ namespace ToSic.Eav.Configuration
     {
         public AppThingsToStack Target;
         public string SystemType;
-        public string CustomType;
+        //public string CustomType;
         public string AppType;
     }
 }

@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps
         /// Simple Override - to track if the init is being called everywhere
         /// </summary>
         public new AppRuntime Init(int appId, bool showDrafts, ILog parentLog) 
-            => base.Init(Dependencies.AppStates.Identity(null, appId), showDrafts, parentLog);
+            => base.Init(Dependencies.AppStates.IdentityOfApp(appId), showDrafts, parentLog);
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.

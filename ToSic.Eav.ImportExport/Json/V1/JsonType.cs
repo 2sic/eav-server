@@ -24,7 +24,7 @@ namespace ToSic.Eav.ImportExport.Json.V1
         public JsonType(IEntity entity, bool withDescription = false)
         {
             Name = entity.Type.Name;
-            Id = entity.Type.StaticName;
+            Id = entity.Type.NameId;
             if (withDescription) Description = entity.Type.Description;
         }
     }

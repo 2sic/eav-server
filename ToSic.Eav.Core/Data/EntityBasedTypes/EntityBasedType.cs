@@ -16,7 +16,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public IEntity Entity { get; protected set; }
 
-        [PrivateApi] public IEntity EntityForEqualityCheck => (Entity as IEntityWrapper)?.EntityForEqualityCheck ?? Entity;
+        [PrivateApi] public IEntity RootContentsForEqualityCheck => (Entity as IEntityWrapper)?.RootContentsForEqualityCheck ?? Entity;
         public List<IDecorator<IEntity>> Decorators => _decorators ?? (_decorators = (Entity as IEntityWrapper)?.Decorators ?? new List<IDecorator<IEntity>>());
         private List<IDecorator<IEntity>> _decorators;
 

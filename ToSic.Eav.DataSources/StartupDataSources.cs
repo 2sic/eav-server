@@ -18,7 +18,6 @@ namespace ToSic.Eav.DataSources
             services.TryAddTransient<Sql>();
             services.TryAddTransient<DataTable>();
 
-            services.TryAddTransient<GlobalQueries>();
             services.TryAddTransient<QueryBuilder>();
 
             services.TryAddTransient<ValueLanguages>();

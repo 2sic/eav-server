@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.PublicApi
 {
@@ -27,7 +28,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="key">The key (string, guid, number) as a string</param>
         /// <param name="contentType">A optional parameter to filter only results by a specific type - if not provided, will return all except internal ones</param>
         /// <returns></returns>
-        IEnumerable<IDictionary<string, object>> Get(int appId, int targetType, string keyType, string key, string contentType = null);
+        MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null);
 
     }
 }

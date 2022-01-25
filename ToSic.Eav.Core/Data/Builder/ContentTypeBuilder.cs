@@ -6,27 +6,14 @@ namespace ToSic.Eav.Data.Builder
 {
     public static class ContentTypeBuilder
     {
-        // 2021-11-22 2dm removed, seems unused - #cleanup EOY 2021
-        ///// <summary>
-        ///// Shortcut go get a new AttributeSet with Scope=System and Name=StaticName
-        ///// </summary>
-        //public static ContentType SystemAttributeSet(int appId, string staticName, string description,
-        //    List<IContentTypeAttribute> attributes, bool alwaysShareConfiguration = false)
-        //    => new ContentType(appId, staticName, staticName, 0, Constants.ScopeSystem, description, null, 0, 0,
-        //        alwaysShareConfiguration)
-        //    {
-        //        Attributes = attributes
-        //    };
-
         public const int DynTypeId = 1;
-        public const string DynTypeDefScope = Constants.ScopeSystem;
         public const string DynTypeDefDescription = "Dynamic content type";
 
-        public static ContentType Fake(string typeName)
+        public static IContentType Fake(string typeName)
             => DynamicContentType(Constants.TransientAppId, typeName, typeName);
 
-        public static ContentType DynamicContentType(int appId, string typeName, string typeIdentifier, string scope = DynTypeDefScope)
-            => new ContentType(appId, typeName, typeIdentifier, DynTypeId, scope, DynTypeDefDescription)
+        public static IContentType DynamicContentType(int appId, string typeName, string typeIdentifier, string scope = null)
+            => new ContentType(appId, typeName, typeIdentifier, DynTypeId, scope ?? Scopes.System, DynTypeDefDescription)
             {
                 Attributes = new List<IContentTypeAttribute>(),
                 IsDynamic = true
@@ -37,10 +24,10 @@ namespace ToSic.Eav.Data.Builder
             type.RepositoryType = repoType;
         }
 
-        public static void SetSourceAndParent(this ContentType type, RepositoryTypes repoType, int parentId, string address)
+        public static void SetSourceParentAndIdForPresetTypes(this ContentType type, RepositoryTypes repoType, int parentId, string address, int id = -1)
         {
+            if (id != -1) type.Id = id;
             type.RepositoryType = repoType;
-            //type.ParentId = parentId;
             type.RepositoryAddress = address;
             var ancestorDecorator = type.GetDecorator<IAncestor>();
             if (ancestorDecorator != null) ancestorDecorator.Id = parentId;

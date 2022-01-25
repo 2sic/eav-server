@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
 {
@@ -11,20 +13,31 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The simple list of <em>all</em> entities, used everywhere
         /// </summary>
-        public IImmutableList<IEntity> List
-            => _list?.List ?? (_list = new SynchronizedEntityList(this, () => Index.Values.ToImmutableArray())).List;
-        private SynchronizedEntityList _list;
+        public IImmutableList<IEntity> List => (ListCache ?? (ListCache = BuildList())).List;
+        internal SynchronizedEntityList ListCache;
+
+        private SynchronizedEntityList BuildList()
+        {
+            // todo: check if feature is enabled #SharedAppFeatureEnabled
+            var buildFn = ParentApp.InheritEntities
+                ? () => Index.Values.Concat(ParentApp.Entities).ToImmutableArray()
+                : (Func<IImmutableList<IEntity>>)(() => Index.Values.ToImmutableArray());
+
+            var syncList = new SynchronizedEntityList(this, buildFn);
+
+            return syncList;
+        }
+
 
         IEnumerable<IEntity> IEntitiesSource.List => List;
 
-        internal Dictionary<int, IEntity> Index { get; }
-
-
+        internal Dictionary<int, IEntity> Index { get; } = new Dictionary<int, IEntity>();
 
         /// <summary>
         /// Add an entity to the cache. Should only be used by EAV code
         /// </summary>
-        internal void Add(Entity newEntity, int? publishedId, bool log)
+        [PrivateApi("Only internal use")]
+        public void Add(Entity newEntity, int? publishedId, bool log)
         {
             if (!Loading)
                 throw new Exception("trying to add entity, but not in loading state. set that first!");
@@ -32,7 +45,6 @@ namespace ToSic.Eav.Apps
             if (newEntity.RepositoryId == 0)
                 throw new Exception("Entities without real ID not supported yet");
 
-            //CacheResetTimestamp(); 
             RemoveObsoleteDraft(newEntity, log);
             Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
             MapDraftToPublished(newEntity, publishedId, log);
@@ -53,7 +65,6 @@ namespace ToSic.Eav.Apps
                 throw new Exception("trying to init metadata, but not in loading state. set that first!");
             Log.Add("remove all items");
             Index.Clear();
-            //CacheResetTimestamp(); 
             _metadataManager.Reset();
         }
 

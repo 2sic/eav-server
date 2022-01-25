@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Apps.Parts
 {
     public partial class EntitiesManager
     {
-        public bool Delete(int id, string contentType = null, bool force = false, bool skipIfCant = false) 
-            => Delete(new[] {id}, contentType, force, skipIfCant);
+        public bool Delete(int id, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null) 
+            => Delete(new[] {id}, contentType, force, skipIfCant, parentId, parentField);
 
         /// <summary>
         /// delete an entity
@@ -18,28 +19,57 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="skipIfCant">skip deleting if relationships exist and force is false</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool Delete(int[] ids, string contentType = null, bool force = false, bool skipIfCant = false)
+        public bool Delete(int[] ids, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null)
         {
             var callLog = Log.Call<bool>($"delete id:{ids.Length}, type:{contentType}, force:{force}", useTimer: true);
 
             // do optional type-check and if necessary, throw error
             BatchCheckTypesMatch(ids, contentType);
 
-            // check if we can delete, or throw exception
-            var oks = BatchCheckCanDelete(ids, force, skipIfCant);
+            // get related metadata ids
+            var metaDataIds = new List<int>();             
+            foreach (var id in ids)
+            {
+                CollectMetaDataIdsRecursively(id, ref metaDataIds);
+            }
 
-            var ok = Parent.DataController.Entities.DeleteEntity(ids, true, true);
+            var deleteIds = ids.ToList<int>();
+            if (metaDataIds.Any()) deleteIds.AddRange(metaDataIds);
+
+            // check if we can delete entities with metadata, or throw exception
+            var oks = BatchCheckCanDelete(deleteIds.ToArray(), force, skipIfCant, parentId, parentField);
+
+            // than delete entities with metadata
+            var ok = Parent.DataController.Entities.DeleteEntity(deleteIds.ToArray(), true, true);
+
             SystemManager.PurgeApp(Parent.AppId);
+
             return callLog(ok.ToString(), ok);
         }
 
-        private Dictionary<int, Tuple<bool, string>> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant)
+        private void CollectMetaDataIdsRecursively(int id, ref List<int> metaDataIds)
         {
-            var canDeleteList = Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(ids);
+            var childrenMetaDataIds = Parent.Read.Entities.Get(id).Metadata.Select(metdata => metdata.EntityId);
+            if (!childrenMetaDataIds.Any()) return;
+            foreach (var childrenMetadataId in childrenMetaDataIds)
+            {
+                CollectMetaDataIdsRecursively(childrenMetadataId, ref metaDataIds);
+            }
+            metaDataIds.AddRange(childrenMetaDataIds);
+        }
+
+        private Dictionary<int, Tuple<bool, string>> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant, int? parentId = null, string parentField = null)
+        {
+            // Commented in v13, new implementation is based on AppState.Relationships that knows about
+            // relationships with json types (that are missing in db relationships).
+            //var canDeleteList = Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(ids);
+            var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(ids, parentId, parentField);
+
             foreach (var canDelete in canDeleteList)
                 if (!canDelete.Value.Item1 && !force && !skipIfCant)
                     throw new InvalidOperationException(
-                        Log.Add($"Can't delete Item {canDelete.Key}. It is used by others: {canDelete.Value.Item2}"));
+                        Log.Add($"Can't delete Item {canDelete.Key}. It is used by others. {canDelete.Value.Item2}"));
+
             return canDeleteList;
         }
 
@@ -48,13 +78,80 @@ namespace ToSic.Eav.Apps.Parts
             foreach (var id in ids)
             {
                 var found = Parent.Read.Entities.Get(id);
-                if (contentType != null && found.Type.Name != contentType && found.Type.StaticName != contentType)
+                if (contentType != null && found.Type.Name != contentType && found.Type.NameId != contentType)
                     throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
             }
         }
 
-        internal Tuple<bool, string> CanDeleteEntityBasedOnDbRelationships(int entityId) 
-            => Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(new[] {entityId}).First().Value;
+        // Commented in v13, new implementation is based on AppState.Relationships.
+        //internal Tuple<bool, string> CanDeleteEntityBasedOnDbRelationships(int entityId) 
+        //    => Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(new[] {entityId}).First().Value;
+
+        internal Tuple<bool, string> CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(int entityId, int? parentId = null, string parentField = null) 
+            => CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(new[] {entityId}, parentId, parentField).First().Value;
+
+        private Dictionary<int, Tuple<bool, string>> CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(int[] ids, int? parentId = null, string parentField = null)
+        {
+            var canDeleteList = new Dictionary<int, Tuple<bool, string>>();
+
+            var relationships = Parent.Read.AppState.Relationships;
+
+            foreach (var entityId in ids)
+            {
+                var messages = new List<string>();
+
+                var parents = relationships.List.Where(r => r.Child.EntityId == entityId).ToList();
+
+                // when have it, ignore first relation with part
+                if (parentId.HasValue && !string.IsNullOrEmpty(parentField))
+                {
+                    var parentToIgnore = parents.FirstOrDefault(r => r.Parent.EntityId == parentId && r.Parent.Attributes.ContainsKey(parentField));
+                    if (parentToIgnore != null) parents.Remove(parentToIgnore);
+                }
+
+                var parentsInfoForMessages = parents.Select(r => TryToGetMoreInfosAboutDependency(r.Parent)).ToList();
+
+                if (parentsInfoForMessages.Any())
+                    messages.Add(
+                        $"Found {parentsInfoForMessages.Count} relationships where this is a child - the parents are: {string.Join(", ", parentsInfoForMessages)}.");
+
+                var children = relationships.List.Where(r => r.Parent.EntityId == entityId)
+                    .Select(r => TryToGetMoreInfosAboutDependency(r.Child)).ToList();
+
+                if (children.Any())
+                    messages.Add(
+                        $"Found {children.Count} entities which are assigned children: {string.Join(", ", children)}.");
+
+                var entity = Parent.Read.Entities.Get(entityId);
+
+                // check if entity has metadata
+                if (entity.Metadata.Any())
+                    messages.Add($"Found {entity.Metadata.Count()} metadata which are assigned.");
+
+                //// check if entity is metadata
+                //if (entity.MetadataFor?.IsMetadata ?? false)
+                //    messages.Add($"Entity is metadata of other entity.");
+
+                canDeleteList.Add(entityId, Tuple.Create(!messages.Any(), string.Join(" ", messages)));
+            }
+
+            if (canDeleteList.Count != ids.Length)
+                throw new Exception("Delete check failed, results doesn't match request");
+
+            return canDeleteList;
+        }
+
+        private string TryToGetMoreInfosAboutDependency(IEntity dependency)
+        {
+            try
+            {
+                return dependency.Type.Name;
+            }
+            catch
+            {
+                return "Relationships but was not able to look up more details to show a nicer error.";
+            }
+        }
 
         public bool Delete(Guid guid)
         {
@@ -72,4 +169,5 @@ namespace ToSic.Eav.Apps.Parts
         }
 
     }
+
 }

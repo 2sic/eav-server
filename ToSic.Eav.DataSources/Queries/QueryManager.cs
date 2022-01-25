@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Plumbing;
+using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -34,7 +37,7 @@ namespace ToSic.Eav.DataSources.Queries
 			try
 			{
 			    var queryEntity = dataSource.List.FindRepoId(entityId);
-                if (queryEntity.Type.StaticName != Constants.QueryTypeName)
+                if (queryEntity.Type.NameId != Constants.QueryTypeName)
                     throw new ArgumentException("Entity is not an DataQuery Entity", nameof(entityId));
 			    return wrapLog("ok", queryEntity);
 			}
@@ -71,11 +74,28 @@ namespace ToSic.Eav.DataSources.Queries
 	    internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app)
         {
             var wrapLog = Log.Call<IImmutableList<IEntity>>();
-            //var dsFact = new DataSource(Log);
-	        var source = DataSourceFactory.GetPublishing(app);
-	        var typeFilter = DataSourceFactory.GetDataSource<EntityTypeFilter>(source);
-	        typeFilter.TypeName = Constants.QueryTypeName;
-	        return wrapLog("ok", typeFilter.List.ToImmutableList());
-	    }
-	}
+            var appState = DataSourceFactory.ServiceProvider.Build<IAppStates>().Get(app);
+            var result = QueryEntities(appState);
+            return wrapLog("ok", result);
+        }
+
+        internal IEntity FindQuery(IAppIdentity appIdentity, string nameOrGuid)
+        {
+            var wrapLog = Log.Call<IEntity>(nameOrGuid);
+            var all = AllQueryItems(appIdentity);
+            var result = FindByNameOrGuid(all, nameOrGuid);
+            return wrapLog(result == null ? "null" : "ok", result);
+        }
+
+        public static IImmutableList<IEntity> QueryEntities(AppState appState)
+            => appState.List.OfType(Constants.QueryTypeName).ToImmutableList();
+
+        //public static IEntity FindByName(IImmutableList<IEntity> queries, string name) 
+        //    => queries.FirstOrDefault(e => e.Value<string>("Name") == name);
+
+        public static IEntity FindByNameOrGuid(IImmutableList<IEntity> queries, string nameOrGuid) =>
+            queries.FirstOrDefault(
+                q => string.Equals(q.Value<string>("Name"), nameOrGuid, InvariantCultureIgnoreCase)
+                     || string.Equals(q.EntityGuid.ToString(), nameOrGuid, InvariantCultureIgnoreCase));
+    }
 }

@@ -91,6 +91,8 @@ namespace ToSic.Eav.Repository.Efc
 
         //public ILog Log { get; private set; }
 
+        public int? ParentAppId { get; set; }
+
         #endregion
 
         #region Constructor and Init
@@ -159,7 +161,7 @@ namespace ToSic.Eav.Repository.Efc
                 _appId = appId.Value;
             }
             else
-                _appId = SqlDb.ToSicEavApps.First(a => a.Name == Constants.DefaultAppName).AppId;
+                _appId = SqlDb.ToSicEavApps.First(a => a.Name == Constants.DefaultAppGuid).AppId;
 
             return this;
         }
@@ -184,7 +186,6 @@ namespace ToSic.Eav.Repository.Efc
 
             var modifiedCount = baseEvent(acceptAllChangesOnSuccess);
 
-
             if (modifiedCount != 0)
                 PurgeAppCacheIfReady();
 
@@ -194,7 +195,7 @@ namespace ToSic.Eav.Repository.Efc
         private void PurgeAppCacheIfReady()
         {
             Log.Call($"{_purgeAppCacheOnSave}")(null);
-            if(_purgeAppCacheOnSave) _appsCache/* State.Cache*/.Purge(this);
+            if(_purgeAppCacheOnSave) _appsCache.Purge(this);
         }
 
         #endregion
@@ -279,5 +280,27 @@ namespace ToSic.Eav.Repository.Efc
             => ContentType.ExtendSaveContentTypes(contentTypes, saveOptions);
 
         #endregion
+
+        public int? GetParentAppId(string parentAppGuid, int parentAppId)
+        {
+            switch (SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid))
+            {
+                case 0:
+                    throw new ArgumentException($"ParentApp is missing. Can't find app with guid:{parentAppGuid}. Please import ParentApp first.");
+                case 1:
+                    return SqlDb.ToSicEavApps.Single(a => a.Name == parentAppGuid).AppId;
+            }
+
+            // we have more apps with requested guid
+            switch (SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid && a.AppId == parentAppId))
+            {
+                case 0:
+                    throw new ArgumentException($"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} but nither has AppId:{parentAppId}. Can't import.");
+                case 1:
+                    return SqlDb.ToSicEavApps.Single(a => a.Name == parentAppGuid && a.AppId == parentAppId).AppId;
+            }
+
+            throw new ArgumentException($"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} and AppId:{parentAppId}. Can't import.");
+        }
     }
 }

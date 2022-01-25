@@ -109,15 +109,10 @@ namespace ToSic.Eav.Apps
             list.Add(newEntity);
         }
 
-        // FYI: disabled 2021-11-19, was deprecated since v11.11 #cleanup EOY 2021
-        ///// <inheritdoc />
-        //public IEnumerable<IEntity> Get<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
-        //    => GetMetadata(targetType, key, contentTypeName);
-
         /// <inheritdoc />
         public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
         {
-            if(key == null) return new IEntity[0];
+            if(key == null) return Array.Empty<IEntity>();
             var type = typeof(TMetadataKey);
             type = Nullable.GetUnderlyingType(type) ?? type;
 
@@ -135,15 +130,18 @@ namespace ToSic.Eav.Apps
             }
         }
 
+        public IEnumerable<IEntity> GetMetadata<T>(TargetTypes targetType, T key, string contentTypeName = null) 
+            => GetMetadata<T>((int)targetType, key, contentTypeName);
+
         private static IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, List<IEntity>>> list, int targetType, T key, string contentTypeName)
         {
             // ReSharper disable once CollectionNeverUpdated.Local
-            if (list.TryGetValue(targetType, out var keyDict))
-                if (keyDict.TryGetValue(key, out var entities))
-                    return contentTypeName == null
-                        ? entities
-                        : entities.Where(e => e.Type.Is(contentTypeName));
-            return new List<IEntity>();
+            if (list.TryGetValue(targetType, out var keyDict)
+                && keyDict.TryGetValue(key, out var entities))
+                return contentTypeName == null
+                    ? entities
+                    : entities.Where(e => e.Type.Is(contentTypeName));
+            return Array.Empty<IEntity>();
         }
     }
 }

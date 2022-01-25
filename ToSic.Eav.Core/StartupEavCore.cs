@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -14,7 +15,7 @@ using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
-using ToSic.Eav.Types;
+using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav
 {
@@ -25,9 +26,6 @@ namespace ToSic.Eav
             // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
             
-            // Global Content-Types - should only be loaded once ever, and then it's done
-            services.TryAddSingleton<GlobalTypeLoader>();
-
             // Configuration objects
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
@@ -41,17 +39,20 @@ namespace ToSic.Eav
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
             services.TryAddTransient<IAppStates, AppStates>();
-            services.TryAddTransient<AppsCacheBase.Dependencies>();
 
             // Other...
             services.TryAddTransient<AttributeBuilder>();
 
-            // The GlobalTypes must be singleton, could cause trouble otherwise
-            services.TryAddSingleton<IGlobalTypes, GlobalTypes>();
-
-
             // Permissions helper
             services.TryAddTransient<PermissionCheckBase.Dependencies>();
+
+            services.TryAddTransient<ILicenseService, LicenseService>();
+
+            // Fingerprinting: Because fo security, we are not injecting the interface
+            // As that would allow replacing the fingerprinter with something else
+            // We actually only use the direct object in DI
+            //services.TryAddTransient<IFingerprint, Fingerprint>();
+            services.TryAddTransient<SystemFingerprint>();
 
             return services;
         }
@@ -86,7 +87,6 @@ namespace ToSic.Eav
         public static IServiceCollection AddEavCoreFallbackServices(this IServiceCollection services)
         {
             // very basic stuff - normally overriden by the platform
-            services.TryAddTransient<IFingerprint, FingerprintUnknown>();
             services.TryAddTransient<IValueConverter, ValueConverterUnknown>();
 
             services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
@@ -100,6 +100,7 @@ namespace ToSic.Eav
 
             // Unknown-Runtime for loading configuration etc. File-runtime
             services.TryAddTransient<IRuntime, RuntimeUnknown>();
+            services.TryAddTransient<IPlatformInfo, PlatformUnknown>();
 
             return services;
         }

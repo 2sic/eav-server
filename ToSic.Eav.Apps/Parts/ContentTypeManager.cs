@@ -39,11 +39,7 @@ namespace ToSic.Eav.Apps.Parts
                 {"Name", staticName},
                 {AttributeMetadata.GeneralFieldInputType, inputType}
             };
-            var meta = new Target
-            {
-                TargetType = (int)TargetTypes.Attribute,
-                KeyNumber = attributeId
-            };
+            var meta = new Target((int)TargetTypes.Attribute, null) { KeyNumber = attributeId };
             Parent.Entities.SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
         }
 
@@ -52,16 +48,9 @@ namespace ToSic.Eav.Apps.Parts
             Log.Add($"update input type attrib:{attributeId}, input:{inputType}");
             var newValues = new Dictionary<string, object> { { AttributeMetadata.GeneralFieldInputType, inputType } };
 
-            var meta = new Target
-            {
-                TargetType = (int)TargetTypes.Attribute,
-                KeyNumber = attributeId
-            };
+            var meta = new Target((int)TargetTypes.Attribute, null) { KeyNumber = attributeId };
             Parent.Entities.SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
             return true;
         }
-
-        
-
     }
 }

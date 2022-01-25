@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
@@ -12,7 +13,6 @@ namespace ToSic.Eav.Data
 	[PublicApi_Stable_ForUseInYourCode]
 	public interface IContentType: IAppIdentityLight, IHasMetadata
 	{
-
         /// <summary>
         /// Gets the Display Name of the Content Type
         /// </summary>
@@ -20,8 +20,16 @@ namespace ToSic.Eav.Data
 
         /// <summary>
         /// Static name - can be a GUID or a system-term for special types
-		/// </summary>
+        /// </summary>
+        /// <remarks>being deprecated in V13, to be replaced with NameId</remarks>
+        [Obsolete("Deprecated in v13, please use NameId instead")]
         string StaticName { get; }
+
+        /// <summary>
+        /// A unique id/name of the content-type. Previously called StaticName.
+        /// </summary>
+        /// <remarks>New in v13</remarks>
+        string NameId { get; }
 
         /// <summary>
         /// The content-type description
@@ -36,7 +44,15 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Get the id of the Content Type - you usually don't need this!
         /// </summary>
+        int Id { get; }
+
+        /// <summary>
+        /// Old name for Id, please use Id instead
+        /// </summary>
+        /// <remarks>Deprecated in v13</remarks>
+        [Obsolete("Deprecated in V13, please use Id instead.")]
         int ContentTypeId { get; }
+
 
         /// <summary>
         /// Dictionary with all Attribute Definitions
@@ -90,6 +106,13 @@ namespace ToSic.Eav.Data
         /// </summary>
         [PrivateApi("WIP 12.03")] string DynamicChildrenField { get; }
 
+
+        #endregion
+
+        #region WIP v13 Shared Content Types should be passed around in IContentType defs
+
+        [PrivateApi("very internal functionality")]
+        bool AlwaysShareConfiguration { get; }
 
         #endregion
     }

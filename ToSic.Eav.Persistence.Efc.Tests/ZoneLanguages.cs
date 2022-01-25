@@ -10,7 +10,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
     {
         private const int MinZones = 4;
         private const int MaxZones = 10;
-        private const int AppCountInHomeZone = 5;
+        private const int AppCountInHomeZone = 6;
         private const int ZoneCountWithMultiLanguage = 2;
         
         private const int ZoneHome = 2;
@@ -34,7 +34,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         }
 
 
-        private IReadOnlyDictionary<int, Zone> _zones;
+        private IDictionary<int, Zone> _zones;
         private int _defaultAppId;
         private Dictionary<int, string> _appsInHomeZone;
 

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps;
+﻿using System;
+using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
@@ -23,10 +24,7 @@ namespace ToSic.Eav.DataSources
         HelpLink = "https://r.2sxc.org/DsApp")]
     public partial class App : DataSourceBase
 	{
-
         #region Configuration-properties
-		//private const string AppSwitchKey = "AppSwitch";
-		//private const string ZoneSwitchKey = "ZoneSwitch";
 
         /// <inheritdoc/>
         [PrivateApi]
@@ -77,8 +75,6 @@ namespace ToSic.Eav.DataSources
 			// Set default switch-keys to 0 = no switch
             ConfigMask(nameof(AppSwitch) + "||0");
 			ConfigMask(nameof(ZoneSwitch) + "||0");
-			//ConfigMask(AppSwitchKey, "[Settings:" + AppSwitchKey + "||0]");
-			//ConfigMask(ZoneSwitchKey, "[Settings:" + ZoneSwitchKey + "||0]");
         }
         private readonly IAppStates _appStates;
 
@@ -98,15 +94,13 @@ namespace ToSic.Eav.DataSources
             Attach(Constants.DefaultStreamName, newDs);
 		}
 
+		[PrivateApi]
+		[Obsolete("Will probably be removed in v14")]
+		// TODO: cause obsolete warning when used! #Deprecated
+        public IMetadataSource Metadata => AppState;
 
-		/// <summary>
-		/// Metadata is an important feature of apps. <br/>
-		/// The App DataSource automatically provides direct access to the metadata system.
-		/// This allows users of the App to query metadata directly through this object. 
-		/// </summary>
-		/// <returns>An initialized <see cref="IMetadataSource"/> for this app</returns>
-		public IMetadataSource Metadata => _metadata ?? (_metadata = _appStates.Get(this));
-        private IMetadataSource _metadata;
+		protected AppState AppState => _appState ?? (_appState = _appStates.Get(this));
+        private AppState _appState;
     }
 
 }

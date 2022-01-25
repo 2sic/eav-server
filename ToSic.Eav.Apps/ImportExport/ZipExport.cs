@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
@@ -26,12 +27,16 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly string _blankGuid = Guid.Empty.ToString();
         private const string ZipFolderForPortalFiles = "PortalFiles";
         private const string ZipFolderForAppStuff = "2sexy";
+        private const string ZipFolderForGlobalAppStuff = "2sexyGlobal";
         private const string AppXmlFileName = "App.xml";
         private const string InstructionsFolder = "ImportExport\\Instructions";
 
         public FileManager FileManager;
         private string _physicalAppPath;
         private string _appFolder;
+
+        public FileManager FileManagerGlobal;
+        private string _physicalPathGlobal;
 
         protected ILog Log;
 
@@ -59,14 +64,16 @@ namespace ToSic.Eav.Apps.ImportExport
         private AppRuntime AppRuntime { get; }
         public DataSourceFactory DataSourceFactory { get; }
 
-        public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, ILog parentLog)
+        public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, string physicalPathGlobal, ILog parentLog)
         {
             _appId = appId;
             _zoneId = zoneId;
             _appFolder = appFolder;
             _physicalAppPath = physicalAppPath;
+            _physicalPathGlobal = physicalPathGlobal;
             Log = new Log("Zip.Exp", parentLog);
             FileManager = new FileManager(_physicalAppPath);
+            FileManagerGlobal = new FileManager(physicalPathGlobal);
             AppRuntime.Init(new AppIdentity(_zoneId, _appId), true, Log);
             return this;
         }
@@ -89,7 +96,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             // generate the XML
             var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
-
+    
             #region Copy needed files to temporary directory
 
             var messages = new List<Message>();
@@ -106,14 +113,18 @@ namespace ToSic.Eav.Apps.ImportExport
             var appDirectory = tempDirectory.CreateSubdirectory("Apps/" + _appFolder + "/");
             
             var sexyDirectory = appDirectory.CreateSubdirectory(ZipFolderForAppStuff);
-            
+            var globalSexyDirectory = appDirectory.CreateSubdirectory(ZipFolderForGlobalAppStuff);
             var portalFilesDirectory = appDirectory.CreateSubdirectory(ZipFolderForPortalFiles);
 
             // Copy app folder
             if (Directory.Exists(_physicalAppPath))
-            {
                 FileManager.CopyAllFiles(sexyDirectory.FullName, false, messages);
-            }
+
+            // Copy global app folder only for ParentApp
+            var parentAppGuid = xmlExport.AppState.ParentApp.AppState?.NameId;
+            if (parentAppGuid == null || parentAppGuid == Constants.PresetName)
+                if (Directory.Exists(_physicalPathGlobal))
+                    FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
 
             // Copy PortalFiles
             foreach (var file in xmlExport.ReferencedFiles)
@@ -160,19 +171,36 @@ namespace ToSic.Eav.Apps.ImportExport
             var attributeSets = runtime.ContentTypes.All.OfScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
-            var contentTypeNames = attributeSets.Select(p => p.StaticName).ToArray();
-            var templateTypeId = _metaTargetTypes.GetId(Settings.TemplateContentType);
-            var entities =
-                DataSourceFactory.GetPublishing(runtime, false).Out[Constants.DefaultStreamName].List.Where(
-                    e => e.MetadataFor.TargetType != templateTypeId
-                         && e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
+            // Exclude ParentApp attributeSets
+            // TODO: option to include ParentApp attributeSets
+            attributeSets = attributeSets.Where(p => !p.HasAncestor());
+
+            var contentTypeNames = attributeSets.Select(p => p.NameId).ToArray();
+
+            // 2022-01-04 2dm Cleaned up
+            // This was for a very old way of storing Template information, probably 2sxc 1-4 or something
+            // I'll completely disable this, as I believe it's not in use at all 
+            // Keep this commented till End of June 2022 #cleanUp #oldTemplates #2631
+            //var templateTypeId = 15; // _metaTargetTypes.GetId(Settings.TemplateContentType);
+            //var entities =
+            //    DataSourceFactory.GetPublishing(runtime, false).List.Where(
+            //        e => e.MetadataFor.TargetType != templateTypeId
+            //             && e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
+
+            // 2022-01-04 2dm - new code, simplified
+            // Get all entities except Attribute/Field Metadata, which is exported in a different way
+            var entities = DataSourceFactory.GetPublishing(runtime, false).List
+                    .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
 
             if (!includeContentGroups)
-                entities = entities.Where(p => p.Type.StaticName != SexyContentContentGroupName).ToList();
+                entities = entities.Where(p => p.Type.NameId != SexyContentContentGroupName).ToList();
+
+            // Exclude ParentApp entities
+            // TODO: option to include ParentApp entities
+            entities = entities.Where(p => !p.HasAncestor()).ToList();
 
             var entityIds = entities
                 .Select(e => e.EntityId.ToString()).ToArray();
-
 
             var xmlExport = _xmlExporter.Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds, Log);
 

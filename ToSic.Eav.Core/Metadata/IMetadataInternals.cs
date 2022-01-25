@@ -13,6 +13,13 @@ namespace ToSic.Eav.Metadata
     public interface IMetadataInternals
     {
         /// <summary>
+        /// Internal API to override metadata providing, for example when creating new entities before saving.
+        /// </summary>
+        /// <param name="items"></param>
+        [PrivateApi]
+        void Use(List<IEntity> items);
+
+        /// <summary>
         /// The complete list of metadata items, incl. the hidden ones
         /// </summary>
         List<IEntity> AllWithHidden { get; }

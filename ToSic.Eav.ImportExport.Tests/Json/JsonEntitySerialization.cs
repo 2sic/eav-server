@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.ImportExport.Tests.Json;
-using ToSic.Eav.Persistence.Efc;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
@@ -12,12 +12,12 @@ namespace ToSic.Eav.ImportExport.Tests.json
     public class JsonEntitySerialization: JsonTestBase
     {
         private readonly JsonSerializer _jsonSerializer;
-        private readonly Efc11Loader _loader;
+        private readonly IRepositoryLoader _loader;
 
         public JsonEntitySerialization()
         {
             _jsonSerializer = Build<JsonSerializer>();
-            _loader = Build<Efc11Loader>();
+            _loader = Build<IRepositoryLoader>();
         }
 
         [TestMethod]

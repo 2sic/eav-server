@@ -27,8 +27,13 @@ namespace ToSic.Eav.Apps.Parts
         /// WARNING: ATM it respects published/unpublished because it's using the Data.
         /// It's not clear if this is actually intended.
         /// </summary>
-        public IEnumerable<IEntity> OnlyContent(bool withConfiguration) =>
-            Parent.Data.List.Where(e => (withConfiguration ? AppConstants.ScopesContentAndConfiguration : AppConstants.ScopesContent).Contains(e.Type.Scope));
+        public IEnumerable<IEntity> OnlyContent(bool withConfiguration)
+        {
+            var scopes = withConfiguration 
+                ? new [] { Scopes.Default, Scopes.SystemConfiguration } 
+                : new[] { Scopes.Default }; // Scopes.DefaultList;
+            return Parent.Data.List.Where(e => scopes.Contains(e.Type.Scope));
+        }
 
         /// <summary>
         /// Get this item or return null if not found

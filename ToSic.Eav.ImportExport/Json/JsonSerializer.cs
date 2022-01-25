@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.Serialization;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Types;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -12,9 +12,9 @@ namespace ToSic.Eav.ImportExport.Json
         /// <summary>
         /// Initialize with the correct logger name
         /// </summary>
-        public JsonSerializer(ITargetTypes metadataTargets, IGlobalTypes globalTypes) : this(metadataTargets, globalTypes, "Jsn.Serlzr") {}
+        public JsonSerializer(ITargetTypes metadataTargets, IAppStates appStates) : this(metadataTargets, appStates, "Jsn.Serlzr") {}
 
-        protected JsonSerializer(ITargetTypes metadataTargets, IGlobalTypes globalTypes, string logName): base(metadataTargets, globalTypes, logName) { }
+        protected JsonSerializer(ITargetTypes metadataTargets, IAppStates appStates, string logName): base(metadataTargets, appStates, logName) { }
     }
 
     internal static class StringHelpers

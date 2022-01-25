@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps
 
         public AppManager Init(IAppIdentity app, ILog parentLog) => Init(app, true, parentLog);
 
-        public AppManager Init(int appId, ILog parentLog) => Init(Dependencies.AppStates.Identity(null, appId), true, parentLog);
+        public AppManager Init(int appId, ILog parentLog) => Init(Dependencies.AppStates.IdentityOfApp(appId), true, parentLog);
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.

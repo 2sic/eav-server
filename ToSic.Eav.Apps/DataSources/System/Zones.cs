@@ -40,11 +40,6 @@ namespace ToSic.Eav.DataSources.System
 
 	    private const string ZoneContentTypeName = "EAV_Zones";
 
-	    // 2dm: this is for a later feature...
-	    // ReSharper disable once UnusedMember.Local
-        private const string ZoneCtGuid = "11001010-251c-eafe-2792-000000000001";
-
-        
 		#endregion
 
         /// <inheritdoc />
@@ -67,20 +62,21 @@ namespace ToSic.Eav.DataSources.System
             var wrapLog = Log.Call<ImmutableArray<IEntity>>();
             
             // Get cache, which manages a list of zones
-            var zones = _appStates.Zones;// Eav.Apps.State.Zones;
+            var zones = _appStates.Zones;
             var builder = DataBuilder;
             var list = zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
 	        {
-	            var tenant = _zoneMapper.SiteOfZone(zone.ZoneId);
+	            var site = _zoneMapper.SiteOfZone(zone.ZoneId);
 
 	            // Assemble the entities
 	            var znData = new Dictionary<string, object>
 	            {
                     {ZoneType.Id.ToString(), zone.ZoneId},
                     {ZoneType.Name.ToString(), $"Zone {zone.ZoneId}" },
-	                {ZoneType.TenantId.ToString(), tenant?.Id},
-	                {ZoneType.TenantName.ToString(), tenant?.Name},
+	                {ZoneType.TenantId.ToString(), site?.Id},
+	                {ZoneType.TenantName.ToString(), site?.Name},
                     {ZoneType.DefaultAppId.ToString(), zone.DefaultAppId },
+                    {ZoneType.PrimaryAppId.ToString(), zone.PrimaryAppId },
                     {ZoneType.IsCurrent.ToString(), zone.ZoneId == ZoneId },
                     {ZoneType.AppCount.ToString(), zone.Apps.Count }
 	            };

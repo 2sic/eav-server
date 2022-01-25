@@ -27,7 +27,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var con = DbContext.SqlDb.Database.GetDbConnection();
             if (con.State != ConnectionState.Open)
                 con.Open(); // make sure same connection is used later
-#if NET451
+#if NETFRAMEWORK
             _mainChangeLogId = DbContext.SqlDb.ToSicEavChangeLog
                 .FromSql("ToSIC_EAV_ChangeLogAdd @p0", userName)
                 .Single().ChangeId;

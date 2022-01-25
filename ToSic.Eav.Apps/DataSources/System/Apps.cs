@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Plumbing;
@@ -44,11 +43,6 @@ namespace ToSic.Eav.DataSources.System
         private const string ZoneIdField = "ZoneId";
         private const string AppsContentTypeName = "EAV_Apps";
 
-        // 2dm: this is for a later feature...
-	    // ReSharper disable once UnusedMember.Local
-	    private const string AppsCtGuid = "11001010-251c-eafe-2792-000000000002";
-
-
 	    /// <summary>
 	    /// The attribute whose value will be filtered
 	    /// </summary>
@@ -84,7 +78,7 @@ namespace ToSic.Eav.DataSources.System
             var builder = DataBuilder;
 
             // try to load the content-type - if it fails, return empty list
-            var zones = _appStates.Zones;// State.Zones;
+            var zones = _appStates.Zones;
             if (!zones.ContainsKey(OfZoneId)) return ImmutableArray<IEntity>.Empty;
             var zone = zones[OfZoneId];
 
@@ -113,6 +107,7 @@ namespace ToSic.Eav.DataSources.System
                     {AppType.Folder.ToString(), appObj?.Folder ?? "" },
                     {AppType.IsHidden.ToString(), appObj?.Hidden ?? false },
 	                {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
+	                {AppType.IsPrimary.ToString(), app.Key == zone.PrimaryAppId},
 	            };
                 if(error != null)
                     appEnt["Error"] = error;
@@ -127,7 +122,7 @@ namespace ToSic.Eav.DataSources.System
             });
 
             var final = list.ToImmutableArray();
-            return wrapLog($"{final.Length}", final); //  list.ToImmutableArray();// .ToList();
+            return wrapLog($"{final.Length}", final);
         }
 
 	}

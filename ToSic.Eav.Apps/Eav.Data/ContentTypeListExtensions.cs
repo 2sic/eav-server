@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Data
@@ -21,12 +19,10 @@ namespace ToSic.Eav.Data
             var scopes = all.Select(ct => ct.Scope).Distinct().ToList();
 
             // Make sure the "Default" scope is always included, otherwise it's missing on new apps
-            if (!scopes.Contains(AppConstants.ScopeContentOld))
-                scopes.Add(AppConstants.ScopeContentOld);
-            
+            if (!scopes.Contains(Scopes.Default)) scopes.Add(Scopes.Default);
+
             // Add new Configuration scope for v12.02
-            if(!scopes.Contains(AppConstants.ScopeConfiguration))
-                scopes.Add(AppConstants.ScopeConfiguration);
+            if (!scopes.Contains(Scopes.SystemConfiguration)) scopes.Add(Scopes.SystemConfiguration);
 
             return scopes.OrderBy(s => s).ToArray();
         }
@@ -35,17 +31,7 @@ namespace ToSic.Eav.Data
         {
             var scopes = all.GetAllScopesInclDefault();
 
-            var lookup = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
-            {
-                {AppConstants.ScopeContentOld, "Default"},
-                {AppConstants.ScopeConfiguration, "Configuration (Views etc.)" },
-                {AppConstants.ScopeContentSystem, "System: CMS"},
-                {AppConstants.ScopeApp, "System: App"},
-                {Constants.ScopeSystem, "System: System"},
-                {"System.DataSources", "System: DataSources"},
-                {"System.Decorators", "System: Decorators"},
-                {"System.Fields", "System: Fields"}
-            };
+            var lookup = Scopes.ScopesWithNames; 
 
             var results = scopes
                 .Select(s => new { value = s, name = lookup.TryGetValue(s, out var label) ? label : s })

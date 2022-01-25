@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.Tests.Mocks;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.Persistence.File;
+using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Run;
 using ToSic.Testing.Shared;
 using ToSic.Testing.Shared.Mocks;
@@ -23,7 +23,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
         {
             // Make sure that features are ready to use
             var sysLoader = Build<SystemLoader>();
-            sysLoader.Reload();
+            sysLoader.LoadFeatures();
         }
     }
 }
