@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps.Run
 
         public abstract Version TenantVersion { get; }
 
-        public abstract string ModuleVersion { get; }
+        public string ModuleVersion => EavSystemInfo.VersionString;
 
         public abstract string FallbackContentTypeScope { get; }
 

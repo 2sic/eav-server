@@ -253,7 +253,7 @@ namespace ToSic.Eav.WebApi
             {
                 Log.Add("import content" + args.DebugInfo);
 
-                var deser = _appManager.ServiceProvider.Build<ImportExport.Json.JsonSerializer>().Init(_appManager.AppState, Log);
+                var deser = _appManager.ServiceProvider.Build<Eav.ImportExport.Json.JsonSerializer>().Init(_appManager.AppState, Log);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents, args.AppId, Log);
                 _appManager.Queries.SaveCopy(qdef);

@@ -20,8 +20,6 @@ namespace ToSic.Eav.Apps.Run
 
         public override Version TenantVersion => new Version(0,0,0);
 
-        public override string ModuleVersion => "00.00.00";
-
         public override string FallbackContentTypeScope => "Default";
 
         public override string TemplatesRoot(int zoneId, int appId) => "/templates-root-not-defined/";

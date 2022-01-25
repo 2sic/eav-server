@@ -19,8 +19,8 @@ namespace ToSic.Eav.Persistence.File
     {
         private const string ContentTypeFolder = "contenttypes\\";
         private const string QueryFolder = "queries\\";
-        private const string ConfigurationFolder = "configurations\\";
-        //private const string ItemFolder = "items\\";
+        public const string ConfigurationFolder = "configurations\\";
+        private const string EntitiesFolder = "entities\\";
 
 
         public int AppId = 0;
@@ -28,11 +28,11 @@ namespace ToSic.Eav.Persistence.File
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
-        public FileSystemLoader(/*JsonSerializer jsonSerializerUnready,*/ IServiceProvider serviceProvider) : base(LogNames.Eav + ".FsLoad")
+        public FileSystemLoader(IServiceProvider serviceProvider) : base(LogNames.Eav + ".FsLoad")
         {
-            //_jsonSerializerUnready = jsonSerializerUnready;
             _serviceProvider = serviceProvider;
         }
+        private readonly IServiceProvider _serviceProvider;
 
         public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
         {
@@ -60,15 +60,13 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_ser != null) return _ser;
-                _ser = _serviceProvider.Build<JsonSerializer>(); // _jsonSerializerUnready;
+                _ser = _serviceProvider.Build<JsonSerializer>();
                 _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
         }
         private JsonSerializer _ser;
-        //private readonly JsonSerializer _jsonSerializerUnready;
-        private readonly IServiceProvider _serviceProvider;
 
         internal void ResetSerializer(AppState appState)
         {
