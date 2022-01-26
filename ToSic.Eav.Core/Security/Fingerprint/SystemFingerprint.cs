@@ -35,7 +35,6 @@ namespace ToSic.Eav.Security.Fingerprint
         public SystemFingerprint(Lazy<IPlatformInfo> platform, Lazy<IDbConfiguration> dbConfigLazy)
         {
             _platform = platform;
-
             _dbConfig = dbConfigLazy;
         }
 
@@ -70,5 +69,7 @@ namespace ToSic.Eav.Security.Fingerprint
             var dbName = dbConnection.Between(key, ";", true) ?? dbConnection;
             return dbName;
         }
+
+        internal static void ResetForTest() => _fingerprintCache = null;
     }
 }

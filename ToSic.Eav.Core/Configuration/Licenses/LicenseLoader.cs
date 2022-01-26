@@ -25,7 +25,6 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
-using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
@@ -37,8 +36,8 @@ namespace ToSic.Eav.Configuration.Licenses
         /// <summary>
         /// Constructor - not meant for DI
         /// </summary>
-        internal LicenseLoader(/*SystemFingerprint fingerprint,*/ LogHistory logHistory, ILog parentLog)
-            : base(/*fingerprint,*/ logHistory, parentLog, LogNames.Eav + "LicLdr", "Load Licenses")
+        internal LicenseLoader(LogHistory logHistory, ILog parentLog)
+            : base(logHistory, parentLog, LogNames.Eav + "LicLdr", "Load Licenses")
         {
         }
 

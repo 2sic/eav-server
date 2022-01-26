@@ -1,9 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using ToSic.Eav;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Testing.Shared
 {
@@ -20,6 +24,9 @@ namespace ToSic.Testing.Shared
 
             var globalConfig = Build<IGlobalConfiguration>();
             globalConfig.DataFolder = "c:\\Projects\\2sxc\\2sxc\\Src\\Data\\";
+
+            // Try to reset some special static variables which may cary over through many tests
+            SystemFingerprint.ResetForTest();
 
             // Make sure global types are loaded
             Build<SystemLoader>().StartUp();
