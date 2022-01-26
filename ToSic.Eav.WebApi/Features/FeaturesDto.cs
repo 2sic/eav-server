@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace ToSic.Eav.WebApi.Features
 {
@@ -20,4 +21,9 @@ namespace ToSic.Eav.WebApi.Features
         public string Signature { get; set; }
     }
 
+    public class FeatureNewDto
+    {
+        public Guid FeatureGuid { get; set; }
+        public bool? Enabled { get; set; }
+    }
 }

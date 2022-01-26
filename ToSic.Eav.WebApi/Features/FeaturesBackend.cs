@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.WebApi.Validation;
 
@@ -51,6 +52,15 @@ namespace ToSic.Eav.WebApi.Features
             // then take the newFeatures (it should be a json)
             // and save to /desktopmodules/.data-custom/configurations/features.json
             if (!SaveFeaturesAndReload(featuresManagementResponse.Msg.Features)) return false;
+
+            return true;
+        }
+
+        public bool SaveNewFeatures(List<FeatureNewDto> featuresManagementResponse)
+        {
+            var json = JsonConvert.SerializeObject(featuresManagementResponse);
+
+            if (!SaveFeaturesAndReload(json)) return false;
 
             return true;
         }
