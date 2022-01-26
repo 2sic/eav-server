@@ -58,6 +58,9 @@ namespace ToSic.Eav.WebApi.Features
 
         public bool SaveNewFeatures(List<FeatureNewDto> featuresManagementResponse)
         {
+            // validity check 
+            if (featuresManagementResponse == null || featuresManagementResponse.Count == 0) return false;
+
             var featureListStored = FeatureListStoredBuilder(featuresManagementResponse);
 
             var json = JsonConvert.SerializeObject(featureListStored);
