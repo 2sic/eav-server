@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.WebApi.Validation;
@@ -38,8 +39,7 @@ namespace ToSic.Eav.WebApi.Features
             if (reload) _systemLoaderLazy.Value.Init(Log).ReloadFeatures();
             return _features.Value.All;
         }
-
-
+        
         public bool SaveFeatures(FeaturesDto featuresManagementResponse)
         {
             // first do a validity check 
@@ -58,15 +58,32 @@ namespace ToSic.Eav.WebApi.Features
 
         public bool SaveNewFeatures(List<FeatureNewDto> featuresManagementResponse)
         {
-            var json = JsonConvert.SerializeObject(featuresManagementResponse);
+            var featureListStored = FeatureListStoredBuilder(featuresManagementResponse);
+
+            var json = JsonConvert.SerializeObject(featureListStored);
 
             if (!SaveFeaturesAndReload(json)) return false;
 
             return true;
         }
 
-
         #region Helper Functions
+
+        private FeatureListStored FeatureListStoredBuilder(List<FeatureNewDto> featuresManagementResponse) =>
+            new FeatureListStored
+            {
+                Features = featuresManagementResponse.Select(FeatureConfigBuilder).ToList(),
+                Fingerprint = _systemLoaderLazy.Value.Init(Log).Fingerprint.GetFingerprint()
+            };
+
+        private static FeatureConfig FeatureConfigBuilder(FeatureNewDto featureNewDto)
+        {
+            var featureConfig = new FeatureConfig();
+            featureConfig.Id = featureNewDto.FeatureGuid;
+            if (featureNewDto.Enabled.HasValue)
+                featureConfig.Enabled = featureNewDto.Enabled.Value;
+            return featureConfig;
+        }
 
         private bool SaveFeaturesAndReload(string features)
         {
@@ -91,7 +108,6 @@ namespace ToSic.Eav.WebApi.Features
                 return wrapLog("error", false);
             }
         }
-
 
         #endregion
     }
