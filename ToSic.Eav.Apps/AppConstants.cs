@@ -28,6 +28,8 @@
         public static string RootNameResources = "Resources";
 
         // Placeholders / Tokens - probably should move somewhere else someday
+        // TODO: CHANGE TO [App:Folder] - must check UI code if this is used anywhere
+        public const string AppFolderPlaceholder = "[AppFolder]";
         public static string AppPathPlaceholder = "[App:Path]";
         public static string AppPathSharedPlaceholder = "[App:PathShared]";
     }
