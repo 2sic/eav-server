@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps.Languages
             if (appStateOrNull == null)
             {
                 var noAppResult = languages
-                    .Select(l => new AppUserLanguageState(l, true))
+                    .Select(l => new AppUserLanguageState(l, true, -1))
                     .ToList();
                 return wrapLog($"no-app {noAppResult.Count}", noAppResult);
             }
@@ -61,11 +61,12 @@ namespace ToSic.Eav.Apps.Languages
 
             var newSet = set.Select(s =>
             {
+                var permissionEntities = s.Permissions.ToList();
                 var ok = defaultAllowed;
                 if (!ok)
                 {
                     var pChecker = _checkGenerator.Build<AppPermissionCheck>();
-                    var permissions = s.Permissions.Select(p => new Permission(p));
+                    var permissions = permissionEntities.Select(p => new Permission(p));
                     pChecker.ForCustom(_ctx, appStateOrNull, permissions, Log);
                     ok = pChecker.PermissionsAllow(GrantSets.WriteSomething);
                 }
@@ -74,11 +75,12 @@ namespace ToSic.Eav.Apps.Languages
                 {
                     s.Language,
                     Allowed = ok,
+                    PermissionCount = permissionEntities.Count
                 };
             });
 
             var result = newSet
-                .Select(s => new AppUserLanguageState(s.Language, s.Allowed))
+                .Select(s => new AppUserLanguageState(s.Language, s.Allowed, s.PermissionCount))
                 .ToList();
             return wrapLog($"ok {result.Count}", result);
         }

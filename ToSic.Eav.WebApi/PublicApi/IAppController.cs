@@ -20,6 +20,8 @@ namespace ToSic.Eav.WebApi.PublicApi
         AppExportInfoDto Statistics(int appId, int zoneId);
         ImportResultDto Import(int zoneId);
 
+        List<SiteLanguageDto> Languages(int appId);
+
         /// <summary>
         /// Reset an App to the last xml state
         /// </summary>
