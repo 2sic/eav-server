@@ -38,7 +38,7 @@ namespace ToSic.Eav.Configuration.Licenses
         ) { AutoEnable = true };
 
         public static readonly LicenseDefinition Patron = new LicenseDefinition(101, 
-            "Patron/Supporter",
+            "Patron Basic",
             new Guid("61d0bf11-187c-4ae8-9b76-a2c3d4beaad7"),
             "Patrons / supporters of 2sxc get some additional features as a thank you for supporting 2sxc."
         );

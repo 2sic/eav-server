@@ -21,7 +21,7 @@ using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    public class LicenseInfoRaw
+    public class LicenseInfoRawOld
     {
         public string Name { get; set; }
         public Guid Guid { get; set; }
@@ -40,9 +40,9 @@ namespace ToSic.Eav.Configuration.Licenses
         /// <summary>
         /// Empty constructor so it can also be used by code on 2sxc.org to create licenses
         /// </summary>
-        public LicenseInfoRaw() { }
+        public LicenseInfoRawOld() { }
 
-        public LicenseInfoRaw(IEntity entity)
+        public LicenseInfoRawOld(IEntity entity)
         {
             Guid = entity.EntityGuid;
             Name = entity.Value<string>(LicenseConstants.FieldTitle);

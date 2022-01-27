@@ -15,7 +15,7 @@ namespace ToSic.Eav
         /// <remarks>
         /// It must be a const, otherwise it couldn't be used in method signatures :(
         /// </remarks>
-        public const string Protector = "Rule: all params must be named (https://r.2sxc.org/named-params), Example: 'enable: true, version: 10'";
+        public const string Protector = "Rule: All params must be named (https://r.2sxc.org/named-params)";
 
         /// <summary>
         /// Parameter checker which should be called on all protected methods. It will help you generate a proper error message if the parameters were not named. 

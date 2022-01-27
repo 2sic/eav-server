@@ -80,7 +80,7 @@ namespace ToSic.Eav.Configuration.Licenses
 
             if (entity == null) return wrapLog("null", new List<LicenseState>());
 
-            var infoRaw = new LicenseInfoRaw(entity);
+            var infoRaw = new LicenseInfoRawOld(entity);
 
             // Check signature valid
             var resultForSignature = infoRaw.GetStandardizedControlString();
