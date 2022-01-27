@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Newtonsoft.Json;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
@@ -65,10 +64,10 @@ namespace ToSic.Eav.Configuration
 
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_logHistory, Log).Init(Fingerprint.GetFingerprint(), _globalConfiguration.Value.GlobalFolder).LoadLicenses(presetApp);
+            new LicenseLoader(_logHistory, Log).LoadLicenses(Fingerprint.GetFingerprint(), _globalConfiguration.Value.GlobalFolder);
 
             // Now do a normal reload of configuration and features
-            LoadFeaturesNew(presetApp);
+            LoadFeaturesNew();
         }
         
 
@@ -91,7 +90,7 @@ namespace ToSic.Eav.Configuration
         /// Pre-Load enabled / disabled global features
         /// </summary>
         [PrivateApi]
-        public void LoadFeaturesNew(AppState presetApp = null)
+        public void LoadFeaturesNew()
         {
             var wrapLog = Log.Call();
             var features = new FeatureListStored();

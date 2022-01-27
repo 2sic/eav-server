@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
@@ -41,32 +40,18 @@ namespace ToSic.Eav.Configuration.Licenses
         {
         }
 
-        private string _fingerprint;
-        private string _globalFolder;
-
-        public LicenseLoader Init(string fingerprint, string globalFolder)
-        {
-            _fingerprint = fingerprint;
-            _globalFolder = globalFolder;
-            return this;
-        }
-
         /// <summary>
         /// Pre-Load enabled / disabled global features
         /// </summary>
         [PrivateApi]
-        internal void LoadLicenses(AppState presetApp)
+        internal void LoadLicenses(string fingerprint, string globalFolder)
         {
             var wrapLog = Log.Call();
             try
             {
-                //var licenseEntities = presetApp.List.OfType(LicenseConstants.TypeName).ToList();
-                //Log.Add($"Found {licenseEntities.Count} license entities");
-                //var licenses = licenseEntities.SelectMany(LicensesInOneEntity).ToList();
-
-                var licensesStored = LicensesStoredInConfigFolder();
+                var licensesStored = LicensesStoredInConfigFolder(globalFolder);
                 Log.Add($"Found {licensesStored.Count} licenseStored in files");
-                var licenses = licensesStored.SelectMany(LicensesStateBuilder).ToList();
+                var licenses = licensesStored.SelectMany(ls => LicensesStateBuilder(ls, fingerprint)).ToList();
                 var autoEnabled = AutoEnabledLicenses();
                 LicenseService.Update(autoEnabled.Union(licenses).ToList());
                 Log.Add($"Found {licenses.Count} licenses");
@@ -80,21 +65,21 @@ namespace ToSic.Eav.Configuration.Licenses
             }
         }
 
-        public List<LicenseStored> LicensesStoredInConfigFolder()
+        public List<LicenseStored> LicensesStoredInConfigFolder(string globalFolder)
         {
             var wrapLog = Log.Call<List<LicenseStored>>();
-            var configurationsPath = Path.Combine(_globalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
+            var configurationsPath = Path.Combine(globalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
 
             var licensesStored = Directory.EnumerateFiles(configurationsPath, "*.license.json")
-                .Select(filePath => File.ReadAllText(filePath))
-                .Select(json => JsonConvert.DeserializeObject<LicenseStored>(json))
+                .Select(File.ReadAllText)
+                .Select(JsonConvert.DeserializeObject<LicenseStored>)
                 .Where(licenses => licenses != null).ToList();
 
             Log.Add($"licensesStored: {licensesStored.Count}");
             return wrapLog("ok", licensesStored);
         }
 
-        private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored)
+        private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored, string fingerprint)
         {
             var wrapLog = Log.Call<List<LicenseState>>();
 
@@ -118,7 +103,7 @@ namespace ToSic.Eav.Configuration.Licenses
 
             // Check fingerprints
             var fps = licenseStored.FingerprintsArray;
-            var validFp = fps.Any(fp => _fingerprint.Equals(fp));
+            var validFp = fps.Any(fingerprint.Equals);
             Log.Add($"Fingerprint: {validFp}");
 
             var validVersion = int.TryParse(licenseStored.Versions, out var licVersion) &&
