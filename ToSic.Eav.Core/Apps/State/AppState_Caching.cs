@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Caching;
+using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
@@ -46,5 +47,12 @@ namespace ToSic.Eav.Apps
                 ? new CacheExpiringMultiSource(this, ParentApp.AppState)
                 : this as ICacheExpiring;
         }
+
+        [PrivateApi] 
+        public PiggyBack PiggyBack => _piggyBack ?? (_piggyBack = new PiggyBack());
+        private PiggyBack _piggyBack;
+
+        [PrivateApi]
+        public TData GetPiggyBack<TData>(string key, Func<TData> create) => PiggyBack.GetOrGenerate(key, create);
     }
 }

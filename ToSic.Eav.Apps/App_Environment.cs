@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps
         #region Paths
 
         [PrivateApi]
-        public string PhysicalPath => Path.Combine(Site.AppsRootPhysicalFull, Folder);
+        public string PhysicalPath => AppState.GetPiggyBack(nameof(PhysicalPath), () => Path.Combine(Site.AppsRootPhysicalFull, Folder));
 
         #endregion
 
