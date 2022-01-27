@@ -65,7 +65,7 @@ namespace ToSic.Eav.Configuration
 
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_logHistory, Log).Init(Fingerprint.GetFingerprint()).LoadLicenses(presetApp);
+            new LicenseLoader(_logHistory, Log).Init(Fingerprint.GetFingerprint(), _globalConfiguration.Value.GlobalFolder).LoadLicenses(presetApp);
 
             // Now do a normal reload of configuration and features
             LoadFeaturesNew(presetApp);

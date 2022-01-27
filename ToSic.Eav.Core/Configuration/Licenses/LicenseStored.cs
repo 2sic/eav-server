@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
@@ -79,16 +80,17 @@ namespace ToSic.Eav.Configuration.Licenses
         /// </summary>
         public string Signature { get; set; }
 
+        public string[] LicensesArray => Licenses?.Select(l => l.Id).ToArray().TrimmedAndWithoutEmpty() ?? Array.Empty<string>();
+
+        public string[] FingerprintsArray => Fingerprints?.Select(fp => fp.Id).ToArray().TrimmedAndWithoutEmpty() ?? Array.Empty<string>();
+
         public string GenerateIdentity()
         {
-            var licenses = Licenses?.Select(l => l.Id) ?? Array.Empty<string>();
-            var fingerprints = Fingerprints?.Select(fp => fp.Id) ?? Array.Empty<string>();
-
             var parts = new[]
             {
                 "key: " + Key,
-                "licenses:" + string.Join(",", licenses), // 2. Add all licenses
-                "fingerprints:" + string.Join(",", fingerprints), // 3. Add all fingerprints
+                "licenses:" + string.Join(",", LicensesArray), // 2. Add all licenses
+                "fingerprints:" + string.Join(",", FingerprintsArray), // 3. Add all fingerprints
                 "versions:" + Versions,
                 "expires:" + Expires.ToString("yyyy-MM-dd"),
                 "generated:" + Generated.ToString("yyyy-MM-dd"),
@@ -99,7 +101,6 @@ namespace ToSic.Eav.Configuration.Licenses
             var licNoSpaces = Regex.Replace(licenseString, @"\s+", "");
             return licNoSpaces;
         }
-
     }
 
     public class LicenseStoredDetails
