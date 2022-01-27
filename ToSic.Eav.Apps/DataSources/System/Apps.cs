@@ -92,7 +92,7 @@ namespace ToSic.Eav.DataSources.System
                     appObj = _serviceProvider.Build<Eav.Apps.App>();
                     appObj.Init(new AppIdentity(zone.ZoneId, app.Key), null, Log);
                     // this will get the guid, if the identity is not "default"
-                    if (Guid.TryParse(appObj.AppGuid, out var g)) guid = g;
+                    if (Guid.TryParse(appObj.NameId, out var g)) guid = g;
                 }
                 catch(Exception ex)
                 {

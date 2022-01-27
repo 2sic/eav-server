@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
@@ -33,9 +34,12 @@ namespace ToSic.Eav.Apps
         bool Hidden { get; }
 
         /// <summary>
-        /// GUID of the App as string.
+        /// NameId of the App - usually a string-GUID
         /// </summary>
-        /// <returns>The internal GUID of the app.</returns>
+        string NameId { get; }
+
+        [PrivateApi]
+        [Obsolete("Don't use any more, use NameId instead, will be removed ca. v14")]
         string AppGuid { get; }
 
         /// <summary>
