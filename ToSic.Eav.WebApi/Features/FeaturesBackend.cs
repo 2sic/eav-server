@@ -60,7 +60,7 @@ namespace ToSic.Eav.WebApi.Features
         public bool SaveNewFeatures(List<FeatureNewDto> featuresManagementResponse)
         {
             // validity check 
-            if (featuresManagementResponse == null || featuresManagementResponse.Count == 0) return false;
+            if (featuresManagementResponse == null) return false;
 
             var featureListStored = FeatureListStoredBuilder(featuresManagementResponse);
 
@@ -69,17 +69,6 @@ namespace ToSic.Eav.WebApi.Features
                 // reduce datetime serialization precision from 'yyyy-MM-ddTHH:mm:ss.FFFFFFFK'
                 new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-ddTHH:mm:ss" }
                 );
-
-            //var systemLoader = _systemLoaderLazy.Value.Init(Log);
-            //systemLoader.Features.Stored = featureListStored;
-            //systemLoader.Features.CacheTimestamp = DateTime.Now.Ticks;
-            //var appState = systemLoader.AppStateBuilder();
-            //var featureConfigurationEntity = systemLoader.FeatureConfigurationEntity(appState);
-            //var entity = appState.List.FirstOrDefaultOfType(FeatureConstants.TypeName);
-            //var featStr = entity?.Value<string>("Features"/*FeatureConstants.FeaturesField*/);
-            //var signature = entity?.Value<string>("Signature"/*FeatureConstants.SignatureField*/);
-            //var ser = _serviceProvider.Build<Eav.ImportExport.Json.JsonSerializer>().Init(appState, Log);
-            //var json = ser.Serialize(featureConfigurationEntity);
 
             if (!SaveFeaturesAndReload(json)) return false;
 
