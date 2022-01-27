@@ -132,42 +132,42 @@ namespace ToSic.Eav.Persistence.File
             return outerWrapLog("ok", appState);
         }
 
-        /// <summary>
-        /// Reload App Configuration Items from the File System
-        /// </summary>
-        public void ReloadConfigEntities()
-        {
-            var mainWrap = Log.Call();
-            var appStates = _serviceProvider.Build<IAppStates>();
-            var appState = appStates.GetPresetApp();
+        ///// <summary>
+        ///// Reload App Configuration Items from the File System
+        ///// </summary>
+        //public void ReloadConfigEntities()
+        //{
+        //    var mainWrap = Log.Call();
+        //    var appStates = _serviceProvider.Build<IAppStates>();
+        //    var appState = appStates.GetPresetApp();
 
-            var previousConfig = appState.List.FirstOrDefaultOfType(FeatureConstants.TypeName);
-            var prevId = previousConfig?.EntityId;
+        //    var previousConfig = appState.List.FirstOrDefaultOfType(FeatureConstants.TypeName);
+        //    var prevId = previousConfig?.EntityId;
 
-            appState.Load(() =>
-            {
-                var wrapLog = Log.Call(message: "Inside loader");
-                try
-                {
-                    Log.Add("Load config items");
-                    var configs = LoadGlobalItems(FsDataConstants.ConfigFolder)?.ToList() ?? new List<IEntity>();
-                    Log.Add($"Found {configs.Count} items");
-                    var featuresOnly = configs.OfType(FeatureConstants.TypeName).ToList();
-                    Log.Add($"Found {featuresOnly.Count} items which are {FeatureConstants.TypeName} - expected: 1");
-                    Log.Add("Ids of previous and new should match, otherwise we may run into problems. " +
-                            $"Prev: {prevId}, New: {featuresOnly.FirstOrDefault()?.EntityId}");
-                    foreach (var c in featuresOnly) appState.Add(c as Entity, null, true);
-                }
-                catch (Exception ex)
-                {
-                    Log.Add("Error updating config");
-                    Log.Exception(ex);
-                }
+        //    appState.Load(() =>
+        //    {
+        //        var wrapLog = Log.Call(message: "Inside loader");
+        //        try
+        //        {
+        //            Log.Add("Load config items");
+        //            var configs = LoadGlobalItems(FsDataConstants.ConfigFolder)?.ToList() ?? new List<IEntity>();
+        //            Log.Add($"Found {configs.Count} items");
+        //            var featuresOnly = configs.OfType(FeatureConstants.TypeName).ToList();
+        //            Log.Add($"Found {featuresOnly.Count} items which are {FeatureConstants.TypeName} - expected: 1");
+        //            Log.Add("Ids of previous and new should match, otherwise we may run into problems. " +
+        //                    $"Prev: {prevId}, New: {featuresOnly.FirstOrDefault()?.EntityId}");
+        //            foreach (var c in featuresOnly) appState.Add(c as Entity, null, true);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Log.Add("Error updating config");
+        //            Log.Exception(ex);
+        //        }
 
-                wrapLog("done");
-            });
+        //        wrapLog("done");
+        //    });
 
-            mainWrap("ok");
-        }
+        //    mainWrap("ok");
+        //}
     }
 }

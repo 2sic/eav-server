@@ -1,21 +1,22 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.WebApi.Validation;
 
 namespace ToSic.Eav.WebApi.Features
 {
-    public class FeaturesBackend: WebApiBackendBase<FeaturesBackend>
+    public class FeaturesBackend : WebApiBackendBase<FeaturesBackend>
     {
         #region Constructor / DI
 
         public FeaturesBackend(
             IServiceProvider serviceProvider,
             Lazy<IGlobalConfiguration> globalConfiguration,
-            Lazy<IFeaturesInternal> features, 
+            Lazy<IFeaturesInternal> features,
             Lazy<SystemLoader> systemLoaderLazy
             ) : base(serviceProvider, "Bck.Feats")
         {
@@ -39,7 +40,7 @@ namespace ToSic.Eav.WebApi.Features
             if (reload) _systemLoaderLazy.Value.Init(Log).ReloadFeatures();
             return _features.Value.All;
         }
-        
+
         public bool SaveFeatures(FeaturesDto featuresManagementResponse)
         {
             // first do a validity check 
@@ -63,7 +64,22 @@ namespace ToSic.Eav.WebApi.Features
 
             var featureListStored = FeatureListStoredBuilder(featuresManagementResponse);
 
-            var json = JsonConvert.SerializeObject(featureListStored);
+            var json = JsonConvert.SerializeObject(featureListStored,
+                //JsonSettings.Defaults()
+                // reduce datetime serialization precision from 'yyyy-MM-ddTHH:mm:ss.FFFFFFFK'
+                new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-ddTHH:mm:ss" }
+                );
+
+            //var systemLoader = _systemLoaderLazy.Value.Init(Log);
+            //systemLoader.Features.Stored = featureListStored;
+            //systemLoader.Features.CacheTimestamp = DateTime.Now.Ticks;
+            //var appState = systemLoader.AppStateBuilder();
+            //var featureConfigurationEntity = systemLoader.FeatureConfigurationEntity(appState);
+            //var entity = appState.List.FirstOrDefaultOfType(FeatureConstants.TypeName);
+            //var featStr = entity?.Value<string>("Features"/*FeatureConstants.FeaturesField*/);
+            //var signature = entity?.Value<string>("Signature"/*FeatureConstants.SignatureField*/);
+            //var ser = _serviceProvider.Build<Eav.ImportExport.Json.JsonSerializer>().Init(appState, Log);
+            //var json = ser.Serialize(featureConfigurationEntity);
 
             if (!SaveFeaturesAndReload(json)) return false;
 
@@ -75,18 +91,18 @@ namespace ToSic.Eav.WebApi.Features
         private FeatureListStored FeatureListStoredBuilder(List<FeatureNewDto> featuresManagementResponse) =>
             new FeatureListStored
             {
-                Features = featuresManagementResponse.Select(FeatureConfigBuilder).ToList(),
+                Features = featuresManagementResponse
+                    .Where(f => f.Enabled.HasValue)
+                    .Select(FeatureConfigBuilder).ToList(),
                 Fingerprint = _systemLoaderLazy.Value.Init(Log).Fingerprint.GetFingerprint()
             };
 
-        private static FeatureConfig FeatureConfigBuilder(FeatureNewDto featureNewDto)
-        {
-            var featureConfig = new FeatureConfig();
-            featureConfig.Id = featureNewDto.FeatureGuid;
-            if (featureNewDto.Enabled.HasValue)
-                featureConfig.Enabled = featureNewDto.Enabled.Value;
-            return featureConfig;
-        }
+        private static FeatureConfig FeatureConfigBuilder(FeatureNewDto featureNewDto) =>
+            new FeatureConfig
+            {
+                Id = featureNewDto.FeatureGuid,
+                Enabled = featureNewDto.Enabled.Value
+            };
 
         private bool SaveFeaturesAndReload(string features)
         {
@@ -95,7 +111,7 @@ namespace ToSic.Eav.WebApi.Features
             {
                 var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
 
-                if (!Directory.Exists(configurationsPath)) 
+                if (!Directory.Exists(configurationsPath))
                     Directory.CreateDirectory(configurationsPath);
 
                 var featureFilePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
@@ -103,6 +119,7 @@ namespace ToSic.Eav.WebApi.Features
                 File.WriteAllText(featureFilePath, features);
 
                 _systemLoaderLazy.Value.Init(Log).ReloadFeatures();
+
                 return wrapLog("ok", true);
             }
             catch (Exception ex)

@@ -24,7 +24,7 @@ namespace ToSic.Testing.Shared
 
             var globalConfig = Build<IGlobalConfiguration>();
             globalConfig.DataFolder = "c:\\Projects\\2sxc\\2sxc\\Src\\Data\\";
-
+            globalConfig.GlobalFolder = globalConfig.DataFolder;
             // Try to reset some special static variables which may cary over through many tests
             SystemFingerprint.ResetForTest();
 
