@@ -2,6 +2,13 @@
 {
     public static class AppConstants
     {
+        /// <summary>
+        /// This is the folder name which contains all apps.
+        /// As of now, it's hard-coded to be 2sxc
+        /// If every EAV is used in other systems, we will have to put this into the global configuration and init in on startup
+        /// </summary>
+        public static string AppsRootFolder = "2sxc";
+
         public const string AppIconFile = "app-icon.png";
         public const string AppPrimaryIconFile = "app-primary.png";
 
@@ -9,6 +16,8 @@
         /// This is used in rare cases where the Zone should be auto-retrieved from the current context zone
         /// </summary>
         public const int AutoLookupZone = -1;
+
+        public static readonly string ContentGroupRefTypeName = "ContentGroupReference";
 
 
         #region App Configuration Fields
