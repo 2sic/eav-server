@@ -106,8 +106,12 @@ namespace ToSic.Eav.Configuration.Licenses
             var validFp = fps.Any(fingerprint.Equals);
             Log.Add($"Fingerprint: {validFp}");
 
-            var validVersion = int.TryParse(licenseStored.Versions, out var licVersion) &&
-                               SystemInformation.Version.Major == licVersion;
+            var validVersion = licenseStored.Versions?
+                .Split(',')
+                .Select(v => v.Trim())
+                .Any(v => int.TryParse(v, out var licVersion) && SystemInformation.Version.Major == licVersion)
+                ?? false;
+
             Log.Add($"Version: {validVersion}");
 
             var validDate = DateTime.Now.CompareTo(licenseStored.Expires) <= 0;
