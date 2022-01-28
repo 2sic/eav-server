@@ -29,7 +29,7 @@ namespace ToSic.Eav
             // Configuration objects
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
-            
+            services.TryAddTransient<GlobalPaths>();
             services.TryAddTransient<SystemLoader>();
 
             // Make sure that IFeaturesInternal and IFeatures use the same singleton!
