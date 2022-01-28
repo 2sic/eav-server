@@ -9,7 +9,7 @@ namespace ToSic.Eav.Configuration
         public const string QueriesFolder = "queries";
         public const string ConfigFolder = "configurations";
         public const string EntitiesFolder = "entities";
-        public static string[] EntityItemFolders = { QueriesFolder, ConfigFolder, EntitiesFolder };
+        public static string[] EntityItemFolders = { QueriesFolder, EntitiesFolder };
 
         private const int MagicZeroMaker = 10000000;
         public const int GlobalContentTypeMin = int.MaxValue / MagicZeroMaker * MagicZeroMaker;
