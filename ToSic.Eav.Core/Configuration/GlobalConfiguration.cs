@@ -28,7 +28,7 @@ namespace ToSic.Eav.Configuration
         }
 
         /// <inheritdoc />
-        public string GlobalSiteFolder
+        public string SharedAppsFolder
         {
             get => _globalSiteFolder;
             set => _globalSiteFolder = value;
