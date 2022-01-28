@@ -215,6 +215,5 @@ namespace ToSic.Eav.Configuration.Licenses
                 .ToList();
             return licenseStates;
         }
-
     }
 }

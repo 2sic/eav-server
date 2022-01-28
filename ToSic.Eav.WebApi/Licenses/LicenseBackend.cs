@@ -25,9 +25,7 @@ namespace ToSic.Eav.WebApi.Licenses
         public IEnumerable<LicenseDto> Summary()
         {
             var licSer = _licenseServiceLazy.Value;
-            var licenses = licSer.All
-                .Select(l => l.License)
-                .Distinct()
+            var licenses = licSer.Catalog()
                 .OrderBy(l => l.Priority);
 
             var features = _featuresLazy.Value.All;
