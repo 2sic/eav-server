@@ -4,6 +4,7 @@ using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
@@ -57,6 +58,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<IAppInitializedChecker, AppInitializedChecker>();
             services.TryAddTransient<AppInitializedChecker>();
             services.TryAddTransient<AppInitializer>();
+            services.TryAddTransient<AppPaths>();
 
             // export import stuff
             services.TryAddScoped<ExportListXml>();
