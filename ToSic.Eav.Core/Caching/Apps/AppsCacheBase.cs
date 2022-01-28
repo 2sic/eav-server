@@ -178,8 +178,16 @@ namespace ToSic.Eav.Caching
         [PrivateApi]
         public int ZoneIdOfApp(IServiceProvider sp, int appId)
         {
-            var zones = Zones(sp);
-            return zones.Single(z => z.Value.Apps.Any(a => a.Key == appId)).Key;
+            try
+            {
+                var zones = Zones(sp);
+                // var zone = zones.FirstOrDefault(z => z.Value.Apps.Any(a => a.Key == appId));
+                return zones.Single(z => z.Value.Apps.Any(a => a.Key == appId)).Key;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error trying to run {nameof(ZoneIdOfApp)}({appId}) - probably something wrong with the {nameof(appId)}", ex);
+            }
         }
     }
 }

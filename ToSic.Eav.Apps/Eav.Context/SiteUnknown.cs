@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Run;
+﻿using ToSic.Eav.Logging;
+using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
 
 // ReSharper disable once CheckNamespace
@@ -27,7 +28,7 @@ namespace ToSic.Eav.Context
 
         public string DefaultCultureCode => "en-us";
 
-        public ISite Init(int siteId)
+        public ISite Init(int siteId, ILog parentLog)
         {
             Id = siteId;
             ZoneId = siteId;
