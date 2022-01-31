@@ -42,7 +42,10 @@ namespace ToSic.Eav.Security.Encryption
         public bool VerifyBase64(string publicCertBase64, string signatureBase64, byte[] dataClient)
         {
             var publicCert = new X509Certificate2(Convert.FromBase64String(publicCertBase64), "");
-            var cspPublic = (RSACryptoServiceProvider)publicCert.PublicKey.Key;
+            var rsaParam = publicCert.GetRSAPublicKey().ExportParameters(false);
+            var cspPublic = new RSACryptoServiceProvider();
+            cspPublic.ImportParameters(rsaParam);
+
             var signatureClient = Convert.FromBase64String(signatureBase64);
 
             // verify the signature 
