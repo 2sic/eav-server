@@ -1,15 +1,16 @@
 ﻿using ToSic.Eav.Context;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Tests.Mocks
 {
     public class MockSite : ISite
     {
-        public int Id => -999;
-
-        public ISite Init(int tenantId)
+        public ISite Init(int siteId, ILog parentLog)
         {
             return this;
         }
+
+        public int Id => -999;
 
         public string DefaultLanguage => null;
 
