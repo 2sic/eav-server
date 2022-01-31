@@ -110,13 +110,16 @@ namespace ToSic.Eav.Configuration
                     msgShort = allowed ? "configuration" : "unlicensed";
                     message = allowed ? " by configuration" : " - requires license";
                 }
-                return new FeatureState(f, expiry, enabled, msgShort, (enabled ? "Enabled" : "Disabled") + message);
+
+                return new FeatureState(f, expiry, enabled, msgShort, (enabled ? "Enabled" : "Disabled") + message,
+                    licenseEnabled: allowed, enabledStored: inConfig?.Enabled);
             }).ToList();
 
             // Find additional, un matching features
             var missingFeatures = config.Features
                 .Where(f => cat.All(fd => fd.Guid != f.Id))
-                .Select(f => new FeatureState(new FeatureDefinition(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually"));
+                .Select(f => new FeatureState(new FeatureDefinition(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually", 
+                    licenseEnabled: false, enabledStored: f.Enabled));
 
             var final = allFeats.Union(missingFeatures).ToList();
             return final;
