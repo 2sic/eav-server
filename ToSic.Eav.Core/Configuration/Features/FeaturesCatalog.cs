@@ -59,9 +59,9 @@ namespace ToSic.Eav.Configuration
             };
 
 
-        internal static List<FeatureLicenseRule> BuildRule(LicenseDefinition licDef) => new List<FeatureLicenseRule>
+        internal static List<FeatureLicenseRule> BuildRule(LicenseDefinition licDef, bool enabled) => new List<FeatureLicenseRule>
         {
-            new FeatureLicenseRule(licDef, true)
+            new FeatureLicenseRule(licDef, enabled)
         };
     }
 }

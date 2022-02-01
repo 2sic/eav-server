@@ -6,7 +6,7 @@ namespace ToSic.Eav.Configuration
 {
     public partial class FeaturesCatalog
     {
-        internal static List<FeatureLicenseRule> ForEnterpriseCms = BuildRule(LicenseCatalog.EnterpriseCms);
+        internal static List<FeatureLicenseRule> ForEnterpriseCms = BuildRule(LicenseCatalog.EnterpriseCms, true);
 
         // WIP / Beta in v13
         public static readonly FeatureDefinition SharedApps = new FeatureDefinition(

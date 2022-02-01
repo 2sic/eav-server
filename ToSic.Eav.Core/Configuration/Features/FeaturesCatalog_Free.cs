@@ -6,7 +6,8 @@ namespace ToSic.Eav.Configuration
 {
     public partial class FeaturesCatalog
     {
-        internal static List<FeatureLicenseRule> ForAll = BuildRule(LicenseCatalog.CoreFree);
+        internal static List<FeatureLicenseRule> ForAllEnabled = BuildRule(LicenseCatalog.CoreFree, true);
+        internal static List<FeatureLicenseRule> ForAllDisabled = BuildRule(LicenseCatalog.CoreFree, false);
 
         public static readonly FeatureDefinition WysiwygPasteFormatted = new FeatureDefinition(
             "WysiwygPasteFormatted",
@@ -17,7 +18,7 @@ namespace ToSic.Eav.Configuration
             "Paste formatted text into WYSIWYG TinyMCE",
             new FeatureSecurity(2,
                 "Should not affect security, unless a TinyMCE bug allows adding script tags or similar which could result in XSS."),
-            ForAll
+            ForAllEnabled
         );
 
         public static readonly FeatureDefinition PublicEditForm = new FeatureDefinition(
@@ -29,7 +30,7 @@ namespace ToSic.Eav.Configuration
             "Allows non-editors to use the Edit-Form to edit/create data. <br>" +
             "This is for commands like @Edit.Enable(...) or certain IPageService.Activate(...)",
             new FeatureSecurity(4, "Could affect security if a bug would allow saving data without permission checks."),
-            ForAll
+            ForAllDisabled
         );
 
 
@@ -43,7 +44,7 @@ namespace ToSic.Eav.Configuration
             "With this enabled, public forms will allow file-upload with ADAM. Otherwise it will be disabled. <br>" +
             "Note that each of these fields must also have the permissions set allowing an upload. This is to prevent uploads on fields which were just meant to hold a link.",
             new FeatureSecurity(4, "Could affect security if a bug allows saving files with bad extensions."),
-            ForAll
+            ForAllDisabled
         );
 
         public static readonly FeatureDefinition SaveInAdamApi = new FeatureDefinition(
@@ -53,8 +54,8 @@ namespace ToSic.Eav.Configuration
             false,
             false,
             "Enable the SaveInAdam command in Razor / C#. Otherwise, SaveInAdam(...) will be refused, and custom WebAPIs trying to do this (like Mobius forms with Upload) will throw an error.",
-            new FeatureSecurity(4, "Could affect security if a bug allows saving files with bad extensions."),
-            ForAll
+            new FeatureSecurity(2, "Could affect security if a bug allows saving files with bad extensions."),
+            ForAllEnabled
         );
 
         public static readonly FeatureDefinition PermissionCheckUsers = new FeatureDefinition(
@@ -65,7 +66,7 @@ namespace ToSic.Eav.Configuration
             false,
             "Enable permission checks by user (User ID)",
             new FeatureSecurity(1, "Could affect security if a bug in security checks doesn't correctly match IDs."),
-            ForAll
+            ForAllDisabled
         );
 
         public static readonly FeatureDefinition PermissionCheckGroups = new FeatureDefinition(
@@ -76,7 +77,7 @@ namespace ToSic.Eav.Configuration
             false,
             "Enable permission checks to use the Groups a user belongs to based on the Group/Role-ID",
             new FeatureSecurity(1, "Could affect security if a bug in security checks doesn't correctly match IDs."),
-            ForAll
+            ForAllDisabled
         );
     }
 }

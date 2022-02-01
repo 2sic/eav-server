@@ -6,7 +6,7 @@ namespace ToSic.Eav.Configuration
 {
     public partial class FeaturesCatalog
     {
-        internal static List<FeatureLicenseRule> ForBeta = BuildRule(LicenseCatalog.CoreBeta);
+        internal static List<FeatureLicenseRule> ForBeta = BuildRule(LicenseCatalog.CoreBeta, false);
 
 
         // TODO: Probably change how this setting is used, so it's "Enable..." and defaults to true ?
