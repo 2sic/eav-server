@@ -94,7 +94,7 @@ namespace ToSic.Eav.Configuration
                 {
                     licService.Enabled.TryGetValue(enabledRule.LicenseDefinition, out var licenseState);
                     var specialExpiry = licenseState?.Expiration;
-                    enabled = enabledRule.EnableFeatureByDefault || enabledRule.LicenseDefinition.AutoEnable;
+                    enabled = enabledRule.EnableFeatureByDefault;
                     licenseEnabled = true; // The license is active, so it's allowed to enable this
                     msgShort = enabledRule.LicenseDefinition.Name;
                     message = $" by default with license {enabledRule.LicenseDefinition.Name}";
