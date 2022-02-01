@@ -1,9 +1,4 @@
-﻿#if NETFRAMEWORK
-using PlatformResponseType = System.Net.Http.HttpResponseMessage;
-#else
-using PlatformResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
-#endif
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -12,18 +7,18 @@ using ToSic.Sxc.WebApi.Plumbing;
 
 namespace ToSic.Eav.WebApi.ApiExplorer
 {
-    public class ApiExplorerBackend: WebApiBackendBase<ApiExplorerBackend>
+    public class ApiExplorerBackend<HttpResponseType> : WebApiBackendBase<ApiExplorerBackend<HttpResponseType>>
     {
         public IApiInspector Inspector { get; }
-        public ResponseMaker ResponseMaker { get; }
+        public ResponseMaker<HttpResponseType> ResponseMaker { get; }
 
-        public ApiExplorerBackend(IServiceProvider sp, IApiInspector inspector, ResponseMaker responseMaker): base(sp, "Bck.ApiExp")
+        public ApiExplorerBackend(IServiceProvider sp, IApiInspector inspector, ResponseMaker<HttpResponseType> responseMaker): base(sp, "Bck.ApiExp")
         {
             Inspector = inspector;
             ResponseMaker = responseMaker;
         }
 
-        public bool PreCheckAndCleanPath(ref string path, out PlatformResponseType error)
+        public bool PreCheckAndCleanPath(ref string path, out HttpResponseType error)
         {
             var wrapLog = Log.Call<bool>();
 
@@ -40,13 +35,13 @@ namespace ToSic.Eav.WebApi.ApiExplorer
 
             // Ensure make windows path slashes to make later work easier
             path = path.Backslash();
-            error = null;
+            error = default; // null
             return false;
         }
 
-        public PlatformResponseType AnalyzeClassAndCreateDto(string path, Assembly assembly)
+        public HttpResponseType AnalyzeClassAndCreateDto(string path, Assembly assembly)
         {
-            var wrapLog = Log.Call<PlatformResponseType>();
+            var wrapLog = Log.Call<HttpResponseType>();
             var controllerName = path.Substring(path.LastIndexOf('\\') + 1);
             controllerName = controllerName.Substring(0, controllerName.IndexOf('.'));
             var controller =
