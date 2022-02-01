@@ -3,6 +3,13 @@ using static System.StringComparison;
 
 namespace ToSic.Eav.Plumbing
 {
+    /// <summary>
+    /// IMPORTANT
+    /// This code is duplicate with RazorBlades implementation
+    /// ATM we leave it here, because we don't want a reference to RazorBlade in the EAV project
+    /// but some day in future we should probably decide to optimize
+    /// </summary>
+
     public static class SubstringExtensions
     {
         /// <summary>
