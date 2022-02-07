@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.Paths
     ///   This is why as a temporary workaround we use the SiteId as part of the cache key.
     ///   Not sexy, but I guess better than alternatives for now.
     /// * Future: We should find a way to scope some DI to a module, so it doesn't bleed to others
-    ///   But that is a bit difficult, because there are also some services like the IPage which should be shared acrosss modules
+    ///   But that is a bit difficult, because there are also some services like the IPage which should be shared across modules
     /// </remarks>
     public class AppPaths: HasLog, IAppPaths
     {

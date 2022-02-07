@@ -30,10 +30,10 @@ namespace ToSic.Eav.Data
         }
 
         protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)
-            => LookupLanguages = languageCodes ?? new string[0];
+            => LookupLanguages = languageCodes ?? Array.Empty<string>();
 
         protected EntityBasedType(IEntity entity, string languageCode) : this(entity) 
-            => LookupLanguages = languageCode != null ? new[] {languageCode} : new string[0];
+            => LookupLanguages = languageCode != null ? new[] {languageCode} : Array.Empty<string>();
 
         /// <inheritdoc />
         public virtual string Title => _title ?? (_title = Entity?.GetBestTitle() ?? "");
