@@ -80,7 +80,8 @@ namespace ToSic.Eav.Apps.Paths
 
         private string GetInternal(string name, Func<string> callIfNotFound)
         {
-            var key = name + _site.Id;
+            // 2022-02-07 2dm try to drop special case with site-id again, as we shouldn't need this any more
+            var key = name; // + _site.Id;
             var final = _appState.GetPiggyBack(key,
                 () =>
                 {
