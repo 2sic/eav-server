@@ -178,7 +178,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 {
                     // save all the values we just added
                     //DbContext.DoAndSave(() => SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, changeLogId, logDetails), "save attributes EAV");
-                    SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, changeLogId, logDetails);
+                    SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, changeLogId, _zoneLangs, logDetails);
                     DbContext.Relationships.ChangeRelationships(newEnt, dbEnt, attributeDefs, so);
                 }
                 else if (isNew)

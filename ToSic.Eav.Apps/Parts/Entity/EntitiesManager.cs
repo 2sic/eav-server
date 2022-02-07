@@ -40,6 +40,8 @@ namespace ToSic.Eav.Apps.Parts
         private readonly Lazy<ImportListXml> _lazyImportListXml;
         private readonly Lazy<Import> _importLazy;
         private readonly Lazy<IImportExportEnvironment> _environmentLazy;
+        private IImportExportEnvironment Environment => _environment ?? (_environment = _environmentLazy.Value.Init(Log));
+        private IImportExportEnvironment _environment;
         private readonly IServiceProvider _serviceProvider;
         private readonly IAppsCache _appsCache;
         protected readonly SystemManager SystemManager;
@@ -71,7 +73,7 @@ namespace ToSic.Eav.Apps.Parts
             // in which case it would add it twice
             var appState = Parent.AppState;
 
-            saveOptions = saveOptions ?? _environmentLazy.Value.SaveOptions(Parent.ZoneId); // SaveOptions.Build(Parent.ZoneId);
+            saveOptions = saveOptions ?? Environment.SaveOptions(Parent.ZoneId); // SaveOptions.Build(Parent.ZoneId);
 
             // Inner call which will be executed with the Lock of the AppState
             List<int> InnerSaveInLock()
