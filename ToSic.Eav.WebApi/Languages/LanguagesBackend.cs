@@ -5,6 +5,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Security;
@@ -15,17 +16,17 @@ namespace ToSic.Eav.WebApi.Languages
     {
         #region Constructor & DI
         
-        public LanguagesBackend(Lazy<IZoneMapper> zoneMapper, Lazy<ZoneManager> zoneManager, ISite site, Lazy<AppUserLanguageCheck> appUserLanguageCheckLazy) : base("Bck.Admin")
+        public LanguagesBackend(Lazy<IZoneMapper> zoneMapper, Lazy<ZoneManager> zoneManager, ISite site, LazyInitLog<AppUserLanguageCheck> appUserLanguageCheckLazy) : base("Bck.Admin")
         {
             _zoneManager = zoneManager;
             _site = site;
-            _appUserLanguageCheckLazy = appUserLanguageCheckLazy;
+            _appUserLanguageCheckLazy = appUserLanguageCheckLazy.SetLog(Log);
             _zoneMapper = zoneMapper;
         }
         private readonly Lazy<IZoneMapper> _zoneMapper;
         private readonly Lazy<ZoneManager> _zoneManager;
         private readonly ISite _site;
-        private readonly Lazy<AppUserLanguageCheck> _appUserLanguageCheckLazy;
+        private readonly LazyInitLog<AppUserLanguageCheck> _appUserLanguageCheckLazy;
 
         #endregion
 
@@ -45,7 +46,7 @@ namespace ToSic.Eav.WebApi.Languages
         {
             try
             {
-                var langs = _appUserLanguageCheckLazy.Value.Init(Log).LanguagesWithPermissions(appState);
+                var langs = _appUserLanguageCheckLazy.Ready.LanguagesWithPermissions(appState);
                 var converted = langs.Select(l =>
                     {
                         var dto = new SiteLanguageDto { Code = l.Code, Culture = l.Culture, IsAllowed = l.IsAllowed, IsEnabled = l.IsEnabled };

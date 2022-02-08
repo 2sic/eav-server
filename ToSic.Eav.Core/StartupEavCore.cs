@@ -66,6 +66,8 @@ namespace ToSic.Eav
         {
             // Lazy loading dependency injection
             services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
+            services.AddTransient(typeof(LazyInit<>), typeof(LazyInit<>));
+            services.AddTransient(typeof(LazyInitLog<>), typeof(LazyInitLog<>));
 
             // History (very core service)
             services.TryAddTransient<LogHistory>();

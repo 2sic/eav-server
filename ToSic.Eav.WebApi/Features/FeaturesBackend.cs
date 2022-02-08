@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Validation;
 
 namespace ToSic.Eav.WebApi.Features
@@ -17,12 +18,12 @@ namespace ToSic.Eav.WebApi.Features
             IServiceProvider serviceProvider,
             Lazy<IGlobalConfiguration> globalConfiguration,
             Lazy<IFeaturesInternal> features,
-            Lazy<SystemLoader> systemLoaderLazy
+            LazyInitLog<SystemLoader> systemLoaderLazy
             ) : base(serviceProvider, "Bck.Feats")
         {
             _globalConfiguration = globalConfiguration;
             _features = features;
-            _systemLoaderLazy = systemLoaderLazy;
+            _systemLoaderLazy = systemLoaderLazy.SetLog(Log);
         }
 
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
@@ -31,13 +32,13 @@ namespace ToSic.Eav.WebApi.Features
         /// <summary>
         /// Must be lazy, to avoid log being filled with sys-loading infos when this service is being used
         /// </summary>
-        private readonly Lazy<SystemLoader> _systemLoaderLazy;
+        private readonly LazyInitLog<SystemLoader> _systemLoaderLazy;
 
         #endregion
 
         public IEnumerable<FeatureState> GetAll(bool reload)
         {
-            if (reload) _systemLoaderLazy.Value.Init(Log).ReloadFeatures();
+            if (reload) _systemLoaderLazy.Ready.ReloadFeatures();
             return _features.Value.All;
         }
 
@@ -83,7 +84,7 @@ namespace ToSic.Eav.WebApi.Features
                 Features = featuresManagementResponse
                     .Where(f => f.Enabled.HasValue)
                     .Select(FeatureConfigBuilder).ToList(),
-                Fingerprint = _systemLoaderLazy.Value.Init(Log).Fingerprint.GetFingerprint()
+                Fingerprint = _systemLoaderLazy.Ready.Fingerprint.GetFingerprint()
             };
 
         private static FeatureConfig FeatureConfigBuilder(FeatureNewDto featureNewDto) =>
@@ -107,7 +108,7 @@ namespace ToSic.Eav.WebApi.Features
 
                 File.WriteAllText(featureFilePath, features);
 
-                _systemLoaderLazy.Value.Init(Log).ReloadFeatures();
+                _systemLoaderLazy.Ready.ReloadFeatures();
 
                 return wrapLog("ok", true);
             }
