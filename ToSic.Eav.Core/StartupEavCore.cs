@@ -69,6 +69,7 @@ namespace ToSic.Eav
             services.AddTransient(typeof(LazyInit<>));
             services.AddTransient(typeof(LazyInitLog<>));
             services.AddTransient(typeof(Generator<>));
+            services.AddTransient(typeof(GeneratorLog<>));
 
             // History (very core service)
             services.TryAddTransient<LogHistory>();
