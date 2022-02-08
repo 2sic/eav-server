@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
@@ -8,13 +9,13 @@ namespace ToSic.Eav.Apps
     {
         #region Constructor and simple properties
 
-        public ZoneManager(Lazy<DbDataController> dbLazy, Lazy<SystemManager> systemManagerLazy) : base("App.Zone")
+        public ZoneManager(Lazy<DbDataController> dbLazy, LazyInitLog<SystemManager> systemManagerLazy) : base("App.Zone")
         {
             _dbLazy = dbLazy;
-            _systemManagerLazy = systemManagerLazy;
+            _systemManagerLazy = systemManagerLazy.SetLog(Log);
         }
         private readonly Lazy<DbDataController> _dbLazy;
-        private readonly Lazy<SystemManager> _systemManagerLazy;
+        private readonly LazyInitLog<SystemManager> _systemManagerLazy;
 
 
         internal DbDataController DataController => _eavContext ?? (_eavContext = _dbLazy.Value.Init(ZoneId, null, Log));
@@ -25,7 +26,7 @@ namespace ToSic.Eav.Apps
         #region App management
 
         public void DeleteApp(int appId, bool fullDelete)
-            => _systemManagerLazy.Value.Init(Log).DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId, fullDelete), true);
+            => _systemManagerLazy.Ready.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId, fullDelete), true);
 
 
         #endregion
@@ -36,7 +37,7 @@ namespace ToSic.Eav.Apps
         {
             Log.Add($"save languages code:{cultureCode}, txt:{cultureText}, act:{active}");
             DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
-            _systemManagerLazy.Value.Init(Log).PurgeZoneList();
+            _systemManagerLazy.Ready.PurgeZoneList();
         }
 
         #endregion
