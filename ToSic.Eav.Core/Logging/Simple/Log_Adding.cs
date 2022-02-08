@@ -57,7 +57,7 @@ namespace ToSic.Eav.Logging.Simple
         {
             // prevent parallel threads from updating entries at the same time
             lock (Entries) { Entries.Add(entry); }
-            (_parent as Log)?.AddToEntriesAndParent(entry);
+            (Parent as Log)?.AddToEntriesAndParent(entry);
         }
 
         /// <inheritdoc />

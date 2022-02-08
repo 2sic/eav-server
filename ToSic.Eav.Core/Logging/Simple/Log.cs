@@ -18,13 +18,13 @@ namespace ToSic.Eav.Logging.Simple
 
         public int WrapDepth;
         public  List<Entry> Entries { get; } = new List<Entry>();
-        private ILog _parent;
+        public ILog Parent { get; private set; }
         public int Depth { get; set; } = 0;
         private const int MaxParentDepth = 100;
 
         public string Identifier => $"{Scope}{Name}[{Id}]";
 
-        public string FullIdentifier => _parent?.FullIdentifier + Identifier;
+        public string FullIdentifier => Parent?.FullIdentifier + Identifier;
 
         public bool Preserve
         {
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Logging.Simple
             {
                 _preserve = value;
                 // pass it on to the parent, so that the chain knows if it should be preserved
-                if (_parent != null) _parent.Preserve = true;
+                if (Parent != null) Parent.Preserve = true;
             }
         }
 
@@ -107,17 +107,17 @@ namespace ToSic.Eav.Logging.Simple
             // this is critical because we cannot guarantee that sometimes a LinkTo is called more than once on something
             if (parent != null) 
             {
-                if(_parent == null)
+                if(Parent == null)
                 {
-                    _parent = parent;
+                    Parent = parent;
                     Depth = parent.Depth + 1;
                     if(Depth > MaxParentDepth)
                         throw new Exception($"LOGGER ERROR - Adding parent to logger but exceeded max depth of {MaxParentDepth}");
                 }
                 // show an error, if it the new parent is different from the old one
-                else if (_parent.FullIdentifier != parent.FullIdentifier)
+                else if (Parent.FullIdentifier != parent.FullIdentifier)
                     Add("LOGGER WARNING - this logger already has a parent, but trying to attach to new parent. " +
-                        $"Existing parent: {_parent.FullIdentifier}. " +
+                        $"Existing parent: {Parent.FullIdentifier}. " +
                         $"New Parent (ignored): {parent.FullIdentifier}");
             }
             if (name != null)
@@ -125,6 +125,6 @@ namespace ToSic.Eav.Logging.Simple
         }
 
         /// <inheritdoc />
-        public void Unlink() => _parent = null;
+        public void Unlink() => Parent = null;
     }
 }
