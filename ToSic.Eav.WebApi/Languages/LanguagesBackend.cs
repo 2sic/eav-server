@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Languages;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
@@ -16,16 +17,20 @@ namespace ToSic.Eav.WebApi.Languages
     {
         #region Constructor & DI
         
-        public LanguagesBackend(Lazy<IZoneMapper> zoneMapper, Lazy<ZoneManager> zoneManager, ISite site, LazyInitLog<AppUserLanguageCheck> appUserLanguageCheckLazy) : base("Bck.Admin")
+        public LanguagesBackend(Lazy<IZoneMapper> zoneMapper, Lazy<ZoneManager> zoneManager, ISite site, LazyInitLog<AppUserLanguageCheck> appUserLanguageCheckLazy,
+            Lazy<IFeaturesService> featuresLazy) 
+            : base("Bck.Admin")
         {
             _zoneManager = zoneManager;
             _site = site;
+            _featuresLazy = featuresLazy;
             _appUserLanguageCheckLazy = appUserLanguageCheckLazy.SetLog(Log);
             _zoneMapper = zoneMapper;
         }
         private readonly Lazy<IZoneMapper> _zoneMapper;
         private readonly Lazy<ZoneManager> _zoneManager;
         private readonly ISite _site;
+        private readonly Lazy<IFeaturesService> _featuresLazy;
         private readonly LazyInitLog<AppUserLanguageCheck> _appUserLanguageCheckLazy;
 
         #endregion
@@ -46,10 +51,12 @@ namespace ToSic.Eav.WebApi.Languages
         {
             try
             {
+                var mlFeatureEnabled = _featuresLazy.Value.IsEnabled(FeaturesCatalog.PermissionsByLanguage.NameId);
+                var allowAllLanguages = !mlFeatureEnabled;
                 var langs = _appUserLanguageCheckLazy.Ready.LanguagesWithPermissions(appState);
                 var converted = langs.Select(l =>
                     {
-                        var dto = new SiteLanguageDto { Code = l.Code, Culture = l.Culture, IsAllowed = l.IsAllowed, IsEnabled = l.IsEnabled };
+                        var dto = new SiteLanguageDto { Code = l.Code, Culture = l.Culture, IsAllowed = allowAllLanguages || l.IsAllowed, IsEnabled = l.IsEnabled };
                         if (withCount) dto.Permissions = new HasPermissionsDto { Count = l.PermissionCount };
                         return dto;
                     })

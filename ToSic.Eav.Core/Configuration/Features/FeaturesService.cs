@@ -71,6 +71,7 @@ namespace ToSic.Eav.Configuration
             {
                 _stored = value;
                 _all = null;
+                _enabledFeatures = null;
             }
         }
         private static FeatureListStored _stored;
