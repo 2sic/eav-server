@@ -65,7 +65,7 @@ namespace ToSic.Eav.WebApi
             IEnumerable<MetadataRecommendation> recommendations = null;
             try
             {
-                recommendations = _mdRead.Ready.GetRecommendations(targetType, key, contentType);
+                recommendations = _mdRead.Ready.GetAllowedRecommendations(targetType, key, contentType);
             }
             catch (Exception e)
             {

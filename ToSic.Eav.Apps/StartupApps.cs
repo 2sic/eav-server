@@ -39,6 +39,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<QueryRuntime>();
             services.TryAddTransient<MetadataRuntime>();
             services.TryAddTransient<MdRecommendations>(); // new v13
+            services.TryAddTransient<MdRequirements>(); // new v13
             services.TryAddTransient<EntityRuntime>();
 
             services.TryAddTransient<Import>();

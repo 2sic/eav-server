@@ -11,6 +11,8 @@ namespace ToSic.Eav.Plumbing
 
         public static string UseFallbackIfNoValue(this string value, string fallback) => value.HasValue() ? value : fallback;
 
+        public static string NullIfNoValue(this string value) => value.HasValue() ? value : null;
+
         public static string[] SplitNewLine(this string value) 
             => value?.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 

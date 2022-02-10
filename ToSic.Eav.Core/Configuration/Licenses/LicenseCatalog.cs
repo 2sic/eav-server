@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    internal class LicenseCatalog
+    public class LicenseCatalog
     {
         // IMPORTANT
         // The guids of these licenses must match the ones in the 2sxc.org license management list

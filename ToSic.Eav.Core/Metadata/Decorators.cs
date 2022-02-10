@@ -24,8 +24,5 @@
 
         // Marks Metadata to be global 13.00
         public static string IsSharedDecoratorId = "18d2b1db-e1ed-45bc-8746-cd8885651063";
-
-        // Marks Requirements Metadata 13.00
-        public static string RequirementsDecoratorId = "19655377-6626-4986-aea0-ec3c187186ad";
     }
 }

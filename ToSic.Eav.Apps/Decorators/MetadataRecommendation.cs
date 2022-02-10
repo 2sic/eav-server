@@ -16,11 +16,11 @@ namespace ToSic.Eav.Apps.Decorators
         public const int PrioMedium = 2;
         public const int PrioHigh = 10;
 
-        public string Id { get; }
+        public string Id => Type.NameId;
 
         public string Title { get; }
 
-        public string Name { get; }
+        public string Name => Type.Name;
 
         public int Count { get; set; }
 
@@ -41,10 +41,14 @@ namespace ToSic.Eav.Apps.Decorators
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Debug { get; set; }
 
+        [JsonIgnore]
+        public IContentType Type { get; }
+
         public MetadataRecommendation(IContentType type, IEntity recommendation, int? count, string debugMessage, int priority)
         {
-            Id = type.NameId;
-            Name = type.Name;
+            Type = type;
+            //Id = type.NameId;
+            //Name = type.Name;
             Priority = priority;
             var typeDetails = type.Metadata.DetailsOrNull;
             Title = (typeDetails?.Title).UseFallbackIfNoValue(type.Name);

@@ -21,10 +21,24 @@ namespace ToSic.Eav.Apps.Decorators
     /// <remarks>new in v13.02</remarks>
     public class MdRecommendations: ReadBase<MdRecommendations>
     {
-        public MdRecommendations(): base($"{AppConstants.LogName}.MdRead")
-        { }
+
+        public MdRecommendations(LazyInitLog<MdRequirements> requirements): base($"{AppConstants.LogName}.MdRead")
+        {
+            _requirements = requirements.SetLog(Log);
+        }
+        private readonly LazyInitLog<MdRequirements> _requirements;
 
 
+        public IList<MetadataRecommendation> GetAllowedRecommendations(int targetTypeId, string key, string recommendedTypeName = null)
+        {
+            var recommendations = GetRecommendations(targetTypeId, key, recommendedTypeName);
+
+            var remaining = recommendations
+                .Where(r => _requirements.Ready.RequirementMet(r.Type.Metadata))
+                .ToList();
+            return remaining;
+        }
+        
 
         public IEnumerable<MetadataRecommendation> GetRecommendations(int targetTypeId, string key, string recommendedTypeName = null)
         {
@@ -63,9 +77,9 @@ namespace ToSic.Eav.Apps.Decorators
 
             attachedRecommendations.AddRange(initialTypes);
 
-            var distinct = attachedRecommendations.OrderByDescending(ar => ar.Priority).Distinct();
+            var distinct = attachedRecommendations.OrderByDescending(ar => ar.Priority).Distinct().ToList();
 
-            return wrapLog("unknown case", distinct);
+            return wrapLog($"final: {distinct.Count}", distinct);
         }
 
         private List<(IContentType Type, IEntity Recommendation)> TypesWhichDeclareTheyAreForTheTarget(int targetType, string key)
