@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
 using Newtonsoft.Json;
-using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Data;
-using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Apps.AppMetadata
+namespace ToSic.Eav.Apps.Decorators
 {
     /// <summary>
     /// Important: also used as DTO, so don't just rename the parameters
@@ -42,7 +40,7 @@ namespace ToSic.Eav.Apps.AppMetadata
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Debug { get; set; }
 
-        public MetadataRecommendation(IContentType type, IEntity recommendation, int count, string debugMessage, int priority)
+        public MetadataRecommendation(IContentType type, IEntity recommendation, int? count, string debugMessage, int priority)
         {
             Id = type.NameId;
             Name = type.Name;
@@ -53,9 +51,10 @@ namespace ToSic.Eav.Apps.AppMetadata
             // So we must use .Value
             Title = typeDescription?.Value<string>(ContentTypes.ContentTypeMetadataLabel) ?? type.Name;
             Icon = typeDescription?.Value<string>(ContentTypes.ContentTypeMetadataIcon) ?? type.Name;
-            Count = count;
+            var recDec = new ForDecorator(recommendation);
+            Count = count ?? recDec.Amount;
             Debug = debugMessage;
-            DeleteWarning = recommendation?.Value<string>(MetadataForDecorator.MetadataForDeleteWarningField);
+            DeleteWarning = recDec.DeleteWarning; // recommendation?.Value<string>(ForDecorator.DeleteWarningField);
 
             // Mark empty if possible - so it has no attributes, and it has a decorator to support this
             if (!type.Attributes.Any() && type.Metadata.HasType(Metadata.Decorators.SaveEmptyDecoratorId))

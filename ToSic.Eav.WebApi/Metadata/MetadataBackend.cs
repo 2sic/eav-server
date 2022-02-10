@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.AppMetadata;
 using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataFormats.EavLight;

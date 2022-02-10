@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps.AppMetadata;
 using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;

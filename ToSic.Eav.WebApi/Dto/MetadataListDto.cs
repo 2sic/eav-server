@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.AppMetadata;
+using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.WebApi.Dto

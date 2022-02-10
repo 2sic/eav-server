@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.AppMetadata;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
-using static System.Array;
-using static ToSic.Eav.Apps.AppMetadata.MetadataRecommendation;
-using static ToSic.Eav.Apps.Decorators.MetadataForDecorator;
-using static ToSic.Eav.Metadata.Decorators;
+using static ToSic.Eav.Apps.Decorators.MetadataRecommendation;
 
 namespace ToSic.Eav.Apps.Decorators
 {
@@ -47,7 +43,7 @@ namespace ToSic.Eav.Apps.Decorators
             // For example Types which are marked to decorate an App
             var initialTypes =
                 (TypesWhichDeclareTheyAreForTheTarget(targetTypeId, key) ?? new List<(IContentType Type, IEntity Recommendation)>())
-                .Select(set => new MetadataRecommendation(set.Type, set.Recommendation, 1, "Self-Declaring", PrioMedium));
+                .Select(set => new MetadataRecommendation(set.Type, set.Recommendation, null, "Self-Declaring", PrioMedium));
 
             // 2.3 Ask the target if it knows of expected types using `MetadataExpected`
             // Check if this object-type has a specific list of Content-Types which it expects
@@ -76,8 +72,8 @@ namespace ToSic.Eav.Apps.Decorators
                 .Select(ct =>
                 {
                     var decor = ct.Metadata
-                        .OfType(MetadataForDecoratorId)
-                        .FirstOrDefault(dec => dec.GetBestValue<int>(MetadataForTargetTypeField, Empty<string>()) == targetType);
+                        .OfType(ForDecorator.TypeGuid)
+                        .FirstOrDefault(dec => new ForDecorator(dec).TargetType == targetType);
                     return new
                     {
                         Found = decor != null,
@@ -94,8 +90,9 @@ namespace ToSic.Eav.Apps.Decorators
                 .Where(set =>
                 {
                     var decor = set.Decorator;
+                    var decorNew = new ForDecorator(set.Decorator);
 
-                    var targetName = decor.GetBestValue<string>(MetadataForTargetNameField, Empty<string>()) ?? "";
+                    var targetName = decorNew.TargetName;
 
                     switch (targetType)
                     {
@@ -181,18 +178,19 @@ namespace ToSic.Eav.Apps.Decorators
         {
             var wrapLog = Log.Call<List<MetadataRecommendation>>();
 
-            var allRecs = md.OfType(MetadataExpectedDecorator.MetadataExpectedDecoratorId).ToList();
-            if (meantFor > 0) allRecs = allRecs.Where(r => meantFor == r.GetBestValue<int>(MetadataForTargetTypeField, Empty<string>())).ToList();
-            if (!allRecs.Any()) return wrapLog("no recommendations", new List<MetadataRecommendation>());
+            var all = md.OfType(ExpectedDecorator.TypeGuid).ToList();
+            if (meantFor > 0) all = all.Where(r => meantFor == new ForDecorator(r).TargetType).ToList();
+            if (!all.Any()) return wrapLog("no recommendations", new List<MetadataRecommendation>());
 
-            var resultAll = allRecs.SelectMany(rec =>
+            var resultAll = all.SelectMany(rEntity =>
             {
-                var config = rec.GetBestValue<string>(MetadataExpectedDecorator.MetadataExpectedTypesField, Empty<string>());
-                var delWarning = rec.GetBestValue<string>(MetadataForDeleteWarningField, Empty<string>());
+                var rec = new ExpectedDecorator(rEntity);
+                var config = rec.Types;
+                var delWarning = rec.DeleteWarning;
                 if (string.IsNullOrWhiteSpace(config)) return wrapLog("no values in config", null);
                 return config
                     .Split(',')
-                    .Select(name => TypeAsRecommendation(name.Trim(), 1, debug, priority, delWarning))
+                    .Select(name => TypeAsRecommendation(name.Trim(), debug, priority, delWarning))
                     .Where(x => x != null)
                     .ToList();
             }).ToList();
@@ -204,7 +202,7 @@ namespace ToSic.Eav.Apps.Decorators
         /// Find a content-type and convert it into a recommendation object
         /// </summary>
         /// <returns></returns>
-        private MetadataRecommendation TypeAsRecommendation(string name, int count, string debug, int priority, string delWarning)
+        private MetadataRecommendation TypeAsRecommendation(string name, string debug, int priority, string delWarning)
         {
             var wrapLog = Log.Call<MetadataRecommendation>(name);
 
@@ -214,7 +212,7 @@ namespace ToSic.Eav.Apps.Decorators
             return type == null
                 ? wrapLog("name not found", null)
                 : wrapLog("use existing name",
-                    new MetadataRecommendation(type, null, count, debug, priority)
+                    new MetadataRecommendation(type, null, null, debug, priority)
                         { DeleteWarning = delWarning });
         }
 
