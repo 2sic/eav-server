@@ -58,8 +58,17 @@ namespace ToSic.Eav.Persistence
             if (!ct.IsDynamic && !saveOptions.PreserveUnknownAttributes && ct.Attributes != null)
             {
                 var keys = ct.Attributes.Select(a => a.Name).ToList();
+
                 keys.Add(Attributes.EntityFieldGuid);
                 keys.Add(Attributes.EntityFieldIsPublished);
+
+                var originalIsPublished = AttributeBuilder.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean);
+                originalIsPublished.Values = new List<IValue> { ValueBuilder.Build(ValueTypes.Boolean.ToString(), original.IsPublished, null) };
+                origAttribs.Add(Attributes.EntityFieldIsPublished, originalIsPublished);
+
+                var updateIsPublished = AttributeBuilder.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean);
+                updateIsPublished.Values = new List<IValue> { ValueBuilder.Build(ValueTypes.Boolean.ToString(), update.IsPublished, null) };
+                newAttribs.Add(Attributes.EntityFieldIsPublished, updateIsPublished);
 
                 if (originalWasSaved) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
                 newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
@@ -206,7 +215,7 @@ namespace ToSic.Eav.Persistence
             return result;
         }
 
-        private bool CorrectPublishedAndGuidImports(Entity newE, bool logDetails)
+        private bool CorrectPublishedAndGuidImports(Entity newE,  bool logDetails)
         {
             var callLog = logDetails ? Log.Call() : null;
             // check IsPublished

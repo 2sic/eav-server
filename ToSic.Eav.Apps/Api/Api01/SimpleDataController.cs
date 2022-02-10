@@ -157,6 +157,8 @@ namespace ToSic.Eav.Api.Api01
         {
             Log.Add($"update i:{entityId}");
             var original = _appManager.AppState.List.FindRepoId(entityId);
+            if (!values.Keys.Contains(Attributes.EntityFieldIsPublished))
+                values.Add(Attributes.EntityFieldIsPublished, original.IsPublished);
             var importEntity = BuildEntity(original.Type, values, null) as Entity;
             _appManager.Entities.UpdateParts(entityId, importEntity);
         }
@@ -212,7 +214,7 @@ namespace ToSic.Eav.Api.Api01
                 // Handle special attributes (for example of the system)
                 if (value.Key.ToLowerInvariant() == Attributes.EntityFieldIsPublished)
                 {
-                    entity.IsPublished = value.Value as bool? ?? true;
+                    if (value.Value is bool newValue) entity.IsPublished = newValue;
                     Log.Add($"IsPublished: {entity.IsPublished}");
                     continue;
                 }
