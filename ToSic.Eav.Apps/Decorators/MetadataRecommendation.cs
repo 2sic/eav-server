@@ -2,6 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Data;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps.Decorators
 {
@@ -45,16 +46,13 @@ namespace ToSic.Eav.Apps.Decorators
             Id = type.NameId;
             Name = type.Name;
             Priority = priority;
-            var typeDescription = type.Metadata.Description;
-            // Note: we cannot use GetBestTitle here, because the Content-type of the type is not really known
-            // Because it's usually an inherited type (bug/weakness in the shared types model as of v12, WIP)
-            // So we must use .Value
-            Title = typeDescription?.Value<string>(ContentTypes.ContentTypeMetadataLabel) ?? type.Name;
-            Icon = typeDescription?.Value<string>(ContentTypes.ContentTypeMetadataIcon) ?? type.Name;
+            var typeDetails = type.Metadata.DetailsOrNull;
+            Title = (typeDetails?.Title).UseFallbackIfNoValue(type.Name);
+            Icon = typeDetails?.Icon;
             var recDec = new ForDecorator(recommendation);
             Count = count ?? recDec.Amount;
             Debug = debugMessage;
-            DeleteWarning = recDec.DeleteWarning; // recommendation?.Value<string>(ForDecorator.DeleteWarningField);
+            DeleteWarning = recDec.DeleteWarning;
 
             // Mark empty if possible - so it has no attributes, and it has a decorator to support this
             if (!type.Attributes.Any() && type.Metadata.HasType(Metadata.Decorators.SaveEmptyDecoratorId))

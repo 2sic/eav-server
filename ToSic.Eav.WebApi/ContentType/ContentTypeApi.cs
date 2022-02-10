@@ -7,6 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Dto;
@@ -94,16 +95,16 @@ namespace ToSic.Eav.WebApi
         private ContentTypeDto ContentTypeAsDto(IContentType t, int count = -1)
 	    {
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
-	        var description = t.Metadata.Description;
+	        var details = t.Metadata.DetailsOrNull;
 
-	        var nameOverride = description?.Value<string>(ContentTypes.ContentTypeMetadataLabel);
+            var nameOverride = details?.Title; // description?.Value<string>(ContentTypeDetails.ContentTypeMetadataLabel);
 	        if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
             var ser = _convertToEavLight.Value;
 
             var ancestorDecorator = t.GetDecorator<IAncestor>();
 
-            var properties = ser.Convert(description);
+            var properties = ser.Convert(details?.Entity);
 
             var jsonReady = new ContentTypeDto
             {
@@ -112,7 +113,7 @@ namespace ToSic.Eav.WebApi
                 Label = nameOverride,
                 StaticName = t.NameId,
                 Scope = t.Scope,
-                Description = t.Description,
+                Description = t.Description.UseFallbackIfNoValue(details?.Description),
                 EditInfo = new EditInfoDto(t),
                 UsesSharedDef = ancestorDecorator != null,
                 SharedDefId = ancestorDecorator?.Id,

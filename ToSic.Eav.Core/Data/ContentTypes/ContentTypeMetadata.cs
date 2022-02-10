@@ -26,8 +26,17 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Description <see cref="IEntity"/> metadata of this content-type.
         /// </summary>
-        public IEntity Description => this
-            .FirstOrDefault(md => md.Type.NameId == ContentTypes.ContentTypeTypeName);
+        [PrivateApi("was public in the clas which used to be public, so it may be used, but try to privatise as we don't plan to publish this")]
+        public IEntity Description => this.FirstOrDefaultOfType(ContentTypeDetails.ContentTypeTypeName);
+
+        public ContentTypeDetails DetailsOrNull
+        {
+            get
+            {
+                var desc = Description;
+                return desc == null ? null : new ContentTypeDetails(desc);
+            }
+        }
 
         /// <summary>
         /// Load / initialize - needed when building the cache.

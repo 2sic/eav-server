@@ -17,6 +17,15 @@ namespace ToSic.Eav.ImportExport.Json.V1
         public string Description { get; set; }
 
         /// <summary>
+        /// Additional description for the type, usually not included.
+        /// Sometimes added in admin-UI scenarios, where additional info is useful
+        /// ATM only used for Metadata
+        /// </summary>
+        /// <remarks>Added in v13.02</remarks>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Title { get; set; }
+
+        /// <summary>
         /// Empty constructor is important for de-serializing
         /// </summary>
         public JsonType() { }
@@ -25,7 +34,12 @@ namespace ToSic.Eav.ImportExport.Json.V1
         {
             Name = entity.Type.Name;
             Id = entity.Type.NameId;
-            if (withDescription) Description = entity.Type.Description;
+            if (withDescription)
+            {
+                var description = entity.Type.Metadata.DetailsOrNull;
+                Title = description?.Title ?? entity.Type.NameId;
+                Description = description?.Description ?? entity.Type.Description;
+            }
         }
     }
 }
