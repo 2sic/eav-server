@@ -157,12 +157,34 @@ namespace ToSic.Eav.Api.Api01
         {
             Log.Add($"update i:{entityId}");
             var original = _appManager.AppState.List.FindRepoId(entityId);
-            if (!values.Keys.Contains(Attributes.EntityFieldIsPublished))
-                values.Add(Attributes.EntityFieldIsPublished, original.IsPublished);
+
+            bool? draft = null;
+            if (values.Keys.Contains(Attributes.EntityFieldIsPublished))
+            {
+                draft = IsDraft(values, original);
+                Log.Add($"contains IsPublished value d:{draft}");
+            }
+            else
+                values.Add(Attributes.EntityFieldIsPublished, original.IsPublished); // original "IsPublished" initial state, temp store in "values" (so it is forwarded in BuildEntity AddValues where it will be removed)
+
             var importEntity = BuildEntity(original.Type, values, null) as Entity;
-            _appManager.Entities.UpdateParts(entityId, importEntity);
+
+            _appManager.Entities.UpdateParts(entityId, importEntity, draft);
         }
-        
+
+        private static bool? IsDraft(Dictionary<string, object> values, IEntity original)
+        {
+            var isPublishedValue = values[Attributes.EntityFieldIsPublished];
+            if (bool.TryParse(isPublishedValue.ToString(), out var updateIsPublished))
+            {
+                if (original.IsPublished && !updateIsPublished)
+                    return true; // becomes draft-copy, so the original is still there
+
+                if (!original.IsPublished && updateIsPublished)
+                    return false; // becomes published (only the master-copy remains, with the changes of the draft an your value changes)
+            }
+            return null;
+        }
 
 
         /// <summary>

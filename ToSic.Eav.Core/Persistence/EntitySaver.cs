@@ -62,13 +62,8 @@ namespace ToSic.Eav.Persistence
                 keys.Add(Attributes.EntityFieldGuid);
                 keys.Add(Attributes.EntityFieldIsPublished);
 
-                var originalIsPublished = AttributeBuilder.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean);
-                originalIsPublished.Values = new List<IValue> { ValueBuilder.Build(ValueTypes.Boolean.ToString(), original.IsPublished, null) };
-                origAttribs.Add(Attributes.EntityFieldIsPublished, originalIsPublished);
-
-                var updateIsPublished = AttributeBuilder.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean);
-                updateIsPublished.Values = new List<IValue> { ValueBuilder.Build(ValueTypes.Boolean.ToString(), update.IsPublished, null) };
-                newAttribs.Add(Attributes.EntityFieldIsPublished, updateIsPublished);
+                AddIsPublishedAttribute(origAttribs, original.IsPublished); // tmp store original IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
+                AddIsPublishedAttribute(newAttribs, update.IsPublished); // tmp store update IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
 
                 if (originalWasSaved) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
                 newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
@@ -113,6 +108,16 @@ namespace ToSic.Eav.Persistence
             var result = EntityBuilder.FullClone(idProvidingEntity, mergedAttribs, null);
             CorrectPublishedAndGuidImports(result, logDetails);
             return callLog?.Invoke("ok", result) ?? result;
+        }
+
+        private static void AddIsPublishedAttribute(IDictionary<string, IAttribute> attributes, bool isPublished) 
+            => attributes.Add(Attributes.EntityFieldIsPublished, CreateIsPublishedAttribute(isPublished));
+
+        private static IAttribute CreateIsPublishedAttribute(bool isPublished)
+        {
+            var attribute = AttributeBuilder.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean);
+            attribute.Values = new List<IValue> {ValueBuilder.Build(ValueTypes.Boolean.ToString(), isPublished, null)};
+            return attribute;
         }
 
         /// <summary>
