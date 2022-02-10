@@ -18,5 +18,12 @@ namespace ToSic.Eav.Plumbing
                 .Select(s => s.Trim())
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .ToArray();
+
+        public static bool EqualsInsensitive(this string a, string b)
+        {
+            if(a == null && b == null) return true;
+            if (a == null) return false;
+            return a.Equals(b, StringComparison.InvariantCultureIgnoreCase);
+        }
     }
 }

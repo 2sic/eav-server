@@ -17,15 +17,7 @@
         // Is-Recommended Decorator
         public static string RecommendedDecoratorId = "c740085a-d548-41f3-8d06-0a48b8692345";
 
-        // Informs what Metadata is expected / used on a specific item
-        public static string MetadataExpectedDecoratorId = "c490b369-9cd2-4298-af74-19c1e438cdfc";
 
-        public static string MetadataExpectedTypesField = "MetadataTypes";
-
-        public static string MetadataForDecoratorId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
-        public static string MetadataForTargetTypeField = "TargetType";
-        public static string MetadataForTargetNameField = "TargetName";
-        public static string MetadataForDeleteWarningField = "DeleteWarning";
 
         // This marks entities which should allow saving empty
         public static string SaveEmptyDecoratorId = "8c78dabf-e0ad-4c26-b750-48138ecb8a39";

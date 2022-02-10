@@ -2,6 +2,8 @@
 {
     public static class AppConstants
     {
+        public const string LogName = "App";
+
         /// <summary>
         /// This is the folder name which contains all apps.
         /// As of now, it's hard-coded to be 2sxc

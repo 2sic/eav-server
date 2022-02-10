@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps.AppMetadata;
+using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Languages;
@@ -37,6 +39,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ContentTypeRuntime>();
             services.TryAddTransient<QueryRuntime>();
             services.TryAddTransient<MetadataRuntime>();
+            services.TryAddTransient<MdRecommendations>(); // new v13
             services.TryAddTransient<EntityRuntime>();
 
             services.TryAddTransient<Import>();
