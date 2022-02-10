@@ -26,12 +26,14 @@ namespace ToSic.Sxc.Apps.Paths
         /// images in the app folder. 
         /// </summary>
         /// <returns>Path usually starting with /portals/_default/...</returns>
+        /// <remarks>Added v13.01</remarks>
         string PathShared { get; }
 
         /// <summary>
         /// The path on the server hard disk for the current app global folder. 
         /// </summary>
         /// <returns>Path usually starting with c:\...</returns>
+        /// <remarks>Added v13.01</remarks>
         string PhysicalPathShared { get; }
 
         [PrivateApi("not public, not sure if we should surface this")]
