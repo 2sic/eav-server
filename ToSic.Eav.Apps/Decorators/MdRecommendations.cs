@@ -10,8 +10,16 @@ using static ToSic.Eav.Apps.Decorators.MetadataRecommendation;
 
 namespace ToSic.Eav.Apps.Decorators
 {
-    // WIP v13 2dm - trying to simplify Read-Helpers to not be part of the large construct but a simple standalone read service
-    public partial class MdRecommendations: ReadBase<MdRecommendations>
+    /// <summary>
+    /// Figure out all the recommendations for a Metadata Target
+    ///
+    /// Note: this uses a new model for such helpers, which is different from the previous solution.
+    /// We're trying to simplify Read-Helpers to not be part of the large construct but a simple standalone read service
+    ///
+    /// If this model works well, we'll probably reconsider how our xxxRead objects work
+    /// </summary>
+    /// <remarks>new in v13.02</remarks>
+    public class MdRecommendations: ReadBase<MdRecommendations>
     {
         public MdRecommendations(): base($"{AppConstants.LogName}.MdRead")
         { }
@@ -60,7 +68,7 @@ namespace ToSic.Eav.Apps.Decorators
             return wrapLog("unknown case", distinct);
         }
 
-        public List<(IContentType Type, IEntity Recommendation)> TypesWhichDeclareTheyAreForTheTarget(int targetType, string key)
+        private List<(IContentType Type, IEntity Recommendation)> TypesWhichDeclareTheyAreForTheTarget(int targetType, string key)
         {
             var wrapLog = Log.Call<List<(IContentType, IEntity)>>();
             // for path comparisons, make sure we have the slashes cleaned
@@ -126,7 +134,7 @@ namespace ToSic.Eav.Apps.Decorators
             return wrapLog($"{result.Count}", result);
         }
 
-        public List<MetadataRecommendation> GetTargetsExpectations(int targetType, string key)
+        private List<MetadataRecommendation> GetTargetsExpectations(int targetType, string key)
         {
             var wrapLog = Log.Call<List<MetadataRecommendation>>($"targetType: {targetType}");
 
