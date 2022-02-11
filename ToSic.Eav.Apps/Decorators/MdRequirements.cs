@@ -24,7 +24,7 @@ namespace ToSic.Eav.Apps.Decorators
         private readonly Lazy<IPlatformInfo> _platInfo;
 
 
-        public bool RequirementMet(IEnumerable<IEntity> entities)
+        public bool RequirementMet(IEnumerable<IEntity> requirement)
         {
             var entities = requirement?.ToList();
             var wrapLog = Log.Call<bool>($"entities: {entities?.Count}");
