@@ -37,7 +37,7 @@ namespace ToSic.Eav.Data.Builder
                             : new bool?()));
                         break;
                     case ValueTypes.DateTime:
-                        typedModel = new Value<DateTime?>(value as DateTime? ?? (DateTime.TryParse(stringValue, CultureInfo.CurrentCulture,
+                        typedModel = new Value<DateTime?>(value as DateTime? ?? (DateTime.TryParse(stringValue, CultureInfo.InvariantCulture,
                                                      DateTimeStyles.None, out var typedDateTime)
                                                      ? typedDateTime
                                                      : new DateTime?()));

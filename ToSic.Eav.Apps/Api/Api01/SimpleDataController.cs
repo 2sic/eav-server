@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
@@ -13,9 +14,9 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 // This is the simple API used to quickly create/edit/delete entities
 
-    // todo: there is quite a lot of duplicate code here
-    // like code to build attributes, or convert id-relationships to guids
-    // this should be in the AttributeBuilder or similar
+// todo: there is quite a lot of duplicate code here
+// like code to build attributes, or convert id-relationships to guids
+// this should be in the AttributeBuilder or similar
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Api.Api01
@@ -252,13 +253,27 @@ namespace ToSic.Eav.Api.Api01
                 var attribute = contentType[value.Key];
                 if (attribute != null && value.Value != null)
                 {
-                    var strValue = value.Value.ToString();
-                    AttributeBuilder.AddValue(entity.Attributes, attribute.Name, strValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
-                    Log.Add($"Attribute '{value.Key}' will become '{strValue}' ({attribute.Type})");
+                    var unWrappedValue = UnWrapJValue(value.Value);
+                    AttributeBuilder.AddValue(entity.Attributes, attribute.Name, unWrappedValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    Log.Add($"Attribute '{value.Key}' will become '{unWrappedValue}' ({attribute.Type})");
                 }
             }
 
             wrapLog("done");
+        }
+
+        private static object UnWrapJValue(object original)
+        {
+            // it is not clear why we are doing type conversion to string (so it will stay like that)
+            // but string conversion is causing issue with DateTime (2sxc#2658) so we should not convert DateTime to string
+            object value;
+            if (original is JValue jValue && (jValue.Type is JTokenType.Date)) // JTokenType.Date
+                value = jValue.Value as DateTime?;
+            else if (original is DateTime is false) // not System.DateTime
+                value = original.ToString();
+            else // System.DateTime
+                value = original;
+            return value;
         }
     }
 }
