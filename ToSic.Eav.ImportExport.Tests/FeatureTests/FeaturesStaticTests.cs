@@ -20,7 +20,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
         //[TestMethod]
         //public void InventedFeatureGuid()
         //{
-        //    var inventedGuid = new Guid("4f3d0021-1c8b-4286-a33b-3210ed3b2d9a");
+        //    var inventedGuid = new Guid("12345678-1c8b-4286-a33b-3210ed3b2d9a");
         //    var x = Features.Enabled(inventedGuid);
         //    Assert.IsFalse(x, "this should be enabled and expired");
         //}

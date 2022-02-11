@@ -91,6 +91,8 @@
   <ItemGroup>
     <Compile Include="IServiceBuilder.cs" />
     <Compile Include="Mocks\MockGlobalMetadataProvider.cs" />
+    <Compile Include="Platforms\TestPlatformNoLicense.cs" />
+    <Compile Include="Platforms\TestPlatformWithLicense.cs" />
     <Compile Include="SqlTracing.cs" />
     <Compile Include="TestBaseDiCore.cs" />
     <Compile Include="TestBaseDiEavFullAndDb.cs" />
@@ -141,6 +143,7 @@
       <Version>2.0.3</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

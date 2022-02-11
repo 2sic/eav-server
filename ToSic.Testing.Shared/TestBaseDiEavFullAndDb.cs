@@ -1,13 +1,9 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using ToSic.Eav;
 using ToSic.Eav.Configuration;
-using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Testing.Shared
 {
@@ -20,19 +16,13 @@ namespace ToSic.Testing.Shared
         {
             // this will run after the base constructor, which configures DI
             var dbConfiguration = Build<IDbConfiguration>();
-            dbConfiguration.ConnectionString = DbConnectionString;
+            dbConfiguration.ConnectionString = TestConstants.ConStr;
 
-            var globalConfig = Build<IGlobalConfiguration>();
-            globalConfig.DataFolder = "c:\\Projects\\2sxc\\2sxc\\Src\\Data\\";
-            globalConfig.GlobalFolder = globalConfig.DataFolder;
-            // Try to reset some special static variables which may cary over through many tests
-            SystemFingerprint.ResetForTest();
+            StartupGlobalFoldersAndFingerprint();
 
             // Make sure global types are loaded
             Build<SystemLoader>().StartUp();
         }
-
-        protected virtual string DbConnectionString => TestConstants.ConStr;
 
         protected override IServiceCollection SetupServices(IServiceCollection services = null)
         {

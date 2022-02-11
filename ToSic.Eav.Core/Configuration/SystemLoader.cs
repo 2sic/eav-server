@@ -35,12 +35,6 @@ namespace ToSic.Eav.Configuration
         public readonly IFeaturesInternal Features;
         private readonly LogHistory _logHistory;
 
-        public SystemLoader Init(ILog parentLog)
-        {
-            Log.LinkTo(parentLog);
-            return this;
-        }
-
         #endregion
 
         /// <summary>
@@ -67,30 +61,17 @@ namespace ToSic.Eav.Configuration
             new LicenseLoader(_logHistory, Log).LoadLicenses(Fingerprint.GetFingerprint(), _globalConfiguration.Value.GlobalFolder);
 
             // Now do a normal reload of configuration and features
-            LoadFeaturesNew();
+            ReloadFeatures();
         }
         
 
         private bool _startupAlreadyRan;
 
-        ///// <summary>
-        ///// Pre-Load enabled / disabled global features
-        ///// </summary>
-        //[PrivateApi]
-        //public void LoadFeatures(AppState presetApp = null)
-        //{
-        //    var wrapLog = Log.Call();
-        //    presetApp = presetApp ?? _appsCache.Get(null, Constants.PresetIdentity);
-        //    Features.Stored = new FeaturesLoader(_logHistory, Log).LoadFeatures(presetApp, Fingerprint.GetFingerprint());
-        //    Features.CacheTimestamp = DateTime.Now.Ticks;
-        //    wrapLog("ok");
-        //}
-
         /// <summary>
-        /// Pre-Load enabled / disabled global features
+        /// Reset the features to force reloading of the features
         /// </summary>
         [PrivateApi]
-        public void LoadFeaturesNew()
+        public void ReloadFeatures()
         {
             var wrapLog = Log.Call();
             var features = new FeatureListStored();
@@ -109,14 +90,5 @@ namespace ToSic.Eav.Configuration
             wrapLog("ok");
         }
 
-        /// <summary>
-        /// Reset the features to force reloading of the features
-        /// </summary>
-        [PrivateApi]
-        public void ReloadFeatures()
-        {
-            //_appStateLoader.ReloadConfigEntities();
-            LoadFeaturesNew();
-        }
     }
 }

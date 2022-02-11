@@ -41,7 +41,7 @@ namespace ToSic.Eav.Persistence.Efc
 
             if (ancestorAppId != 0)
             {
-                // todo: check if feature is enabled #SharedAppFeatureEnabled
+                // Check if feature is enabled #SharedAppFeatureEnabled
                 if (!_featuresService.Value.IsEnabled(FeaturesCatalog.SharedApps.NameId))
                     throw new FeaturesDisabledException(FeaturesCatalog.SharedApps.NameId, "This is required to load shared app states.");
 

@@ -1,7 +1,9 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Testing.Shared
 {
@@ -26,5 +28,15 @@ namespace ToSic.Testing.Shared
         }
 
         protected virtual void AddServices(IServiceCollection services) { }
+
+        protected void StartupGlobalFoldersAndFingerprint()
+        {
+            var globalConfig = Build<IGlobalConfiguration>();
+            globalConfig.DataFolder = TestConstants.GlobalDataFolder; // "c:\\Projects\\2sxc\\2sxc\\Src\\Data\\";
+            globalConfig.GlobalFolder = globalConfig.DataFolder;
+            // Try to reset some special static variables which may cary over through many tests
+            SystemFingerprint.ResetForTest();
+        }
+
     }
 }
