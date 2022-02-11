@@ -62,7 +62,7 @@ namespace ToSic.Eav.Persistence
                 keys.Add(Attributes.EntityFieldGuid);
                 keys.Add(Attributes.EntityFieldIsPublished);
 
-                AddIsPublishedAttribute(origAttribs, original.IsPublished); // tmp store original IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
+                AddIsPublishedAttribute(origAttribs, original?.IsPublished); // tmp store original IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
                 AddIsPublishedAttribute(newAttribs, update.IsPublished); // tmp store update IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
 
                 if (originalWasSaved) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
@@ -110,8 +110,12 @@ namespace ToSic.Eav.Persistence
             return callLog?.Invoke("ok", result) ?? result;
         }
 
-        private static void AddIsPublishedAttribute(IDictionary<string, IAttribute> attributes, bool isPublished) 
-            => attributes.Add(Attributes.EntityFieldIsPublished, CreateIsPublishedAttribute(isPublished));
+        private static void AddIsPublishedAttribute(IDictionary<string, IAttribute> attributes, bool? isPublished) 
+        {
+            if (isPublished.HasValue && !attributes.ContainsKey(Attributes.EntityFieldIsPublished)) 
+                attributes.Add(Attributes.EntityFieldIsPublished, CreateIsPublishedAttribute(isPublished.Value));
+        }
+
 
         private static IAttribute CreateIsPublishedAttribute(bool isPublished)
         {
