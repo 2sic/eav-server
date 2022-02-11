@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
+using static ToSic.Testing.Shared.ValueBuilderTestExtensions;
 
 namespace ToSic.Eav.DataSourceTests.TestData
 {
@@ -87,14 +88,14 @@ namespace ToSic.Eav.DataSourceTests.TestData
 
             var attribute = AttributeBuilder.CreateTyped(name,  ValueTypes.String, new List<IValue>
             {
-                ValueBuilder.Build(ValueTypes.String, PriPrefix + original, new List<ILanguage> { LangPri.Copy()}),
-                ValueBuilder.Build(ValueTypes.String, EnPrefix + original, new List<ILanguage> { LangEn.Copy()}),
-                ValueBuilder.Build(ValueTypes.String, DeMult + original, new List<ILanguage>
+                ValueBuilderBuildTest(ValueTypes.String, PriPrefix + original, new List<ILanguage> { LangPri.Copy()}),
+                ValueBuilderBuildTest(ValueTypes.String, EnPrefix + original, new List<ILanguage> { LangEn.Copy()}),
+                ValueBuilderBuildTest(ValueTypes.String, DeMult + original, new List<ILanguage>
                     {
                         LangDeDe.Copy(), 
                         LangDeCh.Copy(readOnly: true)
                     }),
-                ValueBuilder.Build(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr.Copy()})
+                ValueBuilderBuildTest(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr.Copy()})
             });
             return attribute;
         }
@@ -104,8 +105,8 @@ namespace ToSic.Eav.DataSourceTests.TestData
 
             var attribute = AttributeBuilder.CreateTyped(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
             {
-                ValueBuilder.Build(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { LangEn.Copy()}),
-                ValueBuilder.Build(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
+                ValueBuilderBuildTest(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { LangEn.Copy()}),
+                ValueBuilderBuildTest(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
                     {
                         LangDeDe.Copy(), 
                         LangDeCh.Copy(readOnly: true)
@@ -119,7 +120,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                 ? (object) original
                 : AttributeBuilder.CreateTyped(name, type, new List<IValue>
                 {
-                    ValueBuilder.Build(type, original, new List<ILanguage>()),
+                    ValueBuilderBuildTest(type, original, new List<ILanguage>()),
                 });
     }
 }

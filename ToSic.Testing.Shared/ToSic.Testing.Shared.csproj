@@ -103,6 +103,7 @@
     <Compile Include="TestBaseWithCustomDependencyInjection.cs" />
     <Compile Include="TestConstants.cs" />
     <Compile Include="TestServiceBase.cs" />
+    <Compile Include="ValueBuilderTestExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj">
