@@ -224,38 +224,38 @@ namespace ToSic.Eav.Api.Api01
             return result;
         }
 
-        private void AddValues(Entity entity, IContentType contentType, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
+        private void AddValues(Entity entity, IContentType contentType, Dictionary<string, object> valuePairs, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
         {
-            var wrapLog = Log.Call($"..., ..., values: {values?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}");
-            if (values == null)
+            var wrapLog = Log.Call($"..., ..., values: {valuePairs?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}");
+            if (valuePairs == null)
             {
                 wrapLog("no values");
                 return;
             }
-            foreach (var value in values)
+            foreach (var keyValuePair in valuePairs)
             {
                 // Handle special attributes (for example of the system)
-                if (value.Key.ToLowerInvariant() == Attributes.EntityFieldIsPublished)
+                if (keyValuePair.Key.ToLowerInvariant() == Attributes.EntityFieldIsPublished)
                 {
-                    if (value.Value is bool newValue) entity.IsPublished = newValue;
+                    if (keyValuePair.Value is bool newValue) entity.IsPublished = newValue;
                     Log.Add($"IsPublished: {entity.IsPublished}");
                     continue;
                 }
 
                 // Ignore entity guid - it's already set earlier
-                if (value.Key.ToLowerInvariant() == Attributes.EntityFieldGuid)
+                if (keyValuePair.Key.ToLowerInvariant() == Attributes.EntityFieldGuid)
                 {
                     Log.Add("entity-guid, ignore here");
                     continue;
                 }
 
                 // Handle content-type attributes
-                var attribute = contentType[value.Key];
-                if (attribute != null && value.Value != null)
+                var attribute = contentType[keyValuePair.Key];
+                if (attribute != null && keyValuePair.Value != null)
                 {
-                    var unWrappedValue = UnWrapJValue(value.Value);
+                    var unWrappedValue = UnWrapJValue(keyValuePair.Value);
                     AttributeBuilder.AddValue(entity.Attributes, attribute.Name, unWrappedValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
-                    Log.Add($"Attribute '{value.Key}' will become '{unWrappedValue}' ({attribute.Type})");
+                    Log.Add($"Attribute '{keyValuePair.Key}' will become '{unWrappedValue}' ({attribute.Type})");
                 }
             }
 
@@ -266,14 +266,16 @@ namespace ToSic.Eav.Api.Api01
         {
             // it is not clear why we are doing type conversion to string (so it will stay like that)
             // but string conversion is causing issue with DateTime (2sxc#2658) so we should not convert DateTime to string
-            object value;
-            if (original is JValue jValue && (jValue.Type is JTokenType.Date)) // JTokenType.Date
-                value = jValue.Value as DateTime?;
-            else if (original is DateTime is false) // not System.DateTime
-                value = original.ToString();
-            else // System.DateTime
-                value = original;
-            return value;
+            if (original is JValue jValue && jValue.Type is JTokenType.Date) // JTokenType.Date
+                return jValue.Value as DateTime?;
+
+            // If it's not System.DateTime, ToString() it
+            // Note 2022-02-11 2dm/STV we believe this is a forced unwrap from the JValue
+            // And maybe this would also work with JValue.Value or something
+            // But if we change this, it must be tested well, so no priority
+            if (!(original is DateTime)) return original.ToString();
+            // System.DateTime
+            return original;
         }
     }
 }
