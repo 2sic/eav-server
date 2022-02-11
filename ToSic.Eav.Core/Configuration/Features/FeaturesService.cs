@@ -42,7 +42,7 @@ namespace ToSic.Eav.Configuration
         {
             // ReSharper disable PossibleMultipleEnumeration
             var enabled = Enabled(features);
-            exception = enabled ? null : new FeaturesDisabledException(message + " - " + MsgMissingSome(features), features);
+            exception = enabled ? null : new FeaturesDisabledException(message + " - " + MsgMissingSome(features));
             // ReSharper restore PossibleMultipleEnumeration
             return enabled;
         }

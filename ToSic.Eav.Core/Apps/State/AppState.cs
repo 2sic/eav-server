@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps
 
             ParentApp = parentApp;
             Log.Add($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");
-            CacheExpiryDelegate = CreateExpiryProvider();
+            CacheExpiryDelegate = CreateExpiryDelegate(parentApp);
 
             NameId = nameId;
             

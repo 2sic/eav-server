@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
@@ -47,8 +48,8 @@ namespace ToSic.Eav.Apps
         private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack()
         {
             var cacheExpires = SiteOrNull == null
-                ? new ICacheExpiring[] { Owner, Global }
-                : new ICacheExpiring[] { Owner, SiteOrNull, Global };
+                ? new ITimestamped[] { Owner, Global }
+                : new ITimestamped[] { Owner, SiteOrNull, Global };
             var cachedStack =
                 new SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>(
                     new CacheExpiringMultiSource(cacheExpires), RebuildStack);
