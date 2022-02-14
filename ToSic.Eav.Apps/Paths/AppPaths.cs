@@ -98,21 +98,20 @@ namespace ToSic.Eav.Apps.Paths
                 .ToAbsolutePathForwardSlash());
 
         public string PathShared => GetInternal(nameof(PathShared), 
-            () => Combine(_config.Value.SharedAppsFolder, AppConstants.AppsRootFolder, _appState.Folder)
+            () => Combine(_config.Value.SharedAppsFolder, _appState.Folder)
                 .ToAbsolutePathForwardSlash());
 
         public string PhysicalPath => GetInternal(nameof(PhysicalPath), 
             () => Combine(_site.AppsRootPhysicalFull, _appState.Folder));
 
         public string PhysicalPathShared => GetInternal(nameof(PhysicalPathShared), 
-            () => _serverPaths.Value.FullAppPath(Combine(_config.Value.SharedAppsFolder,
-                AppConstants.AppsRootFolder, _appState.Folder)));
+            () => _serverPaths.Value.FullAppPath(Combine(_config.Value.SharedAppsFolder, _appState.Folder)));
 
         public string RelativePath => GetInternal(nameof(RelativePath), 
             () => Combine(_site.AppsRootPhysical, _appState.Folder).Backslash());
         
         public string RelativePathShared => GetInternal(nameof(RelativePathShared), 
-            () => Combine(_config.Value.SharedAppsFolder, AppConstants.AppsRootFolder, _appState.Folder)
+            () => Combine(_config.Value.SharedAppsFolder, _appState.Folder)
                 .ToAbsolutePathForwardSlash());
     }
 }
