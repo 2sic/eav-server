@@ -75,12 +75,10 @@ namespace ToSic.Eav.LookUp
         /// <returns></returns>
         public static bool ContainsTokens(string sourceText)
         {
-            if (!string.IsNullOrEmpty(sourceText))
-            {
-                foreach (Match currentMatch in Tokenizer.Matches(sourceText))
-                    if (currentMatch.Result("${object}").Length > 0)
-                        return true;
-            }
+            if (string.IsNullOrEmpty(sourceText)) return false;
+            foreach (Match currentMatch in Tokenizer.Matches(sourceText))
+                if (currentMatch.Result("${object}").Length > 0)
+                    return true;
             return false;
         }
 
@@ -98,45 +96,43 @@ namespace ToSic.Eav.LookUp
             var result = new StringBuilder();
             var charProgress = 0;
             var matches = Tokenizer.Matches(sourceText);
-            if (matches.Count > 0)
+            
+            // If no matches found, just return the sourceText
+            if (matches.Count <= 0) return sourceText;
+
+            foreach (Match curMatch in matches)
             {
-                foreach (Match curMatch in matches)
-                {
-                    // Get characters before the first match
-                    if (curMatch.Index > charProgress)
-                        result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
-                    charProgress = curMatch.Index + curMatch.Length;
+                // Get characters before the first match
+                if (curMatch.Index > charProgress)
+                    result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
+                charProgress = curMatch.Index + curMatch.Length;
 
-                    // get the infos we need to retrieve the value, get it. 
-                    var strObjectName = curMatch.Result("${object}");
-                    if (!string.IsNullOrEmpty(strObjectName))
-                    {
-                        var strPropertyName = curMatch.Result("${property}");
-                        var strFormat = curMatch.Result("${format}");
-                        var strIfEmptyReplacement = curMatch.Result("${ifEmpty}");
-                        var strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
+                // get the infos we need to retrieve the value, get it. 
+                var strObjectName = curMatch.Result("${object}");
+                if (string.IsNullOrEmpty(strObjectName)) continue;
 
-                        var useFallback = string.IsNullOrEmpty(strConversion);
-                        if (useFallback)
-                            strConversion = strIfEmptyReplacement; 
+                var strPropertyName = curMatch.Result("${property}");
+                var strFormat = curMatch.Result("${format}");
+                var strIfEmptyReplacement = curMatch.Result("${ifEmpty}");
+                var strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
+
+                var useFallback = string.IsNullOrEmpty(strConversion);
+                if (useFallback)
+                    strConversion = strIfEmptyReplacement; 
                         
-                        if (repeat > 0 || useFallback) // note: when using fallback, always re-run tokens, even if no repeat left
-                            strConversion = ReplaceTokens(strConversion, repeat - 1);
+                if (repeat > 0 || useFallback) // note: when using fallback, always re-run tokens, even if no repeat left
+                    strConversion = ReplaceTokens(strConversion, repeat - 1);
 
-                        result.Append(strConversion);
-                    }
-                }
-
-                // attach the rest of the text (after the last match)
-                result.Append(sourceText.Substring(charProgress));
-                
-                // Ready to finish, but first, ensure repeating if desired
-                var finalResult = result.ToString();
-                return finalResult;
+                result.Append(strConversion);
             }
 
-            // no matches found, just return the sourceText
-            return sourceText;
+            // attach the rest of the text (after the last match)
+            result.Append(sourceText.Substring(charProgress));
+                
+            // Ready to finish, but first, ensure repeating if desired
+            var finalResult = result.ToString();
+            return finalResult;
+
         }
 
         /// <summary>
