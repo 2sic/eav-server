@@ -30,8 +30,8 @@ namespace ToSic.Eav.Configuration
         /// <inheritdoc />
         public string SharedAppsFolder
         {
-            get => _globalSiteFolder;
-            set => _globalSiteFolder = value;
+            get => _globalSiteFolder ?? throw new Exception(ErrorMessage(nameof(SharedAppsFolder)));
+            set => _globalSiteFolder = CorrectFolderOrErrorIfInvalid(value, nameof(SharedAppsFolder));
         }
 
         /// <inheritdoc />
