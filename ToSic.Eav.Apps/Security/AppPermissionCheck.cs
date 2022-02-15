@@ -128,7 +128,7 @@ namespace ToSic.Eav.Apps.Security
         /// Check if user is valid admin of current portal / zone
         /// </summary>
         /// <returns></returns>
-        public bool UserIsTenantAdmin() => Log.Intercept(nameof(UserIsTenantAdmin), () => Context.User?.IsAdmin ?? false);
+        public bool UserIsSiteAdmin() => Log.Intercept(nameof(UserIsSiteAdmin), () => Context.User?.IsAdmin ?? false);
 
 
         #endregion
