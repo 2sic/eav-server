@@ -153,6 +153,14 @@ namespace ToSic.Eav.Security
             return result;
         }
 
+        // TODO: @STV
+        // 1. Create new EnvironmentPermission class with these two methods
+        // 2. Inject it into this class
+        // 3. Init it on the main init of this class
+        // 4. Create the Dnn & Oqtane versions
+        // 5. Register in DI & test
+
+
         /// <summary>
         /// This should evaluate the grants and decide if the environment approves any of these grants.
         /// Note that in many cases the implementation will simply check if the environment provides edit permissions, but
