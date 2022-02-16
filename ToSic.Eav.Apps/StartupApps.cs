@@ -12,6 +12,8 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
+using ToSic.Eav.Security;
+using EnvironmentPermission = ToSic.Eav.Apps.Security.EnvironmentPermission;
 
 namespace ToSic.Eav.Apps
 {
@@ -92,6 +94,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ISite, SiteUnknown>();
             services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
             services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
+            services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
             services.TryAddTransient<IAppFileSystemLoader, FileSystemLoaderUnknown>();
 
             services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
