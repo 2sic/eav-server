@@ -4,9 +4,16 @@ using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Security
 {
-    public interface IEnvironmentPermission
+    public interface IEnvironmentPermission: IHasLog<IEnvironmentPermission>
     {
-        IEnvironmentPermission Init<T>(T ctx, IAppIdentity appIdentity, ILog parentLog);
+        /// <summary>
+        /// Init the checker
+        /// </summary>
+        /// <typeparam name="TContext">Important: Special type info for the context because the Eav.Core doesn't know about these types yet</typeparam>
+        /// <param name="context"></param>
+        /// <param name="appIdentityOrNull"></param>
+        /// <returns></returns>
+        IEnvironmentPermission Init<TContext>(TContext context, IAppIdentity appIdentityOrNull);
 
         Conditions GrantedBecause { get; set; }
 

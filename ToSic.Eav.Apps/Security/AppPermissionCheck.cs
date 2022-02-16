@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Security
         protected AppPermissionCheck(IAppStates appStates, Dependencies dependencies, string logPrefix) : base(dependencies, $"{logPrefix}.PrmChk")
         {
             _appStates = appStates;
-            _environmentPermission = (EnvironmentPermission) dependencies.EnvironmentPermission;
+            _environmentPermission = (EnvironmentPermission) dependencies.EnvironmentPermission.Init(Log);
         }
         private readonly IAppStates _appStates;
         private readonly EnvironmentPermission _environmentPermission;
@@ -98,7 +98,7 @@ namespace ToSic.Eav.Apps.Security
             IEnumerable<Permission> permissions = null)
         {
             Init(parentLog, targetType ?? targetItem?.Type, targetItem, permissions);
-            _environmentPermission.Init(ctx, appIdentity, parentLog);
+            _environmentPermission.Init(ctx, appIdentity);
             var logWrap = Log.Call($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
             Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
             AppIdentity = appIdentity;

@@ -1,28 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Apps.Security
 {
-    public abstract class EnvironmentPermission : HasLog, IEnvironmentPermission
+    public abstract class EnvironmentPermission : HasLog<IEnvironmentPermission>, IEnvironmentPermission
     {
-        protected EnvironmentPermission(string logName) : base(logName)
-        {
-        }
+        protected EnvironmentPermission(string logPrefix) : base($"{logPrefix}.EnvPrm") { }
 
-        public IEnvironmentPermission Init<T>(T ctx, IAppIdentity appIdentity, ILog parentLog)
+        public IEnvironmentPermission Init<TContext>(TContext context, IAppIdentity appIdentityOrNull)
         {
-            Log.LinkTo(parentLog);
-            Context = ctx as IContextOfSite;
-            AppIdentity = appIdentity;
+            Context = context as IContextOfSite ?? throw new ArgumentException($"Must be an {nameof(IContextOfSite)}", nameof(context));
+            AppIdentity = appIdentityOrNull;
             GrantedBecause = Conditions.Undefined;
             return this;
         }
-
         protected IContextOfSite Context { get; set; }
         protected IAppIdentity AppIdentity { get; set; }
-
         public Conditions GrantedBecause { get; set; }
 
         /// <summary>
@@ -63,11 +59,16 @@ namespace ToSic.Eav.Apps.Security
         protected bool CurrentZoneMatchesSiteZone()
         {
             var wrapLog = Log.Call<bool>();
-            // but is the current portal also the one we're asking about?
-            if (Context.Site == null || Context.Site.Id == Eav.Constants.NullId) return wrapLog("no", false); // this is the case when running out-of http-context
-            if (AppIdentity == null) return wrapLog("yes", true); // this is the case when an app hasn't been selected yet, so it's an empty module, must be on current portal
-            var pZone = Context.Site.ZoneId;
-            var result = pZone == AppIdentity.ZoneId; // must match, to accept user as admin
+            
+            // Check if we are running out-of http-context
+            if (Context.Site == null || Context.Site.Id == Eav.Constants.NullId) return wrapLog("no", false);
+            
+            // Check if no app is provided, like when an app hasn't been selected yet, so it's an empty module, must be on current portal
+            if (AppIdentity == null) return wrapLog("no app, so context unchanged", true); 
+
+            // If we have the full context, we must check if the site has changed
+            // This will important for other security checks, only allow zone-change for super users
+            var result = Context.Site.ZoneId == AppIdentity.ZoneId;
             return wrapLog($"{result}", result);
         }
     }
