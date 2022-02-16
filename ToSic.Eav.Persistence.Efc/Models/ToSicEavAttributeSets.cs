@@ -16,7 +16,16 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public string StaticName { get; set; }
         public string Name { get; set; }
         public string Scope { get; set; }
-        public string Description { get; set; }
+
+        // FIX: to ensure non nullable value in DB
+        public string Description
+        {
+            get => _description ?? string.Empty;
+            set => _description = value;
+        }
+        private string _description;
+
+
         public int ChangeLogCreated { get; set; }
         public int? ChangeLogDeleted { get; set; }
         public int AppId { get; set; }
