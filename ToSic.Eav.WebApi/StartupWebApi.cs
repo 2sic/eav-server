@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.WebApi.ApiExplorer;
 using ToSic.Eav.WebApi.Features;
 using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Eav.WebApi.Languages;
 using ToSic.Eav.WebApi.Licenses;
+using ToSic.Eav.WebApi.Plumbing;
 using ToSic.Eav.WebApi.Security;
 using ToSic.Eav.WebApi.Sys;
 using ToSic.Eav.WebApi.Zone;
@@ -45,6 +47,15 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<ConvertToEavLight.Dependencies>();
             services.TryAddTransient<ConvertToEavLight, ConvertToEavLight>();
 
+            return services;
+        }
+
+        public static IServiceCollection AddEavApiExplorer<THttpResponseType>(this IServiceCollection services)
+        {
+            // APIs
+            services.TryAddTransient<ApiExplorerBackend<THttpResponseType>>();
+            services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
+            services.TryAddTransient<ResponseMaker<THttpResponseType>, ResponseMakerUnknown<THttpResponseType>>();
             return services;
         }
     }
