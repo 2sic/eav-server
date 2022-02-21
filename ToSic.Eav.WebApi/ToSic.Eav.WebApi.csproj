@@ -14,10 +14,17 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" Version="5.2.3" />
+    <Reference Include="System.Web" />
+    <Reference Include="ToSic.Razor">
+	    <HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\net472\ToSic.Razor.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <Reference Include="ToSic.Razor">
+	    <HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\netstandard2.0\ToSic.Razor.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
