@@ -40,7 +40,6 @@ namespace ToSic.Eav.WebApi.Sys
             return this;
         }
 
-        //private Action ThrowIfNotSuperUser;
         private Exception CreateBadRequest(string msg) => HttpException.BadRequest(msg);
 
         private void ThrowIfNotSuperUser()

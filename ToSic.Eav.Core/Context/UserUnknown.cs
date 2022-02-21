@@ -9,20 +9,25 @@ namespace ToSic.Eav.Context
     {
         public UserUnknown(WarnUseOfUnknown<UserUnknown> warn) { }
 
+        /// <summary>
+        /// Simple setting to pretend the user is a super-user in test-scenarios
+        /// </summary>
+        public static bool AllowEverything = false;
+
         public string IdentityToken => "unknown(eav):0";
 
         public Guid? Guid => System.Guid.Empty;
 
         public List<int> Roles => new List<int>();
 
-        public bool IsSuperUser => false;
+        public bool IsSuperUser => AllowEverything;
 
-        public bool IsAdmin => false;
+        public bool IsAdmin => AllowEverything;
 
-        public bool IsDesigner => false;
+        public bool IsDesigner => AllowEverything;
 
         public int Id => 0;
 
-        public bool IsAnonymous => true;
+        public bool IsAnonymous => !AllowEverything;
     }
 }
