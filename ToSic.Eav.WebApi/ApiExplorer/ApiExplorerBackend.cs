@@ -3,22 +3,22 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using ToSic.Eav.Helpers;
-using ToSic.Sxc.WebApi.Plumbing;
+using ToSic.Eav.WebApi.Plumbing;
 
 namespace ToSic.Eav.WebApi.ApiExplorer
 {
-    public class ApiExplorerBackend<HttpResponseType> : WebApiBackendBase<ApiExplorerBackend<HttpResponseType>>
+    public class ApiExplorerBackend<THttpResponseType> : WebApiBackendBase<ApiExplorerBackend<THttpResponseType>>
     {
         public IApiInspector Inspector { get; }
-        public ResponseMaker<HttpResponseType> ResponseMaker { get; }
+        public ResponseMaker<THttpResponseType> ResponseMaker { get; }
 
-        public ApiExplorerBackend(IServiceProvider sp, IApiInspector inspector, ResponseMaker<HttpResponseType> responseMaker): base(sp, "Bck.ApiExp")
+        public ApiExplorerBackend(IServiceProvider sp, IApiInspector inspector, ResponseMaker<THttpResponseType> responseMaker): base(sp, "Bck.ApiExp")
         {
             Inspector = inspector;
             ResponseMaker = responseMaker;
         }
 
-        public bool PreCheckAndCleanPath(ref string path, out HttpResponseType error)
+        public bool PreCheckAndCleanPath(ref string path, out THttpResponseType error)
         {
             var wrapLog = Log.Call<bool>();
 
@@ -39,9 +39,9 @@ namespace ToSic.Eav.WebApi.ApiExplorer
             return false;
         }
 
-        public HttpResponseType AnalyzeClassAndCreateDto(string path, Assembly assembly)
+        public THttpResponseType AnalyzeClassAndCreateDto(string path, Assembly assembly)
         {
-            var wrapLog = Log.Call<HttpResponseType>();
+            var wrapLog = Log.Call<THttpResponseType>();
             var controllerName = path.Substring(path.LastIndexOf('\\') + 1);
             controllerName = controllerName.Substring(0, controllerName.IndexOf('.'));
             var controller =

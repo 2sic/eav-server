@@ -1,15 +1,16 @@
 ﻿using System;
 
-namespace ToSic.Sxc.WebApi.Plumbing
+namespace ToSic.Eav.WebApi.Plumbing
 {
-    public abstract class ResponseMaker<HttpResponseType>
+    public abstract class ResponseMaker<THttpResponseType>
     {
-        public abstract HttpResponseType InternalServerError(string message);
-        public abstract HttpResponseType InternalServerError(Exception exception);
+        public abstract THttpResponseType InternalServerError(string message);
+        public abstract THttpResponseType InternalServerError(Exception exception);
         
-        public abstract HttpResponseType Error(int statusCode, string message);
+        public abstract THttpResponseType Error(int statusCode, string message);
         
-        public abstract HttpResponseType Error(int statusCode, Exception exception);
-        public abstract HttpResponseType Json(object json);
+        public abstract THttpResponseType Error(int statusCode, Exception exception);
+
+        public abstract THttpResponseType Json(object json);
     }
 }
