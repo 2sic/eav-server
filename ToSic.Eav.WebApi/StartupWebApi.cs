@@ -1,8 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.WebApi.Features;
 using ToSic.Eav.WebApi.ImportExport;
+using ToSic.Eav.WebApi.Languages;
+using ToSic.Eav.WebApi.Licenses;
 using ToSic.Eav.WebApi.Security;
+using ToSic.Eav.WebApi.Sys;
+using ToSic.Eav.WebApi.Zone;
 
 namespace ToSic.Eav.WebApi
 {
@@ -10,6 +15,16 @@ namespace ToSic.Eav.WebApi
     {
         public static IServiceCollection AddEavWebApi(this IServiceCollection services)
         {
+            // Insights, the most important core backend
+            services.TryAddTransient<Insights>();
+
+            // Various Backends
+            services.TryAddTransient<FeaturesBackend>();
+            services.TryAddTransient<LicenseBackend>();
+            services.TryAddTransient<LanguagesBackend>();
+            services.TryAddTransient<ZoneBackend>();
+
+
             // APIs
             services.TryAddTransient<EntityPickerApi>();
             services.TryAddTransient<ContentTypeApi>();
