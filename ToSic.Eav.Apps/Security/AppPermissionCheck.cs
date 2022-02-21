@@ -11,10 +11,10 @@ namespace ToSic.Eav.Apps.Security
     /// <summary>
     /// Check permissions on something inside an App, like a specific Entity, Content-Type etc.
     /// </summary>
-    public abstract class AppPermissionCheck: PermissionCheckBase
+    public class AppPermissionCheck: PermissionCheckBase
     {
         #region Constructor & DI
-        protected AppPermissionCheck(IAppStates appStates, Dependencies dependencies, string logPrefix) : base(dependencies, $"{logPrefix}.PrmChk")
+        public AppPermissionCheck(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{AppConstants.LogName}.PrmChk")
         {
             _appStates = appStates;
             _environmentPermission = (EnvironmentPermission) dependencies.EnvironmentPermission.Init(Log);

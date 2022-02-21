@@ -41,7 +41,6 @@ namespace ToSic.Eav
                 .AddEavCorePlumbing()
                 .AddEavCoreFallbackServices();
 
-
             return services;
         }
     }

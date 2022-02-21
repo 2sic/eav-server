@@ -72,6 +72,9 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ExportImportValueConversion>();
             services.TryAddTransient<XmlImportWithFiles.Dependencies>();
 
+            // App Permission Check moved to this project as the implementations are now all identical
+            services.TryAddTransient<AppPermissionCheck>();
+
             // V13 Language Checks
             services.TryAddTransient<AppUserLanguageCheck>();
 
