@@ -9,9 +9,8 @@ using ToSic.Eav.WebApi.Errors;
 
 namespace ToSic.Eav.WebApi.Sys
 {
-    public partial class Insights: HasLog
+    public partial class Insights: HasLog<Insights>
     {
-
         #region Constructor / DI
 
         public Insights(IServiceProvider serviceProvider, IAppStates appStates, SystemManager systemManager, IAppsCache appsCache, LogHistory logHistory, Lazy<ILicenseService> licenseServiceLazy, IUser user)
@@ -33,12 +32,7 @@ namespace ToSic.Eav.WebApi.Sys
         private readonly IUser _user;
         protected readonly SystemManager SystemManager;
 
-
-        public Insights Init(ILog parentLog) 
-        {
-            Log.LinkTo(parentLog);
-            return this;
-        }
+        #endregion
 
         private Exception CreateBadRequest(string msg) => HttpException.BadRequest(msg);
 
@@ -47,7 +41,6 @@ namespace ToSic.Eav.WebApi.Sys
             if(!_user.IsSuperUser) throw HttpException.PermissionDenied("requires Superuser permissions");
         }
 
-        #endregion
 
         private AppRuntime AppRt(int? appId) => _serviceProvider.Build<AppRuntime>().Init(appId.Value, true, Log);
 
