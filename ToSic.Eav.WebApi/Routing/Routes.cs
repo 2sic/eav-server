@@ -12,6 +12,15 @@
         public const string Admin = "admin";
     }
 
+    public class AreaRoutes
+    {
+        public const string App = Areas.App + "/" + "[controller]/[action]";
+        public const string Sys = Areas.Sys + "/" + "[controller]/[action]";
+        public const string Cms = Areas.Cms + "/" + "[controller]/[action]"; // new, v13
+        public const string Admin = Areas.Admin + "/" + "[controller]/[action]";
+    }
+
+
     public class AppParts
     {
         public const string Auto = "auto";
@@ -20,14 +29,14 @@
         public const string Query = "query";
     }
 
-
     public class AppRoots
     {
         public const string AppAuto = Areas.App + "/" + AppParts.Auto;
-        public const string AppNamed = Areas.App + "/" + TokensFramework.AppPath;
-        public const string AppContentAuto = AppAuto + "/" + AppParts.Content;
-        public const string AppContentNamed = AppNamed + "/" + AppParts.Content;
-        public const string AppDataAuto = AppAuto + "/" + AppParts.Data; // new, v13
-        public const string AppDataNamed = AppNamed + "/" + AppParts.Data; // new, v13
+        public const string AppAutoContent = Areas.App + "/" + AppParts.Auto + "/" + AppParts.Content;
+        public const string AppAutoData = Areas.App + "/" + AppParts.Auto + "/" + AppParts.Data; // new, v13
+
+        public const string AppNamed = Areas.App + "/" + ValueTokens.AppPath;
+        public const string AppNamedContent = Areas.App + "/" + ValueTokens.AppPath + "/" + AppParts.Content;
+        public const string AppNamedData = Areas.App + "/" + ValueTokens.AppPath + "/" + AppParts.Data; // new, v13
     }
 }
