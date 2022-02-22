@@ -3,7 +3,7 @@
     /// <summary>
     /// These are tokens in the format {xyz} used in routes to identify a part
     /// </summary>
-    public class TokensFramework
+    public class ValueTokens
     {
         // Single Placeholders
         public const string Name = "{" + VarNames.Name + "}";
@@ -25,4 +25,5 @@
         public const string SetTypeGuidField = SetTypeAndGuid + "/" + Field;
         public const string SetTypeGuidFieldAction = SetTypeGuidField + "/" + Action;
     }
+
 }
