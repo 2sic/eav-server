@@ -42,10 +42,6 @@ namespace ToSic.Eav.WebApi.PublicApi
         // interface method is commented because aspnetcore implementation have different signature
         // IEnumerable<EntityForPickerDto> EntityPicker(int appId, string contentTypeName = null);
 
-        // 2021-04-13 2dm should be unused now
-        //[Obsolete("Wait till UI only suse the Pro, then drop this")]
-        //string LookupLink(string link, int appId, string contentType = default, Guid guid = default, string field = default);
-
 
         /// <summary>
         /// This GET-call will resolve links to files and to pages.
