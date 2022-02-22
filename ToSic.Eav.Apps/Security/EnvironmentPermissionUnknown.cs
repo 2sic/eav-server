@@ -10,14 +10,9 @@ namespace ToSic.Eav.Apps.Security
         public EnvironmentPermissionUnknown(WarnUseOfUnknown<EnvironmentPermissionUnknown> warn) : base(LogNames.NotImplemented)
         { }
 
-        public override bool EnvironmentAllows(List<Grants> grants)
-        {
-            return UserIsSuperuser();
-        }
+        public override bool EnvironmentAllows(List<Grants> grants) => UserIsSuperuser();
 
-        public override bool VerifyConditionOfEnvironment(string condition)
-        {
-            return condition.Equals("SecurityAccessLevel.Anonymous", StringComparison.CurrentCultureIgnoreCase);
-        }
+        public override bool VerifyConditionOfEnvironment(string condition) 
+            => condition.Equals("SecurityAccessLevel.Anonymous", StringComparison.CurrentCultureIgnoreCase);
     }
 }
