@@ -22,20 +22,20 @@ namespace ToSic.Eav.WebApi.Helpers
 
         private Action<string> _actionTimerWrap; // it is used across events to track action execution total time
 
+        public IServiceProvider ServiceProvider => _serviceProvider ?? throw new Exception($"{nameof(ServiceProvider)} is only available after calling {nameof(OnActionExecuting)}");
+        private IServiceProvider _serviceProvider;
 
-        public IServiceProvider OnActionExecuting(ActionExecutingContext context, string historyLogGroup)
+
+        public void OnActionExecuting(ActionExecutingContext context, string historyLogGroup)
         {
             // Create a log entry with timing
             _actionTimerWrap = LogOrNull.SafeCall($"action executing url: {context.HttpContext.Request.GetDisplayUrl()}", useTimer: true);
 
             // Get the ServiceProvider of the current request
-            var serviceProvider = context.HttpContext.RequestServices;
+            _serviceProvider = context.HttpContext.RequestServices;
 
             // Add to Log History
-            serviceProvider.Build<LogHistory>().Add(historyLogGroup, LogOrNull);
-
-            // Return the ServiceProvider as it will be used by the parent controller
-            return serviceProvider;
+            _serviceProvider.Build<LogHistory>().Add(historyLogGroup, LogOrNull);
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
@@ -59,6 +59,12 @@ namespace ToSic.Eav.WebApi.Helpers
             _actionTimerWrap("ok");
             _actionTimerWrap = null; // just to mark that Action Delegate is not in use any more, so GC can collect it
         }
+
+        public TService GetService<TService>() => ServiceProvider.Build<TService>();
+
+        public TRealController Real<TRealController>() where TRealController : class, IHasLog<TRealController>
+            => ServiceProvider?.Build<TRealController>().Init(LogOrNull) ??
+               throw new Exception($"Can't use {nameof(Real)} before {nameof(OnActionExecuting)}");
     }
 }
 #endif 
