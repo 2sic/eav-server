@@ -18,7 +18,7 @@ namespace ToSic.Eav.WebApi
         public static IServiceCollection AddEavWebApi(this IServiceCollection services)
         {
             // Insights, the most important core backend
-            services.TryAddTransient<Insights>();
+            services.TryAddTransient<InsightsControllerReal>();
 
             // Various Backends
             services.TryAddTransient<FeaturesBackend>();

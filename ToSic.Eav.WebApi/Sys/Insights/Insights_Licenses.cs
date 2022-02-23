@@ -3,7 +3,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
 {
-    public partial class Insights
+    public partial class InsightsControllerReal
     {
         private string Licenses()
         {

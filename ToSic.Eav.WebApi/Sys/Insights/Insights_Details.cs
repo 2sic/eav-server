@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.WebApi.Sys
 {
-    public partial class Insights
+    public partial class InsightsControllerReal
     {
         /// <summary>
         /// WIP

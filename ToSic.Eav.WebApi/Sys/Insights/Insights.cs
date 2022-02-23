@@ -9,11 +9,11 @@ using ToSic.Eav.WebApi.Errors;
 
 namespace ToSic.Eav.WebApi.Sys
 {
-    public partial class Insights: HasLog<Insights>
+    public partial class InsightsControllerReal: HasLog<InsightsControllerReal>
     {
         #region Constructor / DI
 
-        public Insights(IServiceProvider serviceProvider, IAppStates appStates, SystemManager systemManager, IAppsCache appsCache, LogHistory logHistory, Lazy<ILicenseService> licenseServiceLazy, IUser user)
+        public InsightsControllerReal(IServiceProvider serviceProvider, IAppStates appStates, SystemManager systemManager, IAppsCache appsCache, LogHistory logHistory, Lazy<ILicenseService> licenseServiceLazy, IUser user)
             : base("Api.SysIns")
         {
             _serviceProvider = serviceProvider;

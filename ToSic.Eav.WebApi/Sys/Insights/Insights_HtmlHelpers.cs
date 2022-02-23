@@ -7,7 +7,7 @@ using ToSic.Razor.Markup;
 
 namespace ToSic.Eav.WebApi.Sys
 {
-    public partial class Insights
+    public partial class InsightsControllerReal
     {
         protected static ITag HeadFields(params object[] fields)
             => Tag.Thead(Tag.Tr(

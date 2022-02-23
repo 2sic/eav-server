@@ -8,7 +8,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
 {
-    public partial class Insights
+    public partial class InsightsControllerReal
     {
 
         internal string LogHeader(string key = null)
