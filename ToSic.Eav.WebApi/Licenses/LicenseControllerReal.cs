@@ -6,21 +6,16 @@ using ToSic.Eav.Configuration.Licenses;
 
 namespace ToSic.Eav.WebApi.Licenses
 {
-    public class LicenseBackend : WebApiBackendBase<LicenseBackend>
+    public class LicenseControllerReal : WebApiBackendBase<LicenseControllerReal>
     {
-
-        #region Constructor / DI
-
-        public LicenseBackend(IServiceProvider serviceProvider, Lazy<ILicenseService> licenseServiceLazy, Lazy<IFeaturesInternal> featuresLazy) : base(serviceProvider, "Bck.Lics")
+        public LicenseControllerReal(IServiceProvider serviceProvider, Lazy<ILicenseService> licenseServiceLazy, Lazy<IFeaturesInternal> featuresLazy) : base(serviceProvider, "Bck.Lics")
         {
             _licenseServiceLazy = licenseServiceLazy;
             _featuresLazy = featuresLazy;
         }
-
         private readonly Lazy<ILicenseService> _licenseServiceLazy;
         private readonly Lazy<IFeaturesInternal> _featuresLazy;
 
-        #endregion
 
         public IEnumerable<LicenseDto> Summary()
         {
