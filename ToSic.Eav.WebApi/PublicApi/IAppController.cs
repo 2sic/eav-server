@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.WebApi.Dto;
-#if NETFRAMEWORK
-using ExportResponse = System.Net.Http.HttpResponseMessage;
-#else
-using ExportResponse = Microsoft.AspNetCore.Mvc.IActionResult;
-#endif
 
 namespace ToSic.Eav.WebApi.PublicApi
 {
-    public interface IAppController
+    public interface IAppController<out THttpResponse>
     {
         List<AppDto> List(int zoneId);
 
         List<AppDto> InheritableApps();
 
-        ExportResponse Export(int appId, int zoneId, bool includeContentGroups, bool resetAppGuid);
+        THttpResponse Export(int appId, int zoneId, bool includeContentGroups, bool resetAppGuid);
         bool SaveData(int appId, int zoneId, bool includeContentGroups, bool resetAppGuid);
         AppExportInfoDto Statistics(int appId, int zoneId);
         ImportResultDto Import(int zoneId);
