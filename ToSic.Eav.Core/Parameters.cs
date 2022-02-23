@@ -29,7 +29,8 @@ namespace ToSic.Eav
             if (criticalParameter == null || criticalParameter != Protector)
                 throw new Exception($"when using '{protectedMethod}' you must use named parameters " +
                                     "- otherwise you are relying on the parameter order staying the same. " +
-                                    $"this command expects these parameters: {paramNames}");
+                                    "See https://r.2sxc.org/named-params " +
+                                    $"This command expects these parameters: {paramNames}");
         }
 
         #endregion
