@@ -6,15 +6,17 @@ using System.IO;
 using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.WebApi.Validation;
+using ToSic.Eav.WebApi.PublicApi;
 
 namespace ToSic.Eav.WebApi.Features
 {
-    public class FeaturesBackend : WebApiBackendBase<FeaturesBackend>
+    public class FeatureControllerReal : WebApiBackendBase<FeatureControllerReal>, IFeatureController
     {
+        public const string LogSuffix = "Feats";
+
         #region Constructor / DI
 
-        public FeaturesBackend(
+        public FeatureControllerReal(
             IServiceProvider serviceProvider,
             Lazy<IGlobalConfiguration> globalConfiguration,
             Lazy<IFeaturesInternal> features,
@@ -25,7 +27,6 @@ namespace ToSic.Eav.WebApi.Features
             _features = features;
             _systemLoaderLazy = systemLoaderLazy.SetLog(Log);
         }
-
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
         private readonly Lazy<IFeaturesInternal> _features;
 
@@ -36,29 +37,32 @@ namespace ToSic.Eav.WebApi.Features
 
         #endregion
 
-        public IEnumerable<FeatureState> GetAll(bool reload)
-        {
-            if (reload) _systemLoaderLazy.Ready.ReloadFeatures();
-            return _features.Value.All;
-        }
+        // TODO: PROBABLY REMOVE, PROBABLY NOT USED ANY MORE
+        //public IEnumerable<FeatureState> List(bool reload)
+        //{
+        //    if (reload) _systemLoaderLazy.Ready.ReloadFeatures();
+        //    return _features.Value.All;
+        //}
 
-        public bool SaveFeatures(FeaturesDto featuresManagementResponse)
-        {
-            // first do a validity check 
-            if (featuresManagementResponse?.Msg?.Features == null) return false;
 
-            // 1. valid json? 
-            // - ensure signature is valid
-            if (!Json.IsValidJson(featuresManagementResponse.Msg.Features)) return false;
+        // TODO: PROBABLY REMOVE, PROBABLY NOT USED ANY MORE
+        //public bool Save(FeaturesDto featuresManagementResponse)
+        //{
+        //    // first do a validity check 
+        //    if (featuresManagementResponse?.Msg?.Features == null) return false;
 
-            // then take the newFeatures (it should be a json)
-            // and save to /desktopmodules/.data-custom/configurations/features.json
-            if (!SaveFeaturesAndReload(featuresManagementResponse.Msg.Features)) return false;
+        //    // 1. valid json? 
+        //    // - ensure signature is valid
+        //    if (!Json.IsValidJson(featuresManagementResponse.Msg.Features)) return false;
 
-            return true;
-        }
+        //    // then take the newFeatures (it should be a json)
+        //    // and save to /desktopmodules/.data-custom/configurations/features.json
+        //    if (!SaveFeaturesAndReload(featuresManagementResponse.Msg.Features)) return false;
 
-        public bool SaveNewFeatures(List<FeatureNewDto> featuresManagementResponse)
+        //    return true;
+        //}
+
+        public bool SaveNew(List<FeatureNewDto> featuresManagementResponse)
         {
             // validity check 
             if (featuresManagementResponse == null) return false;
@@ -91,7 +95,7 @@ namespace ToSic.Eav.WebApi.Features
             new FeatureConfig
             {
                 Id = featureNewDto.FeatureGuid,
-                Enabled = featureNewDto.Enabled.Value
+                Enabled = featureNewDto.Enabled ?? false
             };
 
         private bool SaveFeaturesAndReload(string features)
