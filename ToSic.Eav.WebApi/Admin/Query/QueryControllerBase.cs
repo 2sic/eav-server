@@ -15,7 +15,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Dto;
 using Connection = ToSic.Eav.DataSources.Queries.Connection;
 
-namespace ToSic.Eav.WebApi
+namespace ToSic.Eav.WebApi.Admin.Query
 {
 	/// <inheritdoc />
 	/// <summary>
@@ -23,13 +23,13 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public abstract class QueryControllerBase<TImplementation> : HasLog<TImplementation> where TImplementation : QueryControllerBase<TImplementation>
     {
-        protected QueryControllerBase(QueryApiDependencies dependencies, string logName) : base(logName)
+        protected QueryControllerBase(QueryControllerDependencies dependencies, string logName) : base(logName)
         {
             _dependencies = dependencies;
             QueryBuilder = dependencies.QueryBuilder;
             QueryBuilder.Init(Log);
         }
-        private readonly QueryApiDependencies _dependencies;
+        private readonly QueryControllerDependencies _dependencies;
         private AppManager _appManager;
         private QueryBuilder QueryBuilder { get; }
 

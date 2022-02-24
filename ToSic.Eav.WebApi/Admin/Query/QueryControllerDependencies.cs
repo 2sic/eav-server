@@ -5,9 +5,9 @@ using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
 
-namespace ToSic.Eav.WebApi
+namespace ToSic.Eav.WebApi.Admin.Query
 {
-    public class QueryApiDependencies
+    public class QueryControllerDependencies
     {
         public Lazy<AppManager> AppManagerLazy { get; }
         /// <summary>
@@ -20,7 +20,7 @@ namespace ToSic.Eav.WebApi
         public Lazy<QueryInfo> QueryInfoLazy { get; }
         public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
 
-        public QueryApiDependencies(Lazy<AppManager> appManagerLazy,
+        public QueryControllerDependencies(Lazy<AppManager> appManagerLazy,
             Lazy<AppRuntime> appReaderLazy,
             QueryBuilder queryBuilder,
             Lazy<ConvertToEavLight> entToDicLazy,

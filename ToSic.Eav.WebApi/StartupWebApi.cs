@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.WebApi.Admin.Features;
 using ToSic.Eav.WebApi.Admin.Metadata;
+using ToSic.Eav.WebApi.Admin.Query;
 using ToSic.Eav.WebApi.ApiExplorer;
 using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Eav.WebApi.Languages;
@@ -35,7 +36,7 @@ namespace ToSic.Eav.WebApi
             // APIs
             services.TryAddTransient<EntityPickerApi>();
             services.TryAddTransient<ContentTypeApi>();
-            services.TryAddTransient<QueryApiDependencies>();
+            services.TryAddTransient<QueryControllerDependencies>();
             services.TryAddTransient<ContentExportApi>();
             services.TryAddTransient<ContentImportApi>();
 
