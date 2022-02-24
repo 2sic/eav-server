@@ -5,16 +5,13 @@ using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Catalog;
-using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.WebApi.Admin.Metadata;
 using ToSic.Eav.WebApi.Dto;
 using Connection = ToSic.Eav.DataSources.Queries.Connection;
 
@@ -24,59 +21,24 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for the Pipeline Designer UI
 	/// </summary>
-	public abstract class QueryApi : HasLog
+	public abstract class QueryControllerBase<TImplementation> : HasLog<TImplementation> where TImplementation : QueryControllerBase<TImplementation>
     {
-        public class Dependencies
-        {
-            public Lazy<AppManager> AppManagerLazy { get; }
-            /// <summary>
-            /// The lazy reader should only be used in the Definition - it's important that it's a new object
-            /// when used, to ensure it has the changes previously saved
-            /// </summary>
-            public Lazy<AppRuntime> AppReaderLazy { get; }
-            public QueryBuilder QueryBuilder { get; }
-            public Lazy<ConvertToEavLight> EntToDicLazy { get; }
-            public Lazy<QueryInfo> QueryInfoLazy { get; }
-            public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
-            public Lazy<MetadataControllerReal> MetadataBackendLazy { get; }
-
-            public Dependencies(Lazy<AppManager> appManagerLazy,
-                Lazy<AppRuntime> appReaderLazy,
-                QueryBuilder queryBuilder,
-                Lazy<ConvertToEavLight> entToDicLazy,
-                Lazy<QueryInfo> queryInfoLazy,
-                Lazy<DataSourceCatalog> dataSourceCatalogLazy,
-                Lazy<MetadataControllerReal> metadataBackendLazy)
-            {
-                AppManagerLazy = appManagerLazy;
-                AppReaderLazy = appReaderLazy;
-                QueryBuilder = queryBuilder;
-                EntToDicLazy = entToDicLazy;
-                QueryInfoLazy = queryInfoLazy;
-                DataSourceCatalogLazy = dataSourceCatalogLazy;
-                MetadataBackendLazy = metadataBackendLazy;
-            }
-        }
-
-        public QueryBuilder QueryBuilder { get; }
-        private readonly Dependencies _dependencies;
-
-        private AppManager _appManager;
-
-        protected QueryApi(
-            Dependencies dependencies) : base("Api.EavQry")
+        protected QueryControllerBase(QueryApiDependencies dependencies, string logName) : base(logName)
         {
             _dependencies = dependencies;
             QueryBuilder = dependencies.QueryBuilder;
             QueryBuilder.Init(Log);
         }
+        private readonly QueryApiDependencies _dependencies;
+        private AppManager _appManager;
+        private QueryBuilder QueryBuilder { get; }
 
-        public QueryApi Init(int appId, ILog parentLog)
+
+        public TImplementation Init(int appId)
         {
-            Log.LinkTo(parentLog);
             if (appId != 0) // if 0, then no context is available or used
                 _appManager = _dependencies.AppManagerLazy.Value.Init(appId, Log);
-            return this;
+            return this as TImplementation;
         }
 
 
@@ -84,7 +46,7 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Get a Pipeline with DataSources
         /// </summary>
-		public QueryDefinitionDto Definition(int appId, int? id = null)
+		public QueryDefinitionDto Get(int appId, int? id = null)
         {
             Log.Add($"get pipe a#{appId}, id:{id}");
             var query = new QueryDefinitionDto();
@@ -93,8 +55,6 @@ namespace ToSic.Eav.WebApi
 
             var reader = _dependencies.AppReaderLazy.Value.Init(appId, false, Log);
             var qDef = reader.Queries.Get(id.Value);
-
-            var metadataBackend = _dependencies.MetadataBackendLazy.Value;
 
             #region Deserialize some Entity-Values
 
@@ -119,6 +79,9 @@ namespace ToSic.Eav.WebApi
             return query;
         }
 
+        /// <summary>
+        /// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
+        /// </summary>
         public IEnumerable<DataSourceDto> DataSources()
         {
             var dsCatalog = _dependencies.DataSourceCatalogLazy.Value.Init(Log);
@@ -141,12 +104,12 @@ namespace ToSic.Eav.WebApi
         }
 
         /// <summary>
-		/// Save Pipeline
-		/// </summary>
-		/// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
-		/// <param name="appId">AppId this Pipeline belongs to</param>
-		/// <param name="id">PipelineEntityId</param>
-		public QueryDefinitionDto Save(QueryDefinitionDto data, int appId, int id)
+        /// Save Pipeline
+        /// </summary>
+        /// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
+        /// <param name="appId">AppId this Pipeline belongs to</param>
+        /// <param name="id">PipelineEntityId</param>
+        public QueryDefinitionDto Save(QueryDefinitionDto data, int appId, int id)
 		{
 		    Log.Add($"save pipe: a#{appId}, id#{id}");
 
@@ -163,7 +126,7 @@ namespace ToSic.Eav.WebApi
 
             _appManager.Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
-		    return Definition(appId, id);
+		    return Get(appId, id);
 		}
 
         /// <summary>
