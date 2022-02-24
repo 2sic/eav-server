@@ -55,5 +55,12 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="field">Item field (optional). Relevant for checking ADAM links inside an item.</param>
         /// <returns></returns>
         LinkInfoDto LinkInfo(string link, int appId, string contentType = default, Guid guid = default, string field = default);
+
+        /// <summary>
+        /// Used to be GET Module/Publish
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        bool Publish(int id);
     }
 }
