@@ -8,6 +8,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -175,14 +176,32 @@ namespace ToSic.Eav.Api.Api01
 
         private static bool? IsDraft(Dictionary<string, object> values, IEntity original)
         {
+            if (!values.ContainsKey(Attributes.EntityFieldIsPublished)) return null;
             var isPublishedValue = values[Attributes.EntityFieldIsPublished];
-            if (bool.TryParse(isPublishedValue.ToString(), out var updateIsPublished))
+            switch (isPublishedValue)
             {
-                if (original.IsPublished && !updateIsPublished)
-                    return true; // becomes draft-copy, so the original is still there
-
-                if (!original.IsPublished && updateIsPublished)
-                    return false; // becomes published (only the master-copy remains, with the changes of the draft an your value changes)
+                case null:
+                case string emptyString when string.IsNullOrEmpty(emptyString):
+                case string nullString when nullString.ToLowerInvariant().Contains("null"):
+                    return null;
+                case string draftString when draftString.ToLowerInvariant().Contains("draft"):
+                    switch (original?.IsPublished)
+                    {
+                        case true: // on update of a published it should create a draft-copy
+                            return true;
+                        default: // behave as if IsPublished = false
+                            return false;
+                    }
+                default:
+                    var isPublished = isPublishedValue.ConvertOrDefault<bool>(numeric: false, truthy: true);
+                    switch (isPublished)
+                    {
+                        case true: // if IsPublished = true
+                            return false; // then publish no matter if it was draft or not
+                        case false:
+                            return true; // make it draft-only - so no original which is still there
+                    }
+                    break;
             }
             return null;
         }
@@ -237,7 +256,15 @@ namespace ToSic.Eav.Api.Api01
                 // Handle special attributes (for example of the system)
                 if (keyValuePair.Key.ToLowerInvariant() == Attributes.EntityFieldIsPublished)
                 {
-                    if (keyValuePair.Value is bool newValue) entity.IsPublished = newValue;
+                    switch (keyValuePair.Value)
+                    {
+                        case string draftString when draftString.ToLowerInvariant().Contains("draft"): // if IsPublished = "draft"
+                            entity.IsPublished = false; // on new: behave as if IsPublished = false
+                            break;
+                        case bool newValue:
+                            entity.IsPublished = newValue;
+                            break;
+                    }
                     Log.Add($"IsPublished: {entity.IsPublished}");
                     continue;
                 }
