@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace ToSic.Eav.WebApi.Features
+namespace ToSic.Eav.WebApi.Admin.Features
 {
     public class FeaturesDto
     {

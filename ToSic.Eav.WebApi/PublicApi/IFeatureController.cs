@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Configuration;
-using ToSic.Eav.WebApi.Features;
+using ToSic.Eav.WebApi.Admin.Features;
 
 namespace ToSic.Eav.WebApi.PublicApi
 {

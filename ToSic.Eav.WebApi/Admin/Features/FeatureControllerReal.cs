@@ -1,14 +1,14 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.PublicApi;
 
-namespace ToSic.Eav.WebApi.Features
+namespace ToSic.Eav.WebApi.Admin.Features
 {
     public class FeatureControllerReal : WebApiBackendBase<FeatureControllerReal>, IFeatureController
     {

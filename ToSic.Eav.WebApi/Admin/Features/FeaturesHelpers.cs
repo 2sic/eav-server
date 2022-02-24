@@ -4,7 +4,7 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Security;
 
-namespace ToSic.Eav.WebApi.Features
+namespace ToSic.Eav.WebApi.Admin.Features
 {
     internal class FeaturesHelpers
     {
