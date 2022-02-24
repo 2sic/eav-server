@@ -9,20 +9,19 @@ using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.WebApi.Dto;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.WebApi
+namespace ToSic.Eav.WebApi.Admin.Metadata
 {
 	/// <summary>
 	/// Web API Controller for MetaData
 	/// Metadata-entities (content-items) are additional information about some other object
 	/// </summary>
-	public class MetadataBackend: HasLog<MetadataBackend>
+	public class MetadataControllerReal: HasLog<MetadataControllerReal>, IMetadataController
     {
         #region Constructor
 
-        public MetadataBackend(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazyInitLog<MdRecommendations> mdRead) : base($"{LogNames.WebApi}.MetaDT")
+        public MetadataControllerReal(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazyInitLog<MdRecommendations> mdRead) : base($"{LogNames.WebApi}.MetaDT")
         {
             _converter = converter;
             _appStates = appStates;

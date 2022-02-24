@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.WebApi.Admin.Metadata;
 using ToSic.Eav.WebApi.ApiExplorer;
 using ToSic.Eav.WebApi.Features;
 using ToSic.Eav.WebApi.ImportExport;
@@ -23,6 +24,7 @@ namespace ToSic.Eav.WebApi
 
             // Real Controller Implementations https://r.2sxc.org/proxy-controllers
             services.TryAddTransient<LicenseControllerReal>();
+            services.TryAddTransient<MetadataControllerReal>();
 
             // Various Backends
             services.TryAddTransient<FeaturesBackend>();
@@ -39,7 +41,6 @@ namespace ToSic.Eav.WebApi
 
             // Internal API helpers
             services.TryAddTransient<EntityApi>();
-            services.TryAddTransient<MetadataBackend>();
 
             // WebApi Security
             services.TryAddTransient<MultiPermissionsTypes>();

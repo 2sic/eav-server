@@ -2,7 +2,7 @@
 using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.ImportExport.Json.V1;
 
-namespace ToSic.Eav.WebApi.Dto
+namespace ToSic.Eav.WebApi.Admin.Metadata
 {
     public class MetadataListDto
     {

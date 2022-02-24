@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.WebApi.Dto;
-
-namespace ToSic.Eav.WebApi.PublicApi
+﻿namespace ToSic.Eav.WebApi.Admin.Metadata
 {
     /// <summary>
     /// Metadata Controller to get Entities assigned to something

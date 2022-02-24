@@ -14,6 +14,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.WebApi.Admin.Metadata;
 using ToSic.Eav.WebApi.Dto;
 using Connection = ToSic.Eav.DataSources.Queries.Connection;
 
@@ -37,7 +38,7 @@ namespace ToSic.Eav.WebApi
             public Lazy<ConvertToEavLight> EntToDicLazy { get; }
             public Lazy<QueryInfo> QueryInfoLazy { get; }
             public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
-            public Lazy<MetadataBackend> MetadataBackendLazy { get; }
+            public Lazy<MetadataControllerReal> MetadataBackendLazy { get; }
 
             public Dependencies(Lazy<AppManager> appManagerLazy,
                 Lazy<AppRuntime> appReaderLazy,
@@ -45,7 +46,7 @@ namespace ToSic.Eav.WebApi
                 Lazy<ConvertToEavLight> entToDicLazy,
                 Lazy<QueryInfo> queryInfoLazy,
                 Lazy<DataSourceCatalog> dataSourceCatalogLazy,
-                Lazy<MetadataBackend> metadataBackendLazy)
+                Lazy<MetadataControllerReal> metadataBackendLazy)
             {
                 AppManagerLazy = appManagerLazy;
                 AppReaderLazy = appReaderLazy;
