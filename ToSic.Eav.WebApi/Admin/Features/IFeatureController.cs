@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Configuration;
-using ToSic.Eav.WebApi.Admin.Features;
 
-namespace ToSic.Eav.WebApi.PublicApi
+namespace ToSic.Eav.WebApi.Admin.Features
 {
     public interface IFeatureController
     {
