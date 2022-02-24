@@ -4,9 +4,9 @@ using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
 
-namespace ToSic.Eav.WebApi.Licenses
+namespace ToSic.Eav.WebApi.Sys.Licenses
 {
-    public class LicenseControllerReal : WebApiBackendBase<LicenseControllerReal>
+    public class LicenseControllerReal : WebApiBackendBase<LicenseControllerReal>, ILicenseController
     {
         public LicenseControllerReal(IServiceProvider serviceProvider, Lazy<ILicenseService> licenseServiceLazy, Lazy<IFeaturesInternal> featuresLazy) : base(serviceProvider, "Bck.Lics")
         {
@@ -16,7 +16,10 @@ namespace ToSic.Eav.WebApi.Licenses
         private readonly Lazy<ILicenseService> _licenseServiceLazy;
         private readonly Lazy<IFeaturesInternal> _featuresLazy;
 
-
+        /// <summary>
+        /// Gives an array of License (sort by priority)
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<LicenseDto> Summary()
         {
             var licSer = _licenseServiceLazy.Value;

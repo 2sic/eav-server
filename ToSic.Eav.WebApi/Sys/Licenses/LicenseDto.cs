@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Configuration;
 
-namespace ToSic.Eav.WebApi.Licenses
+namespace ToSic.Eav.WebApi.Sys.Licenses
 {
     public class LicenseDto
     {

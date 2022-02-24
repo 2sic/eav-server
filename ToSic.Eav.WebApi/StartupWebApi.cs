@@ -6,10 +6,10 @@ using ToSic.Eav.WebApi.Admin.Metadata;
 using ToSic.Eav.WebApi.ApiExplorer;
 using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Eav.WebApi.Languages;
-using ToSic.Eav.WebApi.Licenses;
 using ToSic.Eav.WebApi.Plumbing;
 using ToSic.Eav.WebApi.Security;
 using ToSic.Eav.WebApi.Sys;
+using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Zone;
 
 namespace ToSic.Eav.WebApi
@@ -25,9 +25,9 @@ namespace ToSic.Eav.WebApi
             // Real Controller Implementations https://r.2sxc.org/proxy-controllers
             services.TryAddTransient<LicenseControllerReal>();
             services.TryAddTransient<MetadataControllerReal>();
+            services.TryAddTransient<FeatureControllerReal>();
 
             // Various Backends
-            services.TryAddTransient<FeatureControllerReal>();
             services.TryAddTransient<LanguagesBackend>();
             services.TryAddTransient<ZoneBackend>();
 
