@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.WebApi.PublicApi;
 
 namespace ToSic.Eav.WebApi.Admin.Features
 {
@@ -37,12 +36,11 @@ namespace ToSic.Eav.WebApi.Admin.Features
 
         #endregion
 
-        // TODO: PROBABLY REMOVE, PROBABLY NOT USED ANY MORE
-        //public IEnumerable<FeatureState> List(bool reload)
-        //{
-        //    if (reload) _systemLoaderLazy.Ready.ReloadFeatures();
-        //    return _features.Value.All;
-        //}
+        public IEnumerable<FeatureState> List(bool reload)
+        {
+            if (reload) _systemLoaderLazy.Ready.ReloadFeatures();
+            return _features.Value.All;
+        }
 
 
         // TODO: PROBABLY REMOVE, PROBABLY NOT USED ANY MORE
@@ -82,13 +80,30 @@ namespace ToSic.Eav.WebApi.Admin.Features
 
         #region Helper Functions
 
-        private FeatureListStored FeatureListStoredBuilder(List<FeatureNewDto> featuresManagementResponse) =>
-            new FeatureListStored
+        private FeatureListStored FeatureListStoredBuilder(List<FeatureNewDto> featuresManagementResponse)
+        {
+            var updatedIds = featuresManagementResponse.Select(f => f.FeatureGuid);
+
+            var currentFeatures = _features.Value.All
+                .Where(f => !updatedIds.Contains(f.Guid))
+                .Select(FeatureConfigBuilder).ToList();
+
+            var updatedFeatures = featuresManagementResponse
+                .Where(f => f.Enabled.HasValue)
+                .Select(FeatureConfigBuilder).ToList();
+
+            return new FeatureListStored
             {
-                Features = featuresManagementResponse
-                    .Where(f => f.Enabled.HasValue)
-                    .Select(FeatureConfigBuilder).ToList(),
+                Features = currentFeatures.Union(updatedFeatures).ToList(),
                 Fingerprint = _systemLoaderLazy.Ready.Fingerprint.GetFingerprint()
+            };
+        }
+
+        private static FeatureConfig FeatureConfigBuilder(FeatureState featureState) => 
+            new FeatureConfig
+            {
+                Id = featureState.Guid, 
+                Enabled = featureState.Enabled
             };
 
         private static FeatureConfig FeatureConfigBuilder(FeatureNewDto featureNewDto) =>
