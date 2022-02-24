@@ -18,19 +18,17 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// Assumes that the context is given in the app-headers.
         /// </summary>
         /// <param name="name">Query name - ideally without spaces or special characters (required)</param>
-        /// <param name="includeGuid">Include GUID IDs of the items retrieved (optional)</param>
-        /// <param name="stream">Stream names - leave empty or * for all. Comma separated if multiple. (optional)</param>
         /// <param name="appId">AppId to use in case we want to specify an app (optional)</param>
+        /// <param name="stream">Stream names - leave empty or * for all. Comma separated if multiple. (optional)</param>
+        /// <param name="includeGuid">Include GUID IDs of the items retrieved (optional)</param>
         /// <remarks>
         /// will check security internally, so assume the endpoint doesn't need to check security first
         /// </remarks>
         /// <returns></returns>
-        IDictionary<string, IEnumerable<EavLightEntity>> Query(
-            string name, 
-            bool includeGuid = false, 
-            string stream = null, 
-            int? appId = null
-            );
+        IDictionary<string, IEnumerable<EavLightEntity>> Query(string name,
+            int? appId = null,
+            string stream = null,
+            bool includeGuid = false);
 
         /// <summary>
         /// POST a public query by name, with some minimal options.
@@ -38,20 +36,18 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// </summary>
         /// <param name="name">Query name - ideally without spaces or special characters (required)</param>
         /// <param name="more">Additional parameters / filters etc. which would not fit into the url</param>
-        /// <param name="includeGuid">Include GUID IDs of the items retrieved (optional)</param>
-        /// <param name="stream">Stream names - leave empty or * for all. Comma separated if multiple. (optional)</param>
         /// <param name="appId">AppId to use in case we want to specify an app (optional)</param>
+        /// <param name="stream">Stream names - leave empty or * for all. Comma separated if multiple. (optional)</param>
+        /// <param name="includeGuid">Include GUID IDs of the items retrieved (optional)</param>
         /// <remarks>
         /// will check security internally, so assume the endpoint doesn't need to check security first
         /// </remarks>
         /// <returns></returns>
-        IDictionary<string, IEnumerable<EavLightEntity>> QueryPost(
-            string name,
+        IDictionary<string, IEnumerable<EavLightEntity>> QueryPost(string name,
             QueryParameters more,
-            bool includeGuid = false,
+            int? appId = null,
             string stream = null,
-            int? appId = null
-        );
+            bool includeGuid = false);
 
         /// <summary>
         /// GET a public query from an app in a specific path.
