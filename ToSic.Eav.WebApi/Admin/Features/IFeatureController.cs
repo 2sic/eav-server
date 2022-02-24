@@ -5,7 +5,8 @@ namespace ToSic.Eav.WebApi.Admin.Features
 {
     public interface IFeatureController
     {
-        IEnumerable<FeatureState> List(bool reload = false);
+        // TODO: PROBABLY REMOVE, PROBABLY NOT USED ANY MORE
+        //IEnumerable<FeatureState> List(bool reload = false);
 
         // v13.02 not used any more
         //string RemoteManageUrl();

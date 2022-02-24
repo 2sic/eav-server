@@ -36,11 +36,12 @@ namespace ToSic.Eav.WebApi.Admin.Features
 
         #endregion
 
-        public IEnumerable<FeatureState> List(bool reload)
-        {
-            if (reload) _systemLoaderLazy.Ready.ReloadFeatures();
-            return _features.Value.All;
-        }
+        // TODO: PROBABLY REMOVE, PROBABLY NOT USED ANY MORE
+        //public IEnumerable<FeatureState> List(bool reload)
+        //{
+        //    if (reload) _systemLoaderLazy.Ready.ReloadFeatures();
+        //    return _features.Value.All;
+        //}
 
 
         // TODO: PROBABLY REMOVE, PROBABLY NOT USED ANY MORE
