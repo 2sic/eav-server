@@ -11,6 +11,7 @@ namespace ToSic.Eav.WebApi.Sys
 {
     public partial class InsightsControllerReal: HasLog<InsightsControllerReal>
     {
+        public const string LogSuffix = "Insight";
         #region Constructor / DI
 
         public InsightsControllerReal(IServiceProvider serviceProvider, IAppStates appStates, SystemManager systemManager, IAppsCache appsCache, LogHistory logHistory, Lazy<ILicenseService> licenseServiceLazy, IUser user)
