@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Formats;
 
-namespace ToSic.Eav.WebApi.PublicApi
+namespace ToSic.Eav.WebApi.Cms
 {
     /// <summary>
     /// This is the Contract / Interface for the edit controller.
