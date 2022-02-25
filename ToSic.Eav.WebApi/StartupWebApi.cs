@@ -29,6 +29,7 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<MetadataControllerReal>();
             services.TryAddTransient<FeatureControllerReal>();
             services.TryAddTransient<ZoneControllerReal>();
+            services.TryAddTransient<FieldControllerReal>();
 
             // Various Backends
             services.TryAddTransient<LanguagesBackend>();
