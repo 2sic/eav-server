@@ -2,7 +2,7 @@
 using System.Net.Http;
 using ToSic.Eav.WebApi.Dto;
 
-namespace ToSic.Eav.WebApi.PublicApi
+namespace ToSic.Eav.WebApi.Admin
 {
     public interface ITypeController
     {
@@ -54,5 +54,14 @@ namespace ToSic.Eav.WebApi.PublicApi
         void SetTitle(int appId, int contentTypeId, int attributeId);
 
         HttpResponseMessage Json(int appId, string name);
+
+        /// <summary>
+        /// Used to be POST ImportExport/ImportContent
+        /// </summary>
+        /// <remarks>
+        /// New in 2sxc 11.07
+        /// </remarks>
+        /// <returns></returns>
+        ImportResultDto Import(int zoneId, int appId);
     }
 }
