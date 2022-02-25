@@ -2,7 +2,7 @@
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.WebApi.Dto;
 
-namespace ToSic.Eav.WebApi.PublicApi
+namespace ToSic.Eav.WebApi.Admin
 {
     public interface IFieldController
     {
