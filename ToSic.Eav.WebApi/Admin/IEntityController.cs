@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Net.Http;
 using ToSic.Eav.WebApi.Dto;
 
-namespace ToSic.Eav.WebApi.PublicApi
+namespace ToSic.Eav.WebApi.Admin
 {
-    public interface IEntitiesController
+    public interface IEntityController
     {
         /// <summary>
         /// Get all entities of a specific type in the app
