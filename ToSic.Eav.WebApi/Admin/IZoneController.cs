@@ -2,8 +2,11 @@
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Zone;
 
-namespace ToSic.Eav.WebApi.PublicApi
+namespace ToSic.Eav.WebApi.Admin
 {
+    /// <summary>
+    /// This one supplies portal-wide (or cross-portal) settings / configuration
+    /// </summary>
     public interface IZoneController
     {
         /// <summary>

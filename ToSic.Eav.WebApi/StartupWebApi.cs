@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.WebApi.Admin;
 using ToSic.Eav.WebApi.Admin.Features;
 using ToSic.Eav.WebApi.Admin.Metadata;
 using ToSic.Eav.WebApi.Admin.Query;
@@ -27,6 +28,7 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<LicenseControllerReal>();
             services.TryAddTransient<MetadataControllerReal>();
             services.TryAddTransient<FeatureControllerReal>();
+            services.TryAddTransient<ZoneControllerReal>();
 
             // Various Backends
             services.TryAddTransient<LanguagesBackend>();
