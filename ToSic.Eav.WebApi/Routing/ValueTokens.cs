@@ -24,6 +24,9 @@
         public const string SetTypeAndGuid = ContentType + "/" + Guid;
         public const string SetTypeGuidField = SetTypeAndGuid + "/" + Field;
         public const string SetTypeGuidFieldAction = SetTypeGuidField + "/" + Action;
+
+        // Sets for Query
+        public const string SetNameAndStream = Name + "/" + Stream;
     }
 
 }
