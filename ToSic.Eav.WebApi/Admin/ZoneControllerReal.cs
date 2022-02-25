@@ -9,8 +9,9 @@ using ToSic.Eav.WebApi.Zone;
 
 namespace ToSic.Eav.WebApi.Admin
 {
-
-
+    /// <summary>
+    /// This one supplies portal-wide (or cross-portal) settings / configuration
+    /// </summary>
     public class ZoneControllerReal : HasLog<ZoneControllerReal>, IZoneController
     {
         public const string LogSuffix = "Zone";
