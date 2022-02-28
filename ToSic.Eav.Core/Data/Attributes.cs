@@ -39,7 +39,6 @@ namespace ToSic.Eav.Data
 
         public const string JsonKeyMetadataFor = "For";
         public const string JsonKeyMetadata = "Metadata";
-        public const string JsonKeyParentRelationship = "ParentRelationship";
 
         #endregion
 

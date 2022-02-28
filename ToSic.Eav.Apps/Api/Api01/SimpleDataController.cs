@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -11,6 +12,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
+using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // This is the simple API used to quickly create/edit/delete entities
@@ -92,6 +94,8 @@ namespace ToSic.Eav.Api.Api01
         {
             var wrapLog = Log.Call<IEnumerable<int>>($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}");
 
+            if (multiValues == null) return wrapLog("values were null", null);
+
             // ensure the type really exists
             var type = _appManager.Read.ContentTypes.Get(contentTypeName);
             if (type == null)
@@ -161,13 +165,13 @@ namespace ToSic.Eav.Api.Api01
             var original = _appManager.AppState.List.FindRepoId(entityId);
 
             bool? draft = null;
-            if (values.Keys.Contains(Attributes.EntityFieldIsPublished))
+            if (values.Keys.Contains(SaveApiAttributes.SavePublishingState))
             {
                 draft = IsDraft(values, original);
                 Log.Add($"contains IsPublished value d:{draft}");
             }
             else
-                values.Add(Attributes.EntityFieldIsPublished, original.IsPublished); // original "IsPublished" initial state, temp store in "values" (so it is forwarded in BuildEntity AddValues where it will be removed)
+                values.Add(SaveApiAttributes.SavePublishingState, original.IsPublished); // original "IsPublished" initial state, temp store in "values" (so it is forwarded in BuildEntity AddValues where it will be removed)
 
             var importEntity = BuildEntity(original.Type, values, null) as Entity;
 
@@ -176,24 +180,26 @@ namespace ToSic.Eav.Api.Api01
 
         private static bool? IsDraft(Dictionary<string, object> values, IEntity original)
         {
-            if (!values.ContainsKey(Attributes.EntityFieldIsPublished)) return null;
-            var isPublishedValue = values[Attributes.EntityFieldIsPublished];
+            if (!values.ContainsKey(SaveApiAttributes.SavePublishingState)) return null;
+            var isPublishedValue = values[SaveApiAttributes.SavePublishingState];
             switch (isPublishedValue)
             {
+                // Case No change
                 case null:
                 case string emptyString when string.IsNullOrEmpty(emptyString):
-                case string nullString when nullString.ToLowerInvariant().Contains("null"):
+                case string nullString when nullString.Equals(SaveApiAttributes.PublishModeNull, InvariantCultureIgnoreCase):
                     return null;
-                case string draftString when draftString.ToLowerInvariant().Contains("draft"):
-                    switch (original?.IsPublished)
-                    {
-                        case true: // on update of a published it should create a draft-copy
-                            return true;
-                        default: // behave as if IsPublished = false
-                            return false;
-                    }
+                
+                // Case "draft"
+                case string draftString when draftString.Equals(SaveApiAttributes.PublishModeDraft, InvariantCultureIgnoreCase):
+                    // If Original was published then now it should be draft (true)
+                    // Otherwise it should be 
+                    return original?.IsPublished == true;
+
+                // case boolean / truthy
                 default:
                     var isPublished = isPublishedValue.ConvertOrDefault<bool>(numeric: false, truthy: true);
+                    // TODO: CONVERT TO IF
                     switch (isPublished)
                     {
                         case true: // if IsPublished = true
@@ -203,6 +209,7 @@ namespace ToSic.Eav.Api.Api01
                     }
                     break;
             }
+
             return null;
         }
 
@@ -254,11 +261,12 @@ namespace ToSic.Eav.Api.Api01
             foreach (var keyValuePair in valuePairs)
             {
                 // Handle special attributes (for example of the system)
-                if (keyValuePair.Key.ToLowerInvariant() == Attributes.EntityFieldIsPublished)
+                if (SaveApiAttributes.SavePublishingState.Equals(keyValuePair.Key, InvariantCultureIgnoreCase))
                 {
                     switch (keyValuePair.Value)
                     {
-                        case string draftString when draftString.ToLowerInvariant().Contains("draft"): // if IsPublished = "draft"
+                        // TODO: W/@STV - WHAT IF IT'S FALSE?
+                        case string draftString when draftString.Equals(SaveApiAttributes.PublishModeDraft, InvariantCultureIgnoreCase): // if IsPublished = "draft"
                             entity.IsPublished = false; // on new: behave as if IsPublished = false
                             break;
                         case bool newValue:
