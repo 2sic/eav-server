@@ -31,5 +31,10 @@ namespace ToSic.Eav.WebApi.Plumbing
         {
             throw new NotImplementedException();
         }
+
+        public override THttpResponseType Ok()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

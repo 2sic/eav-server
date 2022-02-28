@@ -12,5 +12,7 @@ namespace ToSic.Eav.WebApi.Plumbing
         public abstract THttpResponseType Error(int statusCode, Exception exception);
 
         public abstract THttpResponseType Json(object json);
+
+        public abstract THttpResponseType Ok();
     }
 }
