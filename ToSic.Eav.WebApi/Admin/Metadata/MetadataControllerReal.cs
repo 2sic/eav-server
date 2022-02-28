@@ -19,9 +19,11 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
 	/// </summary>
 	public class MetadataControllerReal: HasLog<MetadataControllerReal>, IMetadataController
     {
+        public const string LogSuffix = "MetaDt";
+
         #region Constructor
 
-        public MetadataControllerReal(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazyInitLog<MdRecommendations> mdRead) : base($"{LogNames.WebApi}.MetaDT")
+        public MetadataControllerReal(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazyInitLog<MdRecommendations> mdRead) : base($"{LogNames.WebApi}.{LogSuffix}Rl")
         {
             _converter = converter;
             _appStates = appStates;
