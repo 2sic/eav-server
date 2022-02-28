@@ -18,8 +18,12 @@ namespace ToSic.Eav.Plumbing
         /// <param name="newInitCall"></param>
         public LazyInit<T> SetInit(Action<T> newInitCall)
         {
+#if DEBUG
+            // Warn if we're accidentally replacing init-call, but only do this on debug
+            // In most cases it has no consequences, but we should write code that avoids this
             if (_initCall != null)
                 throw new Exception($"You tried to call {nameof(SetInit)} twice. This should never happen");
+#endif
             _initCall = newInitCall;
             return this;
         }
