@@ -7,7 +7,7 @@ namespace ToSic.Eav.WebApi.App
     /// Should check for security at each standard call - to see if the current user may do this
     /// Then we can reduce security access level to anonymous, because each method will do the security check
     /// </summary>
-    public interface IAppContentController
+    public interface IAppDataController
     {
         /// <summary>
         /// Get all Entities of specified Type
