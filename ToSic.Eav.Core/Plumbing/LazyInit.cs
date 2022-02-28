@@ -18,6 +18,8 @@ namespace ToSic.Eav.Plumbing
         /// <param name="newInitCall"></param>
         public LazyInit<T> SetInit(Action<T> newInitCall)
         {
+            if (_initCall != null)
+                throw new Exception($"You tried to call {nameof(SetInit)} twice. This should never happen");
             _initCall = newInitCall;
             return this;
         }
