@@ -27,7 +27,7 @@ namespace ToSic.Eav.Api.Api01
     /// <summary>
     /// This is a simple controller with some Create, Update and Delete commands. 
     /// </summary>
-    public class SimpleDataController: HasLog
+    public class SimpleDataController: HasLog<SimpleDataController>
     {
         #region Constructor / DI
 
@@ -58,10 +58,8 @@ namespace ToSic.Eav.Api.Api01
 
         /// <param name="zoneId">Zone ID</param>
         /// <param name="appId">App ID</param>
-        /// <param name="parentLog"></param>
-        internal SimpleDataController Init(int zoneId, int appId, ILog parentLog)
+        public SimpleDataController Init(int zoneId, int appId)
         {
-            Log.LinkTo(parentLog);
             var wrapLog = Log.Call<SimpleDataController>($"{zoneId}, {appId}");
             _appId = appId;
             _defaultLanguageCode = GetDefaultLanguage();

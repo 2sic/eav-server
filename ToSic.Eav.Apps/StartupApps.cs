@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
@@ -13,7 +14,6 @@ using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security;
-using EnvironmentPermission = ToSic.Eav.Apps.Security.EnvironmentPermission;
 
 namespace ToSic.Eav.Apps
 {
@@ -71,6 +71,9 @@ namespace ToSic.Eav.Apps
             services.TryAddScoped<ImportListXml>();
             services.TryAddTransient<ExportImportValueConversion>();
             services.TryAddTransient<XmlImportWithFiles.Dependencies>();
+
+            // Simple DataController - registration was missing
+            services.TryAddTransient<SimpleDataController>();
 
             // App Permission Check moved to this project as the implementations are now all identical
             services.TryAddTransient<AppPermissionCheck>();
