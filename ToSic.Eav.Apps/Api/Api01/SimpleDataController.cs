@@ -176,6 +176,11 @@ namespace ToSic.Eav.Api.Api01
             _appManager.Entities.UpdateParts(entityId, importEntity, draft);
         }
 
+        // TODO:
+        // - probably create something which returns a tuple if it should go unpublished & branch
+        // - the call should also include the information if the user is allowed to write published
+        // - then write all the test cases against this
+        //public static (bool Published, bool Branch) IsDraft(object PublishedState, bool? existingIsPublished, bool writePublishAllowed)
         private static bool? IsDraft(Dictionary<string, object> values, IEntity original)
         {
             if (!values.ContainsKey(SaveApiAttributes.SavePublishingState)) return null;
