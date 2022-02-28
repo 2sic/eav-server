@@ -24,16 +24,18 @@ namespace ToSic.Eav.WebApi.Admin
         /// Delete an item from the admin-UI
         /// </summary>
         /// <param name="contentType"></param>
+        /// <param name="appId"></param>
         /// <param name="id"></param>
         /// <param name="guid"></param>
-        /// <param name="appId"></param>
         /// <param name="force"></param>
+        /// <param name="parentId"></param>
+        /// <param name="parentField"></param>
         /// <remarks>
         /// Id or guid is required.
         /// Needs edit-permissions, as the item-list can also be accessed from the toolbar in certain cases.
         /// Will do permission checks internally.
         /// </remarks>
-        void Delete(string contentType, int? id, Guid? guid, int appId, bool force = false, int? parentId = null,
+        void Delete(string contentType, int appId, int? id = null, Guid? guid = null, bool force = false, int? parentId = null,
             string parentField = null);
 
         /// <summary>
