@@ -29,14 +29,20 @@ namespace ToSic.Eav.Context
             public Lazy<IFeaturesService> FeatsLazy { get; }
             public LazyInitLog<AppUserLanguageCheck> LangCheckLazy { get; }
             internal readonly GeneratorLog<IEnvironmentPermission> EnvironmentPermissionGenerator;
+            internal bool InitDone;
         }
 
         public ContextOfApp(IServiceProvider serviceProvider, ISite site, IUser user, ContextOfAppDependencies dependencies)
             : base(serviceProvider, site, user)
         {
             Deps = dependencies;
-            dependencies.LangCheckLazy.SetLog(Log);
-            dependencies.EnvironmentPermissionGenerator.SetLog(Log);
+            if (!dependencies.InitDone)
+            {
+                dependencies.LangCheckLazy.SetLog(Log);
+                dependencies.EnvironmentPermissionGenerator.SetLog(Log);
+                dependencies.InitDone = true;
+            }
+            
             Log.Rename("Sxc.CtxApp");
         }
         protected readonly ContextOfAppDependencies Deps;
