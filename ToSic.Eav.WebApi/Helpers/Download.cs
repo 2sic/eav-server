@@ -5,10 +5,9 @@ using System.Net.Http.Headers;
 
 namespace ToSic.Eav.WebApi.Helpers
 {
-    internal static class Download
+    public static class Download
     {
-
-        internal static HttpResponseMessage BuildDownload(string content, string fileName)
+        public static HttpResponseMessage BuildDownload(string content, string fileName)
         {
             var response = new HttpResponseMessage(HttpStatusCode.OK)
             {
