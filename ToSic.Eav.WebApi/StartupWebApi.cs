@@ -25,12 +25,13 @@ namespace ToSic.Eav.WebApi
             services.TryAddSingleton<DummyControllerReal>();
 
             // Real Controller Implementations https://r.2sxc.org/proxy-controllers
-            services.TryAddTransient<LicenseControllerReal>();
-            services.TryAddTransient<MetadataControllerReal>();
             services.TryAddTransient<FeatureControllerReal>();
-            services.TryAddTransient<ZoneControllerReal>();
-            services.TryAddTransient<FieldControllerReal>();
+            services.TryAddTransient<MetadataControllerReal>();
             services.TryAddTransient<EntityControllerReal>();
+            services.TryAddTransient<FieldControllerReal>();
+            services.TryAddTransient<ZoneControllerReal>();
+            services.TryAddTransient<LicenseControllerReal>();
+
 
             // Various Backends
             services.TryAddTransient<LanguagesBackend>();
