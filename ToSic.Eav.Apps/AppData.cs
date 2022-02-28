@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps
         public override string LogId => "DS.AppCUD";
 
         public AppData(LazyInit<SimpleDataController> dataController, IAppStates appStates): base(appStates) 
-            => _lazyDataController = dataController.SetInit((dc) => dc.Init(Log).Init(ZoneId, AppId));
+            => DataController = dataController.SetInit(dc => dc.Init(Log).Init(ZoneId, AppId));
 
         #endregion
 
@@ -31,9 +31,9 @@ namespace ToSic.Eav.Apps
         /// Get a correctly instantiated instance of the simple data controller once needed.
         /// </summary>
         /// <returns>An data controller to create, update and delete entities</returns>
-        private SimpleDataController DataController() => _lazyDataController.Ready;// _dataController ?? (_dataController = _lazyDataController.Ready.Init(ZoneId, AppId));
+        //private SimpleDataController DataController() => _dataController ?? (_dataController = _lazyDataController.Ready.Init(ZoneId, AppId));
         //private SimpleDataController _dataController;
-        private readonly LazyInit<SimpleDataController> _lazyDataController;
+        private LazyInit<SimpleDataController> DataController { get; }
 
         /// <inheritdoc />
         public IEntity Create(string contentTypeName,
@@ -43,7 +43,7 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Call<IEntity>(contentTypeName);
             if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
-            var ids = DataController().Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
+            var ids = DataController.Ready.Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
             var id = ids.FirstOrDefault();
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps
                 foreach (var values in multiValues)
                     ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
 
-            var ids = DataController().Create(contentTypeName, multiValues);
+            var ids = DataController.Ready.Create(contentTypeName, multiValues);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             var created = List.Where(e => ids.Contains(e.EntityId)).ToList();
@@ -82,7 +82,7 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Call($"app update i:{entityId}");
             // userName is not used (to change owner of updated entity).
-            DataController().Update(entityId, values);
+            DataController.Ready.Update(entityId, values);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             wrapLog(null);
@@ -94,7 +94,7 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Call($"app delete i:{entityId}");
             // userName is not used (to change owner of deleted entity).
-            DataController().Delete(entityId);
+            DataController.Ready.Delete(entityId);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             wrapLog(null);
