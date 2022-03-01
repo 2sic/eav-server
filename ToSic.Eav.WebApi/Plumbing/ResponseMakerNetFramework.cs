@@ -20,11 +20,11 @@ namespace ToSic.Eav.WebApi.Plumbing
             => _apiController ?? throw new Exception(
                 $"Accessing the {nameof(ApiController)} in the {nameof(ResponseMakerNetFramework)} requires it to be Init first.");
 
-        public override HttpResponseMessage InternalServerError(string message) 
-            => Error((int)HttpStatusCode.InternalServerError, message);
+        //public override HttpResponseMessage InternalServerError(string message) 
+        //    => Error((int)HttpStatusCode.InternalServerError, message);
 
-        public override HttpResponseMessage InternalServerError(Exception exception)
-            => Error((int)HttpStatusCode.InternalServerError, exception);
+        //public override HttpResponseMessage InternalServerError(Exception exception)
+        //    => Error((int)HttpStatusCode.InternalServerError, exception);
 
         public override HttpResponseMessage Error(int statusCode, string message) 
             => ApiController.Request.CreateErrorResponse((HttpStatusCode)statusCode, message);
@@ -54,11 +54,11 @@ namespace ToSic.Eav.WebApi.Plumbing
             return response;
         }
 
-        public override HttpResponseMessage GetAttachmentHttpResponseMessage(string fileName, string fileType, string fileContent)
-        {
-            var fileBytes = Encoding.UTF8.GetBytes(fileContent);
-            return GetAttachmentHttpResponseMessage(fileName, fileType, new MemoryStream(fileBytes));
-        }
+        //public override HttpResponseMessage GetAttachmentHttpResponseMessage(string fileName, string fileType, string fileContent)
+        //{
+        //    var fileBytes = Encoding.UTF8.GetBytes(fileContent);
+        //    return GetAttachmentHttpResponseMessage(fileName, fileType, new MemoryStream(fileBytes));
+        //}
 
         public override HttpResponseMessage BuildDownload(string content, string fileName)
         {
