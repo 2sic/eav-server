@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.WebApi.Admin;
@@ -56,6 +57,11 @@ namespace ToSic.Eav.WebApi
             // Here we only register the dependencies, as the final converter must be registered elsewhere
             services.TryAddTransient<ConvertToEavLight.Dependencies>();
             services.TryAddTransient<ConvertToEavLight, ConvertToEavLight>();
+
+
+#if NETFRAMEWORK
+            services.TryAddScoped<ResponseMaker<HttpResponseMessage>, ResponseMakerNetFramework>(); // must be scoped, as the api-controller must init this for use in other parts
+#endif
 
             return services;
         }

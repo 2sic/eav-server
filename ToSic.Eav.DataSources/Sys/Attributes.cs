@@ -64,7 +64,6 @@ namespace ToSic.Eav.DataSources.Sys
 	    {
             Configuration.Parse();
 
-            IContentType type;
             // try to load the content-type - if it fails, return empty list
             if (string.IsNullOrWhiteSpace(ContentTypeName)) return ImmutableArray<IEntity>.Empty;
 
@@ -73,7 +72,7 @@ namespace ToSic.Eav.DataSources.Sys
 	            ? In[Constants.DefaultStreamName]?.List.ToImmutableArray()
 	            : null;
 
-	        type = useStream 
+	        var type = useStream 
                 ? optionalList?.FirstOrDefault()?.Type
                 : _appStates.Get(this).GetContentType(ContentTypeName);
 
