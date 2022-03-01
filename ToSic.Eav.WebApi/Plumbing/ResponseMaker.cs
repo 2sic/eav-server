@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace ToSic.Eav.WebApi.Plumbing
 {
@@ -14,5 +15,13 @@ namespace ToSic.Eav.WebApi.Plumbing
         public abstract THttpResponseType Json(object json);
 
         public abstract THttpResponseType Ok();
+
+        public abstract THttpResponseType GetAttachmentHttpResponseMessage(string fileName, string fileType,
+            Stream fileContent);
+
+        public abstract THttpResponseType GetAttachmentHttpResponseMessage(string fileName, string fileType,
+            string fileContent);
+
+        public abstract THttpResponseType BuildDownload(string content, string fileName);
     }
 }

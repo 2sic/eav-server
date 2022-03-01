@@ -27,7 +27,7 @@ namespace ToSic.Eav.WebApi
             // Real Controller Implementations https://r.2sxc.org/proxy-controllers
             services.TryAddTransient<FeatureControllerReal>();
             services.TryAddTransient<MetadataControllerReal>();
-            services.TryAddTransient<EntityControllerReal>();
+            services.TryAddTransient(typeof(EntityControllerReal<>));
             services.TryAddTransient<FieldControllerReal>();
             services.TryAddTransient<ZoneControllerReal>();
             services.TryAddTransient<LicenseControllerReal>();
@@ -42,7 +42,7 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<EntityPickerApi>();
             services.TryAddTransient<ContentTypeApi>();
             services.TryAddTransient<QueryControllerDependencies>();
-            services.TryAddTransient<ContentExportApi>();
+            services.TryAddTransient(typeof(ContentExportApi<>));
             services.TryAddTransient<ContentImportApi>();
 
             // Internal API helpers

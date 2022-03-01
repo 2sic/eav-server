@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using ToSic.Eav.Run.Unknown;
 
 namespace ToSic.Eav.WebApi.Plumbing
@@ -33,6 +34,21 @@ namespace ToSic.Eav.WebApi.Plumbing
         }
 
         public override THttpResponseType Ok()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override THttpResponseType GetAttachmentHttpResponseMessage(string fileName, string fileType, Stream fileContent)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override THttpResponseType GetAttachmentHttpResponseMessage(string fileName, string fileType, string fileContent)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override THttpResponseType BuildDownload(string content, string fileName)
         {
             throw new NotImplementedException();
         }

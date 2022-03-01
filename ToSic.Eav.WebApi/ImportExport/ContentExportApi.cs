@@ -11,6 +11,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Helpers;
+using ToSic.Eav.WebApi.Plumbing;
 using ToSic.Eav.WebApi.Security;
 #if NETFRAMEWORK
 using System.Web.Http;
@@ -20,18 +21,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ToSic.Eav.WebApi.ImportExport
 {
-    public class ContentExportApi : HasLog
+    public class ContentExportApi<THttpResponseType> : HasLog
     {
         private AppManager _appManager;
-        public ContentExportApi(Lazy<AppManager> appManagerLazy, IAppStates appStates) : base("Api.EaCtEx")
+        public ContentExportApi(
+            Lazy<AppManager> appManagerLazy, 
+            IAppStates appStates, 
+            ResponseMaker<THttpResponseType> responseMaker
+            ) : base("Api.EaCtEx")
         {
             _appManagerLazy = appManagerLazy;
             _appStates = appStates;
+            _responseMaker = responseMaker;
         }
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly IAppStates _appStates;
+        private readonly ResponseMaker<THttpResponseType> _responseMaker;
 
-        public ContentExportApi Init(int appId, ILog parentLog)
+        public ContentExportApi<THttpResponseType> Init(int appId, ILog parentLog)
         {
             Log.LinkTo(parentLog);
             _appManager = _appManagerLazy.Value.Init(appId, Log);
@@ -83,27 +90,27 @@ namespace ToSic.Eav.WebApi.ImportExport
         }
 
         [HttpGet]
-        public HttpResponseMessage DownloadTypeAsJson(IUser user, string name)
+        public THttpResponseType DownloadTypeAsJson(IUser user, string name)
         {
             Log.Add($"get fields type:{name}");
             SecurityHelpers.ThrowIfNotAdmin(user);
             var type = _appManager.Read.ContentTypes.Get(name);
             var serializer = _appManager.ServiceProvider.Build<JsonSerializer>().Init(_appManager.AppState, Log);
-
-            return Download.BuildDownload(serializer.Serialize(type),
-                (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
-                     .RemoveNonFilenameCharacters());
+            var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
+                .RemoveNonFilenameCharacters();
+ 
+            return _responseMaker.GetAttachmentHttpResponseMessage(fileName, MimeHelper.Json, serializer.Serialize(type));
         }
 
         [HttpGet]
-        public HttpResponseMessage DownloadEntityAsJson(IUser user, int id, string prefix, bool withMetadata)
+        public THttpResponseType DownloadEntityAsJson(IUser user, int id, string prefix, bool withMetadata)
         {
             Log.Add($"get fields id:{id}");
             SecurityHelpers.ThrowIfNotAdmin(user);
             var entity = _appManager.Read.Entities.Get(id);
             var serializer = _appManager.ServiceProvider.Build<JsonSerializer>().Init(_appManager.AppState, Log);
 
-            return Download.BuildDownload(
+            return _responseMaker.BuildDownload(
                 serializer.Serialize(entity, withMetadata ? FileSystemLoader.QueryMetadataDepth : 0),
                 (prefix + (string.IsNullOrWhiteSpace(prefix) ? "" : ".")
                  + entity.GetBestTitle() + ImpExpConstants.Extension(ImpExpConstants.Files.json))

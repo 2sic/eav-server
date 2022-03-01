@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Net.Http;
 using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public interface ITypeController
+    public interface ITypeController<THttpResponseType>
     {
         /// <summary>
         /// Create a ghost-content-type (very advanced feature)
@@ -53,7 +52,7 @@ namespace ToSic.Eav.WebApi.Admin
         /// <param name="attributeId"></param>
         void SetTitle(int appId, int contentTypeId, int attributeId);
 
-        HttpResponseMessage Json(int appId, string name);
+        THttpResponseType Json(int appId, string name);
 
         /// <summary>
         /// Used to be POST ImportExport/ImportContent

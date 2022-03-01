@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public interface IEntityController
+    public interface IEntityController<THttpResponseType>
     {
         /// <summary>
         /// Get all entities of a specific type in the app
@@ -44,7 +43,7 @@ namespace ToSic.Eav.WebApi.Admin
         /// <remarks>
         /// Will do permission checks internally.
         /// </remarks>
-        HttpResponseMessage Json(int appId, int id, string prefix, bool withMetadata);
+        THttpResponseType Json(int appId, int id, string prefix, bool withMetadata);
 
         /// <summary>
         /// Used to be GET ContentExport/ExportContent
@@ -58,7 +57,7 @@ namespace ToSic.Eav.WebApi.Admin
         /// <param name="languageReferences"></param>
         /// <param name="selectedIds"></param>
         /// <returns></returns>
-        HttpResponseMessage Download(
+        THttpResponseType Download(
             int appId, 
             string language, 
             string defaultLanguage, 
