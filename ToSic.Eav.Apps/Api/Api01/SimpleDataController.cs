@@ -9,7 +9,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using static System.StringComparison;
@@ -27,7 +26,7 @@ namespace ToSic.Eav.Api.Api01
     /// <summary>
     /// This is a simple controller with some Create, Update and Delete commands. 
     /// </summary>
-    public class SimpleDataController: HasLog<SimpleDataController>
+    public partial class SimpleDataController: HasLog<SimpleDataController>
     {
         #region Constructor / DI
 
@@ -175,47 +174,6 @@ namespace ToSic.Eav.Api.Api01
 
             _appManager.Entities.UpdateParts(entityId, importEntity, draft);
         }
-
-        // TODO:
-        // - probably create something which returns a tuple if it should go unpublished & branch
-        // - the call should also include the information if the user is allowed to write published
-        // - then write all the test cases against this
-        //public static (bool Published, bool Branch) IsDraft(object PublishedState, bool? existingIsPublished, bool writePublishAllowed)
-        private static bool? IsDraft(Dictionary<string, object> values, IEntity original)
-        {
-            if (!values.ContainsKey(SaveApiAttributes.SavePublishingState)) return null;
-            var isPublishedValue = values[SaveApiAttributes.SavePublishingState];
-            switch (isPublishedValue)
-            {
-                // Case No change
-                case null:
-                case string emptyString when string.IsNullOrEmpty(emptyString):
-                case string nullString when nullString.Equals(SaveApiAttributes.PublishModeNull, InvariantCultureIgnoreCase):
-                    return null;
-                
-                // Case "draft"
-                case string draftString when draftString.Equals(SaveApiAttributes.PublishModeDraft, InvariantCultureIgnoreCase):
-                    // If Original was published then now it should be draft (true)
-                    // Otherwise it should be 
-                    return original?.IsPublished == true;
-
-                // case boolean / truthy
-                default:
-                    var isPublished = isPublishedValue.ConvertOrDefault<bool>(numeric: false, truthy: true);
-                    // TODO: CONVERT TO IF
-                    switch (isPublished)
-                    {
-                        case true: // if IsPublished = true
-                            return false; // then publish no matter if it was draft or not
-                        case false:
-                            return true; // make it draft-only - so no original which is still there
-                    }
-                    break;
-            }
-
-            return null;
-        }
-
 
         /// <summary>
         /// Delete the entity specified by ID.

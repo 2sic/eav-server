@@ -85,6 +85,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\Api01\SimpleDataControllerTests_IsDraft.cs" />
     <Compile Include="ImportExport\ValueConversionTests.cs" />
     <Compile Include="ImportExport\XmlTable.cs" />
     <Compile Include="ListPairs\ListPairTests_Reorder.cs" />
