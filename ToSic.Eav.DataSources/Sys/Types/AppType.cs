@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSources.System
+﻿namespace ToSic.Eav.DataSources.Sys.Types
 {
     internal enum AppType
     {

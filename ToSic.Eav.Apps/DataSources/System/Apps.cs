@@ -4,12 +4,13 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources.System
+namespace ToSic.Eav.DataSources.Sys
 {
     /// <inheritdoc />
     /// <summary>

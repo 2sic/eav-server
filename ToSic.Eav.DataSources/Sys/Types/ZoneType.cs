@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.DataSources.Types
+﻿namespace ToSic.Eav.DataSources.Sys.Types
 {
     internal enum ZoneType
     {

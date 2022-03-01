@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.DataSources.System.Types;
+using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Documentation;
-using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.System
+namespace ToSic.Eav.DataSources.Sys
 {
     /// <inheritdoc />
     /// <summary>
