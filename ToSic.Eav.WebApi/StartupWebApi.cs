@@ -66,12 +66,20 @@ namespace ToSic.Eav.WebApi
             return services;
         }
 
-        public static IServiceCollection AddEavApiExplorer<THttpResponseType>(this IServiceCollection services)
+        /// <summary>
+        /// Add typed EAV WebApi objects.
+        /// Make sure it's called AFTER adding the normal EAV. Otherwise the ResponseMaker will be the unknown even in
+        /// </summary>
+        /// <typeparam name="THttpResponseType"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddEavWebApiTypedAfterEav<THttpResponseType>(this IServiceCollection services)
         {
             // APIs
             services.TryAddTransient<ApiExplorerBackend<THttpResponseType>>();
             services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
-            services.TryAddTransient<ResponseMaker<THttpResponseType>, ResponseMakerUnknown<THttpResponseType>>();
+            // The ResponseMaker must be registered as generic, so that any specific registration will have priority
+            services.TryAddScoped(typeof(ResponseMaker<>), typeof(ResponseMakerUnknown<>));
             return services;
         }
     }

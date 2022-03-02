@@ -5,7 +5,7 @@ namespace ToSic.Eav.LookUp
 {
     /// <summary>
     /// Look-Up helper to get something from a standard .net NameValueCollection. <br/>
-    /// Read more about this in [](xref:Basics.LookUp.Index)
+    /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
     public class LookUpInNameValueCollection : LookUpBase
