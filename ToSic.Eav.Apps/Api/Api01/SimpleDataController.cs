@@ -161,18 +161,25 @@ namespace ToSic.Eav.Api.Api01
             Log.Add($"update i:{entityId}");
             var original = _appManager.AppState.List.FindRepoId(entityId);
 
-            bool? draft = null;
+            (bool, bool)? draftAndBranch = null;
             if (values.Keys.Contains(SaveApiAttributes.SavePublishingState))
             {
-                draft = IsDraft(values, original);
-                Log.Add($"contains IsPublished value d:{draft}");
+                bool writePublishAllowed = true; // TODO: STV find permissions
+
+                draftAndBranch = IsDraft(
+                    publishedState: values[SaveApiAttributes.SavePublishingState], 
+                    existingIsPublished: original?.IsPublished, 
+                    writePublishAllowed);
+                
+                //draft = IsDraft(values, original);
+                Log.Add($"contains IsPublished value d:{draftAndBranch}");
             }
             else
                 values.Add(SaveApiAttributes.SavePublishingState, original.IsPublished); // original "IsPublished" initial state, temp store in "values" (so it is forwarded in BuildEntity AddValues where it will be removed)
 
             var importEntity = BuildEntity(original.Type, values, null) as Entity;
 
-            _appManager.Entities.UpdateParts(entityId, importEntity, draft);
+            _appManager.Entities.UpdateParts(entityId, importEntity, draftAndBranch);
         }
 
         /// <summary>

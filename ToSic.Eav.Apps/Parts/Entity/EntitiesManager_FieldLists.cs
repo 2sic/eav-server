@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Apps.Parts.Tools;
 using ToSic.Eav.Data;
 using Callback = System.Func<ToSic.Eav.Apps.Parts.Tools.CoupledIdLists, System.Collections.Generic.Dictionary<string, object>>;
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
             var values = callback.Invoke(lists);
-            Parent.Entities.UpdatePartsFromValues(target, values, asDraft);
+            Parent.Entities.UpdatePartsFromValues(target, values, SimpleDataController.DraftAndBranch(asDraft));
         }
 
         public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft)

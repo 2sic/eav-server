@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="id"></param>
         /// <param name="values"></param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        public void UpdateParts(int id, UpdateList values, bool? draftAndBranch = null)
+        public void UpdateParts(int id, UpdateList values, (bool published, bool branch)? draftAndBranch = null)
         {
             var wrapLog = Log.Call($"id:{id}");
             UpdatePartsFromValues(Parent.AppState.List.FindRepoId(id), values, draftAndBranch);
@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="id"></param>
         /// <param name="values"></param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        public void UpdateParts(int id, Entity values, bool? draftAndBranch = null)
+        public void UpdateParts(int id, Entity values, (bool published, bool branch)? draftAndBranch = null)
         {
             var wrapLog = Log.Call($"id:{id}");
             UpdatePartFromEntity(Parent.AppState.List.FindRepoId(id), values, draftAndBranch);
@@ -39,7 +39,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="orig">Original entity to be updated</param>
         /// <param name="values">Dictionary of values to update</param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        private bool UpdatePartsFromValues(IEntity orig, UpdateList values, bool? draftAndBranch = null)
+        private bool UpdatePartsFromValues(IEntity orig, UpdateList values, (bool published, bool branch)? draftAndBranch = null)
         {
             var wrapLog = Log.Call<bool>();
             var tempEnt = CreatePartialEntityOld(orig, values);
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="orig">Original entity to be updated</param>
         /// <param name="partialEntity">Partial Entity to update</param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        private bool UpdatePartFromEntity(IEntity orig, Entity partialEntity, bool? draftAndBranch = null)
+        private bool UpdatePartFromEntity(IEntity orig, Entity partialEntity, (bool published, bool branch)? draftAndBranch = null)
         {
             var wrapLog = Log.Call<bool>();
             if (partialEntity == null)
@@ -67,10 +67,10 @@ namespace ToSic.Eav.Apps.Parts
             var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, partialEntity, saveOptions);
 
             // if changes should be draft, ensure it works
-            if (draftAndBranch == true)
+            if (draftAndBranch.HasValue)
             {
-                saveEnt.PlaceDraftInBranch = true;
-                saveEnt.IsPublished = false;
+                saveEnt.IsPublished = draftAndBranch.Value.published;
+                saveEnt.PlaceDraftInBranch = draftAndBranch.Value.branch;
             }
 
             Save(saveEnt, saveOptions);
