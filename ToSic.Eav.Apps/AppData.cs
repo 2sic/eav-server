@@ -47,8 +47,8 @@ namespace ToSic.Eav.Apps
             var id = ids.FirstOrDefault();
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
-            // try to find it again
-            var created = List.One(id);
+            // try to find it again (AppState.List contains also draft items)
+            var created = AppState.List.One(id);
             return wrapLog(null, created);
         }
 
