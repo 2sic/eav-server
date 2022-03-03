@@ -33,7 +33,7 @@ namespace ToSic.Eav.Api.Api01
                 case string draftString when draftString.Equals(SaveApiAttributes.PublishModeDraft,
                     StringComparison.InvariantCultureIgnoreCase):
                     published = false;
-                    branch = existingIsPublished ?? true;
+                    branch = existingIsPublished ?? false;
                     break;
 
                 // case boolean / truthy
