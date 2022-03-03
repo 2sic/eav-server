@@ -85,31 +85,17 @@ namespace ToSic.Eav.WebApi.App
 
                 // todo: maybe one day get default-values and insert them if not supplied by JS
             }
-            
-            AddIsPublished(newContentItem, cleanedNewItem);
+
+            AddPublishState(newContentItem, cleanedNewItem);
 
             return cleanedNewItem;
         }
 
-        // add (updated) "IsPublished" in "values" (before it can be removed when there is no IsPublished attribute)
-        private void AddIsPublished(IDictionary<string, object> values, IDictionary<string, object> cleaned)
+        // add "PublishState" in "values" (before it can be removed when there is no "PublishState" attribute)
+        private void AddPublishState(IDictionary<string, object> values, IDictionary<string, object> cleaned)
         {
             if (!values.ContainsKey(SaveApiAttributes.SavePublishingState)) return;
-
-            var isPublishedValue = values[SaveApiAttributes.SavePublishingState];
-            switch (isPublishedValue)
-            {
-                case null:
-                case string emptyString when string.IsNullOrEmpty(emptyString):
-                case string nullString when nullString.ToLowerInvariant().Contains(SaveApiAttributes.PublishModeNull):
-                    return;
-                case string draftString when draftString.ToLowerInvariant().Contains(SaveApiAttributes.PublishModeDraft):
-                    cleaned.Add(SaveApiAttributes.SavePublishingState, SaveApiAttributes.PublishModeDraft);
-                    return;
-                default:
-                    cleaned.Add(SaveApiAttributes.SavePublishingState, isPublishedValue.ConvertOrDefault<bool>(numeric: false, truthy: true));
-                    return;
-            }
+            cleaned.Add(SaveApiAttributes.SavePublishingState, values[SaveApiAttributes.SavePublishingState]);
         }
 
         /// <summary>

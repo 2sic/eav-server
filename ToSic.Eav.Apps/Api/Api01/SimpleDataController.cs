@@ -4,13 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
+using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
+using ToSic.Eav.Security.Permissions;
 using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -33,18 +36,22 @@ namespace ToSic.Eav.Api.Api01
         /// <summary>
         /// Used for DI - must always call Init to use
         /// </summary>
-        public SimpleDataController(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbDataLazy, IZoneMapper zoneMapper, ISite site): base("Dta.Simple")
+        public SimpleDataController(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbDataLazy, IZoneMapper zoneMapper, ISite site, IContextOfSite ctx, GeneratorLog<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             _appManagerLazy = appManagerLazy;
             _dbDataLazy = dbDataLazy;
             _zoneMapper = zoneMapper.Init(Log);
             _site = site;
+            _ctx = ctx;
+            _appPermissionCheckGenerator = appPermissionCheckGenerator.SetLog(Log);
             _lazyAttributeBuilder = lazyAttributeBuilder;
         }
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<DbDataController> _dbDataLazy;
         private readonly IZoneMapper _zoneMapper;
         private readonly ISite _site;
+        private readonly IContextOfSite _ctx;
+        private readonly GeneratorLog<AppPermissionCheck> _appPermissionCheckGenerator;
 
         public AttributeBuilder AttributeBuilder => _attributeBuilder ?? (_attributeBuilder = _lazyAttributeBuilder.Value.Init(Log));
         private AttributeBuilder _attributeBuilder;
@@ -104,13 +111,13 @@ namespace ToSic.Eav.Api.Api01
 
             Log.Add($"Type {contentTypeName} found. Will build entities to save...");
 
-            var importEntity = multiValues.Select(values => BuildEntity(type, values, target)).ToList();
+            var importEntity = multiValues.Select(values => BuildEntity(type, values, target, null, out var draftAndBranch)).ToList();
 
             var ids = _appManager.Entities.Save(importEntity);
             return wrapLog(null, ids);
         }
 
-        private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, ITarget target)
+        private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, ITarget target, bool? existingIsPublished, out (bool, bool)? draftAndBranch)
         {
             var wrapLog = Log.Call<IEntity>($"{type.Name}, {values?.Count}, target: {target != null}");
             // ensure it's case insensitive...
@@ -140,7 +147,7 @@ namespace ToSic.Eav.Api.Api01
             }
 
             var preparedValues = ConvertEntityRelations(values);
-            AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false, true);
+            AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false, true, existingIsPublished, out draftAndBranch);
             return wrapLog(null, importEntity);
         }
 
@@ -161,25 +168,24 @@ namespace ToSic.Eav.Api.Api01
             Log.Add($"update i:{entityId}");
             var original = _appManager.AppState.List.FindRepoId(entityId);
 
-            (bool, bool)? draftAndBranch = null;
-            if (values.Keys.Contains(SaveApiAttributes.SavePublishingState))
-            {
-                bool writePublishAllowed = true; // TODO: STV find permissions
-
-                draftAndBranch = IsDraft(
-                    publishedState: values[SaveApiAttributes.SavePublishingState], 
-                    existingIsPublished: original?.IsPublished, 
-                    writePublishAllowed);
-                
-                //draft = IsDraft(values, original);
-                Log.Add($"contains IsPublished value d:{draftAndBranch}");
-            }
-            else
-                values.Add(SaveApiAttributes.SavePublishingState, original.IsPublished); // original "IsPublished" initial state, temp store in "values" (so it is forwarded in BuildEntity AddValues where it will be removed)
-
-            var importEntity = BuildEntity(original.Type, values, null) as Entity;
+            var importEntity = BuildEntity(original.Type, values, null, original.IsPublished, out var draftAndBranch) as Entity;
 
             _appManager.Entities.UpdateParts(entityId, importEntity, draftAndBranch);
+        }
+
+        private bool GetWritePublishAllowedOrThrow()
+        {
+            var userMayWritePublished = _appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
+                .UserMay(GrantSets.WritePublished);
+
+            if (userMayWritePublished) return true;
+
+            var userMayWriteDraft = _appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
+                .UserMay(GrantSets.WriteDraft);
+
+            if (userMayWriteDraft) return false;
+
+            throw new Exception("User is not allowed to update published or draft entity.");
         }
 
         /// <summary>
@@ -218,29 +224,31 @@ namespace ToSic.Eav.Api.Api01
             return result;
         }
 
-        private void AddValues(Entity entity, IContentType contentType, Dictionary<string, object> valuePairs, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
+        private void AddValues(Entity entity, IContentType contentType, Dictionary<string, object> valuePairs, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink, bool? existingIsPublished, out (bool, bool)? draftAndBranch)
         {
             var wrapLog = Log.Call($"..., ..., values: {valuePairs?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}");
+            draftAndBranch = null;
             if (valuePairs == null)
             {
                 wrapLog("no values");
                 return;
             }
+
+            // On update, by default preserve IsPublished state
+            if (existingIsPublished.HasValue) entity.IsPublished = existingIsPublished.Value;
+
             foreach (var keyValuePair in valuePairs)
             {
-                // Handle special attributes (for example of the system)
+                // Handle special "PublishState" attribute
                 if (SaveApiAttributes.SavePublishingState.Equals(keyValuePair.Key, InvariantCultureIgnoreCase))
                 {
-                    switch (keyValuePair.Value)
-                    {
-                        // TODO: W/@STV - WHAT IF IT'S FALSE?
-                        case string draftString when draftString.Equals(SaveApiAttributes.PublishModeDraft, InvariantCultureIgnoreCase): // if IsPublished = "draft"
-                            entity.IsPublished = false; // on new: behave as if IsPublished = false
-                            break;
-                        case bool newValue:
-                            entity.IsPublished = newValue;
-                            break;
-                    }
+                    draftAndBranch = IsDraft(
+                        publishedState: valuePairs[SaveApiAttributes.SavePublishingState],
+                        existingIsPublished: existingIsPublished,
+                        GetWritePublishAllowedOrThrow());
+
+                    if (draftAndBranch.HasValue) entity.IsPublished = draftAndBranch.Value.Item1; // published
+
                     Log.Add($"IsPublished: {entity.IsPublished}");
                     continue;
                 }
@@ -280,5 +288,10 @@ namespace ToSic.Eav.Api.Api01
             // System.DateTime
             return original;
         }
+
+        #region Permission Checks
+
+
+        #endregion
     }
 }
