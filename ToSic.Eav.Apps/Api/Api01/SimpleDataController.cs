@@ -173,18 +173,31 @@ namespace ToSic.Eav.Api.Api01
             _appManager.Entities.UpdateParts(entityId, importEntity, draftAndBranch);
         }
 
-        private bool GetWritePublishAllowedOrThrow()
+        private bool GetWritePublishAllowedOrThrow(IContentType targetType)
         {
-            var userMayWritePublished = _appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
-                .UserMay(GrantSets.WritePublished);
+            // 1. Find if user may write PUBLISHED:
 
-            if (userMayWritePublished) return true;
+            // 1.1. app permissions 
+            if (_appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
+                .UserMay(GrantSets.WritePublished)) return true;
 
-            var userMayWriteDraft = _appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
-                .UserMay(GrantSets.WriteDraft);
+            // 1.2. type permissions
+            if (_appPermissionCheckGenerator.New.ForType(_ctx, _appManager.AppState, targetType, Log)
+                .UserMay(GrantSets.WritePublished)) return true;
 
-            if (userMayWriteDraft) return false;
 
+            // 2. Find if user may write DRAFT:
+
+            // 2.1. app permissions 
+            if (_appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
+                .UserMay(GrantSets.WriteDraft)) return false;
+
+            // 2.2. type permissions
+            if (_appPermissionCheckGenerator.New.ForType(_ctx, _appManager.AppState, targetType, Log)
+                .UserMay(GrantSets.WriteDraft)) return false;
+
+
+            // 3. User is not allowed to update published or draft entity.
             throw new Exception("User is not allowed to update published or draft entity.");
         }
 
@@ -237,15 +250,22 @@ namespace ToSic.Eav.Api.Api01
             // On update, by default preserve IsPublished state
             if (existingIsPublished.HasValue) entity.IsPublished = existingIsPublished.Value;
 
+            // Ensure WritePublished or WriteDraft user permissions. 
+            var writePublishAllowed = GetWritePublishAllowedOrThrow(contentType);
+
+            // IsPublished becomes false when write published is not allowed.
+            if (entity.IsPublished && !writePublishAllowed) entity.IsPublished = false;
+
             foreach (var keyValuePair in valuePairs)
             {
                 // Handle special "PublishState" attribute
                 if (SaveApiAttributes.SavePublishingState.Equals(keyValuePair.Key, InvariantCultureIgnoreCase))
                 {
+
                     draftAndBranch = IsDraft(
                         publishedState: valuePairs[SaveApiAttributes.SavePublishingState],
                         existingIsPublished: existingIsPublished,
-                        GetWritePublishAllowedOrThrow());
+                        writePublishAllowed);
 
                     if (draftAndBranch.HasValue) entity.IsPublished = draftAndBranch.Value.Item1; // published
 
