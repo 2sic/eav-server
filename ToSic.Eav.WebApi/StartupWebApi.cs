@@ -76,7 +76,7 @@ namespace ToSic.Eav.WebApi
         public static IServiceCollection AddEavWebApiTypedAfterEav<THttpResponseType>(this IServiceCollection services)
         {
             // APIs
-            services.TryAddTransient<ApiExplorerBackend<THttpResponseType>>();
+            services.TryAddTransient<ApiExplorerControllerReal<THttpResponseType>>();
             services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
             // The ResponseMaker must be registered as generic, so that any specific registration will have priority
             services.TryAddScoped(typeof(ResponseMaker<>), typeof(ResponseMakerUnknown<>));

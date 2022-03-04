@@ -7,21 +7,36 @@ using ToSic.Eav.WebApi.Plumbing;
 
 namespace ToSic.Eav.WebApi.ApiExplorer
 {
-    public class ApiExplorerBackend<THttpResponseType> : WebApiBackendBase<ApiExplorerBackend<THttpResponseType>>
+    public class ApiExplorerControllerReal<THttpResponseType> : WebApiBackendBase<ApiExplorerControllerReal<THttpResponseType>> /*, IApiExplorerController<THttpResponseType>*/
     {
         public const string LogSuffix = "ApiExp";
 
         public IApiInspector Inspector { get; }
         public ResponseMaker<THttpResponseType> ResponseMaker { get; }
 
-        public ApiExplorerBackend(IServiceProvider sp, IApiInspector inspector, ResponseMaker<THttpResponseType> responseMaker): base(sp, $"{LogNames.WebApi}.{LogSuffix}Rl")
+        public ApiExplorerControllerReal(IServiceProvider sp, IApiInspector inspector, ResponseMaker<THttpResponseType> responseMaker): base(sp, $"{LogNames.WebApi}.{LogSuffix}Rl")
         {
             Inspector = inspector;
             ResponseMaker = responseMaker;
         }
 
+        public THttpResponseType Inspect(string path, Func<string, Assembly> getAssembly)
+        {
+            var wrapLog = Log.Call<THttpResponseType>();
 
-        public bool PreCheckAndCleanPath(ref string path, out THttpResponseType error)
+            if (PreCheckAndCleanPath(ref path, out var error)) return error;
+
+            try
+            {
+                return wrapLog(null, AnalyzeClassAndCreateDto(path, getAssembly(path)));
+            }
+            catch (Exception exc)
+            {
+                return wrapLog($"Error: {exc.Message}.", ResponseMaker.InternalServerError(exc));
+            }
+        }
+
+        private bool PreCheckAndCleanPath(ref string path, out THttpResponseType error)
         {
             var wrapLog = Log.Call<bool>();
 
@@ -42,7 +57,7 @@ namespace ToSic.Eav.WebApi.ApiExplorer
             return false;
         }
 
-        public THttpResponseType AnalyzeClassAndCreateDto(string path, Assembly assembly)
+        private THttpResponseType AnalyzeClassAndCreateDto(string path, Assembly assembly)
         {
             var wrapLog = Log.Call<THttpResponseType>();
             var controllerName = path.Substring(path.LastIndexOf('\\') + 1);
@@ -65,7 +80,7 @@ namespace ToSic.Eav.WebApi.ApiExplorer
 
         }
 
-        internal ApiControllerDto BuildApiControllerDto(Type controller)
+        private ApiControllerDto BuildApiControllerDto(Type controller)
         {
             var wrapLog = Log.Call<ApiControllerDto>();
             var controllerSecurity = Inspector.GetSecurity(controller);
@@ -102,7 +117,7 @@ namespace ToSic.Eav.WebApi.ApiExplorer
             return wrapLog(null, controllerDto);
         }
 
-        public ApiSecurityDto MergeSecurity(ApiSecurityDto contSec, ApiSecurityDto methSec)
+        private ApiSecurityDto MergeSecurity(ApiSecurityDto contSec, ApiSecurityDto methSec)
         {
             var wrapLog = Log.Call<ApiSecurityDto>();
             var ignoreSecurity = contSec.ignoreSecurity || methSec.ignoreSecurity;
@@ -131,22 +146,6 @@ namespace ToSic.Eav.WebApi.ApiExplorer
                 requireVerificationToken = !ignoreSecurity && requireVerificationToken,
             };
             return wrapLog(null, result);
-        }
-
-        public THttpResponseType Inspect(string path, Func<string, Assembly> getAssembly)
-        {
-            var wrapLog = Log.Call<THttpResponseType>();
-
-            if (PreCheckAndCleanPath(ref path, out var error)) return error;
-
-            try
-            {
-                return wrapLog(null, AnalyzeClassAndCreateDto(path, getAssembly(path)));
-            }
-            catch (Exception exc)
-            {
-                return wrapLog($"Error: {exc.Message}.", ResponseMaker.InternalServerError(exc));
-            }
         }
     }
 }
