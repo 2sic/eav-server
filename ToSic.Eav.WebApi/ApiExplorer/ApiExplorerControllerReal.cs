@@ -7,7 +7,7 @@ using ToSic.Eav.WebApi.Plumbing;
 
 namespace ToSic.Eav.WebApi.ApiExplorer
 {
-    public class ApiExplorerControllerReal<THttpResponseType> : WebApiBackendBase<ApiExplorerControllerReal<THttpResponseType>> /*, IApiExplorerController<THttpResponseType>*/
+    public class ApiExplorerControllerReal<THttpResponseType> : WebApiBackendBase<ApiExplorerControllerReal<THttpResponseType>>
     {
         public const string LogSuffix = "ApiExp";
 
