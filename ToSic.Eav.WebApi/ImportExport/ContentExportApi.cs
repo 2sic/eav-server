@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Http;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport;
@@ -10,7 +9,6 @@ using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.WebApi.Helpers;
 using ToSic.Eav.WebApi.Plumbing;
 using ToSic.Eav.WebApi.Security;
 #if NETFRAMEWORK
