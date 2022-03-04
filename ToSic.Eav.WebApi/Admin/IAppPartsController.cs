@@ -1,9 +1,8 @@
-﻿using System.Net.Http;
-using ToSic.Eav.WebApi.Dto;
+﻿using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public interface IAppPartsController
+    public interface IAppPartsController<THttpResponseType>
     {
         /// <summary>
         /// Used to be GET ImportExport/ExportContent
@@ -14,7 +13,7 @@ namespace ToSic.Eav.WebApi.Admin
         /// <param name="entityIdsString"></param>
         /// <param name="templateIdsString"></param>
         /// <returns></returns>
-        HttpResponseMessage Export(int zoneId, int appId, string contentTypeIdsString, string entityIdsString, string templateIdsString);
+        THttpResponseType Export(int zoneId, int appId, string contentTypeIdsString, string entityIdsString, string templateIdsString);
 
 
 
