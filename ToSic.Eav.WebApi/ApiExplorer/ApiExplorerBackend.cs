@@ -9,14 +9,17 @@ namespace ToSic.Eav.WebApi.ApiExplorer
 {
     public class ApiExplorerBackend<THttpResponseType> : WebApiBackendBase<ApiExplorerBackend<THttpResponseType>>
     {
+        public const string LogSuffix = "ApiExp";
+
         public IApiInspector Inspector { get; }
         public ResponseMaker<THttpResponseType> ResponseMaker { get; }
 
-        public ApiExplorerBackend(IServiceProvider sp, IApiInspector inspector, ResponseMaker<THttpResponseType> responseMaker): base(sp, "Bck.ApiExp")
+        public ApiExplorerBackend(IServiceProvider sp, IApiInspector inspector, ResponseMaker<THttpResponseType> responseMaker): base(sp, $"{LogNames.WebApi}.{LogSuffix}Rl")
         {
             Inspector = inspector;
             ResponseMaker = responseMaker;
         }
+
 
         public bool PreCheckAndCleanPath(ref string path, out THttpResponseType error)
         {
@@ -61,8 +64,6 @@ namespace ToSic.Eav.WebApi.ApiExplorer
             return wrapLog("ok", responseMessage);
 
         }
-
-
 
         internal ApiControllerDto BuildApiControllerDto(Type controller)
         {
@@ -132,5 +133,20 @@ namespace ToSic.Eav.WebApi.ApiExplorer
             return wrapLog(null, result);
         }
 
+        public THttpResponseType Inspect(string path, Func<string, Assembly> getAssembly)
+        {
+            var wrapLog = Log.Call<THttpResponseType>();
+
+            if (PreCheckAndCleanPath(ref path, out var error)) return error;
+
+            try
+            {
+                return wrapLog(null, AnalyzeClassAndCreateDto(path, getAssembly(path)));
+            }
+            catch (Exception exc)
+            {
+                return wrapLog($"Error: {exc.Message}.", ResponseMaker.InternalServerError(exc));
+            }
+        }
     }
 }
