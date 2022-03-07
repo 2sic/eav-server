@@ -25,7 +25,9 @@ namespace ToSic.Eav
         {
             // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
-            
+            services.TryAddTransient<AttributeBuilder>();
+            services.TryAddTransient<EntityBuilder>();
+
             // Configuration objects
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
@@ -40,8 +42,6 @@ namespace ToSic.Eav
             services.TryAddSingleton<IAppsCache, AppsCache>();
             services.TryAddTransient<IAppStates, AppStates>();
 
-            // Other...
-            services.TryAddTransient<AttributeBuilder>();
 
             // Permissions helper
             services.TryAddTransient<PermissionCheckBase.Dependencies>();

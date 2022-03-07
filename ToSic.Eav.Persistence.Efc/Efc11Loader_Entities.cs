@@ -116,7 +116,7 @@ namespace ToSic.Eav.Persistence.Efc
 
 
 
-        private static Entity BuildNewEntity(AppState app, TempEntity e, 
+        private Entity BuildNewEntity(AppState app, TempEntity e, 
             IDataDeserializer serializer,
             Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities,
             Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes,
@@ -140,12 +140,12 @@ namespace ToSic.Eav.Persistence.Efc
             if (contentType == null)
                 throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
-            newEntity = EntityBuilder.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
+            newEntity = _entityBuilder.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
                 e.MetadataFor, contentType, e.IsPublished, app, e.Created, e.Modified, e.Owner,
                 e.Version);
 
             // Add all Attributes of that Content-Type
-            var titleAttrib = newEntity.GenerateAttributesOfContentType(contentType);
+            var titleAttrib = _entityBuilder.GenerateAttributesOfContentType(newEntity, contentType);
             if (titleAttrib != null)
                 newEntity.SetTitleField(titleAttrib.Name);
 

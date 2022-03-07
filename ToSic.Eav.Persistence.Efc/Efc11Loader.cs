@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
@@ -19,7 +20,8 @@ namespace ToSic.Eav.Persistence.Efc
             IAppInitializedChecker initializedChecker,
             IAppStates appStates,
             LogHistory logHistory,
-            Lazy<IFeaturesService> featuresService
+            Lazy<IFeaturesService> featuresService,
+            EntityBuilder entityBuilder
             ) : base("Db.Efc11")
         {
             ServiceProvider = serviceProvider;
@@ -29,6 +31,7 @@ namespace ToSic.Eav.Persistence.Efc
             _appStates = appStates;
             _logHistory = logHistory;
             _featuresService = featuresService;
+            _entityBuilder = entityBuilder;
         }
 
         public Efc11Loader UseExistingDb(EavDbContext dbContext)
@@ -44,6 +47,7 @@ namespace ToSic.Eav.Persistence.Efc
         private readonly IAppStates _appStates;
         private readonly LogHistory _logHistory;
         private readonly Lazy<IFeaturesService> _featuresService;
+        private readonly EntityBuilder _entityBuilder;
 
         #endregion
     }

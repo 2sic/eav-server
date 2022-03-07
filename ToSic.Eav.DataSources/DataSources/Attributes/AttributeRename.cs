@@ -73,13 +73,18 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeRename()
+		public AttributeRename(EntityBuilder entityBuilder)
 		{
+            _entityBuilder = entityBuilder;
+
             Provide(GetList);
 			ConfigMask(AttributeMapKey, "[Settings:AttributeMap]");
 			ConfigMask(KeepOtherAttributesKey, $"[Settings:KeepOtherAttributes||True]");
 			ConfigMask(TypeNameKey, $"[Settings:TypeName]");
         }
+
+        private readonly EntityBuilder _entityBuilder;
+
 
         /// <summary>
         /// Get the list of all items with reduced attributes-list
@@ -143,7 +148,7 @@ namespace ToSic.Eav.DataSources
                 return wrapLog("error", originals);
 
             var result = originals
-                .Select(entity => EntityBuilder.FullClone(entity,
+                .Select(entity => _entityBuilder.FullClone(entity,
                     CreateDic(entity),
                     entity.Relationships.AllRelationships,
                     newType

@@ -72,7 +72,7 @@ namespace ToSic.Eav.ImportExport.Json
             }
 
             Log.Add("build entity");
-            var newEntity = EntityBuilder.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
+            var newEntity = _entityBuilder.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
                 AppPackageOrNull, DateTime.MinValue, DateTime.Now, jEnt.Owner, jEnt.Version);
 
             // check if metadata was included

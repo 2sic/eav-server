@@ -69,12 +69,16 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeFilter()
-		{
+		public AttributeFilter(EntityBuilder entityBuilder)
+        {
+            _entityBuilder = entityBuilder;
             Provide(GetList);
 			ConfigMask(AttributeNamesKey, $"[Settings:{AttributeNamesKey}]");
             ConfigMask(ModeKey, $"[Settings:{ModeKey}||+]");
         }
+
+        private readonly EntityBuilder _entityBuilder;
+
 
         /// <summary>
         /// Get the list of all items with reduced attributes-list
@@ -115,13 +119,13 @@ namespace ToSic.Eav.DataSources
                 {
                     // Case 2: Check if we should take none at all
                     if (noFieldNames && keepNamedAttributes)
-                        return EntityBuilder.FullClone(e, new Dictionary<string, IAttribute>(), null);
+                        return _entityBuilder.FullClone(e, new Dictionary<string, IAttribute>(), null);
 
                     // Case 3 - not all fields, keep/drop the ones we don't want
                     var attributes = e.Attributes
                         .Where(a => attributeNames.Contains(a.Key) == keepNamedAttributes)
                         .ToDictionary(k => k.Key, v => v.Value);
-                    return EntityBuilder.FullClone(e, attributes, e.Relationships.AllRelationships);
+                    return _entityBuilder.FullClone(e, attributes, e.Relationships.AllRelationships);
                 })
                 .Cast<IEntity>()
                 .ToImmutableList();

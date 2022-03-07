@@ -32,7 +32,6 @@ namespace ToSic.Eav.DataSources
     [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
     public sealed class LanguageModeler : DataSourceBase
     {
-        private readonly AttributeBuilder _attributeBuilder;
 
         #region Constants / Properties
 
@@ -54,15 +53,19 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public LanguageModeler(AttributeBuilder attributeBuilder)
+        public LanguageModeler(AttributeBuilder attributeBuilder, EntityBuilder entityBuilder)
         {
             _attributeBuilder = attributeBuilder;
+            _entityBuilder = entityBuilder;
             // Specify what out-streams this data-source provides. Usually just one, called "Default"
             Provide(MapLanguagesIntoValues);
 
             // Register the configurations we want as tokens, so that the values will be injected later on
             ConfigMask(FieldMapConfigKey, $"[Settings:{FieldMapConfigKey}]");
         }
+        private readonly AttributeBuilder _attributeBuilder;
+        private readonly EntityBuilder _entityBuilder;
+
 
         /// <summary>
         /// Internal helper that returns the entities
@@ -98,7 +101,7 @@ namespace ToSic.Eav.DataSources
             var result = new List<IEntity>();
             foreach (var entity in originals)
             {
-                var modifiedEntity = EntityBuilder.FullClone(entity, entity.Attributes.Copy(),
+                var modifiedEntity = _entityBuilder.FullClone(entity, entity.Attributes.Copy(),
                     (entity.Relationships as RelationshipManager)?.AllRelationships);
 
                 var attributes = modifiedEntity.Attributes;

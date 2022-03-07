@@ -21,16 +21,19 @@ namespace ToSic.Eav.WebApi
     {
         #region DI Constructor & Init
 
-        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy, Lazy<IConvertToEavLight> entitiesToDicLazy) : base("Api.Entity")
+        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy, Lazy<IConvertToEavLight> entitiesToDicLazy, EntityBuilder entityBuilder) : base("Api.Entity")
         {
             _appRuntime = appRuntime;
             _appManagerLazy = appManagerLazy;
             _entitiesToDicLazy = entitiesToDicLazy;
+            _entityBuilder = entityBuilder;
         }
         private readonly AppRuntime _appRuntime;
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<IConvertToEavLight> _entitiesToDicLazy;
+        private readonly EntityBuilder _entityBuilder;
         public AppRuntime AppRead;
+
 
         public EntityApi Init(int appId, bool showDrafts, ILog parentLog)
         {
@@ -117,7 +120,7 @@ namespace ToSic.Eav.WebApi
 
             if (!p.DuplicateEntity.HasValue) return found;
 
-            var copy = EntityBuilder.FullClone(found, found.Attributes, null);
+            var copy = _entityBuilder.FullClone(found, found.Attributes, null);
             copy.SetGuid(Guid.Empty);
             copy.ResetEntityId();
             return copy;

@@ -8,9 +8,15 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence
 {
-    public class EntitySaver :HasLog
+    public class EntitySaver : HasLog
     {
         public EntitySaver(ILog parentLog = null) : base("Dta.Saver", parentLog) { }
+
+        // TODO: MAKE DI
+        private EntityBuilder EntityBuilder => _entBuilder ?? (_entBuilder = new EntityBuilder());
+        private EntityBuilder _entBuilder;
+
+
 
         /// <summary>
         /// Goal: Pass changes into an existing entity so that it can then be saved as a whole, with correct
