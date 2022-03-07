@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
@@ -20,7 +19,6 @@ namespace ToSic.Eav.Data
         public Value(T typedContents) => TypedContents = typedContents;
 
         public T TypedContents { get; internal set; }
-
 
 
         /// <inheritdoc />
@@ -59,10 +57,6 @@ namespace ToSic.Eav.Data
 
         [PrivateApi]
         public object ObjectContents => TypedContents;
-
-        [PrivateApi]
-        public IValue Copy(string type) => ValueBuilder.Build(type, ObjectContents,
-            Languages.Select(l => new Language {DimensionId = l.DimensionId, Key = l.Key} as ILanguage).ToList(), null);
 
 
         [PrivateApi] public bool? DynamicUseCache { get; set; }

@@ -17,11 +17,16 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class QueryManager: PartOf<AppManager, QueryManager>
     {
-        public QueryManager(Lazy<SystemManager> systemManagerLazy) : base("App.QryMng")
+        public QueryManager(
+            Lazy<SystemManager> systemManagerLazy,
+            Lazy<ValueBuilder> valueBuilder
+            ) : base("App.QryMng")
         {
             _systemManagerLazy = systemManagerLazy;
+            _valueBuilder = valueBuilder;
         }
         private readonly Lazy<SystemManager> _systemManagerLazy;
+        private readonly Lazy<ValueBuilder> _valueBuilder;
 
         public void SaveCopy(int id) => SaveCopy(Parent.Read.Queries.Get(id));
 
@@ -43,13 +48,14 @@ namespace ToSic.Eav.Apps.Parts
 
             newQuery.Attributes[Constants.QueryStreamWiringAttributeName].Values = new List<IValue>
             {
-                ValueBuilder.Build(ValueTypes.String, newWiring, new List<ILanguage>())
+                _valueBuilder.Value.Build(ValueTypes.String, newWiring, new List<ILanguage>())
             };
 
             var saveList = newParts.Select(p => p.Value).Concat(newMetadata).Cast<IEntity>().ToList();
             saveList.Add(newQuery);
             Parent.Entities.Save(saveList);
         }
+
 
         private static string RemapWiringToCopy(IList<Connection> origWiring, Dictionary<string, string> keyMap)
         {

@@ -32,7 +32,7 @@ namespace ToSic.Eav.Data.Builder
                     var valuesModelList = new List<IValue>();
                     if (oAttrib.Value != null)
                     {
-                        var valueModel = ValueBuilder.Build(attributeType, oAttrib.Value, null);
+                        var valueModel = new ValueBuilder().Build(attributeType, oAttrib.Value, null);
                         valuesModelList.Add(valueModel);
                     }
 
@@ -70,19 +70,6 @@ namespace ToSic.Eav.Data.Builder
         #endregion
 
 
-        //public static IAttribute CloneAttributeAndRename(IAttribute original, string newName)
-        //{
-        //    var attributeType = GetAttributeTypeName(original);
-        //    var newAttrib = AttributeBuilder.CreateTyped(newName, attributeType);
-        //    newAttrib.Values = original.Values;
-        //    return newAttrib;
-        //}
-
-
-        public static Dictionary<string, IAttribute> Copy(this IDictionary<string, IAttribute> attributes)
-            => attributes.ToDictionary(x => x.Key, x => x.Value.Copy());
-
-
         /// <summary>
         /// Get the value of an attribute in the language specified.
         /// </summary>
@@ -93,15 +80,6 @@ namespace ToSic.Eav.Data.Builder
                 .Select(item => item.Value)
                 .FirstOrDefault();
             return values?.Values.FirstOrDefault(value => value.Languages.Any(dimension => dimension.Key == language));
-        }
-
-
-
-        public static void BuildReferenceAttribute(this IEntity newEntity, string attribName, IEnumerable<int?> references,
-            IEntitiesSource app)
-        {
-            var attrib = newEntity.Attributes[attribName];
-            attrib.Values = new List<IValue> { ValueBuilder.Build(attrib.Type, references, null, app) };
         }
 
 

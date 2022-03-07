@@ -9,12 +9,13 @@ namespace ToSic.Eav.DataSourceTests.TestData
     {
         public override string LogId => "TST.Person";
 
-        public PersonsDataSource(AttributeBuilder attributeBuilder)
+        public PersonsDataSource(MultiBuilder multiBuilder)
         {
-            _attributeBuilder = attributeBuilder;
+            _multiBuilder = multiBuilder;
             Provide(GetPersons);
         }
-        private AttributeBuilder _attributeBuilder;
+
+        private MultiBuilder _multiBuilder;
 
         public PersonsDataSource Init(int itemsToGenerate = 10, int firstId = 1001, bool multiLanguage = false)
         {
@@ -29,8 +30,8 @@ namespace ToSic.Eav.DataSourceTests.TestData
 
         private IImmutableList<IEntity> GetPersons()
         {
-            var persons = new PersonGenerator(_attributeBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
-            var list = new PersonGenerator(_attributeBuilder).Person2Entity(persons, _multiLanguage);
+            var persons = new PersonGenerator(_multiBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
+            var list = new PersonGenerator(_multiBuilder).Person2Entity(persons, _multiLanguage);
             return list.ToImmutableArray();
         }
     }

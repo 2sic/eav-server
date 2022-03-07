@@ -84,8 +84,9 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public TreeModeler(AttributeBuilder attributeBuilder, EntityBuilder entityBuilder)
+        public TreeModeler(MultiBuilder multiBuilder, AttributeBuilder attributeBuilder, EntityBuilder entityBuilder)
         {
+            _multiBuilder = multiBuilder;
             _attributeBuilder = attributeBuilder;
             _entityBuilder = entityBuilder;
             // Specify what out-streams this data-source provides. Usually just one, called "Default"
@@ -96,6 +97,8 @@ namespace ToSic.Eav.DataSources
             ConfigMask(TargetChildrenAttributeConfigKey, $"[Settings:{TargetChildrenAttributeConfigKey}]");
             ConfigMask(TargetParentAttributeConfigKey, $"[Settings:{TargetParentAttributeConfigKey}]");
         }
+
+        private readonly MultiBuilder _multiBuilder;
         private readonly AttributeBuilder _attributeBuilder;
         private readonly EntityBuilder _entityBuilder;
 
@@ -115,10 +118,10 @@ namespace ToSic.Eav.DataSources
             switch (Identifier)
             {
                 case "EntityGuid":
-                    treeMapper = new TreeMapper<Guid>(_attributeBuilder, _entityBuilder);
+                    treeMapper = new TreeMapper<Guid>(_multiBuilder);
                     break;
                 case "EntityId":
-                    treeMapper = new TreeMapper<int>(_attributeBuilder, _entityBuilder);
+                    treeMapper = new TreeMapper<int>(_multiBuilder);
                     break;
                 default:
                     return wrapLog("error", SetError("Invalid Identifier",

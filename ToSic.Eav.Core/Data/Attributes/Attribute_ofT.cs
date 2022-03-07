@@ -97,37 +97,6 @@ namespace ToSic.Eav.Data
         {
             var valT = GetInternalValue(keys, lookupCallback);
             return valT == null ? default : valT.TypedContents;
-
-            // Value with Dimensions specified
-            //if (keys != null && keys.Length > 0 && Values != null && Values.Count > 0)
-            //{
-            //    // try match all specified Dimensions
-            //    // note that as of now, the dimensions are always just 1 language, not more
-            //    // so the dimensions are _not_ a list of languages, but would contain other dimensions
-            //    // that is why we match ALL - but in truth it's a "feature" that's never been used
-            //    IValue valueHavingSpecifiedLanguages = null;
-            //    foreach (var key in keys)
-            //    {
-            //        // if it's null or 0, try to just get anything
-            //        if (EqualityComparer<TKey>.Default.Equals(key, default))
-            //            valueHavingSpecifiedLanguages = Values.FirstOrDefault();
-            //        else if (key != null)
-            //            valueHavingSpecifiedLanguages = lookupCallback(new[] {key});
-                    
-            //        // stop at first hit
-            //        if (valueHavingSpecifiedLanguages != null) break;
-            //    }
-
-            //    if (valueHavingSpecifiedLanguages != null)
-            //        try
-            //        {
-            //            return ((IValue<T>)valueHavingSpecifiedLanguages).TypedContents;
-            //        }
-            //        catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
-            //}
-            //// use Default
-            //return TypedContents == null ? default : TypedContents;
-
         }
 
         private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
@@ -160,8 +129,7 @@ namespace ToSic.Eav.Data
                     catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
             }
             // use Default
-            return GetTypedValue(); // TypedContents == null ? default : TypedContents;
-
+            return GetTypedValue();
         }
 
         private IValue FindHavingDimensions(int[] keys)
@@ -179,7 +147,5 @@ namespace ToSic.Eav.Data
             return valuesHavingDimensions;
         }
 
-        [PrivateApi]
-        public IAttribute Copy() => new Attribute<T>(Name, Type) { Values = Values.Select(v => v.Copy(Type)).ToList()};
     }
 }

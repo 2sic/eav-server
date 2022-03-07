@@ -32,13 +32,6 @@ namespace ToSic.Eav.Data
         [PrivateApi("not sure why we have two serialization systems, probably will deprecate this some day")]
         string Serialized { get; }
 
-        /// <summary>
-        /// Copy the value 
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        [PrivateApi("not sure if this is here to stay, or if we'll change to use a T based type instead of string-based")]
-        IValue Copy(string type);
 
         [PrivateApi("very experimental in 12.05")]
         bool? DynamicUseCache { get; set; }

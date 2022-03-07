@@ -72,7 +72,7 @@ namespace ToSic.Eav.ImportExport.Json
             }
 
             Log.Add("build entity");
-            var newEntity = _entityBuilder.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
+            var newEntity = MultiBuilder.Entity.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
                 AppPackageOrNull, DateTime.MinValue, DateTime.Now, jEnt.Owner, jEnt.Version);
 
             // check if metadata was included
@@ -126,7 +126,7 @@ namespace ToSic.Eav.ImportExport.Json
             foreach (var attrib in list)
             {
                 var newAtt = AttributeBuilder.CreateTyped(attrib.Key, type, attrib.Value
-                    .Select(v => ValueBuilder.Build(type, v.Value, RecreateLanguageList(v.Key), relationshipsSource)).ToList());
+                    .Select(v => MultiBuilder.Value.Build(type, v.Value, RecreateLanguageList(v.Key), relationshipsSource)).ToList());
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
             }
         }
@@ -149,7 +149,7 @@ namespace ToSic.Eav.ImportExport.Json
                         if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true)
                             break; // just keep the empty definition, as that's fine
                         newAtt.Values = jAtts.Entity[definition.Name]
-                            .Select(v => ValueBuilder.Build(
+                            .Select(v => MultiBuilder.Value.Build(
                                 definition.Type, 
                                 v.Value,
                                 RecreateLanguageList(v.Key),
@@ -192,7 +192,7 @@ namespace ToSic.Eav.ImportExport.Json
         {
             if (!list?.ContainsKey(attrDef.Name) ?? true) return;
             target.Values = list[attrDef.Name]
-                .Select(v => ValueBuilder.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
+                .Select(v => MultiBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
 
         }
 

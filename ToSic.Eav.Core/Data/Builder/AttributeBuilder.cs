@@ -12,16 +12,14 @@ namespace ToSic.Eav.Data.Builder
 
         public AttributeBuilder(
             Lazy<IValueConverter> valueConverter,
-            Lazy<ValueBuilderNs> valueBuilder
-
-            ): base("Dta.AttBld")
+            Lazy<ValueBuilder> valueBuilder
+        ): base("Dta.AttBld")
         {
             _valueConverter = valueConverter;
             _valueBuilder = valueBuilder;
         }
-
         private readonly Lazy<IValueConverter> _valueConverter;
-        private readonly Lazy<ValueBuilderNs> _valueBuilder;
+        private readonly Lazy<ValueBuilder> _valueBuilder;
 
         #endregion
 
@@ -46,7 +44,7 @@ namespace ToSic.Eav.Data.Builder
             // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
             if (string.IsNullOrWhiteSpace(language)) language = null;
 
-            var valueWithLanguages = ValueBuilder.Build(valueType, value, language == null
+            var valueWithLanguages = _valueBuilder.Value.Build(valueType, value, language == null
                 ? null : new List<ILanguage> { new Language { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
 
 
@@ -69,6 +67,23 @@ namespace ToSic.Eav.Data.Builder
             return wrapLog(null, valueWithLanguages);
         }
         #endregion
+
+        /// <summary>
+        /// Create a reference / relationship attribute on an entity being constructed (at DB load)
+        /// </summary>
+        public void BuildReferenceAttribute(IEntity newEntity, string attribName, IEnumerable<int?> references,
+            IEntitiesSource app)
+        {
+            var attrib = newEntity.Attributes[attribName];
+            attrib.Values = new List<IValue> { _valueBuilder.Value.Build(attrib.Type, references, null, app) };
+        }
+
+
+        public Dictionary<string, IAttribute> Copy(IDictionary<string, IAttribute> attributes) 
+            => attributes?.ToDictionary(x => x.Key, x => Copy(x.Value));
+
+        public IAttribute Copy(IAttribute original)
+            => CreateTyped(original.Name, original.Type, original.Values.Select(v => _valueBuilder.Value.Copy(v, original.Type)).ToList());
 
 
         /// <summary>

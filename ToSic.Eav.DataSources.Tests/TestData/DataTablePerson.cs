@@ -13,9 +13,10 @@ namespace ToSic.Eav.DataSourceTests.TestData
     {
         public DataTablePerson(IServiceBuilder serviceProvider) : base(serviceProvider)
         {
-            _attributeBuilder = Build<AttributeBuilder>();
+            _multiBuilder = Build<MultiBuilder>();
         }
-        private AttributeBuilder _attributeBuilder;
+
+        private MultiBuilder _multiBuilder;
 
         private static readonly Dictionary<int, DataTable> CachedDs = new Dictionary<int, DataTable>();
 
@@ -40,7 +41,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                 new DataColumn(PersonSpecs.FieldModifiedInternal, typeof(DateTime)),
             });
 
-            new PersonGenerator(_attributeBuilder).GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId)
+            new PersonGenerator(_multiBuilder).GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId)
                 .ForEach(person => dataTable.Rows.Add(person.Id,
                     person.FullName,
                     person.First,

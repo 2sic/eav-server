@@ -21,7 +21,7 @@ namespace ToSic.Eav.Persistence.Efc
             IAppStates appStates,
             LogHistory logHistory,
             Lazy<IFeaturesService> featuresService,
-            EntityBuilder entityBuilder
+            MultiBuilder multiBuilder
             ) : base("Db.Efc11")
         {
             ServiceProvider = serviceProvider;
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Persistence.Efc
             _appStates = appStates;
             _logHistory = logHistory;
             _featuresService = featuresService;
-            _entityBuilder = entityBuilder;
+            _multiBuilder = multiBuilder;
         }
 
         public Efc11Loader UseExistingDb(EavDbContext dbContext)
@@ -47,7 +47,7 @@ namespace ToSic.Eav.Persistence.Efc
         private readonly IAppStates _appStates;
         private readonly LogHistory _logHistory;
         private readonly Lazy<IFeaturesService> _featuresService;
-        private readonly EntityBuilder _entityBuilder;
+        private readonly MultiBuilder _multiBuilder;
 
         #endregion
     }

@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
         public Dictionary<string, IAttribute> Attributes
         {
             get => _attributes ?? (_attributes = LightAttributesForInternalUseOnlyForNow.ConvertToInvariantDic());
-            set => _attributes = (value?.ToInvariant() ?? new Dictionary<string, IAttribute>()).ToInvariant();
+            set => _attributes = (value ?? new Dictionary<string, IAttribute>()).ToInvariant();
         }
 
         private Dictionary<string, IAttribute> _attributes;

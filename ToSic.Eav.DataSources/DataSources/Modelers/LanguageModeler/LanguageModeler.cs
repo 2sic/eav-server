@@ -53,18 +53,17 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public LanguageModeler(AttributeBuilder attributeBuilder, EntityBuilder entityBuilder)
+        public LanguageModeler(MultiBuilder multiBuilder)
         {
-            _attributeBuilder = attributeBuilder;
-            _entityBuilder = entityBuilder;
+            _multiBuilder = multiBuilder;
             // Specify what out-streams this data-source provides. Usually just one, called "Default"
             Provide(MapLanguagesIntoValues);
 
             // Register the configurations we want as tokens, so that the values will be injected later on
             ConfigMask(FieldMapConfigKey, $"[Settings:{FieldMapConfigKey}]");
         }
-        private readonly AttributeBuilder _attributeBuilder;
-        private readonly EntityBuilder _entityBuilder;
+
+        private readonly MultiBuilder _multiBuilder;
 
 
         /// <summary>
@@ -101,7 +100,7 @@ namespace ToSic.Eav.DataSources
             var result = new List<IEntity>();
             foreach (var entity in originals)
             {
-                var modifiedEntity = _entityBuilder.FullClone(entity, entity.Attributes.Copy(),
+                var modifiedEntity = _multiBuilder.Entity.FullClone(entity, _multiBuilder.Attribute.Copy(entity.Attributes), // entity.Attributes.Copy(),
                     (entity.Relationships as RelationshipManager)?.AllRelationships);
 
                 var attributes = modifiedEntity.Attributes;
@@ -137,7 +136,7 @@ namespace ToSic.Eav.DataSources
                             // Remove first, in case the new name replaces an old one
                             attributes.Remove(entry.OriginalField);
                             // Now add the resulting new attribute
-                            _attributeBuilder.AddValue(attributes, map.Target, value, newAttribute.Type, /*lang*/ entry.Language);
+                            _multiBuilder.Attribute.AddValue(attributes, map.Target, value, newAttribute.Type, /*lang*/ entry.Language);
                         }
                     }
                     else // simple re-mapping / renaming

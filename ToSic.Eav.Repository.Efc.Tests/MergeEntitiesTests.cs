@@ -18,8 +18,12 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public MergeEntitiesTests()
         {
             _entitySaver = Build<EntitySaver>().Init(new Log("Tst.Merge"));
+            MultiBuilder = Build<MultiBuilder>();
         }
         private readonly EntitySaver _entitySaver;
+        private readonly MultiBuilder MultiBuilder;
+
+
 
         private DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
         private DimensionBuilder _langBuilder;
@@ -153,15 +157,15 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var title = AttributeBuilder.CreateTyped("Title", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn)}),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn)}),
             });
             var teaser = AttributeBuilder.CreateTyped("Teaser", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { Clone(langEn)}),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { Clone(langEn)}),
             });
             var file = AttributeBuilder.CreateTyped("File", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn) }),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn) }),
             });
 
             return new Entity(AppId, 3006, ContentTypeBuilder.Fake("Product"), new Dictionary<string, object>
@@ -181,29 +185,29 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var title = AttributeBuilder.CreateTyped("Title", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn) }),
-                ValueBuilderBuildTest(ValueTypes.String, "Title DE",
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn) }),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "Title DE",
                     new List<ILanguage> { Clone(langDeDe), Clone(langDeCh, true)}),
-                ValueBuilderBuildTest(ValueTypes.String, "titre FR", new List<ILanguage> { Clone(langFr)})
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "titre FR", new List<ILanguage> { Clone(langFr)})
             });
 
             var teaser = AttributeBuilder.CreateTyped("Teaser", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "teaser de de", new List<ILanguage> {Clone(langDeDe) }),
-                ValueBuilderBuildTest(ValueTypes.String, "teaser de CH", new List<ILanguage> {Clone(langDeCh)}),
-                ValueBuilderBuildTest(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "teaser de de", new List<ILanguage> {Clone(langDeDe) }),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "teaser de CH", new List<ILanguage> {Clone(langDeCh)}),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
                 // special test: leave EN (primary) at end of list, as this could happen in real life
-                ValueBuilderBuildTest(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {Clone(langEn)}),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {Clone(langEn)}),
             });
             var file = AttributeBuilder.CreateTyped("File", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
-                ValueBuilderBuildTest(ValueTypes.String, "File de de",
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "File de de",
                     new List<ILanguage> { Clone(langDeDe), Clone(langFr) }),
-                ValueBuilderBuildTest(ValueTypes.String, "File FR", new List<ILanguage> {Clone(langFr)}),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "File FR", new List<ILanguage> {Clone(langFr)}),
                 // special test - empty language item
-                ValueBuilderBuildTest(ValueTypes.String, "File without language!", new List<ILanguage>()),
-                ValueBuilderBuildTest(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "File without language!", new List<ILanguage>()),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
             });
 
             return new Entity(AppId, 430, ContentTypeBuilder.Fake("Product"), new Dictionary<string, object>

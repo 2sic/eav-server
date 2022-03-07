@@ -6,22 +6,25 @@ using System.Linq;
 
 namespace ToSic.Eav.Data.Builder
 {
-    public class ValueBuilderNs
+    public class ValueBuilder
     {
-        public IValue Copy(IValue original, string type) => ValueBuilder.Build(type, original.ObjectContents,
+        // WIP - constructor should never be called because we should use DI
+        public ValueBuilder()
+        {
+
+        }
+
+        public IValue Copy(IValue original, string type) => new ValueBuilder().Build(type, original.ObjectContents,
             LanguageBuilder.Clone(original.Languages), null);
 
+        // TODO: DI
         public DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
         private DimensionBuilder _langBuilder;
 
-    }
-
-    public static class ValueBuilder
-    {
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        public static IValue Build(string attributeType, object value, IList<ILanguage> languages,
+        public IValue Build(string attributeType, object value, IList<ILanguage> languages,
             IEntitiesSource fullEntityListForLookup = null)
             => Build((ValueTypes)Enum.Parse(typeof(ValueTypes), attributeType), value, languages, fullEntityListForLookup);
 
@@ -32,7 +35,7 @@ namespace ToSic.Eav.Data.Builder
         /// <returns>
         /// An IValue, which is actually an IValue<string>, IValue<decimal>, IValue<IEnumerable<IEntity>> etc.
         /// </returns>
-        public static IValue Build(ValueTypes type, object value, IList<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
+        public IValue Build(ValueTypes type, object value, IList<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
         {
             if (languages == null) languages = new List<ILanguage>();
             IValue typedModel;
@@ -110,7 +113,7 @@ namespace ToSic.Eav.Data.Builder
         }
 
 
-        internal static List<Guid?> GuidCsvToList(object value)
+        private static List<Guid?> GuidCsvToList(object value)
         {
             var stringValue = value as string;
             var entityIdEnum = value as IEnumerable; // note: strings are also enum!

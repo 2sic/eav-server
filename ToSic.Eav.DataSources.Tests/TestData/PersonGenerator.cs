@@ -10,11 +10,12 @@ namespace ToSic.Eav.DataSourceTests.TestData
 {
     internal class PersonGenerator
     {
-        public PersonGenerator(AttributeBuilder attributeBuilder)
+
+        public PersonGenerator(MultiBuilder multiBuilder)
         {
-            _attributeBuilder = attributeBuilder;
+            MultiBuilder = multiBuilder;
         }
-        private readonly AttributeBuilder _attributeBuilder;
+        public MultiBuilder MultiBuilder { get; }
 
         private static Person SemiRandom(int i)
         {
@@ -79,20 +80,20 @@ namespace ToSic.Eav.DataSourceTests.TestData
         private static ILanguage Clone(ILanguage orig) => new DimensionBuilder().Clone(orig);
         private static ILanguage Clone(ILanguage orig, bool readOnly) => new DimensionBuilder().Clone(orig, readOnly);
 
-        private static object MaybeMakeMl(bool convert, string name, string original)
+        private object MaybeMakeMl(bool convert, string name, string original)
         {
             if (!convert) return original;
 
             var attribute = AttributeBuilder.CreateTyped(name,  ValueTypes.String, new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, PriPrefix + original, new List<ILanguage> { Clone(LangPri)}),
-                ValueBuilderBuildTest(ValueTypes.String, EnPrefix + original, new List<ILanguage> { Clone(LangEn)}),
-                ValueBuilderBuildTest(ValueTypes.String, DeMult + original, new List<ILanguage>
+                MultiBuilder.Value.Build4Test(ValueTypes.String, PriPrefix + original, new List<ILanguage> { Clone(LangPri)}),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, EnPrefix + original, new List<ILanguage> { Clone(LangEn)}),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, DeMult + original, new List<ILanguage>
                     {
                         Clone(LangDeDe), 
                         Clone(LangDeCh, true)
                     }),
-                ValueBuilderBuildTest(ValueTypes.String, FrPrefix + original, new List<ILanguage> { Clone(LangFr)})
+                MultiBuilder.Value.Build4Test(ValueTypes.String, FrPrefix + original, new List<ILanguage> { Clone(LangFr)})
             });
             return attribute;
         }
@@ -102,8 +103,8 @@ namespace ToSic.Eav.DataSourceTests.TestData
 
             var attribute = AttributeBuilder.CreateTyped(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { Clone(LangEn)}),
-                ValueBuilderBuildTest(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
+                MultiBuilder.Value.Build4Test(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { Clone(LangEn)}),
+                MultiBuilder.Value.Build4Test(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
                     {
                         Clone(LangDeDe), 
                         Clone(LangDeCh, true)
@@ -112,12 +113,12 @@ namespace ToSic.Eav.DataSourceTests.TestData
             });
             return attribute;
         }
-        private static object MaybeMakeMlNonString<T>(bool convert, string name, ValueTypes type, T original) =>
+        private object MaybeMakeMlNonString<T>(bool convert, string name, ValueTypes type, T original) =>
             !convert
                 ? (object) original
                 : AttributeBuilder.CreateTyped(name, type, new List<IValue>
                 {
-                    ValueBuilderBuildTest(type, original, new List<ILanguage>()),
+                    MultiBuilder.Value.Build4Test(type, original, new List<ILanguage>()),
                 });
     }
 }

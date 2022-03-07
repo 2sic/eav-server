@@ -26,9 +26,11 @@ namespace ToSic.Eav
         {
             // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
+            services.TryAddTransient<MultiBuilder>();
             services.TryAddTransient<AttributeBuilder>();
             services.TryAddTransient<EntityBuilder>();
-            services.TryAddTransient<EntitySaver>(); // WIP, not working yet
+            services.TryAddTransient<EntitySaver>();
+            services.TryAddTransient<ValueBuilder>();
 
             // Configuration objects
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();

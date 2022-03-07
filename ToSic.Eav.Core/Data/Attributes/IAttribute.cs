@@ -28,13 +28,6 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         object this[int languageId] { get; }
 
-        ///// <summary>
-        ///// Gets the Value for this Languages, untyped
-        ///// </summary>
-        ///// <param name="languageIds">list of languages to check</param>
-        //[PrivateApi]
-        //object this[int[] languageIds] { get; }
-
         /// <summary>
         /// Get the best/first matching value for the specified language key - untyped
         /// </summary>
@@ -51,12 +44,6 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        /// <summary>
-        /// Clone the attribute - for creating copies of this, usually when saving drafts or similar.
-        /// </summary>
-        /// <returns></returns>
-        [PrivateApi("might rename to Clone or something, and might be moved out")]
-	    IAttribute Copy();
 
         [PrivateApi("experimental in 12.05")]
         Tuple<IValue, object> GetTypedValue(string[] languageKeys);

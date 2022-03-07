@@ -14,10 +14,10 @@ namespace ToSic.Testing.Shared
         /// <param name="languages"></param>
         /// <param name="fullEntityListForLookup"></param>
         /// <returns></returns>
-        public static IValue ValueBuilderBuildTest(ValueTypes type, object value, List<ILanguage> languages,
+        public static IValue Build4Test(this ValueBuilder vBuilder, ValueTypes type, object value, List<ILanguage> languages,
             IEntitiesSource fullEntityListForLookup = null)
         {
-            return ValueBuilder.Build(type, value, languages, fullEntityListForLookup);
+            return vBuilder.Build(type, value, languages, fullEntityListForLookup);
         }
 
     }
