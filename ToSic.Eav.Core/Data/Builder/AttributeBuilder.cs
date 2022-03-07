@@ -79,11 +79,11 @@ namespace ToSic.Eav.Data.Builder
         }
 
 
-        public Dictionary<string, IAttribute> Copy(IDictionary<string, IAttribute> attributes) 
-            => attributes?.ToDictionary(x => x.Key, x => Copy(x.Value));
+        public Dictionary<string, IAttribute> Clone(IDictionary<string, IAttribute> attributes) 
+            => attributes?.ToDictionary(x => x.Key, x => Clone(x.Value));
 
-        public IAttribute Copy(IAttribute original)
-            => CreateTyped(original.Name, original.Type, original.Values.Select(v => _valueBuilder.Value.Copy(v, original.Type)).ToList());
+        public IAttribute Clone(IAttribute original)
+            => CreateTyped(original.Name, original.Type, original.Values.Select(v => _valueBuilder.Value.Clone(v, original.Type)).ToList());
 
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
             var result = new List<IEntity>();
 
             // Copy all entities to prevent modification
-            var clones = originals.Select(e => _builder.Entity.FullClone(e, _builder.Attribute.Copy(e.Attributes) /*e.Attributes.Copy()*/, ((RelationshipManager)e.Relationships).AllRelationships)).ToList();
+            var clones = originals.Select(e => _builder.Entity.Clone(e, _builder.Attribute.Clone(e.Attributes) /*e.Attributes.Copy()*/, ((RelationshipManager)e.Relationships).AllRelationships)).ToList();
 
             // Convert list to lookup of "parent" guids
             var childrenByParentIdentifier = clones.ToLookup(e => GetTypedValueOrNull(e, childParentAttribute), e => e);

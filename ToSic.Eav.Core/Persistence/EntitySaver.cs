@@ -52,8 +52,8 @@ namespace ToSic.Eav.Persistence
 
             #region Step 2: clean up unwanted attributes from both lists
 
-            var origAttribs = _multiBuilder.Attribute.Copy(original?.Attributes); //.Copy();
-            var newAttribs = _multiBuilder.Attribute.Copy(update.Attributes); //.Copy();
+            var origAttribs = _multiBuilder.Attribute.Clone(original?.Attributes); //.Copy();
+            var newAttribs = _multiBuilder.Attribute.Clone(update.Attributes); //.Copy();
 
             Log.Add($"has orig:{originalWasSaved}, origAtts⋮{origAttribs?.Count}, newAtts⋮{newAttribs.Count}");
 
@@ -113,7 +113,7 @@ namespace ToSic.Eav.Persistence
                         ? MergeAttribute(mergedAttribs[newAttrib.Key], newAttrib.Value, saveOptions)
                         : newAttrib.Value;
 
-            var result = _multiBuilder.Entity.FullClone(idProvidingEntity, mergedAttribs, null);
+            var result = _multiBuilder.Entity.Clone(idProvidingEntity, mergedAttribs, null);
             CorrectPublishedAndGuidImports(result, logDetails);
             return callLog?.Invoke("ok", result) ?? result;
         }
@@ -214,7 +214,7 @@ namespace ToSic.Eav.Persistence
                 if (remainingLanguages.Count == 0) continue;
 
                 // Add the value with the remaining languages / relationships
-                var val = _multiBuilder.Value.Copy(orgVal, original.Type); // orgVal.Copy(original.Type);
+                var val = _multiBuilder.Value.Clone(orgVal, original.Type); // orgVal.Copy(original.Type);
                 val.Languages = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
                 result.Values.Add(val);
             }

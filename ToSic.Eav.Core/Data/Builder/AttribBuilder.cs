@@ -45,8 +45,6 @@ namespace ToSic.Eav.Data.Builder
             }
 
             return result;
-
-
         }
 
         // helper to get text-name of the type

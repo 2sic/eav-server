@@ -33,11 +33,7 @@ namespace ToSic.Eav.Data
         public const int DefaultEntityId = 0;
         public const string DefaultTypeName = "unspecified";
 
-        /// <summary>
-        /// Create a fake content-type using the specified name. 
-        /// </summary>
-        /// <param name="typeName">Name to use for this content-type</param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public IContentType Type(string typeName) => _builder.ContentType.Transient(typeName);
 
         /// <inheritdoc />
@@ -71,12 +67,7 @@ namespace ToSic.Eav.Data
                 typeName: typeName)
             );
 
-        /// <summary>
-        /// Create a dummy fake entity. It's just used in scenarios where code must have an entity but the
-        /// internals are not relevant. Examples are dummy Metadata or dummy Content-Data.
-        /// </summary>
-        /// <param name="appId"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         [PrivateApi]
         public IEntity FakeEntity(int appId)
             => Entity(new Dictionary<string, object> { { Attributes.TitleNiceName, "" } },

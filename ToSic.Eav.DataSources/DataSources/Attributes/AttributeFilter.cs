@@ -119,13 +119,13 @@ namespace ToSic.Eav.DataSources
                 {
                     // Case 2: Check if we should take none at all
                     if (noFieldNames && keepNamedAttributes)
-                        return _entityBuilder.FullClone(e, new Dictionary<string, IAttribute>(), null);
+                        return _entityBuilder.Clone(e, new Dictionary<string, IAttribute>(), null);
 
                     // Case 3 - not all fields, keep/drop the ones we don't want
                     var attributes = e.Attributes
                         .Where(a => attributeNames.Contains(a.Key) == keepNamedAttributes)
                         .ToDictionary(k => k.Key, v => v.Value);
-                    return _entityBuilder.FullClone(e, attributes, e.Relationships.AllRelationships);
+                    return _entityBuilder.Clone(e, attributes, e.Relationships.AllRelationships);
                 })
                 .Cast<IEntity>()
                 .ToImmutableList();

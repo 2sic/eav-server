@@ -120,7 +120,7 @@ namespace ToSic.Eav.WebApi
 
             if (!p.DuplicateEntity.HasValue) return found;
 
-            var copy = _entityBuilder.FullClone(found, found.Attributes, null);
+            var copy = _entityBuilder.Clone(found, found.Attributes, null);
             copy.SetGuid(Guid.Empty);
             copy.ResetEntityId();
             return copy;

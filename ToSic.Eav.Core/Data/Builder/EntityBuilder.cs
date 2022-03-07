@@ -81,7 +81,7 @@ namespace ToSic.Eav.Data.Builder
         /// Create a new Entity based on an Entity and Attributes
         /// Used in the Attribute-Filter, which generates a new entity with less properties
         /// </summary>
-        public Entity FullClone(IEntity entity, 
+        public Entity Clone(IEntity entity, 
             Dictionary<string, IAttribute> attributes, 
             IEnumerable<EntityRelationship> allRelationships,
             IContentType newType = null)

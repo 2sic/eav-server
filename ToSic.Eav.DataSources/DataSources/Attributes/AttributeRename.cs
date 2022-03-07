@@ -148,7 +148,7 @@ namespace ToSic.Eav.DataSources
                 return wrapLog("error", originals);
 
             var result = originals
-                .Select(entity => _entityBuilder.FullClone(entity,
+                .Select(entity => _entityBuilder.Clone(entity,
                     CreateDic(entity),
                     entity.Relationships.AllRelationships,
                     newType
