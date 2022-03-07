@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps.ImportExport
@@ -14,6 +16,8 @@ namespace ToSic.Eav.Apps.ImportExport
 	{
         public class Dependencies
         {
+            public Lazy<ContentTypeAttributeBuilder> CtAttribBuilder { get; }
+
             public Dependencies(
                 Lazy<Import> importerLazy,
                 Lazy<DbDataController> dbDataForNewApp,
@@ -21,16 +25,19 @@ namespace ToSic.Eav.Apps.ImportExport
                 IImportExportEnvironment importExportEnvironment,
                 ITargetTypes metaTargetTypes,
                 SystemManager systemManager,
-                IAppStates appStates
-                )
+                IAppStates appStates,
+                Lazy<XmlToEntity> xmlToEntity,
+                Lazy<ContentTypeAttributeBuilder> ctAttribBuilder
+                    )
             {
+                CtAttribBuilder = ctAttribBuilder;
                 _importerLazy = importerLazy;
                 _dbDataForNewApp = dbDataForNewApp;
                 _dbDataForAppImport = dbDataForAppImport;
                 _environment = importExportEnvironment;
                 _metaTargetTypes = metaTargetTypes;
                 AppStates = appStates;
-                GlobalApp = appStates.GetPresetApp();
+                _xmlToEntity = xmlToEntity;
                 SystemManager = systemManager;
             }
             internal readonly Lazy<Import> _importerLazy;
@@ -39,9 +46,8 @@ namespace ToSic.Eav.Apps.ImportExport
             internal readonly IImportExportEnvironment _environment;
             internal readonly ITargetTypes _metaTargetTypes;
             internal readonly IAppStates AppStates;
+            internal readonly Lazy<XmlToEntity> _xmlToEntity;
             internal readonly SystemManager SystemManager;
-
-            internal readonly AppState GlobalApp;
         }
 
         private List<DimensionDefinition> _targetDimensions;

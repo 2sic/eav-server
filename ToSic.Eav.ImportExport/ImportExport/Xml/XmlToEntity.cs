@@ -13,26 +13,36 @@ namespace ToSic.Eav.ImportExport.Xml
 	/// <summary>
 	/// Import EAV Data from XML Format
 	/// </summary>
-	public class XmlToEntity: HasLog
+	public class XmlToEntity: HasLog<XmlToEntity>
 	{
         private class TargetLanguageToSourceLanguage: DimensionDefinition
         {
             public List<DimensionDefinition> PrioritizedDimensions = new List<DimensionDefinition>();
         }
 
-        public int AppId { get; }
-	    public XmlToEntity(AppState presetApp, int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang, ILog parentLog)
-            : base("Imp.XmlEnt", parentLog, "init", "XmlToEntity")
-	    {
-	        AppId = appId;
+        public XmlToEntity(IAppStates appStates, ValueBuilder valueBuilder) : base("Imp.XmlEnt")
+        {
+            _valueBuilder = valueBuilder;
+            _presetApp = appStates.GetPresetApp();
+        }
+
+        private readonly ValueBuilder _valueBuilder;
+        private readonly AppState _presetApp;
+
+        public XmlToEntity Init(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
+        {
+            AppId = appId;
             envLanguages = envLanguages.OrderByDescending(p => p.Matches(envDefLang)).ThenBy(p => p.EnvironmentKey).ToList();
-	        _envLangs = PrepareTargetToSourceLanguageMapping(envLanguages, envDefLang, srcLanguages, srcDefLang);
-            _presetApp = presetApp;
+            _envLangs = PrepareTargetToSourceLanguageMapping(envLanguages, envDefLang, srcLanguages, srcDefLang);
             _envDefLang = envDefLang;
             _srcDefLang = srcDefLang?.ToString();
-	    }
+            return this;
+        }
 
-	    private List<TargetLanguageToSourceLanguage> PrepareTargetToSourceLanguageMapping(List<DimensionDefinition> envLanguages, string envDefLang, List<DimensionDefinition> srcLanguages, int? srcDefLang)
+        public int AppId { get; private set; }
+
+
+        private List<TargetLanguageToSourceLanguage> PrepareTargetToSourceLanguageMapping(List<DimensionDefinition> envLanguages, string envDefLang, List<DimensionDefinition> srcLanguages, int? srcDefLang)
 	    {
 	        var wrapLog = Log.Call($"Env has {envLanguages.Count} languages");
 	        List<TargetLanguageToSourceLanguage> result;
@@ -103,12 +113,10 @@ namespace ToSic.Eav.ImportExport.Xml
         }
 
         //private readonly List<string> _relevantSrcLangsByPriority;
-	    private readonly List<TargetLanguageToSourceLanguage> _envLangs;
-        private readonly AppState _presetApp;
-        private readonly string _envDefLang;
-        private readonly string _srcDefLang;
+	    private List<TargetLanguageToSourceLanguage> _envLangs;
+        private string _envDefLang;
+        private string _srcDefLang;
         
-
         /// <summary>
         /// Returns an EAV import entity
         /// </summary>
@@ -159,7 +167,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
                 // construct value elements
 			    var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
-			            => ValueBuilder.Build(tempImportValue.XmlValue.Attribute(
+			            => _valueBuilder.Build(tempImportValue.XmlValue.Attribute(
 			                               XmlConstants.EntityTypeAttribute)?.Value ??
 			                           throw new NullReferenceException("cant' build attribute with unknown value-type"),
 			                tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
