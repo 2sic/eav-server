@@ -10,9 +10,9 @@ namespace ToSic.Eav.WebApi.PublicApi
 
         List<AppDto> InheritableApps();
 
-        THttpResponse Export(int appId, int zoneId, bool includeContentGroups, bool resetAppGuid);
-        bool SaveData(int appId, int zoneId, bool includeContentGroups, bool resetAppGuid);
-        AppExportInfoDto Statistics(int appId, int zoneId);
+        THttpResponse Export(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid);
+        bool SaveData(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid);
+        AppExportInfoDto Statistics(int zoneId, int appId);
         ImportResultDto Import(int zoneId);
 
         List<SiteLanguageDto> Languages(int appId);
