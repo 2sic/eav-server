@@ -50,7 +50,7 @@ namespace ToSic.Eav.Data
             DateTime? created = null,
             DateTime? modified = null
             ) 
-            => new Entity(appId, id, type ?? _builder.ContentType.Transient(typeName), values, titleField, created: created, modified: modified, guid: guid);
+            => new Entity(appId, id, type ?? Type(typeName), values, titleField, created: created, modified: modified, guid: guid);
 
         /// <inheritdoc />
         [PublicApi]
@@ -61,11 +61,14 @@ namespace ToSic.Eav.Data
             string typeName = DefaultTypeName,
             IContentType type = null
             )
-            => itemValues.Select(values => Entity(values,
+        {
+            type = type ?? Type(typeName);
+            return itemValues.Select(values => Entity(values,
                 appId: appId,
                 titleField: titleField,
-                typeName: typeName)
+                type: type)
             );
+        }
 
         /// <inheritdoc />
         [PrivateApi]
