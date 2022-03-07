@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.WebApi.Dto;
 
-namespace ToSic.Eav.WebApi.PublicApi
+namespace ToSic.Eav.WebApi.Admin
 {
     public interface IAppController<out THttpResponse>
     {
@@ -10,18 +10,19 @@ namespace ToSic.Eav.WebApi.PublicApi
 
         List<AppDto> InheritableApps();
 
-        THttpResponse Export(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid);
-        bool SaveData(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid);
-        AppExportInfoDto Statistics(int zoneId, int appId);
-        ImportResultDto Import(int zoneId);
+        void App(int zoneId, int appId, bool fullDelete = true);
+
+        void App(int zoneId, string name, int? inheritAppId = null);
 
         List<SiteLanguageDto> Languages(int appId);
 
-        /// <summary>
-        /// Reset an App to the last xml state
-        /// </summary>
-        /// <returns></returns>
-        ImportResultDto Reset(int zoneId, int appId);
+        AppExportInfoDto Statistics(int zoneId, int appId);
+
+        bool FlushCache(int zoneId, int appId);
+
+        THttpResponse Export(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid);
+
+        bool SaveData(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid);
 
         /// <summary>
         /// Get a stack of values from settings or resources
@@ -32,5 +33,13 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="view">Optional guid of a view to merge with the settings</param>
         /// <returns></returns>
         List<StackInfoDto> GetStack(int appId, string part, string key = null, Guid? view = null);
+
+        /// <summary>
+        /// Reset an App to the last xml state
+        /// </summary>
+        /// <returns></returns>
+        ImportResultDto Reset(int zoneId, int appId);
+
+        ImportResultDto Import(int zoneId);
     }
 }
