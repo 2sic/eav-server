@@ -10,6 +10,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
@@ -27,6 +28,7 @@ namespace ToSic.Eav
             services.TryAddTransient<IDataBuilder, DataBuilder>();
             services.TryAddTransient<AttributeBuilder>();
             services.TryAddTransient<EntityBuilder>();
+            services.TryAddTransient<EntitySaver>(); // WIP, not working yet
 
             // Configuration objects
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();

@@ -16,19 +16,20 @@ namespace ToSic.Eav.Repository.Efc.Tests
     [TestClass]
     public class SaveDataToDbTests: TestBaseDiEavFullAndDb
     {
-        private readonly DbDataController _dbData;
-        private readonly Efc11Loader _loader1;
-        private readonly Efc11Loader _loader2;
-
-        private readonly IImportExportEnvironment _environment;
-
         public SaveDataToDbTests()
         {
             _dbData = Build<DbDataController>();
             _loader1 = Build<Efc11Loader>();
             _loader2 = Build<Efc11Loader>();
             _environment = Build<IImportExportEnvironment>();
+            _entitySaver = Build<EntitySaver>().Init(new Log("Tst.Merge"));
         }
+        private readonly DbDataController _dbData;
+        private readonly Efc11Loader _loader1;
+        private readonly Efc11Loader _loader2;
+        private readonly IImportExportEnvironment _environment;
+        private readonly EntitySaver _entitySaver;
+
 
         [TestInitialize]
         public void Init()
@@ -85,7 +86,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {
                 {test.TitleField, "changed title on " + DateTime.Now}
             });
-            var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(itm1, itmNewTitle, so);
+            var saveEntity = _entitySaver.CreateMergedForSaving(itm1, itmNewTitle, so);
 
             // save it
             dbi.Save(new List<IEntity> {saveEntity}, so);
@@ -126,7 +127,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 { test.TitleField, ctTitle }
             });
 
-            var saveEntity = new EntitySaver(new Log("Tst.Merge")).CreateMergedForSaving(null, newE, so);
+            var saveEntity = _entitySaver.CreateMergedForSaving(null, newE, so);
 
             // save it
             var newId = dbi.Save(new List<IEntity> {saveEntity}, so);

@@ -8,14 +8,10 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence
 {
-    public class EntitySaver : HasLog
+    public class EntitySaver : HasLog<EntitySaver>
     {
-        public EntitySaver(ILog parentLog = null) : base("Dta.Saver", parentLog) { }
-
-        // TODO: MAKE DI
-        private EntityBuilder EntityBuilder => _entBuilder ?? (_entBuilder = new EntityBuilder());
-        private EntityBuilder _entBuilder;
-
+        public EntitySaver(EntityBuilder entityBuilder) : base("Dta.Saver") => _entityBuilder = entityBuilder;
+        private readonly EntityBuilder _entityBuilder;
 
 
         /// <summary>
@@ -111,7 +107,7 @@ namespace ToSic.Eav.Persistence
                         ? MergeAttribute(mergedAttribs[newAttrib.Key], newAttrib.Value, saveOptions)
                         : newAttrib.Value;
 
-            var result = EntityBuilder.FullClone(idProvidingEntity, mergedAttribs, null);
+            var result = _entityBuilder.FullClone(idProvidingEntity, mergedAttribs, null);
             CorrectPublishedAndGuidImports(result, logDetails);
             return callLog?.Invoke("ok", result) ?? result;
         }

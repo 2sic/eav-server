@@ -7,6 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts
@@ -27,6 +28,7 @@ namespace ToSic.Eav.Apps.Parts
             Lazy<IImportExportEnvironment> environmentLazy, 
             SystemManager systemManager,
             IServiceProvider serviceProvider,
+            LazyInitLog<EntitySaver> entitySaverLazy,
             IAppsCache appsCache // Note: Singleton
             ) : base("App.EntMan")
         {
@@ -34,6 +36,7 @@ namespace ToSic.Eav.Apps.Parts
             _importLazy = importLazy;
             _environmentLazy = environmentLazy;
             _serviceProvider = serviceProvider;
+            _entitySaverLazy = entitySaverLazy.SetLog(Log);
             _appsCache = appsCache;
             SystemManager = systemManager.Init(Log);
         }
@@ -43,6 +46,7 @@ namespace ToSic.Eav.Apps.Parts
         private IImportExportEnvironment Environment => _environment ?? (_environment = _environmentLazy.Value.Init(Log));
         private IImportExportEnvironment _environment;
         private readonly IServiceProvider _serviceProvider;
+        private readonly LazyInitLog<EntitySaver> _entitySaverLazy;
         private readonly IAppsCache _appsCache;
         protected readonly SystemManager SystemManager;
 
