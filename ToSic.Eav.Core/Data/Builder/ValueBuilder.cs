@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data.Builder
 
         }
 
-        public IValue Copy(IValue original, string type) => new ValueBuilder().Build(type, original.ObjectContents,
+        public IValue Copy(IValue original, string type) => Build(type, original.ObjectContents,
             LanguageBuilder.Clone(original.Languages), null);
 
         // TODO: DI

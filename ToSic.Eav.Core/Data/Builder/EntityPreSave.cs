@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.Builder
     /// Helper commands to build an entity
     /// Should only be used by internal system data handlers - not for "public" use
     /// </summary>
-    public static class EntityModifier
+    public static class EntityPreSave
     {
         public static void SetGuid(this IEntity entity, Guid newGuid) => ((EntityLight) entity).EntityGuid = newGuid;
 

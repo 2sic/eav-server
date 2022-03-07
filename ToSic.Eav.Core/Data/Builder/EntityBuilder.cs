@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Metadata;
-using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -39,8 +39,11 @@ namespace ToSic.Eav.Data.Builder
             return e;
         }
 
-        [Obsolete("Unclear where this is used or actually needed - will probably remove soon")]
-        public Entity EntityTemplate(int appId, Guid entityGuid, int entityId,
+        /// <summary>
+        /// Create an empty entity of a specific type.
+        /// Usually used in edit scenarios, where the presentation doesn't exist yet
+        /// </summary>
+        public Entity EmptyOfType(int appId, Guid entityGuid, int entityId,
             int repositoryId, IContentType type)
         {
             var ent = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId, 

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Data
 {
-    public static class ContentTypeAttributeExtensions
+    public static class ContentTypeAttributePreSave
     {
         /// <summary>
         /// Special accessor for saving, as the SortOrder is otherwise internal only
