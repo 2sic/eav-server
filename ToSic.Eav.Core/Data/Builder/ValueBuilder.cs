@@ -6,12 +6,22 @@ using System.Linq;
 
 namespace ToSic.Eav.Data.Builder
 {
+    public class ValueBuilderNs
+    {
+        public IValue Copy(IValue original, string type) => ValueBuilder.Build(type, original.ObjectContents,
+            LanguageBuilder.Clone(original.Languages), null);
+
+        public DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
+        private DimensionBuilder _langBuilder;
+
+    }
+
     public static class ValueBuilder
     {
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        public static IValue Build(string attributeType, object value, List<ILanguage> languages,
+        public static IValue Build(string attributeType, object value, IList<ILanguage> languages,
             IEntitiesSource fullEntityListForLookup = null)
             => Build((ValueTypes)Enum.Parse(typeof(ValueTypes), attributeType), value, languages, fullEntityListForLookup);
 
@@ -22,7 +32,7 @@ namespace ToSic.Eav.Data.Builder
         /// <returns>
         /// An IValue, which is actually an IValue<string>, IValue<decimal>, IValue<IEnumerable<IEntity>> etc.
         /// </returns>
-        public static IValue Build(ValueTypes type, object value, List<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
+        public static IValue Build(ValueTypes type, object value, IList<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
         {
             if (languages == null) languages = new List<ILanguage>();
             IValue typedModel;
@@ -73,7 +83,7 @@ namespace ToSic.Eav.Data.Builder
                         else if (value is List<Guid?> guids)
                             rel = new LazyEntities(fullEntityListForLookup, guids);
                         else
-                            rel = new LazyEntities(fullEntityListForLookup, GuidCsvToList(value)); 
+                            rel = new LazyEntities(fullEntityListForLookup, GuidCsvToList(value));
                         typedModel = new Value<IEnumerable<IEntity>>(rel);
                         break;
                     // ReSharper disable RedundantCaseLabel
@@ -126,10 +136,10 @@ namespace ToSic.Eav.Data.Builder
         /// ...and then it must be a new object every time, 
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
-        internal static Value<IEnumerable<IEntity>> NullRelationship 
+        internal static Value<IEnumerable<IEntity>> NullRelationship
             => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null))
-        {
-            Languages = new List<ILanguage>()
-        };
+            {
+                Languages = new DimensionBuilder().NoLanguages()
+            };
     }
 }

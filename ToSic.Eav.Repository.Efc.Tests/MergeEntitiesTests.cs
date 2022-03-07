@@ -15,6 +15,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
     public class MergeEntitiesTests
     {
 
+        private DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
+        private DimensionBuilder _langBuilder;
+        private ILanguage Clone(ILanguage orig) => LanguageBuilder.Clone(orig);
+        private ILanguage Clone(ILanguage orig, bool readOnly) => LanguageBuilder.Clone(orig, readOnly);
+
         // Todo
         // finish implementing ML-handling and test every possible case
         // check relationship handling
@@ -136,19 +141,21 @@ namespace ToSic.Eav.Repository.Efc.Tests
             { "Image", "file:403" }
         }, "Title");
 
-        private readonly Entity _prodEn = ((Func<Entity>)(() =>
+        private Entity ProductEntityEn => _prodEn ?? (_prodEn = GetProdEn());
+        private Entity _prodEn;
+        private Entity GetProdEn() 
         {
             var title = AttributeBuilder.CreateTyped("Title", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilderBuildTest(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn)}),
             });
             var teaser = AttributeBuilder.CreateTyped("Teaser", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilderBuildTest(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { Clone(langEn)}),
             });
             var file = AttributeBuilder.CreateTyped("File", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> {langEn.Copy() }),
+                ValueBuilderBuildTest(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn) }),
             });
 
             return new Entity(AppId, 3006, ContentTypeBuilder.Fake("Product"), new Dictionary<string, object>
@@ -157,37 +164,40 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 {teaser.Name, teaser},
                 {file.Name, file}
             }, "Title");
-        }))();
+        }
 
-        private readonly Entity _prodMl  = ((Func<Entity>)(() =>
+
+
+        private Entity ProductEntityMl => _prodMl ?? (_prodMl = GetProductEntityMl());
+        private Entity _prodMl;
+
+        private Entity GetProductEntityMl()
         {
             var title = AttributeBuilder.CreateTyped("Title", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "TitleEn, language En", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilderBuildTest(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn) }),
                 ValueBuilderBuildTest(ValueTypes.String, "Title DE",
-                    new List<ILanguage> {langDeDe.Copy(), langDeCh.Copy(readOnly: true)}),
-                ValueBuilderBuildTest(ValueTypes.String, "titre FR", new List<ILanguage> {langFr.Copy()})
+                    new List<ILanguage> { Clone(langDeDe), Clone(langDeCh, true)}),
+                ValueBuilderBuildTest(ValueTypes.String, "titre FR", new List<ILanguage> { Clone(langFr)})
             });
 
             var teaser = AttributeBuilder.CreateTyped("Teaser", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "teaser de de",
-                    new List<ILanguage> {langDeDe.Copy() }),
-                ValueBuilderBuildTest(ValueTypes.String, "teaser de CH",
-                    new List<ILanguage> {langDeCh.Copy()}),
-                ValueBuilderBuildTest(ValueTypes.String, "teaser FR", new List<ILanguage> {langFr.Copy( readOnly:true)}),
+                ValueBuilderBuildTest(ValueTypes.String, "teaser de de", new List<ILanguage> {Clone(langDeDe) }),
+                ValueBuilderBuildTest(ValueTypes.String, "teaser de CH", new List<ILanguage> {Clone(langDeCh)}),
+                ValueBuilderBuildTest(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
                 // special test: leave EN (primary) at end of list, as this could happen in real life
-                ValueBuilderBuildTest(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn.Copy()}),
+                ValueBuilderBuildTest(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {Clone(langEn)}),
             });
             var file = AttributeBuilder.CreateTyped("File", "String", new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
+                ValueBuilderBuildTest(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
                 ValueBuilderBuildTest(ValueTypes.String, "File de de",
-                    new List<ILanguage> {langDeDe.Copy(), langFr.Copy() }),
-                ValueBuilderBuildTest(ValueTypes.String, "File FR", new List<ILanguage> {langFr.Copy()}),
+                    new List<ILanguage> { Clone(langDeDe), Clone(langFr) }),
+                ValueBuilderBuildTest(ValueTypes.String, "File FR", new List<ILanguage> {Clone(langFr)}),
                 // special test - empty language item
                 ValueBuilderBuildTest(ValueTypes.String, "File without language!", new List<ILanguage>()),
-                ValueBuilderBuildTest(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> {langEn.Copy(), langDeCh.Copy()}),
+                ValueBuilderBuildTest(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
             });
 
             return new Entity(AppId, 430, ContentTypeBuilder.Fake("Product"), new Dictionary<string, object>
@@ -196,7 +206,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 {teaser.Name, teaser},
                 {file.Name, file}
             }, "Title");
-        }))();
+        }
 
 
 
@@ -219,7 +229,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeMlIntoNoLang_MustClearUnknownLang()
         {
-            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProdNoLang, _prodMl, _saveDefault);
+            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProdNoLang, ProductEntityMl, _saveDefault);
 
             Assert.AreEqual(2, merged["Title"].Values.Count, "should only have 2, no FR");
             var deVal = merged["Title"].Values.First(v => v.Languages.Any(l => l.Key == langDeDe.Key));
@@ -229,7 +239,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeMlIntoNoLang_DontClearUnknownLang()
         {
-            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProdNoLang, _prodMl, _saveKeepUnknownLangs);
+            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProdNoLang, ProductEntityMl, _saveKeepUnknownLangs);
 
             Assert.AreEqual(3, merged["Title"].Values.Count, "should have 3, with FR");
             var deVal = merged["Title"].Values.First(v => v.Languages.Any(l => l.Key == langFr.Key));
@@ -241,7 +251,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeEnIntoNoLang_ShouldHaveLang()
         {
-            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProdNoLang, _prodEn, _saveDefault);
+            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProdNoLang, ProductEntityEn, _saveDefault);
 
             Assert.AreEqual(1, merged["Title"].Values.Count, "should only have 1");
             var firstVal = merged["Title"].Values.First();
@@ -251,15 +261,15 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeEnIntoML_KeepLangs()
         {
-            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(_prodMl, _prodEn, _saveKeepExistingLangs);
+            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProductEntityMl, ProductEntityEn, _saveKeepExistingLangs);
 
             // check the titles as expected
             Assert.AreEqual(2, merged["Title"].Values.Count, "should have 2 titles with languages - EN and a shared DE+CH");
             Assert.AreEqual(2, merged["Title"].Values.Single(v => v.Languages.Any(l => l.Key == langDeDe.Key)).Languages.Count, "should have 2 languages on the shared DE+CH");
-            Assert.AreEqual(_prodEn.Value<string>("Title"), merged.GetBestValue<string>("Title", new[] { langEn.Key }), "en title should be the en-value");
-            Assert.AreEqual(_prodMl.GetBestValue("Title", new [] {langDeDe.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeDe.Key }), "de title should be the ML-value");
-            Assert.AreEqual(_prodMl.GetBestValue("Title", new [] {langDeCh.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeCh.Key }), "ch title should be the ML-value");
-            Assert.AreNotEqual(_prodEn.GetBestValue("Title", new [] {langDeCh.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeCh.Key }).ToString(), "ch title should be the ML-value");
+            Assert.AreEqual(ProductEntityEn.Value<string>("Title"), merged.GetBestValue<string>("Title", new[] { langEn.Key }), "en title should be the en-value");
+            Assert.AreEqual(ProductEntityMl.GetBestValue("Title", new [] {langDeDe.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeDe.Key }), "de title should be the ML-value");
+            Assert.AreEqual(ProductEntityMl.GetBestValue("Title", new [] {langDeCh.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeCh.Key }), "ch title should be the ML-value");
+            Assert.AreNotEqual(ProductEntityEn.GetBestValue("Title", new [] {langDeCh.Key}).ToString(), merged.GetBestValue("Title", new[] { langDeCh.Key }).ToString(), "ch title should be the ML-value");
             var firstVal = merged["Title"].Values.First();
             Assert.AreEqual(1, firstVal.Languages.Count, "should have 1 language");
             Assert.AreEqual(langEn.Key, firstVal.Languages.First().Key, "language should be EN-US");
@@ -269,7 +279,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public void MergeMlIntoEn_KeepLangs()
         {
-            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(_prodMl, _prodEn, _saveKeepExistingLangs);
+            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProductEntityMl, ProductEntityEn, _saveKeepExistingLangs);
 
             // check the titles as expected
             Assert.AreEqual(2, merged["Title"].Values.Count, "should have 2 titles with languages - EN and a shared DE+CH");
@@ -280,7 +290,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public void MergeMlIntoNoLang_KeepLangs()
         {
             //this test will have to merge ML into the no-lang, and ensure that no-lang is typed correctly!
-            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(_prodEn, _prodMl, _saveKeepUnknownLangs);
+            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProductEntityEn, ProductEntityMl, _saveKeepUnknownLangs);
 
             // todo!
         }
@@ -288,7 +298,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeNoLangIntoEn_DefaultNoMerge()
         {
-            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(_prodEn, ProdNoLang, _saveDefault);
+            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProductEntityEn, ProdNoLang, _saveDefault);
 
             Assert.AreEqual(1, merged.Title.Values.Count, "should only have 1");
             var firstVal = merged.Title.Values.First();
@@ -298,7 +308,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeNoLangIntoEn_Merge()
         {
-            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(_prodEn, ProdNoLang, _saveKeepExistingLangs);
+            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProductEntityEn, ProdNoLang, _saveKeepExistingLangs);
 
             Assert.AreEqual(1, merged.Title.Values.Count, "should only have 1");
             var firstVal = merged.Title.Values.First();
@@ -308,7 +318,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergMlintoEnDefault_shouldBeMl()
         {
-            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(_prodEn, _prodMl, _saveDefault);
+            var merged = new EntitySaver(new  Log("Tst.Merge")).CreateMergedForSaving(ProductEntityEn, ProductEntityMl, _saveDefault);
             // todo: add some test conditions
         }
         #endregion

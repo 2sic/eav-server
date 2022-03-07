@@ -1,13 +1,23 @@
-﻿namespace ToSic.Eav.Data.Builder
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace ToSic.Eav.Data.Builder
 {
-    public static class DimensionBuilder
+    public class DimensionBuilder
     {
-        public static Language Copy(this Language orig, bool? readOnly = null, int? dimensionId = null, string key = null)
-            => new Language
-            {
-                DimensionId = dimensionId ?? orig.DimensionId,
-                ReadOnly = readOnly ?? orig.ReadOnly,
-                Key = key ?? orig.Key
-            };
+        public Language Clone(ILanguage orig) => Clone(orig, null);
+
+        public Language Clone(ILanguage orig, bool? readOnly) => new Language
+        {
+            DimensionId = orig.DimensionId,
+            ReadOnly = readOnly ?? orig.ReadOnly,
+            Key = orig.Key
+        };
+
+        public IList<ILanguage> Clone(IList<ILanguage> orig) => orig
+            .Select(l => new Language { DimensionId = l.DimensionId, Key = l.Key } as ILanguage).ToList();
+
+        public IList<ILanguage> NoLanguages() => new List<ILanguage>();
+
     }
 }

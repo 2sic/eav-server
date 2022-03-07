@@ -120,7 +120,7 @@ namespace ToSic.Eav.Persistence
         private static IAttribute CreateIsPublishedAttribute(bool isPublished)
         {
             var attribute = AttributeBuilder.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean);
-            attribute.Values = new List<IValue> {ValueBuilder.Build(ValueTypes.Boolean.ToString(), isPublished, null)};
+            attribute.Values = new List<IValue> { Data.Builder.ValueBuilder.Build(ValueTypes.Boolean.ToString(), isPublished, null)};
             return attribute;
         }
 
@@ -205,13 +205,19 @@ namespace ToSic.Eav.Persistence
                 if (remainingLanguages.Count == 0) continue;
 
                 // Add the value with the remaining languages / relationships
-                var val = orgVal.Copy(original.Type);
-                val.Languages = remainingLanguages.Select(l => ((Language)l).Copy() as ILanguage).ToList();
+                var val = ValueBuilder.Copy(orgVal, original.Type); // orgVal.Copy(original.Type);
+                val.Languages = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
                 result.Values.Add(val);
             }
 
             return callLog("ok", result);
         }
+
+        private ValueBuilderNs ValueBuilder => _valBuilder ?? (_valBuilder = new ValueBuilderNs());
+        private ValueBuilderNs _valBuilder;
+
+        private DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
+        private DimensionBuilder _langBuilder;
 
         private Dictionary<string, IAttribute> KeepOnlyKnownKeys(Dictionary<string, IAttribute> orig, List<string> keys)
         {

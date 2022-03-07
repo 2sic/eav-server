@@ -5,6 +5,7 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data.Builder
 {
+
     public static class AttribBuilder
     {
 
@@ -69,13 +70,13 @@ namespace ToSic.Eav.Data.Builder
         #endregion
 
 
-        public static IAttribute CloneAttributeAndRename(IAttribute original, string newName)
-        {
-            var attributeType = GetAttributeTypeName(original);
-            var newAttrib = AttributeBuilder.CreateTyped(newName, attributeType);
-            newAttrib.Values = original.Values;
-            return newAttrib;
-        }
+        //public static IAttribute CloneAttributeAndRename(IAttribute original, string newName)
+        //{
+        //    var attributeType = GetAttributeTypeName(original);
+        //    var newAttrib = AttributeBuilder.CreateTyped(newName, attributeType);
+        //    newAttrib.Values = original.Values;
+        //    return newAttrib;
+        //}
 
 
         public static Dictionary<string, IAttribute> Copy(this IDictionary<string, IAttribute> attributes)

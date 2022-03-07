@@ -120,7 +120,7 @@ namespace ToSic.Eav.DataSources
                             // check if the name actually changed, if not, return original (faster)
                             if (string.Equals(fieldMap.New, fieldMap.Old, StringComparison.InvariantCultureIgnoreCase))
                                 return a;
-                            var renameAttribute = AttribBuilder.CloneAttributeAndRename(a.Value, fieldMap.New);
+                            var renameAttribute = CloneAttributeAndRename(a.Value, fieldMap.New);
                             return new KeyValuePair<string, IAttribute>(fieldMap.New, renameAttribute);
                         }
                         return preserveOthers 
@@ -155,5 +155,15 @@ namespace ToSic.Eav.DataSources
 		    return wrapLog("ok", result);
 		}
 
-	}
+
+
+        public static IAttribute CloneAttributeAndRename(IAttribute original, string newName)
+        {
+            var attributeType = AttribBuilder.GetAttributeTypeName(original);
+            var newAttrib = AttributeBuilder.CreateTyped(newName, attributeType);
+            newAttrib.Values = original.Values;
+            return newAttrib;
+        }
+
+    }
 }

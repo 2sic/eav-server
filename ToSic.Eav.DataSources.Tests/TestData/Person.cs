@@ -82,20 +82,24 @@ namespace ToSic.Eav.DataSourceTests.TestData
                 FieldFullName, person.Modified);
         }
 
+        // todo: should be non-static some day, when the test-code isn't static any more
+        private static ILanguage Clone(ILanguage orig) => new DimensionBuilder().Clone(orig);
+        private static ILanguage Clone(ILanguage orig, bool readOnly) => new DimensionBuilder().Clone(orig, readOnly);
+
         private static object MaybeMakeMl(bool convert, string name, string original)
         {
             if (!convert) return original;
 
             var attribute = AttributeBuilder.CreateTyped(name,  ValueTypes.String, new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, PriPrefix + original, new List<ILanguage> { LangPri.Copy()}),
-                ValueBuilderBuildTest(ValueTypes.String, EnPrefix + original, new List<ILanguage> { LangEn.Copy()}),
+                ValueBuilderBuildTest(ValueTypes.String, PriPrefix + original, new List<ILanguage> { Clone(LangPri)}),
+                ValueBuilderBuildTest(ValueTypes.String, EnPrefix + original, new List<ILanguage> { Clone(LangEn)}),
                 ValueBuilderBuildTest(ValueTypes.String, DeMult + original, new List<ILanguage>
                     {
-                        LangDeDe.Copy(), 
-                        LangDeCh.Copy(readOnly: true)
+                        Clone(LangDeDe), 
+                        Clone(LangDeCh, true)
                     }),
-                ValueBuilderBuildTest(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr.Copy()})
+                ValueBuilderBuildTest(ValueTypes.String, FrPrefix + original, new List<ILanguage> { Clone(LangFr)})
             });
             return attribute;
         }
@@ -105,11 +109,11 @@ namespace ToSic.Eav.DataSourceTests.TestData
 
             var attribute = AttributeBuilder.CreateTyped(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
             {
-                ValueBuilderBuildTest(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { LangEn.Copy()}),
+                ValueBuilderBuildTest(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { Clone(LangEn)}),
                 ValueBuilderBuildTest(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
                     {
-                        LangDeDe.Copy(), 
-                        LangDeCh.Copy(readOnly: true)
+                        Clone(LangDeDe), 
+                        Clone(LangDeCh, true)
                     }),
                 //ValueBuilder.Build(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr.Copy()})
             });

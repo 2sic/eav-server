@@ -13,11 +13,18 @@ namespace ToSic.Eav.Data
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, always work with interface IValue<T>")]
     public class Value<T> : IValue<T>
     {
-        /// <inheritdoc />
-        public IList<ILanguage> Languages { get; set; }
+        /// <summary>
+        /// The default constructor to create a value object. Used internally to build the memory model. 
+        /// </summary>
+        /// <param name="typedContents"></param>
+        public Value(T typedContents) => TypedContents = typedContents;
+
+        public T TypedContents { get; internal set; }
+
+
 
         /// <inheritdoc />
-        public T TypedContents { get; internal set; }
+        public IList<ILanguage> Languages { get; set; }
 
         /// <inheritdoc />
         public object SerializableObject
@@ -26,14 +33,11 @@ namespace ToSic.Eav.Data
             {
                 var typedObject = ((IValue<T>)this).TypedContents;
 
-                // special case with list of related entities - should return array of guids
-                if (typedObject is IEnumerable<IEntity> maybeRelationshipList)
-                {
-                    var entityGuids = maybeRelationshipList.Select(e => e?.EntityGuid);
-                    return entityGuids.ToList();
-                }
+                if (!(typedObject is IEnumerable<IEntity> maybeRelationshipList)) return typedObject;
 
-                return typedObject;
+                // special case with list of related entities - should return array of guids
+                var entityGuids = maybeRelationshipList.Select(e => e?.EntityGuid);
+                return entityGuids.ToList();
             }
         }
 
@@ -51,15 +55,6 @@ namespace ToSic.Eav.Data
                     ?? (obj as decimal?)?.ToString(System.Globalization.CultureInfo.InvariantCulture)
                     ?? obj?.ToString();
             }
-        }
-
-        /// <summary>
-        /// The default constructor to create a value object. Used internally to build the memory model. 
-        /// </summary>
-        /// <param name="typedContents"></param>
-        public Value(T typedContents)
-        {
-            TypedContents = typedContents;
         }
 
         [PrivateApi]
