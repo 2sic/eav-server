@@ -181,6 +181,10 @@ namespace ToSic.Eav.DataSources
                 const int idColumnNotDetermined = -999;
                 var idColumnIndex = idColumnNotDetermined;
                 string titleColName = null;
+
+                // Content-Type name
+                var csvType = DataBuilder.Type(ContentType);
+
                 // Parse data
                 while (parser.Read())
                 {
@@ -236,7 +240,7 @@ namespace ToSic.Eav.DataSources
                     for (var i = 0; i < parser.FieldHeaders.Length; i++)
                         entityValues.Add(parser.FieldHeaders[i], fields[i]);
 
-                    entityList.Add(new Entity(Constants.TransientAppId, entityId, ContentTypeBuilder.Fake(ContentType), entityValues, titleColName));
+                    entityList.Add(new Entity(Constants.TransientAppId, entityId, csvType, entityValues, titleColName));
                 }
             }
             return wrapLog($"{entityList.Count}", entityList.ToImmutableArray());

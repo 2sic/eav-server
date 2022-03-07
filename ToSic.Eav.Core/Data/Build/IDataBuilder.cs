@@ -14,8 +14,10 @@ namespace ToSic.Eav.Data
     {
         #region Plumbing / Logging
 
+        [PrivateApi]
         DataBuilder Init(ILog parent);
 
+        [PrivateApi]
         DataBuilder Init(ILog parent, string logName);
 
         #endregion
@@ -98,6 +100,17 @@ namespace ToSic.Eav.Data
             string typeName = null,
             ValueTypes type = ValueTypes.Undefined,
             IList<IValue> values = null);
+
+        #endregion
+
+        #region Content-Type
+
+        /// <summary>
+        /// Create a fake content-type using the specified name. 
+        /// </summary>
+        /// <param name="typeName">Name to use for this content-type</param>
+        /// <returns></returns>
+        IContentType Type(string typeName);
 
         #endregion
 

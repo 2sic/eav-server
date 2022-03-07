@@ -142,7 +142,7 @@ namespace ToSic.Eav.DataSources
             var typeName = TypeName;
             IContentType newType = null;
             if (!string.IsNullOrEmpty(typeName))
-                newType = ContentTypeBuilder.DynamicContentType(AppId, typeName, typeName);
+                newType = new ContentTypeBuilder().Transient(AppId, typeName, typeName);
 
             if (!GetRequiredInList(out var originals))
                 return wrapLog("error", originals);

@@ -14,19 +14,31 @@ namespace ToSic.Eav.Data
     [PrivateApi]
     public partial class DataBuilder: HasLog<DataBuilder>, IDataBuilder
     {
+
         #region Constructor / DI
 
         /// <summary>
         /// Primary constructor for DI.
         /// We recommend that you always call Init afterwards to supply the logger.
         /// </summary>
-        public DataBuilder() : base("Dta.Buildr") { }
+        public DataBuilder(MultiBuilder builder) : base("Dta.Buildr")
+        {
+            _builder = builder;
+        }
+        private readonly MultiBuilder _builder;
 
         #endregion
 
         public const int DefaultAppId = 0;
         public const int DefaultEntityId = 0;
         public const string DefaultTypeName = "unspecified";
+
+        /// <summary>
+        /// Create a fake content-type using the specified name. 
+        /// </summary>
+        /// <param name="typeName">Name to use for this content-type</param>
+        /// <returns></returns>
+        public IContentType Type(string typeName) => _builder.ContentType.Transient(typeName);
 
         /// <inheritdoc />
         [PublicApi]
@@ -42,7 +54,7 @@ namespace ToSic.Eav.Data
             DateTime? created = null,
             DateTime? modified = null
             ) 
-            => new Entity(appId, id, type ?? ContentTypeBuilder.Fake(typeName), values, titleField, created: created, modified: modified, guid: guid);
+            => new Entity(appId, id, type ?? _builder.ContentType.Transient(typeName), values, titleField, created: created, modified: modified, guid: guid);
 
         /// <inheritdoc />
         [PublicApi]

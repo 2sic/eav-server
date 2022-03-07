@@ -31,6 +31,7 @@ namespace ToSic.Eav
             services.TryAddTransient<EntityBuilder>();
             services.TryAddTransient<EntitySaver>();
             services.TryAddTransient<ValueBuilder>();
+            services.TryAddTransient<ContentTypeBuilder>();
             services.TryAddTransient<ContentTypeAttributeBuilder>();
 
             // Configuration objects

@@ -53,7 +53,7 @@ namespace ToSic.Eav.ImportExport.Json
             // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
             var contentType = GetContentType(jEnt.Type.Id)
                                        ?? (allowDynamic || skipUnknownType
-                                           ? ContentTypeBuilder.DynamicContentType(AppId, jEnt.Type.Name, jEnt.Type.Id)
+                                           ? MultiBuilder.ContentType.Transient(AppId, jEnt.Type.Name, jEnt.Type.Id)
                                            : throw new FormatException(
                                                "type not found for deserialization and dynamic not allowed " +
                                                $"- cannot continue with {jEnt.Type.Id}")

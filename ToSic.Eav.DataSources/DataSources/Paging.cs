@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -96,7 +95,7 @@ namespace ToSic.Eav.DataSources
                 return wrapLog("error", originals);
 
 
-            var result = originals // [Constants.DefaultStreamName].List
+            var result = originals
                 .Skip(itemsToSkip)
                 .Take(PageSize)
                 .ToImmutableArray();
@@ -113,7 +112,7 @@ namespace ToSic.Eav.DataSources
             if (!GetRequiredInList(out var originals))
                 return wrapLog("error", originals);
 
-            var itemCount = originals.Count; // In[Constants.DefaultStreamName].List.Count();
+            var itemCount = originals.Count;
             var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
 
             // Assemble the entity
@@ -126,7 +125,7 @@ namespace ToSic.Eav.DataSources
                 {"PageCount", pageCount}
             };
 
-            var entity = new Data.Entity(Constants.TransientAppId, 0, ContentTypeBuilder.Fake("Paging"), paging, Attributes.TitleNiceName);
+            var entity = new Data.Entity(Constants.TransientAppId, 0, DataBuilder.Type("Paging"), paging, Attributes.TitleNiceName);
 
             // Assemble list of this for the stream
             var list = new List<IEntity> {entity};

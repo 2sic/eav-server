@@ -18,10 +18,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public MergeEntitiesTests()
         {
             _entitySaver = Build<EntitySaver>().Init(new Log("Tst.Merge"));
-            MultiBuilder = Build<MultiBuilder>();
+            BuildData = Build<MultiBuilder>();
         }
         private readonly EntitySaver _entitySaver;
-        private readonly MultiBuilder MultiBuilder;
+        private readonly MultiBuilder BuildData;
 
 
 
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"Birthday", new DateTime(1981, 5, 14) }
         });
 
-        private Entity GirlMarried => new Entity(AppId, 0, ContentTypeBuilder.Fake("DynPerson"), new Dictionary<string, object>
+        private Entity GirlMarried => new Entity(AppId, 0, BuildData.ContentType.Transient("DynPerson"), new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried-Married"},
             {"FirstName", "Sandra"},
@@ -157,18 +157,18 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var title = AttributeBuilder.CreateTyped("Title", "String", new List<IValue>
             {
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn)}),
+                BuildData.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn)}),
             });
             var teaser = AttributeBuilder.CreateTyped("Teaser", "String", new List<IValue>
             {
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { Clone(langEn)}),
+                BuildData.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { Clone(langEn)}),
             });
             var file = AttributeBuilder.CreateTyped("File", "String", new List<IValue>
             {
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn) }),
+                BuildData.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn) }),
             });
 
-            return new Entity(AppId, 3006, ContentTypeBuilder.Fake("Product"), new Dictionary<string, object>
+            return new Entity(AppId, 3006, BuildData.ContentType.Transient("Product"), new Dictionary<string, object>
             {
                 {title.Name, title},
                 {teaser.Name, teaser},
@@ -185,32 +185,32 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var title = AttributeBuilder.CreateTyped("Title", "String", new List<IValue>
             {
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn) }),
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "Title DE",
+                BuildData.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn) }),
+                BuildData.Value.Build4Test(ValueTypes.String, "Title DE",
                     new List<ILanguage> { Clone(langDeDe), Clone(langDeCh, true)}),
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "titre FR", new List<ILanguage> { Clone(langFr)})
+                BuildData.Value.Build4Test(ValueTypes.String, "titre FR", new List<ILanguage> { Clone(langFr)})
             });
 
             var teaser = AttributeBuilder.CreateTyped("Teaser", "String", new List<IValue>
             {
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "teaser de de", new List<ILanguage> {Clone(langDeDe) }),
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "teaser de CH", new List<ILanguage> {Clone(langDeCh)}),
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
+                BuildData.Value.Build4Test(ValueTypes.String, "teaser de de", new List<ILanguage> {Clone(langDeDe) }),
+                BuildData.Value.Build4Test(ValueTypes.String, "teaser de CH", new List<ILanguage> {Clone(langDeCh)}),
+                BuildData.Value.Build4Test(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
                 // special test: leave EN (primary) at end of list, as this could happen in real life
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {Clone(langEn)}),
+                BuildData.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {Clone(langEn)}),
             });
             var file = AttributeBuilder.CreateTyped("File", "String", new List<IValue>
             {
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "File de de",
+                BuildData.Value.Build4Test(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
+                BuildData.Value.Build4Test(ValueTypes.String, "File de de",
                     new List<ILanguage> { Clone(langDeDe), Clone(langFr) }),
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "File FR", new List<ILanguage> {Clone(langFr)}),
+                BuildData.Value.Build4Test(ValueTypes.String, "File FR", new List<ILanguage> {Clone(langFr)}),
                 // special test - empty language item
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "File without language!", new List<ILanguage>()),
-                MultiBuilder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
+                BuildData.Value.Build4Test(ValueTypes.String, "File without language!", new List<ILanguage>()),
+                BuildData.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
             });
 
-            return new Entity(AppId, 430, ContentTypeBuilder.Fake("Product"), new Dictionary<string, object>
+            return new Entity(AppId, 430, BuildData.ContentType.Transient("Product"), new Dictionary<string, object>
             {
                 {title.Name, title},
                 {teaser.Name, teaser},
