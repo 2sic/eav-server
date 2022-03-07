@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps;
@@ -14,7 +13,7 @@ using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class Runtime : HasLog<IRuntime>, IRuntime
+    public partial class Runtime : HasLog/*<IRuntime>*/, IRuntime
     {
         #region Constructor and DI
 
