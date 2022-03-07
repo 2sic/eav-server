@@ -8,16 +8,6 @@ namespace ToSic.Eav.WebApi.Plumbing
     {
         public ResponseMakerUnknown(WarnUseOfUnknown<ResponseMakerUnknown<THttpResponseType>> warn) { }
 
-        public override THttpResponseType InternalServerError(string message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override THttpResponseType InternalServerError(Exception exception)
-        {
-            throw new NotImplementedException();
-        }
-
         public override THttpResponseType Error(int statusCode, string message)
         {
             throw new NotImplementedException();
@@ -38,17 +28,12 @@ namespace ToSic.Eav.WebApi.Plumbing
             throw new NotImplementedException();
         }
 
-        public override THttpResponseType GetAttachmentHttpResponseMessage(string fileName, string fileType, Stream fileContent)
+        public override THttpResponseType File(Stream fileContent, string fileName, string fileType)
         {
             throw new NotImplementedException();
         }
 
-        public override THttpResponseType GetAttachmentHttpResponseMessage(string fileName, string fileType, string fileContent)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override THttpResponseType BuildDownload(string content, string fileName)
+        public override THttpResponseType File(string fileContent, string fileName)
         {
             throw new NotImplementedException();
         }

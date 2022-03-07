@@ -21,15 +21,14 @@ namespace ToSic.Eav.WebApi.Plumbing
 
         public abstract THttpResponseType Ok();
 
-        public abstract THttpResponseType GetAttachmentHttpResponseMessage(string fileName, string fileType,
-            Stream fileContent);
+        public abstract THttpResponseType File(Stream fileContent, string fileName, string fileType);
 
-        public virtual THttpResponseType GetAttachmentHttpResponseMessage(string fileName, string fileType, string fileContent)
+        public virtual THttpResponseType File(string fileContent, string fileName, string fileType)
         {
             var fileBytes = Encoding.UTF8.GetBytes(fileContent);
-            return GetAttachmentHttpResponseMessage(fileName, fileType, new MemoryStream(fileBytes));
+            return File(new MemoryStream(fileBytes), fileName, fileType);
         }
 
-        public abstract THttpResponseType BuildDownload(string content, string fileName);
+        public abstract THttpResponseType File(string fileContent, string fileName);
     }
 }

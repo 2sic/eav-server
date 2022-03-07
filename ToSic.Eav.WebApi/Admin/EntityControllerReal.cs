@@ -84,7 +84,7 @@ namespace ToSic.Eav.WebApi.Admin
                 recordExport, resourcesReferences,
                 languageReferences, selectedIds);
 
-            return _responseMaker.BuildDownload(content: content, fileName: fileName);
+            return _responseMaker.File(fileContent: content, fileName: fileName);
         }
 
 

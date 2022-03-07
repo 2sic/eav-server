@@ -97,7 +97,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                 .RemoveNonFilenameCharacters();
  
-            return _responseMaker.GetAttachmentHttpResponseMessage(fileName, MimeHelper.Json, serializer.Serialize(type));
+            return _responseMaker.File(serializer.Serialize(type), fileName, MimeHelper.Json);
         }
 
         [HttpGet]
@@ -108,7 +108,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             var entity = _appManager.Read.Entities.Get(id);
             var serializer = _appManager.ServiceProvider.Build<JsonSerializer>().Init(_appManager.AppState, Log);
 
-            return _responseMaker.BuildDownload(
+            return _responseMaker.File(
                 serializer.Serialize(entity, withMetadata ? FileSystemLoader.QueryMetadataDepth : 0),
                 (prefix + (string.IsNullOrWhiteSpace(prefix) ? "" : ".")
                  + entity.GetBestTitle() + ImpExpConstants.Extension(ImpExpConstants.Files.json))
