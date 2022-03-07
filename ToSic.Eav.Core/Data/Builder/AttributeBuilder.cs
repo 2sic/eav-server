@@ -10,14 +10,19 @@ namespace ToSic.Eav.Data.Builder
     {
         #region Dependency Injection
 
-        public AttributeBuilder(Lazy<IValueConverter> lazyValueConverter): base("Dta.AttBld")
+        public AttributeBuilder(
+            Lazy<IValueConverter> valueConverter,
+            Lazy<ValueBuilderNs> valueBuilder
+
+            ): base("Dta.AttBld")
         {
-            _lazyValueConverter = lazyValueConverter;
+            _valueConverter = valueConverter;
+            _valueBuilder = valueBuilder;
         }
 
-        private IValueConverter ValueConverter => _lazyValueConverter.Value;
-        private readonly Lazy<IValueConverter> _lazyValueConverter;
-        
+        private readonly Lazy<IValueConverter> _valueConverter;
+        private readonly Lazy<ValueBuilderNs> _valueBuilder;
+
         #endregion
 
         #region Helper to add a value with languages to an existing list of Attributes
@@ -34,7 +39,7 @@ namespace ToSic.Eav.Data.Builder
             if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString() && value is string stringValue)
             {
                 Log.Add($"Will resolve hyperlink for '{stringValue}'");
-                value = ValueConverter.ToReference(stringValue);
+                value = _valueConverter.Value.ToReference(stringValue);
                 Log.Add($"New value: '{stringValue}'");
             }
 

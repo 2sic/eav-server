@@ -32,7 +32,7 @@ namespace ToSic.Eav.Data
         /// List of all attributes
         /// </summary>
         [PrivateApi]
-		protected Dictionary<string, object> LightAttributesForInternalUseOnlyForNow { get; set; }
+		protected Dictionary<string, object> LightAttributesForInternalUseOnlyForNow { get; }
 
         /// <inheritdoc />
 		public IContentType Type { get; internal set; }
