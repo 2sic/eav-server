@@ -1,19 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data.Builder
 {
     public class AttribBuilder
     {
 
+        public AttribBuilder(ValueBuilder valueBuilder)
+        {
+            _valueBuilder = valueBuilder;
+        }
+        private readonly ValueBuilder _valueBuilder;
+        private AttributeBuilder _attributeBuilder;
+
+        protected AttributeBuilder AttributeBuilder =>
+            _attributeBuilder ?? (_attributeBuilder = new AttributeBuilder(_valueBuilder));
+
+        public static AttribBuilder GetStatic() => new AttribBuilder(new ValueBuilder(new DimensionBuilder()));
+
         /// <summary>
         /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
         /// </summary>
-        public static Dictionary<string, IAttribute> ConvertToInvariantDic(IDictionary<string, object> objAttributes)
+        public Dictionary<string, IAttribute> ConvertToInvariantDic(IDictionary<string, object> objAttributes)
         {
             var result = new Dictionary<string, IAttribute>(StringComparer.InvariantCultureIgnoreCase);
 
+            // Process each property
             foreach (var oAttrib in objAttributes)
             {
                 // in case the object is already an IAttribute, use that, don't rebuild it
@@ -26,7 +38,7 @@ namespace ToSic.Eav.Data.Builder
                     var valuesModelList = new List<IValue>();
                     if (oAttrib.Value != null)
                     {
-                        var valueModel = new ValueBuilder().Build(attributeType, oAttrib.Value, null);
+                        var valueModel = _valueBuilder.Build(attributeType, oAttrib.Value, null);
                         valuesModelList.Add(valueModel);
                     }
 

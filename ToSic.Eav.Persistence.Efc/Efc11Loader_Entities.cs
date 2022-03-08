@@ -145,7 +145,7 @@ namespace ToSic.Eav.Persistence.Efc
                 e.Version);
 
             // Add all Attributes of that Content-Type
-            var titleAttrib = _multiBuilder.Entity.GenerateAttributesOfContentType(newEntity, contentType);
+            var titleAttrib = _multiBuilder.Attribute.GenerateAttributesOfContentType(newEntity, contentType);
             if (titleAttrib != null)
                 newEntity.SetTitleField(titleAttrib.Name);
 

@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data.Builder
 
         public MultiBuilder(
             Lazy<EntityBuilder> entityBuilder,
-            Lazy<AttributeBuilder> attributeBuilder,
+            Lazy<AttributeBuilderForImport> attributeBuilder,
             Lazy<ValueBuilder> valueBuilder,
             Lazy<ContentTypeBuilder> contentTypeBuilder)
         {
@@ -17,12 +17,12 @@ namespace ToSic.Eav.Data.Builder
             _contentTypeBuilder = contentTypeBuilder;
         }
         private readonly Lazy<EntityBuilder> _entityBuilder;
-        private readonly Lazy<AttributeBuilder> _attributeBuilder;
+        private readonly Lazy<AttributeBuilderForImport> _attributeBuilder;
         private readonly Lazy<ValueBuilder> _valueBuilder;
         private readonly Lazy<ContentTypeBuilder> _contentTypeBuilder;
 
         public EntityBuilder Entity => _entityBuilder.Value;
-        public AttributeBuilder Attribute => _attributeBuilder.Value;
+        public AttributeBuilderForImport Attribute => _attributeBuilder.Value;
 
         public ValueBuilder Value => _valueBuilder.Value;
 

@@ -27,7 +27,9 @@ namespace ToSic.Eav
             // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
             services.TryAddTransient<MultiBuilder>();
+            services.TryAddTransient<DimensionBuilder>();
             services.TryAddTransient<AttributeBuilder>();
+            services.TryAddTransient<AttributeBuilderForImport>();
             services.TryAddTransient<EntityBuilder>();
             services.TryAddTransient<EntitySaver>();
             services.TryAddTransient<ValueBuilder>();

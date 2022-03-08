@@ -12,10 +12,12 @@ namespace ToSic.Eav.Data.Builder
     /// </summary>
     public class EntityBuilder
     {
+
         /// <summary>
         /// Constructor - should never be called as it should be used with DI
         /// </summary>
-        public EntityBuilder() { }
+        public EntityBuilder(AttributeBuilder attributeBuilder) => _attributeBuilder = attributeBuilder;
+        private readonly AttributeBuilder _attributeBuilder;
 
         /// <summary>
         /// Create a new Entity from a data store (usually SQL backend)
@@ -51,7 +53,7 @@ namespace ToSic.Eav.Data.Builder
 
             ent.MetadataFor = new Target();
 
-            var titleAttrib = GenerateAttributesOfContentType(ent, type);
+            var titleAttrib = _attributeBuilder.GenerateAttributesOfContentType(ent, type);
             if (titleAttrib != null)
                 ent.SetTitleField(titleAttrib.Name);
             return ent;
@@ -100,18 +102,5 @@ namespace ToSic.Eav.Data.Builder
             return e;
         }
 
-        // TODO: MOVE TO AttributeBuilder
-        public IAttribute GenerateAttributesOfContentType(IEntity newEntity, IContentType contentType)
-        {
-            IAttribute titleAttrib = null;
-            foreach (var definition in contentType.Attributes)
-            {
-                var entityAttribute = ((ContentTypeAttribute)definition).CreateAttribute();
-                newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
-                if (definition.IsTitle)
-                    titleAttrib = entityAttribute;
-            }
-            return titleAttrib;
-        }
     }
 }

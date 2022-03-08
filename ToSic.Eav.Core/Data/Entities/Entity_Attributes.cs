@@ -9,8 +9,8 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public Dictionary<string, IAttribute> Attributes
         {
-            get => _attributes ?? (_attributes = AttribBuilder.ConvertToInvariantDic(LightAttributesForInternalUseOnlyForNow));
-            set => _attributes = (value ?? new Dictionary<string, IAttribute>()).ToInvariant();
+            get => _attributes ?? (_attributes = AttribBuilder.GetStatic().ConvertToInvariantDic(LightAttributesForInternalUseOnlyForNow));
+            internal set => _attributes = (value ?? new Dictionary<string, IAttribute>()).ToInvariant();
         }
 
         private Dictionary<string, IAttribute> _attributes;
@@ -22,7 +22,7 @@ namespace ToSic.Eav.Data
 
 
         /// <inheritdoc />
-        public new IAttribute this[string attributeName] => Attributes.ContainsKey(attributeName) ? Attributes[attributeName] : null;
+        public new IAttribute this[string attributeName] => Attributes.TryGetValue(attributeName, out var result) ? result : null; 
 
     }
 }

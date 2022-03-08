@@ -36,7 +36,7 @@ namespace ToSic.Eav.Api.Api01
         /// <summary>
         /// Used for DI - must always call Init to use
         /// </summary>
-        public SimpleDataController(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbDataLazy, IZoneMapper zoneMapper, ISite site, IContextOfSite ctx, GeneratorLog<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
+        public SimpleDataController(LazyInitLog<AttributeBuilderForImport> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbDataLazy, IZoneMapper zoneMapper, ISite site, IContextOfSite ctx, GeneratorLog<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             _appManagerLazy = appManagerLazy;
             _dbDataLazy = dbDataLazy;
@@ -44,7 +44,7 @@ namespace ToSic.Eav.Api.Api01
             _site = site;
             _ctx = ctx;
             _appPermissionCheckGenerator = appPermissionCheckGenerator.SetLog(Log);
-            _lazyAttributeBuilder = lazyAttributeBuilder;
+            AttributeBuilder = lazyAttributeBuilder.SetLog(Log);
         }
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<DbDataController> _dbDataLazy;
@@ -53,9 +53,7 @@ namespace ToSic.Eav.Api.Api01
         private readonly IContextOfSite _ctx;
         private readonly GeneratorLog<AppPermissionCheck> _appPermissionCheckGenerator;
 
-        public AttributeBuilder AttributeBuilder => _attributeBuilder ?? (_attributeBuilder = _lazyAttributeBuilder.Value.Init(Log));
-        private AttributeBuilder _attributeBuilder;
-        private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
+        private readonly LazyInitLog<AttributeBuilderForImport> AttributeBuilder;
         private DbDataController _context;
         private AppManager _appManager;
         private string _defaultLanguageCode;
@@ -285,7 +283,7 @@ namespace ToSic.Eav.Api.Api01
                 if (attribute != null && keyValuePair.Value != null)
                 {
                     var unWrappedValue = UnWrapJValue(keyValuePair.Value);
-                    AttributeBuilder.AddValue(entity.Attributes, attribute.Name, unWrappedValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    AttributeBuilder.Ready.AddValue(entity.Attributes, attribute.Name, unWrappedValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
                     Log.Add($"Attribute '{keyValuePair.Key}' will become '{unWrappedValue}' ({attribute.Type})");
                 }
             }

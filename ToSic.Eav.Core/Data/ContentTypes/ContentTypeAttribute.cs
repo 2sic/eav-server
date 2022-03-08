@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
@@ -48,14 +47,6 @@ namespace ToSic.Eav.Data
         public ContentTypeAttribute(int appId, string name, string type, List<IEntity> attributeMetadata)
             : this(appId, name, type, false, 0, 0)
             => MetadataInternal.Use(attributeMetadata);
-
-
-        /// <summary>
-        /// Get Attribute for specified Typ
-        /// </summary>
-        /// <returns><see cref="Attribute{ValueType}"/></returns>
-        [PrivateApi]
-        public IAttribute CreateAttribute() => AttributeBuilder.CreateTyped(Name, Type);
 
 
         #region Metadata and Permissions

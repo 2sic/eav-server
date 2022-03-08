@@ -20,13 +20,13 @@ namespace ToSic.Eav.ImportExport.Xml
             public List<DimensionDefinition> PrioritizedDimensions = new List<DimensionDefinition>();
         }
 
-        public XmlToEntity(IAppStates appStates, ValueBuilder valueBuilder) : base("Imp.XmlEnt")
+        public XmlToEntity(IAppStates appStates, MultiBuilder multiBuilder) : base("Imp.XmlEnt")
         {
-            _valueBuilder = valueBuilder;
+            _multiBuilder = multiBuilder;
             _presetApp = appStates.GetPresetApp();
         }
 
-        private readonly ValueBuilder _valueBuilder;
+        private readonly MultiBuilder _multiBuilder;
         private readonly AppState _presetApp;
 
         public XmlToEntity Init(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
@@ -167,7 +167,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
                 // construct value elements
 			    var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
-			            => _valueBuilder.Build(tempImportValue.XmlValue.Attribute(
+			            => _multiBuilder.Value.Build(tempImportValue.XmlValue.Attribute(
 			                               XmlConstants.EntityTypeAttribute)?.Value ??
 			                           throw new NullReferenceException("cant' build attribute with unknown value-type"),
 			                tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
@@ -176,7 +176,7 @@ namespace ToSic.Eav.ImportExport.Xml
 			        .ToList();
 
                 // construct the attribute with these value elements
-			    var newAttr = AttributeBuilder.CreateTyped(sourceAttrib.StaticName, 
+			    var newAttr =_multiBuilder.Attribute.CreateTyped(sourceAttrib.StaticName, 
                     tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value,
 			        currentAttributesImportValues);
 

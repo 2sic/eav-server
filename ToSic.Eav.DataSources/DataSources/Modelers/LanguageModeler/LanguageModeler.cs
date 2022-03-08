@@ -116,7 +116,7 @@ namespace ToSic.Eav.DataSources
                             .Where(s => attributes.ContainsKey(s))
                             .Select(s => attributes[s]).FirstOrDefault();
                         var newAttribute =
-                            AttributeBuilder.CreateTyped(map.Target,
+                            _multiBuilder.Attribute.CreateTyped(map.Target,
                                 firstExistingValue?.Type ??
                                 "string"); // if there are no values, we assume it's a string field
                         attributes.Add(map.Target, newAttribute);
@@ -150,7 +150,7 @@ namespace ToSic.Eav.DataSources
 
                         // Make a copy to make sure the Name property of the attribute is set correctly
                         var sourceAttr = attributes[map.Source];
-                        var newAttribute = AttributeBuilder.CreateTyped(map.Target, sourceAttr.Type,
+                        var newAttribute = _multiBuilder.Attribute.CreateTyped(map.Target, sourceAttr.Type,
                             (List<IValue>) sourceAttr.Values);
                         // Remove first, in case the new name replaces an old one
                         attributes.Remove(map.Source);

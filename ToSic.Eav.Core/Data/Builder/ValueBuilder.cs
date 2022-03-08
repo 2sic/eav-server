@@ -9,17 +9,15 @@ namespace ToSic.Eav.Data.Builder
     public class ValueBuilder
     {
         // WIP - constructor should never be called because we should use DI
-        public ValueBuilder()
+        public ValueBuilder(DimensionBuilder dimensionBuilder)
         {
-
+            LanguageBuilder = dimensionBuilder;
         }
 
         public IValue Clone(IValue original, string type) => Build(type, original.ObjectContents,
             LanguageBuilder.Clone(original.Languages), null);
 
-        // TODO: DI
-        public DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
-        private DimensionBuilder _langBuilder;
+        private DimensionBuilder LanguageBuilder { get; }
 
         /// <summary>
         /// Creates a Typed Value Model
@@ -58,7 +56,7 @@ namespace ToSic.Eav.Data.Builder
 
                     case ValueTypes.Number:
                         decimal? newDec = null;
-                        if(value != null && !(value is string s && string.IsNullOrEmpty(s)))
+                        if (value != null && !(value is string s && string.IsNullOrEmpty(s)))
                         {
                             // only try converting if it's not an empty string
                             try
@@ -74,7 +72,7 @@ namespace ToSic.Eav.Data.Builder
                     case ValueTypes.Entity:
                         IEnumerable<IEntity> rel;
                         var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)
-                                        ?.Select(x => (int?) x).ToList();
+                                        ?.Select(x => (int?)x).ToList();
                         if (entityIds != null)
                             rel = new LazyEntities(fullEntityListForLookup, entityIds.ToList());
                         else if (value is IEnumerable<IEntity> relList)
@@ -139,10 +137,10 @@ namespace ToSic.Eav.Data.Builder
         /// ...and then it must be a new object every time, 
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
-        internal static Value<IEnumerable<IEntity>> NullRelationship
+        internal Value<IEnumerable<IEntity>> NullRelationship
             => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null))
             {
-                Languages = new DimensionBuilder().NoLanguages()
+                Languages =  LanguageBuilder.NoLanguages()
             };
     }
 }

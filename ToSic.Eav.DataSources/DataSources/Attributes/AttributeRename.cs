@@ -73,9 +73,9 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeRename(EntityBuilder entityBuilder)
+		public AttributeRename(MultiBuilder multiBuilder)
 		{
-            _entityBuilder = entityBuilder;
+            _multiBuilder = multiBuilder;
 
             Provide(GetList);
 			ConfigMask(AttributeMapKey, "[Settings:AttributeMap]");
@@ -83,7 +83,7 @@ namespace ToSic.Eav.DataSources
 			ConfigMask(TypeNameKey, $"[Settings:TypeName]");
         }
 
-        private readonly EntityBuilder _entityBuilder;
+        private readonly MultiBuilder _multiBuilder;
 
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace ToSic.Eav.DataSources
                 return wrapLog("error", originals);
 
             var result = originals
-                .Select(entity => _entityBuilder.Clone(entity,
+                .Select(entity => _multiBuilder.Entity.Clone(entity,
                     CreateDic(entity),
                     entity.Relationships.AllRelationships,
                     newType
@@ -162,10 +162,10 @@ namespace ToSic.Eav.DataSources
 
 
 
-        public static IAttribute CloneAttributeAndRename(IAttribute original, string newName)
+        private IAttribute CloneAttributeAndRename(IAttribute original, string newName)
         {
             var attributeType = DataTypes.GetAttributeTypeName(original);
-            var newAttrib = AttributeBuilder.CreateTyped(newName, attributeType);
+            var newAttrib = _multiBuilder.Attribute.CreateTyped(newName, attributeType);
             newAttrib.Values = original.Values;
             return newAttrib;
         }

@@ -10,6 +10,7 @@ using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Plumbing;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -22,16 +23,16 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         #region Dependency Injection
 
-        private AttributeBuilder AttributeBuilder => _lazyAttributeBuilder.Value;
-        private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
-
         private readonly Lazy<Import> _importerLazy;
 
-        public ImportListXml(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<Import> importerLazy) : base("App.ImpVtT")
+        public ImportListXml(LazyInitLog<AttributeBuilderForImport> lazyAttributeBuilder, Lazy<Import> importerLazy) : base("App.ImpVtT")
         {
-            _lazyAttributeBuilder = lazyAttributeBuilder;
+            AttributeBuilder = lazyAttributeBuilder.SetLog(Log);
             _importerLazy = importerLazy;
         }
+
+        private readonly LazyInitLog<AttributeBuilderForImport> AttributeBuilder;
+
 
         #endregion
 
@@ -153,7 +154,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     // Case 2: Xml empty string
                     if (value == XmlConstants.Empty)
                     {
-                        AttributeBuilder.AddValue(entity.Attributes, valName, "", attribute.Type, nodeLang, false, ResolveLinks);
+                        AttributeBuilder.Ready.AddValue(entity.Attributes, valName, "", attribute.Type, nodeLang, false, ResolveLinks);
                         continue;
                     }
 
@@ -165,7 +166,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         try
                         {
-                            AttributeBuilder.AddValue(entity.Attributes, valName, value, valType, nodeLang, false, ResolveLinks);
+                            AttributeBuilder.Ready.AddValue(entity.Attributes, valName, value, valType, nodeLang, false, ResolveLinks);
                         }
                         catch (FormatException)
                         {
@@ -208,7 +209,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         continue;
                     }
 
-                    var val = AttributeBuilder.AddValue(entity.Attributes, valName,
+                    var val = AttributeBuilder.Ready.AddValue(entity.Attributes, valName,
                             valExisting,
                             valType,
                             valueReferenceLanguage,

@@ -136,7 +136,7 @@ namespace ToSic.Eav.ImportExport.Json
             var wrapLog = Log.Call();
             foreach (var definition in contentType.Attributes)
             {
-                var newAtt = ((ContentTypeAttribute) definition).CreateAttribute();
+                var newAtt = MultiBuilder.Attribute.CreateTyped(definition.Name, definition.Type); // ((ContentTypeAttribute) definition).CreateAttribute();
                 switch (definition.ControlledType)
                 {
                     case ValueTypes.Boolean:
