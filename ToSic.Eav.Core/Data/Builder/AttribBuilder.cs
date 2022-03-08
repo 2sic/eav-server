@@ -87,8 +87,8 @@ namespace ToSic.Eav.Data.Builder
             // Background: there are rare cases, where data was stored incorrectly
             // this happens when a attribute has multiple values, but some don't have languages assigned
             // that would be invalid, as any property with a language code must have all the values (for that property) with language codes
-            if (attrib.Values.Count == 0 || attrib.Values.All(v => v.Languages.Any())) return;
-
+            if (attrib.Values.Count <= 1 || attrib.Values.All(v => v.Languages.Any())) return;
+            
             var badValuesWithoutLanguage = attrib.Values.Where(v => !v.Languages.Any()).ToList();
             if (!badValuesWithoutLanguage.Any()) return;
 
