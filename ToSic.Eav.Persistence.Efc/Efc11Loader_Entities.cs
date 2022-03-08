@@ -168,8 +168,8 @@ namespace ToSic.Eav.Persistence.Efc
                     .Select(v => _multiBuilder.Value.Build(attrib.Type, v.Value, v.Languages))
                     .ToList();
 
-                // fix faulty data dimensions in case old storage mechanims messed up
-                attrib.FixIncorrectLanguageDefinitions(primaryLanguage);
+                // fix faulty data dimensions in case old storage mechanisms messed up
+                DataRepair.FixIncorrectLanguageDefinitions(attrib, primaryLanguage);
             }
 
             #endregion

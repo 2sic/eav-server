@@ -164,7 +164,7 @@ namespace ToSic.Eav.DataSources
 
         public static IAttribute CloneAttributeAndRename(IAttribute original, string newName)
         {
-            var attributeType = AttribBuilder.GetAttributeTypeName(original);
+            var attributeType = DataTypes.GetAttributeTypeName(original);
             var newAttrib = AttributeBuilder.CreateTyped(newName, attributeType);
             newAttrib.Values = original.Values;
             return newAttrib;
