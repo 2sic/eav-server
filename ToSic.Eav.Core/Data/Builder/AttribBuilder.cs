@@ -5,11 +5,8 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data.Builder
 {
-
     public static class AttribBuilder
     {
-
-
         #region Helper to assemble an entity from a dictionary of properties
 
         /// <summary>
@@ -39,8 +36,6 @@ namespace ToSic.Eav.Data.Builder
 
                     result[oAttrib.Key] = attributeModel;
                 }
-
-
             }
 
             return result;
@@ -87,7 +82,11 @@ namespace ToSic.Eav.Data.Builder
             // Background: there are rare cases, where data was stored incorrectly
             // this happens when a attribute has multiple values, but some don't have languages assigned
             // that would be invalid, as any property with a language code must have all the values (for that property) with language codes
-            if (attrib.Values.Count <= 1 || attrib.Values.All(v => v.Languages.Any())) return;
+            // Case 1 ok: Value has max 1 real value, so no risk
+            if (attrib.Values.Count <= 1) return;
+            // Case 2 ok: All values have languages assigned
+            if (attrib.Values.All(v => v.Languages.Any())) return;
+
             
             var badValuesWithoutLanguage = attrib.Values.Where(v => !v.Languages.Any()).ToList();
             if (!badValuesWithoutLanguage.Any()) return;
