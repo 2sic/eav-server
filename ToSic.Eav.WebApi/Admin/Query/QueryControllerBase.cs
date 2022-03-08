@@ -208,7 +208,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 		/// <summary>
 		/// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
 		/// </summary>
-		public bool Delete(/*int appId,*/ int id) => _appManager.Queries.Delete(id);
+		public bool Delete(int id) => _appManager.Queries.Delete(id);
 
 
         public bool Import(EntityImportDto args)

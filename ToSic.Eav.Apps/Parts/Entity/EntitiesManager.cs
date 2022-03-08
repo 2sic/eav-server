@@ -5,6 +5,7 @@ using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Plumbing;
@@ -29,7 +30,9 @@ namespace ToSic.Eav.Apps.Parts
             SystemManager systemManager,
             IServiceProvider serviceProvider,
             LazyInitLog<EntitySaver> entitySaverLazy,
-            IAppsCache appsCache // Note: Singleton
+            IAppsCache appsCache, // Note: Singleton
+            LazyInit<JsonSerializer> jsonSerializer,
+            Generator<ExportListXml> exportListXmlGenerator
             ) : base("App.EntMan")
         {
             _lazyImportListXml = lazyImportListXml;
@@ -38,7 +41,9 @@ namespace ToSic.Eav.Apps.Parts
             _serviceProvider = serviceProvider;
             _entitySaverLazy = entitySaverLazy.SetLog(Log);
             _appsCache = appsCache;
+            _exportListXmGenerator = exportListXmlGenerator;
             SystemManager = systemManager.Init(Log);
+            Serializer = jsonSerializer.SetInit(j => j.Init(Parent.AppState, Log));
         }
         private readonly Lazy<ImportListXml> _lazyImportListXml;
         private readonly Lazy<Import> _importLazy;
@@ -48,7 +53,9 @@ namespace ToSic.Eav.Apps.Parts
         private readonly IServiceProvider _serviceProvider;
         private readonly LazyInitLog<EntitySaver> _entitySaverLazy;
         private readonly IAppsCache _appsCache;
+        private readonly Generator<ExportListXml> _exportListXmGenerator;
         protected readonly SystemManager SystemManager;
+        private LazyInit<JsonSerializer> Serializer { get; }
 
         #endregion
 

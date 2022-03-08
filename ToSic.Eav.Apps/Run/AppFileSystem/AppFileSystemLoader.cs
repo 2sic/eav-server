@@ -25,13 +25,13 @@ namespace ToSic.Eav.Apps.Run
 
         public class Dependencies
         {
-            public Dependencies(IServiceProvider serviceProvider, ISite site)
+            public Dependencies(ISite site, Generator<FileSystemLoader> fslGenerator)
             {
-                ServiceProvider = serviceProvider;
                 Site = site;
+                FslGenerator = fslGenerator;
             }
-            public IServiceProvider ServiceProvider { get; }
             public ISite Site { get; }
+            internal Generator<FileSystemLoader> FslGenerator { get; }
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace ToSic.Eav.Apps.Run
         private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
         {
             var wrapLog = Log.Call<IList<IContentType>>(extensionPath);
-            var fsLoader = Deps.ServiceProvider.Build<FileSystemLoader>()
+            var fsLoader = Deps.FslGenerator.New // Deps.ServiceProvider.Build<FileSystemLoader>()
                 .Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource, Log);
             var types = fsLoader.ContentTypes();
             return wrapLog("ok", types);

@@ -9,11 +9,11 @@ namespace ToSic.Eav.DataSources.Catalog
     [PrivateApi]
     public partial class DataSourceCatalog: HasLog<DataSourceCatalog>
     {
-        public IServiceProvider ServiceProvider { get; }
         public DataSourceCatalog(IServiceProvider serviceProvider) : base("DS.DsCat")
         {
             ServiceProvider = serviceProvider;
         }
+        private IServiceProvider ServiceProvider { get; }
 
         /// <summary>
         /// Create Instance of DataSource to get In- and Out-Streams
@@ -29,11 +29,8 @@ namespace ToSic.Eav.DataSources.Catalog
 
             try
             {
-                // Handle Interfaces and real types (currently only on ICache / IAppRoot)
-                // TODO: STV - this might fail in Oqtane, because the types are not registered
-                // To make this work, we probably need to scan all DLLs for IDataSources and register them in DI
-                // Pls check
-                var dataSourceInstance = ServiceProvider.Build<IDataSource>(dsInfo.Type);// (IDataSource)Factory.Resolve(dsInfo.Type);
+                // This MUST use Build (not GetService<>) since that will also create objects which are not registered
+                var dataSourceInstance = ServiceProvider.Build<IDataSource>(dsInfo.Type);
 
                 // skip this if out-connections cannot be queried
                 return dataSourceInstance.Out.Keys;

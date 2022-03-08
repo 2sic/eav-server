@@ -16,7 +16,16 @@ namespace ToSic.Eav.WebApi.Security
     /// </summary>
     public class MultiPermissionsApp: MultiPermissionsBase
     {
-        private readonly IZoneMapper _zoneMapper;
+        public class Dependencies
+        {
+            public Dependencies(IZoneMapper zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator)
+            {
+                ZoneMapper = zoneMapper;
+                AppPermCheckGenerator = appPermCheckGenerator;
+            }
+            internal IZoneMapper ZoneMapper { get; }
+            internal Generator<AppPermissionCheck> AppPermCheckGenerator { get; }
+        }
 
         /// <summary>
         /// The current app which will be used and can be re-used externally
@@ -31,13 +40,15 @@ namespace ToSic.Eav.WebApi.Security
 
         #region Constructors and DI
 
-        public MultiPermissionsApp(IZoneMapper zoneMapper) : this(zoneMapper, "Api.Perms") { }
+        public MultiPermissionsApp(Dependencies dependencies) : this(dependencies, "Api.Perms") { }
 
-        protected MultiPermissionsApp(IZoneMapper zoneMapper, string logName) : base(logName ?? "Api.Perms")
+        protected MultiPermissionsApp(Dependencies dependencies, string logName) : base(logName ?? "Api.Perms")
         {
-            _zoneMapper = zoneMapper;
-            _zoneMapper.Init(Log);
+            _zoneMapper = dependencies.ZoneMapper.Init(Log);
+            _appPermCheckGenerator = dependencies.AppPermCheckGenerator;
         }
+        private readonly IZoneMapper _zoneMapper;
+        private readonly Generator<AppPermissionCheck> _appPermCheckGenerator;
 
         public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app, ILog parentLog, string logName = null)
         {
@@ -86,7 +97,7 @@ namespace ToSic.Eav.WebApi.Security
             // user has edit permissions on this app, and it's the same app as the user is coming from
             var modifiedContext = Context.Clone(Log);
             modifiedContext.Site = SiteForSecurityCheck;
-            return Context.ServiceProvider.Build<AppPermissionCheck>().ForParts(modifiedContext, App, type, item, Log);
+            return _appPermCheckGenerator.New /*Context.ServiceProvider.Build<AppPermissionCheck>()*/.ForParts(modifiedContext, App, type, item, Log);
         }
 
     }

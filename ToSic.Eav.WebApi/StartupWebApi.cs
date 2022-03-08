@@ -51,6 +51,8 @@ namespace ToSic.Eav.WebApi
 
             // WebApi Security
             services.TryAddTransient<MultiPermissionsTypes>();
+            services.TryAddTransient<MultiPermissionsApp>();
+            services.TryAddTransient<MultiPermissionsApp.Dependencies>();
 
             // WIP Converter clean-up v12.05
             // This is still needed on one EAV WebApi for DataSource to JsonBasic conversion
