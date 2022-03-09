@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
+using static ToSic.Eav.DataSources.CompareOperators;
 using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
 using static ToSic.Eav.DataSourceTests.ValueSortShared;
 
@@ -106,7 +107,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
-            vf.Operator = "all";
+            vf.Operator = OpAll;
             vf.Value = "uCHs";
             Assert.AreEqual(10000, vf.ListForTests().Count(), "Should find exactly 10000 people with this city");
         }
@@ -119,7 +120,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
-            vf.Operator = "contains";
+            vf.Operator = OpContains;
             vf.Value = "uCHs";
             Assert.AreEqual(2500, vf.ListForTests().Count(), "Should find exactly 2500 people with this city");
         }
@@ -133,7 +134,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
-            vf.Operator = "contains";
+            vf.Operator = OpContains;
             vf.Value = "uCHs";
             vf.Take = "5";
             Assert.AreEqual(5, vf.ListForTests().Count(), "Should find exactly 5 people with this city");
@@ -143,20 +144,31 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
-            vf.Operator = "contains";
+            vf.Operator = OpContains;
             vf.Value = "CH";
             vf.Take = "1000";
             Assert.AreEqual(1000, vf.ListForTests().Count(), "Should find exactly 5 people with this city");
         }
+
         [TestMethod]
        public void ValueFilter_TakeAll10000()
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
-            vf.Operator = "all";
+            vf.Operator = OpAll;
             vf.Value = "uCHs";
             vf.Take = "10000";
             Assert.AreEqual(10000, vf.ListForTests().Count(), "Should find exactly 5 people with this city");
+        }        
+        [TestMethod]
+       public void ValueFilter_TakeNone()
+        {
+            var vf = _testDataGeneratedOutsideTimer;
+            vf.Attribute = "City";
+            vf.Operator = OpNone;
+            vf.Value = "uCHs";
+            vf.Take = "10000";
+            Assert.AreEqual(0, vf.ListForTests().Count(), "Should find none");
         }        
 
         [TestMethod]
@@ -164,7 +176,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
-            vf.Operator = "all";
+            vf.Operator = OpAll;
             vf.Value = "uCHs";
             vf.Take = "90000";
             Assert.AreEqual(10000, vf.ListForTests().Count(), "Should find exactly 5 people with this city");
@@ -199,7 +211,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = _testDataGeneratedOutsideTimer;
             vf.Attribute = "City";
-            vf.Operator = "contains";
+            vf.Operator = OpContains;
             vf.Value = "Buchs SG";
             Assert.AreEqual(0, vf.ListForTests().Count(), "Should find exactly 0 people with this city");
         }

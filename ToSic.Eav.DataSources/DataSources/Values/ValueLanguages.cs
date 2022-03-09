@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
             // if String.Empty, then we just want the default, so use empty array (faster)
             if (resolved != null)
                 return wrapLog(resolved, resolved == string.Empty
-                    ? new string[0]
+                    ? Array.Empty<string>()
                     : new[] { resolved });
 
 

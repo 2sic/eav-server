@@ -99,7 +99,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void NumberFilterInvalidOperator()
             => DataSourceErrors.VerifyStreamIsError(PrepareNumberFilterDs("Height", "180", "!!"), 
-                ValueFilter.ErrorInvalidOperator);
+                CompareOperators.ErrorInvalidOperator);
 
 
     }
