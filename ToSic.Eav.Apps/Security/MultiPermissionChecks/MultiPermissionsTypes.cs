@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Security;
 
-namespace ToSic.Eav.WebApi.Security
+namespace ToSic.Eav.Apps.Security
 {
     public class MultiPermissionsTypes: MultiPermissionsApp
     {
@@ -25,7 +24,7 @@ namespace ToSic.Eav.WebApi.Security
 
         public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType, ILog parentLog)
         {
-            Init(context, app, parentLog);
+            Init(context, app, parentLog, LogName);
             return InitTypesAfterInit(new[] {contentType});
         }
 

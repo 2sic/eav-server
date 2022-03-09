@@ -3,7 +3,7 @@ using System.Linq;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Security;
 
-namespace ToSic.Eav.WebApi.Security
+namespace ToSic.Eav.Apps.Security
 {
     /// <summary>
     /// A permission checker which is initialized with various items which must be checked
@@ -11,22 +11,18 @@ namespace ToSic.Eav.WebApi.Security
     /// </summary>
     public abstract class MultiPermissionsBase: HasLog<MultiPermissionsBase>, IMultiPermissionCheck
     {
+        #region Constructor / Init stuff
+
+        protected MultiPermissionsBase(string logName) : base(logName) { }
+
+        #endregion
+
         /// <summary>
         /// All the permission checks that will be used
         /// </summary>
         public Dictionary<string, IPermissionCheck> PermissionCheckers
             => _permissionCheckers ?? (_permissionCheckers = InitializePermissionChecks());
         private Dictionary<string, IPermissionCheck> _permissionCheckers;
-
-        #region Constructor / Init stuff
-
-        protected MultiPermissionsBase(string logName) : base(logName) { }
-
-        protected MultiPermissionsBase(string logName, ILog parentLog) : base(logName, parentLog)
-        {}
-        
-
-        #endregion
 
         #region abstract methods
 

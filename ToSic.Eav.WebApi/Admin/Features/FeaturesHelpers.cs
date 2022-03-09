@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Security;

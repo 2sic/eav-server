@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
@@ -9,46 +7,35 @@ using ToSic.Eav.Run;
 using ToSic.Eav.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.WebApi.Security
+namespace ToSic.Eav.Apps.Security
 {
     /// <summary>
     /// Do consolidated permission checks on a set of permissions
     /// </summary>
     public class MultiPermissionsApp: MultiPermissionsBase
     {
+        #region Constructors and DI
+
         public class Dependencies
         {
-            public Dependencies(IZoneMapper zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator)
+            public Dependencies(LazyInitLog<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator)
             {
                 ZoneMapper = zoneMapper;
                 AppPermCheckGenerator = appPermCheckGenerator;
             }
-            internal IZoneMapper ZoneMapper { get; }
+            internal LazyInitLog<IZoneMapper> ZoneMapper { get; }
             internal Generator<AppPermissionCheck> AppPermCheckGenerator { get; }
+
+            internal Dependencies SetLog(ILog log)
+            {
+                ZoneMapper.SetLog(log);
+                return this;
+            }
         }
 
-        /// <summary>
-        /// The current app which will be used and can be re-used externally
-        /// </summary>
-        protected IAppIdentity App { get; private set; }
 
-        public IContextOfSite Context { get; private set; }
-
-        protected ISite SiteForSecurityCheck { get; private set; }
-
-        protected bool SamePortal { get; private set; }
-
-        #region Constructors and DI
-
-        public MultiPermissionsApp(Dependencies dependencies) : this(dependencies, "Api.Perms") { }
-
-        protected MultiPermissionsApp(Dependencies dependencies, string logName) : base(logName ?? "Api.Perms")
-        {
-            _zoneMapper = dependencies.ZoneMapper.Init(Log);
-            _appPermCheckGenerator = dependencies.AppPermCheckGenerator;
-        }
-        private readonly IZoneMapper _zoneMapper;
-        private readonly Generator<AppPermissionCheck> _appPermCheckGenerator;
+        public MultiPermissionsApp(Dependencies dependencies) : base("Api.Perms") => _dp = dependencies.SetLog(Log);
+        private readonly Dependencies _dp;
 
         public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app, ILog parentLog, string logName = null)
         {
@@ -62,17 +49,21 @@ namespace ToSic.Eav.WebApi.Security
                 ? context.Site 
                 // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
                 // todo: probably enhance with a Site.IsMultiZone check
-                : _zoneMapper.SiteOfZone(App.ZoneId) ?? context.Site;
+                : _dp.ZoneMapper.Ready.SiteOfZone(App.ZoneId) ?? context.Site;
             return wrapLog($"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}", this);
         }
+        /// <summary>
+        /// The current app which will be used and can be re-used externally
+        /// </summary>
+        protected IAppIdentity App { get; private set; }
+        public IContextOfSite Context { get; private set; }
+        protected ISite SiteForSecurityCheck { get; private set; }
+        protected bool SamePortal { get; private set; }
 
         #endregion
 
         protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
-            => new Dictionary<string, IPermissionCheck>
-            {
-                {"App", BuildPermissionChecker()}
-            };
+            => new Dictionary<string, IPermissionCheck> { { "App", BuildPermissionChecker() } };
 
         public bool ZoneIsOfCurrentContextOrUserIsSuper(out string error)
         {
@@ -97,7 +88,7 @@ namespace ToSic.Eav.WebApi.Security
             // user has edit permissions on this app, and it's the same app as the user is coming from
             var modifiedContext = Context.Clone(Log);
             modifiedContext.Site = SiteForSecurityCheck;
-            return _appPermCheckGenerator.New /*Context.ServiceProvider.Build<AppPermissionCheck>()*/.ForParts(modifiedContext, App, type, item, Log);
+            return _dp.AppPermCheckGenerator.New.ForParts(modifiedContext, App, type, item, Log);
         }
 
     }
