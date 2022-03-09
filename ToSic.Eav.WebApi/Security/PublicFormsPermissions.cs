@@ -3,9 +3,8 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Errors;
-using ToSic.Eav.WebApi.Security;
 
-namespace ToSic.Sxc.WebApi.Security
+namespace ToSic.Eav.WebApi.Security
 {
     internal static class PublicFormsPermissions
     {
