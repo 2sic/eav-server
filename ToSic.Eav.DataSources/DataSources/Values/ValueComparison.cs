@@ -180,8 +180,8 @@ namespace ToSic.Eav.DataSources
         {
             var wrapLog = Log.Call<Func<IEntity, bool>>(expected);
 
-            DateTime max = DateTime.MaxValue,
-                referenceDateTime = DateTime.MinValue;
+            var max = DateTime.MaxValue;
+            var expectedDtm = DateTime.MinValue;
 
             #region handle special case "between" with 2 values
             if (operation == OpBetween || operation == OpNotBetween)
@@ -190,7 +190,7 @@ namespace ToSic.Eav.DataSources
                 var (useBetween, start, end) = BetweenParts(expected);
                 if (useBetween)
                 {
-                    DateTime.TryParse(start, out referenceDateTime);
+                    DateTime.TryParse(start, out expectedDtm);
                     DateTime.TryParse(end, out max);
                 }
                 else
@@ -199,46 +199,48 @@ namespace ToSic.Eav.DataSources
             #endregion
 
             // get the value (but only if it hasn't been initialized already)
-            if (referenceDateTime == DateTime.MinValue)
-                DateTime.TryParse(expected, out referenceDateTime);
+            if (expectedDtm == DateTime.MinValue)
+                DateTime.TryParse(expected, out expectedDtm);
 
-            var dateComparisons = new Dictionary<string, Func<DateTime, bool>>
-            {
-                { OpEquals, value => value == referenceDateTime},
-                { OpExactly, value => value == referenceDateTime},
-                { OpNotEquals, value => value != referenceDateTime},
-                { OpGt, value => value > referenceDateTime},
-                { OpLt, value => value < referenceDateTime},
-                { OpGtEquals, value => value >= referenceDateTime},
-                { OpLtEquals, value => value <= referenceDateTime},
-                { OpBetween, value => value >= referenceDateTime && value <= max },
-                { OpNotBetween, value => !(value >= referenceDateTime && value <= max) },
-            };
+            var innerFunc = DateTimeInnerCompare(operation, expectedDtm, max);
 
-            if (!dateComparisons.ContainsKey(operation))
+            if (innerFunc == null)
             {
                 _errCallback(ErrorInvalidOperator, $"Bad operator for datetime compare, can't find comparison '{operation}'");
                 return wrapLog("error", null);
             }
 
-            var dateTimeCompare = dateComparisons[operation];
-
-            wrapLog("ok", null);
-            return e => {
-                var value = e.GetBestValue(fieldName, languages);
+            return wrapLog("ok", e =>
+            {
                 try
                 {
-                    // treat null as DateTime.MinValue - because that's also how the null-parameter is parsed when creating the filter
-                    var valAsDec = value == null ? DateTime.MinValue : Convert.ToDateTime(value);
-                    return dateTimeCompare(valAsDec);
+                    // This will treat null as DateTime.MinValue - because that's also how the null-parameter is parsed when creating the filter
+                    var value = e.GetBestValue<DateTime>(fieldName, languages);
+                    return innerFunc(value);
                 }
                 catch
                 {
                     return false;
                 }
-            };
+            });
         }
 
+        private static Func<DateTime, bool> DateTimeInnerCompare(string operation, DateTime expected, DateTime max)
+        {
+            switch (operation)
+            {
+                case OpEquals: return value => value == expected;
+                case OpExactly: return value => value == expected;
+                case OpNotEquals: return value => value != expected;
+                case OpGt: return value => value > expected;
+                case OpLt: return value => value < expected;
+                case OpGtEquals: return value => value >= expected;
+                case OpLtEquals: return value => value <= expected;
+                case OpBetween: return value => value >= expected && value <= max;
+                case OpNotBetween: return value => !(value >= expected && value <= max);
+                default: return null;
+            }
+        }
 
 
         #region "between" helper

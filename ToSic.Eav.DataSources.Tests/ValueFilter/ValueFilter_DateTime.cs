@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
 using static ToSic.Eav.DataSources.CompareOperators;
+using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
 
 namespace ToSic.Eav.DataSourceTests
 {
@@ -24,26 +25,29 @@ namespace ToSic.Eav.DataSourceTests
 
         #region DateTime Filters
 
-        [DataRow("Birthdate", "1990-01-01", 2, null, "EqIso")]
-        [DataRow("Birthdate", "4/4/1903", 2, null, "EqUsa")]
-        [DataRow("Birthdate", "6.6.1905", 2, null, "EqEurope")]
+        [DataRow(FieldBirthday, "1990-01-01", 2, null, "EqIso")]
+        [DataRow(FieldBirthday, "4/4/1903", 2, null, "EqUsa")]
+        [DataRow(FieldBirthday, "6.6.1905", 2, null, "EqEurope")]
         [DataRow("Modified", "6.6.1905", 0, null, "DateModifiedZero")]
         [DataRow("Modified", "2100-01-01", 10000, OpLt, "DateModifiedOlder")]
         [DataRow("Modified", "0000-01-01 and 2100-01-01", 10000, "Between", "DateModifiedBetween")]
-        [DataRow("Birthdate", "24.8.1997", 1124, OpGt, "Gt")]// this is one of the generated dates
-        [DataRow("Birthdate", "24.8.1997", 10000 - 1127, OpLt, "Lt")]// this is one of the generated dates
-        [DataRow("Birthdate", "24.8.1997", 1127, OpGtEquals, "GtEq")] // this is one of the generated dates
-        [DataRow("Birthdate", "24.8.1997", 10000 - 1124, OpLtEquals, "LtEq")] // this is one of the generated dates
+        [DataRow(FieldBirthday, "24.8.1997", 1124, OpGt, "Gt")]// this is one of the generated dates
+        [DataRow(FieldBirthday, "24.8.1997", 10000 - 1127, OpLt, "Lt")]// this is one of the generated dates
+        [DataRow(FieldBirthday, "24.8.1997", 1127, OpGtEquals, "GtEq")] // this is one of the generated dates
+        [DataRow(FieldBirthday, "24.8.1997", 10000 - 1124, OpLtEquals, "LtEq")] // this is one of the generated dates
 
-        [DataRow("Birthdate", "24.8.1997", 3, OpExactly, "Eq1997")] // this is one of the generated dates
-        [DataRow("Birthdate", "24.8.1997", 10000 - 3, OpNotEquals, "NotEq1997")] // this is one of the generated dates
-        [DataRow("Birthdate", "1.1.1995 and 31.12.2000", 546, OpBetween, "Between")] // this is one of the generated dates
-        [DataRow("Birthdate", "1.1.1995 and 31.12.2000", 10000 - 546, OpNotBetween, "BetweenNot")] // this is one of the generated dates
+        [DataRow(FieldBirthday, "24.8.1997", 3, OpExactly, "Eq1997")] // this is one of the generated dates
+        [DataRow(FieldBirthday, "24.8.1997", 10000 - 3, OpNotEquals, "NotEq1997")] // this is one of the generated dates
+        [DataRow(FieldBirthday, "1.1.1995 and 31.12.2000", 546, OpBetween, "Between")] // this is one of the generated dates
+        [DataRow(FieldBirthday, "1.1.1995 and 31.12.2000", 10000 - 546, OpNotBetween, "BetweenNot")] // this is one of the generated dates
+        [DataRow(FieldBirthday, "1.1.1995 and 31.12.2000", 10000 - 546, OpNotBetween, "BetweenNot")] // this is one of the generated dates
+        [DataRow(FieldBirthdayNull, "", 10000 / 2, OpEquals, "eq empty")] // this is one of the generated dates
         [DataTestMethod]
         public void DateTimeFilter(string attr, string value, int expected, string operation, string name)
         {
             var vf = PrepareDateTimeFilterDs(attr, value, operation);
-            Assert.AreEqual(expected, vf.ListForTests().Count(), "Should find exactly " + expected + " amount people");
+            var list = vf.ListForTests().ToList();
+            Assert.AreEqual(expected, list.Count(), "Should find exactly " + expected + " amount people");
         }
 
         private ValueFilter PrepareDateTimeFilterDs(string attr, string value, string operation)
@@ -77,7 +81,7 @@ namespace ToSic.Eav.DataSourceTests
 
         [TestMethod]
         public void NumberFilterInvalidOperator()
-            => DataSourceErrors.VerifyStreamIsError(PrepareDateTimeFilterDs("Birthdate", "180", "!!"),
+            => DataSourceErrors.VerifyStreamIsError(PrepareDateTimeFilterDs(FieldBirthday, "180", "!!"),
                 ErrorInvalidOperator);
 
 
