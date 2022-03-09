@@ -54,7 +54,8 @@ namespace ToSic.Eav.WebApi
 
 
 #if NETFRAMEWORK
-            services.TryAddScoped<ResponseMaker<HttpResponseMessage>, ResponseMakerNetFramework>(); // must be scoped, as the api-controller must init this for use in other parts
+            // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
+            services.TryAddScoped<ResponseMaker<System.Net.Http.HttpResponseMessage>, ResponseMakerNetFramework>();
 #endif
 
             return services;
