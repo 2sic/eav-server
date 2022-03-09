@@ -35,7 +35,6 @@ namespace ToSic.Eav.DataSourceTests
         [DataRow(FieldBirthday, "24.8.1997", 10000 - 1127, OpLt, "Lt")]// this is one of the generated dates
         [DataRow(FieldBirthday, "24.8.1997", 1127, OpGtEquals, "GtEq")] // this is one of the generated dates
         [DataRow(FieldBirthday, "24.8.1997", 10000 - 1124, OpLtEquals, "LtEq")] // this is one of the generated dates
-
         [DataRow(FieldBirthday, "24.8.1997", 3, OpExactly, "Eq1997")] // this is one of the generated dates
         [DataRow(FieldBirthday, "24.8.1997", 10000 - 3, OpNotEquals, "NotEq1997")] // this is one of the generated dates
         [DataRow(FieldBirthday, "1.1.1995 and 31.12.2000", 546, OpBetween, "Between")] // this is one of the generated dates
@@ -47,7 +46,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = PrepareDateTimeFilterDs(attr, value, operation);
             var list = vf.ListForTests().ToList();
-            Assert.AreEqual(expected, list.Count(), "Should find exactly " + expected + " amount people");
+            Assert.AreEqual(expected, list.Count(), $"{name}: find exactly " + expected + " amount people");
         }
 
         private ValueFilter PrepareDateTimeFilterDs(string attr, string value, string operation)

@@ -100,20 +100,25 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static bool InternalOnlyIsSpecialEntityProperty(string name)
+        public static (bool isSpecial, ValueTypes fieldType) InternalOnlyIsSpecialEntityProperty(string name)
         {
             switch (name.ToLowerInvariant())
             {
                 case EntityFieldTitle:
+                    return (true, ValueTypes.String);
                 case EntityFieldId:
+                    return (true, ValueTypes.Number);
                 case EntityFieldGuid:
+                    return (true, ValueTypes.Undefined);
                 case EntityFieldType:
+                    return (true, ValueTypes.Undefined);
                 case EntityFieldIsPublished:
+                    return (true, ValueTypes.Boolean);
                 case EntityFieldCreated:
                 case EntityFieldModified:
-                    return true;
+                    return (true, ValueTypes.DateTime);
             }
-            return false;
+            return (false, ValueTypes.Undefined);
 
         }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -18,32 +17,59 @@ namespace ToSic.Eav.DataSources
 
         private readonly Action<string, string> _errCallback; // (string title, string message);
 
-        public Func<IEntity, bool> GetComparison(object firstValue, string fieldName, string operation, string[] languages, string expected)
+        public Func<IEntity, bool> GetComparison(ValueTypes type, /*object firstValue,*/ string fieldName, string operation, string[] languages, string expected)
         {
             var wrapLog = Log.Call<Func<IEntity, bool>>();
             operation = operation.ToLowerInvariant();
 
-            switch (firstValue)
+            // First try to figure out based on known type
+            switch (type)
             {
-                case bool _:
+                case ValueTypes.Boolean:
                     return wrapLog("bool comparison", BoolComparison(fieldName, operation, languages, expected));
-                case int _:
-                case float _:
-                case decimal _:
-                    return wrapLog("decimal comparison", NumberComparison(fieldName, operation, languages, expected));
-                case DateTime _:
+                case ValueTypes.DateTime:
                     return wrapLog("datetime comparison", DateTimeComparison(fieldName, operation, languages, expected));
-                case IEnumerable<IEntity> _:
-                case IEntity _:
+                case ValueTypes.Number:
+                    return wrapLog("decimal comparison", NumberComparison(fieldName, operation, languages, expected));
+                case ValueTypes.Entity:
                     Log.Add("Would apply entity comparison, but this doesn't work");
                     _errCallback("Can't apply Value comparison to Relationship",
                         "Can't compare values which contain related entities - use the RelationshipFilter instead.");
                     return wrapLog("error", null);
-                case string _:
-                case null:  // note: null should never happen, because we only look at entities having non-null in this value
+                case ValueTypes.Undefined:
+                case ValueTypes.Hyperlink:
+                case ValueTypes.String:
+                case ValueTypes.Empty:
+                case ValueTypes.Custom:
+                case ValueTypes.Json:
                 default:
                     return wrapLog("string comparison", StringComparison(fieldName, operation, languages, expected));
             }
+
+            // Fallback - if known type didn't work, try based on the object data
+            // 2022-03-09 2dm disabled this, I believe this will never happen based on the changes above
+            // If all works well, remove mid of 2022
+            //switch (firstValue)
+            //{
+            //    case bool _:
+            //        return wrapLog("bool comparison", BoolComparison(fieldName, operation, languages, expected));
+            //    case int _:
+            //    case float _:
+            //    case decimal _:
+            //        return wrapLog("decimal comparison", NumberComparison(fieldName, operation, languages, expected));
+            //    case DateTime _:
+            //        return wrapLog("datetime comparison", DateTimeComparison(fieldName, operation, languages, expected));
+            //    case IEnumerable<IEntity> _:
+            //    case IEntity _:
+            //        Log.Add("Would apply entity comparison, but this doesn't work");
+            //        _errCallback("Can't apply Value comparison to Relationship",
+            //            "Can't compare values which contain related entities - use the RelationshipFilter instead.");
+            //        return wrapLog("error", null);
+            //    case string _:
+            //    case null:  // note: null should never happen, because we only look at entities having non-null in this value
+            //    default:
+            //        return wrapLog("string comparison", StringComparison(fieldName, operation, languages, expected));
+            //}
         }
 
 

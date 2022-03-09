@@ -142,10 +142,12 @@ namespace ToSic.Eav.DataSources
 
             // Case 3: Real filter
             // Find first Entity which has this property being not null to detect type
-            var firstEntity = Attributes.InternalOnlyIsSpecialEntityProperty(fieldName)
+            var (isSpecial, fieldType) = Attributes.InternalOnlyIsSpecialEntityProperty(fieldName);
+            var firstEntity = isSpecial
                 ? originals.FirstOrDefault()
-                : originals.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName) 
-                                                && x.Value(fieldName) != null);
+                : originals.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName) && x.Value(fieldName) != null)
+                  // 2022-03-09 2dm If none is found with a real value, get the first that has this attribute
+                  ?? originals.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName));
 
             // if I can't find any, return empty list
             if (firstEntity == null)
@@ -153,7 +155,10 @@ namespace ToSic.Eav.DataSources
 
             // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
             // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
-            var firstValue = firstEntity.Value(fieldName);
+            // 2022-03-09 2dm 
+            if (!isSpecial) fieldType = firstEntity[fieldName].ControlledType;
+            //var firstValue = firstEntity.Value(fieldName);
+
 
             // 2021-03-29 2dm changed from checking the type-name to actually checking the type
             // this was necessary, because entity-lists were LazyEntities and not "Entity"
@@ -163,7 +168,7 @@ namespace ToSic.Eav.DataSources
             //if (netTypeName.Contains(Constants.DataTypeEntity)) netTypeName = Constants.DataTypeEntity;
 
             var compMaker = new ValueComparison((title, message) => SetError(title, message), Log);
-            var compare = compMaker.GetComparison(firstValue, fieldName, op, languages, Value);
+            var compare = compMaker.GetComparison(fieldType, /*firstValue,*/ fieldName, op, languages, Value);
 
             return !ErrorStream.IsDefaultOrEmpty 
                 ? wrapLog("error", ErrorStream) 
