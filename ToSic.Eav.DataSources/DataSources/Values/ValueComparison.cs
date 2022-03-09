@@ -54,24 +54,29 @@ namespace ToSic.Eav.DataSources
         {
             var wrapLog = Log.Call<Func<IEntity, bool>>(expected);
 
-            var stringComparison = new Dictionary<string, Func<object, bool>>
+            Func<object, bool> StringCompareInner()
             {
-                { OpEquals, value => value != null && string.Equals(value.ToString(), expected, InvariantCultureIgnoreCase)        },
-                { OpExactly, value => value != null && value.ToString() == expected}, // case sensitive, full equal
-                { OpNotEquals, value => value != null && !string.Equals(value.ToString(), expected, InvariantCultureIgnoreCase)},
-                { OpContains, value => value?.ToString().IndexOf(expected, InvariantCultureIgnoreCase) > -1 },
-                { OpNotContains, value => value?.ToString().IndexOf(expected, InvariantCultureIgnoreCase) == -1},
-                { OpBegins, value => value?.ToString().IndexOf(expected, InvariantCultureIgnoreCase) == 0 },
-                { OpAll, value => true }
-            };
+                switch (operation)
+                {
+                    case OpEquals: return value => value != null && string.Equals(value.ToString(), expected, InvariantCultureIgnoreCase) ;
+                    case OpExactly: return value => value != null && value.ToString() == expected; // case sensitive: return full equal
+                    case OpNotEquals: return value => value != null && !string.Equals(value.ToString(), expected, InvariantCultureIgnoreCase) ;
+                    case OpContains: return value => value?.ToString().IndexOf(expected, InvariantCultureIgnoreCase) > -1;
+                    case OpNotContains: return value => value?.ToString().IndexOf(expected, InvariantCultureIgnoreCase) == -1;
+                    case OpBegins: return value => value?.ToString().IndexOf(expected, InvariantCultureIgnoreCase) == 0;
+                    case OpAll: return value => true;
+                    default: return null;
+                }
+            }
 
-            if (!stringComparison.ContainsKey(operation))
+            var stringCompare = StringCompareInner();
+
+            if (stringCompare == null)
             {
                 _errCallback(ErrorInvalidOperator, $"Bad operator for string compare, can't find comparison '{operation}'");
                 return wrapLog("error", null);
             }
 
-            var stringCompare = stringComparison[operation];
             return wrapLog("ok", e => stringCompare(e.GetBestValue(fieldName, languages)));
         }
 
