@@ -24,7 +24,6 @@ namespace ToSic.Eav.Apps
             // Context
             services.TryAddTransient<IContextOfSite, ContextOfSite>();
             services.TryAddTransient<ContextOfSite>();
-            //services.TryAddTransient<ContextOfSite.ContextOfSiteDependencies>();
 
             // Runtimes and Managers
             services.TryAddTransient<AppRuntimeDependencies>();
@@ -77,6 +76,9 @@ namespace ToSic.Eav.Apps
 
             // App Permission Check moved to this project as the implementations are now all identical
             services.TryAddTransient<AppPermissionCheck>();
+            services.TryAddTransient<MultiPermissionsTypes>();
+            services.TryAddTransient<MultiPermissionsApp>();
+            services.TryAddTransient<MultiPermissionsApp.Dependencies>();
 
             // V13 Language Checks
             services.TryAddTransient<AppUserLanguageCheck>();
