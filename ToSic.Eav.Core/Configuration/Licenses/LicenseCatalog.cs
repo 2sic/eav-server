@@ -26,7 +26,7 @@ namespace ToSic.Eav.Configuration.Licenses
         // The guids of these licenses must match the ones in the 2sxc.org license management list
         // So always create the definition there first, then use the GUID of that definition here
 
-        public static readonly DateTime UnlimitedExpiry = new DateTime(2099, 12, 31);
+        public static readonly DateTime UnlimitedExpiry = DateTime.MaxValue; // new DateTime(2099, 12, 31);
 
         public static IReadOnlyCollection<LicenseDefinition> Licenses => _licenseTypes ?? (_licenseTypes = CreateList());
         private static IReadOnlyCollection<LicenseDefinition> _licenseTypes;

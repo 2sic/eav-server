@@ -18,7 +18,7 @@ namespace ToSic.Eav.Configuration
             "BlockFileResolveOutsideOfEntityAdam (BETA, not final)",
             false,
             false,
-            "If enabled, then links like 'file:72' will only work if the file is inside the ADAM of the current Entity.", FeaturesCatalogRules.Security0,
+            "If enabled, then links like 'file:72' will only work if the file is inside the ADAM of the current Entity.", FeaturesCatalogRules.Security0Improved,
             ForBeta
         );
     }

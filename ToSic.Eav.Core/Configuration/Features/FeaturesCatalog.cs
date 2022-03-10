@@ -42,16 +42,18 @@ namespace ToSic.Eav.Configuration
                 PermissionCheckUsers,
                 PermissionCheckGroups,
 
-                // Beta features - meant for Patreons
+                // Free features for all
+                EditUiShowNotes,
+                EditUiShowMetadataFor,
+
+                // Features for Patreons
                 PasteImageFromClipboard,
                 WysiwygPasteFormatted,
                 NoSponsoredByToSic,
+                ImageServiceMultiFormat,    // v13
 
                 // 2sxc 10.24+
                 WebFarmCache,
-
-                // 2sxc 13 - for Patreons
-                ImageServiceMultiFormat,
 
                 // 2sxc 13 - Global Apps
                 SharedApps,

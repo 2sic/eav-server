@@ -15,7 +15,7 @@ namespace ToSic.Eav.Configuration
             "Share Apps to Reuse on Many Sites",
             false,
             false,
-            "Allows you to define shared global Apps which can be inherited and re-used on many Sites.", FeaturesCatalogRules.Security0,
+            "Allows you to define shared global Apps which can be inherited and re-used on many Sites.", FeaturesCatalogRules.Security0Improved,
             ForEnterpriseCms
         );
 
@@ -25,7 +25,7 @@ namespace ToSic.Eav.Configuration
             "Edit-Permissions by Language",
             false,
             false,
-            "Configure who can edit what language in the Edit UI.", FeaturesCatalogRules.Security0,
+            "Configure who can edit what language in the Edit UI.", FeaturesCatalogRules.Security0Improved,
             ForEnterpriseCms
         );
     }
