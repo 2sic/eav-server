@@ -17,15 +17,7 @@
         // Is-Recommended Decorator
         public static string RecommendedDecoratorId = "c740085a-d548-41f3-8d06-0a48b8692345";
 
-        // Informs what Metadata is expected / used on a specific item
-        public static string MetadataExpectedDecoratorId = "c490b369-9cd2-4298-af74-19c1e438cdfc";
 
-        public static string MetadataExpectedTypesField = "MetadataTypes";
-
-        public static string MetadataForDecoratorId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
-        public static string MetadataForTargetTypeField = "TargetType";
-        public static string MetadataForTargetNameField = "TargetName";
-        public static string MetadataForDeleteWarningField = "DeleteWarning";
 
         // This marks entities which should allow saving empty
         public static string SaveEmptyDecoratorId = "8c78dabf-e0ad-4c26-b750-48138ecb8a39";
@@ -33,7 +25,10 @@
         // Marks Metadata to be global 13.00
         public static string IsSharedDecoratorId = "18d2b1db-e1ed-45bc-8746-cd8885651063";
 
-        // Marks Requirements Metadata 13.00
-        public static string RequirementsDecoratorId = "19655377-6626-4986-aea0-ec3c187186ad";
+        // Note Decorator 13.03
+        public static string NoteDecoratorId = "5e958dc6-2922-4d68-835c-7b9711538b12";
+
+        // Edit UI configuration 13.03
+        public static string EditUiConfigurationDecoratorId = "4f6d1484-4672-43d5-9c48-94ff3ec11069";
     }
 }

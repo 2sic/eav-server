@@ -10,6 +10,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Plumbing;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -24,15 +25,19 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Constructor / DI
 
-        private readonly Lazy<AppManager> _appManagerLazy;
-        private readonly IImportExportEnvironment _importExportEnvironment;
-        internal AppManager AppManager;
-
-        public Import(Lazy<AppManager> appManagerLazy, IImportExportEnvironment importExportEnvironment) : base("Eav.Import")
+        public Import(Lazy<AppManager> appManagerLazy, 
+            IImportExportEnvironment importExportEnvironment,
+            LazyInitLog<EntitySaver> entitySaverLazy
+            ) : base("Eav.Import")
         {
             _appManagerLazy = appManagerLazy;
             _importExportEnvironment = importExportEnvironment;
+            _entitySaver = entitySaverLazy.SetLog(Log);
         }
+        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly IImportExportEnvironment _importExportEnvironment;
+        private readonly LazyInitLog<EntitySaver> _entitySaver;
+
 
         public Import Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes, ILog parentLog)
         {
@@ -53,6 +58,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             return this;
         }
+        internal AppManager AppManager;
 
         #endregion
 
@@ -220,7 +226,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 metadataToUse.SetGuid(Guid.NewGuid());
             }
             else
-                metadataToUse = new EntitySaver(Log).CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
+                metadataToUse = _entitySaver.Ready.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
             return metadataToUse;
         }
 
@@ -266,7 +272,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // now update (main) entity id from existing - since it already exists
             var original = existingEntities.First();
             update.ResetEntityId(original.EntityId);
-            var result = new EntitySaver(Log).CreateMergedForSaving(original, update, saveOptions, logDetails);
+            var result = _entitySaver.Ready.CreateMergedForSaving(original, update, saveOptions, logDetails);
             return callLog("ok", result);
         }
 

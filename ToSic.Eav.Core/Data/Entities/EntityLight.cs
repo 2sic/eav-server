@@ -32,7 +32,7 @@ namespace ToSic.Eav.Data
         /// List of all attributes
         /// </summary>
         [PrivateApi]
-		protected Dictionary<string, object> LightAttributesForInternalUseOnlyForNow { get; set; }
+		protected Dictionary<string, object> LightAttributesForInternalUseOnlyForNow { get; }
 
         /// <inheritdoc />
 		public IContentType Type { get; internal set; }
@@ -58,8 +58,8 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public object this[string attributeName]
-            => LightAttributesForInternalUseOnlyForNow.ContainsKey(attributeName)
-                ? LightAttributesForInternalUseOnlyForNow[attributeName]
+            => LightAttributesForInternalUseOnlyForNow.TryGetValue(attributeName, out var result)
+                ? result
                 : null;
         #endregion
 
@@ -107,11 +107,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public object GetBestValue(string attributeName) 
         {
-            object result;
-
-            if (LightAttributesForInternalUseOnlyForNow.ContainsKey(attributeName))
-                result = LightAttributesForInternalUseOnlyForNow[attributeName];
-            else
+            if (!LightAttributesForInternalUseOnlyForNow.TryGetValue(attributeName, out var result))
             {
                 var attributeNameLower = attributeName.ToLowerInvariant();
                 if (attributeNameLower == Attributes.EntityFieldTitle)
@@ -130,7 +126,7 @@ namespace ToSic.Eav.Data
                 || result is float
                 || result is double
                 || result is decimal)
-                return System.Convert.ToDecimal(result);
+                return Convert.ToDecimal(result);
 
             return result;
         }

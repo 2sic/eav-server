@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Metadata;
 
@@ -10,11 +11,19 @@ namespace ToSic.Eav.ImportExport.Json
         public const string NoLanguage = "*";
 
         /// <summary>
+        /// Constructor for DI
+        /// </summary>
+        public JsonSerializer(ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder) : this(metadataTargets, appStates, multiBuilder, "Jsn.Serlzr") {}
+        
+
+        /// <summary>
         /// Initialize with the correct logger name
         /// </summary>
-        public JsonSerializer(ITargetTypes metadataTargets, IAppStates appStates) : this(metadataTargets, appStates, "Jsn.Serlzr") {}
-
-        protected JsonSerializer(ITargetTypes metadataTargets, IAppStates appStates, string logName): base(metadataTargets, appStates, logName) { }
+        protected JsonSerializer(ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder, string logName): base(metadataTargets, appStates, logName)
+        {
+            MultiBuilder = multiBuilder;
+        }
+        protected MultiBuilder MultiBuilder { get; }
     }
 
     internal static class StringHelpers

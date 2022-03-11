@@ -1,21 +1,27 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Api.Api01;
+using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
+using ToSic.Eav.Security.Permissions;
+using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // This is the simple API used to quickly create/edit/delete entities
 
-    // todo: there is quite a lot of duplicate code here
-    // like code to build attributes, or convert id-relationships to guids
-    // this should be in the AttributeBuilder or similar
+// todo: there is quite a lot of duplicate code here
+// like code to build attributes, or convert id-relationships to guids
+// this should be in the AttributeBuilder or similar
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Api.Api01
@@ -23,29 +29,31 @@ namespace ToSic.Eav.Api.Api01
     /// <summary>
     /// This is a simple controller with some Create, Update and Delete commands. 
     /// </summary>
-    public class SimpleDataController: HasLog
+    public partial class SimpleDataController: HasLog<SimpleDataController>
     {
         #region Constructor / DI
 
         /// <summary>
         /// Used for DI - must always call Init to use
         /// </summary>
-        public SimpleDataController(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbDataLazy, IZoneMapper zoneMapper, ISite site): base("Dta.Simple")
+        public SimpleDataController(LazyInitLog<AttributeBuilderForImport> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbDataLazy, IZoneMapper zoneMapper, ISite site, IContextOfSite ctx, GeneratorLog<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             _appManagerLazy = appManagerLazy;
             _dbDataLazy = dbDataLazy;
             _zoneMapper = zoneMapper.Init(Log);
             _site = site;
-            _lazyAttributeBuilder = lazyAttributeBuilder;
+            _ctx = ctx;
+            _appPermissionCheckGenerator = appPermissionCheckGenerator.SetLog(Log);
+            AttributeBuilder = lazyAttributeBuilder.SetLog(Log);
         }
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<DbDataController> _dbDataLazy;
         private readonly IZoneMapper _zoneMapper;
         private readonly ISite _site;
+        private readonly IContextOfSite _ctx;
+        private readonly GeneratorLog<AppPermissionCheck> _appPermissionCheckGenerator;
 
-        public AttributeBuilder AttributeBuilder => _attributeBuilder ?? (_attributeBuilder = _lazyAttributeBuilder.Value.Init(Log));
-        private AttributeBuilder _attributeBuilder;
-        private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
+        private readonly LazyInitLog<AttributeBuilderForImport> AttributeBuilder;
         private DbDataController _context;
         private AppManager _appManager;
         private string _defaultLanguageCode;
@@ -54,10 +62,8 @@ namespace ToSic.Eav.Api.Api01
 
         /// <param name="zoneId">Zone ID</param>
         /// <param name="appId">App ID</param>
-        /// <param name="parentLog"></param>
-        internal SimpleDataController Init(int zoneId, int appId, ILog parentLog)
+        public SimpleDataController Init(int zoneId, int appId)
         {
-            Log.LinkTo(parentLog);
             var wrapLog = Log.Call<SimpleDataController>($"{zoneId}, {appId}");
             _appId = appId;
             _defaultLanguageCode = GetDefaultLanguage();
@@ -90,6 +96,8 @@ namespace ToSic.Eav.Api.Api01
         {
             var wrapLog = Log.Call<IEnumerable<int>>($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}");
 
+            if (multiValues == null) return wrapLog("values were null", null);
+
             // ensure the type really exists
             var type = _appManager.Read.ContentTypes.Get(contentTypeName);
             if (type == null)
@@ -101,13 +109,13 @@ namespace ToSic.Eav.Api.Api01
 
             Log.Add($"Type {contentTypeName} found. Will build entities to save...");
 
-            var importEntity = multiValues.Select(values => BuildEntity(type, values, target)).ToList();
+            var importEntity = multiValues.Select(values => BuildEntity(type, values, target, null, out var draftAndBranch)).ToList();
 
             var ids = _appManager.Entities.Save(importEntity);
             return wrapLog(null, ids);
         }
 
-        private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, ITarget target)
+        private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, ITarget target, bool? existingIsPublished, out (bool, bool)? draftAndBranch)
         {
             var wrapLog = Log.Call<IEntity>($"{type.Name}, {values?.Count}, target: {target != null}");
             // ensure it's case insensitive...
@@ -137,7 +145,7 @@ namespace ToSic.Eav.Api.Api01
             }
 
             var preparedValues = ConvertEntityRelations(values);
-            AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false, true);
+            AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false, true, existingIsPublished, out draftAndBranch);
             return wrapLog(null, importEntity);
         }
 
@@ -157,11 +165,39 @@ namespace ToSic.Eav.Api.Api01
         {
             Log.Add($"update i:{entityId}");
             var original = _appManager.AppState.List.FindRepoId(entityId);
-            var importEntity = BuildEntity(original.Type, values, null) as Entity;
-            _appManager.Entities.UpdateParts(entityId, importEntity);
-        }
-        
 
+            var importEntity = BuildEntity(original.Type, values, null, original.IsPublished, out var draftAndBranch) as Entity;
+
+            _appManager.Entities.UpdateParts(entityId, importEntity, draftAndBranch);
+        }
+
+        private bool GetWritePublishAllowedOrThrow(IContentType targetType)
+        {
+            // 1. Find if user may write PUBLISHED:
+
+            // 1.1. app permissions 
+            if (_appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
+                .UserMay(GrantSets.WritePublished)) return true;
+
+            // 1.2. type permissions
+            if (_appPermissionCheckGenerator.New.ForType(_ctx, _appManager.AppState, targetType, Log)
+                .UserMay(GrantSets.WritePublished)) return true;
+
+
+            // 2. Find if user may write DRAFT:
+
+            // 2.1. app permissions 
+            if (_appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
+                .UserMay(GrantSets.WriteDraft)) return false;
+
+            // 2.2. type permissions
+            if (_appPermissionCheckGenerator.New.ForType(_ctx, _appManager.AppState, targetType, Log)
+                .UserMay(GrantSets.WriteDraft)) return false;
+
+
+            // 3. User is not allowed to update published or draft entity.
+            throw new Exception("User is not allowed to update published or draft entity.");
+        }
 
         /// <summary>
         /// Delete the entity specified by ID.
@@ -199,42 +235,81 @@ namespace ToSic.Eav.Api.Api01
             return result;
         }
 
-        private void AddValues(Entity entity, IContentType contentType, Dictionary<string, object> values, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink)
+        private void AddValues(Entity entity, IContentType contentType, Dictionary<string, object> valuePairs, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink, bool? existingIsPublished, out (bool, bool)? draftAndBranch)
         {
-            var wrapLog = Log.Call($"..., ..., values: {values?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}");
-            if (values == null)
+            var wrapLog = Log.Call($"..., ..., values: {valuePairs?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}");
+            draftAndBranch = null;
+            if (valuePairs == null)
             {
                 wrapLog("no values");
                 return;
             }
-            foreach (var value in values)
+
+            // On update, by default preserve IsPublished state
+            if (existingIsPublished.HasValue) entity.IsPublished = existingIsPublished.Value;
+
+            // Ensure WritePublished or WriteDraft user permissions. 
+            var writePublishAllowed = GetWritePublishAllowedOrThrow(contentType);
+
+            // IsPublished becomes false when write published is not allowed.
+            if (entity.IsPublished && !writePublishAllowed) entity.IsPublished = false;
+
+            foreach (var keyValuePair in valuePairs)
             {
-                // Handle special attributes (for example of the system)
-                if (value.Key.ToLowerInvariant() == Attributes.EntityFieldIsPublished)
+                // Handle special "PublishState" attribute
+                if (SaveApiAttributes.SavePublishingState.Equals(keyValuePair.Key, InvariantCultureIgnoreCase))
                 {
-                    entity.IsPublished = value.Value as bool? ?? true;
+
+                    draftAndBranch = IsDraft(
+                        publishedState: valuePairs[SaveApiAttributes.SavePublishingState],
+                        existingIsPublished: existingIsPublished,
+                        writePublishAllowed);
+
+                    if (draftAndBranch.HasValue) entity.IsPublished = draftAndBranch.Value.Item1; // published
+
                     Log.Add($"IsPublished: {entity.IsPublished}");
                     continue;
                 }
 
                 // Ignore entity guid - it's already set earlier
-                if (value.Key.ToLowerInvariant() == Attributes.EntityFieldGuid)
+                if (keyValuePair.Key.ToLowerInvariant() == Attributes.EntityFieldGuid)
                 {
                     Log.Add("entity-guid, ignore here");
                     continue;
                 }
 
                 // Handle content-type attributes
-                var attribute = contentType[value.Key];
-                if (attribute != null && value.Value != null)
+                var attribute = contentType[keyValuePair.Key];
+                if (attribute != null && keyValuePair.Value != null)
                 {
-                    var strValue = value.Value.ToString();
-                    AttributeBuilder.AddValue(entity.Attributes, attribute.Name, strValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
-                    Log.Add($"Attribute '{value.Key}' will become '{strValue}' ({attribute.Type})");
+                    var unWrappedValue = UnWrapJValue(keyValuePair.Value);
+                    AttributeBuilder.Ready.AddValue(entity.Attributes, attribute.Name, unWrappedValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    Log.Add($"Attribute '{keyValuePair.Key}' will become '{unWrappedValue}' ({attribute.Type})");
                 }
             }
 
             wrapLog("done");
         }
+
+        private static object UnWrapJValue(object original)
+        {
+            // it is not clear why we are doing type conversion to string (so it will stay like that)
+            // but string conversion is causing issue with DateTime (2sxc#2658) so we should not convert DateTime to string
+            if (original is JValue jValue && jValue.Type is JTokenType.Date) // JTokenType.Date
+                return jValue.Value as DateTime?;
+
+            // If it's not System.DateTime, ToString() it
+            // Note 2022-02-11 2dm/STV we believe this is a forced unwrap from the JValue
+            // And maybe this would also work with JValue.Value or something
+            // But if we change this, it must be tested well, so no priority
+            if (!(original is DateTime)) return original.ToString();
+            // System.DateTime
+            return original;
+        }
+
+        #region Permission Checks
+
+
+        #endregion
     }
 }

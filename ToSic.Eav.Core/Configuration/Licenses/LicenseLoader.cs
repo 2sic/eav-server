@@ -14,18 +14,16 @@
  * So asking for support to finance advanced features is not asking for much. 
  *
  */
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
-using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
@@ -37,32 +35,24 @@ namespace ToSic.Eav.Configuration.Licenses
         /// <summary>
         /// Constructor - not meant for DI
         /// </summary>
-        internal LicenseLoader(/*SystemFingerprint fingerprint,*/ LogHistory logHistory, ILog parentLog)
-            : base(/*fingerprint,*/ logHistory, parentLog, LogNames.Eav + "LicLdr", "Load Licenses")
+        internal LicenseLoader(LogHistory logHistory, ILog parentLog)
+            : base(logHistory, parentLog, LogNames.Eav + "LicLdr", "Load Licenses")
         {
-        }
-
-        private string _fingerprint;
-
-        public LicenseLoader Init(string fingerprint)
-        {
-            _fingerprint = fingerprint;
-            return this;
         }
 
         /// <summary>
         /// Pre-Load enabled / disabled global features
         /// </summary>
         [PrivateApi]
-        internal void LoadLicenses(AppState presetApp)
+        internal void LoadLicenses(string fingerprint, string globalFolder)
         {
             var wrapLog = Log.Call();
             try
             {
-                var licenseEntities = presetApp.List.OfType(LicenseConstants.TypeName).ToList();
-                Log.Add($"Found {licenseEntities.Count} license entities");
+                var licensesStored = LicensesStoredInConfigFolder(globalFolder);
+                Log.Add($"Found {licensesStored.Count} licenseStored in files");
+                var licenses = licensesStored.SelectMany(ls => LicensesStateBuilder(ls, fingerprint)).ToList();
                 var autoEnabled = AutoEnabledLicenses();
-                var licenses = licenseEntities.SelectMany(LicensesInOneEntity).ToList();
                 LicenseService.Update(autoEnabled.Union(licenses).ToList());
                 Log.Add($"Found {licenses.Count} licenses");
                 wrapLog("ok");
@@ -75,22 +65,34 @@ namespace ToSic.Eav.Configuration.Licenses
             }
         }
 
-        private List<LicenseState> LicensesInOneEntity(IEntity entity)
+        public List<LicenseStored> LicensesStoredInConfigFolder(string globalFolder)
+        {
+            var wrapLog = Log.Call<List<LicenseStored>>();
+            var configurationsPath = Path.Combine(globalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
+
+            var licensesStored = Directory.EnumerateFiles(configurationsPath, "*.license.json")
+                .Select(File.ReadAllText)
+                .Select(JsonConvert.DeserializeObject<LicenseStored>)
+                .Where(licenses => licenses != null).ToList();
+
+            Log.Add($"licensesStored: {licensesStored.Count}");
+            return wrapLog("ok", licensesStored);
+        }
+
+        private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored, string fingerprint)
         {
             var wrapLog = Log.Call<List<LicenseState>>();
 
-            if (entity == null) return wrapLog("null", new List<LicenseState>());
-
-            var infoRaw = new LicenseInfoRaw(entity);
+            if (licenseStored == null) return wrapLog("null", new List<LicenseState>());
 
             // Check signature valid
-            var resultForSignature = infoRaw.GetStandardizedControlString();
+            var resultForSignature = licenseStored.GenerateIdentity();
             var validSig = false;
             try
             {
                 var data = new UnicodeEncoding().GetBytes(resultForSignature);
                 validSig = new Sha256().VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930,
-                    infoRaw.Signature, data);
+                    licenseStored.Signature, data);
             }
             catch (Exception ex)
             {
@@ -100,32 +102,31 @@ namespace ToSic.Eav.Configuration.Licenses
             Log.Add($"Signature: {validSig}");
 
             // Check fingerprints
-            //var myFingerprint = Fingerprint;
-            var fps = infoRaw.Fingerprints.SplitNewLine().TrimmedAndWithoutEmpty();
-            var validFp = fps.Any(fp => _fingerprint.Equals(fp));
+            var fps = licenseStored.FingerprintsArray;
+            var validFp = fps.Any(fingerprint.Equals);
             Log.Add($"Fingerprint: {validFp}");
 
-            var validVersion = int.TryParse(infoRaw.Version, out var licVersion) &&
-                               SystemInformation.Version.Major == licVersion;
+            var validVersion = licenseStored.Versions?
+                .Split(',')
+                .Select(v => v.Trim())
+                .Any(v => int.TryParse(v, out var licVersion) && SystemInformation.Version.Major == licVersion)
+                ?? false;
+
             Log.Add($"Version: {validVersion}");
 
-            var dateOk = DateTime.TryParse(infoRaw.Expires, out var expires);
-            if(!dateOk)
-                expires = DateTime.MinValue;
-
-            var validDate = dateOk && DateTime.Now.CompareTo(expires) <= 0;
+            var validDate = DateTime.Now.CompareTo(licenseStored.Expires) <= 0;
             Log.Add($"Expired: {validDate}");
 
-            var licenses = infoRaw.Licenses.SplitNewLine().TrimmedAndWithoutEmpty() ?? Array.Empty<string>();
+            var licenses = licenseStored.LicensesArray;
             Log.Add($"Licenses: {licenses.Length}");
 
             var licenseStates = licenses.Select(l => new LicenseState
                 {
-                    Title = infoRaw.Name,
+                    Title = licenseStored.Title,
                     License = LicenseCatalog.Find(l),
-                    EntityGuid = infoRaw.Guid,
-                    LicenseKey = infoRaw.Key,
-                    Expiration = expires,
+                    EntityGuid = licenseStored.GuidSalt,
+                    LicenseKey = licenseStored.Key,
+                    Expiration = licenseStored.Expires,
                     ValidExpired = validDate,
                     ValidFingerprint = validFp,
                     ValidSignature = validSig,
@@ -135,6 +136,67 @@ namespace ToSic.Eav.Configuration.Licenses
 
             return wrapLog(licenseStates.Count.ToString(), licenseStates);
         }
+
+        //private List<LicenseState> LicensesInOneEntity(IEntity entity)
+        //{
+        //    var wrapLog = Log.Call<List<LicenseState>>();
+
+        //    if (entity == null) return wrapLog("null", new List<LicenseState>());
+
+        //    var infoRaw = new LicenseInfoRawOld(entity);
+
+        //    // Check signature valid
+        //    var resultForSignature = infoRaw.GetStandardizedControlString();
+        //    var validSig = false;
+        //    try
+        //    {
+        //        var data = new UnicodeEncoding().GetBytes(resultForSignature);
+        //        validSig = new Sha256().VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930,
+        //            infoRaw.Signature, data);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Just log, and ignore
+        //        Log.Exception(ex);
+        //    }
+        //    Log.Add($"Signature: {validSig}");
+
+        //    // Check fingerprints
+        //    //var myFingerprint = Fingerprint;
+        //    var fps = infoRaw.Fingerprints.SplitNewLine().TrimmedAndWithoutEmpty();
+        //    var validFp = fps.Any(fp => _fingerprint.Equals(fp));
+        //    Log.Add($"Fingerprint: {validFp}");
+
+        //    var validVersion = int.TryParse(infoRaw.Version, out var licVersion) &&
+        //                       SystemInformation.Version.Major == licVersion;
+        //    Log.Add($"Version: {validVersion}");
+
+        //    var dateOk = DateTime.TryParse(infoRaw.Expires, out var expires);
+        //    if (!dateOk)
+        //        expires = DateTime.MinValue;
+
+        //    var validDate = dateOk && DateTime.Now.CompareTo(expires) <= 0;
+        //    Log.Add($"Expired: {validDate}");
+
+        //    var licenses = infoRaw.Licenses.SplitNewLine().TrimmedAndWithoutEmpty() ?? Array.Empty<string>();
+        //    Log.Add($"Licenses: {licenses.Length}");
+
+        //    var licenseStates = licenses.Select(l => new LicenseState
+        //    {
+        //        Title = infoRaw.Name,
+        //        License = LicenseCatalog.Find(l),
+        //        EntityGuid = infoRaw.Guid,
+        //        LicenseKey = infoRaw.Key,
+        //        Expiration = expires,
+        //        ValidExpired = validDate,
+        //        ValidFingerprint = validFp,
+        //        ValidSignature = validSig,
+        //        ValidVersion = validVersion,
+        //    })
+        //        .ToList();
+
+        //    return wrapLog(licenseStates.Count.ToString(), licenseStates);
+        //}
 
         private List<LicenseState> AutoEnabledLicenses()
         {
@@ -153,6 +215,5 @@ namespace ToSic.Eav.Configuration.Licenses
                 .ToList();
             return licenseStates;
         }
-
     }
 }

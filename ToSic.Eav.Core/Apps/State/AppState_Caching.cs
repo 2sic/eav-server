@@ -1,18 +1,19 @@
 ﻿using System;
 using ToSic.Eav.Caching;
+using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
 {
-    public partial class AppState: ICacheExpiring, ICacheExpiringDelegated
+    public partial class AppState: ICacheExpiring
     {
         /// <summary>
         /// Helper object to keep track of cache changes
         /// </summary>
         [PrivateApi] public ICacheStatistics CacheStatistics = new CacheStatistics();
-        
+
         /// <inheritdoc />
-        public long CacheTimestamp { get; private set; }
+        public long CacheTimestamp => CacheExpiryDelegate.CacheTimestamp;
 
         private void CacheResetTimestamp(string message, int offset = 0)
         {
@@ -20,8 +21,9 @@ namespace ToSic.Eav.Apps
             // In very rare, fast cases the timestamp is unmodified
             // In such cases we must make sure it's incremented by at least 1
             var prevTimeStamp = CacheTimestamp;
-            CacheTimestamp = DateTime.Now.Ticks + offset;
-            if (prevTimeStamp == CacheTimestamp) CacheTimestamp++;
+            CacheTimestampPrivate.CacheTimestamp = DateTime.Now.Ticks + offset;
+            if (prevTimeStamp == CacheTimestampPrivate.CacheTimestamp)
+                CacheTimestampPrivate.CacheTimestamp++;
 
             CacheStatistics.Update(CacheTimestamp, Index.Count, message);
             Log.Add($"cache reset to stamp {CacheTimestamp} = {CacheTimestamp.ToReadable()}");
@@ -36,15 +38,28 @@ namespace ToSic.Eav.Apps
         /// The App can itself be the master of expiry, or it can be that a parent-app must be included
         /// So the expiry-provider is this object, which must be initialized on AppState creation
         /// </summary>
-        [PrivateApi]
-        public ICacheExpiring CacheExpiryDelegate { get; }
+        private ITimestamped CacheExpiryDelegate { get; }
 
-        private ICacheExpiring CreateExpiryProvider()
-        {
-            // todo: check if feature is enabled #SharedAppFeatureEnabled
-            return ParentApp.InheritEntities && ParentApp.AppState != null
-                ? new CacheExpiringMultiSource(this, ParentApp.AppState)
-                : this as ICacheExpiring;
-        }
+        /// <summary>
+        /// Store for the app-private timestamp. In inherited apps, it will be combined with the parent using the CacheExpiryDelegate
+        /// </summary>
+        private Timestamped CacheTimestampPrivate { get; } = new Timestamped();
+
+        /// <summary>
+        /// Create an expiry source for this app.
+        /// In normal mode it will only use the private timestamp.
+        /// In shared mode it will merge its timestamp with the parent
+        /// </summary>
+        private ITimestamped CreateExpiryDelegate(ParentAppState pApp)
+            => (pApp.InheritContentTypes || pApp.InheritEntities) && pApp.AppState != null
+                ? new CacheExpiringMultiSource(CacheTimestampPrivate, pApp.AppState) as ITimestamped
+                : CacheTimestampPrivate;
+
+        [PrivateApi] 
+        public PiggyBack PiggyBack => _piggyBack ?? (_piggyBack = new PiggyBack());
+        private PiggyBack _piggyBack;
+
+        [PrivateApi]
+        public TData GetPiggyBack<TData>(string key, Func<TData> create) => PiggyBack.GetOrGenerate(key, create);
     }
 }

@@ -9,7 +9,7 @@ namespace ToSic.Eav.LookUp
 {
     /// <summary>
     /// Takes a list of configuration masks (list of tokens) and resolves them with a bunch of LookUps. <br/>
-    /// Read more about this in [](xref:Basics.LookUp.Index)
+    /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, use Interface in your code ILookupEngine")]
     public class LookUpEngine : HasLog, ILookUpEngine

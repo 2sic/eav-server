@@ -43,7 +43,7 @@ namespace ToSic.Eav.Security
 
                 // this checks if the condition is a environment condition
                 // for example, if it's a DNN code for "user may view something"
-                if (VerifyConditionOfEnvironment(condition))
+                if (_environmentPermission.VerifyConditionOfEnvironment(condition))
                     return IsGrantedBecause(Conditions.EnvironmentInstance);
 
                 return false;
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Security
         /// </summary>
         private bool VerifyUserIsThisUser(string identity, IUser user)
         {
-            if (!_dependencies.Features.Enabled(FeaturesCatalog.PermissionCheckUsers.Guid)) return false;
+            if (!_features.Enabled(FeaturesCatalog.PermissionCheckUsers.Guid)) return false;
             return identity == user.Guid.ToString();
         }
 
@@ -80,7 +80,7 @@ namespace ToSic.Eav.Security
         /// <returns></returns>
         private bool VerifyUserIsInGroup(string identity, IUser user)
         {
-            if (!_dependencies.Features.Enabled(FeaturesCatalog.PermissionCheckGroups.Guid)) return false;
+            if (!_features.Enabled(FeaturesCatalog.PermissionCheckGroups.Guid)) return false;
 
             if (string.IsNullOrWhiteSpace(identity)) return false;
 

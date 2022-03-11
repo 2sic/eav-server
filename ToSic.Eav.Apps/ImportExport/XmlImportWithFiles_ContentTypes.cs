@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Metadata;
 
@@ -50,7 +49,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     var fieldTypeName = xmlField.Attribute(XmlConstants.EntityTypeAttribute).Value;
                     var attribute = new ContentTypeAttribute(AppId, name, fieldTypeName, attributeMetadata: new List<IEntity>
                         {
-                            AttDefBuilder.GenerateAttributeMetadata(Deps.GlobalApp, AppId, null, null, null,
+                            Deps.CtAttribBuilder.Value.GenerateAttributeMetadata(AppId, null, null, null,
                                 string.Empty, null)
                         });
                     var md = xmlField.Elements(XmlConstants.Entity).ToList();

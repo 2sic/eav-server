@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
@@ -101,27 +100,4 @@ namespace ToSic.Eav.Apps.ImportExport
 
     }
 
-
-
-    internal static class StringExtension
-    {
-        /// <summary>
-        /// Get for example en-US from [ref(en-US,ro)].
-        /// </summary>
-        public static string GetLanguageInARefTextCode(this string valueString)
-        {
-            var match = Regex.Match(valueString, @"\[ref\((?<language>.+),(?<readOnly>.+)\)\]");
-            return match.Success ? match.Groups["language"].Value : null;
-        }
-
-        /// <summary>
-        /// Get for example ro from [ref(en-US,ro)].
-        /// </summary>
-        public static string GetValueReferenceProtection(this string valueString, string defaultValue = "")
-        {
-            var match = Regex.Match(valueString, @"\[ref\((?<language>.+),(?<readOnly>.+)\)\]");
-            return match.Success ? match.Groups["readOnly"].Value : defaultValue;
-        }
-
-    }
 }

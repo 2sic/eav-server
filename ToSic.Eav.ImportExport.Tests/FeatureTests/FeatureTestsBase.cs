@@ -12,6 +12,13 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
 {
     public class FeatureTestsBase: TestBaseDiEavFull
     {
+        public FeatureTestsBase()
+        {
+            // Make sure that features are ready to use
+            var sysLoader = Build<SystemLoader>();
+            sysLoader.ReloadFeatures();
+        }
+
         protected override void AddServices(IServiceCollection services)
         {
             services.AddTransient<IRuntime, Runtime>();
@@ -19,11 +26,5 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
             services.TryAddTransient<IZoneMapper, MockZoneMapper>();
         }
 
-        public FeatureTestsBase()
-        {
-            // Make sure that features are ready to use
-            var sysLoader = Build<SystemLoader>();
-            sysLoader.LoadFeatures();
-        }
     }
 }

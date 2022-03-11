@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps.Run
 
         public override int GetZoneId(int siteId) => siteId;
 
-        public override ISite SiteOfZone(int zoneId) => _sp.Build<ISite>().Init(zoneId);
+        public override ISite SiteOfZone(int zoneId) => _sp.Build<ISite>().Init(zoneId, null);
 
         public override List<ISiteLanguageState> CulturesWithState(ISite site) => new List<ISiteLanguageState>();
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence;
 using UpdateList = System.Collections.Generic.Dictionary<string, object>;
@@ -13,11 +12,11 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="id"></param>
         /// <param name="values"></param>
-        /// <param name="draft">Optionally specify that it should be a draft change</param>
-        public void UpdateParts(int id, UpdateList values, bool? draft = null)
+        /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
+        public void UpdateParts(int id, UpdateList values, (bool published, bool branch)? draftAndBranch = null)
         {
             var wrapLog = Log.Call($"id:{id}");
-            UpdatePartsFromValues(Parent.AppState.List.FindRepoId(id), values, draft);
+            UpdatePartsFromValues(Parent.AppState.List.FindRepoId(id), values, draftAndBranch);
             wrapLog("ok");
         }
 
@@ -26,11 +25,11 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="id"></param>
         /// <param name="values"></param>
-        /// <param name="draft">Optionally specify that it should be a draft change</param>
-        public void UpdateParts(int id, Entity values, bool? draft = null)
+        /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
+        public void UpdateParts(int id, Entity values, (bool published, bool branch)? draftAndBranch = null)
         {
             var wrapLog = Log.Call($"id:{id}");
-            UpdatePartFromEntity(Parent.AppState.List.FindRepoId(id), values, draft);
+            UpdatePartFromEntity(Parent.AppState.List.FindRepoId(id), values, draftAndBranch);
             wrapLog("ok");
         }
 
@@ -39,13 +38,13 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="orig">Original entity to be updated</param>
         /// <param name="values">Dictionary of values to update</param>
-        /// <param name="draft">Optionally specify that it should be a draft change</param>
-        private bool UpdatePartsFromValues(IEntity orig, UpdateList values, bool? draft = null)
+        /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
+        private bool UpdatePartsFromValues(IEntity orig, UpdateList values, (bool published, bool branch)? draftAndBranch = null)
         {
             var wrapLog = Log.Call<bool>();
             var tempEnt = CreatePartialEntityOld(orig, values);
             if (tempEnt == null) return wrapLog("nothing to import", false);
-            var result = UpdatePartFromEntity(orig, tempEnt, draft);
+            var result = UpdatePartFromEntity(orig, tempEnt, draftAndBranch);
             return wrapLog($"{result}", true);
         }
 
@@ -54,24 +53,24 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="orig">Original entity to be updated</param>
         /// <param name="partialEntity">Partial Entity to update</param>
-        /// <param name="draft">Optionally specify that it should be a draft change</param>
-        private bool UpdatePartFromEntity(IEntity orig, Entity partialEntity, bool? draft = null)
+        /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
+        private bool UpdatePartFromEntity(IEntity orig, Entity partialEntity, (bool published, bool branch)? draftAndBranch = null)
         {
             var wrapLog = Log.Call<bool>();
             if (partialEntity == null)
                 return wrapLog("nothing to import", false);
 
-            var saveOptions = _environmentLazy.Value.SaveOptions(Parent.ZoneId);
+            var saveOptions = Environment.SaveOptions(Parent.ZoneId);
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 
-            var saveEnt = new EntitySaver(Log).CreateMergedForSaving(orig, partialEntity, saveOptions);
+            var saveEnt = _entitySaverLazy.Ready.CreateMergedForSaving(orig, partialEntity, saveOptions);
 
             // if changes should be draft, ensure it works
-            if (draft.HasValue && draft.Value)
+            if (draftAndBranch.HasValue)
             {
-                saveEnt.PlaceDraftInBranch = true;
-                saveEnt.IsPublished = false;
+                saveEnt.IsPublished = draftAndBranch.Value.published;
+                saveEnt.PlaceDraftInBranch = draftAndBranch.Value.branch;
             }
 
             Save(saveEnt, saveOptions);
@@ -82,9 +81,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             var wrapLog = Log.Call<Entity>();
             if (values == null || !values.Any())
-            {
                 return wrapLog("nothing to save", null);
-            }
 
             return wrapLog("ok", new Entity(Parent.AppId, 0, orig.Type, values));
         }

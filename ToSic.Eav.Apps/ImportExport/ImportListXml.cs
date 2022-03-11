@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ToSic.Eav.Apps.ImportExport.ImportHelpers;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
@@ -9,6 +10,7 @@ using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Plumbing;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -21,16 +23,16 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         #region Dependency Injection
 
-        private AttributeBuilder AttributeBuilder => _lazyAttributeBuilder.Value;
-        private readonly Lazy<AttributeBuilder> _lazyAttributeBuilder;
-
         private readonly Lazy<Import> _importerLazy;
 
-        public ImportListXml(Lazy<AttributeBuilder> lazyAttributeBuilder, Lazy<Import> importerLazy) : base("App.ImpVtT")
+        public ImportListXml(LazyInitLog<AttributeBuilderForImport> lazyAttributeBuilder, Lazy<Import> importerLazy) : base("App.ImpVtT")
         {
-            _lazyAttributeBuilder = lazyAttributeBuilder;
+            AttributeBuilder = lazyAttributeBuilder.SetLog(Log);
             _importerLazy = importerLazy;
         }
+
+        private readonly LazyInitLog<AttributeBuilderForImport> AttributeBuilder;
+
 
         #endregion
 
@@ -144,24 +146,27 @@ namespace ToSic.Eav.Apps.ImportExport
                     var valType = attribute.Type;
                     var valName = attribute.Name;
                     var value = xEntity.Element(valName)?.Value;
+
+                    // Case 1: Nothing
                     if (value == null || value == XmlConstants.Null)
                         continue;
 
+                    // Case 2: Xml empty string
                     if (value == XmlConstants.Empty)
                     {
-                        // It is an empty string
-                        AttributeBuilder.AddValue(entity.Attributes, 
-                        /*entity.Attributes.AddValue(*/valName, "", attribute.Type, nodeLang, false, ResolveLinks);
+                        AttributeBuilder.Ready.AddValue(entity.Attributes, valName, "", attribute.Type, nodeLang, false, ResolveLinks);
                         continue;
                     }
 
-                    var valueReferenceLanguage = value.GetLanguageInARefTextCode()?.ToLowerInvariant();
+                    // Check if reference to another language like "[ref(en-US,ro)]"
+                    var valueReferenceLanguage = AttributeLanguageImportHelper.GetLanguageInARefTextCode(value)?.ToLowerInvariant();
+
+                    // Case 3: Not a reference, normal value
                     if (valueReferenceLanguage == null) // It is not a value reference.. it is a normal text
                     {
                         try
                         {
-                            AttributeBuilder.AddValue(entity.Attributes, 
-                            /*entity.Attributes.AddValue(*/valName, value, valType, nodeLang, false, ResolveLinks);
+                            AttributeBuilder.Ready.AddValue(entity.Attributes, valName, value, valType, nodeLang, false, ResolveLinks);
                         }
                         catch (FormatException)
                         {
@@ -170,7 +175,8 @@ namespace ToSic.Eav.Apps.ImportExport
                         continue;
                     }
 
-                    var valueReferenceProtection = value.GetValueReferenceProtection();
+                    // Case 4: Error - Reference without specific "ro" or "rw"
+                    var valueReferenceProtection = AttributeLanguageImportHelper.GetValueReferenceProtection(value);
                     if (valueReferenceProtection != XmlConstants.ReadWrite && valueReferenceProtection != XmlConstants.ReadOnly)
                     {
                         ErrorLog.Add(ImportErrorCode.InvalidValueReferenceProtection, value, nodesCount);
@@ -180,7 +186,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                     // if this value is just a placeholder/reference to another value,
                     // then find the master record, and add this language to it's users
-                    var entityValue = entity.Attributes.FindItemOfLanguage(valName, valueReferenceLanguage);
+                    var entityValue = AttributeLanguageImportHelper.ValueItemOfLanguageOrNull(entity.Attributes, valName, valueReferenceLanguage);
                     if (entityValue != null)
                     {
                         entityValue.Languages.Add(new Language { Key = nodeLang, ReadOnly = valueReadOnly });
@@ -203,7 +209,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         continue;
                     }
 
-                    var val = AttributeBuilder.AddValue(entity.Attributes, /*entity.Attributes.AddValue(*/valName,
+                    var val = AttributeBuilder.Ready.AddValue(entity.Attributes, valName,
                             valExisting,
                             valType,
                             valueReferenceLanguage,

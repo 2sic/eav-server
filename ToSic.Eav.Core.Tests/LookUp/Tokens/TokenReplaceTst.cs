@@ -252,7 +252,6 @@ Now try a token which returns a token: Daniel";
 
             var qs = new LookUpInDictionary("QueryString");
             qs.Properties.Add("UserName", "Daniel");
-            //qs.Properties.Add("Id", "7");
             var mod = new LookUpInDictionary("Module");
             mod.Properties.Add("SubId", "4567");
             var appS = new LookUpInDictionary("AppSettings");
@@ -261,20 +260,13 @@ Now try a token which returns a token: Daniel";
             appS.Properties.Add("UserNameMaybeFromUrl", "[QueryString:UserName||Samantha]");
             var tok = new LookUpInDictionary("token");
             tok.Properties.Add("key", "What a Token!");
-            //var sources = new Dictionary<string, ILookUp>
-            //{
-            //    {qs.Name.ToLowerInvariant(), qs},
-            //    {mod.Name.ToLowerInvariant(), mod},
-            //    {appS.Name.ToLowerInvariant(), appS},
-            //    {tok.Name.ToLowerInvariant(), tok}
-            //};
             var engine = new LookUpEngine(null);
             engine.Add(qs);
             engine.Add(mod);
             engine.Add(appS);
             engine.Add(tok);
 
-            var tr = new TokenReplace(/*sources*/engine);
+            var tr = new TokenReplace(engine);
             var resultNoRecurrance = tr.ReplaceTokens(original);
             Assert.AreEqual(expectedNoRecurrance, resultNoRecurrance, "No Recurrance");
             var resultRecurrance = tr.ReplaceTokens(original, 2);

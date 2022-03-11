@@ -42,7 +42,7 @@ namespace ToSic.Eav.Configuration
         {
             // ReSharper disable PossibleMultipleEnumeration
             var enabled = Enabled(features);
-            exception = enabled ? null : new FeaturesDisabledException(message + " - " + MsgMissingSome(features), features);
+            exception = enabled ? null : new FeaturesDisabledException(message + " - " + MsgMissingSome(features));
             // ReSharper restore PossibleMultipleEnumeration
             return enabled;
         }
@@ -71,19 +71,20 @@ namespace ToSic.Eav.Configuration
             {
                 _stored = value;
                 _all = null;
+                _enabledFeatures = null;
             }
         }
         private static FeatureListStored _stored;
 
 
-        private static List<FeatureState> Merge(FeatureListStored config, IReadOnlyCollection<FeatureDefinition> cat)
+        private static List<FeatureState> Merge(FeatureListStored config, IReadOnlyCollection<FeatureDefinition> featuresCat)
         {
             var licService = new LicenseService();
 
-            var allFeats = cat.Select(f =>
+            var allFeats = featuresCat.Select(f =>
             {
                 var enabled = false;
-                var allowed = false;
+                var licenseEnabled = false;
                 var msgShort = "default";
                 var message = " by default";
                 var expiry = DateTime.MinValue;
@@ -94,8 +95,8 @@ namespace ToSic.Eav.Configuration
                 {
                     licService.Enabled.TryGetValue(enabledRule.LicenseDefinition, out var licenseState);
                     var specialExpiry = licenseState?.Expiration;
-                    enabled = enabledRule.EnableFeatureByDefault || enabledRule.LicenseDefinition.AutoEnable;
-                    allowed = true; // The license is active, so it's allowed to enable this
+                    enabled = enabledRule.EnableFeatureByDefault;
+                    licenseEnabled = true; // The license is active, so it's allowed to enable this
                     msgShort = enabledRule.LicenseDefinition.Name;
                     message = $" by default with license {enabledRule.LicenseDefinition.Name}";
                     expiry = specialExpiry ?? LicenseCatalog.UnlimitedExpiry;
@@ -105,18 +106,21 @@ namespace ToSic.Eav.Configuration
                 var inConfig = config.Features.FirstOrDefault(cf => cf.Id == f.Guid);
                 if (inConfig != null)
                 {
-                    enabled = allowed && inConfig.Enabled;
+                    enabled = licenseEnabled && inConfig.Enabled;
                     expiry = inConfig.Expires;
-                    msgShort = allowed ? "configuration" : "unlicensed";
-                    message = allowed ? " by configuration" : " - requires license";
+                    msgShort = licenseEnabled ? "configuration" : "unlicensed";
+                    message = licenseEnabled ? " by configuration" : " - requires license";
                 }
-                return new FeatureState(f, expiry, enabled, msgShort, (enabled ? "Enabled" : "Disabled") + message);
+
+                return new FeatureState(f, expiry, enabled, msgShort, (enabled ? "Enabled" : "Disabled") + message,
+                    licenseEnabled, enabledByDefault: enabledRule?.EnableFeatureByDefault ?? false, enabledStored: inConfig?.Enabled);
             }).ToList();
 
-            // Find additional, un matching features
+            // Find additional, un matching features which are not known in the catalog
             var missingFeatures = config.Features
-                .Where(f => cat.All(fd => fd.Guid != f.Id))
-                .Select(f => new FeatureState(new FeatureDefinition(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually"));
+                .Where(f => featuresCat.All(fd => fd.Guid != f.Id))
+                .Select(f => new FeatureState(new FeatureDefinition(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually", 
+                    licenseEnabled: false, enabledByDefault: false,  enabledStored: f.Enabled));
 
             var final = allFeats.Union(missingFeatures).ToList();
             return final;

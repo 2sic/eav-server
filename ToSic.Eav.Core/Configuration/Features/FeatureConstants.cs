@@ -12,8 +12,8 @@ namespace ToSic.Eav.Configuration
         [PrivateApi]
         public const string FeaturesJson = "features.json";
 
-        [PrivateApi]
-        public const string FeaturesPath = Constants.FolderDataCustom + "/configurations/";
+        //[PrivateApi]
+        //public const string FeaturesPath = Constants.FolderDataCustom + "/configurations/";
 
         [PrivateApi("no good reason to publish this")]
         internal const string FeaturesValidationSignature2Sxc930 =

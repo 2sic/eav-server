@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport;
@@ -17,22 +18,16 @@ namespace ToSic.Eav.Persistence.File
 {
     public partial class FileSystemLoader: HasLog, IContentTypeLoader
     {
-        private const string ContentTypeFolder = "contenttypes\\";
-        private const string QueryFolder = "queries\\";
-        private const string ConfigurationFolder = "configurations\\";
-        //private const string ItemFolder = "items\\";
-
-
-        public int AppId = 0;
+        public int AppId = -999;
 
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
-        public FileSystemLoader(/*JsonSerializer jsonSerializerUnready,*/ IServiceProvider serviceProvider) : base(LogNames.Eav + ".FsLoad")
+        public FileSystemLoader(IServiceProvider serviceProvider) : base(LogNames.Eav + ".FsLoad")
         {
-            //_jsonSerializerUnready = jsonSerializerUnready;
             _serviceProvider = serviceProvider;
         }
+        private readonly IServiceProvider _serviceProvider;
 
         public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
         {
@@ -60,15 +55,13 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_ser != null) return _ser;
-                _ser = _serviceProvider.Build<JsonSerializer>(); // _jsonSerializerUnready;
+                _ser = _serviceProvider.Build<JsonSerializer>();
                 _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
         }
         private JsonSerializer _ser;
-        //private readonly JsonSerializer _jsonSerializerUnready;
-        private readonly IServiceProvider _serviceProvider;
 
         internal void ResetSerializer(AppState appState)
         {
@@ -86,20 +79,16 @@ namespace ToSic.Eav.Persistence.File
         #endregion
 
         #region Queries & Configuration
-        private string QueryPath => Path + QueryFolder;
-        private string ConfigurationPath => Path + ConfigurationFolder;
-        public IList<IEntity> Queries(int idSeed) => LoadEntitiesFromSubfolder(QueryPath, idSeed);
 
-        public IList<IEntity> Configurations(int idSeed) => LoadEntitiesFromSubfolder(ConfigurationPath, idSeed);
-
-        private IList<IEntity> LoadEntitiesFromSubfolder(string path, int seed)
+        public IList<IEntity> Entities(string folder, int idSeed)
         {
             // #1. check that folder exists
-            if (!CheckPathExists(Path) || !CheckPathExists(path))
+            var subPath = System.IO.Path.Combine(Path, folder);
+            if (!CheckPathExists(Path) || !CheckPathExists(subPath))
                 return new List<IEntity>();
 
             // #2 find all content-type files in folder
-            var jsons = Directory.GetFiles(path, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json))
+            var jsons = Directory.GetFiles(subPath, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                 .OrderBy(f => f)
                 .ToArray();
 
@@ -107,11 +96,10 @@ namespace ToSic.Eav.Persistence.File
             var entitiesForRelationships = new List<IEntity>();
             var relationshipsSource = new DirectEntitiesSource(entitiesForRelationships);
 
-
             // #3.2 load entity-items from folder
             var jsonSerializer = Serializer;
             var entities = jsons
-                .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++seed, relationshipsSource))
+                .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++idSeed, relationshipsSource))
                 .Where(entity => entity != null)
                 .ToList();
 
@@ -158,7 +146,7 @@ namespace ToSic.Eav.Persistence.File
             return cts;
         }
 
-        private string ContentTypePath => Path + ContentTypeFolder;
+        private string ContentTypePath => System.IO.Path.Combine(Path, Configuration.FsDataConstants.TypesFolder);
 
         /// <summary>
         /// Try to load a content-type file, but if anything fails, just return a null

@@ -17,15 +17,15 @@ namespace ToSic.Eav.Apps.Parts
 
         private int _zoneId;
 
-        public AppCreator(DbDataController db, AppManager appManager, IRepositoryLoader repositoryLoader, SystemManager systemManager) : base("Eav.AppBld")
+        public AppCreator(DbDataController db, IRepositoryLoader repositoryLoader, SystemManager systemManager, Generator<AppInitializer> appInitGenerator) : base("Eav.AppBld")
         {
             _db = db;
-            _appManager = appManager;
+            _appInitGenerator = appInitGenerator;
             SystemManager = systemManager.Init(Log);
             RepositoryLoader = repositoryLoader.Init(Log);
         }
         private readonly DbDataController _db;
-        private readonly AppManager _appManager;
+        private readonly Generator<AppInitializer> _appInitGenerator;
         protected readonly SystemManager SystemManager;
         protected readonly IRepositoryLoader RepositoryLoader;
 
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Apps.Parts
             // must get app from DB directly, not from cache, so no State.Get(...)
             var appState = RepositoryLoader.AppState(appId, false);
 
-            _appManager.ServiceProvider.Build<AppInitializer>()
+            _appInitGenerator.New // _appManager.ServiceProvider.Build<AppInitializer>()
                 .Init(appState, Log)
                 .InitializeApp(appName);
         }

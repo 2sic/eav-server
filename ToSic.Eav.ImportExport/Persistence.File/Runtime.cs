@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps;
@@ -14,7 +13,7 @@ using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class Runtime : HasLog<IRuntime>, IRuntime
+    public partial class Runtime : HasLog/*<IRuntime>*/, IRuntime
     {
         #region Constructor and DI
 
@@ -88,19 +87,16 @@ namespace ToSic.Eav.Persistence.File
                 var wrapLog = Log.Call(message: msg, useTimer: true);
 
                 // Prepare metadata lists & relationships etc.
-                // TODO: this might fail, as we don't have a list of Metadata
                 appState.InitMetadata(new Dictionary<int, string>().ToImmutableDictionary(a => a.Key, a => a.Value));
                 appState.Name = Constants.PresetName;
                 appState.Folder = Constants.PresetName;
 
-
                 // prepare content-types
-                var typeTimer = Stopwatch.StartNew();
+                var wrapLoadTypes = Log.Call(useTimer: true);
                 // Just attach all global content-types to this app, as they belong here
-                var dbTypes = LoadGlobalContentTypes(Global.GlobalContentTypeMin);
-                appState.InitContentTypes(dbTypes);
-                typeTimer.Stop();
-                Log.Add($"timers types:{typeTimer.Elapsed}");
+                var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
+                appState.InitContentTypes(types);
+                wrapLoadTypes($"types loaded");
 
                 // load data
                 try
@@ -112,15 +108,16 @@ namespace ToSic.Eav.Persistence.File
                     // This should probably not cause any problems, but it's important to know
                     // We may optimize / change this some day
                     Log.Add("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
-                    Loaders.ForEach(l => l.ResetSerializer(appState.ContentTypes.ToList()));
+                    var appTypes = appState.ContentTypes.ToList();
+                    Loaders.ForEach(l => l.ResetSerializer(appTypes));
 
-                    Log.Add("Load config items");
-                    var configs = LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();
-                    foreach (var c in configs) appState.Add(c as Entity, null, true);
-
-                    Log.Add("Add queries");
-                    var queries = LoadGlobalItems(Global.GroupQuery)?.ToList() ?? new List<IEntity>();
-                    foreach (var q in queries) appState.Add(q as Entity, null, true);
+                    Log.Add("Load items");
+                    foreach (var entityItemFolder in FsDataConstants.EntityItemFolders)
+                    {
+                        Log.Add($"Load {entityItemFolder} items");
+                        var configs = LoadGlobalItems(entityItemFolder)?.ToList() ?? new List<IEntity>();
+                        foreach (var c in configs) appState.Add(c as Entity, null, true);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -134,42 +131,42 @@ namespace ToSic.Eav.Persistence.File
             return outerWrapLog("ok", appState);
         }
 
-        /// <summary>
-        /// Reload App Configuration Items from the File System
-        /// </summary>
-        public void ReloadConfigEntities()
-        {
-            var mainWrap = Log.Call();
-            var appStates = _serviceProvider.Build<IAppStates>();
-            var appState = appStates.GetPresetApp();
+        ///// <summary>
+        ///// Reload App Configuration Items from the File System
+        ///// </summary>
+        //public void ReloadConfigEntities()
+        //{
+        //    var mainWrap = Log.Call();
+        //    var appStates = _serviceProvider.Build<IAppStates>();
+        //    var appState = appStates.GetPresetApp();
 
-            var previousConfig = appState.List.FirstOrDefaultOfType(FeatureConstants.TypeName);
-            var prevId = previousConfig?.EntityId;
+        //    var previousConfig = appState.List.FirstOrDefaultOfType(FeatureConstants.TypeName);
+        //    var prevId = previousConfig?.EntityId;
 
-            appState.Load(() =>
-            {
-                var wrapLog = Log.Call(message: "Inside loader");
-                try
-                {
-                    Log.Add("Load config items");
-                    var configs = LoadGlobalItems(Global.GroupConfiguration)?.ToList() ?? new List<IEntity>();
-                    Log.Add($"Found {configs.Count} items");
-                    var featuresOnly = configs.OfType(FeatureConstants.TypeName).ToList();
-                    Log.Add($"Found {featuresOnly.Count} items which are {FeatureConstants.TypeName} - expected: 1");
-                    Log.Add("Ids of previous and new should match, otherwise we may run into problems. " +
-                            $"Prev: {prevId}, New: {featuresOnly.FirstOrDefault()?.EntityId}");
-                    foreach (var c in featuresOnly) appState.Add(c as Entity, null, true);
-                }
-                catch (Exception ex)
-                {
-                    Log.Add("Error updating config");
-                    Log.Exception(ex);
-                }
+        //    appState.Load(() =>
+        //    {
+        //        var wrapLog = Log.Call(message: "Inside loader");
+        //        try
+        //        {
+        //            Log.Add("Load config items");
+        //            var configs = LoadGlobalItems(FsDataConstants.ConfigFolder)?.ToList() ?? new List<IEntity>();
+        //            Log.Add($"Found {configs.Count} items");
+        //            var featuresOnly = configs.OfType(FeatureConstants.TypeName).ToList();
+        //            Log.Add($"Found {featuresOnly.Count} items which are {FeatureConstants.TypeName} - expected: 1");
+        //            Log.Add("Ids of previous and new should match, otherwise we may run into problems. " +
+        //                    $"Prev: {prevId}, New: {featuresOnly.FirstOrDefault()?.EntityId}");
+        //            foreach (var c in featuresOnly) appState.Add(c as Entity, null, true);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Log.Add("Error updating config");
+        //            Log.Exception(ex);
+        //        }
 
-                wrapLog("done");
-            });
+        //        wrapLog("done");
+        //    });
 
-            mainWrap("ok");
-        }
+        //    mainWrap("ok");
+        //}
     }
 }

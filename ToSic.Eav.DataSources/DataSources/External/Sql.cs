@@ -252,7 +252,7 @@ namespace ToSic.Eav.DataSources
                     message: "The ConnectionString property is empty / has not been initialized");
 
 			// The content type returned in this query
-			var contentTypeToUse = ContentTypeBuilder.Fake(ContentType);
+			var contentTypeToUse = DataBuilder.Type(ContentType);
 
 			var list = new List<IEntity>();
             using (var connection = new SqlConnection(ConnectionString))

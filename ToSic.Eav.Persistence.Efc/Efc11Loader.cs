@@ -1,6 +1,8 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
@@ -11,12 +13,15 @@ namespace ToSic.Eav.Persistence.Efc
     {
         #region constructor and private vars
 
-        public Efc11Loader(EavDbContext dbContext,
+        public Efc11Loader(
+            EavDbContext dbContext,
             Lazy<IZoneCultureResolver> environmentLazy,
             IServiceProvider serviceProvider,
             IAppInitializedChecker initializedChecker,
             IAppStates appStates,
-            LogHistory logHistory
+            LogHistory logHistory,
+            Lazy<IFeaturesService> featuresService,
+            MultiBuilder multiBuilder
             ) : base("Db.Efc11")
         {
             ServiceProvider = serviceProvider;
@@ -25,6 +30,8 @@ namespace ToSic.Eav.Persistence.Efc
             _initializedChecker = initializedChecker;
             _appStates = appStates;
             _logHistory = logHistory;
+            _featuresService = featuresService;
+            _multiBuilder = multiBuilder;
         }
 
         public Efc11Loader UseExistingDb(EavDbContext dbContext)
@@ -39,6 +46,8 @@ namespace ToSic.Eav.Persistence.Efc
         private readonly IAppInitializedChecker _initializedChecker;
         private readonly IAppStates _appStates;
         private readonly LogHistory _logHistory;
+        private readonly Lazy<IFeaturesService> _featuresService;
+        private readonly MultiBuilder _multiBuilder;
 
         #endregion
     }

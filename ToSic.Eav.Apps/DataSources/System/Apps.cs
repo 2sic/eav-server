@@ -4,12 +4,13 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources.System
+namespace ToSic.Eav.DataSources.Sys
 {
     /// <inheritdoc />
     /// <summary>
@@ -92,7 +93,7 @@ namespace ToSic.Eav.DataSources.System
                     appObj = _serviceProvider.Build<Eav.Apps.App>();
                     appObj.Init(new AppIdentity(zone.ZoneId, app.Key), null, Log);
                     // this will get the guid, if the identity is not "default"
-                    if (Guid.TryParse(appObj.AppGuid, out var g)) guid = g;
+                    if (Guid.TryParse(appObj.NameId, out var g)) guid = g;
                 }
                 catch(Exception ex)
                 {

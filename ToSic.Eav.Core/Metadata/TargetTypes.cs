@@ -115,6 +115,26 @@ namespace ToSic.Eav.Metadata
         /// <remarks>New in v13</remarks>
         User = 18,
 
+
+        [PrivateApi("can be used for something later on")]
+        Reserved19 = 19,
+
+        // TODO:
+        [PrivateApi("not ready yet, still in concept, may change")]
+        License = 20,
+
+        [PrivateApi("not ready yet, still in concept, may change")]
+        Feature = 21,
+
+        [PrivateApi("can be used for something later on")]
+        Reserved22 = 22,
+        [PrivateApi("can be used for something later on")]
+        Reserved23 = 23,
+
+        [PrivateApi("not ready yet, still in concept, may change")]
+        EntityValue = 24,
+
+
         /// <summary>
         /// Custom target (90). This is what you should use for basic apps which have a custom target that's none of the other defaults.
         /// </summary>

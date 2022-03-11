@@ -6,10 +6,10 @@ namespace ToSic.Eav.WebApi.Dto
     public class EditPrefetchDto
     {
         /// <summary>
-        /// Prefetched links for hyperlink fields
+        /// Dictionary where each field contains a list of ADAM items
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, LinkInfoDto> Links { get; set; }
+        public Dictionary<string, Dictionary<string, IEnumerable<AdamItemDto>>> Adam { get; set; }
 
         /// <summary>
         /// Prefetched entities for entity picker
@@ -18,9 +18,9 @@ namespace ToSic.Eav.WebApi.Dto
         public IEnumerable<EntityForPickerDto> Entities { get; set; }
 
         /// <summary>
-        /// Dictionary where each field contains a list of ADAM items
+        /// Prefetched links for hyperlink fields
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, Dictionary<string, IEnumerable<AdamItemDto>>> Adam { get; set; }
+        public Dictionary<string, LinkInfoDto> Links { get; set; }
     }
 }

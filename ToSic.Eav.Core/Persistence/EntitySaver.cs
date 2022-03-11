@@ -8,9 +8,17 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence
 {
-    public class EntitySaver :HasLog
+    public class EntitySaver : HasLog<EntitySaver>
     {
-        public EntitySaver(ILog parentLog = null) : base("Dta.Saver", parentLog) { }
+        public EntitySaver(
+            MultiBuilder multiBuilder
+        ) : base("Dta.Saver")
+        {
+            _multiBuilder = multiBuilder;
+        }
+
+        private readonly MultiBuilder _multiBuilder;
+
 
         /// <summary>
         /// Goal: Pass changes into an existing entity so that it can then be saved as a whole, with correct
@@ -44,8 +52,8 @@ namespace ToSic.Eav.Persistence
 
             #region Step 2: clean up unwanted attributes from both lists
 
-            var origAttribs = original?.Attributes.Copy();
-            var newAttribs = update.Attributes.Copy();
+            var origAttribs = _multiBuilder.Attribute.Clone(original?.Attributes); //.Copy();
+            var newAttribs = _multiBuilder.Attribute.Clone(update.Attributes); //.Copy();
 
             Log.Add($"has orig:{originalWasSaved}, origAtts⋮{origAttribs?.Count}, newAtts⋮{newAttribs.Count}");
 
@@ -58,8 +66,12 @@ namespace ToSic.Eav.Persistence
             if (!ct.IsDynamic && !saveOptions.PreserveUnknownAttributes && ct.Attributes != null)
             {
                 var keys = ct.Attributes.Select(a => a.Name).ToList();
+
                 keys.Add(Attributes.EntityFieldGuid);
                 keys.Add(Attributes.EntityFieldIsPublished);
+
+                AddIsPublishedAttribute(origAttribs, original?.IsPublished); // tmp store original IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
+                AddIsPublishedAttribute(newAttribs, update.IsPublished); // tmp store update IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
 
                 if (originalWasSaved) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
                 newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
@@ -101,10 +113,25 @@ namespace ToSic.Eav.Persistence
                         ? MergeAttribute(mergedAttribs[newAttrib.Key], newAttrib.Value, saveOptions)
                         : newAttrib.Value;
 
-            var result = EntityBuilder.FullClone(idProvidingEntity, mergedAttribs, null);
+            var result = _multiBuilder.Entity.Clone(idProvidingEntity, mergedAttribs, null);
             CorrectPublishedAndGuidImports(result, logDetails);
             return callLog?.Invoke("ok", result) ?? result;
         }
+
+        private void AddIsPublishedAttribute(IDictionary<string, IAttribute> attributes, bool? isPublished) 
+        {
+            if (isPublished.HasValue && !attributes.ContainsKey(Attributes.EntityFieldIsPublished)) 
+                attributes.Add(Attributes.EntityFieldIsPublished, CreateIsPublishedAttribute(isPublished.Value));
+        }
+
+
+        private IAttribute CreateIsPublishedAttribute(bool isPublished)
+        {
+            var attribute = AttributeBuilder.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean);
+            attribute.Values = new List<IValue> { _multiBuilder.Value.Build(ValueTypes.Boolean.ToString(), isPublished, null)};
+            return attribute;
+        }
+
 
         /// <summary>
         /// Will remove all language-information for values which have no language
@@ -187,13 +214,16 @@ namespace ToSic.Eav.Persistence
                 if (remainingLanguages.Count == 0) continue;
 
                 // Add the value with the remaining languages / relationships
-                var val = orgVal.Copy(original.Type);
-                val.Languages = remainingLanguages.Select(l => ((Language)l).Copy() as ILanguage).ToList();
+                var val = _multiBuilder.Value.Clone(orgVal, original.Type); // orgVal.Copy(original.Type);
+                val.Languages = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
                 result.Values.Add(val);
             }
 
             return callLog("ok", result);
         }
+
+        private DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
+        private DimensionBuilder _langBuilder;
 
         private Dictionary<string, IAttribute> KeepOnlyKnownKeys(Dictionary<string, IAttribute> orig, List<string> keys)
         {
@@ -206,7 +236,7 @@ namespace ToSic.Eav.Persistence
             return result;
         }
 
-        private bool CorrectPublishedAndGuidImports(Entity newE, bool logDetails)
+        private bool CorrectPublishedAndGuidImports(Entity newE,  bool logDetails)
         {
             var callLog = logDetails ? Log.Call() : null;
             // check IsPublished

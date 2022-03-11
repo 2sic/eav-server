@@ -2,7 +2,6 @@
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 
@@ -60,7 +59,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             _targetDimensions = Deps.AppStates.Languages(zoneId, true);
 
-            _xmlBuilder = new XmlToEntity(Deps.GlobalApp, AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage, Log);
+            _xmlBuilder = Deps._xmlToEntity.Value.Init(Log).Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
             #endregion
 
             var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);

@@ -157,7 +157,8 @@ namespace ToSic.Eav.Apps.Parts
         {
             Log.Add($"delete guid:{guid}");
             // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
-            return Delete(Parent.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId);
+            // force: true - force-delete the data-source part
+            return Delete(Parent.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId, force: true);
         }
 
         public bool Delete(List<int> ids)

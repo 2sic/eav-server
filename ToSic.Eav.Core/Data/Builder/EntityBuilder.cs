@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Metadata;
-using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -10,12 +10,19 @@ namespace ToSic.Eav.Data.Builder
     /// It's basically different kinds of constructors, just to keep the primary 
     /// Entity object lean and clean
     /// </summary>
-    public static class EntityBuilder
+    public class EntityBuilder
     {
+
+        /// <summary>
+        /// Constructor - should never be called as it should be used with DI
+        /// </summary>
+        public EntityBuilder(AttributeBuilder attributeBuilder) => _attributeBuilder = attributeBuilder;
+        private readonly AttributeBuilder _attributeBuilder;
+
         /// <summary>
         /// Create a new Entity from a data store (usually SQL backend)
         /// </summary>
-        public static Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, 
+        public Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, 
             int repositoryId, ITarget metadataFor, IContentType type, 
             bool isPublished, 
             AppState source,
@@ -34,8 +41,11 @@ namespace ToSic.Eav.Data.Builder
             return e;
         }
 
-        [Obsolete("Unclear where this is used or actually needed - will probably remove soon")]
-        public static Entity EntityTemplate(int appId, Guid entityGuid, int entityId,
+        /// <summary>
+        /// Create an empty entity of a specific type.
+        /// Usually used in edit scenarios, where the presentation doesn't exist yet
+        /// </summary>
+        public Entity EmptyOfType(int appId, Guid entityGuid, int entityId,
             int repositoryId, IContentType type)
         {
             var ent = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId, 
@@ -43,7 +53,7 @@ namespace ToSic.Eav.Data.Builder
 
             ent.MetadataFor = new Target();
 
-            var titleAttrib = ent.GenerateAttributesOfContentType(type);
+            var titleAttrib = _attributeBuilder.GenerateAttributesOfContentType(ent, type);
             if (titleAttrib != null)
                 ent.SetTitleField(titleAttrib.Name);
             return ent;
@@ -73,7 +83,7 @@ namespace ToSic.Eav.Data.Builder
         /// Create a new Entity based on an Entity and Attributes
         /// Used in the Attribute-Filter, which generates a new entity with less properties
         /// </summary>
-        public static Entity FullClone(IEntity entity, 
+        public Entity Clone(IEntity entity, 
             Dictionary<string, IAttribute> attributes, 
             IEnumerable<EntityRelationship> allRelationships,
             IContentType newType = null)
@@ -92,18 +102,5 @@ namespace ToSic.Eav.Data.Builder
             return e;
         }
 
-
-        public static IAttribute GenerateAttributesOfContentType(this IEntity newEntity, IContentType contentType)
-        {
-            IAttribute titleAttrib = null;
-            foreach (var definition in contentType.Attributes)
-            {
-                var entityAttribute = ((ContentTypeAttribute)definition).CreateAttribute();
-                newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
-                if (definition.IsTitle)
-                    titleAttrib = entityAttribute;
-            }
-            return titleAttrib;
-        }
     }
 }

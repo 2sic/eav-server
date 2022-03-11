@@ -6,7 +6,7 @@ namespace ToSic.Eav.Configuration
 {
     public partial class FeaturesCatalog
     {
-        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(LicenseCatalog.Patron);
+        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(LicenseCatalog.Patron, true);
 
         public static readonly FeatureDefinition PasteImageFromClipboard = new FeatureDefinition(
             "PasteImageFromClipboard",
@@ -15,7 +15,7 @@ namespace ToSic.Eav.Configuration
             true,
             true,
             "Enable paste image from clipboard into a wysiwyg or file field.",
-            FeaturesCatalogRules.Security0,
+            FeaturesCatalogRules.Security0Improved,
             ForPatrons
         );
 
@@ -26,7 +26,7 @@ namespace ToSic.Eav.Configuration
             true,
             true,
             "Hide 'Sponsored by 2sic' messages - for example on the ADAM field.",
-            FeaturesCatalogRules.Security0,
+            FeaturesCatalogRules.Security0Improved,
             ForPatrons
         );
 
@@ -38,7 +38,7 @@ namespace ToSic.Eav.Configuration
             false,
             false,
             "Enables the ImageService to also provide WebP as better alternatives to Jpg and Png", 
-            FeaturesCatalogRules.Security0,
+            FeaturesCatalogRules.Security0Improved,
             ForPatrons
         );
 

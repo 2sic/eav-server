@@ -68,14 +68,13 @@ namespace ToSic.Eav.WebApi.Dto
         [JsonProperty(NullValueHandling = Ignore)] public bool? Query { get; set; }
 
         [JsonProperty(NullValueHandling = Ignore)] public bool? FormulaSave { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public bool? OverrideEditRestrictions { get; set; }
     }
 
     public class ContextLanguageDto
     {
         public string Primary { get; set; }
         public string Current { get; set; }
-        public Dictionary<string, string> All { get; set; }
-
         public List<SiteLanguageDto> List { get; set; }
     }
 

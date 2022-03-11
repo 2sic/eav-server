@@ -12,5 +12,7 @@
         
         
         // @"Data Source=(local);Initial Catalog=2sxc-dnn742;Integrated Security=True;";
+
+        public const string GlobalDataFolder = "c:\\Projects\\2sxc\\2sxc\\Src\\Data\\";
     }
 }

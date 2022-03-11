@@ -6,7 +6,7 @@ namespace ToSic.Eav.Configuration
 {
     public partial class FeaturesCatalog
     {
-        internal static List<FeatureLicenseRule> ForBeta = BuildRule(LicenseCatalog.CoreBeta);
+        internal static List<FeatureLicenseRule> ForBeta = BuildRule(LicenseCatalog.CoreBeta, false);
 
 
         // TODO: Probably change how this setting is used, so it's "Enable..." and defaults to true ?
@@ -18,7 +18,7 @@ namespace ToSic.Eav.Configuration
             "BlockFileResolveOutsideOfEntityAdam (BETA, not final)",
             false,
             false,
-            "If enabled, then links like 'file:72' will only work if the file is inside the ADAM of the current Entity.", FeaturesCatalogRules.Security0,
+            "If enabled, then links like 'file:72' will only work if the file is inside the ADAM of the current Entity.", FeaturesCatalogRules.Security0Improved,
             ForBeta
         );
     }

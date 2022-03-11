@@ -55,9 +55,12 @@ namespace ToSic.Eav.Security
         public class Dependencies
         {
             public IFeaturesService Features { get; }
-            public Dependencies(IFeaturesService features)
+            public IEnvironmentPermission EnvironmentPermission { get; }
+
+            public Dependencies(IFeaturesService features, IEnvironmentPermission environmentPermission)
             {
                 Features = features;
+                EnvironmentPermission = environmentPermission;
             }
         }
 
@@ -66,9 +69,11 @@ namespace ToSic.Eav.Security
         /// </summary>
         protected PermissionCheckBase(Dependencies dependencies, string logName): base(logName)
         {
-            _dependencies = dependencies;
+            _features = dependencies.Features;
+            _environmentPermission = dependencies.EnvironmentPermission;
         }
-        private readonly Dependencies _dependencies;
+        private readonly IFeaturesService _features;
+        private readonly IEnvironmentPermission _environmentPermission;
 
         /// <summary>
         /// Initialize this object so it can then give information regarding the permissions of an entity.
@@ -105,15 +110,15 @@ namespace ToSic.Eav.Security
 
         public Conditions GrantedBecause
         {
-            get;
-            protected set;
+            get => _environmentPermission.GrantedBecause;
+            protected set => _environmentPermission.GrantedBecause = value;
         }
 
         public bool UserMay(List<Grants> grants)
         {
             var wrapLog = Log.Call(() => $"[{string.Join(",", grants)}]");
             GrantedBecause = Conditions.Undefined;
-            var result = EnvironmentAllows(grants) || PermissionsAllow(grants);
+            var result = _environmentPermission.EnvironmentAllows(grants) || PermissionsAllow(grants);
             wrapLog($"{result} ({GrantedBecause})");
             return result;
         }
@@ -153,23 +158,6 @@ namespace ToSic.Eav.Security
             return result;
         }
 
-        /// <summary>
-        /// This should evaluate the grants and decide if the environment approves any of these grants.
-        /// Note that in many cases the implementation will simply check if the environment provides edit permissions, but
-        /// it can really check the grants required and compare each one with the environment.
-        /// </summary>
-        /// <param name="grants"></param>
-        /// <returns></returns>
-        protected abstract bool EnvironmentAllows(List<Grants> grants);
-
-
-        /// <summary>
-        /// Verify if a condition is a special code in the environment. 
-        /// Example: a DNN code which asks for "registered users" or "view-users"
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        protected abstract bool VerifyConditionOfEnvironment(string condition);
 
         /// <summary>
         /// The current user, as provided by injection

@@ -5,8 +5,10 @@ using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts
@@ -27,22 +29,33 @@ namespace ToSic.Eav.Apps.Parts
             Lazy<IImportExportEnvironment> environmentLazy, 
             SystemManager systemManager,
             IServiceProvider serviceProvider,
-            IAppsCache appsCache // Note: Singleton
+            LazyInitLog<EntitySaver> entitySaverLazy,
+            IAppsCache appsCache, // Note: Singleton
+            LazyInit<JsonSerializer> jsonSerializer,
+            Generator<ExportListXml> exportListXmlGenerator
             ) : base("App.EntMan")
         {
             _lazyImportListXml = lazyImportListXml;
             _importLazy = importLazy;
             _environmentLazy = environmentLazy;
             _serviceProvider = serviceProvider;
+            _entitySaverLazy = entitySaverLazy.SetLog(Log);
             _appsCache = appsCache;
+            _exportListXmGenerator = exportListXmlGenerator;
             SystemManager = systemManager.Init(Log);
+            Serializer = jsonSerializer.SetInit(j => j.Init(Parent.AppState, Log));
         }
         private readonly Lazy<ImportListXml> _lazyImportListXml;
         private readonly Lazy<Import> _importLazy;
         private readonly Lazy<IImportExportEnvironment> _environmentLazy;
+        private IImportExportEnvironment Environment => _environment ?? (_environment = _environmentLazy.Value.Init(Log));
+        private IImportExportEnvironment _environment;
         private readonly IServiceProvider _serviceProvider;
+        private readonly LazyInitLog<EntitySaver> _entitySaverLazy;
         private readonly IAppsCache _appsCache;
+        private readonly Generator<ExportListXml> _exportListXmGenerator;
         protected readonly SystemManager SystemManager;
+        private LazyInit<JsonSerializer> Serializer { get; }
 
         #endregion
 
@@ -71,7 +84,7 @@ namespace ToSic.Eav.Apps.Parts
             // in which case it would add it twice
             var appState = Parent.AppState;
 
-            saveOptions = saveOptions ?? _environmentLazy.Value.SaveOptions(Parent.ZoneId); // SaveOptions.Build(Parent.ZoneId);
+            saveOptions = saveOptions ?? Environment.SaveOptions(Parent.ZoneId); // SaveOptions.Build(Parent.ZoneId);
 
             // Inner call which will be executed with the Lock of the AppState
             List<int> InnerSaveInLock()

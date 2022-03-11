@@ -191,5 +191,8 @@ namespace ToSic.Eav.Logging
         /// Unlink a logger from the parent.
         /// </summary>
         void Unlink();
+
+        [PrivateApi("not public, created in v13")]
+        ILog Parent { get; }
     }
 }

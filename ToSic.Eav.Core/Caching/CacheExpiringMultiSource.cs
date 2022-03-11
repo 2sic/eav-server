@@ -9,9 +9,9 @@ namespace ToSic.Eav.Caching
     [PrivateApi]
     public class CacheExpiringMultiSource: ICacheExpiring
     {
-        private readonly ICacheExpiring[] _sources;
+        private readonly ITimestamped[] _sources;
 
-        public CacheExpiringMultiSource(params ICacheExpiring[] sources) => _sources = sources;
+        public CacheExpiringMultiSource(params ITimestamped[] sources) => _sources = sources;
 
         /// <summary>
         /// Assume that the relevant timestamp is the largest timestamp available on any of the sources.

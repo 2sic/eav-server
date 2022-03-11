@@ -73,7 +73,12 @@ namespace ToSic.Eav.Apps
         public bool Hidden { get; private set; }
 
         /// <inheritdoc />
-        public string AppGuid { get; private set; }
+        public string NameId { get; private set; }
+
+        /// <inheritdoc />
+        [Obsolete]
+        [PrivateApi]
+        public string AppGuid => NameId;
 
         /// <inheritdoc />
         public bool ShowDrafts { get; private set; }
@@ -98,7 +103,7 @@ namespace ToSic.Eav.Apps
             // Look up name in cache
             // 2020-11-25 changed to use State.Get. before it was this...
             //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
-            AppGuid = _dependencies.AppStates.Get(this).NameId;
+            NameId = _dependencies.AppStates.Get(this).NameId;
 
             InitializeResourcesSettingsAndMetadata();
 

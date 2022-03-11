@@ -19,7 +19,7 @@ namespace ToSic.Eav.Context
         /// <summary>
         /// The user in the current request / context
         /// </summary>
-        IUser User { get; set; }
+        IUser User { get; }
 
         /// <summary>
         /// Determines if the user is regarded as an editor within this context.

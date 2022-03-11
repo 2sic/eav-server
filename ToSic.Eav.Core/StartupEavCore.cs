@@ -10,6 +10,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
@@ -25,11 +26,20 @@ namespace ToSic.Eav
         {
             // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
-            
+            services.TryAddTransient<MultiBuilder>();
+            services.TryAddTransient<DimensionBuilder>();
+            services.TryAddTransient<AttributeBuilder>();
+            services.TryAddTransient<AttributeBuilderForImport>();
+            services.TryAddTransient<EntityBuilder>();
+            services.TryAddTransient<EntitySaver>();
+            services.TryAddTransient<ValueBuilder>();
+            services.TryAddTransient<ContentTypeBuilder>();
+            services.TryAddTransient<ContentTypeAttributeBuilder>();
+
             // Configuration objects
             services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
-            
+            services.TryAddTransient<GlobalPaths>();
             services.TryAddTransient<SystemLoader>();
 
             // Make sure that IFeaturesInternal and IFeatures use the same singleton!
@@ -39,9 +49,8 @@ namespace ToSic.Eav
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
             services.TryAddTransient<IAppStates, AppStates>();
+            services.TryAddTransient<AppSettingsStack>();
 
-            // Other...
-            services.TryAddTransient<AttributeBuilder>();
 
             // Permissions helper
             services.TryAddTransient<PermissionCheckBase.Dependencies>();
@@ -66,6 +75,10 @@ namespace ToSic.Eav
         {
             // Lazy loading dependency injection
             services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
+            services.AddTransient(typeof(LazyInit<>));
+            services.AddTransient(typeof(LazyInitLog<>));
+            services.AddTransient(typeof(Generator<>));
+            services.AddTransient(typeof(GeneratorLog<>));
 
             // History (very core service)
             services.TryAddTransient<LogHistory>();

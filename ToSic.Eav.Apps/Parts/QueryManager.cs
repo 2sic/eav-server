@@ -17,11 +17,24 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class QueryManager: PartOf<AppManager, QueryManager>
     {
-        public QueryManager(Lazy<SystemManager> systemManagerLazy) : base("App.QryMng")
+        public QueryManager(
+            Lazy<SystemManager> systemManagerLazy,
+            Lazy<ValueBuilder> valueBuilder,
+            LazyInit<JsonSerializer> jsonSerializer,
+            LazyInitLog<Eav.DataSources.Queries.QueryManager> queryManager
+            ) : base("App.QryMng")
         {
             _systemManagerLazy = systemManagerLazy;
+            _valueBuilder = valueBuilder;
+            Serializer = jsonSerializer.SetInit(j => j.Init(Parent.AppState, Log));
+            _queryManager = queryManager.SetLog(Log);
         }
         private readonly Lazy<SystemManager> _systemManagerLazy;
+        private readonly Lazy<ValueBuilder> _valueBuilder;
+        private LazyInit<JsonSerializer> Serializer { get; }
+        private readonly LazyInitLog<Eav.DataSources.Queries.QueryManager> _queryManager;
+        //private JsonSerializer Serializer => _serializer ?? (_serializer = _jsonLazy.Value.Init(Parent.AppState, Log));
+        //private JsonSerializer _serializer;
 
         public void SaveCopy(int id) => SaveCopy(Parent.Read.Queries.Get(id));
 
@@ -43,13 +56,14 @@ namespace ToSic.Eav.Apps.Parts
 
             newQuery.Attributes[Constants.QueryStreamWiringAttributeName].Values = new List<IValue>
             {
-                ValueBuilder.Build(ValueTypes.String, newWiring, new List<ILanguage>())
+                _valueBuilder.Value.Build(ValueTypes.String, newWiring, new List<ILanguage>())
             };
 
             var saveList = newParts.Select(p => p.Value).Concat(newMetadata).Cast<IEntity>().ToList();
             saveList.Add(newQuery);
             Parent.Entities.Save(saveList);
         }
+
 
         private static string RemapWiringToCopy(IList<Connection> origWiring, Dictionary<string, string> keyMap)
         {
@@ -72,18 +86,15 @@ namespace ToSic.Eav.Apps.Parts
 
         private Entity CopyAndResetIds(IEntity origQuery, Guid? newMetadataTarget = null)
         {
-            var newSer = Serializer.Serialize(origQuery);
-            var newEnt = Serializer.Deserialize(newSer) as Entity;
+            var serializer = Serializer.Ready;
+            var newSer = serializer.Serialize(origQuery);
+            var newEnt = serializer.Deserialize(newSer) as Entity;
             newEnt.SetGuid(Guid.NewGuid());
             newEnt.ResetEntityId();
             if(newMetadataTarget != null)
                 newEnt.Retarget(newMetadataTarget.Value);
             return newEnt;
         }
-
-        private JsonSerializer Serializer 
-            => _serializer ?? (_serializer = Parent.ServiceProvider.Build<JsonSerializer>().Init(Parent.AppState, Log));
-        private JsonSerializer _serializer;
 
         public bool Delete(int id)
         {
@@ -96,7 +107,7 @@ namespace ToSic.Eav.Apps.Parts
 
 
             // Get the Entity describing the Query and Query Parts (DataSources)
-            var queryEntity = Parent.ServiceProvider.Build<Eav.DataSources.Queries.QueryManager>().GetQueryEntity(id, Parent.AppState);
+            var queryEntity = _queryManager.Ready.GetQueryEntity(id, Parent.AppState);
             var qDef = new QueryDefinition(queryEntity, Parent.AppId, Log);
 
             var mdItems = qDef.Parts// parts

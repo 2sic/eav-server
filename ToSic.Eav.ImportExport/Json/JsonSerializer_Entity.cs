@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -31,9 +30,9 @@ namespace ToSic.Eav.ImportExport.Json
                 return null;
             }
 
-            JsonMetadataFor mddic = null;
+            JsonMetadataFor jsonFor = null;
             if (entity.MetadataFor.IsMetadata)
-                mddic = new JsonMetadataFor
+                jsonFor = new JsonMetadataFor
                 {
                     // #TargetTypeIdInsteadOfTarget - the Target should become obsolete
                     Target = MetadataTargets.GetName(entity.MetadataFor.TargetType),
@@ -100,7 +99,7 @@ namespace ToSic.Eav.ImportExport.Json
                 Type = new JsonType(entity),
                 Attributes = attribs,
                 Owner = entity.Owner,
-                For = mddic,
+                For = jsonFor,
                 Metadata = itemMeta
             };
             wrapLog("ok");
@@ -127,13 +126,11 @@ namespace ToSic.Eav.ImportExport.Json
             return entities;
         }
 
-        private static string LanguageKey(IValue v)
-        {
-            return string.Join(",", v.Languages
+        private static string LanguageKey(IValue v) =>
+            string.Join(",", v.Languages
                     .OrderBy(l => l.ReadOnly)
                     .Select(l => (l.ReadOnly ? ReadOnlyMarker : "") + l.Key)
                     .ToArray())
                 .EmptyAlternative(NoLanguage);
-        }
     }
 }

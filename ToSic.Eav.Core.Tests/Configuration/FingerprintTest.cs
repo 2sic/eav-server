@@ -1,12 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Core.Tests.Configuration
 {
     [TestClass]
-    public class FingerprintTest: TestBaseDiPlumbing
+    public class FingerprintTest: TestBaseDiEavFullAndDb
     {
         [TestMethod]
         public void FingerprintExistsAndStaysTheSame()

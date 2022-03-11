@@ -1,7 +1,5 @@
-﻿using System;
-using ToSic.Eav.Configuration;
+﻿using ToSic.Eav.Configuration;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps
 {
@@ -14,16 +12,16 @@ namespace ToSic.Eav.Apps
         /// <param name="sp"></param>
         /// <returns></returns>
         [PrivateApi]
-        public AppStateSettings SettingsInApp => _settingsInApp ?? (_settingsInApp = new AppStateSettings(this, ConfigurationConstants.Settings));
-        private AppStateSettings _settingsInApp;
+        public AppStateMetadata SettingsInApp => _settingsInApp ?? (_settingsInApp = new AppStateMetadata(this, ConfigurationConstants.Settings));
+        private AppStateMetadata _settingsInApp;
 
 
         [PrivateApi]
-        public AppStateSettings ResourcesInApp => _resourcesInApp ?? (_resourcesInApp = new AppStateSettings(this, ConfigurationConstants.Resources));
-        private AppStateSettings _resourcesInApp;
+        public AppStateMetadata ResourcesInApp => _resourcesInApp ?? (_resourcesInApp = new AppStateMetadata(this, ConfigurationConstants.Resources));
+        private AppStateMetadata _resourcesInApp;
 
         [PrivateApi]
-        public AppStateSettings ThingInApp(AppThingsToStack target) =>
+        public AppStateMetadata ThingInApp(AppThingsToStack target) =>
             target == AppThingsToStack.Settings ? SettingsInApp : ResourcesInApp;
     }
 }

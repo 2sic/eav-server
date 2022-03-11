@@ -34,6 +34,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// The content-type description
         /// </summary>
+        [Obsolete("Obsolete in v12, used to contain the description, which is now in the metadata")]
         string Description { get; }
 
         /// <summary>
@@ -99,13 +100,14 @@ namespace ToSic.Eav.Data
 	    bool Is(string name);
 
 
-        #region WIP 12.03
+        #region WIP 12.03 / 13.02
+
         /// <summary>
         /// This internal property says which of the content-type properties
         /// should be used for DynamicChildren, enabling Content.Lightbox.xyz instead of Content.Items.Lightbox.xyz
         /// </summary>
-        [PrivateApi("WIP 12.03")] string DynamicChildrenField { get; }
-
+        [PrivateApi("WIP 12.03")] 
+        string DynamicChildrenField { get; }
 
         #endregion
 

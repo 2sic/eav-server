@@ -20,7 +20,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                      ?? Create(scope, usesConfigurationOfOtherSet, alwaysShareConfig);
 
             ct.Name = name;
-            ct.Description = description;
+            ct.Description = description ?? string.Empty; // FIX: to ensure non nullable value in DB
             ct.Scope = scope;
             ct.ChangeLogCreated = DbContext.Versioning.GetChangeLogId();
 

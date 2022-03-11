@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Persistence.Xml;
 using ToSic.Eav.Serialization;
@@ -19,6 +20,8 @@ namespace ToSic.Eav.ImportExport
             services.TryAddTransient<XmlSerializer>();
 
             services.TryAddTransient<FileSystemLoader>();
+
+            services.TryAddTransient<XmlToEntity>();
 
             return services;
         }

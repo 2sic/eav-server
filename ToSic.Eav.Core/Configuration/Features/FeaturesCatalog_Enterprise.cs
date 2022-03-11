@@ -11,8 +11,8 @@ namespace ToSic.Eav.Configuration
             "Web Farm Cache",
             false,
             false,
-            "Enables WebFarm Cache use in Dnn", FeaturesCatalogRules.Security0,
-            BuildRule(LicenseCatalog.WebFarmCache)
+            "Enables WebFarm Cache use in Dnn", FeaturesCatalogRules.Security0Improved,
+            BuildRule(LicenseCatalog.WebFarmCache, true)
         );
 
     }

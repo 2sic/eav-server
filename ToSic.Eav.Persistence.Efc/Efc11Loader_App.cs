@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
@@ -40,6 +41,10 @@ namespace ToSic.Eav.Persistence.Efc
 
             if (ancestorAppId != 0)
             {
+                // Check if feature is enabled #SharedAppFeatureEnabled
+                if (!_featuresService.Value.IsEnabled(FeaturesCatalog.SharedApps.NameId))
+                    throw new FeaturesDisabledException(FeaturesCatalog.SharedApps.NameId, "This is required to load shared app states.");
+
                 var testParentApp = _appStates.Get(ancestorAppId);
                 parent = new ParentAppState(testParentApp, true, true);
             }

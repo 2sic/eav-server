@@ -19,9 +19,9 @@ namespace ToSic.Eav.Run.Unknown
                 "The system uses extensive Dependency Injection, and defaults to 'Unknown' implementations if something is missing. ");
             log.Add("You are seeing this warning, because apparently such an implementation was initialized, which shouldn't happen in a good productive environment.");
             log.Add("This warning will only appear once per used type");
-            logHistory.Add("warnings-mock", log);
+            log.Add("See https://r.2sxc.org/unknown-implementations");
+            logHistory.Add("warnings-not-implemented", log);
         }
-
 
         private static readonly List<Type> AlreadyWarnedTypes = new List<Type>();
     }

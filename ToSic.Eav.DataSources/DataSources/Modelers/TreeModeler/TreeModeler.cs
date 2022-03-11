@@ -32,8 +32,6 @@ namespace ToSic.Eav.DataSources
     // ReSharper disable once UnusedMember.Global
     public sealed class TreeModeler : DataSourceBase
     {
-        private readonly AttributeBuilder _attributeBuilderWip;
-
         #region Constants & Properties
         public override string LogId => "Ds.Tree"; // this text is added to all internal logs, so it's easier to debug
 
@@ -86,9 +84,11 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public TreeModeler(AttributeBuilder attributeBuilderWip)
+        public TreeModeler(MultiBuilder multiBuilder, AttributeBuilder attributeBuilder, EntityBuilder entityBuilder)
         {
-            _attributeBuilderWip = attributeBuilderWip;
+            _multiBuilder = multiBuilder;
+            _attributeBuilder = attributeBuilder;
+            _entityBuilder = entityBuilder;
             // Specify what out-streams this data-source provides. Usually just one, called "Default"
             Provide(GetList);
 
@@ -97,6 +97,10 @@ namespace ToSic.Eav.DataSources
             ConfigMask(TargetChildrenAttributeConfigKey, $"[Settings:{TargetChildrenAttributeConfigKey}]");
             ConfigMask(TargetParentAttributeConfigKey, $"[Settings:{TargetParentAttributeConfigKey}]");
         }
+
+        private readonly MultiBuilder _multiBuilder;
+        private readonly AttributeBuilder _attributeBuilder;
+        private readonly EntityBuilder _entityBuilder;
 
         /// <summary>
         /// Internal helper that returns the entities
@@ -114,10 +118,10 @@ namespace ToSic.Eav.DataSources
             switch (Identifier)
             {
                 case "EntityGuid":
-                    treeMapper = new TreeMapper<Guid>(_attributeBuilderWip);
+                    treeMapper = new TreeMapper<Guid>(_multiBuilder);
                     break;
                 case "EntityId":
-                    treeMapper = new TreeMapper<int>(_attributeBuilderWip);
+                    treeMapper = new TreeMapper<int>(_multiBuilder);
                     break;
                 default:
                     return wrapLog("error", SetError("Invalid Identifier",

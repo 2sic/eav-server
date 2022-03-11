@@ -16,16 +16,13 @@ namespace ToSic.Testing.Shared
         {
             // this will run after the base constructor, which configures DI
             var dbConfiguration = Build<IDbConfiguration>();
-            dbConfiguration.ConnectionString = DbConnectionString;
+            dbConfiguration.ConnectionString = TestConstants.ConStr;
 
-            var globalConfig = Build<IGlobalConfiguration>();
-            globalConfig.DataFolder = "c:\\Projects\\2sxc\\2sxc\\Src\\Data\\";
+            StartupGlobalFoldersAndFingerprint();
 
             // Make sure global types are loaded
             Build<SystemLoader>().StartUp();
         }
-
-        protected virtual string DbConnectionString => TestConstants.ConStr;
 
         protected override IServiceCollection SetupServices(IServiceCollection services = null)
         {

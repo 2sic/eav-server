@@ -9,19 +9,21 @@ namespace ToSic.Eav.DataSources
 {
     internal class TreeMapper<T> : ITreeMapper where T : struct
     {
-        private readonly AttributeBuilder _attributeBuilder;
-
-        public TreeMapper(AttributeBuilder attributeBuilder)
+        // TODO: PROBABLY make DI
+        public TreeMapper(MultiBuilder builder)
         {
-            _attributeBuilder = attributeBuilder;
+            _builder = builder;
         }
-        
+
+        private readonly MultiBuilder _builder;
+
+
         public IImmutableList<IEntity> GetEntitiesWithRelationships(IEnumerable<IEntity> originals, string parentIdentifierAttribute, string childParentAttribute, string targetChildrenAttribute, string targetParentAttribute)
         {
             var result = new List<IEntity>();
 
             // Copy all entities to prevent modification
-            var clones = originals.Select(e => EntityBuilder.FullClone(e, e.Attributes.Copy(), ((RelationshipManager)e.Relationships).AllRelationships)).ToList();
+            var clones = originals.Select(e => _builder.Entity.Clone(e, _builder.Attribute.Clone(e.Attributes) /*e.Attributes.Copy()*/, ((RelationshipManager)e.Relationships).AllRelationships)).ToList();
 
             // Convert list to lookup of "parent" guids
             var childrenByParentIdentifier = clones.ToLookup(e => GetTypedValueOrNull(e, childParentAttribute), e => e);
@@ -35,7 +37,7 @@ namespace ToSic.Eav.DataSources
 
                 // Find and assign children
                 var children = childrenByParentIdentifier[item.Key].ToList();
-                _attributeBuilder.AddValue(entity.Attributes, targetChildrenAttribute, children.Select(e => e.EntityGuid).ToList(), "Entity", null, false, false, new DirectEntitiesSource(children));
+                _builder.Attribute.AddValue(entity.Attributes, targetChildrenAttribute, children.Select(e => e.EntityGuid).ToList(), "Entity", null, false, false, new DirectEntitiesSource(children));
                 //entity.Attributes.AddValue(targetChildrenAttribute, children.Select(e => e.EntityGuid).ToList(), "Entity", null, false, false, new DirectEntitiesSource(children));
 
                 // Find and assign parent
@@ -44,7 +46,7 @@ namespace ToSic.Eav.DataSources
                 if (parentIdentifier.HasValue && identifiers.ContainsKey(parentIdentifier)) {
                     parents.Add(identifiers[parentIdentifier]);
                 }
-                _attributeBuilder.AddValue(entity.Attributes, targetParentAttribute, parents.Select(e => e.EntityGuid).ToList(), "Entity", null, false, false, new DirectEntitiesSource(parents));
+                _builder.Attribute.AddValue(entity.Attributes, targetParentAttribute, parents.Select(e => e.EntityGuid).ToList(), "Entity", null, false, false, new DirectEntitiesSource(parents));
                 //entity.Attributes.AddValue(targetParentAttribute, parents.Select(e => e.EntityGuid).ToList(), "Entity", null, false, false, new DirectEntitiesSource(parents));
 
                 result.Add(entity);

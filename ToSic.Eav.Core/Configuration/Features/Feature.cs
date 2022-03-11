@@ -49,14 +49,35 @@ namespace ToSic.Eav.Configuration
         public bool Public => _featureDefinition.Public;
         public FeatureSecurity Security => _featureDefinition.Security;
 
+        /// <summary>
+        /// Indicate if this feature is allowed to be activated
+        /// </summary>
+        public bool LicenseEnabled { get; }
 
-        public FeatureState(FeatureDefinition definition, DateTime expires, bool enabled, string msgShort, string msgLong)
+        /// <summary>
+        /// The stored enabled state.
+        /// The EnabledStored would be null, true or false.
+        /// Null if it was not stored. 
+        /// </summary>
+        public bool? EnabledStored { get; }
+
+        /// <summary>
+        /// If this feature is enabled by default (assuming the license requirements are met)
+        /// </summary>
+        public bool EnabledByDefault { get; }
+
+
+
+        public FeatureState(FeatureDefinition definition, DateTime expires, bool enabled, string msgShort, string msgLong, bool licenseEnabled, bool enabledByDefault, bool? enabledStored)
         {
             _featureDefinition = definition;
             Expires = expires;
             _enabled = enabled;
             EnabledReason = msgShort;
             EnabledReasonDetailed = msgLong;
+            LicenseEnabled = licenseEnabled;
+            EnabledStored = enabledStored;
+            EnabledByDefault = enabledByDefault;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.Core.Tests.LookUp
@@ -24,7 +23,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
 
         public static LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = AppIdX)
         {
-            var ent = new Eav.Data.Entity(appId, 0, ContentTypeBuilder.Fake(name), values, values.FirstOrDefault().Key);
+            var ent = new Eav.Data.Entity(appId, 0, new ContentTypeBuilder().Transient(name), values, values.FirstOrDefault().Key);
             return new LookUpInEntity(name, ent, null);
         }
 

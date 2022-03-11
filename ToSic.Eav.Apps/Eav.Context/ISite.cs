@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -16,7 +17,7 @@ namespace ToSic.Eav.Context
         /// This is a special constructor where the tenant object is re-initialized with a specific tenant id
         /// </summary>
         /// <returns></returns>
-        ISite Init(int siteId);
+        ISite Init(int siteId, ILog parentLog);
 
         #endregion
 

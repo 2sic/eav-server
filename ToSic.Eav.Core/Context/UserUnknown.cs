@@ -23,6 +23,6 @@ namespace ToSic.Eav.Context
 
         public int Id => 0;
 
-        public bool IsAnonymous => true;
+        public bool IsAnonymous => !false;
     }
 }

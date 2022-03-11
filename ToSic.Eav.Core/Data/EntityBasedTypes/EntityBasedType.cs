@@ -24,16 +24,13 @@ namespace ToSic.Eav.Data
         /// Create a EntityBasedType and wrap the entity provided
         /// </summary>
         /// <param name="entity"></param>
-        protected EntityBasedType(IEntity entity)
-        {
-            Entity = entity;    
-        }
+        protected EntityBasedType(IEntity entity) => Entity = entity;
 
         protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)
-            => LookupLanguages = languageCodes ?? new string[0];
+            => LookupLanguages = languageCodes ?? Array.Empty<string>();
 
         protected EntityBasedType(IEntity entity, string languageCode) : this(entity) 
-            => LookupLanguages = languageCode != null ? new[] {languageCode} : new string[0];
+            => LookupLanguages = languageCode != null ? new[] {languageCode} : Array.Empty<string>();
 
         /// <inheritdoc />
         public virtual string Title => _title ?? (_title = Entity?.GetBestTitle() ?? "");
@@ -49,7 +46,7 @@ namespace ToSic.Eav.Data
         public IMetadataOf Metadata => Entity?.Metadata;
 
         [PrivateApi]
-        protected string[] LookupLanguages { get; } = new string[0];
+        protected string[] LookupLanguages { get; } = Array.Empty<string>();
 
 
         /// <summary>

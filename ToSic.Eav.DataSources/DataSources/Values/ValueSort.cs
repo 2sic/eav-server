@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -33,7 +32,7 @@ namespace ToSic.Eav.DataSources
 	    public override string LogId => "DS.ValueS";
 
         private const string AttrKey = "Attributes";
-		private const string DirectionKey = "Value";
+		private const string DirectionKey = "Directions";
 		//private const string LangKey = "Language";
         
 		/// <summary>
@@ -72,8 +71,8 @@ namespace ToSic.Eav.DataSources
 		public ValueSort(ValueLanguages valLanguages)
 		{
             Provide(GetValueSort);
-		    ConfigMask(AttrKey, "[Settings:Attributes]");
-		    ConfigMask(DirectionKey, "[Settings:Directions]");
+		    ConfigMask(AttrKey, $"[Settings:{AttrKey}]");
+		    ConfigMask(DirectionKey, $"[Settings:{DirectionKey}]");
 		    ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
 
             _valLanguages = valLanguages.Init(Log);
@@ -86,6 +85,11 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         [PrivateApi] internal string[] LanguageList { get; private set; }
 
+        private const char FieldId = 'i';
+        private const char FieldMod = 'm';
+        private const char FieldTitle = 't';
+        private const char FieldCreate = 'c';
+        private const char FieldNormal = 'x';
 
 		private IImmutableList<IEntity> GetValueSort()
 		{
@@ -111,25 +115,32 @@ namespace ToSic.Eav.DataSources
 		    if (sortAttributes.Length == 1 && string.IsNullOrWhiteSpace(sortAttributes[0]))
 		        return wrapLog("no params", originals);
 
+			// 2022-03-09 2dm
+			// Previously we had some code which extracted "unsortable" items
+			// Based on the fact that they didn't have certain properties which were to be sorted on
+			// Now I plan to change it back so it won't optimize this
+			// And let LINQ handle null as before/after
+			// Plan is to leave this original code and comment in till ca. middle of 2022, in case something breaks
+            var results = originals;
             // only keep entities that have the expected attributes (but don't test for id/title, as all have these)
-            var valueAttrs = sortAttributes.Where(v => !Data.Attributes.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
-			var results = valueAttrs.Length == 0
-				? originals
-				: originals
-					.Where(e =>
-                    {
-						if(e.Attributes.Keys.Where(valueAttrs.Contains).Count() != valueAttrs.Length) return false;
-						var allNotNull = valueAttrs.All(va => e.GetBestValue(va, LanguageList) != null);
-						return allNotNull;
-                    })
-					.ToImmutableArray();
+            //var valueAttrs = sortAttributes.Where(v => !Data.Attributes.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
+			//var results = valueAttrs.Length == 0
+			//	? originals
+			//	: originals
+			//		.Where(e =>
+   //                 {
+			//			if(e.Attributes.Keys.Where(valueAttrs.Contains).Count() != valueAttrs.Length) return false;
+			//			var allNotNull = valueAttrs.All(va => e.GetBestValue(va, LanguageList) != null);
+			//			return allNotNull;
+   //                 })
+			//		.ToImmutableArray();
 
 			// if list is blank, then it didn't find the attribute to sort by - so just return unsorted
 			// note 2020-10-07 this may have been a bug previously, returning an empty list instead
-            if (!results.Any()) return wrapLog("sort-attribute not found", originals);
+            if (!results.Any()) return wrapLog("sort-attribute not found in data", originals);
 
-			// Keep entities which cannot sort by the required values (removed previously from results)
-            var unsortable = originals.Where(e => !results.Contains(e)).ToImmutableArray();
+            // Keep entities which cannot sort by the required values (removed previously from results)
+            //var unsortable = originals.Where(e => !results.Contains(e)).ToImmutableArray();
 
             IOrderedEnumerable<IEntity> ordered = null;
 
@@ -138,29 +149,23 @@ namespace ToSic.Eav.DataSources
 				// get attribute-name and type; set type=id|title for special cases
 				var a = sortAttributes[i];
 			    var aLow = a.ToLowerInvariant();
-				var specAttr = aLow == Data.Attributes.EntityFieldId ? 'i' 
-                    : aLow == Data.Attributes.EntityFieldTitle ? 't' 
-                    : aLow == Data.Attributes.EntityFieldModified ? 'm'
-                    : 'x';
+				var specAttr = aLow == Data.Attributes.EntityFieldId ? FieldId
+                    : aLow == Data.Attributes.EntityFieldTitle ? FieldTitle 
+                    : aLow == Data.Attributes.EntityFieldModified ? FieldMod
+                    : aLow == Data.Attributes.EntityFieldCreated ? FieldCreate
+                    : FieldNormal;
 				var isAscending = true;			// default
 				if (sortDirections.Length - 1 >= i)	// if this value has a direction specified, use that...
 					isAscending = !descendingCodes.Any(sortDirections[i].ToLowerInvariant().Trim().Contains);
 
-				if (ordered == null)
-				{
-					// First sort...
-					ordered = isAscending
-						? results.OrderBy(e => GetPropertyToSort(e, a, specAttr))
-						: results.OrderByDescending(e => GetPropertyToSort(e, a, specAttr));
-				}
-				else
-				{
-					// following sorts...
-					ordered = isAscending
-						? ordered.ThenBy(e => GetPropertyToSort(e, a, specAttr))
-						: ordered.ThenByDescending(e => GetPropertyToSort(e, a, specAttr));
-				}
-			}
+                var getValue = GetPropertyToSortFunc(specAttr, a, LanguageList);
+
+                ordered = ordered == null
+                    // First sort - no ordered data yet
+                    ? isAscending ? results.OrderBy(getValue) : results.OrderByDescending(getValue)
+                    // Following sorts, extend previous sort
+                    : isAscending ? ordered.ThenBy(getValue) : ordered.ThenByDescending(getValue);
+            }
 
 			ImmutableArray<IEntity> final;
 			try
@@ -172,20 +177,36 @@ namespace ToSic.Eav.DataSources
 				return SetError("Error sorting", "Sorting failed - see exception in insights", e);
             }
 
-            final = final.AddRange(unsortable).ToImmutableArray();
+            final = final/*.AddRange(unsortable)*/.ToImmutableArray();
 			return wrapLog("ok", final);
 		}
 
-		private object GetPropertyToSort(IEntity e, string a, char special)
-		{
-			// get either the special id or title, if title or normal field, then use language [0] = default
-			return special == 'i' ? e.EntityId 
-                : special == 'm' ? e.Modified
-                    : special == 't' 
-                    ? e.GetBestTitle(LanguageList) 
-                    : e.GetBestValue(a, LanguageList);
-            // note 2020-11-17 changed it from the line below to the above, to support languages    
-            //: (special == 't' ? e.Title : e[a])[0];
-		}
+        private Func<IEntity, object> GetPropertyToSortFunc(char propertyCode, string fieldName, string[] languages)
+        {
+            switch (propertyCode)
+            {
+				case FieldId: return e => e.EntityId;
+				case FieldMod: return e => e.Modified;
+				case FieldCreate: return e => e.Created;
+				case FieldTitle: return e => e.GetBestTitle(languages);
+				default: return e => e.GetBestValue(fieldName, languages);
+            }
+        }
+
+		//private object GetPropertyToSort(IEntity e, string a, char special)
+		//{
+		//	// get either the special id or title, if title or normal field, then use language [0] = default
+  //          return special == FieldId
+  //              ? e.EntityId
+  //              : special == FieldMod
+  //                  ? e.Modified
+  //                  : special == FieldCreate
+  //                      ? e.Created
+  //                      : special == FieldTitle
+  //                          ? e.GetBestTitle(LanguageList)
+  //                          : e.GetBestValue(a, LanguageList);
+  //          // note 2020-11-17 changed it from the line below to the above, to support languages    
+  //          //: (special == 't' ? e.Title : e[a])[0];
+  //      }
 	}
 }

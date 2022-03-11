@@ -1,15 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Api.Api01;
+using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
+using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Apps
 {
@@ -35,6 +39,8 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ContentTypeRuntime>();
             services.TryAddTransient<QueryRuntime>();
             services.TryAddTransient<MetadataRuntime>();
+            services.TryAddTransient<MdRecommendations>(); // new v13
+            services.TryAddTransient<MdRequirements>(); // new v13
             services.TryAddTransient<EntityRuntime>();
 
             services.TryAddTransient<Import>();
@@ -57,12 +63,22 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<IAppInitializedChecker, AppInitializedChecker>();
             services.TryAddTransient<AppInitializedChecker>();
             services.TryAddTransient<AppInitializer>();
+            services.TryAddTransient<AppPaths>();
 
             // export import stuff
             services.TryAddScoped<ExportListXml>();
             services.TryAddScoped<ImportListXml>();
             services.TryAddTransient<ExportImportValueConversion>();
             services.TryAddTransient<XmlImportWithFiles.Dependencies>();
+
+            // Simple DataController - registration was missing
+            services.TryAddTransient<SimpleDataController>();
+
+            // App Permission Check moved to this project as the implementations are now all identical
+            services.TryAddTransient<AppPermissionCheck>();
+            services.TryAddTransient<MultiPermissionsTypes>();
+            services.TryAddTransient<MultiPermissionsApp>();
+            services.TryAddTransient<MultiPermissionsApp.Dependencies>();
 
             // V13 Language Checks
             services.TryAddTransient<AppUserLanguageCheck>();
@@ -86,6 +102,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ISite, SiteUnknown>();
             services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
             services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
+            services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
             services.TryAddTransient<IAppFileSystemLoader, FileSystemLoaderUnknown>();
 
             services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();

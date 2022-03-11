@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -9,16 +10,20 @@ namespace ToSic.Eav.Context
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [PrivateApi]
-    public abstract class Site<T>: ISite, IWrapper<T>
+    public abstract class Site<T>: HasLog, ISite, IWrapper<T>
     {
+        protected Site(string logPrefix): base($"{logPrefix}.Site") { }
+
         /// <inheritdoc />
-        public abstract ISite Init(int siteId);
+        public abstract ISite Init(int siteId, ILog parentLog);
 
         /// <summary>
         /// The tenant settings - usually the DNN PortalSettings
         /// </summary>
-        public virtual T UnwrappedContents { get; protected set; }
-        public T GetContents() => UnwrappedContents;
+        public virtual T UnwrappedContents => _contents;
+        public T GetContents() => _contents;
+        // ReSharper disable once InconsistentNaming
+        [PrivateApi] protected T _contents;
 
         /// <inheritdoc />
         public abstract string CurrentCultureCode { get; }

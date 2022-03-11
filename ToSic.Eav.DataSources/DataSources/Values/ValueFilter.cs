@@ -27,15 +27,13 @@ namespace ToSic.Eav.DataSources
 
     public sealed class ValueFilter : DataSourceBase
     {
-        private readonly ValueLanguages _valLanguages;
-
         #region Configuration-properties Attribute, Value, Language, Operator
         /// <inheritdoc/>
         [PrivateApi]
         public override string LogId => "DS.ValueF";
 
         private const string AttrKey = "Attribute";
-        private const string FilterKey = "Value";
+        private const string ExpectedKey = "Value";
         private const string OperatorKey = "Operator";
         private const string TakeKey = "Take";
 
@@ -53,8 +51,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string Value
 		{
-			get => Configuration[FilterKey];
-		    set => Configuration[FilterKey] = value;
+			get => Configuration[ExpectedKey];
+		    set => Configuration[ExpectedKey] = value;
 		}
 
 		/// <summary>
@@ -86,15 +84,6 @@ namespace ToSic.Eav.DataSources
 		}
         #endregion
 
-        #region Error Constants
-
-        // these are public so we can verify them in tests
-
-        [PrivateApi]
-        public const string ErrorInvalidOperator = "Invalid Operator";
-
-        #endregion
-
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new ValueFilter
@@ -103,382 +92,100 @@ namespace ToSic.Eav.DataSources
 		public ValueFilter(ValueLanguages valLanguages)
 		{
             Provide(GetValueFilterOrFallback);
-		    ConfigMask(AttrKey, "[Settings:Attribute]");
-		    ConfigMask(FilterKey, "[Settings:Value]");
-		    ConfigMask(OperatorKey, "[Settings:Operator||==]");
-		    ConfigMask(TakeKey, "[Settings:Take]");
+		    ConfigMask(AttrKey, $"[Settings:{AttrKey}]");
+		    ConfigMask(ExpectedKey, $"[Settings:{ExpectedKey}]");
+		    ConfigMask(OperatorKey, $"[Settings:{OperatorKey}||==]");
+		    ConfigMask(TakeKey, $"[Settings:{TakeKey}]");
 		    ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
 
-            _valLanguages = valLanguages.Init(Log);
+            _valueLanguageService = valLanguages.Init(Log);
         }
+        private readonly ValueLanguages _valueLanguageService;
 
         private IImmutableList<IEntity> GetValueFilterOrFallback()
         {
             var callLog = Log.Call<IImmutableList<IEntity>>();
 
-            var res = GetValueFilter();
-            if (res.Any()) return callLog("found", res);
-            if (In.HasStreamWithItems(Constants.FallbackStreamName))
-                return callLog("fallback", In[Constants.FallbackStreamName].List.ToImmutableList());
+            // todo: maybe do something about languages?
+            Configuration.Parse();
 
-            return callLog("final", res);
+            // Get the data, then see if anything came back
+            var res = GetValueFilter();
+            return res.Any()
+                ? callLog("found", res)
+                : In.HasStreamWithItems(Constants.FallbackStreamName)
+                    ? callLog("fallback", In[Constants.FallbackStreamName].List.ToImmutableList())
+                    : callLog("final", res);
         }
 
 
         private IImmutableList<IEntity> GetValueFilter()
         {
             var wrapLog = Log.Call<IImmutableList<IEntity>>();
-            // todo: maybe do something about languages?
-            Configuration.Parse();
 
             Log.Add("applying value filter...");
-			_initializedAttrName = Attribute;
+			var fieldName = Attribute;
 
-            LanguageList = _valLanguages.PrepareLanguageList(Languages, Log);
+            var languages = _valueLanguageService.PrepareLanguageList(Languages, Log);
 
-            if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
-
-            //var originals = In[Constants.DefaultStreamName].List.ToImmutableList();
-
-            // stop if the list is empty
-            if (!originals.Any())
-                return wrapLog("empty", originals);
-
-
- 		    Func<IEntity, bool> compare; // the real comparison method which will be used
-
-            #region if it's a real filter - optimize
+            // Get the In-list and stop if error orempty
+            if (!GetRequiredInList(out var originals)) return wrapLog("error", originals);
+            if (!originals.Any()) return wrapLog("empty", originals);
 
 		    var op = Operator.ToLowerInvariant();
-            if (op == "none" || op == "all")
-                compare = e => true; // dummy comparison
-            else
-            {
-                // Find first Entity which has this property being not null
-                var firstEntity = Attributes.InternalOnlyIsSpecialEntityProperty(_initializedAttrName)
-                    ? originals.FirstOrDefault()
-                    : originals.FirstOrDefault(x => x.Attributes.ContainsKey(_initializedAttrName) 
-                                                    && x.Value(_initializedAttrName) != null);
 
-                // if I can't find any, return empty list
-                if (firstEntity == null)
-                    return wrapLog("empty", ImmutableArray<IEntity>.Empty);
+            // Case 1/2: Handle basic "none" and "all" operators
+            if (op == CompareOperators.OpNone) 
+                return wrapLog(CompareOperators.OpNone, ImmutableArray.Create<IEntity>());
+            if (op == CompareOperators.OpAll)
+                return wrapLog(CompareOperators.OpAll, ApplyTake(originals).ToImmutableArray());
 
-                // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
-                // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
-                var firstAtt = firstEntity.Value(_initializedAttrName);
-                
-                // 2021-03-29 2dm changed from checking the type-name to actually checking the type
-                // this was necessary, because entity-lists were LazyEntities and not "Entity"
-                //var netTypeName = firstAtt?.GetType().Name ?? "Null";
-                // very special case - since we're using the .net type and not the Attribute.Type,
-                // then lazy-entities are marked as LazyEntity or similar, and NOT "Entity"
-                //if (netTypeName.Contains(Constants.DataTypeEntity)) netTypeName = Constants.DataTypeEntity;
-                
-                switch (firstAtt)
-                {
-                    case bool b:
-                        Log.Add("Will apply Boolean comparison");
-                        compare = GetBoolComparison(Value);
-                        break;
-                    case int i:
-                    case float f:
-                    case decimal d:
-                        Log.Add("Will apply Decimal comparison");
-                        compare = GetNumberComparison(Value);
-                        break;
-                    case DateTime d:
-                        Log.Add("Will apply DateTime comparison");
-                        compare = GetDateTimeComparison(Value);
-                        break;
-                    case IEnumerable<IEntity> ie:
-                    case IEntity e:
-                        Log.Add("Would apply entity comparison, but this doesn't work");
-                        return wrapLog("error", SetError("Can't apply Value comparison to Relationship",
-                            "Can't compare values which contain related entities - use the RelationshipFilter instead."));
-                    case string s:
-                    case null:  // note: null should never happen, because we only look at entities having non-null in this value
-                    default:
-                        Log.Add("Will apply String comparison");
-                        compare = GetStringComparison(Value);
-                        break;
-                }
-            }
-            #endregion
+            // Case 3: Real filter
+            // Find first Entity which has this property being not null to detect type
+            var (isSpecial, fieldType) = Attributes.InternalOnlyIsSpecialEntityProperty(fieldName);
+            var firstEntity = isSpecial
+                ? originals.FirstOrDefault()
+                : originals.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName) && x.Value(fieldName) != null)
+                  // 2022-03-09 2dm If none is found with a real value, get the first that has this attribute
+                  ?? originals.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName));
 
-            if (!ErrorStream.IsDefaultOrEmpty)
-                return wrapLog("error", ErrorStream);
+            // if I can't find any, return empty list
+            if (firstEntity == null)
+                return wrapLog("empty", ImmutableArray<IEntity>.Empty);
 
-            return wrapLog("ok", GetFilteredWithLinq(originals, compare));
-            // The following version has more logging, activate in serious cases
+            // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
+            // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
+            // 2022-03-09 2dm 
+            if (!isSpecial) fieldType = firstEntity[fieldName].ControlledType;
+            //var firstValue = firstEntity.Value(fieldName);
+
+
+            // 2021-03-29 2dm changed from checking the type-name to actually checking the type
+            // this was necessary, because entity-lists were LazyEntities and not "Entity"
+            //var netTypeName = firstAtt?.GetType().Name ?? "Null";
+            // very special case - since we're using the .net type and not the Attribute.Type,
+            // then lazy-entities are marked as LazyEntity or similar, and NOT "Entity"
+            //if (netTypeName.Contains(Constants.DataTypeEntity)) netTypeName = Constants.DataTypeEntity;
+
+            var compMaker = new ValueComparison((title, message) => SetError(title, message), Log);
+            var compare = compMaker.GetComparison(fieldType, /*firstValue,*/ fieldName, op, languages, Value);
+
+            return !ErrorStream.IsDefaultOrEmpty 
+                ? wrapLog("error", ErrorStream) 
+                : wrapLog("ok", GetFilteredWithLinq(originals, compare));
+
+            // Note: the alternate GetFilteredWithLoop has more logging, activate in serious cases
             // Note that the code might not be 100% identical, but it should help find issues
 		}
 
-
-
-        /// <summary>
-        /// Provide all the string comparison functionality as a prepared function
-        /// </summary>
-        /// <param name="original"></param>
-        /// <returns></returns>
-        private Func<IEntity, bool> GetStringComparison(string original)
-        {
-            var wrapLog = Log.Call<Func<IEntity, bool>>(original);
-            var operation = Operator.ToLowerInvariant();
-
-            var stringComparison = new Dictionary<string, Func<object, bool>>
-            {
-                {"==", value => value != null && string.Equals(value.ToString(), original, StringComparison.InvariantCultureIgnoreCase)        },
-                { "===", value => value != null && value.ToString() == original}, // case sensitive, full equal
-                {"!=", value => value != null && !string.Equals(value.ToString(), original, StringComparison.InvariantCultureIgnoreCase)},
-                {"contains", value => value?.ToString().IndexOf(original, StringComparison.OrdinalIgnoreCase) > -1 },
-                {"!contains", value => value?.ToString().IndexOf(original, StringComparison.OrdinalIgnoreCase) == -1},
-                {"begins", value => value?.ToString().IndexOf(original, StringComparison.OrdinalIgnoreCase) == 0 },
-                {"all", value => true }
-            };
-
-            if (!stringComparison.ContainsKey(operation))
-            {
-                SetError(ErrorInvalidOperator, $"Bad operator for string compare, can't find comparison '{operation}'");
-                return wrapLog("error", null);
-            }
-
-            var stringCompare = stringComparison[operation];
-            return wrapLog("ok", e => stringCompare(e.GetBestValue(_initializedAttrName, LanguageList)));
-        }
-
-        /// <summary>
-        /// Provide all bool-compare functionality as a prepared function
-        /// </summary>
-        /// <param name="original"></param>
-        /// <returns></returns>
-        private Func<IEntity, bool> GetBoolComparison(string original)
-        {
-            var wrapLog = Log.Call(original);
-
-            var boolFilter = bool.Parse(original);
-
-            var operation = Operator.ToLowerInvariant();
-            switch (operation)
-            {
-                case "==":
-                case "===":
-                    wrapLog("ok");
-                    return e =>
-                    {
-                        var value = e.GetBestValue(_initializedAttrName, LanguageList);
-                        return value as bool? == boolFilter;
-                    };
-                case "!=":
-                    wrapLog("ok");
-                    return e =>
-                    {
-                        var value = e.GetBestValue(_initializedAttrName, LanguageList);
-                        return value as bool? != boolFilter;
-                    };
-            }
-
-            SetError(ErrorInvalidOperator,message: $"Bad operator for boolean compare, can't find comparison '{operation}'");
-            wrapLog("error");
-            return null;
-        }
-
-
-
-        #region "between" helper
-        private Tuple<bool, string, string> BetweenParts(string original)
-        {
-            var wrapLog = Log.Call(original);
-            original = original.ToLowerInvariant();
-            var hasAnd = original.IndexOf(" and ", StringComparison.Ordinal);
-            string low = "", high = "";
-            if (hasAnd > -1)
-            {
-                Log.Add("has 'and'");
-                low = original.Substring(0, hasAnd).Trim();
-                high = original.Substring(hasAnd + 4).Trim();
-                Log.Add($"has 'and'. low: {low}, high: {high}");
-            }
-            else Log.Add("No 'and' found, low/high will be empty");
-
-            wrapLog("ok");
-            return new Tuple<bool, string, string>(hasAnd > -1, low, high);
-        }
-        #endregion 
-
-
-        /// <summary>
-        /// provide all date-time comparison as a prepared function
-        /// </summary>
-        /// <param name="original"></param>
-        /// <returns></returns>
-        private Func<IEntity, bool> GetDateTimeComparison(string original)
-        {
-            var wrapLog = Log.Call<Func<IEntity, bool>>(original);
-
-            var operation = Operator.ToLowerInvariant();
-            DateTime max = DateTime.MaxValue,
-                referenceDateTime = DateTime.MinValue;
-            
-            #region handle special case "between" with 2 values
-            if (operation == "between" || operation == "!between")
-            {
-                Log.Add("Operator is between or !between");
-                var parts = BetweenParts(original);
-                if (parts.Item1)
-                {
-                    DateTime.TryParse(parts.Item2, out referenceDateTime);
-                    DateTime.TryParse(parts.Item3, out max);
-                }
-                else
-                    operation = "==";   
-            }
-            #endregion
-
-            // get the value (but only if it hasn't been initialized already)
-            if (referenceDateTime == DateTime.MinValue)
-                DateTime.TryParse(original, out referenceDateTime);
-
-            var dateComparisons = new Dictionary<string, Func<DateTime, bool>>
-            {
-                {"==", value => value == referenceDateTime},
-                {"===", value => value == referenceDateTime},
-                {"!=", value => value != referenceDateTime},
-                {">", value => value > referenceDateTime},
-                {"<", value => value < referenceDateTime},
-                {">=", value => value >= referenceDateTime},
-                {"<=", value => value <= referenceDateTime},
-                {"between", value => value >= referenceDateTime && value <= max },
-                {"!between", value => !(value >= referenceDateTime && value <= max) },
-            };
-
-            if (!dateComparisons.ContainsKey(operation))
-            {
-                SetError(ErrorInvalidOperator, $"Bad operator for datetime compare, can't find comparison '{operation}'");
-                return wrapLog("error", null);
-            }
-
-            var dateTimeCompare = dateComparisons[operation];
-
-            wrapLog("ok", null);
-            return e => {
-                var value = e.GetBestValue(_initializedAttrName, LanguageList);
-                try
-                {
-                    // treat null as DateTime.MinValue - because that's also how the null-parameter is parsed when creating the filter
-                    var valAsDec = value == null ? DateTime.MinValue : global::System.Convert.ToDateTime(value);
-                    return dateTimeCompare(valAsDec);
-                }
-                catch
-                {
-                    return false;
-                }
-            };
-        }
-
-
-
-        /// <summary>
-        /// provide all number-compare functionality as prepared/precompiled functions
-        /// </summary>
-        /// <param name="original"></param>
-        /// <returns></returns>
-        private Func<IEntity, bool> GetNumberComparison(string original)
-        {
-            var wrapLog = Log.Call<Func<IEntity, bool>>(original);
-
-            var operation = Operator.ToLowerInvariant();
         
-            var max = decimal.MaxValue;
-            var numberFilter = decimal.MinValue;
-
-            #region check for special case "between" with two values to compare
-            if (operation == "between" || operation == "!between")
-            {
-                Log.Add("Operator is between or !between");
-                var parts = BetweenParts(original);
-                if (parts.Item1)
-                {
-                    decimal.TryParse(parts.Item2, out numberFilter);
-                    decimal.TryParse(parts.Item3, out max);
-                }
-                else
-                    operation = "==";
-            }
-            #endregion
-
-            // get the value (but only if it hasn't been initialized already)
-            if (numberFilter == decimal.MinValue)
-                decimal.TryParse(original, out numberFilter);
-
-            var numComparisons = new Dictionary<string, Func<decimal, bool>>
-            {
-                {"==", value => value == numberFilter},
-                {"===", value => value == numberFilter},
-                {"!=", value => value != numberFilter},
-                {">", value => value > numberFilter},
-                {"<", value => value < numberFilter},
-                {">=", value => value >= numberFilter},
-                {"<=", value => value <= numberFilter},
-                {"between", value => value >= numberFilter && value <= max },
-                {"!between", value => !(value >= numberFilter && value <= max) },
-            };
-
-            if (!numComparisons.ContainsKey(operation))
-            {
-                SetError(ErrorInvalidOperator, $"Bad operator for number compare, can't find comparison '{operation}'");
-                return wrapLog("error", null);
-            }
-
-            var numberCompare = numComparisons[operation];
-            wrapLog("ok", null);
-            return e =>
-            {
-                var value = e.GetBestValue(_initializedAttrName, LanguageList);
-                if (value == null)
-                    return false;
-                try
-                {
-                    var valAsDec = global::System.Convert.ToDecimal(value);
-                    return numberCompare(valAsDec);
-                }
-                catch
-                {
-                    return false;
-                }
-            };
-
-        }
-
-        /// <summary>
-        /// The internal language list used to lookup values.
-        /// It's internal, to allow testing/debugging from the outside
-        /// </summary>
-        [PrivateApi] internal string[] LanguageList { get; private set; }
-	    [PrivateApi] private string _initializedAttrName;
-
 	    private ImmutableArray<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
         {
             var wrapLog = Log.Call<ImmutableArray<IEntity>>();
             try
             {
-                var op = Operator.ToLowerInvariant();
-                IEnumerable<IEntity> results;
-                switch (op)
-                {
-                    case "all":
-                        results = from e in originals select e;
-                        break;
-                    case "none":
-                        results = new List<IEntity>();
-                        break;
-                    default:
-                        results = originals.Where(compare);
-                        break;
-                }
-                if (int.TryParse(Take, out var tk))
-	                results = results.Take(tk);
+                var results = originals.Where(compare);
+                results = ApplyTake(results);
 	            return wrapLog("ok", results.ToImmutableArray());
 	        }
 	        catch (Exception ex)
@@ -491,8 +198,14 @@ namespace ToSic.Eav.DataSources
             }
 	    }
 
+        private IEnumerable<IEntity> ApplyTake(IEnumerable<IEntity> results)
+        {
+            var wrapLog = Log.Call<IEnumerable<IEntity>>();
+            return int.TryParse(Take, out var tk) ? wrapLog($"take {tk}", results.Take(tk)) : wrapLog("take all", results);
+        }
 
-	    /// <summary>
+
+        /// <summary>
 	    /// A helper function to apply the filter without LINQ - ideal when trying to debug exactly what value crashed
 	    /// </summary>
 	    /// <param name="inList"></param>

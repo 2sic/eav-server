@@ -41,7 +41,7 @@ namespace ToSic.Eav.Data
             Guid? guid = null,
             DateTime? modified = null)
         {
-            return new Entity(appId, id, ContentTypeBuilder.Fake(typeName), values, titleField, 
+            return new Entity(appId, id, new ContentTypeBuilder().Transient(typeName), values, titleField, 
                 modified: modified,
                 guid: guid);
         }
@@ -72,21 +72,21 @@ namespace ToSic.Eav.Data
                 typeName: typeName)
             );
 
-        /// <summary>
-        /// Create a dummy fake entity. It's just used in scenarios where code must have an entity but the
-        /// internals are not relevant. Examples are dummy Metadata or dummy Content-Data.
-        /// </summary>
-        /// <param name="appId"></param>
-        /// <returns></returns>
-        [PrivateApi]
-        [Obsolete("Use the IDataBuilder for this - will be removed in 2sxc 12")]
-        public static Entity FakeEntity(int appId)
-            => new Entity(
-                appId,
-                0,
-                ContentTypeBuilder.Fake(""),
-                new Dictionary<string, object> {{Attributes.TitleNiceName, ""}},
-                Attributes.TitleNiceName
-            );
+        ///// <summary>
+        ///// Create a dummy fake entity. It's just used in scenarios where code must have an entity but the
+        ///// internals are not relevant. Examples are dummy Metadata or dummy Content-Data.
+        ///// </summary>
+        ///// <param name="appId"></param>
+        ///// <returns></returns>
+        //[PrivateApi]
+        //[Obsolete("Use the IDataBuilder for this - will be removed in 2sxc 12")]
+        //public static Entity FakeEntity(int appId)
+        //    => new Entity(
+        //        appId,
+        //        0,
+        //        ContentTypeBuilder.Fake(""),
+        //        new Dictionary<string, object> {{Attributes.TitleNiceName, ""}},
+        //        Attributes.TitleNiceName
+        //    );
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.DataSourceTests.TestData
@@ -8,10 +9,13 @@ namespace ToSic.Eav.DataSourceTests.TestData
     {
         public override string LogId => "TST.Person";
 
-        public PersonsDataSource()
+        public PersonsDataSource(MultiBuilder multiBuilder)
         {
+            _multiBuilder = multiBuilder;
             Provide(GetPersons);
-        }        
+        }
+
+        private MultiBuilder _multiBuilder;
 
         public PersonsDataSource Init(int itemsToGenerate = 10, int firstId = 1001, bool multiLanguage = false)
         {
@@ -26,8 +30,8 @@ namespace ToSic.Eav.DataSourceTests.TestData
 
         private IImmutableList<IEntity> GetPersons()
         {
-            var persons = Person.GetSemiRandomList(_itemsToGenerate, _firstId);
-            var list = Person.Person2Entity(persons, _multiLanguage);
+            var persons = new PersonGenerator(_multiBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
+            var list = new PersonGenerator(_multiBuilder).Person2Entity(persons, _multiLanguage);
             return list.ToImmutableArray();
         }
     }

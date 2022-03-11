@@ -116,7 +116,7 @@ namespace ToSic.Eav.Persistence.Efc
 
 
 
-        private static Entity BuildNewEntity(AppState app, TempEntity e, 
+        private Entity BuildNewEntity(AppState app, TempEntity e, 
             IDataDeserializer serializer,
             Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities,
             Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes,
@@ -140,19 +140,19 @@ namespace ToSic.Eav.Persistence.Efc
             if (contentType == null)
                 throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
-            newEntity = EntityBuilder.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
+            newEntity = _multiBuilder.Entity.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
                 e.MetadataFor, contentType, e.IsPublished, app, e.Created, e.Modified, e.Owner,
                 e.Version);
 
             // Add all Attributes of that Content-Type
-            var titleAttrib = newEntity.GenerateAttributesOfContentType(contentType);
+            var titleAttrib = _multiBuilder.Attribute.GenerateAttributesOfContentType(newEntity, contentType);
             if (titleAttrib != null)
                 newEntity.SetTitleField(titleAttrib.Name);
 
             // add Related-Entities Attributes to the entity
             if (relatedEntities.ContainsKey(e.EntityId))
                 foreach (var r in relatedEntities[e.EntityId])
-                    newEntity.BuildReferenceAttribute(r.StaticName, r.Children, app);
+                    _multiBuilder.Attribute.BuildReferenceAttribute(newEntity, r.StaticName, r.Children, app);
 
             #region Add "normal" Attributes (that are not Entity-Relations)
 
@@ -165,16 +165,19 @@ namespace ToSic.Eav.Persistence.Efc
                     continue;
 
                 attrib.Values = a.Values
-                    .Select(v => ValueBuilder.Build(attrib.Type, v.Value, v.Languages))
+                    .Select(v => _multiBuilder.Value.Build(attrib.Type, v.Value, v.Languages))
                     .ToList();
 
-                // fix faulty data dimensions in case old storage mechanims messed up
-                attrib.FixIncorrectLanguageDefinitions(primaryLanguage);
+                // fix faulty data dimensions in case old storage mechanisms messed up
+                DataRepair.FixIncorrectLanguageDefinitions(attrib, primaryLanguage);
             }
 
             #endregion
 
             return newEntity;
         }
+
+       
     }
+
 }

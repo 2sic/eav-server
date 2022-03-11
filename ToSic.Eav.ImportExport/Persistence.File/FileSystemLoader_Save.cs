@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data;
+﻿using ToSic.Eav.Configuration;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Interfaces;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.Persistence.File
 
             System.IO.Directory.CreateDirectory(ContentTypePath);
 
-            var fileName = ContentTypePath + cleanName + ImpExpConstants.Extension(ImpExpConstants.Files.json);
+            var fileName = System.IO.Path.Combine(ContentTypePath, cleanName + ImpExpConstants.Extension(ImpExpConstants.Files.json));
 
             System.IO.File.WriteAllText(fileName, json);
         }
@@ -31,9 +32,9 @@ namespace ToSic.Eav.Persistence.File
 
             var cleanname = queryDef.EntityGuid.ToString()
                 .RemoveNonFilenameCharacters();
-
-            System.IO.Directory.CreateDirectory(QueryPath);
-            var fileName = QueryPath + cleanname + ImpExpConstants.Extension(ImpExpConstants.Files.json);
+            var queryPath = System.IO.Path.Combine(Path, FsDataConstants.QueriesFolder);
+            System.IO.Directory.CreateDirectory(queryPath);
+            var fileName = System.IO.Path.Combine(queryPath, cleanname + ImpExpConstants.Extension(ImpExpConstants.Files.json));
 
             System.IO.File.WriteAllText(fileName, json);
        }

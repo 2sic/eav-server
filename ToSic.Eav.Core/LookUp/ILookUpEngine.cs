@@ -13,7 +13,7 @@ namespace ToSic.Eav.LookUp
         /// <summary>
         /// Property Sources this Provider can use.
         /// Sources are various dictionaries which can resolve a key to a value. <br/>
-        /// Read more about this in [](xref:Basics.LookUp.Index)
+        /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
         /// </summary>
         /// <returns><see cref="Dictionary{TKey,TValue}"/> of <see cref="ILookUp"/> items.</returns>
         [PrivateApi("prone to change")]

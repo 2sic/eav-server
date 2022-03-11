@@ -27,8 +27,9 @@ namespace ToSic.Eav.Context
         public ISite Site { get; set; }
 
         /// <inheritdoc />
-        public IUser User { get; set; }
+        public IUser User { get; }
 
+        /// <inheritdoc />
         public virtual bool UserMayEdit
         {
             get

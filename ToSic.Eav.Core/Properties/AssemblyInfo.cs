@@ -30,9 +30,10 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("13.02.00")]
+[assembly: AssemblyVersion("13.03.00")]
 
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Repository.EF4")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Persistence.Efc")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Core.Tests")]
+[assembly: InternalsVisibleTo("ToSic.Testing.Shared")]

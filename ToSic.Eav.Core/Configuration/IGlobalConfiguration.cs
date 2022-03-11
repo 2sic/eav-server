@@ -22,7 +22,7 @@
         /// <summary>
         /// This is the root path of where global apps are stored
         /// </summary>
-        string GlobalSiteFolder { get; set; }
+        string SharedAppsFolder { get; set; }
 
         /// <summary>
         /// The assets virtual url to main module global folder where assets are stored.

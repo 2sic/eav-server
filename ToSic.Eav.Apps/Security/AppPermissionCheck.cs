@@ -11,14 +11,16 @@ namespace ToSic.Eav.Apps.Security
     /// <summary>
     /// Check permissions on something inside an App, like a specific Entity, Content-Type etc.
     /// </summary>
-    public abstract class AppPermissionCheck: PermissionCheckBase
+    public class AppPermissionCheck: PermissionCheckBase
     {
         #region Constructor & DI
-        protected AppPermissionCheck(IAppStates appStates, Dependencies dependencies, string logPrefix) : base(dependencies, $"{logPrefix}.PrmChk")
+        public AppPermissionCheck(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{AppConstants.LogName}.PrmChk")
         {
             _appStates = appStates;
+            _environmentPermission = (EnvironmentPermission) dependencies.EnvironmentPermission.Init(Log);
         }
         private readonly IAppStates _appStates;
+        private readonly EnvironmentPermission _environmentPermission;
 
         public AppPermissionCheck ForItem(IContextOfSite ctx, IAppIdentity appIdentity, IEntity targetItem, ILog parentLog)
         {
@@ -58,7 +60,6 @@ namespace ToSic.Eav.Apps.Security
         {
             var permissions = FindPermissionsOfApp(appIdentity);
             Init(ctx, appIdentity, parentLog, permissions: permissions);
-
             // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
             var wrapLog = Log.Call<AppPermissionCheck>($"ctx, app: {appIdentity}, log");
             Log.Add($"Permissions: {permissions?.Count}");
@@ -97,6 +98,7 @@ namespace ToSic.Eav.Apps.Security
             IEnumerable<Permission> permissions = null)
         {
             Init(parentLog, targetType ?? targetItem?.Type, targetItem, permissions);
+            _environmentPermission.Init(ctx, appIdentity);
             var logWrap = Log.Call($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
             Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
             AppIdentity = appIdentity;
@@ -128,7 +130,7 @@ namespace ToSic.Eav.Apps.Security
         /// Check if user is valid admin of current portal / zone
         /// </summary>
         /// <returns></returns>
-        public bool UserIsTenantAdmin() => Log.Intercept(nameof(UserIsTenantAdmin), () => Context.User?.IsAdmin ?? false);
+        public bool UserIsSiteAdmin() => Log.Intercept(nameof(UserIsSiteAdmin), () => Context.User?.IsAdmin ?? false);
 
 
         #endregion

@@ -73,13 +73,18 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeRename()
+		public AttributeRename(MultiBuilder multiBuilder)
 		{
+            _multiBuilder = multiBuilder;
+
             Provide(GetList);
 			ConfigMask(AttributeMapKey, "[Settings:AttributeMap]");
 			ConfigMask(KeepOtherAttributesKey, $"[Settings:KeepOtherAttributes||True]");
 			ConfigMask(TypeNameKey, $"[Settings:TypeName]");
         }
+
+        private readonly MultiBuilder _multiBuilder;
+
 
         /// <summary>
         /// Get the list of all items with reduced attributes-list
@@ -120,7 +125,7 @@ namespace ToSic.Eav.DataSources
                             // check if the name actually changed, if not, return original (faster)
                             if (string.Equals(fieldMap.New, fieldMap.Old, StringComparison.InvariantCultureIgnoreCase))
                                 return a;
-                            var renameAttribute = AttribBuilder.CloneAttributeAndRename(a.Value, fieldMap.New);
+                            var renameAttribute = CloneAttributeAndRename(a.Value, fieldMap.New);
                             return new KeyValuePair<string, IAttribute>(fieldMap.New, renameAttribute);
                         }
                         return preserveOthers 
@@ -137,13 +142,13 @@ namespace ToSic.Eav.DataSources
             var typeName = TypeName;
             IContentType newType = null;
             if (!string.IsNullOrEmpty(typeName))
-                newType = ContentTypeBuilder.DynamicContentType(AppId, typeName, typeName);
+                newType = new ContentTypeBuilder().Transient(AppId, typeName, typeName);
 
             if (!GetRequiredInList(out var originals))
                 return wrapLog("error", originals);
 
             var result = originals
-                .Select(entity => EntityBuilder.FullClone(entity,
+                .Select(entity => _multiBuilder.Entity.Clone(entity,
                     CreateDic(entity),
                     entity.Relationships.AllRelationships,
                     newType
@@ -155,5 +160,15 @@ namespace ToSic.Eav.DataSources
 		    return wrapLog("ok", result);
 		}
 
-	}
+
+
+        private IAttribute CloneAttributeAndRename(IAttribute original, string newName)
+        {
+            var attributeType = DataTypes.GetAttributeTypeName(original);
+            var newAttrib = _multiBuilder.Attribute.CreateTyped(newName, attributeType);
+            newAttrib.Values = original.Values;
+            return newAttrib;
+        }
+
+    }
 }

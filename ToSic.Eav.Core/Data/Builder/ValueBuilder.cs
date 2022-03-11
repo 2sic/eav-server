@@ -6,12 +6,23 @@ using System.Linq;
 
 namespace ToSic.Eav.Data.Builder
 {
-    public static class ValueBuilder
+    public class ValueBuilder
     {
+        // WIP - constructor should never be called because we should use DI
+        public ValueBuilder(DimensionBuilder dimensionBuilder)
+        {
+            LanguageBuilder = dimensionBuilder;
+        }
+
+        public IValue Clone(IValue original, string type) => Build(type, original.ObjectContents,
+            LanguageBuilder.Clone(original.Languages), null);
+
+        private DimensionBuilder LanguageBuilder { get; }
+
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        public static IValue Build(string attributeType, object value, List<ILanguage> languages,
+        public IValue Build(string attributeType, object value, IList<ILanguage> languages,
             IEntitiesSource fullEntityListForLookup = null)
             => Build((ValueTypes)Enum.Parse(typeof(ValueTypes), attributeType), value, languages, fullEntityListForLookup);
 
@@ -22,7 +33,7 @@ namespace ToSic.Eav.Data.Builder
         /// <returns>
         /// An IValue, which is actually an IValue<string>, IValue<decimal>, IValue<IEnumerable<IEntity>> etc.
         /// </returns>
-        public static IValue Build(ValueTypes type, object value, List<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
+        public IValue Build(ValueTypes type, object value, IList<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
         {
             if (languages == null) languages = new List<ILanguage>();
             IValue typedModel;
@@ -45,7 +56,7 @@ namespace ToSic.Eav.Data.Builder
 
                     case ValueTypes.Number:
                         decimal? newDec = null;
-                        if(value != null && !(value is string s && string.IsNullOrEmpty(s)))
+                        if (value != null && !(value is string s && string.IsNullOrEmpty(s)))
                         {
                             // only try converting if it's not an empty string
                             try
@@ -61,7 +72,7 @@ namespace ToSic.Eav.Data.Builder
                     case ValueTypes.Entity:
                         IEnumerable<IEntity> rel;
                         var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)
-                                        ?.Select(x => (int?) x).ToList();
+                                        ?.Select(x => (int?)x).ToList();
                         if (entityIds != null)
                             rel = new LazyEntities(fullEntityListForLookup, entityIds.ToList());
                         else if (value is IEnumerable<IEntity> relList)
@@ -73,7 +84,7 @@ namespace ToSic.Eav.Data.Builder
                         else if (value is List<Guid?> guids)
                             rel = new LazyEntities(fullEntityListForLookup, guids);
                         else
-                            rel = new LazyEntities(fullEntityListForLookup, GuidCsvToList(value)); 
+                            rel = new LazyEntities(fullEntityListForLookup, GuidCsvToList(value));
                         typedModel = new Value<IEnumerable<IEntity>>(rel);
                         break;
                     // ReSharper disable RedundantCaseLabel
@@ -100,7 +111,7 @@ namespace ToSic.Eav.Data.Builder
         }
 
 
-        internal static List<Guid?> GuidCsvToList(object value)
+        private static List<Guid?> GuidCsvToList(object value)
         {
             var stringValue = value as string;
             var entityIdEnum = value as IEnumerable; // note: strings are also enum!
@@ -126,10 +137,10 @@ namespace ToSic.Eav.Data.Builder
         /// ...and then it must be a new object every time, 
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
-        internal static Value<IEnumerable<IEntity>> NullRelationship 
+        internal Value<IEnumerable<IEntity>> NullRelationship
             => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null))
-        {
-            Languages = new List<ILanguage>()
-        };
+            {
+                Languages =  LanguageBuilder.NoLanguages()
+            };
     }
 }

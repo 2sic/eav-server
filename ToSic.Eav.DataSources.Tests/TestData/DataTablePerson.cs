@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Core.Tests.LookUp;
+using ToSic.Eav.Data.Builder;
 using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
@@ -12,7 +13,10 @@ namespace ToSic.Eav.DataSourceTests.TestData
     {
         public DataTablePerson(IServiceBuilder serviceProvider) : base(serviceProvider)
         {
+            _multiBuilder = Build<MultiBuilder>();
         }
+
+        private MultiBuilder _multiBuilder;
 
         private static readonly Dictionary<int, DataTable> CachedDs = new Dictionary<int, DataTable>();
 
@@ -37,7 +41,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                 new DataColumn(PersonSpecs.FieldModifiedInternal, typeof(DateTime)),
             });
 
-            Person.GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId)
+            new PersonGenerator(_multiBuilder).GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId)
                 .ForEach(person => dataTable.Rows.Add(person.Id,
                     person.FullName,
                     person.First,

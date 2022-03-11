@@ -5,7 +5,7 @@ namespace ToSic.Eav.LookUp
     /// <summary>
     /// A key-value map which resolves keys like "SortOrder" to "asc". <br/>
     /// It's usually used to get pre-stored configuration or to get settings from the context. <br/>
-    /// Read more about this in [](xref:Basics.LookUp.Index)
+    /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
 	public interface ILookUp

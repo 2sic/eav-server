@@ -12,14 +12,6 @@ namespace ToSic.Eav.Data
     [PublicApi]
     public interface IDataBuilder
     {
-        #region Plumbing / Logging
-
-        DataBuilder Init(ILog parent);
-
-        DataBuilder Init(ILog parent, string logName);
-
-        #endregion
-
         /// <summary>
         /// Create an Entity using a dictionary of values.
         /// 
@@ -33,7 +25,8 @@ namespace ToSic.Eav.Data
         /// <param name="typeName">an optional type-name - usually not needed, defaults to "unspecified"; alternatively you can specify the type directly</param>
         /// <param name="type">an optional type object - use this OR the typename to specify a type</param>
         /// <param name="guid">an optional guid for this item, defaults to empty guid</param>
-        /// <param name="modified"></param>
+        /// <param name="created">creation timestamp</param>
+        /// <param name="modified">modified timestamp</param>
         /// <returns></returns>
         IEntity Entity(
             Dictionary<string, object> values = null,
@@ -98,6 +91,17 @@ namespace ToSic.Eav.Data
             string typeName = null,
             ValueTypes type = ValueTypes.Undefined,
             IList<IValue> values = null);
+
+        #endregion
+
+        #region Content-Type
+
+        /// <summary>
+        /// Create a fake content-type using the specified name. 
+        /// </summary>
+        /// <param name="typeName">Name to use for this content-type</param>
+        /// <returns></returns>
+        IContentType Type(string typeName);
 
         #endregion
 

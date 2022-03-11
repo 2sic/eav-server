@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
@@ -10,7 +9,9 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class FeaturesDisabledException : Exception
     {
-        public FeaturesDisabledException(string message, IEnumerable<Guid> features): base(message)
-        { }
+        public FeaturesDisabledException(string message): base(message) { }
+        
+        public FeaturesDisabledException(string nameId, string message)
+            : base($"Feature '{nameId}' is required but not enabled. \n{message}") { }
     }
 }

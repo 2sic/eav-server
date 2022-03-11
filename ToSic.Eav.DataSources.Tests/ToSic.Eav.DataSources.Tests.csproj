@@ -150,6 +150,7 @@
     <Compile Include="RelationshipTests\RelationshipTestSpecs.cs" />
     <Compile Include="TestData\DataTableTrivial.cs" />
     <Compile Include="TestData\DataTablePerson.cs" />
+    <Compile Include="TestData\PersonGenerator.cs" />
     <Compile Include="TestData\Person.cs" />
     <Compile Include="TestData\PersonsDataSource.cs" />
     <Compile Include="TestData\PersonSpecs.cs" />

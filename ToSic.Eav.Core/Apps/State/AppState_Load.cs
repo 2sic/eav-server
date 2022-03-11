@@ -63,29 +63,35 @@ namespace ToSic.Eav.Apps
         {
             var callLog = Log.Call<bool>($"Name: {Name}, Folder: {Folder}, AppGuidName: {NameId}");
 
+            // Before we do anything, check primary App
+            // Otherwise other checks (like is name empty) will fail, because it's not empty
+            // This is necessary, because it does get loaded with real settings
+            // But we must override them to always be the same.
+            if (NameId == PrimaryAppGuid)
+            {
+                Folder = PrimaryAppFolder;
+                Name = PrimaryAppName;
+                return callLog($"Primary App. Name: {Name}, Folder:{Folder}", true);
+            }
+
             // Only do something if Name or Folder are still invalid
             if (!string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Folder))
                 return callLog($"No change. Name: {Name}, Folder:{Folder}", false);
 
             // If the loader wasn't able to fill name/folder, then the data was not a json
             // so we must try to fix this now
-            var config = List.FirstOrDefault(md => md.Type.NameId == AppLoadConstants.TypeAppConfig);
-
             Log.Add("Trying to load Name/Folder from App package entity");
+            var config = List.FirstOrDefault(md => md.Type.NameId == AppLoadConstants.TypeAppConfig);
             if (string.IsNullOrWhiteSpace(Name)) Name = config?.Value<string>(AppLoadConstants.FieldName);
             if (string.IsNullOrWhiteSpace(Folder)) Folder = config?.Value<string>(AppLoadConstants.FieldFolder);
 
-            // if the folder still isn't know (either no data found, or the Name existed)
-            // try one last time
-            if (string.IsNullOrWhiteSpace(Folder))
+            // Last corrections for the DefaultApp "Content"
+            if (NameId == DefaultAppGuid)
             {
-                if (NameId == DefaultAppGuid) Folder = ContentAppFolder;
-                else if (NameId == PrimaryAppGuid) Folder = PrimaryAppFolder; // #SiteApp v13
-            }
-            if (string.IsNullOrWhiteSpace(Name))
-            {
-                if (NameId == DefaultAppGuid) Name = ContentAppName;
-                else if (NameId == PrimaryAppGuid) Name = PrimaryAppName; // #SiteApp v13
+                // Always set the Name if we are on the content or primary app
+                Name = ContentAppName;
+                // Only set the folder if not over-configured since it can change in v13+
+                if (string.IsNullOrWhiteSpace(Folder)) Folder = ContentAppFolder;
             }
 
             return callLog($"Name: {Name}, Folder:{Folder}", true);

@@ -5,6 +5,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using static System.StringComparison;
 
@@ -35,7 +36,8 @@ namespace ToSic.Eav.Data
         public string NameId { get; private set; }
 
         /// <inheritdoc />
-        public string Description { get; protected set; }
+        [Obsolete("Obsolete in v12, used to contain the description, which is now in the metadata")]
+        public string Description { get; private set; }
 
         /// <inheritdoc />
         public string Scope { get; private set; }
@@ -73,9 +75,8 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         [PrivateApi("WIP 12.03")]
         // Don't cache the result, as it could change during runtime
-        public string DynamicChildrenField => Metadata.GetBestValue<string>(ContentTypes.DynamicChildrenField);
+        public string DynamicChildrenField => Metadata.DetailsOrNull?.DynamicChildrenField; // Metadata.GetBestValue<string>(ContentTypeDetails.DynamicChildrenField);
         
-
         #endregion
 
 

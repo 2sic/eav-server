@@ -8,7 +8,7 @@ namespace ToSic.Eav.LookUp
     /// It's important so that code can easily ask for the current engine, but that the
     /// real implementation is dependency-injected later on, as each environment (DNN, Nop, etc.)
     /// can provide different initial engines. <br/>
-    /// Read more about this in [](xref:Basics.LookUp.Index)
+    /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public interface ILookUpEngineResolver: IHasLog<ILookUpEngineResolver>
@@ -16,9 +16,9 @@ namespace ToSic.Eav.LookUp
         /// <summary>
         /// Get the engine for the current execution instance.
         /// </summary>
-        /// <param name="instanceId">The instance ID - should be 0 if unknown</param>
+        /// <param name="moduleId">The instance ID - should be 0 if unknown</param>
         ///// <returns>a <see cref="ILookUpEngine"/> for the current context</returns>
-        ILookUpEngine GetLookUpEngine(int instanceId);
+        ILookUpEngine GetLookUpEngine(int moduleId);
 
     }
 }

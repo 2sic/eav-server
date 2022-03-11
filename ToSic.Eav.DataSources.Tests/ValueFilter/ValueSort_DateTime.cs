@@ -58,18 +58,22 @@ namespace ToSic.Eav.DataSourceTests
 
         private void ValidateDateFieldIsSorted(List<IEntity> list, string field, bool asc)
         {
-            var previous = list.First().Value<DateTime>(field) as DateTime?;
+            var previous = list.First().Value<DateTime?>(field);
             foreach (var entity in list)
             {
-                var next = entity.Value<DateTime>(field) as DateTime?;
-                //if(!(next is DateTime) || !previousValue.HasValue) 
-                //    throw new Exception("try to compare prev/next dates, but one or both are null");
+                var next = entity.Value<DateTime?>(field);
+
+                if (next == null || previous == null)
+                {
+                    var tempToAddDebuggerline = true;
+                }
                 double comp;
                 if (next == null && previous == null) comp = 0;
-                else if (next == null && previous != null) comp = -1;
-                else if (next != null && previous == null) comp = 1;
-
+                else if (next == null) comp = -1;
+                else if (previous == null) comp = 1;
                 else comp = (next.Value - previous.Value).TotalMilliseconds;
+
+
                 if (asc)
                     Assert.IsTrue(comp >= 0, "new " + field + " " + next + " should be = or larger than prev " + previous);
                 else

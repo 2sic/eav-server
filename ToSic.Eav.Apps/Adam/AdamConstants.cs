@@ -8,6 +8,6 @@
         public const string ConfigFieldRootFolder = "AppRootFolder";
 
         public const string ItemFolderMask = "[AdamRoot]/[Guid22]/[FieldName]/[SubFolder]";
-        public const string AdamFolderMask = AdamRootFolder + "/[AppFolder]/";
+        public static string AdamFolderMask = $"{AdamRootFolder}/{AppConstants.AppFolderPlaceholder}/";
     }
 }

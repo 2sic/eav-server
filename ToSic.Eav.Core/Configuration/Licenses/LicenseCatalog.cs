@@ -20,13 +20,13 @@ using System.Linq;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    internal class LicenseCatalog
+    public class LicenseCatalog
     {
         // IMPORTANT
         // The guids of these licenses must match the ones in the 2sxc.org license management list
         // So always create the definition there first, then use the GUID of that definition here
 
-        public static readonly DateTime UnlimitedExpiry = new DateTime(2099, 12, 31);
+        public static readonly DateTime UnlimitedExpiry = DateTime.MaxValue; // new DateTime(2099, 12, 31);
 
         public static IReadOnlyCollection<LicenseDefinition> Licenses => _licenseTypes ?? (_licenseTypes = CreateList());
         private static IReadOnlyCollection<LicenseDefinition> _licenseTypes;
@@ -38,7 +38,7 @@ namespace ToSic.Eav.Configuration.Licenses
         ) { AutoEnable = true };
 
         public static readonly LicenseDefinition Patron = new LicenseDefinition(101, 
-            "Patron/Supporter",
+            "Patron Basic",
             new Guid("61d0bf11-187c-4ae8-9b76-a2c3d4beaad7"),
             "Patrons / supporters of 2sxc get some additional features as a thank you for supporting 2sxc."
         );

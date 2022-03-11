@@ -73,6 +73,7 @@ namespace ToSic.Eav.DataSourceTests
         [DataRow(FieldCity, UseEntitiesL, true, "D",    false, "")]
         [DataRow(FieldCity, UseEntitiesL, true, "0",    false, "")]
         [DataRow(FieldCity, UseEntitiesL, true, ">",    false, "")]
+        [DataRow("NonexistingField", UseEntitiesL, true, ">",    false, "")]
 
         [DataTestMethod]
         public void ValueSort_SortField_Basic_Ca10x(string field, bool useTable, bool multiLanguage, string direction, bool testAscending,  string notes)
@@ -102,6 +103,20 @@ namespace ToSic.Eav.DataSourceTests
                 // the expected result is reversed, because string "True" is after string "False"
                 expectedResults != MlSortMalesFirst
                 );
+        }
+
+        [TestMethod]
+        public void ValueSort_MultiField()
+        {
+            var vf = _valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume, true, false);
+            vf.Attributes = FieldCity + "," + FieldIsMale;
+            // vf.Directions = direction;
+            var result = vf.ListForTests().ToList();
+
+            // TODO: VERIFY RESULT
+
+            // check that each following city is same or larger...
+            //ValidateFieldIsSorted(result, field, testAscending);
         }
 
 

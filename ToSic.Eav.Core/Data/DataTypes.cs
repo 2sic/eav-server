@@ -1,4 +1,7 @@
-﻿using ToSic.Eav.Documentation;
+﻿using System;
+using System.Collections.Generic;
+using ToSic.Eav.Documentation;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data
 {
@@ -17,5 +20,25 @@ namespace ToSic.Eav.Data
         
         // Don't call this "Empty" because it's too similar to "Entity" and could be overlooked when coding
         public static string VoidEmpty = "Empty";
+
+        // TODO: Also look for other code which does very similar stuff, and try to de-duplicate
+        // helper to get text-name of the type
+        public static string GetAttributeTypeName(object value)
+        {
+            if (value is DateTime)
+                return DataTypes.DateTime;
+            if (value.IsNumeric()) // 2021-11-16 2dm changed, because it missed bigint from SQL - original was: // (value is decimal || value is int || value is double)
+                return DataTypes.Number;
+            if (value is bool)
+                return DataTypes.Boolean;
+            if (value is Guid || value is List<Guid> || value is List<Guid?> || value is List<int> ||
+                value is List<int?>)
+                return DataTypes.Entity;
+            if (value is int[] || value is int?[])
+                throw new Exception(
+                    "Trying to provide an attribute with a value which is an int-array. This is not allowed - ask the iJungleboy.");
+            return DataTypes.String;
+        }
+
     }
 }

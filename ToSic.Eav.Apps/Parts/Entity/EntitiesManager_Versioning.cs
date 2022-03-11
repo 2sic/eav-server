@@ -41,10 +41,10 @@ namespace ToSic.Eav.Apps.Parts
         ///// <param name="defaultCultureDimension">Default Language</param>
         private IEntity PrepareRestoreEntity(int entityId, int changeId)
         {
-            var deserializer = Parent.ServiceProvider.Build<JsonSerializer>().Init(Parent.AppState, Log);
+            //var deserializer = Parent.ServiceProvider.Build<JsonSerializer>().Init(Parent.AppState, Log);
 
             var str = GetFromTimelime(entityId, changeId);
-            return deserializer.Deserialize(str);
+            return Serializer.Ready.Deserialize(str);
 
         }
 

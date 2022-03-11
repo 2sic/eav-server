@@ -36,7 +36,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             SaveOptions so,
             List<ToSicEavAttributes> dbAttributes,
             ToSicEavEntities dbEnt,
-            int changeId, bool logDetails)
+            int changeId,
+            List<DimensionDefinition> zoneLanguages,
+            bool logDetails)
         {
             var wrapLog = Log.Call($"id:{newEnt.EntityId}", useTimer: true);
             if (!_attributeQueueActive) throw new Exception("Attribute save-queue not ready - should be wrapped");
@@ -70,7 +72,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     {
                         toSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
                         {
-                            DimensionId = _zoneLangs.Single(ol => ol.Matches(l.Key)).DimensionId,
+                            DimensionId = zoneLanguages.Single(ol => ol.Matches(l.Key)).DimensionId,
                             ReadOnly = l.ReadOnly
                         }).ToList();
                     }
