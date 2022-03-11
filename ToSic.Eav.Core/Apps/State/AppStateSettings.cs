@@ -1,25 +1,28 @@
-﻿using ToSic.Eav.Configuration;
-using ToSic.Eav.Documentation;
+﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
     [PrivateApi]
-    public partial class AppStateSettings
+    public partial class AppSettingsStack: HasLog<AppSettingsStack>
     {
-        /// <summary>
-        /// TODO: Warning - in rare cases this could be a problem
-        /// Because we're storing an appStates indefinitely, which has a service provider etc. which was created at the time this app was created
-        /// </summary>
-        /// <param name="owner"></param>
-        /// <param name="target"></param>
-        internal AppStateSettings(AppState owner, AppThingsIdentifiers target)
+
+        public AppSettingsStack(IAppStates appStates): base("App.Stack")
         {
-            Owner = owner;
-            Target = target;
+            _appStates = appStates;
         }
 
-        private AppState Owner { get; }
-        private AppThingsIdentifiers Target { get; }
+        private readonly IAppStates _appStates;
 
+        /// <summary>
+        /// </summary>
+        /// <param name="owner"></param>
+        public AppSettingsStack Init(AppState owner)
+        {
+            Owner = owner;
+            return this;
+        }
+
+        private AppState Owner { get; set; }
     }
 }

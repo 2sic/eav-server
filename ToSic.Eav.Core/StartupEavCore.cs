@@ -49,6 +49,7 @@ namespace ToSic.Eav
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
             services.TryAddTransient<IAppStates, AppStates>();
+            services.TryAddTransient<AppSettingsStack>();
 
 
             // Permissions helper
