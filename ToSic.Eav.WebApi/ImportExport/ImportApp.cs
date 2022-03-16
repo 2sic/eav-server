@@ -29,12 +29,12 @@ namespace ToSic.Eav.WebApi.ImportExport
 
         #endregion
 
-        public ImportResultDto Import(int zoneId, string name, Stream stream)
+        public ImportResultDto Import(Stream stream, int zoneId, string renameApp)
         {
             Log.Add("import app start");
             var result = new ImportResultDto();
 
-            if (!string.IsNullOrEmpty(name)) Log.Add($"new app name: {name}");
+            if (!string.IsNullOrEmpty(renameApp)) Log.Add($"new app name: {renameApp}");
 
             var zipImport = _zipImport;
             try
@@ -43,7 +43,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 var temporaryDirectory = Path.Combine(_globalConfiguration.TemporaryFolder, Mapper.GuidCompress(Guid.NewGuid()).Substring(0, 8));
 
                 // Increase script timeout to prevent timeouts
-                result.Success = zipImport.ImportZip(stream, temporaryDirectory, name);
+                result.Success = zipImport.ImportZip(stream, temporaryDirectory, renameApp);
                 result.Messages.AddRange(zipImport.Messages);
             }
             catch (Exception ex)
