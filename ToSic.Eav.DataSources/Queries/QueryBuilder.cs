@@ -122,7 +122,7 @@ namespace ToSic.Eav.DataSources.Queries
             // More logging in unexpected case that we do not have parts.
             if (parts.Count == 0)
             {
-                Log.Add($"{queryDef.Entity.Metadata.Count()}");
+                Log.Add($"qd.Entity.Metadeta:{queryDef.Entity.Metadata.Count()}");
             }
 
 			foreach (var dataQueryPart in parts)
