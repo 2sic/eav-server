@@ -120,12 +120,9 @@ namespace ToSic.Eav.DataSources.Queries
             Log.Add($"parts:{parts.Count}");
 			
             // More logging in unexpected case that we do not have parts.
-            if (parts.Count == 0)
-            {
-                Log.Add($"qd.Entity.Metadeta:{queryDef.Entity.Metadata.Count()}");
-            }
+            if (parts.Count == 0) Log.Add($"qd.Entity.Metadata:{queryDef.Entity.Metadata.Count()}");
 
-			foreach (var dataQueryPart in parts)
+            foreach (var dataQueryPart in parts)
 	        {
 	            #region Init Configuration Provider
 
