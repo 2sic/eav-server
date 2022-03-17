@@ -26,7 +26,7 @@ namespace ToSic.Eav.Configuration.Licenses
         // The guids of these licenses must match the ones in the 2sxc.org license management list
         // So always create the definition there first, then use the GUID of that definition here
 
-        public static readonly DateTime UnlimitedExpiry = DateTime.MaxValue; // new DateTime(2099, 12, 31);
+        public static readonly DateTime UnlimitedExpiry = DateTime.MaxValue;
 
         public static IReadOnlyCollection<LicenseDefinition> Licenses => _licenseTypes ?? (_licenseTypes = CreateList());
         private static IReadOnlyCollection<LicenseDefinition> _licenseTypes;
@@ -37,10 +37,16 @@ namespace ToSic.Eav.Configuration.Licenses
             "The core, free, open-source license covers 99% of all features in 2sxc. Most of the features are not even listed, as they are always enabled."
         ) { AutoEnable = true };
 
-        public static readonly LicenseDefinition Patron = new LicenseDefinition(101, 
+        public static readonly LicenseDefinition PatronBasic = new LicenseDefinition(101, 
             "Patron Basic",
             new Guid("61d0bf11-187c-4ae8-9b76-a2c3d4beaad7"),
             "Patrons / supporters of 2sxc get some additional features as a thank you for supporting 2sxc."
+        );
+
+        public static readonly LicenseDefinition PatronPerfectionist = new LicenseDefinition(102, 
+            "Patron Perfectionist",
+            new Guid("015077bb-9829-4291-bf99-244d8ba3b100"),
+            "Patrons / supporters of 2sxc who really care about perfect pictures and ultra-fast caching. They get some very enhanced goodies."
         );
 
         public static readonly LicenseDefinition WebFarmCache = new LicenseDefinition(301, 
@@ -72,7 +78,8 @@ namespace ToSic.Eav.Configuration.Licenses
             {
                 CoreFree,
                 CoreBeta,
-                Patron,
+                PatronBasic,
+                PatronPerfectionist,
                 WebFarmCache,
                 LightSpeed,
                 EnterpriseCms,

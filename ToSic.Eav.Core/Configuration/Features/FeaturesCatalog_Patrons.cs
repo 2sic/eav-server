@@ -6,7 +6,7 @@ namespace ToSic.Eav.Configuration
 {
     public partial class FeaturesCatalog
     {
-        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(LicenseCatalog.Patron, true);
+        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(LicenseCatalog.PatronBasic, true);
 
         public static readonly FeatureDefinition PasteImageFromClipboard = new FeatureDefinition(
             "PasteImageFromClipboard",
@@ -26,18 +26,6 @@ namespace ToSic.Eav.Configuration
             true,
             true,
             "Hide 'Sponsored by 2sic' messages - for example on the ADAM field.",
-            FeaturesCatalogRules.Security0Improved,
-            ForPatrons
-        );
-
-        // WIP / Beta in v13
-        public static readonly FeatureDefinition ImageServiceMultiFormat = new FeatureDefinition(
-            "ImageServiceMultiFormat",
-            new Guid("4262df94-3877-4a5a-ac86-20b4f9b38e87"),
-            "Image Service Activates Multiple Formats",
-            false,
-            false,
-            "Enables the ImageService to also provide WebP as better alternatives to Jpg and Png", 
             FeaturesCatalogRules.Security0Improved,
             ForPatrons
         );

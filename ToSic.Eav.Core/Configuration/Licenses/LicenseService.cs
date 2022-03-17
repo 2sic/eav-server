@@ -52,7 +52,12 @@ namespace ToSic.Eav.Configuration.Licenses
         internal static void Update(List<LicenseState> licenses)
         {
             AllCache = licenses;
-            EnabledCache = licenses.Where(l => l.Enabled).ToImmutableDictionary(l => l.License, l => l); ;
+            EnabledCache = licenses
+                .Where(l => l.Enabled)
+                // must do Distinct = GroupBy+First to ensure we don't have duplicate keys
+                .GroupBy(l => l.License)
+                .Select(g => g.First())
+                .ToImmutableDictionary(l => l.License, l => l); ;
             CacheTimestamp = DateTime.Now.Ticks;
         }
         #endregion

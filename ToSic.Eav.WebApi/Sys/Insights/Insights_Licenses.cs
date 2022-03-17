@@ -11,19 +11,23 @@ namespace ToSic.Eav.WebApi.Sys
                       + H2("Licenses")
                       + P("These are the licenses as loaded by the system");
 
-            var rows = _licenseServiceLazy.Value.All.Select(l => RowFields(
-                EmojiTrueFalse(l.Enabled),
-                l.Title,
-                l.LicenseKey,
-                l.License.Name,
-                l.License.Guid,
-                EmojiTrueFalse(l.Valid),
-                EmojiTrueFalse(l.ValidSignature),
-                EmojiTrueFalse(l.ValidFingerprint),
-                EmojiTrueFalse(l.ValidVersion),
-                EmojiTrueFalse(l.ValidExpired),
-                l.Expiration.ToString("yyyy-MM-dd")
-            ));
+            var rows = _licenseServiceLazy.Value.All
+                .ToList()
+                .Select(l => RowFields(
+                        EmojiTrueFalse(l.Enabled),
+                        l.Title,
+                        l.LicenseKey,
+                        l.License?.Name,
+                        l.License?.Guid,
+                        EmojiTrueFalse(l.Valid),
+                        EmojiTrueFalse(l.ValidSignature),
+                        EmojiTrueFalse(l.ValidFingerprint),
+                        EmojiTrueFalse(l.ValidVersion),
+                        EmojiTrueFalse(l.ValidExpired),
+                        l.Expiration.ToString("yyyy-MM-dd")
+                    ).ToString()
+                )
+                .ToList();
 
             var msg = intro
                       + Table().Id("table").Wrap(

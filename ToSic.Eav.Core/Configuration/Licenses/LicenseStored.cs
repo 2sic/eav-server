@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Configuration.Licenses
@@ -80,8 +81,16 @@ namespace ToSic.Eav.Configuration.Licenses
         /// </summary>
         public string Signature { get; set; }
 
+        /// <summary>
+        /// Internal property to work with the data, shouldn't end up in the json
+        /// </summary>
+        [JsonIgnore]
         public string[] LicensesArray => Licenses?.Select(l => l.Id).ToArray().TrimmedAndWithoutEmpty() ?? Array.Empty<string>();
 
+        /// <summary>
+        /// Internal property to work with the data, shouldn't end up in the json
+        /// </summary>
+        [JsonIgnore]
         public string[] FingerprintsArray => Fingerprints?.Select(fp => fp.Id).ToArray().TrimmedAndWithoutEmpty() ?? Array.Empty<string>();
 
         public string GenerateIdentity()
