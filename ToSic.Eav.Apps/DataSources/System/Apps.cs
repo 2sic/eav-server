@@ -61,14 +61,14 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps(IServiceProvider serviceProvider, IAppStates appStates)
+        public Apps(Generator<Eav.Apps.App> appGenerator, IAppStates appStates)
 		{
-            _serviceProvider = serviceProvider;
+            _appGenerator = appGenerator;
             _appStates = appStates;
             Provide(GetList);
             ConfigMask(ZoneKey, $"[Settings:{ZoneIdField}]");
 		}
-        private readonly IServiceProvider _serviceProvider;
+        private readonly Generator<Eav.Apps.App> _appGenerator;
         private readonly IAppStates _appStates;
 
         private ImmutableArray<IEntity> GetList()
@@ -90,8 +90,7 @@ namespace ToSic.Eav.DataSources.Sys
                 string error = null;
                 try
                 {
-                    appObj = _serviceProvider.Build<Eav.Apps.App>();
-                    appObj.Init(new AppIdentity(zone.ZoneId, app.Key), null, Log);
+                    appObj = _appGenerator.New.Init(new AppIdentity(zone.ZoneId, app.Key), null, Log);
                     // this will get the guid, if the identity is not "default"
                     if (Guid.TryParse(appObj.NameId, out var g)) guid = g;
                 }
