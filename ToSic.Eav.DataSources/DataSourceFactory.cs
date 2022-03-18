@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
         private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
         private readonly Lazy<IDataBuilder> _dataBuilderLazy;
         private readonly Lazy<DataSourceErrorHandling> _dataSourceErrorsLazy;
-        public IServiceProvider ServiceProvider { get; }
+        public IServiceProvider ServiceProvider { get; } // TODO: used in object that are created without DI to build dependencies
 
         #region Constructor / DI
 
