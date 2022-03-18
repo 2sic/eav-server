@@ -4,6 +4,8 @@ using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.WebApi.Admin.Query
 {
@@ -19,13 +21,15 @@ namespace ToSic.Eav.WebApi.Admin.Query
         public Lazy<ConvertToEavLight> EntToDicLazy { get; }
         public Lazy<QueryInfo> QueryInfoLazy { get; }
         public Lazy<DataSourceCatalog> DataSourceCatalogLazy { get; }
+        public Generator<JsonSerializer> JsonSerializer { get; }
 
         public QueryControllerDependencies(Lazy<AppManager> appManagerLazy,
             Lazy<AppRuntime> appReaderLazy,
             QueryBuilder queryBuilder,
             Lazy<ConvertToEavLight> entToDicLazy,
             Lazy<QueryInfo> queryInfoLazy,
-            Lazy<DataSourceCatalog> dataSourceCatalogLazy)
+            Lazy<DataSourceCatalog> dataSourceCatalogLazy,
+            Generator<JsonSerializer> jsonSerializer)
         {
             AppManagerLazy = appManagerLazy;
             AppReaderLazy = appReaderLazy;
@@ -33,6 +37,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             EntToDicLazy = entToDicLazy;
             QueryInfoLazy = queryInfoLazy;
             DataSourceCatalogLazy = dataSourceCatalogLazy;
+            JsonSerializer = jsonSerializer;
         }
     }
 }

@@ -24,16 +24,19 @@ namespace ToSic.Eav.WebApi.ImportExport
         private AppManager _appManager;
         public ContentExportApi(
             Lazy<AppManager> appManagerLazy, 
-            IAppStates appStates, 
+            IAppStates appStates,
+            Generator<JsonSerializer> jsonSerializer,
             ResponseMaker<THttpResponseType> responseMaker
             ) : base("Api.EaCtEx")
         {
             _appManagerLazy = appManagerLazy;
             _appStates = appStates;
+            _jsonSerializer = jsonSerializer;
             _responseMaker = responseMaker;
         }
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly IAppStates _appStates;
+        private readonly Generator<JsonSerializer> _jsonSerializer;
         private readonly ResponseMaker<THttpResponseType> _responseMaker;
 
         public ContentExportApi<THttpResponseType> Init(int appId, ILog parentLog)
@@ -93,7 +96,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             Log.Add($"get fields type:{name}");
             SecurityHelpers.ThrowIfNotAdmin(user);
             var type = _appManager.Read.ContentTypes.Get(name);
-            var serializer = _appManager.ServiceProvider.Build<JsonSerializer>().Init(_appManager.AppState, Log);
+            var serializer = _jsonSerializer.New.Init(_appManager.AppState, Log);
             var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                 .RemoveNonFilenameCharacters();
  
@@ -106,7 +109,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             Log.Add($"get fields id:{id}");
             SecurityHelpers.ThrowIfNotAdmin(user);
             var entity = _appManager.Read.Entities.Get(id);
-            var serializer = _appManager.ServiceProvider.Build<JsonSerializer>().Init(_appManager.AppState, Log);
+            var serializer = _jsonSerializer.New.Init(_appManager.AppState, Log);
 
             return _responseMaker.File(
                 serializer.Serialize(entity, withMetadata ? FileSystemLoader.QueryMetadataDepth : 0),

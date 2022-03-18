@@ -6,14 +6,12 @@ using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;
-using ToSic.Eav.WebApi.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
@@ -22,17 +20,23 @@ namespace ToSic.Eav.WebApi
     {
         #region DI Constructor & Init
 
-        public EntityApi(AppRuntime appRuntime, Lazy<AppManager> appManagerLazy, Lazy<IConvertToEavLight> entitiesToDicLazy, EntityBuilder entityBuilder) : base("Api.Entity")
+        public EntityApi(AppRuntime appRuntime, 
+            Lazy<AppManager> appManagerLazy, 
+            Lazy<IConvertToEavLight> entitiesToDicLazy, 
+            EntityBuilder entityBuilder, 
+            Generator<MultiPermissionsTypes> multiPermissionsTypes) : base("Api.Entity")
         {
             _appRuntime = appRuntime;
             _appManagerLazy = appManagerLazy;
             _entitiesToDicLazy = entitiesToDicLazy;
             _entityBuilder = entityBuilder;
+            _multiPermissionsTypes = multiPermissionsTypes;
         }
         private readonly AppRuntime _appRuntime;
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<IConvertToEavLight> _entitiesToDicLazy;
         private readonly EntityBuilder _entityBuilder;
+        private readonly Generator<MultiPermissionsTypes> _multiPermissionsTypes;
         public AppRuntime AppRead;
 
 
@@ -174,7 +178,7 @@ namespace ToSic.Eav.WebApi
         // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
         public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
         {
-            var permCheck = _appManagerLazy.Value.ServiceProvider.Build<MultiPermissionsTypes>().Init(context, app, contentType, parentLog);
+            var permCheck = _multiPermissionsTypes.New.Init(context, app, contentType, parentLog);
             if (!permCheck.EnsureAll(requiredGrants, out var error))
                 throw HttpException.PermissionDenied(error);
             return Init(app.AppId, true, parentLog);

@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps
 {
@@ -13,7 +12,14 @@ namespace ToSic.Eav.Apps
 
         #region constructors
 
-        public AppRuntime(AppRuntimeDependencies dependencies, string logName = null) : base(dependencies, logName ?? "Eav.AppRt") {}
+        public AppRuntime(AppRuntimeDependencies dependencies, string logName = null) : base(dependencies,
+            logName ?? "Eav.AppRt")
+        {
+            dependencies.EntityRuntime.SetInit(r => r.Init(this, Log));
+            dependencies.MetadataRuntime.SetInit(r => r.Init(this, Log));
+            dependencies.ContentTypeRuntime.SetInit(r => r.Init(this, Log));
+            dependencies.QueryRuntime.SetInit(r => r.Init(this, Log));
+        }
 
         /// <summary>
         /// Simple Init
@@ -24,7 +30,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Simple Override - to track if the init is being called everywhere
         /// </summary>
-        public new AppRuntime Init(int appId, bool showDrafts, ILog parentLog) 
+        public AppRuntime Init(int appId, bool showDrafts, ILog parentLog) 
             => base.Init(Dependencies.AppStates.IdentityOfApp(appId), showDrafts, parentLog);
 
         /// <summary>
@@ -44,26 +50,23 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Entities Runtime to get entities in this app
         /// </summary>
-        public EntityRuntime Entities => _entities ?? (_entities = DataSourceFactory.ServiceProvider.Build< EntityRuntime>().Init(this, Log));
-        private EntityRuntime _entities;
+        public EntityRuntime Entities => Dependencies.EntityRuntime.Ready;
 
         /// <summary>
         /// Metadata runtime to get metadata from this app
         /// </summary>
-        public MetadataRuntime Metadata => _metadata ?? (_metadata = DataSourceFactory.ServiceProvider.Build<MetadataRuntime>().Init(this, Log));
-        private MetadataRuntime _metadata;
+        public MetadataRuntime Metadata => Dependencies.MetadataRuntime.Ready;
 
         /// <summary>
         /// ContentTypes runtime to get content types from this app
         /// </summary>
-        public ContentTypeRuntime ContentTypes => _contentTypes ?? (_contentTypes = DataSourceFactory.ServiceProvider.Build<ContentTypeRuntime>().Init(this, Log));
-        private ContentTypeRuntime _contentTypes; 
+        public ContentTypeRuntime ContentTypes => Dependencies.ContentTypeRuntime.Ready;
 
         /// <summary>
         /// Queries runtime to get queries of this app
         /// </summary>
-        public QueryRuntime Queries => _queries ?? (_queries = DataSourceFactory.ServiceProvider.Build<QueryRuntime>().Init(this, Log));
-        private QueryRuntime _queries;
+        public QueryRuntime Queries => Dependencies.QueryRuntime.Ready;
+
 
         ///// <summary>
         ///// Zone runtime to get the zone of this app
