@@ -3,7 +3,7 @@ using ToSic.Eav.Run;
 
 namespace ToSic.Testing.Shared.Platforms
 {
-    public class TestPlatformWithLicense: IPlatformInfo
+    public class TestPlatformPatronPerfectionist: IPlatformInfo
     {
         public virtual string Name => "Test";
 

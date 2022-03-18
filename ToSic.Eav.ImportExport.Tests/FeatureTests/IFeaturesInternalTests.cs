@@ -20,7 +20,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
 
         protected override IServiceCollection SetupServices(IServiceCollection services = null)
         {
-            return base.SetupServices(services).AddTransient<IPlatformInfo, TestPlatformWithLicense>();
+            return base.SetupServices(services).AddTransient<IPlatformInfo, TestPlatformPatronPerfectionist>();
         }
 
 
