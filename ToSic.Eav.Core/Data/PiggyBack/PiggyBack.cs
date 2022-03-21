@@ -19,9 +19,15 @@ namespace ToSic.Eav.Data.PiggyBack
         public TData GetOrGenerate<TData>(string key, Func<TData> create)
         {
             if (_cache.TryGetValue(key, out var result) && result is TData typed) return typed;
-            typed = create();
-            _cache.TryAdd(key, typed);
-            return typed;
+            try
+            {
+                typed = create();
+                _cache.TryAdd(key, typed);
+                return typed;
+            }
+            catch { /* ignore / silent */ }
+
+            return default;
         }
     }
 }

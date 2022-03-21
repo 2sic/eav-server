@@ -1,8 +1,6 @@
 ﻿using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Interfaces;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
@@ -15,7 +13,16 @@ namespace ToSic.Eav.Apps
     {
         #region Constructors
 
-        public AppManager(AppRuntimeDependencies dependencies) : this(dependencies, "Eav.AppMan") { }
+        public AppManager(AppRuntimeDependencies dependencies) : this(dependencies, "Eav.AppMan")
+        { }
+
+        protected override void InitForDi()
+        {
+            Dependencies.AppRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts, Log));
+            Dependencies.DbDataController.SetInit(c => c.Init(ZoneId, AppId, Log));
+            Dependencies.EntitiesManager.SetInit(m => m.Init(this, Log));
+            Dependencies.QueryManager.SetInit(m => m.Init(this, Log));
+        }
 
         protected AppManager(AppRuntimeDependencies dependencies, string logName) : base(dependencies, logName) { }
 
@@ -40,16 +47,15 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Read / Runtime system of the AppManager, to read data
         /// </summary>
-        public AppRuntime Read => _read ?? (_read = ServiceProvider.Build<AppRuntime>().InitWithState(AppState, ShowDrafts, Log));
-        private AppRuntime _read;
+        public AppRuntime Read => Dependencies.AppRuntime.Ready;
+
         #endregion
 
         /// <summary>
         /// Database controller / DB-Context
         /// </summary>
-        internal DbDataController DataController 
-            => _eavContext ?? (_eavContext = ServiceProvider.Build<DbDataController>().Init(ZoneId, AppId, Log));
-        private DbDataController _eavContext;
+        internal DbDataController DataController =>  Dependencies.DbDataController.Ready;
+
 
         /// <summary>
         /// Storage system providing another interface
@@ -59,14 +65,12 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The entity-management subsystem
         /// </summary>
-        public EntitiesManager Entities => _entities ?? (_entities = ServiceProvider.Build<EntitiesManager>().Init(this, Log));
-        private EntitiesManager _entities;
+        public EntitiesManager Entities => Dependencies.EntitiesManager.Ready;
 
         /// <summary>
         /// Queries Management Subsystem
         /// </summary>
-        public QueryManager Queries => _queries ?? (_queries = ServiceProvider.Build<QueryManager>().Init(this, Log));
-        private QueryManager _queries;
+        public QueryManager Queries => Dependencies.QueryManager.Ready;
 
         /// <summary>
         /// Content-Types Manager Subsystem

@@ -50,7 +50,12 @@ namespace ToSic.Eav.Configuration
                 PasteImageFromClipboard,
                 WysiwygPasteFormatted,
                 NoSponsoredByToSic,
+
+                // Patrons Perfectionist
                 ImageServiceMultiFormat,    // v13
+                ImageServiceMultipleSizes,
+                ImageServiceSetSizes,
+                ImageServiceUseFactors,
 
                 // 2sxc 10.24+
                 WebFarmCache,

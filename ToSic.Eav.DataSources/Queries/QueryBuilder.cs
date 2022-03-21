@@ -116,8 +116,13 @@ namespace ToSic.Eav.DataSources.Queries
 
 	        Log.Add($"add parts to pipe#{queryDef.Entity.EntityId} ");
 	        var dataSources = new Dictionary<string, IDataSource>();
+            var parts = queryDef.Parts;
+            Log.Add($"parts:{parts.Count}");
+			
+            // More logging in unexpected case that we do not have parts.
+            if (parts.Count == 0) Log.Add($"qd.Entity.Metadata:{queryDef.Entity.Metadata.Count()}");
 
-	        foreach (var dataQueryPart in queryDef.Parts)
+            foreach (var dataQueryPart in parts)
 	        {
 	            #region Init Configuration Provider
 
@@ -190,7 +195,9 @@ namespace ToSic.Eav.DataSources.Queries
 			{
 				var notInitialized = wirings.Where(w => !initializedWirings.Any(i => i.From == w.From && i.Out == w.Out && i.To == w.To && i.In == w.In));
 				var error = string.Join(", ", notInitialized);
-				throw new Exception("Some Stream-Wirings were not created: " + error);
+				var exception = new Exception("Some Stream-Wirings were not created: " + error);
+				Log.Exception(exception);
+				throw exception;
 			}
 		    logWrap("ok");
 		}

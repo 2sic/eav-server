@@ -8,7 +8,7 @@ namespace ToSic.Testing.Shared
     /// </summary>
     public abstract class TestBaseDiCore: TestBaseDiEmpty
     {
-        protected override IServiceCollection SetupServices(IServiceCollection services = null)
+        protected override IServiceCollection SetupServices(IServiceCollection services)
         {
             return base.SetupServices(services)
                 .AddEavCore()

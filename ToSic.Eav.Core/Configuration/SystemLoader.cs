@@ -56,14 +56,23 @@ namespace ToSic.Eav.Configuration
             var presetApp = _appStateLoader.LoadFullAppState();
             _appsCache.Add(presetApp);
 
+            StartUpFeatures();
+        }
+
+        /// <summary>
+        /// Standalone Features loading - to make the features API available in tests
+        /// </summary>
+        public void StartUpFeatures()
+        {
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_logHistory, Log).LoadLicenses(Fingerprint.GetFingerprint(), _globalConfiguration.Value.GlobalFolder);
+            new LicenseLoader(_logHistory, Log).LoadLicenses(Fingerprint.GetFingerprint(),
+                _globalConfiguration.Value.GlobalFolder);
 
             // Now do a normal reload of configuration and features
             ReloadFeatures();
         }
-        
+
 
         private bool _startupAlreadyRan;
 

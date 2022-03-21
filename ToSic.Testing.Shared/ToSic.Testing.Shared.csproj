@@ -91,8 +91,8 @@
   <ItemGroup>
     <Compile Include="IServiceBuilder.cs" />
     <Compile Include="Mocks\MockGlobalMetadataProvider.cs" />
-    <Compile Include="Platforms\TestPlatformNoLicense.cs" />
-    <Compile Include="Platforms\TestPlatformWithLicense.cs" />
+    <Compile Include="Platforms\TestPlatformNotPatron.cs" />
+    <Compile Include="Platforms\TestPlatformPatronPerfectionist.cs" />
     <Compile Include="SqlTracing.cs" />
     <Compile Include="TestBaseDiCore.cs" />
     <Compile Include="TestBaseDiEavFullAndDb.cs" />
@@ -104,6 +104,7 @@
     <Compile Include="TestBaseDiEmpty.cs" />
     <Compile Include="TestBaseWithCustomDependencyInjection.cs" />
     <Compile Include="TestConstants.cs" />
+    <Compile Include="TestHelpers.cs" />
     <Compile Include="TestServiceBase.cs" />
     <Compile Include="ValueBuilderTestExtensions.cs" />
   </ItemGroup>

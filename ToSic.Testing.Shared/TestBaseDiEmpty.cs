@@ -17,12 +17,18 @@ namespace ToSic.Testing.Shared
 
         protected TestBaseDiEmpty(string logName = null) : base("Tst." + (logName ?? "BaseDI"))
         {
-            ServiceProvider = SetupServices().BuildServiceProvider();
+            // ReSharper disable once VirtualMemberCallInConstructor
+            ServiceProvider = SetupServices(new ServiceCollection()).BuildServiceProvider();
+
+            // this will run after the base constructor, which configures DI
+            var dbConfiguration = Build<IDbConfiguration>();
+            dbConfiguration.ConnectionString = TestConstants.ConStr;
+
+            StartupGlobalFoldersAndFingerprint();
         }
 
-        protected virtual IServiceCollection SetupServices(IServiceCollection services = null)
+        protected virtual IServiceCollection SetupServices(IServiceCollection services)
         {
-            services = services ?? new ServiceCollection();
             AddServices(services);
             return services;
         }

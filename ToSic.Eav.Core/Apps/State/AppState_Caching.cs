@@ -5,7 +5,7 @@ using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Apps
 {
-    public partial class AppState: ICacheExpiring
+    public partial class AppState: ICacheExpiring, IHasPiggyBack
     {
         /// <summary>
         /// Helper object to keep track of cache changes
@@ -59,7 +59,5 @@ namespace ToSic.Eav.Apps
         public PiggyBack PiggyBack => _piggyBack ?? (_piggyBack = new PiggyBack());
         private PiggyBack _piggyBack;
 
-        [PrivateApi]
-        public TData GetPiggyBack<TData>(string key, Func<TData> create) => PiggyBack.GetOrGenerate(key, create);
     }
 }

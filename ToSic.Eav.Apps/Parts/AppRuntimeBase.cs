@@ -16,16 +16,16 @@ namespace ToSic.Eav.Apps.Parts
 
         public bool ShowDrafts { get; private set; }
 
-        // TODO: @STV Should become protected, but it's used so much this will take ca. 2-3 hours
-        // The non-inheriting classes should get their services directly, not through this service provider
-        public IServiceProvider ServiceProvider => DataSourceFactory.ServiceProvider;
-
         protected AppRuntimeBase(AppRuntimeDependencies dependencies, string logName): base(logName, new CodeRef())
         {
             Dependencies = dependencies;
             DataSourceFactory = dependencies.DataSourceFactory.Init(Log);
+            // ReSharper disable once VirtualMemberCallInConstructor
+            InitForDi();
         }
         protected readonly AppRuntimeDependencies Dependencies;
+
+        protected abstract void InitForDi();
 
         public T Init(IAppIdentity app, bool showDrafts, ILog parentLog)
         {

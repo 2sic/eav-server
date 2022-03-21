@@ -14,17 +14,17 @@ namespace ToSic.Testing.Shared
     {
         protected TestBaseDiEavFullAndDb()
         {
-            // this will run after the base constructor, which configures DI
-            var dbConfiguration = Build<IDbConfiguration>();
-            dbConfiguration.ConnectionString = TestConstants.ConStr;
+            //// this will run after the base constructor, which configures DI
+            //var dbConfiguration = Build<IDbConfiguration>();
+            //dbConfiguration.ConnectionString = TestConstants.ConStr;
 
-            StartupGlobalFoldersAndFingerprint();
+            //StartupGlobalFoldersAndFingerprint();
 
             // Make sure global types are loaded
             Build<SystemLoader>().StartUp();
         }
 
-        protected override IServiceCollection SetupServices(IServiceCollection services = null)
+        protected override IServiceCollection SetupServices(IServiceCollection services)
         {
             return base.SetupServices(services)
                 .AddEav();

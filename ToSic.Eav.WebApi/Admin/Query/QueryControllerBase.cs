@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
@@ -11,17 +11,16 @@ using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Dto;
 using Connection = ToSic.Eav.DataSources.Queries.Connection;
 
 namespace ToSic.Eav.WebApi.Admin.Query
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// Web API Controller for the Pipeline Designer UI
-	/// </summary>
-	public abstract class QueryControllerBase<TImplementation> : HasLog<TImplementation> where TImplementation : QueryControllerBase<TImplementation>
+    /// <inheritdoc />
+    /// <summary>
+    /// Web API Controller for the Pipeline Designer UI
+    /// </summary>
+    public abstract class QueryControllerBase<TImplementation> : HasLog<TImplementation> where TImplementation : QueryControllerBase<TImplementation>
     {
         protected QueryControllerBase(QueryControllerDependencies dependencies, string logName) : base(logName)
         {
@@ -217,7 +216,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             {
                 Log.Add("import content" + args.DebugInfo);
 
-                var deser = _appManager.ServiceProvider.Build<Eav.ImportExport.Json.JsonSerializer>().Init(_appManager.AppState, Log);
+                var deser = _dependencies.JsonSerializer.New.Init(_appManager.AppState, Log);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents, args.AppId, Log);
                 _appManager.Queries.SaveCopy(qdef);
