@@ -14,11 +14,14 @@ namespace ToSic.Eav.Apps
         #region Constructors
 
         public AppManager(AppRuntimeDependencies dependencies) : this(dependencies, "Eav.AppMan")
+        { }
+
+        protected override void InitForDi()
         {
-            dependencies.AppRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts, Log));
-            dependencies.DbDataController.SetInit(c => c.Init(ZoneId, AppId, Log));
-            dependencies.EntitiesManager.SetInit(m => m.Init(this, Log));
-            dependencies.QueryManager.SetInit(m => m.Init(this, Log));
+            Dependencies.AppRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts, Log));
+            Dependencies.DbDataController.SetInit(c => c.Init(ZoneId, AppId, Log));
+            Dependencies.EntitiesManager.SetInit(m => m.Init(this, Log));
+            Dependencies.QueryManager.SetInit(m => m.Init(this, Log));
         }
 
         protected AppManager(AppRuntimeDependencies dependencies, string logName) : base(dependencies, logName) { }

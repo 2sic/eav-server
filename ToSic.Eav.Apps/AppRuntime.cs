@@ -14,11 +14,14 @@ namespace ToSic.Eav.Apps
 
         public AppRuntime(AppRuntimeDependencies dependencies, string logName = null) : base(dependencies,
             logName ?? "Eav.AppRt")
+        { }
+
+        protected override void InitForDi()
         {
-            dependencies.EntityRuntime.SetInit(r => r.Init(this, Log));
-            dependencies.MetadataRuntime.SetInit(r => r.Init(this, Log));
-            dependencies.ContentTypeRuntime.SetInit(r => r.Init(this, Log));
-            dependencies.QueryRuntime.SetInit(r => r.Init(this, Log));
+            Dependencies.EntityRuntime.SetInit(r => r.Init(this, Log));
+            Dependencies.MetadataRuntime.SetInit(r => r.Init(this, Log));
+            Dependencies.ContentTypeRuntime.SetInit(r => r.Init(this, Log));
+            Dependencies.QueryRuntime.SetInit(r => r.Init(this, Log));
         }
 
         /// <summary>

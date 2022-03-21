@@ -23,8 +23,11 @@ namespace ToSic.Eav.Apps.Parts
         }
         protected readonly AppRuntimeDependencies Dependencies;
 
+        protected abstract void InitForDi();
+
         public T Init(IAppIdentity app, bool showDrafts, ILog parentLog)
         {
+            InitForDi();
             Init(app, new CodeRef(), parentLog);
             // 2020-02-10 DataSourceFactory.Init(Log);
             // re-use data of parent if it's constructed from an app-manager
