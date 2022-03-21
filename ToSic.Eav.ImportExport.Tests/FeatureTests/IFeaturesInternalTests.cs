@@ -18,7 +18,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
         }
         internal IFeaturesInternal FeaturesInternal;
 
-        protected override IServiceCollection SetupServices(IServiceCollection services = null)
+        protected override IServiceCollection SetupServices(IServiceCollection services)
         {
             return base.SetupServices(services).AddTransient<IPlatformInfo, TestPlatformPatronPerfectionist>();
         }
