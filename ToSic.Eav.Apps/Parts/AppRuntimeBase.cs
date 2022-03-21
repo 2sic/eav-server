@@ -20,6 +20,8 @@ namespace ToSic.Eav.Apps.Parts
         {
             Dependencies = dependencies;
             DataSourceFactory = dependencies.DataSourceFactory.Init(Log);
+            // ReSharper disable once VirtualMemberCallInConstructor
+            InitForDi();
         }
         protected readonly AppRuntimeDependencies Dependencies;
 
@@ -27,7 +29,6 @@ namespace ToSic.Eav.Apps.Parts
 
         public T Init(IAppIdentity app, bool showDrafts, ILog parentLog)
         {
-            InitForDi();
             Init(app, new CodeRef(), parentLog);
             // 2020-02-10 DataSourceFactory.Init(Log);
             // re-use data of parent if it's constructed from an app-manager
