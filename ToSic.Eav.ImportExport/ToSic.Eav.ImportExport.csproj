@@ -32,4 +32,19 @@
     <Folder Include="ToSic.Eav.Convert\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection">
+      <HintPath>..\..\2sxc\Dependencies\DI\microsoft.extensions.dependencyinjection\2.2.0\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+      <Private>True</Private>
+      <CopyLocal>False</CopyLocal>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <HintPath>..\..\2sxc\Dependencies\DI\microsoft.extensions.dependencyinjection.abstractions\2.2.0\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>True</Private>
+      <CopyLocal>False</CopyLocal>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
+
 </Project>
