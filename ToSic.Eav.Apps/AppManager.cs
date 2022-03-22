@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
@@ -11,20 +12,34 @@ namespace ToSic.Eav.Apps
     /// </summary>
     public class AppManager: AppRuntimeBase<AppManager>
     {
+        private readonly LazyInit<AppRuntime> _appRuntime;
+        private readonly LazyInit<DbDataController> _dbDataController;
+        private readonly LazyInit<EntitiesManager> _entitiesManager;
+        private readonly LazyInit<QueryManager> _queryManager;
+
         #region Constructors
 
-        public AppManager(AppRuntimeDependencies dependencies) : this(dependencies, "Eav.AppMan")
-        { }
-
-        protected override void InitForDi()
+        protected AppManager(AppRuntimeDependencies dependencies,
+            LazyInit<AppRuntime> appRuntime,
+            LazyInit<DbDataController> dbDataController,
+            LazyInit<EntitiesManager> entitiesManager,
+            LazyInit<QueryManager> queryManager,
+            string logName
+            ) : base(dependencies, logName)
         {
-            Dependencies.AppRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts, Log));
-            Dependencies.DbDataController.SetInit(c => c.Init(ZoneId, AppId, Log));
-            Dependencies.EntitiesManager.SetInit(m => m.Init(this, Log));
-            Dependencies.QueryManager.SetInit(m => m.Init(this, Log));
+            _appRuntime = appRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts, Log));
+            _dbDataController = dbDataController.SetInit(c => c.Init(ZoneId, AppId, Log));
+            _entitiesManager = entitiesManager.SetInit(m => m.Init(this, Log));
+            _queryManager = queryManager.SetInit(m => m.Init(this, Log));
         }
 
-        protected AppManager(AppRuntimeDependencies dependencies, string logName) : base(dependencies, logName) { }
+        public AppManager(AppRuntimeDependencies dependencies,
+            LazyInit<AppRuntime> appRuntime,
+            LazyInit<DbDataController> dbDataController,
+            LazyInit<EntitiesManager> entitiesManager,
+            LazyInit<QueryManager> queryManager
+            ) : this(dependencies, appRuntime, dbDataController, entitiesManager, queryManager, "Eav.AppMan")
+        { }
 
         public AppManager Init(IAppIdentity app, ILog parentLog) => Init(app, true, parentLog);
 
@@ -47,14 +62,14 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Read / Runtime system of the AppManager, to read data
         /// </summary>
-        public AppRuntime Read => Dependencies.AppRuntime.Ready;
+        public AppRuntime Read => _appRuntime.Ready;
 
         #endregion
 
         /// <summary>
         /// Database controller / DB-Context
         /// </summary>
-        internal DbDataController DataController =>  Dependencies.DbDataController.Ready;
+        internal DbDataController DataController =>  _dbDataController.Ready;
 
 
         /// <summary>
@@ -65,12 +80,12 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The entity-management subsystem
         /// </summary>
-        public EntitiesManager Entities => Dependencies.EntitiesManager.Ready;
+        public EntitiesManager Entities => _entitiesManager.Ready;
 
         /// <summary>
         /// Queries Management Subsystem
         /// </summary>
-        public QueryManager Queries => Dependencies.QueryManager.Ready;
+        public QueryManager Queries => _queryManager.Ready;
 
         /// <summary>
         /// Content-Types Manager Subsystem
