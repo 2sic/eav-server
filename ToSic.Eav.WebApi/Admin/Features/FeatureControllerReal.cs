@@ -85,8 +85,8 @@ namespace ToSic.Eav.WebApi.Admin.Features
         {
             var updatedIds = featuresManagementResponse.Select(f => f.FeatureGuid);
 
-            var currentFeatures = _features.Value.All
-                .Where(f => !updatedIds.Contains(f.Guid))
+            var storedFeaturesButNotUpdated = _features.Value.All
+                .Where(f => f.EnabledStored.HasValue && !updatedIds.Contains(f.Guid))
                 .Select(FeatureConfigBuilder).ToList();
 
             var updatedFeatures = featuresManagementResponse
@@ -95,7 +95,7 @@ namespace ToSic.Eav.WebApi.Admin.Features
 
             return new FeatureListStored
             {
-                Features = currentFeatures.Union(updatedFeatures).ToList(),
+                Features = storedFeaturesButNotUpdated.Union(updatedFeatures).ToList(),
                 Fingerprint = _systemLoaderLazy.Ready.Fingerprint.GetFingerprint()
             };
         }
