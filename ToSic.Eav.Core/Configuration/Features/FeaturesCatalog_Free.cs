@@ -106,5 +106,17 @@ namespace ToSic.Eav.Configuration
             FeaturesCatalogRules.Security0Neutral,
             ForAllEnabled
         );
+
+
+        public static readonly FeatureDefinition EditUiAllowDebugModeForEditors = new FeatureDefinition(
+            "EditUiAllowDebugModeForEditors",
+            new Guid("a7703dbe-2659-44c7-9ef5-1cd114357d86"),
+            "Edit UI: Allow normal editors (not System-Admins) to enter Debug-Mode",
+            Public,
+            ForUi,
+            "",
+            new FeatureSecurity(2, "Reduces security. should only be activated during development or for special debugging. "),
+            ForAllDisabled
+        );
     }
 }

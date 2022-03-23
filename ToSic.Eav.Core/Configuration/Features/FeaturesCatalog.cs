@@ -42,9 +42,10 @@ namespace ToSic.Eav.Configuration
                 PermissionCheckUsers,
                 PermissionCheckGroups,
 
-                // Free features for all
+                // Free Edit UI features for all
                 EditUiShowNotes,
                 EditUiShowMetadataFor,
+                EditUiAllowDebugModeForEditors,
 
                 // Features for Patreons
                 PasteImageFromClipboard,
