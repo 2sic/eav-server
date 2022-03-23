@@ -39,6 +39,9 @@ namespace ToSic.Eav.Configuration
         [PrivateApi("Hide - was never public on this interface")]
         bool IsEnabled(params string[] nameIds);
 
+        [PrivateApi("New in 13.05, not public at all")]
+        bool IsEnabled(params FeatureDefinition[] features);
+
         /// <summary>
         /// Informs you if the enabled features are valid or not - meaning if they have been countersigned by the 2sxc features system.
         /// As of now, it's not enforced, but in future it will be. 

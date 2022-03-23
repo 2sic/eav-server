@@ -44,7 +44,7 @@ namespace ToSic.Eav.Apps.Languages
 
             // Note: it's important that all cases where we don't detect a forbidden
             // we return null, and DON'T access _ctx.UserMayEdit, as it will recurse to here again
-            if (!_featuresLazy.Value.IsEnabled(FeaturesCatalog.PermissionsByLanguage.NameId)) 
+            if (!_featuresLazy.Value.IsEnabled(FeaturesCatalog.PermissionsByLanguage)) 
                 return wrapLog("feat disabled", null);
 
             // Check if we have any language rules
@@ -64,7 +64,7 @@ namespace ToSic.Eav.Apps.Languages
             var languages = _zoneMapperLazy.Ready.CulturesWithState(_ctx.Site);
 
             // Check if ML-Permissions-Feature is enabled, otherwise don't check detailed permissions
-            var mlFeatureEnabled = _featuresLazy.Value.IsEnabled(FeaturesCatalog.PermissionsByLanguage.NameId);
+            var mlFeatureEnabled = _featuresLazy.Value.IsEnabled(FeaturesCatalog.PermissionsByLanguage);
             var allowAllLanguages = !mlFeatureEnabled || _ctx.User.IsSuperUser;
 
             if (allowAllLanguages || appStateOrNull == null)

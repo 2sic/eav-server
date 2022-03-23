@@ -104,7 +104,7 @@ namespace ToSic.Eav.Context
                     .UserMay(GrantSets.WriteSomething);
 
                 // Check if language permissions may alter edit
-                if (_userMayEdit == true && Deps.FeatsLazy.Value.IsEnabled(FeaturesCatalog.PermissionsByLanguage.NameId))
+                if (_userMayEdit == true && Deps.FeatsLazy.Value.IsEnabled(FeaturesCatalog.PermissionsByLanguage))
                     _userMayEdit = Deps.LangCheckLazy.Ready.UserRestrictedByLanguagePermissions(AppState) ?? _userMayEdit;
 
                 return wrapLog($"{_userMayEdit.Value}", _userMayEdit.Value);
