@@ -69,6 +69,9 @@ namespace ToSic.Eav.Configuration.Licenses
         {
             var wrapLog = Log.Call<List<LicenseStored>>();
             var configurationsPath = Path.Combine(globalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
+            
+            // ensure that path to store files already exits
+            Directory.CreateDirectory(configurationsPath);
 
             var licensesStored = Directory.EnumerateFiles(configurationsPath, "*.license.json")
                 .Select(File.ReadAllText)

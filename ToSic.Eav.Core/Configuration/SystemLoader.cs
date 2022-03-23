@@ -87,6 +87,10 @@ namespace ToSic.Eav.Configuration
 
             // load features in simple way
             var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
+
+            // ensure that path to store files already exits
+            Directory.CreateDirectory(configurationsPath);
+
             var featureFilePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
             if (File.Exists(featureFilePath))
             {

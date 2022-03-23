@@ -121,8 +121,8 @@ namespace ToSic.Eav.WebApi.Admin.Features
             {
                 var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
 
-                if (!Directory.Exists(configurationsPath))
-                    Directory.CreateDirectory(configurationsPath);
+                // ensure that path to store files already exits
+                Directory.CreateDirectory(configurationsPath);
 
                 var featureFilePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
 
