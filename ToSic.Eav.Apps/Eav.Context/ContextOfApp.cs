@@ -102,7 +102,7 @@ namespace ToSic.Eav.Context
                     return wrapLog("no app, use fallback", _userMayEdit.Value);
                 }
 
-                _userMayEdit = ServiceProvider.Build<AppPermissionCheck>()
+                _userMayEdit = Dependencies.AppPermissionCheckGenerator.New
                     .ForAppInInstance(this, AppState, Log)
                     .UserMay(GrantSets.WriteSomething);
 

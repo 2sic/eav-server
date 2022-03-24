@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
@@ -20,17 +21,20 @@ namespace ToSic.Eav.Context
             public IServiceProvider ServiceProvider { get; }
             public ISite Site { get; }
             public IUser User { get; }
+            public Generator<AppPermissionCheck> AppPermissionCheckGenerator { get; }
             public Generator<IFeaturesInternal> FeaturesInternalGenerator { get; }
 
             public ContextOfSiteDependencies(IServiceProvider serviceProvider, 
                 ISite site, 
                 IUser user,
+                Generator<AppPermissionCheck> appPermissionCheckGenerator,
                 Generator<IFeaturesInternal> featuresInternalGenerator
                 )
             {
                 ServiceProvider = serviceProvider;
                 Site = site;
                 User = user;
+                AppPermissionCheckGenerator = appPermissionCheckGenerator;
                 FeaturesInternalGenerator = featuresInternalGenerator;
             }
         }
