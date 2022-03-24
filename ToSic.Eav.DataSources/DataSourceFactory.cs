@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.Documentation;
@@ -13,21 +14,29 @@ namespace ToSic.Eav.DataSources
     {
         private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
         private readonly Lazy<IDataBuilder> _dataBuilderLazy;
+
+        public IZoneCultureResolver ZoneCultureResolver => _zoneCultureResolverLazy.Value;
+        private readonly Lazy<IZoneCultureResolver> _zoneCultureResolverLazy;
+
         private readonly Lazy<DataSourceErrorHandling> _dataSourceErrorsLazy;
         public IServiceProvider ServiceProvider { get; } // TODO: used in object that are created without DI to build dependencies
+
 
         #region Constructor / DI
 
         public DataSourceFactory(IServiceProvider serviceProvider, 
             Lazy<ILookUpEngineResolver> lookupResolveLazy, 
             Lazy<IDataBuilder> dataBuilderLazy,
+            Lazy<IZoneCultureResolver> zoneCultureResolverLazy,
             Lazy<DataSourceErrorHandling> dataSourceErrorsLazy
             ) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
             _lookupResolveLazy = lookupResolveLazy;
             _dataBuilderLazy = dataBuilderLazy;
+            _zoneCultureResolverLazy = zoneCultureResolverLazy;
             _dataSourceErrorsLazy = dataSourceErrorsLazy;
             ServiceProvider = serviceProvider;
+
         }
 
         #endregion
@@ -183,7 +192,7 @@ namespace ToSic.Eav.DataSources
                 ((IDataTarget)newDs).Attach(upstream);
             if (configLookUp != null) 
                 newDs.Init(configLookUp);
-            
+
             // Attach new 11.13 properties which are needed
             newDs._dataBuilderLazy = _dataBuilderLazy;
             newDs._dataSourceErrorHandlingLazy = _dataSourceErrorsLazy;
