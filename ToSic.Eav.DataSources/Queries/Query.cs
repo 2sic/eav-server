@@ -108,7 +108,7 @@ namespace ToSic.Eav.DataSources.Queries
             wrapLog("ok");
         }
 
-        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = DataSourceFactory.ServiceProvider.Build<QueryBuilder>().Init(Log));
+        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = DataSourceFactory.QueryBuilder.Init(Log));
         private QueryBuilder _queryBuilder;
 
 

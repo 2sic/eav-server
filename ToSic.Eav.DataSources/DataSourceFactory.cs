@@ -3,6 +3,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Catalog;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
@@ -22,8 +23,11 @@ namespace ToSic.Eav.DataSources
         private readonly Lazy<IZoneCultureResolver> _zoneCultureResolverLazy;
 
         private readonly Lazy<DataSourceErrorHandling> _dataSourceErrorsLazy;
-        public IServiceProvider ServiceProvider { get; } // TODO: used in object that are created without DI to build dependencies
 
+        public QueryBuilder QueryBuilder => _queryBuilderLazy.Value;
+        private readonly Lazy<QueryBuilder> _queryBuilderLazy;
+
+        public IServiceProvider ServiceProvider { get; } // TODO: used in object that are created without DI to build dependencies
 
         #region Constructor / DI
 
@@ -32,7 +36,8 @@ namespace ToSic.Eav.DataSources
             Lazy<ILookUpEngineResolver> lookupResolveLazy, 
             Lazy<IDataBuilder> dataBuilderLazy,
             Lazy<IZoneCultureResolver> zoneCultureResolverLazy,
-            Lazy<DataSourceErrorHandling> dataSourceErrorsLazy
+            Lazy<DataSourceErrorHandling> dataSourceErrorsLazy,
+            Lazy<QueryBuilder> queryBuilderLazy
             ) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
             _appStatesGen = appStatesGen;
@@ -40,6 +45,7 @@ namespace ToSic.Eav.DataSources
             _dataBuilderLazy = dataBuilderLazy;
             _zoneCultureResolverLazy = zoneCultureResolverLazy;
             _dataSourceErrorsLazy = dataSourceErrorsLazy;
+            _queryBuilderLazy = queryBuilderLazy;
             ServiceProvider = serviceProvider;
 
         }
