@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using ToSic.Eav.WebApi.Dto.Metadata;
 
 namespace ToSic.Eav.WebApi.Dto
 {
@@ -19,6 +21,11 @@ namespace ToSic.Eav.WebApi.Dto
         /// of course it would only work with one entity, so it's not a final design choice
         /// </summary>
         public int MetadataId { get; set; }
+        
+        /// <summary>
+        /// WIP 13.05
+        /// </summary>
+        public IEnumerable<MetadataOfDto> Metadata { get; set; }
 
         public string Path { get; set; }
         public string Name { get; set; }
