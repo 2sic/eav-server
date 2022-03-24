@@ -12,6 +12,11 @@ namespace ToSic.Eav.Context
         IServiceProvider ServiceProvider { get; }
 
         /// <summary>
+        /// ContextOfSiteDependencies handed around, so it's part of the context being passed around
+        /// </summary>
+        ContextOfSite.ContextOfSiteDependencies Dependencies { get; }
+
+        /// <summary>
         /// The website the current request is running in
         /// </summary>
         ISite Site { get; set; }

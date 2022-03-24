@@ -18,7 +18,10 @@ namespace ToSic.Eav.Context
 
         public class ContextOfAppDependencies
         {
-            public ContextOfAppDependencies(IAppStates appStates, Lazy<IFeaturesService> featsLazy, LazyInitLog<AppUserLanguageCheck> langCheckLazy, GeneratorLog<IEnvironmentPermission> environmentPermissionGenerator)
+            public ContextOfAppDependencies(IAppStates appStates, 
+                Lazy<IFeaturesService> featsLazy, 
+                LazyInitLog<AppUserLanguageCheck> langCheckLazy, 
+                GeneratorLog<IEnvironmentPermission> environmentPermissionGenerator)
             {
                 EnvironmentPermissionGenerator = environmentPermissionGenerator;
                 AppStates = appStates;
@@ -32,8 +35,8 @@ namespace ToSic.Eav.Context
             internal bool InitDone;
         }
 
-        public ContextOfApp(IServiceProvider serviceProvider, ISite site, IUser user, ContextOfAppDependencies dependencies)
-            : base(serviceProvider, site, user)
+        public ContextOfApp(ContextOfSiteDependencies contextOfSiteDependencies, ContextOfAppDependencies dependencies)
+            : base(contextOfSiteDependencies)
         {
             Deps = dependencies;
             if (!dependencies.InitDone)
@@ -99,7 +102,7 @@ namespace ToSic.Eav.Context
                     return wrapLog("no app, use fallback", _userMayEdit.Value);
                 }
 
-                _userMayEdit = ServiceProvider.Build<AppPermissionCheck>()
+                _userMayEdit = Dependencies.AppPermissionCheckGenerator.New
                     .ForAppInInstance(this, AppState, Log)
                     .UserMay(GrantSets.WriteSomething);
 
