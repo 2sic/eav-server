@@ -28,7 +28,7 @@ namespace ToSic.Eav.Configuration.Licenses
             Priority = priority;
             Name = name;
             Guid = guid;
-            Description = description;
+            Description = description ?? "";
         }
 
         public readonly int Priority;
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Configuration.Licenses
         public readonly string Name;
         public readonly Guid Guid;
         public bool AutoEnable = false;
-
-        public string Description = "";
+        public string Description;
+        public LicenseDefinition[] AlsoInheritEnabledFrom = Array.Empty<LicenseDefinition>();
     }
 }

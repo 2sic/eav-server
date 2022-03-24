@@ -32,22 +32,31 @@ namespace ToSic.Eav.Configuration.Licenses
         private static IReadOnlyCollection<LicenseDefinition> _licenseTypes;
 
         public static readonly LicenseDefinition CoreFree = new LicenseDefinition(1, 
-            "Core (free)",
+            "Core (free for everyone)",
             new Guid("40e49a48-0bcd-429c-b6b1-a21e05886bdf"),
             "The core, free, open-source license covers 99% of all features in 2sxc. Most of the features are not even listed, as they are always enabled."
-        ) { AutoEnable = true };
+        )
+        {
+            AutoEnable = true
+        };
 
-        public static readonly LicenseDefinition PatronBasic = new LicenseDefinition(101, 
-            "Patron Basic",
-            new Guid("61d0bf11-187c-4ae8-9b76-a2c3d4beaad7"),
-            "Patrons / supporters of 2sxc get some additional features as a thank you for supporting 2sxc."
-        );
 
         public static readonly LicenseDefinition PatronPerfectionist = new LicenseDefinition(102, 
             "Patron Perfectionist",
             new Guid("015077bb-9829-4291-bf99-244d8ba3b100"),
             "Patrons / supporters of 2sxc who really care about perfect pictures and ultra-fast caching. They get some very enhanced goodies."
         );
+
+
+        public static readonly LicenseDefinition PatronBasic = new LicenseDefinition(101, 
+            "Patron Basic",
+            new Guid("61d0bf11-187c-4ae8-9b76-a2c3d4beaad7"),
+            "Patrons / supporters of 2sxc get some additional features as a thank you for supporting 2sxc."
+        )
+        {
+            AlsoInheritEnabledFrom = new [] { PatronPerfectionist }
+        };
+
 
         public static readonly LicenseDefinition WebFarmCache = new LicenseDefinition(301, 
             "WebFarmCache",
