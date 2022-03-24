@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -7,7 +6,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         public DbEntity(DbDataController db) : base(db, "Db.Enty")
         {
-            Serializer = db.ServiceProvider.Build<JsonSerializer>();
+            Serializer = db.JsonSerializerGenerator.New;
         }
         private JsonSerializer Serializer { get; }
     }
