@@ -13,22 +13,6 @@ namespace ToSic.Eav.DataSources
 {
     public class DataSourceFactory: HasLog<DataSourceFactory>
     {
-        public IAppStates AppStates => _appStatesGen.New;
-        private readonly Generator<IAppStates> _appStatesGen;
-
-        private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
-        private readonly Lazy<IDataBuilder> _dataBuilderLazy;
-
-        public IZoneCultureResolver ZoneCultureResolver => _zoneCultureResolverLazy.Value;
-        private readonly Lazy<IZoneCultureResolver> _zoneCultureResolverLazy;
-
-        private readonly Lazy<DataSourceErrorHandling> _dataSourceErrorsLazy;
-
-        public QueryBuilder QueryBuilder => _queryBuilderLazy.Value;
-        private readonly Lazy<QueryBuilder> _queryBuilderLazy;
-
-        public IServiceProvider ServiceProvider { get; } // TODO: used in object that are created without DI to build dependencies
-
         #region Constructor / DI
 
         public DataSourceFactory(IServiceProvider serviceProvider,
@@ -40,15 +24,30 @@ namespace ToSic.Eav.DataSources
             Lazy<QueryBuilder> queryBuilderLazy
             ) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
+            _serviceProvider = serviceProvider;
             _appStatesGen = appStatesGen;
             _lookupResolveLazy = lookupResolveLazy;
             _dataBuilderLazy = dataBuilderLazy;
             _zoneCultureResolverLazy = zoneCultureResolverLazy;
             _dataSourceErrorsLazy = dataSourceErrorsLazy;
             _queryBuilderLazy = queryBuilderLazy;
-            ServiceProvider = serviceProvider;
-
         }
+
+        private readonly IServiceProvider _serviceProvider;
+        private readonly Generator<IAppStates> _appStatesGen;
+        private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
+        private readonly Lazy<IDataBuilder> _dataBuilderLazy;
+        private readonly Lazy<IZoneCultureResolver> _zoneCultureResolverLazy;
+        private readonly Lazy<DataSourceErrorHandling> _dataSourceErrorsLazy;
+        private readonly Lazy<QueryBuilder> _queryBuilderLazy;
+
+        #endregion
+
+        #region Provide from constructor
+
+        public IAppStates AppStates => _appStatesGen.New;
+        public IZoneCultureResolver ZoneCultureResolver => _zoneCultureResolverLazy.Value;
+        public QueryBuilder QueryBuilder => _queryBuilderLazy.Value;
 
         #endregion
 
@@ -94,7 +93,7 @@ namespace ToSic.Eav.DataSources
         private IDataSource GetDataSource(Type type, IAppIdentity app, IDataSource upstream, ILookUpEngine lookUps)
         {
             var wrapLog = Log.Call();
-            var newDs = ServiceProvider.Build<DataSourceBase>(type);
+            var newDs = _serviceProvider.Build<DataSourceBase>(type);
             ConfigureNewDataSource(newDs, app, upstream, lookUps);
             wrapLog("ok");
             return newDs;
@@ -134,7 +133,7 @@ namespace ToSic.Eav.DataSources
             if (upstream == null && lookUps == null)
                 throw new Exception("Can't get GetDataSource<T> because both upstream and lookUps are null.");
 
-            var newDs = ServiceProvider.Build<T>();
+            var newDs = _serviceProvider.Build<T>();
             ConfigureNewDataSource(newDs, appIdentity, upstream, lookUps ?? upstream.Configuration.LookUpEngine);
             wrapLog("ok");
             return newDs;
