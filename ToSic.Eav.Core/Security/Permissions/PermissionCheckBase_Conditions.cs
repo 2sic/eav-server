@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
-using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security
@@ -15,12 +14,12 @@ namespace ToSic.Eav.Security
         /// <returns></returns>
         private bool VerifyConditionApplies(Permission permission)
         {
-            //var wrapLog = Log.Call<bool>("VerifyConditionApplies");
+            var wrapLog = Log.Call<bool>();
             try
             {
                 // check general permissions
-                var condition = permission.Condition;// permissionEntity.GetBestValue<string>(Permission.FieldCondition);
-                var identity = permission.Identity;// permissionEntity.GetBestValue<string>(Permission.FieldIdentity);
+                var condition = permission.Condition;
+                var identity = permission.Identity;
                 Log.Add($"condition:{condition}, identity:{identity}");
 
                 // check custom permission based on the user Guid or owner
@@ -28,30 +27,31 @@ namespace ToSic.Eav.Security
                 {
                     // check owner conditions (only possible on target entities, not content-types)
                     if (VerifyUserIsItemOwner(condition, TargetItem, User))
-                        return IsGrantedBecause(Conditions.Identity);
+                        return wrapLog("is-owner: true", IsGrantedBecause(Conditions.Identity));
 
                     // check if an identity was provided
                     if (!string.IsNullOrWhiteSpace(identity))
                     {
+                        Log.Add($"Check if user is user or group - identity: {identity}");
                         if (VerifyUserIsThisUser(identity, User))
-                            return IsGrantedBecause(Conditions.Owner);
+                            return wrapLog("is-this-user: true", IsGrantedBecause(Conditions.Owner));
 
                         if (VerifyUserIsInGroup(identity, User))
-                            return IsGrantedBecause(Conditions.Group);
+                            return wrapLog("is-in-specified-group: true", IsGrantedBecause(Conditions.Group));
                     }
                 }
 
                 // this checks if the condition is a environment condition
                 // for example, if it's a DNN code for "user may view something"
                 if (_environmentPermission.VerifyConditionOfEnvironment(condition))
-                    return IsGrantedBecause(Conditions.EnvironmentInstance);
+                    return wrapLog("environment: true", IsGrantedBecause(Conditions.EnvironmentInstance));
 
-                return false;
+                return wrapLog("no-match: false", false);
             }
             catch
             {
                 // something happened, in this case we assume that this rule doesn't grant anything
-                return false;
+                return wrapLog("error: false", false);
             }
         }
 
