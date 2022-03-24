@@ -10,6 +10,7 @@ using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Eav.WebApi.Languages;
 using ToSic.Eav.WebApi.Plumbing;
 using ToSic.Eav.WebApi.Sys;
+using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Zone;
 
 namespace ToSic.Eav.WebApi
@@ -29,6 +30,7 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<FieldControllerReal>();
             services.TryAddTransient<ZoneControllerReal>();
             services.TryAddTransient<LogControllerReal>();
+            services.TryAddTransient<LicenseControllerReal>();
 
             // Various Backends
             services.TryAddTransient<LanguagesBackend>();
