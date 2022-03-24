@@ -12,6 +12,9 @@ namespace ToSic.Eav.DataSources
 {
     public class DataSourceFactory: HasLog<DataSourceFactory>
     {
+        public IAppStates AppStates => _appStatesGen.New;
+        private readonly Generator<IAppStates> _appStatesGen;
+
         private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
         private readonly Lazy<IDataBuilder> _dataBuilderLazy;
 
@@ -24,13 +27,15 @@ namespace ToSic.Eav.DataSources
 
         #region Constructor / DI
 
-        public DataSourceFactory(IServiceProvider serviceProvider, 
+        public DataSourceFactory(IServiceProvider serviceProvider,
+            Generator<IAppStates> appStatesGen,
             Lazy<ILookUpEngineResolver> lookupResolveLazy, 
             Lazy<IDataBuilder> dataBuilderLazy,
             Lazy<IZoneCultureResolver> zoneCultureResolverLazy,
             Lazy<DataSourceErrorHandling> dataSourceErrorsLazy
             ) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
+            _appStatesGen = appStatesGen;
             _lookupResolveLazy = lookupResolveLazy;
             _dataBuilderLazy = dataBuilderLazy;
             _zoneCultureResolverLazy = zoneCultureResolverLazy;
