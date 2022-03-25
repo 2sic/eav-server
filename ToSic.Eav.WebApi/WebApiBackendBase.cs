@@ -8,10 +8,11 @@ namespace ToSic.Eav.WebApi
     {
         protected WebApiBackendBase(IServiceProvider serviceProvider, string logName) : base(logName)
         {
-            ServiceProvider = serviceProvider;
+            _serviceProvider = serviceProvider;
         }
-        protected IServiceProvider ServiceProvider { get; }
 
-        public TService GetService<TService>() => ServiceProvider.Build<TService>();
+        private readonly IServiceProvider _serviceProvider;
+
+        public TService GetService<TService>() => _serviceProvider.Build<TService>();
     }
 }
