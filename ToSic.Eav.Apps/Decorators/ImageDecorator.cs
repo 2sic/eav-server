@@ -9,21 +9,22 @@ namespace ToSic.Eav.Apps.Decorators
 
         public const string FieldDescription = "Description";
         public const string FieldCropBehavior = "CropBehavior";
-        public const string FieldCompass = "CropCompass";
+        public const string FieldCompass = "CropTo";
+        public const string NoCrop = "none";
 
         public ImageDecorator(IEntity entity) : base(entity) { }
 
         public string CropBehavior => Get(FieldCropBehavior, "");
 
-        public string CropCompass => Get(FieldCompass, "");
+        public string CropTo => Get(FieldCompass, "");
 
         public string Description => Get(FieldDescription, "");
 
-        public (string, string) GetAnchorOrNull()
+        public (string Param, string Value) GetAnchorOrNull()
         {
             var b = CropBehavior;
-            if (b != "compass") return (null, null);
-            var direction = CropCompass;
+            if (b != "to") return (null, null);
+            var direction = CropTo;
             if(string.IsNullOrWhiteSpace(direction)) return (null, null);
             var dirLong = ResolveCompass(direction);
             if (string.IsNullOrWhiteSpace(dirLong)) return (null, null);
