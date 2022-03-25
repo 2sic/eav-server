@@ -1,7 +1,8 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Testing.Shared;
@@ -27,6 +28,12 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
         {
             services.AddTransient<ExportImportValueConversion>();
             services.AddTransient<IValueConverter, MockValueConverter>();
+
+            // added to just to fix this tests, because ths are deps of TestBaseDiEmpty
+            // but it looks that this deps are not yet required for this tests
+            // or we need other test base di
+            services.AddTransient<IGlobalConfiguration, GlobalConfiguration>();
+            services.AddTransient<IDbConfiguration, DbConfiguration>();
         }
 
 
