@@ -18,20 +18,18 @@ namespace ToSic.Eav.Context
 
         public class ContextOfSiteDependencies
         {
-            public IServiceProvider ServiceProvider { get; }
             public ISite Site { get; }
             public IUser User { get; }
             public Generator<AppPermissionCheck> AppPermissionCheckGenerator { get; }
             public Generator<IFeaturesInternal> FeaturesInternalGenerator { get; }
 
-            public ContextOfSiteDependencies(IServiceProvider serviceProvider, 
+            public ContextOfSiteDependencies(
                 ISite site, 
                 IUser user,
                 Generator<AppPermissionCheck> appPermissionCheckGenerator,
                 Generator<IFeaturesInternal> featuresInternalGenerator
                 )
             {
-                ServiceProvider = serviceProvider;
                 Site = site;
                 User = user;
                 AppPermissionCheckGenerator = appPermissionCheckGenerator;
@@ -42,7 +40,6 @@ namespace ToSic.Eav.Context
         public ContextOfSite(ContextOfSiteDependencies dependencies) : base("Eav.CtxSte")
         {
             Dependencies = dependencies;
-            ServiceProvider = dependencies.ServiceProvider ?? throw new Exception("Context didn't receive service provider, but this is absolutely necessary.");
             Site = dependencies.Site;
             User = dependencies.User;
         }
@@ -66,9 +63,6 @@ namespace ToSic.Eav.Context
                 return u.IsSuperUser || u.IsAdmin || u.IsDesigner;
             }
         }
-
-        /// <inheritdoc />
-        public IServiceProvider ServiceProvider { get; }
 
         /// <inheritdoc />
         public ContextOfSiteDependencies Dependencies { get; }
