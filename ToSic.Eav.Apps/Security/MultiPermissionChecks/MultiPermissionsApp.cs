@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
@@ -18,13 +19,15 @@ namespace ToSic.Eav.Apps.Security
 
         public class Dependencies
         {
-            public Dependencies(LazyInitLog<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator)
+            public Dependencies(LazyInitLog<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator, Generator<IFeaturesInternal> featIntGen)
             {
                 ZoneMapper = zoneMapper;
                 AppPermCheckGenerator = appPermCheckGenerator;
+                FeatIntGen = featIntGen;
             }
             internal LazyInitLog<IZoneMapper> ZoneMapper { get; }
             internal Generator<AppPermissionCheck> AppPermCheckGenerator { get; }
+            internal Generator<IFeaturesInternal> FeatIntGen { get; }
 
             internal Dependencies SetLog(ILog log)
             {
@@ -59,6 +62,7 @@ namespace ToSic.Eav.Apps.Security
         public IContextOfSite Context { get; private set; }
         protected ISite SiteForSecurityCheck { get; private set; }
         protected bool SamePortal { get; private set; }
+        public IFeaturesInternal FeaturesInternal => _dp.FeatIntGen.New;
 
         #endregion
 
