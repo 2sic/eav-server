@@ -33,16 +33,16 @@ namespace ToSic.Eav.DataFormats.EavLight
 
         #region Dynamic/Objects - which first must detect what it is
 
-        public IEnumerable<EavLightEntity> Convert(IEnumerable<object> dynamicList)
+        public IEnumerable<EavLightEntity> Convert(IEnumerable<object> list)
         {
             // TODO CONTINUE HERE
             // MUST TEST EVERYTHING
 
 
             // 2021-09-11 DataStreams can be handled a bit more efficiently
-            if (dynamicList is IEnumerable<IEntity> stream) return Convert(stream);
+            if (list is IEnumerable<IEntity> stream) return Convert(stream);
 
-            return dynamicList
+            return list
                 .Select(c =>
                 {
                     IEntity entity = null;
@@ -55,21 +55,21 @@ namespace ToSic.Eav.DataFormats.EavLight
                 .ToList();
         }
 
-        public virtual EavLightEntity Convert(object dynamicEntity)
+        public virtual EavLightEntity Convert(object item)
         {
-            if (dynamicEntity is IEntity ent) return Convert(ent);
-            if (dynamicEntity is IEntityWrapper dynEnt) return Convert(dynEnt.Entity);
+            if (item is IEntity ent) return Convert(ent);
+            if (item is IEntityWrapper dynEnt) return Convert(dynEnt.Entity);
 
-            throw new ArgumentException("expected an IEntity or IEntityWrapper like a DynamicEntity, but got something else", nameof(dynamicEntity));
+            throw new ArgumentException("expected an IEntity or IEntityWrapper like a DynamicEntity, but got something else", nameof(item));
         }
 
         #endregion
 
-        public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntityWrapper> dynamicList)
-            => Convert(dynamicList as IEnumerable<object>);
+        public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntityWrapper> list)
+            => Convert(list as IEnumerable<object>);
 
         /// <inheritdoc />
-        public EavLightEntity Convert(IEntityWrapper dynamicEntity)
-            => Convert(dynamicEntity.Entity);
+        public EavLightEntity Convert(IEntityWrapper item)
+            => Convert(item.Entity);
     }
 }

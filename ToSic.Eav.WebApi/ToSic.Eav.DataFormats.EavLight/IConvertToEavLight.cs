@@ -1,6 +1,9 @@
-﻿using ToSic.Eav.Data;
+﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
+// ReSharper disable InheritdocInvalidUsage
+#pragma warning disable CS0108, CS0114
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight
@@ -13,7 +16,7 @@ namespace ToSic.Eav.DataFormats.EavLight
     ///
     /// In Custom Code / Razor / WebApi you can get this service with Dependency Injection like <br/>
     /// `
-    /// var converter = GetService&lt;IConvertToJsonLight&gt;();
+    /// var converter = GetService&lt;IConvertToEavLight&gt;();
     /// `
     /// </summary>
     /// <remarks>
@@ -24,6 +27,32 @@ namespace ToSic.Eav.DataFormats.EavLight
     [PublicApi]
     public interface IConvertToEavLight: IConvertEntity<EavLightEntity>, IConvertDataSource<EavLightEntity>
     {
+        /// <inheritdoc />
+        IEnumerable<EavLightEntity> Convert(IEnumerable<IEntity> entities);
 
+        /// <inheritdoc />
+        EavLightEntity Convert(IEntity entity);
+
+        /// <inheritdoc />
+        IEnumerable<EavLightEntity> Convert(IEnumerable<object> list);
+
+        /// <inheritdoc />
+        EavLightEntity Convert(object item);
+
+
+        /// <inheritdoc />
+        IEnumerable<EavLightEntity> Convert(IEnumerable<IEntityWrapper> list);
+
+        /// <inheritdoc />
+        EavLightEntity Convert(IEntityWrapper item);
+
+        /// <inheritdoc />
+        IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string> streams = null);
+
+        /// <inheritdoc />
+        IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids);
+
+        /// <inheritdoc />
+        IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, string streams);
     }
 }
