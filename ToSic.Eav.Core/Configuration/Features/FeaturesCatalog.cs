@@ -57,6 +57,7 @@ namespace ToSic.Eav.Configuration
                 ImageServiceMultipleSizes,
                 ImageServiceSetSizes,
                 ImageServiceUseFactors,
+                LightSpeedOutputCache,
 
                 // 2sxc 10.24+
                 WebFarmCache,

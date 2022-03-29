@@ -30,5 +30,7 @@
 
         // Edit UI configuration 13.03
         public static string EditUiConfigurationDecoratorId = "4f6d1484-4672-43d5-9c48-94ff3ec11069";
+
+        //public static string LightSpeedOutputDecoratorId = "be34f64b-7d1f-4ad0-b488-dabbbb01a186";
     }
 }
