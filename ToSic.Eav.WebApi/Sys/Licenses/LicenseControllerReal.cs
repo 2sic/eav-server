@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mime;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
@@ -30,6 +33,23 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         private readonly Lazy<IFeaturesInternal> _featuresLazy;
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
         private readonly LazyInitLog<SystemLoader> _systemLoaderLazy;
+
+        private string ConfigurationsPath
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_configurationsPath)) return _configurationsPath;
+                _configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom,
+                    FsDataConstants.ConfigFolder);
+
+                // ensure that path to store files already exits
+                Directory.CreateDirectory(_configurationsPath);
+
+                return _configurationsPath;
+            }
+        }
+        private string _configurationsPath;
+
 
         /// <inheritdoc />
         public IEnumerable<LicenseDto> Summary()
@@ -64,7 +84,8 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         [PrivateApi]
-        public bool Upload() => throw new NotImplementedException();
+        public LicenseFileResultDto Upload() => throw new NotImplementedException();
+    
 
 
         /// <summary>
@@ -73,45 +94,114 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         /// <param name="uploadInfo"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public bool Upload(HttpUploadedFile uploadInfo)
+        public LicenseFileResultDto Upload(HttpUploadedFile uploadInfo)
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Call<LicenseFileResultDto>();
 
             if (!uploadInfo.HasFiles())
-                return wrapLog("no file in upload", false);
+                return wrapLog("no file in upload", new LicenseFileResultDto { Success = false, Message = "no file in upload" });
 
             var files = new List<FileUploadDto>();
             for (var i = 0; i < uploadInfo.Count; i++)
             {
                 var (fileName, stream) = uploadInfo.GetStream(i);
-
                 files.Add(new FileUploadDto { Name = fileName, Stream = stream });
             }
 
-            var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Eav.Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
-            
-            // ensure that path to store files already exits
-            Directory.CreateDirectory(configurationsPath);
+            foreach (var file in files) SaveLicenseFile(file);
 
-            foreach (var file in files)
+            // reload license and features
+            _systemLoaderLazy.Ready.StartUpFeatures();
+
+            return wrapLog("ok", new LicenseFileResultDto { Success = true, Message = "ok" });
+        }
+
+
+
+        /// <inheritdoc />
+        public LicenseFileResultDto Retrieve()
+        {
+            var wrapLog = Log.Call<LicenseFileResultDto>();
+
+            var fingerprint = _systemLoaderLazy.Ready.Fingerprint.GetFingerprint();
+            var url = $"https://patrons.2sxc.org/api/license?fingerprint={fingerprint}";
+            Log.Add($"retrieve license from url:{url}");
+
+            string content;
+            string fileName;
+
+            using (var client = new WebClient())
+            {
+                var initialProtocol = ServicePointManager.SecurityProtocol;
+                try
+                {
+                    Log.Add("Will upgrade TLS connection so we can connect with TLS 1.1 or 1.2");
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
+                    Log.Add($"try to download:{url}");
+                    content = client.DownloadString(url);
+
+                    // verify it's json etc.
+                    if (!Json.IsValidJson(content))
+                        throw new ArgumentException("a file is not json");
+
+                    // check for error
+                    var licenseFileResultDto = JsonConvert.DeserializeObject<LicenseFileResultDto>(content);
+                    if (!licenseFileResultDto.Success) 
+                        return wrapLog(licenseFileResultDto.Message, licenseFileResultDto);
+
+                    // probably license file is ok
+
+                    // get license file name from response
+                    var header = new ContentDisposition(client.ResponseHeaders["Content-Disposition"]);
+                    fileName = header.FileName;
+                }
+                catch (WebException e)
+                {
+                    Log.Exception(e);
+                    throw new Exception("Could not download license file from '" + url + "'.", e);
+                }
+                finally
+                {
+                    ServicePointManager.SecurityProtocol = initialProtocol;
+                }
+            }
+
+            var success = SaveLicenseFile(fileName, content);
+
+            // reload license and features
+            _systemLoaderLazy.Ready.StartUpFeatures();
+
+            return wrapLog("ok", new LicenseFileResultDto { Success = success, Message = $"license file {fileName} retrieved"});
+        }
+
+        private bool SaveLicenseFile(FileUploadDto file) => SaveLicenseFile(file.Name, file.Contents);
+
+        private bool SaveLicenseFile(string fileName, string content)
+        {
+            var wrapLog = Log.Call<bool>();
+
+            var filePath = Path.Combine(ConfigurationsPath, fileName);
+
+            try
             {
                 // verify it's json etc.
-                if (!Json.IsValidJson(file.Contents))
+                if (!Json.IsValidJson(content))
                     throw new ArgumentException("a file is not json");
-
-                var filePath = Path.Combine(configurationsPath, file.Name);
 
                 //  rename old file before saving new one
                 if (File.Exists(filePath)) RenameOldFile(filePath);
 
                 // save file
-                File.WriteAllText(filePath, file.Contents);
+                File.WriteAllText(filePath, content);
+            }
+            catch (Exception e)
+            {
+                Log.Exception(e);
+                throw;
             }
 
-            // reload license and features
-            _systemLoaderLazy.Ready.StartUpFeatures();
-
-            return wrapLog("ok", true);
+            return wrapLog($"ok, save license:{filePath}", true);
         }
 
         private static void RenameOldFile(string filePath)

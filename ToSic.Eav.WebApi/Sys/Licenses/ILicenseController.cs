@@ -14,8 +14,16 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         /// <summary>
         /// License-upload backend
         /// </summary>
-        /// <returns>bool</returns>
+        /// <returns>LicenseFileResultDto</returns>
         /// <exception cref="ArgumentException"></exception>
-        bool Upload();
+        LicenseFileResultDto Upload();
+
+
+        /// <summary>
+        /// License-retrieve backend
+        /// </summary>
+        /// <returns>LicenseFileResultDto</returns>
+        /// <exception cref="ArgumentException"></exception>
+        LicenseFileResultDto Retrieve();
     }
 }
