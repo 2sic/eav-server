@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps
         public override string LogId => "DS.AppCUD";
 
         public AppData(LazyInit<SimpleDataController> dataController, IAppStates appStates): base(appStates) 
-            => DataController = dataController.SetInit(dc => dc.Init(Log).Init(ZoneId, AppId));
+            => DataController = dataController.SetInit(dc => dc.Init(Log).Init(ZoneId, AppId, false));
 
         #endregion
 
