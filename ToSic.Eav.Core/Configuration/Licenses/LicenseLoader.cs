@@ -46,7 +46,7 @@ namespace ToSic.Eav.Configuration.Licenses
         [PrivateApi]
         internal void LoadLicenses(string fingerprint, string globalFolder)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Call(useTimer: true);
             try
             {
                 var licensesStored = LicensesStoredInConfigFolder(globalFolder);
