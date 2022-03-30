@@ -51,8 +51,8 @@ namespace ToSic.Eav.Metadata
         {
             return 
                 $"{nameof(_debugAllEntry)}: {_debugAllEntry}, " +
-                $"{nameof(_debugPreLock)}: {_debugPreLock}, " +
-                $"{nameof(_debugLock)}: {_debugLock}" +
+                $"{nameof(_loadAllInLock.PreLockCount)}: {_loadAllInLock.PreLockCount}, " +
+                $"{nameof(_loadAllInLock.LockCount)}: {_loadAllInLock.LockCount}" +
                 $"{nameof(_debugAllReturn)}: {_debugAllReturn}, " +
                 $"{nameof(_debugLoadFromProvider)}: {_debugLoadFromProvider}, " +
                 $"{nameof(_debugUse)}: {_debugUse}, " +
@@ -68,8 +68,8 @@ namespace ToSic.Eav.Metadata
         private int _debugLoadFromProvider;
         private int _debugAllReturn;
         private int _debugUse;
-        private int _debugLock;
-        private int _debugPreLock;
+        //private int _debugLock;
+        //private int _debugPreLock;
 
         #endregion
 
@@ -93,23 +93,13 @@ namespace ToSic.Eav.Metadata
             {
                 _debugAllEntry++;
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-                if (_allEntities == null || RequiresReload())
-                {
-                    _debugPreLock++;
-                    lock (_loadLock)
-                    {
-                        _debugLock++;
-                        // Re-check, in case after the lock opened, the condition was moot
-                        if (_allEntities == null || RequiresReload())
-                            LoadFromProviderInsideLock();
-                    }
-                }
+                _loadAllInLock.Go(() => _allEntities == null || RequiresReload(), LoadFromProviderInsideLock);
                 _debugAllReturn++;
                 return _allEntities;
             }
         }
         private List<IEntity> _allEntities;
-        private readonly object _loadLock = new object();
+        private readonly TryLockTryDo _loadAllInLock = new TryLockTryDo();
 
         /// <summary>
         /// All "normal" metadata entities - so it hides the system-entities
