@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -54,20 +52,15 @@ namespace ToSic.Eav.DataSources.Queries
 
                 var wrapLog = Log.Call<List<QueryPartDefinition>>();
 
+                //Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
 
-                var md = Entity.Metadata;
-                Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
-
-                var temp = md
+                var temp = Entity.Metadata
                     .Where(m => m.Type.Is(Constants.QueryPartTypeName))
                     .ToList();
                 
-                Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
+                //Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
 
-                _parts = 
-                    //_parts = md
-                    //.Where(m => m.Type.Is(Constants.QueryPartTypeName))
-                    temp
+                _parts = temp
                     .Select(e => new QueryPartDefinition(e, Log))
                     .ToList();
                 return wrapLog($"{_parts.Count}", _parts);

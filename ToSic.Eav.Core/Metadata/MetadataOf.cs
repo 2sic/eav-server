@@ -45,31 +45,29 @@ namespace ToSic.Eav.Metadata
 
         #endregion
 
-        #region Debug
+        #region Debug Code to re-activate if every something is hard to decipher
 
-        public string Debug()
-        {
-            return 
-                $"{nameof(_debugAllEntry)}: {_debugAllEntry}, " +
-                $"{nameof(_loadAllInLock.PreLockCount)}: {_loadAllInLock.PreLockCount}, " +
-                $"{nameof(_loadAllInLock.LockCount)}: {_loadAllInLock.LockCount}" +
-                $"{nameof(_debugAllReturn)}: {_debugAllReturn}, " +
-                $"{nameof(_debugLoadFromProvider)}: {_debugLoadFromProvider}, " +
-                $"{nameof(_debugUse)}: {_debugUse}, " +
-                $"{nameof(CacheTimestamp)}: {CacheTimestamp} , " +
-                $"{nameof(_appMetadataSource)}: {_appMetadataSource != null}, " +
-                $"{nameof(_metaSourceRemote)}: {_metaSourceRemote != null}, " +
-                $"{nameof(_allEntities)}: {_allEntities != null}, " +
-                $"{nameof(_metadataWithoutPermissions)}: {_metadataWithoutPermissions != null}, " +
-                $"{nameof(_mdsGetOnce)}: {_mdsGetOnce.IsValueCreated}, ";
-        }
+        //public string Debug()
+        //{
+        //    return 
+        //        $"{nameof(_debugAllEntry)}: {_debugAllEntry}, " +
+        //        $"{nameof(_loadAllInLock.PreLockCount)}: {_loadAllInLock.PreLockCount}, " +
+        //        $"{nameof(_loadAllInLock.LockCount)}: {_loadAllInLock.LockCount}" +
+        //        $"{nameof(_debugAllReturn)}: {_debugAllReturn}, " +
+        //        $"{nameof(_debugLoadFromProvider)}: {_debugLoadFromProvider}, " +
+        //        $"{nameof(_debugUse)}: {_debugUse}, " +
+        //        $"{nameof(CacheTimestamp)}: {CacheTimestamp} , " +
+        //        $"{nameof(_appMetadataSource)}: {_appMetadataSource != null}, " +
+        //        $"{nameof(_metaSourceRemote)}: {_metaSourceRemote != null}, " +
+        //        $"{nameof(_allEntities)}: {_allEntities != null}, " +
+        //        $"{nameof(_metadataWithoutPermissions)}: {_metadataWithoutPermissions != null}, " +
+        //        $"{nameof(_mdsGetOnce)}: {_mdsGetOnce.IsValueCreated}, ";
+        //}
 
-        private int _debugAllEntry;
-        private int _debugLoadFromProvider;
-        private int _debugAllReturn;
-        private int _debugUse;
-        //private int _debugLock;
-        //private int _debugPreLock;
+        //private int _debugAllEntry;
+        //private int _debugLoadFromProvider;
+        //private int _debugAllReturn;
+        //private int _debugUse;
 
         #endregion
 
@@ -91,10 +89,10 @@ namespace ToSic.Eav.Metadata
         public List<IEntity> AllWithHidden {
             get
             {
-                _debugAllEntry++;
+                //_debugAllEntry++;
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
                 _loadAllInLock.Go(() => _allEntities == null || RequiresReload(), LoadFromProviderInsideLock);
-                _debugAllReturn++;
+                //_debugAllReturn++;
                 return _allEntities;
             }
         }
@@ -145,7 +143,7 @@ namespace ToSic.Eav.Metadata
         [PrivateApi]
         protected virtual void LoadFromProviderInsideLock()
         {
-            _debugLoadFromProvider++;
+            //_debugLoadFromProvider++;
             var mdProvider = GetMetadataSource();
             var list = mdProvider?.GetMetadata(_targetType, Key).ToList() ?? new List<IEntity>();
             Use(list);
@@ -173,7 +171,7 @@ namespace ToSic.Eav.Metadata
         [PrivateApi]
         public void Use(List<IEntity> items)
         {
-            _debugUse++;
+            //_debugUse++;
             // Set the local cache to a list of items, and reset the dependent objects so they will be rebuilt if accessed.
             _allEntities = items;
             _metadataWithoutPermissions = null;
