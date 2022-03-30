@@ -41,9 +41,10 @@ namespace ToSic.Eav.Apps.Parts
         public void SaveCopy(QueryDefinition query)
         {
             var newQuery = CopyAndResetIds(query.Entity);
-            var newParts = query.Parts.ToDictionary(o => o.Guid, o => CopyAndResetIds(o.Entity, newQuery.EntityGuid));
+            var parts = query.Parts;
+            var newParts = parts.ToDictionary(o => o.Guid, o => CopyAndResetIds(o.Entity, newQuery.EntityGuid));
 
-            var origMetadata = query.Parts
+            var origMetadata = parts
                 .ToDictionary(o => o.Guid, o => o.Entity.Metadata.FirstOrDefault())
                 .Where(m => m.Value != null);
 
@@ -110,7 +111,8 @@ namespace ToSic.Eav.Apps.Parts
             var queryEntity = _queryManager.Ready.GetQueryEntity(id, Parent.AppState);
             var qDef = new QueryDefinition(queryEntity, Parent.AppId, Log);
 
-            var mdItems = qDef.Parts// parts
+            var parts = qDef.Parts;
+            var mdItems = parts
                 .Select(ds => ds.Entity.Metadata.FirstOrDefault())
                 .Where(md => md != null)
                 .Select(md => md.EntityId)
@@ -118,7 +120,7 @@ namespace ToSic.Eav.Apps.Parts
 
             // delete in the right order - first the outermost-dependents, then a layer in, and finally the top node
             Parent.Entities.Delete(mdItems);
-            Parent.Entities.Delete(qDef.Parts.Select(p => p.Id).ToList());
+            Parent.Entities.Delete(parts.Select(p => p.Id).ToList());
             Parent.Entities.Delete(id);
 
             // flush cache

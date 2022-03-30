@@ -14,13 +14,16 @@ namespace ToSic.Eav.Plumbing
     {
         public T Get(Func<T> generator)
         {
-            if (_retrieved) return _value;
-            _retrieved = true;
+            if (IsValueCreated) return _value;
+            IsValueCreated = true;
             // Important: don't use try/catch, because the parent should be able to decide if try/catch is appropriate
             return _value = generator();
         }
 
-        private bool _retrieved;
+        /// <summary>
+        /// Determines if value has been created. Name the same as when using Lazy()
+        /// </summary>
+        public bool IsValueCreated;
         private T _value;
     }
 }

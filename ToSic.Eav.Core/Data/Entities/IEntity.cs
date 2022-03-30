@@ -97,10 +97,7 @@ namespace ToSic.Eav.Data
         /// The metadata is either already prepared, from the same app, or from a remote app
         /// </remarks>
         /// <returns>A typed Metadata provider for this Entity</returns>
-#if NETFRAMEWORK
-        new
-#endif
-            IMetadataOf Metadata { get; }
+        IMetadataOf Metadata { get; }
 
         #region Children & Parents
 

@@ -26,7 +26,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Description <see cref="IEntity"/> metadata of this content-type.
         /// </summary>
-        [PrivateApi("was public in the clas which used to be public, so it may be used, but try to privatise as we don't plan to publish this")]
+        [PrivateApi("was public in the class which used to be public, so it may be used, but try to privatise as we don't plan to publish this")]
         public IEntity Description => this.FirstOrDefaultOfType(ContentTypeDetails.ContentTypeTypeName);
 
         public ContentTypeDetails DetailsOrNull
@@ -42,10 +42,10 @@ namespace ToSic.Eav.Data
         /// Load / initialize - needed when building the cache.
         /// Must usually be called a bit later, because the data is initialized from a cache, which in case of ghosts may be loaded a bit later.
         /// </summary>
-        protected override void LoadFromProvider()
+        protected override void LoadFromProviderInsideLock()
         {
             // get the string based metadata
-            base.LoadFromProvider();
+            base.LoadFromProviderInsideLock();
 
             // check if it uses a guid, otherwise leave here
             if (!Guid.TryParse(Key, out var ctGuid)) return;
