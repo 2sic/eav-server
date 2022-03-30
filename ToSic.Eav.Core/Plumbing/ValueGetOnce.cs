@@ -10,12 +10,13 @@ namespace ToSic.Eav.Plumbing
     /// ATM used in the ResponsiveBase, but we should also use it in other places where we have a second toggle to determine if it had been retrieved already. 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class PropertyToRetrieveOnce<T>
+    public class ValueGetOnce<T>
     {
         public T Get(Func<T> generator)
         {
             if (_retrieved) return _value;
             _retrieved = true;
+            // Important: don't use try/catch, because the parent should be able to decide if try/catch is appropriate
             return _value = generator();
         }
 
