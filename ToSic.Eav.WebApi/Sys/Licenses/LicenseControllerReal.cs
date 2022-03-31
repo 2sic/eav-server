@@ -124,7 +124,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             var wrapLog = Log.Call<LicenseFileResultDto>();
 
             var fingerprint = _systemLoaderLazy.Ready.Fingerprint.GetFingerprint();
-            var url = $"https://patrons.2sxc.org/api/license?fingerprint={fingerprint}";
+            var url = $"https://patrons.2sxc.org/api/license/get?fingerprint={fingerprint}";
             Log.Add($"retrieve license from url:{url}");
 
             string content;
@@ -172,7 +172,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             // reload license and features
             _systemLoaderLazy.Ready.StartUpFeatures();
 
-            return wrapLog("ok", new LicenseFileResultDto { Success = success, Message = $"license file {fileName} retrieved"});
+            return wrapLog("ok", new LicenseFileResultDto { Success = success, Message = $"License file {fileName} retrieved and installed"});
         }
 
         private bool SaveLicenseFile(FileUploadDto file) => SaveLicenseFile(file.Name, file.Contents);
