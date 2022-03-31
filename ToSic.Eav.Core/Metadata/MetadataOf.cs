@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Metadata
@@ -23,8 +24,8 @@ namespace ToSic.Eav.Metadata
         /// <summary>
         /// initialize using an already prepared metadata source
         /// </summary>
-        public MetadataOf(int targetType, T key, IHasMetadataSource metaProvider, string targetIdentifier) : this(targetType, key, targetIdentifier) 
-            => _appMetadataProvider = metaProvider;
+        public MetadataOf(int targetType, T key, IHasMetadataSource metaSource, string targetIdentifier) : this(targetType, key, targetIdentifier) 
+            => _appMetadataSource = metaSource;
 
         /// <summary>
         /// initialize using an already prepared metadata source
@@ -44,14 +45,31 @@ namespace ToSic.Eav.Metadata
 
         #endregion
 
-        /// <summary>
-        /// The source (usually an app) which can provide all the metadata once needed
-        /// </summary>
-        protected virtual IHasMetadataSource AppMetadataProvider => _appMetadataProvider ?? _metaSourceRemote?.Invoke();
+        #region Debug Code to re-activate if every something is hard to decipher
 
-        private readonly IHasMetadataSource _appMetadataProvider;
-        private readonly Func<IHasMetadataSource> _metaSourceRemote;
+        //public string Debug()
+        //{
+        //    return 
+        //        $"{nameof(_debugAllEntry)}: {_debugAllEntry}, " +
+        //        $"{nameof(_loadAllInLock.PreLockCount)}: {_loadAllInLock.PreLockCount}, " +
+        //        $"{nameof(_loadAllInLock.LockCount)}: {_loadAllInLock.LockCount}" +
+        //        $"{nameof(_debugAllReturn)}: {_debugAllReturn}, " +
+        //        $"{nameof(_debugLoadFromProvider)}: {_debugLoadFromProvider}, " +
+        //        $"{nameof(_debugUse)}: {_debugUse}, " +
+        //        $"{nameof(CacheTimestamp)}: {CacheTimestamp} , " +
+        //        $"{nameof(_appMetadataSource)}: {_appMetadataSource != null}, " +
+        //        $"{nameof(_metaSourceRemote)}: {_metaSourceRemote != null}, " +
+        //        $"{nameof(_allEntities)}: {_allEntities != null}, " +
+        //        $"{nameof(_metadataWithoutPermissions)}: {_metadataWithoutPermissions != null}, " +
+        //        $"{nameof(_mdsGetOnce)}: {_mdsGetOnce.IsValueCreated}, ";
+        //}
 
+        //private int _debugAllEntry;
+        //private int _debugLoadFromProvider;
+        //private int _debugAllReturn;
+        //private int _debugUse;
+
+        #endregion
 
         /// <summary>
         /// Type-information of the thing we're describing. This is used to retrieve metadata from the correct sub-list of pre-indexed metadata
@@ -70,14 +88,16 @@ namespace ToSic.Eav.Metadata
         [PrivateApi]
         public List<IEntity> AllWithHidden {
             get
-            {             
+            {
+                //_debugAllEntry++;
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-                if (_allEntities == null || RequiresReload())
-                    LoadFromProvider();
+                _loadAllInLock.Go(() => _allEntities == null || RequiresReload(), LoadFromProviderInsideLock);
+                //_debugAllReturn++;
                 return _allEntities;
             }
         }
         private List<IEntity> _allEntities;
+        private readonly TryLockTryDo _loadAllInLock = new TryLockTryDo();
 
         /// <summary>
         /// All "normal" metadata entities - so it hides the system-entities
@@ -121,12 +141,13 @@ namespace ToSic.Eav.Metadata
         /// Must be virtual, because the inheriting <see cref="ContentTypeMetadata"/> needs to overwrite this. 
         /// </summary>
         [PrivateApi]
-        protected virtual void LoadFromProvider()
+        protected virtual void LoadFromProviderInsideLock()
         {
+            //_debugLoadFromProvider++;
             var mdProvider = GetMetadataSource();
-            Use(mdProvider?.GetMetadata(_targetType, Key).ToList() ?? new List<IEntity>());
-            if (mdProvider != null)
-                CacheTimestamp = mdProvider.CacheTimestamp;
+            var list = mdProvider?.GetMetadata(_targetType, Key).ToList() ?? new List<IEntity>();
+            Use(list);
+            if (mdProvider != null) CacheTimestamp = mdProvider.CacheTimestamp;
         }
 
         /// <summary>
@@ -134,16 +155,14 @@ namespace ToSic.Eav.Metadata
         /// </summary>
         /// <returns></returns>
         [PrivateApi]
-        protected IMetadataSource GetMetadataSource()
-        {
-            // check if already retrieved
-            if (_alreadyTriedToGetSource) return _metadataSource;
-            _alreadyTriedToGetSource = true;
+        protected IMetadataSource GetMetadataSource() => _mdsGetOnce.Get(() => (_appMetadataSource ?? _metaSourceRemote?.Invoke())?.MetadataSource);
+        private readonly ValueGetOnce<IMetadataSource> _mdsGetOnce = new ValueGetOnce<IMetadataSource>();
+        /// <summary>
+        /// The source (usually an app) which can provide all the metadata once needed
+        /// </summary>
+        private readonly IHasMetadataSource _appMetadataSource;
+        private readonly Func<IHasMetadataSource> _metaSourceRemote;
 
-            return _metadataSource = AppMetadataProvider?.MetadataSource;
-        }
-        private bool _alreadyTriedToGetSource;
-        private IMetadataSource _metadataSource;
 
         /// <summary>
         /// Set the local cache to a list of items to use as Metadata.
@@ -152,6 +171,7 @@ namespace ToSic.Eav.Metadata
         [PrivateApi]
         public void Use(List<IEntity> items)
         {
+            //_debugUse++;
             // Set the local cache to a list of items, and reset the dependent objects so they will be rebuilt if accessed.
             _allEntities = items;
             _metadataWithoutPermissions = null;

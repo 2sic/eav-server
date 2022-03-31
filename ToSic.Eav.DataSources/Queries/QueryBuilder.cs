@@ -158,7 +158,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 	        InitWirings(queryDef, dataSources);
 			var result = new Tuple<IDataSource, Dictionary<string, IDataSource>>(outTarget, dataSources);
-			return wrapLog($"parts:{queryDef.Parts.Count}", result);
+			return wrapLog($"parts:{parts.Count}", result);
 	    }
 
 	    /// <summary>

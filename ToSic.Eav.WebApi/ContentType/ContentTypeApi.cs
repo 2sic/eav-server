@@ -97,8 +97,8 @@ namespace ToSic.Eav.WebApi
 	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
 	        var details = t.Metadata.DetailsOrNull;
 
-            var nameOverride = details?.Title; // description?.Value<string>(ContentTypeDetails.ContentTypeMetadataLabel);
-	        if (string.IsNullOrEmpty(nameOverride))
+            var nameOverride = details?.Title;
+            if (string.IsNullOrEmpty(nameOverride))
 	            nameOverride = t.Name;
             var ser = _convertToEavLight.Value;
 

@@ -46,7 +46,7 @@ namespace ToSic.Eav.Configuration.Licenses
         [PrivateApi]
         internal void LoadLicenses(string fingerprint, string globalFolder)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Call(useTimer: true);
             try
             {
                 var licensesStored = LicensesStoredInConfigFolder(globalFolder);
@@ -69,6 +69,9 @@ namespace ToSic.Eav.Configuration.Licenses
         {
             var wrapLog = Log.Call<List<LicenseStored>>();
             var configurationsPath = Path.Combine(globalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
+            
+            // ensure that path to store files already exits
+            Directory.CreateDirectory(configurationsPath);
 
             var licensesStored = Directory.EnumerateFiles(configurationsPath, "*.license.json")
                 .Select(File.ReadAllText)

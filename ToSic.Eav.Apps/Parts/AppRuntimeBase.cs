@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.DataSources;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
@@ -20,12 +19,8 @@ namespace ToSic.Eav.Apps.Parts
         {
             Dependencies = dependencies;
             DataSourceFactory = dependencies.DataSourceFactory.Init(Log);
-            // ReSharper disable once VirtualMemberCallInConstructor
-            InitForDi();
         }
         protected readonly AppRuntimeDependencies Dependencies;
-
-        protected abstract void InitForDi();
 
         public T Init(IAppIdentity app, bool showDrafts, ILog parentLog)
         {

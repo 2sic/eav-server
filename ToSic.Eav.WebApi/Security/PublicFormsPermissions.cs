@@ -1,7 +1,5 @@
-﻿using System;
-using ToSic.Eav.Apps.Security;
+﻿using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Configuration;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Errors;
 
@@ -9,7 +7,7 @@ namespace ToSic.Eav.WebApi.Security
 {
     internal static class PublicFormsPermissions
     {
-        internal static bool UserCanWriteAndPublicFormsEnabled(this MultiPermissionsApp mpa, IServiceProvider sp, out HttpExceptionAbstraction preparedException, out string error)
+        internal static bool UserCanWriteAndPublicFormsEnabled(this MultiPermissionsApp mpa, out HttpExceptionAbstraction preparedException, out string error)
         {
             var wrapLog = mpa.Log.Call("");
             // 1. check if user is restricted
@@ -17,7 +15,7 @@ namespace ToSic.Eav.WebApi.Security
 
             // 2. check if feature is enabled
             var feats = new[] { FeaturesCatalog.PublicEditForm.Guid };
-            var sysFeatures = sp.Build<IFeaturesInternal>();
+            var sysFeatures = mpa.FeaturesInternal;
             if (userIsRestricted && !sysFeatures.Enabled(feats))
             {
                 error = $"low-permission users may not access this - {sysFeatures.MsgMissingSome(feats)}";

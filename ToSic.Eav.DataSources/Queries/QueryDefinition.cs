@@ -45,10 +45,28 @@ namespace ToSic.Eav.DataSources.Queries
         /// The parts of the query
         /// </summary>
         public List<QueryPartDefinition> Parts
-            => _parts ?? (_parts = Entity.Metadata
-                   .Where(m => m.Type.Name == Constants.QueryPartTypeName)
-                   .Select(e => new QueryPartDefinition(e, Log))
-                   .ToList());
+        {
+            get
+            {
+                if (_parts!= null) return _parts;
+
+                var wrapLog = Log.Call<List<QueryPartDefinition>>();
+
+                //Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
+
+                var temp = Entity.Metadata
+                    .Where(m => m.Type.Is(Constants.QueryPartTypeName))
+                    .ToList();
+                
+                //Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
+
+                _parts = temp
+                    .Select(e => new QueryPartDefinition(e, Log))
+                    .ToList();
+                return wrapLog($"{_parts.Count}", _parts);
+            }
+        }
+
         private List<QueryPartDefinition> _parts;
 
         /// <summary>

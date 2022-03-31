@@ -23,7 +23,7 @@ namespace ToSic.Eav.Plumbing
         {
             if (_typeCache != null) return _typeCache;
             
-            var wrapLog = log.SafeCall<List<Type>>();
+            var wrapLog = log.SafeCall<List<Type>>(useTimer: true);
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             log.SafeAdd($"GetTypes() - found {assemblies.Length} assemblies");
 

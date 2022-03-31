@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources
         /// <remarks>
         /// Introduced in 2sxc 11.13
         /// </remarks>
-        [WorkInProgressApi("The name of this API is not final")]
+        [PrivateApi("The name of this API is not final")]
         protected ImmutableArray<IEntity> ErrorStream;
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSources
         /// <remarks>
         /// Introduced in 2sxc 11.13
         /// </remarks>
-        [WorkInProgressApi("The name of this API is not final")]
+        [PublicApi]
         protected ImmutableArray<IEntity> SetError(string title, string message, Exception ex = null)
         {
             var result = ErrorHandler.CreateErrorList(source: this, title: title, message: message, exception: ex);
@@ -86,7 +86,7 @@ namespace ToSic.Eav.DataSources
         /// <remarks>
         /// Introduced in 2sxc 11.13
         /// </remarks>
-        [WorkInProgressApi("The name of this API is not final")]
+        [PublicApi]
         protected bool GetRequiredInList(out IImmutableList<IEntity> list) 
             => GetRequiredInList(Constants.DefaultStreamName, out list);
 
@@ -120,7 +120,7 @@ namespace ToSic.Eav.DataSources
         /// <remarks>
         /// Introduced in 2sxc 11.13
         /// </remarks>
-        [WorkInProgressApi("The name of this API is not final")]
+        [PublicApi]
         protected bool GetRequiredInList(string name, out IImmutableList<IEntity> list)
         {
             if (In.ContainsKey(name))

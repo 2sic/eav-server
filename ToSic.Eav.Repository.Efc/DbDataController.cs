@@ -5,12 +5,14 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Parts;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -101,8 +103,8 @@ namespace ToSic.Eav.Repository.Efc
             EavDbContext dbContext, 
             Lazy<Efc11Loader> efcLoaderLazy, 
             Lazy<IUser> userLazy, 
-            IServiceProvider serviceProvider,
             IAppsCache appsCache,
+            Generator<JsonSerializer> jsonSerializerGenerator,
             LogHistory logHistory
             ) : base("Db.Data")
         {
@@ -111,7 +113,7 @@ namespace ToSic.Eav.Repository.Efc
             _appsCache = appsCache;
             _logHistory = logHistory;
             SqlDb = dbContext;
-            ServiceProvider = serviceProvider;
+            JsonSerializerGenerator = jsonSerializerGenerator;
             SqlDb.AlternateSaveHandler += SaveChanges;
         }
 
@@ -121,8 +123,7 @@ namespace ToSic.Eav.Repository.Efc
         private readonly LogHistory _logHistory;
 
         public EavDbContext SqlDb { get; }
-        internal IServiceProvider ServiceProvider { get; }
-
+        internal Generator<JsonSerializer> JsonSerializerGenerator { get; }
 
 
         /// <summary>

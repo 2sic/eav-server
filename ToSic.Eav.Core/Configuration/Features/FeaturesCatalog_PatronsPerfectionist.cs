@@ -57,5 +57,17 @@ namespace ToSic.Eav.Configuration
             ForPatronsPerfectionist
         );
 
+        public static readonly FeatureDefinition LightSpeedOutputCache = new FeatureDefinition(
+            "LightSpeedOutputCache",
+            new Guid("61654bca-b76b-4c15-9173-5643de6b4baa"),
+            "LightSpeed Output Cache (BETA)",
+            false,
+            false,
+            "High-Performance OutputCache", 
+            FeaturesCatalogRules.Security0Neutral,
+            ForPatronsPerfectionist
+        );
+
+
     }
 }

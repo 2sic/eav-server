@@ -1,5 +1,8 @@
 ﻿using System;
+using ToSic.Eav.Apps.Security;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -13,11 +16,32 @@ namespace ToSic.Eav.Context
     {
         #region Constructor / DI
 
-        public ContextOfSite(IServiceProvider serviceProvider, ISite site, IUser user): base("Eav.CtxSte")
+        public class ContextOfSiteDependencies
         {
-            ServiceProvider = serviceProvider ?? throw new Exception("Context didn't receive service provider, but this is absolutely necessary.");
-            Site = site;
-            User = user;
+            public ISite Site { get; }
+            public IUser User { get; }
+            public Generator<AppPermissionCheck> AppPermissionCheckGenerator { get; }
+            public Generator<IFeaturesInternal> FeaturesInternalGenerator { get; }
+
+            public ContextOfSiteDependencies(
+                ISite site, 
+                IUser user,
+                Generator<AppPermissionCheck> appPermissionCheckGenerator,
+                Generator<IFeaturesInternal> featuresInternalGenerator
+                )
+            {
+                Site = site;
+                User = user;
+                AppPermissionCheckGenerator = appPermissionCheckGenerator;
+                FeaturesInternalGenerator = featuresInternalGenerator;
+            }
+        }
+
+        public ContextOfSite(ContextOfSiteDependencies dependencies) : base("Eav.CtxSte")
+        {
+            Dependencies = dependencies;
+            Site = dependencies.Site;
+            User = dependencies.User;
         }
 
         #endregion
@@ -41,9 +65,9 @@ namespace ToSic.Eav.Context
         }
 
         /// <inheritdoc />
-        public IServiceProvider ServiceProvider { get; }
+        public ContextOfSiteDependencies Dependencies { get; }
 
         /// <inheritdoc />
-        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(ServiceProvider, Site, User).Init(parentLog);
+        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(Dependencies).Init(parentLog);
     }
 }

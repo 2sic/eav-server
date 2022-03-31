@@ -77,7 +77,7 @@ namespace ToSic.Eav.Persistence.File
         public AppState LoadFullAppState()
         {
 
-            var outerWrapLog = Log.Call<AppState>();
+            var outerWrapLog = Log.Call<AppState>(useTimer: true);
 
             var appState = new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);
 

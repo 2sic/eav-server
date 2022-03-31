@@ -69,6 +69,7 @@ namespace ToSic.Eav.WebApi.Dto
 
         [JsonProperty(NullValueHandling = Ignore)] public bool? FormulaSave { get; set; }
         [JsonProperty(NullValueHandling = Ignore)] public bool? OverrideEditRestrictions { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public bool? DebugMode { get; set; }
     }
 
     public class ContextLanguageDto

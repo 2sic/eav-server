@@ -115,18 +115,22 @@ namespace ToSic.Eav.Apps.Parts
                     messages.Add(
                         $"Found {parentsInfoForMessages.Count} relationships where this is a child - the parents are: {string.Join(", ", parentsInfoForMessages)}.");
 
-                var children = relationships.List.Where(r => r.Parent.EntityId == entityId)
-                    .Select(r => TryToGetMoreInfosAboutDependency(r.Child)).ToList();
+                /* Next part related to detection of children and metadata is commented because
+                when an item has children or metadata, it can be deleted without force. 
+                Force should only be required, if other items point to this. */
 
-                if (children.Any())
-                    messages.Add(
-                        $"Found {children.Count} entities which are assigned children: {string.Join(", ", children)}.");
+                //var children = relationships.List.Where(r => r.Parent.EntityId == entityId)
+                //    .Select(r => TryToGetMoreInfosAboutDependency(r.Child)).ToList();
 
-                var entity = Parent.Read.Entities.Get(entityId);
+                //if (children.Any())
+                //    messages.Add(
+                //        $"Found {children.Count} entities which are assigned children: {string.Join(", ", children)}.");
 
-                // check if entity has metadata
-                if (entity.Metadata.Any())
-                    messages.Add($"Found {entity.Metadata.Count()} metadata which are assigned.");
+                //var entity = Parent.Read.Entities.Get(entityId);
+
+                //// check if entity has metadata
+                //if (entity.Metadata.Any())
+                //    messages.Add($"Found {entity.Metadata.Count()} metadata which are assigned.");
 
                 //// check if entity is metadata
                 //if (entity.MetadataFor?.IsMetadata ?? false)

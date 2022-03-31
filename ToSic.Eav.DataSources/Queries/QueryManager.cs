@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources.Queries
 	    internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app)
         {
             var wrapLog = Log.Call<IImmutableList<IEntity>>();
-            var appState = DataSourceFactory.ServiceProvider.Build<IAppStates>().Get(app);
+            var appState = DataSourceFactory.AppStates.Get(app);
             var result = QueryEntities(appState);
             return wrapLog("ok", result);
         }

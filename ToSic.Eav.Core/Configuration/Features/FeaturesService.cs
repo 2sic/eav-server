@@ -35,6 +35,9 @@ namespace ToSic.Eav.Configuration
             return nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
         }
 
+        public bool IsEnabled(params FeatureDefinition[] features) 
+            => IsEnabled(features?.Select(f => f.NameId).ToArray());
+
         public bool Valid => ValidInternal;
         public static bool ValidInternal;
         

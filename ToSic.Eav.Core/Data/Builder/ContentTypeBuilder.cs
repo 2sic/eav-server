@@ -15,8 +15,8 @@ namespace ToSic.Eav.Data.Builder
         public IContentType Transient(string typeName)
             => Transient(Constants.TransientAppId, typeName, typeName);
 
-        public IContentType Transient(int appId, string typeName, string typeIdentifier, string scope = null)
-            => new ContentType(appId, typeName, typeIdentifier, DynTypeId, scope ?? Scopes.System, DynTypeDefDescription)
+        public IContentType Transient(int appId, string typeName, string nameId, string scope = null)
+            => new ContentType(appId, typeName, nameId, DynTypeId, scope ?? Scopes.System, DynTypeDefDescription)
             {
                 Attributes = new List<IContentTypeAttribute>(),
                 IsDynamic = true

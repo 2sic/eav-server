@@ -90,15 +90,14 @@ namespace ToSic.Eav.ImportExport.Json
             if (isSharedNew /*typeIsShared*/ && !includeSharedTypes)
             {
                 // if it's a shared type, flush definition as we won't include it
-                if (ancestorDecorator.Id != 0)// sharableCt.ParentId.HasValue)
-                    attribs = null;
+                if (ancestorDecorator.Id != 0) attribs = null;
 
                 jctShare = new JsonContentTypeShareable
                 {
                     AlwaysShare = sharableCt.AlwaysShareConfiguration,
-                    ParentAppId = ancestorDecorator.AppId, // sharableCt.ParentAppId,
-                    ParentZoneId = ancestorDecorator.ZoneId, // sharableCt.ParentZoneId,
-                    ParentId = ancestorDecorator.Id, // sharableCt.ParentId
+                    ParentAppId = ancestorDecorator.AppId,
+                    ParentZoneId = ancestorDecorator.ZoneId,
+                    ParentId = ancestorDecorator.Id,
                 };
             }
             var package = new JsonContentType

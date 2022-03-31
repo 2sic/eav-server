@@ -100,7 +100,7 @@ namespace ToSic.Eav.Security.Encryption
                         }
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     return null;
                 }

@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps
 {
@@ -11,17 +12,24 @@ namespace ToSic.Eav.Apps
     {
 
         #region constructors
+        
+        private readonly LazyInit<EntityRuntime> _entityRuntime;
+        private readonly LazyInit<MetadataRuntime> _metadataRuntime;
+        private readonly LazyInit<ContentTypeRuntime> _contentTypeRuntime;
+        private readonly LazyInit<QueryRuntime> _queryRuntime;
 
-        public AppRuntime(AppRuntimeDependencies dependencies, string logName = null) : base(dependencies,
+        public AppRuntime(AppRuntimeDependencies dependencies,
+            LazyInit<EntityRuntime> entityRuntime,
+            LazyInit<MetadataRuntime> metadataRuntime,
+            LazyInit<ContentTypeRuntime> contentTypeRuntime,
+            LazyInit<QueryRuntime> queryRuntime,
+            string logName = null) : base(dependencies,
             logName ?? "Eav.AppRt")
-        { }
-
-        protected override void InitForDi()
         {
-            Dependencies.EntityRuntime.SetInit(r => r.Init(this, Log));
-            Dependencies.MetadataRuntime.SetInit(r => r.Init(this, Log));
-            Dependencies.ContentTypeRuntime.SetInit(r => r.Init(this, Log));
-            Dependencies.QueryRuntime.SetInit(r => r.Init(this, Log));
+            _entityRuntime = entityRuntime.SetInit(r => r.Init(this, Log));
+            _metadataRuntime = metadataRuntime.SetInit(r => r.Init(this, Log));
+            _contentTypeRuntime = contentTypeRuntime.SetInit(r => r.Init(this, Log));
+            _queryRuntime = queryRuntime.SetInit(r => r.Init(this, Log));
         }
 
         /// <summary>
@@ -53,22 +61,22 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Entities Runtime to get entities in this app
         /// </summary>
-        public EntityRuntime Entities => Dependencies.EntityRuntime.Ready;
+        public EntityRuntime Entities => _entityRuntime.Ready;
 
         /// <summary>
         /// Metadata runtime to get metadata from this app
         /// </summary>
-        public MetadataRuntime Metadata => Dependencies.MetadataRuntime.Ready;
+        public MetadataRuntime Metadata => _metadataRuntime.Ready;
 
         /// <summary>
         /// ContentTypes runtime to get content types from this app
         /// </summary>
-        public ContentTypeRuntime ContentTypes => Dependencies.ContentTypeRuntime.Ready;
+        public ContentTypeRuntime ContentTypes => _contentTypeRuntime.Ready;
 
         /// <summary>
         /// Queries runtime to get queries of this app
         /// </summary>
-        public QueryRuntime Queries => Dependencies.QueryRuntime.Ready;
+        public QueryRuntime Queries => _queryRuntime.Ready;
 
 
         ///// <summary>

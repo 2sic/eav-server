@@ -97,10 +97,9 @@ namespace ToSic.Eav.Data
         /// The metadata is either already prepared, from the same app, or from a remote app
         /// </remarks>
         /// <returns>A typed Metadata provider for this Entity</returns>
-#if NETFRAMEWORK
-        new
-#endif
-            IMetadataOf Metadata { get; }
+#pragma warning disable CS0108, CS0114
+        IMetadataOf Metadata { get; }
+#pragma warning restore CS0108, CS0114
 
         #region Children & Parents
 

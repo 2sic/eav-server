@@ -28,5 +28,16 @@ namespace ToSic.Eav.Plumbing
             if (a == null) return false;
             return a.Equals(b, StringComparison.InvariantCultureIgnoreCase);
         }
+
+
+        /// <summary>
+        /// Make sure a string can be used as key - the core mission is to ensure that null-values are not the same as empty strings.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string AsKey(this string value) 
+            => value ?? NullKey;
+
+        private const string NullKey = "\0";
     }
 }

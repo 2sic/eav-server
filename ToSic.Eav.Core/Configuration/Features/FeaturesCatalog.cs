@@ -42,9 +42,10 @@ namespace ToSic.Eav.Configuration
                 PermissionCheckUsers,
                 PermissionCheckGroups,
 
-                // Free features for all
+                // Free Edit UI features for all
                 EditUiShowNotes,
                 EditUiShowMetadataFor,
+                EditUiAllowDebugModeForEditors,
 
                 // Features for Patreons
                 PasteImageFromClipboard,
@@ -56,6 +57,7 @@ namespace ToSic.Eav.Configuration
                 ImageServiceMultipleSizes,
                 ImageServiceSetSizes,
                 ImageServiceUseFactors,
+                LightSpeedOutputCache,
 
                 // 2sxc 10.24+
                 WebFarmCache,

@@ -59,16 +59,19 @@ namespace ToSic.Eav.Api.Api01
         private string _defaultLanguageCode;
 
         private int _appId;
+        private bool _checkWritePermissions = true; // default behavior is to check write publish/draft permissions (that should happen for REST, but not for c# API)
 
         /// <param name="zoneId">Zone ID</param>
         /// <param name="appId">App ID</param>
-        public SimpleDataController Init(int zoneId, int appId)
+        /// <param name="checkWritePermissions"></param>
+        public SimpleDataController Init(int zoneId, int appId, bool checkWritePermissions = true)
         {
             var wrapLog = Log.Call<SimpleDataController>($"{zoneId}, {appId}");
             _appId = appId;
             _defaultLanguageCode = GetDefaultLanguage();
             _context = _dbDataLazy.Value.Init(zoneId, appId, Log);
             _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId), Log);
+            _checkWritePermissions = checkWritePermissions;
             Log.Add($"Default language:{_defaultLanguageCode}");
             return wrapLog(null, this);
         }
@@ -171,33 +174,6 @@ namespace ToSic.Eav.Api.Api01
             _appManager.Entities.UpdateParts(entityId, importEntity, draftAndBranch);
         }
 
-        private bool GetWritePublishAllowedOrThrow(IContentType targetType)
-        {
-            // 1. Find if user may write PUBLISHED:
-
-            // 1.1. app permissions 
-            if (_appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
-                .UserMay(GrantSets.WritePublished)) return true;
-
-            // 1.2. type permissions
-            if (_appPermissionCheckGenerator.New.ForType(_ctx, _appManager.AppState, targetType, Log)
-                .UserMay(GrantSets.WritePublished)) return true;
-
-
-            // 2. Find if user may write DRAFT:
-
-            // 2.1. app permissions 
-            if (_appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
-                .UserMay(GrantSets.WriteDraft)) return false;
-
-            // 2.2. type permissions
-            if (_appPermissionCheckGenerator.New.ForType(_ctx, _appManager.AppState, targetType, Log)
-                .UserMay(GrantSets.WriteDraft)) return false;
-
-
-            // 3. User is not allowed to update published or draft entity.
-            throw new Exception("User is not allowed to update published or draft entity.");
-        }
 
         /// <summary>
         /// Delete the entity specified by ID.
@@ -308,6 +284,39 @@ namespace ToSic.Eav.Api.Api01
         }
 
         #region Permission Checks
+
+        private bool GetWritePublishAllowedOrThrow(IContentType targetType)
+        {
+            // skip write publish/draft permission checks for c# API
+            if (!_checkWritePermissions) return true;
+
+            // this write publish/draft permission checks should happen only for REST API
+
+            // 1. Find if user may write PUBLISHED:
+
+            // 1.1. app permissions 
+            if (_appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
+                .UserMay(GrantSets.WritePublished)) return true;
+
+            // 1.2. type permissions
+            if (_appPermissionCheckGenerator.New.ForType(_ctx, _appManager.AppState, targetType, Log)
+                .UserMay(GrantSets.WritePublished)) return true;
+
+
+            // 2. Find if user may write DRAFT:
+
+            // 2.1. app permissions 
+            if (_appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
+                .UserMay(GrantSets.WriteDraft)) return false;
+
+            // 2.2. type permissions
+            if (_appPermissionCheckGenerator.New.ForType(_ctx, _appManager.AppState, targetType, Log)
+                .UserMay(GrantSets.WriteDraft)) return false;
+
+
+            // 3. User is not allowed to update published or draft entity.
+            throw new Exception("User is not allowed to update published or draft entity.");
+        }
 
 
         #endregion

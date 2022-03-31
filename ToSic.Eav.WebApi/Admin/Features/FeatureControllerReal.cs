@@ -85,8 +85,8 @@ namespace ToSic.Eav.WebApi.Admin.Features
         {
             var updatedIds = featuresManagementResponse.Select(f => f.FeatureGuid);
 
-            var currentFeatures = _features.Value.All
-                .Where(f => !updatedIds.Contains(f.Guid))
+            var storedFeaturesButNotUpdated = _features.Value.All
+                .Where(f => f.EnabledStored.HasValue && !updatedIds.Contains(f.Guid))
                 .Select(FeatureConfigBuilder).ToList();
 
             var updatedFeatures = featuresManagementResponse
@@ -95,7 +95,7 @@ namespace ToSic.Eav.WebApi.Admin.Features
 
             return new FeatureListStored
             {
-                Features = currentFeatures.Union(updatedFeatures).ToList(),
+                Features = storedFeaturesButNotUpdated.Union(updatedFeatures).ToList(),
                 Fingerprint = _systemLoaderLazy.Ready.Fingerprint.GetFingerprint()
             };
         }
@@ -121,8 +121,8 @@ namespace ToSic.Eav.WebApi.Admin.Features
             {
                 var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
 
-                if (!Directory.Exists(configurationsPath))
-                    Directory.CreateDirectory(configurationsPath);
+                // ensure that path to store files already exits
+                Directory.CreateDirectory(configurationsPath);
 
                 var featureFilePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
 

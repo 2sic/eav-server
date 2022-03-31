@@ -1,7 +1,9 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Catalog;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
@@ -11,24 +13,41 @@ namespace ToSic.Eav.DataSources
 {
     public class DataSourceFactory: HasLog<DataSourceFactory>
     {
-        private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
-        private readonly Lazy<IDataBuilder> _dataBuilderLazy;
-        private readonly Lazy<DataSourceErrorHandling> _dataSourceErrorsLazy;
-        public IServiceProvider ServiceProvider { get; } // TODO: used in object that are created without DI to build dependencies
-
         #region Constructor / DI
 
-        public DataSourceFactory(IServiceProvider serviceProvider, 
+        public DataSourceFactory(IServiceProvider serviceProvider,
+            Generator<IAppStates> appStatesGen,
             Lazy<ILookUpEngineResolver> lookupResolveLazy, 
             Lazy<IDataBuilder> dataBuilderLazy,
-            Lazy<DataSourceErrorHandling> dataSourceErrorsLazy
+            Lazy<IZoneCultureResolver> zoneCultureResolverLazy,
+            Lazy<DataSourceErrorHandling> dataSourceErrorsLazy,
+            Lazy<QueryBuilder> queryBuilderLazy
             ) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
+            _serviceProvider = serviceProvider;
+            _appStatesGen = appStatesGen;
             _lookupResolveLazy = lookupResolveLazy;
             _dataBuilderLazy = dataBuilderLazy;
+            _zoneCultureResolverLazy = zoneCultureResolverLazy;
             _dataSourceErrorsLazy = dataSourceErrorsLazy;
-            ServiceProvider = serviceProvider;
+            _queryBuilderLazy = queryBuilderLazy;
         }
+
+        private readonly IServiceProvider _serviceProvider;
+        private readonly Generator<IAppStates> _appStatesGen;
+        private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
+        private readonly Lazy<IDataBuilder> _dataBuilderLazy;
+        private readonly Lazy<IZoneCultureResolver> _zoneCultureResolverLazy;
+        private readonly Lazy<DataSourceErrorHandling> _dataSourceErrorsLazy;
+        private readonly Lazy<QueryBuilder> _queryBuilderLazy;
+
+        #endregion
+
+        #region Provide from constructor
+
+        public IAppStates AppStates => _appStatesGen.New;
+        public IZoneCultureResolver ZoneCultureResolver => _zoneCultureResolverLazy.Value;
+        public QueryBuilder QueryBuilder => _queryBuilderLazy.Value;
 
         #endregion
 
@@ -74,7 +93,7 @@ namespace ToSic.Eav.DataSources
         private IDataSource GetDataSource(Type type, IAppIdentity app, IDataSource upstream, ILookUpEngine lookUps)
         {
             var wrapLog = Log.Call();
-            var newDs = ServiceProvider.Build<DataSourceBase>(type);
+            var newDs = _serviceProvider.Build<DataSourceBase>(type);
             ConfigureNewDataSource(newDs, app, upstream, lookUps);
             wrapLog("ok");
             return newDs;
@@ -114,7 +133,7 @@ namespace ToSic.Eav.DataSources
             if (upstream == null && lookUps == null)
                 throw new Exception("Can't get GetDataSource<T> because both upstream and lookUps are null.");
 
-            var newDs = ServiceProvider.Build<T>();
+            var newDs = _serviceProvider.Build<T>();
             ConfigureNewDataSource(newDs, appIdentity, upstream, lookUps ?? upstream.Configuration.LookUpEngine);
             wrapLog("ok");
             return newDs;
@@ -183,7 +202,7 @@ namespace ToSic.Eav.DataSources
                 ((IDataTarget)newDs).Attach(upstream);
             if (configLookUp != null) 
                 newDs.Init(configLookUp);
-            
+
             // Attach new 11.13 properties which are needed
             newDs._dataBuilderLazy = _dataBuilderLazy;
             newDs._dataSourceErrorHandlingLazy = _dataSourceErrorsLazy;
