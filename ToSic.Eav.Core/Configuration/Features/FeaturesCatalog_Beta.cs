@@ -18,7 +18,19 @@ namespace ToSic.Eav.Configuration
             "BlockFileResolveOutsideOfEntityAdam (BETA, not final)",
             false,
             false,
-            "If enabled, then links like 'file:72' will only work if the file is inside the ADAM of the current Entity.", FeaturesCatalogRules.Security0Improved,
+            "If enabled, then links like 'file:72' will only work if the file is inside the ADAM of the current Entity.",
+            FeaturesCatalogRules.Security0Improved,
+            ForBeta
+        );
+
+        public static readonly FeatureDefinition ExperimentalRazorThrowPartial = new FeatureDefinition(
+            "ExperimentalRazorThrowPartial",
+            new Guid("d5a327c5-db0f-472b-93b2-94e66b15e16b"),
+            "Will render most of the page and only error on a partial-render, instead of breaking the entire module. ",
+            false,
+            false,
+            "If enabled, then Html.Render or similar activities which throw an error won't stop the entire module, but just that part. ",
+            FeaturesCatalogRules.Security0Neutral,
             ForBeta
         );
     }

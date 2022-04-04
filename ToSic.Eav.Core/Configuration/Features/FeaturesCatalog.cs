@@ -65,6 +65,10 @@ namespace ToSic.Eav.Configuration
                 // 2sxc 13 - Global Apps
                 SharedApps,
                 PermissionsByLanguage,
+
+                // Beta features
+                BlockFileResolveOutsideOfEntityAdam,
+                ExperimentalRazorThrowPartial,
             };
 
 
