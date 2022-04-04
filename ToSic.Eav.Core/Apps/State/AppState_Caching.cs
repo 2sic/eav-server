@@ -12,6 +12,10 @@ namespace ToSic.Eav.Apps
         /// </summary>
         [PrivateApi] public ICacheStatistics CacheStatistics = new CacheStatistics();
 
+
+        // Custom event for LightSpeed
+        [PrivateApi] public event EventHandler AppStateChanged;
+
         /// <inheritdoc />
         public long CacheTimestamp => CacheExpiryDelegate.CacheTimestamp;
 
@@ -29,7 +33,7 @@ namespace ToSic.Eav.Apps
             Log.Add($"cache reset to stamp {CacheTimestamp} = {CacheTimestamp.ToReadable()}");
             Log.Add($"Stats: ItemCount: {Index.Count}; ResetCount: {CacheStatistics.ResetCount}  Message: '{message}'");
 
-            RaiseAppStateChanged(new AppStateChangedEventArgs(AppId)); // so lightspeed can flush cache
+            AppStateChanged?.Invoke(this, EventArgs.Empty); // publish event so lightspeed can flush cache
         }
 
 
@@ -61,18 +65,5 @@ namespace ToSic.Eav.Apps
         public PiggyBack PiggyBack => _piggyBack ?? (_piggyBack = new PiggyBack());
         private PiggyBack _piggyBack;
 
-
-        // Custom event for LightSpeed
-        public event EventHandler<AppStateChangedEventArgs> AppStateChanged;
-
-        protected virtual void RaiseAppStateChanged(AppStateChangedEventArgs e) => AppStateChanged?.Invoke(this, new AppStateChangedEventArgs(AppId));
-    }
-
-    // Define a class to hold custom event info
-    public class AppStateChangedEventArgs : EventArgs
-    {
-        public AppStateChangedEventArgs(int appId) => AppId = appId;
-
-        public int AppId { get; set; }
     }
 }
