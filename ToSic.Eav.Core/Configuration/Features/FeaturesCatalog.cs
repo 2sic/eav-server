@@ -68,7 +68,8 @@ namespace ToSic.Eav.Configuration
 
                 // Beta features
                 BlockFileResolveOutsideOfEntityAdam,
-                ExperimentalRazorThrowPartial,
+                RazorThrowPartial,
+                RenderThrowPartialSystemAdmin,
             };
 
 
