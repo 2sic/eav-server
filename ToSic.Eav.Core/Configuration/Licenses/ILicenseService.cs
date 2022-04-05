@@ -26,8 +26,6 @@ namespace ToSic.Eav.Configuration.Licenses
         /// </summary>
         List<LicenseState> All { get; }
 
-        IReadOnlyCollection<LicenseDefinition> Catalog();
-
         /// <summary>
         /// Enabled licenses, in a dictionary to retrieve with the LicenseDefinition object
         /// </summary>

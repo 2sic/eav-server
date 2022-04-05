@@ -62,6 +62,7 @@ namespace ToSic.Eav
             // We actually only use the direct object in DI
             //services.TryAddTransient<IFingerprint, Fingerprint>();
             services.TryAddTransient<SystemFingerprint>();
+            services.AddSingleton<LicenseCatalog>();    // Must be singleton
 
             return services;
         }

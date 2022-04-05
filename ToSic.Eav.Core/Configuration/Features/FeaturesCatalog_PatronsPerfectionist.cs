@@ -6,7 +6,7 @@ namespace ToSic.Eav.Configuration
 {
     public partial class FeaturesCatalog
     {
-        internal static List<FeatureLicenseRule> ForPatronsPerfectionist = BuildRule(LicenseCatalog.PatronPerfectionist, true);
+        internal static List<FeatureLicenseRule> ForPatronsPerfectionist = BuildRule(BuiltIn.PatronPerfectionist, true);
 
 
         // WIP / Beta in v13

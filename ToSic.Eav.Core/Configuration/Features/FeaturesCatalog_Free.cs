@@ -6,8 +6,8 @@ namespace ToSic.Eav.Configuration
 {
     public partial class FeaturesCatalog
     {
-        internal static List<FeatureLicenseRule> ForAllEnabled = BuildRule(LicenseCatalog.CoreFree, true);
-        internal static List<FeatureLicenseRule> ForAllDisabled = BuildRule(LicenseCatalog.CoreFree, false);
+        internal static List<FeatureLicenseRule> ForAllEnabled = BuildRule(BuiltIn.CoreFree, true);
+        internal static List<FeatureLicenseRule> ForAllDisabled = BuildRule(BuiltIn.CoreFree, false);
 
         public const bool ForUi = true;
         public const bool NotForUi = false;

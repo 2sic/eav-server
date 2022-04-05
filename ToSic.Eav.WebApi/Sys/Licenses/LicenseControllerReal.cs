@@ -21,17 +21,20 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             Lazy<ILicenseService> licenseServiceLazy, 
             Lazy<IFeaturesInternal> featuresLazy,
             Lazy<IGlobalConfiguration> globalConfiguration,
-            LazyInitLog<SystemLoader> systemLoaderLazy
+            LazyInitLog<SystemLoader> systemLoaderLazy,
+            Lazy<LicenseCatalog> licenseCatalog
             ) : base(serviceProvider, "Bck.Lics")
         {
             _licenseServiceLazy = licenseServiceLazy;
             _featuresLazy = featuresLazy;
             _globalConfiguration = globalConfiguration;
+            _licenseCatalog = licenseCatalog;
             _systemLoaderLazy = systemLoaderLazy.SetLog(Log);
         }
         private readonly Lazy<ILicenseService> _licenseServiceLazy;
         private readonly Lazy<IFeaturesInternal> _featuresLazy;
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
+        private readonly Lazy<LicenseCatalog> _licenseCatalog;
         private readonly LazyInitLog<SystemLoader> _systemLoaderLazy;
 
         private string ConfigurationsPath
@@ -55,7 +58,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         public IEnumerable<LicenseDto> Summary()
         {
             var licSer = _licenseServiceLazy.Value;
-            var licenses = licSer.Catalog()
+            var licenses = _licenseCatalog.Value.List // licSer.Catalog()
                 .OrderBy(l => l.Priority);
 
             var features = _featuresLazy.Value.All;

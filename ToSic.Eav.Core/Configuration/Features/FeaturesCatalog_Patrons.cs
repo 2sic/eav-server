@@ -6,7 +6,7 @@ namespace ToSic.Eav.Configuration
 {
     public partial class FeaturesCatalog
     {
-        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(LicenseCatalog.PatronBasic, true);
+        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(BuiltIn.PatronBasic, true);
 
         public static readonly FeatureDefinition PasteImageFromClipboard = new FeatureDefinition(
             "PasteImageFromClipboard",

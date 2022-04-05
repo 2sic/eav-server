@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace ToSic.Eav.Configuration
 {
@@ -18,6 +19,10 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         public IReadOnlyDictionary<string, T> Dictionary { get; private set; }
 
+        public IReadOnlyCollection<T> List { get; private set; }
+
+        public T TryGet(string name) => Dictionary.TryGetValue(name, out var value) ? value : default;
+
         /// <summary>
         /// Add things to the registry
         /// </summary>
@@ -31,6 +36,7 @@ namespace ToSic.Eav.Configuration
 
             // Reset the read-only dictionary
             Dictionary = new ReadOnlyDictionary<string, T>(_master);
+            List = new ReadOnlyCollection<T>(_master.Values.ToList());
         }
 
         private readonly ConcurrentDictionary<string, T> _master = new ConcurrentDictionary<string, T>(StringComparer.InvariantCultureIgnoreCase);

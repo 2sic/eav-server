@@ -19,7 +19,8 @@ namespace ToSic.Eav.Configuration
     {
         #region Constructor / DI
 
-        public SystemLoader(SystemFingerprint fingerprint, IRuntime runtime, Lazy<IGlobalConfiguration> globalConfiguration, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory)
+        public SystemLoader(SystemFingerprint fingerprint, IRuntime runtime, Lazy<IGlobalConfiguration> globalConfiguration, IAppsCache appsCache, 
+            IFeaturesInternal features, LicenseCatalog licenseCatalog, LogHistory logHistory)
             : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
             Fingerprint = fingerprint;
@@ -29,12 +30,14 @@ namespace ToSic.Eav.Configuration
             logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
             _appStateLoader = runtime.Init(Log);
             Features = features;
+            _licenseCatalog = licenseCatalog;
         }
         public SystemFingerprint Fingerprint { get; }
         private readonly IRuntime _appStateLoader;
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
         private readonly IAppsCache _appsCache;
         public readonly IFeaturesInternal Features;
+        private readonly LicenseCatalog _licenseCatalog;
         private readonly LogHistory _logHistory;
 
         #endregion
@@ -68,7 +71,7 @@ namespace ToSic.Eav.Configuration
         {
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_logHistory, Log).LoadLicenses(Fingerprint.GetFingerprint(),
+            new LicenseLoader(_logHistory, _licenseCatalog, Log).LoadLicenses(Fingerprint.GetFingerprint(),
                 _globalConfiguration.Value.GlobalFolder);
 
             // Now do a normal reload of configuration and features

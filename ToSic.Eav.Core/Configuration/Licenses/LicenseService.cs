@@ -28,8 +28,6 @@ namespace ToSic.Eav.Configuration.Licenses
         /// <inheritdoc />
         public List<LicenseState> All => AllCache;
 
-        public IReadOnlyCollection<LicenseDefinition> Catalog() => LicenseCatalog.Licenses;
-
         /// <inheritdoc />
         public IImmutableDictionary<LicenseDefinition, LicenseState> Enabled => EnabledCache;
 

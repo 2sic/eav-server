@@ -102,7 +102,7 @@ namespace ToSic.Eav.Configuration
                     licenseEnabled = true; // The license is active, so it's allowed to enable this
                     msgShort = enabledRule.LicenseDefinition.Name;
                     message = $" by default with license {enabledRule.LicenseDefinition.Name}";
-                    expiry = specialExpiry ?? LicenseCatalog.UnlimitedExpiry;
+                    expiry = specialExpiry ?? BuiltIn.UnlimitedExpiry;
                 }
 
                 // Check if the configuration would enable this feature
