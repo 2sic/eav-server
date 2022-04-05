@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Plumbing;
@@ -17,16 +14,13 @@ namespace ToSic.Eav.WebApi.Admin.Features
 
         public FeatureControllerReal(
             IServiceProvider serviceProvider,
-            Lazy<IGlobalConfiguration> globalConfiguration,
             Lazy<IFeaturesInternal> features,
             LazyInitLog<SystemLoader> systemLoaderLazy
             ) : base(serviceProvider, "Bck.Feats")
         {
-            _globalConfiguration = globalConfiguration;
             _features = features;
             _systemLoaderLazy = systemLoaderLazy.SetLog(Log);
         }
-        private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
         private readonly Lazy<IFeaturesInternal> _features;
 
         /// <summary>
@@ -36,31 +30,6 @@ namespace ToSic.Eav.WebApi.Admin.Features
 
         #endregion
 
-        // TODO: PROBABLY REMOVE, PROBABLY NOT USED ANY MORE
-        //public IEnumerable<FeatureState> List(bool reload)
-        //{
-        //    if (reload) _systemLoaderLazy.Ready.ReloadFeatures();
-        //    return _features.Value.All;
-        //}
-
-
-        // TODO: PROBABLY REMOVE, PROBABLY NOT USED ANY MORE
-        //public bool Save(FeaturesDto featuresManagementResponse)
-        //{
-        //    // first do a validity check 
-        //    if (featuresManagementResponse?.Msg?.Features == null) return false;
-
-        //    // 1. valid json? 
-        //    // - ensure signature is valid
-        //    if (!Json.IsValidJson(featuresManagementResponse.Msg.Features)) return false;
-
-        //    // then take the newFeatures (it should be a json)
-        //    // and save to /desktopmodules/.data-custom/configurations/features.json
-        //    if (!SaveFeaturesAndReload(featuresManagementResponse.Msg.Features)) return false;
-
-        //    return true;
-        //}
-
         public bool SaveNew(List<FeatureNewDto> featuresManagementResponse)
         {
             // validity check 
@@ -68,15 +37,7 @@ namespace ToSic.Eav.WebApi.Admin.Features
 
             var featureListStored = FeatureListStoredBuilder(featuresManagementResponse);
 
-            var json = JsonConvert.SerializeObject(featureListStored,
-                //JsonSettings.Defaults()
-                // reduce datetime serialization precision from 'yyyy-MM-ddTHH:mm:ss.FFFFFFFK'
-                new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-ddTHH:mm:ss" }
-                );
-
-            if (!SaveFeaturesAndReload(json)) return false;
-
-            return true;
+            return SaveFeaturesAndReload(featureListStored);
         }
 
         #region Helper Functions
@@ -114,21 +75,15 @@ namespace ToSic.Eav.WebApi.Admin.Features
                 Enabled = featureNewDto.Enabled ?? false
             };
 
-        private bool SaveFeaturesAndReload(string features)
+        private bool SaveFeaturesAndReload(FeatureListStored features)
         {
             var wrapLog = Log.Call<bool>();
             try
             {
-                var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
-
-                // ensure that path to store files already exits
-                Directory.CreateDirectory(configurationsPath);
-
-                var featureFilePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
-
-                File.WriteAllText(featureFilePath, features);
-
-                _systemLoaderLazy.Ready.ReloadFeatures();
+                var sl = _systemLoaderLazy.Ready;
+                
+                sl.SaveFeatures(features);
+                sl.ReloadFeatures();
 
                 return wrapLog("ok", true);
             }
