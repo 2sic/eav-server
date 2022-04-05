@@ -61,7 +61,15 @@ namespace ToSic.Eav.Apps.Languages
         {
             var wrapLog = Log.Call<List<AppUserLanguageState>>();
 
-            var languages = _zoneMapperLazy.Ready.CulturesWithState(_ctx.Site);
+            // to solves the issue with globals settings languages that can not be saved if 
+            // app languages are different from languages in global app and because global
+            // settings are in primary appid=1, zoneId=1 without portal site we just return empty list for it
+            // in other cases we get the languages from the app state or from context (http headers)
+            var zoneMapper = _zoneMapperLazy.Ready;
+            var site = appStateOrNull != null ? zoneMapper.SiteOfZone(appStateOrNull.ZoneId) : _ctx.Site;
+            if (site == null) return wrapLog("null site", new List<AppUserLanguageState>());
+            
+            var languages = zoneMapper.CulturesWithState(site);
 
             // Check if ML-Permissions-Feature is enabled, otherwise don't check detailed permissions
             var mlFeatureEnabled = _featuresLazy.Value.IsEnabled(FeaturesCatalog.PermissionsByLanguage);
