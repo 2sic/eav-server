@@ -8,6 +8,37 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("no good reason to publish this")]
     public class FeatureDefinition
     {
+        public const string ConditionIsFeature = "feature";
+
+        #region Constructors
+
+        internal FeatureDefinition(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security,
+            IEnumerable<FeatureLicenseRule> licRules)
+        {
+            Guid = guid;
+            NameId = nameId;
+            Name = name;
+            Security = security;
+            Public = isPublic;
+            Ui = ui;
+            Description = description;
+            LicenseRules = licRules?.ToList() ?? new List<FeatureLicenseRule>(0);
+            Condition = new Condition(ConditionIsFeature, nameId);
+        }
+
+
+        /// <summary>
+        /// Constructor for unknown feature - which only has a GUID to identify it
+        /// </summary>
+        /// <param name="unknownFeatureGuid"></param>
+        internal FeatureDefinition(Guid unknownFeatureGuid)
+        {
+            Guid = unknownFeatureGuid;
+            Condition = new Condition(ConditionIsFeature, Guid.ToString());
+        }
+
+        #endregion
+
         /// <summary>
         /// Feature GUID
         /// </summary>
@@ -55,27 +86,6 @@ namespace ToSic.Eav.Configuration
 
         internal List<FeatureLicenseRule> LicenseRules { get; }
 
-        internal FeatureDefinition(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security, 
-            IEnumerable<FeatureLicenseRule> licRules)
-        {
-            Guid = guid;
-            NameId = nameId;
-            Name = name;
-            Security = security;
-            Public = isPublic;
-            Ui = ui;
-            Description = description;
-            LicenseRules = licRules?.ToList() ?? new List<FeatureLicenseRule>(0);
-        }
-
-
-        /// <summary>
-        /// Constructor for unknown feature - which only has a GUID to identify it
-        /// </summary>
-        /// <param name="unknownFeatureGuid"></param>
-        internal FeatureDefinition(Guid unknownFeatureGuid)
-        {
-            Guid = unknownFeatureGuid;
-        }
+        public Condition Condition { get; }
     }
 }

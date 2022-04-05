@@ -23,12 +23,15 @@ namespace ToSic.Eav.Configuration.Licenses
     /// </summary>
     public class LicenseDefinition
     {
+        public const string ConditionIsLicense = "license";
+
         public LicenseDefinition(int priority, string name, Guid guid, string description)
         {
             Priority = priority;
             Name = name;
             Guid = guid;
             Description = description ?? "";
+            Condition = new Condition(ConditionIsLicense, guid.ToString());
         }
 
         public readonly int Priority;
@@ -38,5 +41,7 @@ namespace ToSic.Eav.Configuration.Licenses
         public bool AutoEnable = false;
         public string Description;
         public LicenseDefinition[] AlsoInheritEnabledFrom = Array.Empty<LicenseDefinition>();
+
+        public Condition Condition { get; }
     }
 }
