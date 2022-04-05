@@ -12,7 +12,7 @@ namespace ToSic.Eav.Configuration
 
         #region Constructors
 
-        internal FeatureDefinition(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security,
+        public FeatureDefinition(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security,
             IEnumerable<FeatureLicenseRule> licRules)
         {
             Guid = guid;

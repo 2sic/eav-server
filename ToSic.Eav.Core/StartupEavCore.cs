@@ -43,6 +43,8 @@ namespace ToSic.Eav
             services.TryAddTransient<SystemLoader>();
 
             // Make sure that IFeaturesInternal and IFeatures use the same singleton!
+            services.AddSingleton<LicenseCatalog>();    // Must be singleton
+            services.AddSingleton<FeaturesCatalog>();   // Must be singleton
             services.TryAddSingleton<IFeaturesInternal, FeaturesService>();    // this must come first!
             services.TryAddSingleton<IFeaturesService>(x => x.GetRequiredService<IFeaturesInternal>());
 
@@ -62,7 +64,6 @@ namespace ToSic.Eav
             // We actually only use the direct object in DI
             //services.TryAddTransient<IFingerprint, Fingerprint>();
             services.TryAddTransient<SystemFingerprint>();
-            services.AddSingleton<LicenseCatalog>();    // Must be singleton
 
             return services;
         }

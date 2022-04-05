@@ -9,7 +9,10 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("hide implementation")]
     public class FeaturesService: IFeaturesInternal
     {
-        public IEnumerable<FeatureState> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial)));
+        public FeaturesService(FeaturesCatalog featuresCatalog) => _featuresCatalog = featuresCatalog;
+        private readonly FeaturesCatalog _featuresCatalog;
+
+        public IEnumerable<FeatureState> All => (_all ?? (_all = Merge(Stored, _featuresCatalog.List)));
         private static List<FeatureState> _all;
 
         /// <summary>
