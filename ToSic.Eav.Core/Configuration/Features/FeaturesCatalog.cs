@@ -6,7 +6,7 @@ using static ToSic.Eav.Configuration.FeaturesBuiltIn;
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi]
-    public partial class FeaturesCatalog
+    public class FeaturesCatalog
     {
         // IMPORTANT
         // The guids of these licenses must match the ones in the 2sxc.org features list
