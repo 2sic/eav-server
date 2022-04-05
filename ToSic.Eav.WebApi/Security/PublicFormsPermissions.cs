@@ -14,7 +14,7 @@ namespace ToSic.Eav.WebApi.Security
             var userIsRestricted = !mpa.UserMayOnAll(GrantSets.WritePublished);
 
             // 2. check if feature is enabled
-            var feats = new[] { FeaturesCatalog.PublicEditForm.Guid };
+            var feats = new[] { FeaturesBuiltIn.PublicEditForm.Guid };
             var sysFeatures = mpa.FeaturesInternal;
             if (userIsRestricted && !sysFeatures.Enabled(feats))
             {

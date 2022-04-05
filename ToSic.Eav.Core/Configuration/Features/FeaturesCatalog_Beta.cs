@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Configuration.Licenses;
 
 namespace ToSic.Eav.Configuration
 {
-    public partial class FeaturesCatalog
+    public partial class FeaturesBuiltIn
     {
-        internal static List<FeatureLicenseRule> ForBeta = BuildRule(BuiltIn.CoreBeta, false);
-        internal static List<FeatureLicenseRule> ForBetaEnabled = BuildRule(BuiltIn.CoreBeta, true);
+        internal static List<FeatureLicenseRule> ForBeta = BuildRule(Licenses.BuiltIn.CoreBeta, false);
+        internal static List<FeatureLicenseRule> ForBetaEnabled = BuildRule(Licenses.BuiltIn.CoreBeta, true);
 
 
         // TODO: Probably change how this setting is used, so it's "Enable..." and defaults to true ?

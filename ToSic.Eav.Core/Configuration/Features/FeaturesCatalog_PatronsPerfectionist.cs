@@ -4,9 +4,9 @@ using ToSic.Eav.Configuration.Licenses;
 
 namespace ToSic.Eav.Configuration
 {
-    public partial class FeaturesCatalog
+    public partial class FeaturesBuiltIn
     {
-        internal static List<FeatureLicenseRule> ForPatronsPerfectionist = BuildRule(BuiltIn.PatronPerfectionist, true);
+        internal static List<FeatureLicenseRule> ForPatronsPerfectionist = BuildRule(Licenses.BuiltIn.PatronPerfectionist, true);
 
 
         // WIP / Beta in v13

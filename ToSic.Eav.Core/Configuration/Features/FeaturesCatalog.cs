@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
+using static ToSic.Eav.Configuration.FeaturesBuiltIn;
 
 namespace ToSic.Eav.Configuration
 {

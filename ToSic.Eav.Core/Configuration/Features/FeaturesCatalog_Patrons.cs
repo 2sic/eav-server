@@ -4,9 +4,9 @@ using ToSic.Eav.Configuration.Licenses;
 
 namespace ToSic.Eav.Configuration
 {
-    public partial class FeaturesCatalog
+    public partial class FeaturesBuiltIn
     {
-        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(BuiltIn.PatronBasic, true);
+        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(Licenses.BuiltIn.PatronBasic, true);
 
         public static readonly FeatureDefinition PasteImageFromClipboard = new FeatureDefinition(
             "PasteImageFromClipboard",

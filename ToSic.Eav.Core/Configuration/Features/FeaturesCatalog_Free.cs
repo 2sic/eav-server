@@ -4,10 +4,10 @@ using ToSic.Eav.Configuration.Licenses;
 
 namespace ToSic.Eav.Configuration
 {
-    public partial class FeaturesCatalog
+    public partial class FeaturesBuiltIn
     {
-        internal static List<FeatureLicenseRule> ForAllEnabled = BuildRule(BuiltIn.CoreFree, true);
-        internal static List<FeatureLicenseRule> ForAllDisabled = BuildRule(BuiltIn.CoreFree, false);
+        internal static List<FeatureLicenseRule> ForAllEnabled = BuildRule(Configuration.Licenses.BuiltIn.CoreFree, true);
+        internal static List<FeatureLicenseRule> ForAllDisabled = BuildRule(Configuration.Licenses.BuiltIn.CoreFree, false);
 
         public const bool ForUi = true;
         public const bool NotForUi = false;
