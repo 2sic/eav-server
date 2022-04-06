@@ -36,12 +36,11 @@ namespace ToSic.Eav.Api.Api01
         /// <summary>
         /// Used for DI - must always call Init to use
         /// </summary>
-        public SimpleDataController(LazyInitLog<AttributeBuilderForImport> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbDataLazy, IZoneMapper zoneMapper, ISite site, IContextOfSite ctx, GeneratorLog<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
+        public SimpleDataController(LazyInitLog<AttributeBuilderForImport> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbDataLazy, IZoneMapper zoneMapper, IContextOfSite ctx, GeneratorLog<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             _appManagerLazy = appManagerLazy;
             _dbDataLazy = dbDataLazy;
             _zoneMapper = zoneMapper.Init(Log);
-            _site = site;
             _ctx = ctx;
             _appPermissionCheckGenerator = appPermissionCheckGenerator.SetLog(Log);
             AttributeBuilder = lazyAttributeBuilder.SetLog(Log);
@@ -49,7 +48,6 @@ namespace ToSic.Eav.Api.Api01
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<DbDataController> _dbDataLazy;
         private readonly IZoneMapper _zoneMapper;
-        private readonly ISite _site;
         private readonly IContextOfSite _ctx;
         private readonly GeneratorLog<AppPermissionCheck> _appPermissionCheckGenerator;
 
@@ -68,7 +66,11 @@ namespace ToSic.Eav.Api.Api01
         {
             var wrapLog = Log.Call<SimpleDataController>($"{zoneId}, {appId}");
             _appId = appId;
-            _defaultLanguageCode = GetDefaultLanguage();
+            
+            // when zoneId is not that same as in current context, we need to set right site for provided zoneId
+            if (_ctx.Site.ZoneId != zoneId) _ctx.Site = _zoneMapper.SiteOfZone(zoneId);
+            
+            _defaultLanguageCode = GetDefaultLanguage(zoneId);
             _context = _dbDataLazy.Value.Init(zoneId, appId, Log);
             _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId), Log);
             _checkWritePermissions = checkWritePermissions;
@@ -76,12 +78,17 @@ namespace ToSic.Eav.Api.Api01
             return wrapLog(null, this);
         }
 
-        private string GetDefaultLanguage()
+        private string GetDefaultLanguage(int zoneId)
         {
-            var usesLanguages = _zoneMapper.CulturesWithState(_site).Any(c => c.IsEnabled);
-            return usesLanguages ? _site.DefaultCultureCode : "";
-        }
+            var wrapLog = Log.Call<string>($"{zoneId}");
 
+            var site = _zoneMapper.SiteOfZone(zoneId);
+            if (site == null) return wrapLog("site is null", "");
+
+            var usesLanguages = _zoneMapper.CulturesWithState(site).Any(c => c.IsEnabled);
+            return wrapLog($"ok, usesLanguages:{usesLanguages}", usesLanguages ? site.DefaultCultureCode : "");
+        }
+        
         #endregion
 
         /// <summary>
