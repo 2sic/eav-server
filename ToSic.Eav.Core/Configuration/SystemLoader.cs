@@ -1,8 +1,7 @@
-﻿using System;
-using System.IO;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
@@ -20,7 +19,7 @@ namespace ToSic.Eav.Configuration
         #region Constructor / DI
 
         public SystemLoader(SystemFingerprint fingerprint, IRuntime runtime, Lazy<IGlobalConfiguration> globalConfiguration, IAppsCache appsCache, 
-            IFeaturesInternal features, LicenseCatalog licenseCatalog, LogHistory logHistory)
+            IFeaturesInternal features, FeatureConfigManager featureConfigManager, LicenseCatalog licenseCatalog, LogHistory logHistory)
             : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
             Fingerprint = fingerprint;
@@ -30,6 +29,7 @@ namespace ToSic.Eav.Configuration
             logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
             _appStateLoader = runtime.Init(Log);
             Features = features;
+            _featureConfigManager = featureConfigManager;
             _licenseCatalog = licenseCatalog;
         }
         public SystemFingerprint Fingerprint { get; }
@@ -37,6 +37,7 @@ namespace ToSic.Eav.Configuration
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
         private readonly IAppsCache _appsCache;
         public readonly IFeaturesInternal Features;
+        private readonly FeatureConfigManager _featureConfigManager;
         private readonly LicenseCatalog _licenseCatalog;
         private readonly LogHistory _logHistory;
 
@@ -82,115 +83,81 @@ namespace ToSic.Eav.Configuration
         private bool _startupAlreadyRan;
 
         /// <summary>
-        /// Reset the features to force reloading of the features
+        /// Reset the features stored by loading from 'features.json'.
         /// </summary>
         [PrivateApi]
-        public bool ReloadFeatures()
+        public bool ReloadFeatures() => SetFeaturesStored(LoadFeaturesStored());
+
+
+        private bool SetFeaturesStored(FeatureListStored stored = null)
         {
-            var wrapLog = Log.Call<bool>();
-            
-            // set default (no features stored)
-            Features.Stored = new FeatureListStored();
+            Features.Stored = stored ?? new FeatureListStored();
             Features.CacheTimestamp = DateTime.Now.Ticks;
+            return true;
+        }
 
-            // folder with "features.json"
-            var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
-
-            // ensure that path to store files already exits
-            Directory.CreateDirectory(configurationsPath);
-            
-            var featureFilePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
-            
-            if (!File.Exists(featureFilePath)) return wrapLog("ok, but 'features.json' is missing", true);
+        
+        /// <summary>
+        /// Load features stored from 'features.json'.
+        /// When old format is detected, it is converted to new format.
+        /// </summary>
+        /// <returns></returns>
+        private FeatureListStored LoadFeaturesStored()
+        {
+            var wrapLog = Log.Call<FeatureListStored>();
 
             try
             {
-                var featStr = File.ReadAllText(featureFilePath);
+                var (filePath, fileContent) = _featureConfigManager.LoadFeaturesFile();
+                if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileContent)) 
+                    return wrapLog("ok, but 'features.json' is missing", null);
 
-                // check json format in "features.json" to find is it old version (v12)
-                var json = JObject.Parse(featStr);
-                if (json["_"]?["V"] != null && (int)json["_"]["V"] == 1) // detect old "features.json" format (v12)
-                {
-                    // get stored features from old format
-                    Features.Stored = GetFeaturesFromOldFormat(json);
+                // handle old 'features.json' format
+                var stored = _featureConfigManager.ConvertOldFeaturesFile(filePath, fileContent);
+                if (stored != null) 
+                    return wrapLog("converted to new features.json", stored);
 
-                    // rename old file format "features.json" to "features.json.v12.bak"
-                    var oldFeatureFilePathForBackup = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson + ".v12.bak");
-                    if (File.Exists(oldFeatureFilePathForBackup)) File.Delete(oldFeatureFilePathForBackup);
-                    File.Move(featureFilePath, oldFeatureFilePathForBackup);
-
-                    // save "features.json" in new format
-                    if (!SaveFeatures(Features.Stored)) return wrapLog("can't save features", false);
-                }
-                else // get stored features in new format
-                    Features.Stored = JsonConvert.DeserializeObject<FeatureListStored>(featStr);
-
-                return wrapLog("ok, features loaded", true);
+                // return features stored
+                return wrapLog("ok, features loaded", JsonConvert.DeserializeObject<FeatureListStored>(fileContent));
             }
             catch (Exception e)
             {
                 Log.Exception(e);
-                return wrapLog("load feature failed:" + e.Message, false);
+                return wrapLog("load feature failed:" + e.Message, null);
             }
         }
 
-        /// <summary>
-        /// Load features from json old format (v12)
-        /// </summary>
-        /// <param name="json"></param>
-        private FeatureListStored GetFeaturesFromOldFormat(JObject json)
-        {
-            var features = new FeatureListStored();
-
-            var fs = (string) json["Entity"]["Attributes"]["Custom"]["Features"]["*"];
-            var oldFeatures = JObject.Parse(fs);
-            
-            features.Fingerprint = (string) oldFeatures["fingerprint"];
-            
-            foreach (var f in (JArray) oldFeatures["features"])
-            {
-                features.Features.Add(new FeatureConfig()
-                {
-                    Id = (Guid) f["id"],
-                    Enabled = (bool) f["enabled"],
-                    Expires = (DateTime) f["expires"],
-                });
-            }
-
-            return features;
-        }
 
         /// <summary>
-        /// Save "features.json"
+        /// Update existing features config in "features.json". 
         /// </summary>
         [PrivateApi]
-        public bool SaveFeatures(FeatureListStored features)
+        public bool UpdateFeatures(List<FeatureManagementChange> changes)
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Call<bool>($"c:{changes?.Count ?? -1}");
+            var saved = _featureConfigManager.SaveFeaturesUpdate(changes);
+            SetFeaturesStored(FeatureListStoredBuilder(changes));
+            return wrapLog("ok, updated", saved);
+        }
 
-            // save new format (v13)
-            var json = JsonConvert.SerializeObject(features,
-                //JsonSettings.Defaults()
-                // reduce datetime serialization precision from 'yyyy-MM-ddTHH:mm:ss.FFFFFFFK'
-                new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-ddTHH:mm:ss" });
 
-            var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
+        private FeatureListStored FeatureListStoredBuilder(List<FeatureManagementChange> changes)
+        {
+            var updatedIds = changes.Select(f => f.FeatureGuid);
+
+            var storedFeaturesButNotUpdated = Features.All
+                .Where(f => f.EnabledStored.HasValue && !updatedIds.Contains(f.Guid))
+                .Select(FeatureConfigManager.FeatureConfigBuilder).ToList();
             
-            // ensure that path to store files already exits
-            Directory.CreateDirectory(configurationsPath);
+            var updatedFeatures = changes
+                .Where(f => f.Enabled.HasValue)
+                .Select(FeatureConfigManager.FeatureConfigBuilder).ToList();
 
-            var featureFilePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
-
-            try
+            return new FeatureListStored
             {
-                File.WriteAllText(featureFilePath, json);
-                return wrapLog("ok, features saved ", true);
-            }
-            catch (Exception e)
-            {
-                Log.Exception(e);
-                return wrapLog("save features failed:" + e.Message, false);
-            }
+                Features = storedFeaturesButNotUpdated.Union(updatedFeatures).ToList(),
+                Fingerprint = Fingerprint.GetFingerprint()
+            };
         }
     }
 }
