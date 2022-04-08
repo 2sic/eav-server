@@ -18,7 +18,7 @@ namespace ToSic.Eav.Configuration
         public string Name => _featureDefinition.Name;
         public string Description => _featureDefinition.Description;
 
-        public string License => _featureDefinition?.LicenseRules.FirstOrDefault()?.LicenseDefinition.Name;
+        public string License => _featureDefinition?.LicenseRules?.FirstOrDefault()?.LicenseDefinition?.Name;
 
 
         /// <summary>
