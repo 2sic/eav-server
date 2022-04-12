@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
         NiceName = "SQL Data",
         UiHint = "Get data from a database using SQL",
         Icon = "dynamic_form",
-        Type = DataSourceType.Source, 
+        Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
         DynamicOut = false,
         ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543",
@@ -71,7 +71,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 		/// <summary>
-		/// SQL Command for selecting data. 
+		/// SQL Command for selecting data.
 		/// </summary>
 		public string SelectCommand
 		{
@@ -176,12 +176,12 @@ namespace ToSic.Eav.DataSources
             // this is almost the same code as in the tokenizer, just replacing all tokens with an @param# syntax
             // and adding these @params to the collection of configurations
             var tokenizer = TokenReplace.Tokenizer;
-	        
+
             // Before we process the Select-Command, we must get it (by default it's just a token!)
 	        if (SelectCommand.StartsWith("[Settings"))
 	        {
 	            var tempList = Configuration.LookUpEngine.LookUp(
-                    new Dictionary<string, string> { { "one", SelectCommand } }, 
+                    new Dictionary<string, string> { { "one", SelectCommand } },
                     null, 0); // load, but make sure no recursions to prevent pre-filling parameters
 	            SelectCommand = tempList["one"];
 	        }
@@ -248,7 +248,7 @@ namespace ToSic.Eav.DataSources
 
             // make sure we have one - often it's empty, if the query hasn't been configured yet
             if (string.IsNullOrWhiteSpace(ConnectionString))
-                return ErrorHandler.CreateErrorList(source: this, title: "Connection Problem", 
+                return ErrorHandler.CreateErrorList(source: this, title: "Connection Problem",
                     message: "The ConnectionString property is empty / has not been initialized");
 
 			// The content type returned in this query
@@ -264,7 +264,7 @@ namespace ToSic.Eav.DataSources
 				    var command = new SqlCommand(SelectCommand, connection, trans);
 
                     // Add all items in Configuration starting with an @, as this should be an SQL parameter
-				    foreach (var sqlParameter in Configuration.Values.Where(k => k.Key.StartsWith("@"))) 
+				    foreach (var sqlParameter in Configuration.Values.Where(k => k.Key.StartsWith("@")))
 					    command.Parameters.AddWithValue(sqlParameter.Key, sqlParameter.Value);
 
                     SqlDataReader reader;
