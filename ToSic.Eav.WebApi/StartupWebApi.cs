@@ -6,6 +6,7 @@ using ToSic.Eav.WebApi.Admin.Features;
 using ToSic.Eav.WebApi.Admin.Metadata;
 using ToSic.Eav.WebApi.Admin.Query;
 using ToSic.Eav.WebApi.ApiExplorer;
+using ToSic.Eav.WebApi.Cms;
 using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Eav.WebApi.Languages;
 using ToSic.Eav.WebApi.Plumbing;
@@ -45,6 +46,7 @@ namespace ToSic.Eav.WebApi
 
             // Internal API helpers
             services.TryAddTransient<EntityApi>();
+            services.TryAddTransient<IUiData, UiData>();
 
             // WIP Converter clean-up v12.05
             // This is still needed on one EAV WebApi for DataSource to JsonBasic conversion
