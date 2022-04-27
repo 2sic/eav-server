@@ -10,7 +10,10 @@ namespace ToSic.Eav.WebApi.Admin.Features
         /// if the user has full edit permissions, he may also get the un-public features
         /// otherwise just the public Ui features
         /// </summary>
-        internal static IEnumerable<FeatureState> FeaturesUiBasedOnPermissions(IFeaturesInternal features, bool userHasPublishRight) 
-            => features.EnabledUi.Where(f => userHasPublishRight || f.Public);
+        internal static IEnumerable<FeatureState> FeaturesUiBasedOnPermissions(IFeaturesInternal features,
+            bool userHasPublishRight, bool userIsAdmin)
+            => userIsAdmin
+                ? features.All
+                : features.EnabledUi.Where(f => userHasPublishRight || f.Public);
     }
 }
