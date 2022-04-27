@@ -18,26 +18,10 @@ namespace ToSic.Eav.Caching
         /// <summary>
         /// Retrieve an app from the cache
         /// </summary>
+        /// <param name="sp">Current service provider, in case the app must be retrieved / generated</param>
         /// <param name="app">App identifier.</param>
         /// <returns>The <see cref="AppState"/> of the app.</returns>
         AppState Get(IServiceProvider sp, IAppIdentity app);
-
-        ///// <summary>
-        ///// Retrieve an app from the cache
-        ///// </summary>
-        ///// <param name="appId">App id if zone unknown.</param>
-        ///// <returns>The <see cref="AppState"/> of the app.</returns>
-        //AppState Get(IServiceProvider sp, int appId);
-
-        #endregion
-
-        #region Look up IDs
-
-        ///// <summary>
-        ///// Get/Resolve ZoneId and AppId for specified ZoneId and/or AppId. If both are null, default ZoneId with it's default App is returned.
-        ///// </summary>
-        ///// <returns>An <see cref="IAppIdentity"/> with the correct IDs</returns>
-        //IAppIdentity GetIdentity(IServiceProvider sp, int/*?*/ zoneId /*= null*/, int/*?*/ appId /*= null*/);
 
         #endregion
 
@@ -46,9 +30,6 @@ namespace ToSic.Eav.Caching
         ///// <summary>
         ///// The list of zones, which internally contains the list of apps. 
         ///// </summary>
-        //IReadOnlyDictionary<int, Zone> Zones { get; }
-
-        // WIP v13
         [PrivateApi]
         IReadOnlyDictionary<int, Zone> Zones(IServiceProvider sp);
 
