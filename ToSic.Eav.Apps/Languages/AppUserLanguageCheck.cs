@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.Languages
     public class AppUserLanguageCheck: HasLog<AppUserLanguageCheck>
     {
         public AppUserLanguageCheck(LazyInitLog<IZoneMapper> zoneMapperLazy, IContextOfSite ctx, Generator<AppPermissionCheck> checkGenerator, Lazy<IAppStates> appStatesLazy,
-            Lazy<IFeaturesService> featuresLazy)
+            Lazy<IFeaturesInternal> featuresLazy)
             : base($"{LogNames.Eav}.LngChk")
         {
             _zoneMapperLazy = zoneMapperLazy.SetLog(Log);
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Apps.Languages
         private readonly IContextOfSite _ctx;
         private readonly Generator<AppPermissionCheck> _checkGenerator;
         private readonly Lazy<IAppStates> _appStatesLazy;
-        private readonly Lazy<IFeaturesService> _featuresLazy;
+        private readonly Lazy<IFeaturesInternal> _featuresLazy;
 
         /// <summary>
         /// Test if the current user has explicit language editing permissions.

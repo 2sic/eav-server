@@ -19,7 +19,7 @@ namespace ToSic.Eav.Context
         public class ContextOfAppDependencies
         {
             public ContextOfAppDependencies(IAppStates appStates, 
-                Lazy<IFeaturesService> featsLazy, 
+                Lazy<IFeaturesInternal> featsLazy, 
                 LazyInitLog<AppUserLanguageCheck> langCheckLazy, 
                 GeneratorLog<IEnvironmentPermission> environmentPermissionGenerator)
             {
@@ -29,7 +29,7 @@ namespace ToSic.Eav.Context
                 LangCheckLazy = langCheckLazy;
             }
             public IAppStates AppStates { get; }
-            public Lazy<IFeaturesService> FeatsLazy { get; }
+            public Lazy<IFeaturesInternal> FeatsLazy { get; }
             public LazyInitLog<AppUserLanguageCheck> LangCheckLazy { get; }
             internal readonly GeneratorLog<IEnvironmentPermission> EnvironmentPermissionGenerator;
             internal bool InitDone;

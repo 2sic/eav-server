@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Decorators
     public class MdRequirements: ReadBase<MdRequirements>
     {
 
-        public MdRequirements(Lazy<ILicenseService> licenseService, Lazy<IFeaturesService> featsService, Lazy<IPlatformInfo> platInfo, LicenseCatalog licenseCatalog)
+        public MdRequirements(Lazy<ILicenseService> licenseService, Lazy<IFeaturesInternal> featsService, Lazy<IPlatformInfo> platInfo, LicenseCatalog licenseCatalog)
             : base($"{AppConstants.LogName}.MdReq")
         {
             _licenseService = licenseService;
@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.Decorators
             _licenseCatalog = licenseCatalog;
         }
         private readonly Lazy<ILicenseService> _licenseService;
-        private readonly Lazy<IFeaturesService> _featsService;
+        private readonly Lazy<IFeaturesInternal> _featsService;
         private readonly Lazy<IPlatformInfo> _platInfo;
         private readonly LicenseCatalog _licenseCatalog;
 
