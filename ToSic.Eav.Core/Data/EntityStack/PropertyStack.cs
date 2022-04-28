@@ -41,6 +41,16 @@ namespace ToSic.Eav.Data
             return found.Any() ? found[0].Value : null;
         }
 
+        public IPropertyStack GetStack(params string[] names)
+        {
+            var sources = names
+                .SelectMany(n => Sources.Where(s => s.Key.Equals(n, StringComparison.InvariantCultureIgnoreCase)))
+                .ToArray();
+            var newStack = new PropertyStack();
+            newStack.Init("New", sources);
+            return newStack;
+        }
+
         [PrivateApi("Internal")]
         public PropertyRequest FindPropertyInternal(string field, string[] dimensions, ILog parentLogOrNull)
             => PropertyInStack(field, dimensions, 0, true, parentLogOrNull);

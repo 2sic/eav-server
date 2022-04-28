@@ -14,5 +14,6 @@ namespace ToSic.Eav.Data
         
         IPropertyLookup GetSource(string name);
         
+        IPropertyStack GetStack(params string[] names);
     }
 }
