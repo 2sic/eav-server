@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Configuration
 {
@@ -11,8 +13,13 @@ namespace ToSic.Eav.Configuration
     /// Goal is that it should be implemented by a specific class, 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class GlobalCatalogBase<T>
+    public abstract class GlobalCatalogBase<T>: HasLog where T : IHasIdentityNameId
     {
+        protected GlobalCatalogBase(LogHistory history, string logName, CodeRef code) : base(logName, code: code, initialMessage: $"Catalog Created for {typeof(T).Name}")
+        {
+            history.Add(LogNames.LogHistoryGlobalTypes, Log);
+        }
+
         /// <summary>
         /// The dictionary containing all the items.
         /// Case insensitive.
@@ -26,21 +33,24 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// Add things to the registry
         /// </summary>
-        /// <param name="features"></param>
-        public void Register(params T[] features)
+        /// <param name="items"></param>
+        public void Register(params T[] items)
         {
+            var wrapLog = Log.Call($"Will add {items.Length} items");
             // add all features if it doesn't yet exist, otherwise update
-            foreach (var f in features)
+            foreach (var f in items)
                 if (f != null)
-                    _master.AddOrUpdate(GetKey(f), f, (key, existing) => f);
+                {
+                    Log.Add($"Adding {f.NameId}");
+                    _master.AddOrUpdate(f.NameId, f, (key, existing) => f);
+                }
 
             // Reset the read-only dictionary
             Dictionary = new ReadOnlyDictionary<string, T>(_master);
             List = new ReadOnlyCollection<T>(_master.Values.ToList());
+            wrapLog($"now contains {List.Count} items");
         }
 
         private readonly ConcurrentDictionary<string, T> _master = new ConcurrentDictionary<string, T>(StringComparer.InvariantCultureIgnoreCase);
-
-        protected abstract string GetKey(T item);
     }
 }

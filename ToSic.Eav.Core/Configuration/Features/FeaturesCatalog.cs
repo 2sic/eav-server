@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using static ToSic.Eav.Configuration.FeaturesBuiltIn;
 
 namespace ToSic.Eav.Configuration
@@ -6,7 +7,7 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class FeaturesCatalog: GlobalCatalogBase<FeatureDefinition>
     {
-        public FeaturesCatalog()
+        public FeaturesCatalog(LogHistory logHistory): base(logHistory, LogNames.Eav + ".FeatCt", new CodeRef())
         {
             Register(
                 // Released features since the dawn of features
@@ -44,9 +45,6 @@ namespace ToSic.Eav.Configuration
                 BlockFileResolveOutsideOfEntityAdam
             );
         }
-
-        protected override string GetKey(FeatureDefinition item) => item.NameId;
-
 
         // TODO: MAYBE SUB-FEATURES FOR global apps
         // - Inherit views - auto-on if global on

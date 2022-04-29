@@ -15,13 +15,14 @@
  *
  */
 using System;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
     /// <summary>
     /// Defines a license - name, guid etc.
     /// </summary>
-    public class LicenseDefinition
+    public class LicenseDefinition: IHasIdentityNameId
     {
         public const string ConditionIsLicense = "license";
 
@@ -36,7 +37,10 @@ namespace ToSic.Eav.Configuration.Licenses
 
         public readonly int Priority;
 
-        public readonly string Name;
+        public string Name { get; }
+
+        public string NameId => Guid.ToString();
+
         public readonly Guid Guid;
         public bool AutoEnable = false;
         public string Description;

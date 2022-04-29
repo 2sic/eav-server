@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi("no good reason to publish this")]
-    public class FeatureDefinition
+    public class FeatureDefinition: IHasIdentityNameId
     {
         public const string ConditionIsFeature = "feature";
 

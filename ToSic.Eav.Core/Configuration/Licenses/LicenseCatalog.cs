@@ -14,13 +14,15 @@
  * So asking for support to finance advanced features is not asking for much. 
  *
  */
+
+using ToSic.Eav.Logging;
 using static ToSic.Eav.Configuration.Licenses.BuiltIn;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
     public class LicenseCatalog: GlobalCatalogBase<LicenseDefinition>
     {
-        public LicenseCatalog()
+        public LicenseCatalog(LogHistory logHistory): base(logHistory, LogNames.Eav + ".LicCat", new CodeRef())
         {
             Register(
                 CoreFree,
@@ -32,8 +34,5 @@ namespace ToSic.Eav.Configuration.Licenses
                 EnterpriseCms
             );
         }
-
-        protected override string GetKey(LicenseDefinition item) => item.Guid.ToString();
-
     }
 }
