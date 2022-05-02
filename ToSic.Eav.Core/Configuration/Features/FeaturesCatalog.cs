@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using static ToSic.Eav.Configuration.FeaturesBuiltIn;
+using static ToSic.Eav.Configuration.BuiltInFeatures;
 
 namespace ToSic.Eav.Configuration
 {
@@ -27,12 +27,11 @@ namespace ToSic.Eav.Configuration
                 WysiwygPasteFormatted,
                 NoSponsoredByToSic,
 
-                // Patrons Perfectionist
-                ImageServiceMultiFormat, // v13
-                ImageServiceMultipleSizes,
-                ImageServiceSetSizes,
-                ImageServiceUseFactors,
-                LightSpeedOutputCache,
+                //// Patrons Perfectionist
+                //ImageServiceMultiFormat, // v13
+                //ImageServiceMultipleSizes,
+                //ImageServiceSetSizes,
+                //ImageServiceUseFactors,
 
                 // 2sxc 10.24+
                 WebFarmCache,

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace ToSic.Eav.Configuration
 {
-    public partial class FeaturesBuiltIn
+    public partial class BuiltInFeatures
     {
-        public static List<FeatureLicenseRule> ForBeta = BuildRule(Licenses.BuiltIn.CoreBeta, false);
-        public static List<FeatureLicenseRule> ForBetaEnabled = BuildRule(Licenses.BuiltIn.CoreBeta, true);
+        public static List<FeatureLicenseRule> ForBeta = BuildRule(Licenses.BuiltInLicenses.CoreBeta, false);
+        public static List<FeatureLicenseRule> ForBetaEnabled = BuildRule(Licenses.BuiltInLicenses.CoreBeta, true);
 
 
         // TODO: Probably change how this setting is used, so it's "Enable..." and defaults to true ?

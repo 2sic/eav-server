@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace ToSic.Eav.Configuration
 {
-    public partial class FeaturesBuiltIn
+    public partial class BuiltInFeatures
     {
-        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(Licenses.BuiltIn.PatronBasic, true);
+        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(Licenses.BuiltInLicenses.PatronBasic, true);
 
         public static readonly FeatureDefinition PasteImageFromClipboard = new FeatureDefinition(
             "PasteImageFromClipboard",

@@ -18,7 +18,7 @@ using System;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    public class BuiltIn
+    public class BuiltInLicenses
     {
 
         // IMPORTANT
@@ -41,6 +41,12 @@ namespace ToSic.Eav.Configuration.Licenses
             "Patron Perfectionist",
             new Guid("015077bb-9829-4291-bf99-244d8ba3b100"),
             "Patrons / supporters of 2sxc who really care about perfect pictures and ultra-fast caching. They get some very enhanced goodies."
+        );
+
+        public static readonly LicenseDefinition PatronSentinel = new LicenseDefinition(110, 
+            "Patron Sentinel",
+            new Guid("f1e00b9c-1363-4cf6-a8bc-60a215a4130a"),
+            "Patrons / supporters of 2sxc who really care extra high security such as CSP (Content Security Policies) and other features."
         );
 
 

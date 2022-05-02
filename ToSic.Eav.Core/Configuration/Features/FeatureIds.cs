@@ -15,11 +15,11 @@ namespace ToSic.Eav.Configuration
     public class FeatureIds
     {
         // Important: these names are public - don't ever change them
-        public static Guid PublicForms => FeaturesBuiltIn.PublicEditForm.Guid;
-        public static Guid PublicUpload => FeaturesBuiltIn.PublicUploadFiles.Guid;
-        public static Guid UseAdamInWebApi => FeaturesBuiltIn.SaveInAdamApi.Guid;
-        public static Guid PermissionCheckUserId => FeaturesBuiltIn.PermissionCheckUsers.Guid;
-        public static Guid PermissionCheckGroups => FeaturesBuiltIn.PermissionCheckGroups.Guid;
+        public static Guid PublicForms => BuiltInFeatures.PublicEditForm.Guid;
+        public static Guid PublicUpload => BuiltInFeatures.PublicUploadFiles.Guid;
+        public static Guid UseAdamInWebApi => BuiltInFeatures.SaveInAdamApi.Guid;
+        public static Guid PermissionCheckUserId => BuiltInFeatures.PermissionCheckUsers.Guid;
+        public static Guid PermissionCheckGroups => BuiltInFeatures.PermissionCheckGroups.Guid;
 
         // Beta - never public, commented out 2022-01-03
         //public static Guid PasteImageClipboard => Features.PasteImageFromClipboard.Id; // new Guid("f6b8d6da-4744-453b-9543-0de499aa2352");

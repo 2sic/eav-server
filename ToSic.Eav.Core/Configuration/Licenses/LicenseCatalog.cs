@@ -16,7 +16,7 @@
  */
 
 using ToSic.Eav.Logging;
-using static ToSic.Eav.Configuration.Licenses.BuiltIn;
+using static ToSic.Eav.Configuration.Licenses.BuiltInLicenses;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
@@ -29,6 +29,7 @@ namespace ToSic.Eav.Configuration.Licenses
                 CoreBeta,
                 PatronBasic,
                 PatronPerfectionist,
+                PatronSentinel,
                 WebFarmCache,
                 //LightSpeed,
                 EnterpriseCms

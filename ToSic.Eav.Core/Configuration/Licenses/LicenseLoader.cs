@@ -151,7 +151,7 @@ namespace ToSic.Eav.Configuration.Licenses
                     License = l,
                     EntityGuid = Guid.Empty,
                     LicenseKey = "always enabled",
-                    Expiration = BuiltIn.UnlimitedExpiry,
+                    Expiration = BuiltInLicenses.UnlimitedExpiry,
                     ValidExpired = true,
                     ValidFingerprint = true,
                     ValidSignature = true,

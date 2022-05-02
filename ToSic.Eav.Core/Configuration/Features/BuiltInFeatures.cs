@@ -3,7 +3,7 @@ using ToSic.Eav.Configuration.Licenses;
 
 namespace ToSic.Eav.Configuration
 {
-    public partial class FeaturesBuiltIn
+    public partial class BuiltInFeatures
     {
         // IMPORTANT
         // The guids of these licenses must match the ones in the 2sxc.org features list

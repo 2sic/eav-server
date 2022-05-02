@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Configuration
 {
-    public partial class FeaturesBuiltIn
+    public partial class BuiltInFeatures
     {
         public static readonly FeatureDefinition WebFarmCache = new FeatureDefinition(
             "WebFarmCache",
@@ -11,7 +11,7 @@ namespace ToSic.Eav.Configuration
             false,
             false,
             "Enables WebFarm Cache use in Dnn", FeaturesCatalogRules.Security0Improved,
-            BuildRule(Licenses.BuiltIn.WebFarmCache, true)
+            BuildRule(Licenses.BuiltInLicenses.WebFarmCache, true)
         );
 
     }
