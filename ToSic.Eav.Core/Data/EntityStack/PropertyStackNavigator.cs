@@ -116,6 +116,10 @@ namespace ToSic.Eav.Data
         {
             var safeWrap = logOrNull.SafeCall<PropertyRequest>();
 
+            // 2022-05-02 2dm - there seem to be cases where this wrapper is created without an own entity.
+            // Not yet sure why, but in this case we must be sure to not return something.
+            if (_contents == null) return safeWrap("no entity", null);
+
             var childResult = _contents.FindPropertyInternal(field, dimensions, logOrNull);
             if (childResult == null) return safeWrap("null", null);
             

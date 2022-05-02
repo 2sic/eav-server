@@ -9,9 +9,9 @@ namespace ToSic.Eav.Data
     [PrivateApi]
     public class EntityWithStackNavigation: EntityWrapper
     {
-        public EntityWithStackNavigation(IEntity baseEntity, IPropertyStackLookup parent, string field, int index) : base(baseEntity)
+        public EntityWithStackNavigation(IEntity entity, IPropertyStackLookup parent, string field, int index) : base(entity)
         {
-            PropertyStackNavigator = new PropertyStackNavigator(baseEntity, parent, field, index);
+            PropertyStackNavigator = new PropertyStackNavigator(entity, parent, field, index);
         }
 
         
