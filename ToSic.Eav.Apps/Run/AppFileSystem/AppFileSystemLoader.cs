@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
@@ -25,13 +26,15 @@ namespace ToSic.Eav.Apps.Run
 
         public class Dependencies
         {
-            public Dependencies(ISite site, Generator<FileSystemLoader> fslGenerator)
+            public Dependencies(ISite site, Generator<FileSystemLoader> fslGenerator, Lazy<AppPaths> appPathsLazy)
             {
                 Site = site;
                 FslGenerator = fslGenerator;
+                AppPathsLazy = appPathsLazy;
             }
             public ISite Site { get; }
             internal Generator<FileSystemLoader> FslGenerator { get; }
+            internal Lazy<AppPaths> AppPathsLazy { get; }
         }
 
         /// <summary>
@@ -54,40 +57,42 @@ namespace ToSic.Eav.Apps.Run
 
         #endregion
 
-        protected int AppId { get; set; }
-
         public string Path { get; set; }
-
+        public string PathShared { get; set; }
+        protected int AppId => _appState.AppId;
         protected ISite Site;
+        private AppState _appState;
+        private AppPaths _appPaths;
 
         #region Inits
 
-        public IAppFileSystemLoader Init(int appId, string path, ILog log)
+        public IAppFileSystemLoader Init(AppState app, ILog log)
         {
             Log.LinkTo(log);
 
-            var wrapLog = Log.Call($"{appId}, {path}, ...");
-            AppId = appId;
-            InitPathAfterAppId(path);
+            var wrapLog = Log.Call($"{app.AppId}, {app.Folder}, ...");
+            _appState = app;
+            _appPaths = Deps.AppPathsLazy.Value?.Init(Site, app, log);
+            InitPathAfterAppId();
 
             wrapLog(null);
             return this;
         }
 
-        IAppRepositoryLoader IAppRepositoryLoader.Init(int appId, string path, ILog log) => Init(appId, path, log) as IAppRepositoryLoader;
+        IAppRepositoryLoader IAppRepositoryLoader.Init(AppState app, ILog log) => Init(app, log) as IAppRepositoryLoader;
 
         /// <summary>
         /// Init Path After AppId must be in an own method, as each implementation may have something custom to handle this
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        protected virtual bool InitPathAfterAppId(string path)
+        protected virtual bool InitPathAfterAppId()
         {
-            var wrapLog = Log.Call<bool>(path);
-            Path = System.IO.Path.Combine(Site.AppsRootPhysicalFull, path, Eav.Constants.FolderAppExtensions);
-            return wrapLog(Path, true);
+            var wrapLog = Log.Call<bool>();
+            Path = System.IO.Path.Combine(_appPaths.PhysicalPath, Constants.FolderAppExtensions);
+            PathShared = System.IO.Path.Combine(_appPaths.PhysicalPathShared, Constants.FolderAppExtensions);
+            return wrapLog($"p:{Path}, ps:{PathShared}", true);
         }
-
 
         #endregion
 
@@ -97,28 +102,13 @@ namespace ToSic.Eav.Apps.Run
         public List<InputTypeInfo> InputTypes()
         {
             var wrapLog = Log.Call<List<InputTypeInfo>>();
-            var di = new DirectoryInfo(Path);
-            if (!di.Exists) return wrapLog("directory not found", new List<InputTypeInfo>());
-            var inputFolders = di.GetDirectories(FieldFolderPrefix + "*");
-            Log.Add($"found {inputFolders.Length} field-directories");
 
-            var withIndexJs = inputFolders
-                .Where(fld => fld.GetFiles(JsFile).Any())
-                .Select(fld => fld.Name).ToArray();
-            Log.Add($"found {withIndexJs.Length} folders with {JsFile}");
+            var types = GetInputTypes(Path, AppConstants.AppPathPlaceholder);
+            types.AddRange(GetInputTypes(PathShared, AppConstants.AppPathSharedPlaceholder));
 
-            var types = withIndexJs.Select(name =>
-                {
-                    var fullName = name.Substring(FieldFolderPrefix.Length);
-                    var niceName = NiceName(name);
-                    // TODO: use metadata information if available
-                    return new InputTypeInfo(fullName, niceName, "Extension Field", "", false,
-                        $"{AppConstants.AppPathPlaceholder}/{Eav.Constants.FolderAppExtensions}/{name}/{JsFile}", false);
-                })
-                .ToList();
             return wrapLog($"{types.Count}", types);
         }
-
+        
         /// <inheritdoc />
         public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource)
         {
@@ -153,6 +143,31 @@ namespace ToSic.Eav.Apps.Run
 
 
         #region Helpers
+
+        private List<InputTypeInfo> GetInputTypes(string path, string placeholder)
+        {
+            var wrapLog = Log.Call<List<InputTypeInfo>>();
+            var di = new DirectoryInfo(path);
+            if (!di.Exists) return wrapLog("directory not found", new List<InputTypeInfo>());
+            var inputFolders = di.GetDirectories(FieldFolderPrefix + "*");
+            Log.Add($"found {inputFolders.Length} field-directories");
+
+            var withIndexJs = inputFolders
+                .Where(fld => fld.GetFiles(JsFile).Any())
+                .Select(fld => fld.Name).ToArray();
+            Log.Add($"found {withIndexJs.Length} folders with {JsFile}");
+
+            var types = withIndexJs.Select(name =>
+                {
+                    var fullName = name.Substring(FieldFolderPrefix.Length);
+                    var niceName = NiceName(name);
+                    // TODO: use metadata information if available
+                    return new InputTypeInfo(fullName, niceName, "Extension Field", "", false,
+                        $"{placeholder}/{Eav.Constants.FolderAppExtensions}/{name}/{JsFile}", false);
+                })
+                .ToList();
+            return wrapLog($"{types.Count}", types);
+        }
 
         private static string NiceName(string name)
         {

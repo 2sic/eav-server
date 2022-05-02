@@ -21,6 +21,7 @@ namespace ToSic.Eav.WebApi.Dto
     {
         [JsonProperty(NullValueHandling = Ignore)] public int? Id { get; set; }
         [JsonProperty(NullValueHandling = Ignore)] public string Url { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public string SharedUrl { get; set; }
     }
 
     public class ContextResourceWithApp: WebResourceDto
@@ -50,14 +51,12 @@ namespace ToSic.Eav.WebApi.Dto
         /// Determines if this App is global, meaning it shouldn't have files in the site etc. just global
         /// </summary>
         /// <remarks>New in 13.0</remarks>
-        [JsonProperty(NullValueHandling = Ignore)]
-        public bool? IsGlobal { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public bool? IsGlobal { get; set; }
 
         /// <summary>
         /// Determines if this app was inherited from another App
         /// </summary>
-        [JsonProperty(NullValueHandling = Ignore)]
-        public bool? IsInherited { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)]  public bool? IsInherited { get; set; }
 
     }
 

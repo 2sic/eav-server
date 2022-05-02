@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
@@ -10,7 +11,7 @@ namespace ToSic.Eav.Repositories
     {
         public AppRepositoryLoaderUnknown(WarnUseOfUnknown<AppRepositoryLoaderUnknown> warn) : base(LogNames.NotImplemented + ".RepLdr") { }
 
-        public IAppRepositoryLoader Init(int appId, string path, ILog log)
+        public IAppRepositoryLoader Init(AppState app, ILog log)
         {
             log.LinkTo(log);
             Log.Add("Unknown App Repo loader - won't load anything");
