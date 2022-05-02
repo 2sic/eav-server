@@ -28,7 +28,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns>An object with everything which an app has, usually for caching</returns>
         private AppState LoadBasicAppState(int appId)
         {
-            _logHistory.Add("app-state-loader", Log);
+            _logHistory.Add(LogNames.LogHistoryGlobalAppStateLoader, Log);
 
             var wrapLog = Log.Call<AppState>($"AppId: {appId}");
             var appIdentity =_appStates.IdentityOfApp(appId);

@@ -17,7 +17,7 @@ namespace ToSic.Eav.Configuration
     {
         protected GlobalCatalogBase(LogHistory history, string logName, CodeRef code) : base(logName, code: code, initialMessage: $"Catalog Created for {typeof(T).Name}")
         {
-            history.Add(LogNames.LogHistoryGlobalTypes, Log);
+            history.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
         }
 
         /// <summary>

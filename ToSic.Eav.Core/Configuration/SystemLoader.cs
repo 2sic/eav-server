@@ -26,7 +26,7 @@ namespace ToSic.Eav.Configuration
             _globalConfiguration = globalConfiguration;
             _appsCache = appsCache;
             _logHistory = logHistory;
-            logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
+            logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
             _appStateLoader = runtime.Init(Log);
             Features = features;
             _featureConfigManager = featureConfigManager;
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Configuration
 
             // Pre-Load the Assembly list into memory to log separately
             var assemblyLoadLog = new Log(LogNames.Eav + "AssLdr", null, "Load Assemblies");
-            _logHistory.Add(LogNames.LogHistoryGlobalTypes, assemblyLoadLog);
+            _logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, assemblyLoadLog);
             AssemblyHandling.GetTypes(assemblyLoadLog);
 
             // Build the cache of all system-types. Must happen before everything else

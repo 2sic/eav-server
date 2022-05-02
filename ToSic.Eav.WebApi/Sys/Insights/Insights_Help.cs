@@ -38,7 +38,7 @@ namespace ToSic.Eav.WebApi.Sys
                     + Ol(
                         Li(LinkTo("Global Types in cache", nameof(GlobalTypes))),
                         Li(LinkTo("Global Types loading log", nameof(GlobalTypesLog))),
-                        Li(LinkTo("Global logs", nameof(Logs), key: LogNames.LogHistoryGlobalTypes)),
+                        Li(LinkTo("Global logs", nameof(Logs), key: LogNames.LogHistoryGlobalAndStartUp)),
                         Li(LinkTo("Licenses &amp; Features", nameof(Licenses)))
                     )
 
