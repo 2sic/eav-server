@@ -51,7 +51,6 @@ namespace ToSic.Eav.WebApi.Dto
         /// Determines if this App is global, meaning it shouldn't have files in the site etc. just global
         /// </summary>
         /// <remarks>New in 13.0</remarks>
-        [JsonProperty(NullValueHandling = Ignore)] public bool? IsGlobal { get; set; }
         [JsonProperty(NullValueHandling = Ignore)] public bool? IsShared { get; set; }
 
         /// <summary>
@@ -59,10 +58,19 @@ namespace ToSic.Eav.WebApi.Dto
         /// </summary>
         [JsonProperty(NullValueHandling = Ignore)]  public bool? IsInherited { get; set; }
 
+        /// <summary>
+        /// Marks the App which is global for global settings
+        /// </summary>
         public bool IsGlobalApp { get; set; }
 
+        /// <summary>
+        /// Marks the App which is for the site settings
+        /// </summary>
         public bool IsSiteApp { get; set; }
-        // public bool IsGlobal { get; set; }
+
+        /// <summary>
+        /// Marks the App which is the Content app
+        /// </summary>
         public bool IsContentApp { get; set; }
 
     }
