@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
@@ -52,7 +53,7 @@ namespace ToSic.Eav.Data
         public int ParentIndex;
 
 
-        public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
+        public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull, PropertyLookupPath path)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PSNav");
             var safeWrap = logOrNull.SafeCall<PropertyRequest>(
@@ -63,17 +64,20 @@ namespace ToSic.Eav.Data
             // If it's > 0, we're coming back from an inner-property not found, and then we should skip this
             if (startAtSource == IndexOfOwnItem)
             {
-                childResult = GetResultOfChild(field, dimensions, logOrNull, treatEmptyAsDefault);
+                path = path.Add("StackChild", field);
+                childResult = GetResultOfChild(field, dimensions, logOrNull, treatEmptyAsDefault, path);
                 if (childResult != null && childResult.IsFinal) return safeWrap("final", childResult);
             }
 
+            path = path.Add("↩️");
             logOrNull.SafeAdd("Couldn't find a result  yet, will retry the parent");
 
             // If it didn't work, check if parent has another option
             // Not found yet, ask parent if it may have another
             // If the parent has another source, create a new navigator for that and return that result
             // This will in effect have a recursion - if that won't succeed it will ask the parent again.
-            var sibling = Parent.PropertyInStack(ParentField, dimensions, ParentIndex +1, true, logOrNull);
+            path = path.Add("StackSibling", (ParentIndex + 1).ToString(), ParentField);
+            var sibling = Parent.PropertyInStack(ParentField, dimensions, ParentIndex + 1, true, logOrNull, path);
             
             if (sibling == null || !sibling.IsFinal) return safeWrap("no useful sibling found", childResult);
             
@@ -82,7 +86,8 @@ namespace ToSic.Eav.Data
             {
                 var wrapInner = logOrNull.SafeCall(null, "It's a list of entities as expected.");
                 var entityNav = new EntityWithStackNavigation(siblingEntities.First(), Parent, ParentField, sibling.SourceIndex);
-                var result = entityNav.FindPropertyInternal(field, dimensions, logOrNull);
+                path = path.Add("StackIEntity", field);
+                var result = entityNav.FindPropertyInternal(field, dimensions, logOrNull, path);
                 wrapInner(null);
                 return safeWrap(null, result);
             }
@@ -92,7 +97,8 @@ namespace ToSic.Eav.Data
                 logOrNull.SafeAdd("Another sibling found, it's a list of IPropertyLookups.");
                 var wrapInner = logOrNull.SafeCall(null, "It's a list of entities as expected.");
                 var propNav = new PropertyStackNavigator(siblingStack.First(), Parent, ParentField, sibling.SourceIndex);
-                var result = propNav.PropertyInStack(field, dimensions, 0, true, logOrNull);
+                path = path.Add("StackIPropertyLookup", field);
+                var result = propNav.PropertyInStack(field, dimensions, 0, true, logOrNull, path);
                 wrapInner(null);
                 return safeWrap(null, result);
             }
@@ -112,7 +118,7 @@ namespace ToSic.Eav.Data
         /// <param name="logOrNull"></param>
         /// <param name="treatEmptyAsDefault"></param>
         /// <returns></returns>
-        private PropertyRequest GetResultOfChild(string field, string[] dimensions, ILog logOrNull, bool treatEmptyAsDefault)
+        private PropertyRequest GetResultOfChild(string field, string[] dimensions, ILog logOrNull, bool treatEmptyAsDefault, PropertyLookupPath path)
         {
             var safeWrap = logOrNull.SafeCall<PropertyRequest>();
 
@@ -120,7 +126,8 @@ namespace ToSic.Eav.Data
             // Not yet sure why, but in this case we must be sure to not return something.
             if (_contents == null) return safeWrap("no entity", null);
 
-            var childResult = _contents.FindPropertyInternal(field, dimensions, logOrNull);
+            path = path.Add("Child", field);
+            var childResult = _contents.FindPropertyInternal(field, dimensions, logOrNull, path);
             if (childResult == null) return safeWrap("null", null);
             
             // Test if final was already checked, otherwise update it

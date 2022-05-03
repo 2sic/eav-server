@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
@@ -16,7 +17,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <returns></returns>
         [PrivateApi]
-        public static PropertyRequest TryToNavigateToEntityInList(this IEntity entity, string field, object parentDynEntity, ILog parentLogOrNull)
+        public static PropertyRequest TryToNavigateToEntityInList(this IEntity entity, string field, object parentDynEntity, ILog parentLogOrNull, PropertyLookupPath path)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull("Sxc.SubLst");
             var safeWrap = logOrNull.SafeCall<PropertyRequest>();
@@ -44,7 +45,8 @@ namespace ToSic.Eav.Data
                     Name = field,
                     Result = new List<IEntity> { dynEntityWithTitle },
                     Source = parentDynEntity,
-                    SourceIndex = 0
+                    SourceIndex = 0,
+                    Path = path
                 };
 
                 return safeWrap("named-entity", result);
