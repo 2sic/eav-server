@@ -36,6 +36,12 @@ namespace ToSic.Eav.Apps
             AppStateChanged?.Invoke(this, EventArgs.Empty); // publish event so lightspeed can flush cache
         }
 
+        /// <summary>
+        /// Call this method before AppState object is destroyed and recreate (new object will get new reference)
+        /// to ensure that dependent object are notified.  
+        /// </summary>
+        [PrivateApi] public void PreRemove() => CacheResetTimestamp("AppState object will be destroyed and recreated as new object", 1);
+
 
         /// <inheritdoc />
         public bool CacheChanged(long newCacheTimeStamp) => CacheTimestamp != newCacheTimeStamp;

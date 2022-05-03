@@ -57,7 +57,7 @@ namespace ToSic.Eav.Caching
         }
 
         /// <inheritdoc />
-        protected override AppState Get(IServiceProvider sp, string key) => Caches[key];
+        protected override AppState Get(string key) => Caches[key];
 
         /// <inheritdoc />
         protected override void Remove(string key) => Caches.Remove(key);    // returns false if key was not found (no Exception)
