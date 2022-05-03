@@ -52,6 +52,7 @@ namespace ToSic.Eav.WebApi.Dto
         /// </summary>
         /// <remarks>New in 13.0</remarks>
         [JsonProperty(NullValueHandling = Ignore)] public bool? IsGlobal { get; set; }
+        [JsonProperty(NullValueHandling = Ignore)] public bool? IsShared { get; set; }
 
         /// <summary>
         /// Determines if this app was inherited from another App

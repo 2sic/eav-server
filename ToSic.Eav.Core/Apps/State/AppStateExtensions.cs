@@ -14,7 +14,7 @@
 
         // TODO: @STV - try to use this where possible
         public static bool IsContentApp(this AppState appState)
-            => appState.NameId == Eav.Constants.DefaultAppGuid;
+            => appState.NameId == Constants.DefaultAppGuid;
 
         // TODO: @STV - try to use this where possible
         public static bool IsGlobalSettingsApp(this AppState appState)
