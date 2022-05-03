@@ -53,10 +53,8 @@ namespace ToSic.Eav.Data
             foreach (var name in names)
             {
                 var s = GetSource(name);
-                if (s != null)
-                    newSources.Add(new KeyValuePair<string, IPropertyLookup>(name, s));
-                else
-                    log.SafeAdd($"Didn't find {name}");
+                log.SafeAdd($"Add stack {name}, found: {s != null}");
+                if (s != null) newSources.Add(new KeyValuePair<string, IPropertyLookup>(name, s));
             }
 
             var newStack = new PropertyStack();

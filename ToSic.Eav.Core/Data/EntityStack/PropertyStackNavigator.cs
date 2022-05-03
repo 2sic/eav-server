@@ -81,6 +81,8 @@ namespace ToSic.Eav.Data
             
             if (sibling == null || !sibling.IsFinal) return safeWrap("no useful sibling found", childResult);
             
+            path = sibling.Path;    // Keep path as it was generated to find this sibling
+
             logOrNull.SafeAdd($"Another sibling found. Name:{sibling.Name} #{sibling.SourceIndex}. Will try to check it's properties. ");
             if (sibling.Result is IEnumerable<IEntity> siblingEntities && siblingEntities.Any())
             {
