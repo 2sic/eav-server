@@ -7,13 +7,14 @@ namespace ToSic.Eav.WebApi.Context
         // ReSharper disable once UnusedMember.Global
         None = 0,
         AppBasic = 1,
-        AppAdvanced = 2,
-        //Enable = 4, // disabled in 12.01.01 - not used anymore as Enable has own Enum
+        AppEdit = 2,
+        AppAdvanced = 4,
+
         Language = 8,
         Page = 16,
         Site = 32,
         System = 64,
-        All = AppBasic | AppAdvanced | /*Enable |*/ Language | Page | Site | System ,
+        All = AppBasic | AppEdit | AppAdvanced | Language | Page | Site | System ,
     }
 
 }

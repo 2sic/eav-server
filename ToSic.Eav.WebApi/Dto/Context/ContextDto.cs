@@ -58,6 +58,12 @@ namespace ToSic.Eav.WebApi.Dto
         /// </summary>
         [JsonProperty(NullValueHandling = Ignore)]  public bool? IsInherited { get; set; }
 
+        public bool IsGlobalApp { get; set; }
+
+        public bool IsSiteApp { get; set; }
+        // public bool IsGlobal { get; set; }
+        public bool IsContentApp { get; set; }
+
     }
 
     public class ContextEnableDto
