@@ -96,7 +96,7 @@ namespace ToSic.Eav.Caching
         /// Get CacheItem with specified CacheKey
         /// </summary>
         [PrivateApi("only important for developers, and they have intellisense")]
-		protected abstract AppState Get(string key);
+		protected abstract AppState Get(IServiceProvider sp, string key);
 
         /// <summary>
         /// Remove the CacheItem with specified CacheKey
@@ -124,14 +124,14 @@ namespace ToSic.Eav.Caching
 
             var cacheKey = CacheKey(appIdentity);
 
-            if (Has(cacheKey)) return Get(cacheKey);
+            if (Has(cacheKey)) return Get(sp, cacheKey);
 
             // create lock to prevent parallel initialization
             var lockKey = LoadLocks.GetOrAdd(cacheKey, new object());
             lock (lockKey)
             {
                 // now that lock is free, it could have been initialized, so re-check
-                if (Has(cacheKey)) return Get(cacheKey);
+                if (Has(cacheKey)) return Get(sp, cacheKey);
 
                 // Init EavSqlStore once
                 var loader = GetNewRepoLoader(sp);
@@ -140,7 +140,7 @@ namespace ToSic.Eav.Caching
                 Set(cacheKey, appState);
             }
 
-            return Get(cacheKey);
+            return Get(sp, cacheKey);
         }
 
         /// <summary>
