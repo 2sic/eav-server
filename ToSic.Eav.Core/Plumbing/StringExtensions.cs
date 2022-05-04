@@ -22,6 +22,8 @@ namespace ToSic.Eav.Plumbing
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .ToArray();
 
+        public static string NeverNull(this string value) => value ?? "";
+
         public static bool EqualsInsensitive(this string a, string b)
         {
             if(a == null && b == null) return true;
