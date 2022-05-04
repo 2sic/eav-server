@@ -36,6 +36,11 @@ namespace ToSic.Eav.Configuration.Licenses
             AutoEnable = true
         };
 
+        public static readonly LicenseDefinition CorePlus = new LicenseDefinition(2,
+            "Core+ (free for everyone who registers)",
+            new Guid("86376be0-b06f-4f6f-884b-cce80a456327"),
+            "These core features are free for anyone who registers their system. It has various features which may be security relevant, so by registering we can inform you if security issues appear. "
+        );
 
         public static readonly LicenseDefinition PatronPerfectionist = new LicenseDefinition(102, 
             "Patron Perfectionist",

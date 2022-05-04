@@ -26,6 +26,7 @@ namespace ToSic.Eav.Configuration.Licenses
         {
             Register(
                 CoreFree,
+                CorePlus,
                 CoreBeta,
                 PatronBasic,
                 PatronPerfectionist,
