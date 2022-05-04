@@ -71,8 +71,8 @@ namespace ToSic.Eav.Api.Api01
             if (_ctx.Site.ZoneId != zoneId) _ctx.Site = _zoneMapper.SiteOfZone(zoneId);
             
             _defaultLanguageCode = GetDefaultLanguage(zoneId);
+            _context = _dbDataLazy.Value.Init(zoneId, appId, Log);
             _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId), Log);
-            _context = _dbDataLazy.Value.Init(_appManager.AppState, Log);
             _checkWritePermissions = checkWritePermissions;
             Log.Add($"Default language:{_defaultLanguageCode}");
             return wrapLog(null, this);

@@ -49,8 +49,6 @@ namespace ToSic.Eav.Repository.Efc
         private DbContentType _contentType;
 
         private int _appId;
-
-        private int? _parentAppId;
         private int _zoneId;
         #endregion
 
@@ -60,7 +58,6 @@ namespace ToSic.Eav.Repository.Efc
         /// AppId of this whole Context
         /// </summary>
         public int AppId => _appId == Constants.AppIdEmpty ? Constants.MetaDataAppId : _appId;
-        public int[] AppIds => _parentAppId == null ? new[] { AppId } : new[] { AppId, _parentAppId.Value };
 
         /// <summary>
         /// ZoneId of this whole Context
@@ -128,17 +125,6 @@ namespace ToSic.Eav.Repository.Efc
         public EavDbContext SqlDb { get; }
         internal Generator<JsonSerializer> JsonSerializerGenerator { get; }
 
-        /// <summary>
-        /// Set ZoneId, AppId and ParentAppId on current context.
-        /// </summary>
-        /// <param name="appState"></param>
-        /// <param name="parentLog"></param>
-        /// <returns></returns>
-        public DbDataController Init(AppState appState, ILog parentLog)
-        {
-            _parentAppId = appState.ParentApp?.AppState?.AppId;
-            return Init(appState.ZoneId, appState.AppId, parentLog);
-        }
 
         /// <summary>
         /// Set ZoneId and AppId on current context.

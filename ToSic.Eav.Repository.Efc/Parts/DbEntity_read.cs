@@ -74,7 +74,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             => EntityQuery.Where(e => e.EntityGuid == entityGuid
                                       && !e.ChangeLogDeleted.HasValue
                                       && !e.AttributeSet.ChangeLogDeleted.HasValue
-                                      && DbContext.AppIds.Contains(e.AppId));
+                                      && e.AppId == DbContext.AppId);
 
         /// <summary>
         /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
@@ -99,7 +99,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             => EntityQuery.Where(e => entityGuid.Contains(e.EntityGuid)
                                       && !e.ChangeLogDeleted.HasValue
                                       && !e.AttributeSet.ChangeLogDeleted.HasValue
-                                      && DbContext.AppIds.Contains(e.AppId));
+                                      && e.AppId == DbContext.AppId);
 
 
         /// <summary>
