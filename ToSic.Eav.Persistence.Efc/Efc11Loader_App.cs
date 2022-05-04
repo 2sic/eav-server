@@ -28,7 +28,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns>An object with everything which an app has, usually for caching</returns>
         private AppState LoadBasicAppState(int appId)
         {
-            _logHistory.Add("app-state-loader", Log);
+            _logHistory.Add(LogNames.LogHistoryGlobalAppStateLoader, Log);
 
             var wrapLog = Log.Call<AppState>($"AppId: {appId}");
             var appIdentity =_appStates.IdentityOfApp(appId);
@@ -42,8 +42,8 @@ namespace ToSic.Eav.Persistence.Efc
             if (ancestorAppId != 0)
             {
                 // Check if feature is enabled #SharedAppFeatureEnabled
-                if (!_featuresService.Value.IsEnabled(FeaturesCatalog.SharedApps))
-                    throw new FeaturesDisabledException(FeaturesCatalog.SharedApps.NameId, "This is required to load shared app states.");
+                if (!_featuresService.Value.IsEnabled(BuiltInFeatures.SharedApps))
+                    throw new FeaturesDisabledException(BuiltInFeatures.SharedApps.NameId, "This is required to load shared app states.");
 
                 var testParentApp = _appStates.Get(ancestorAppId);
                 parent = new ParentAppState(testParentApp, true, true);

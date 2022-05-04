@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Plumbing
 {
@@ -12,7 +13,12 @@ namespace ToSic.Eav.Plumbing
     /// <typeparam name="T"></typeparam>
     public class ValueGetOnce<T>
     {
-        public T Get(Func<T> generator)
+        /// <summary>
+        /// Get the value once only. If not yet retrieved, use the generator function. 
+        /// </summary>
+        /// <param name="generator">Function which will generate the value on first use.</param>
+        /// <returns></returns>
+        public virtual T Get(Func<T> generator)
         {
             if (IsValueCreated) return _value;
             IsValueCreated = true;
@@ -21,7 +27,23 @@ namespace ToSic.Eav.Plumbing
         }
 
         /// <summary>
-        /// Determines if value has been created. Name the same as when using Lazy()
+        /// Get the value once only. If not yet retrieved, use the generator function.
+        ///
+        /// Also log what the returned value was for better insights.
+        /// </summary>
+        /// <param name="generator">Function which will generate the value on first use.</param>
+        /// <param name="log">Logger to use</param>
+        /// <param name="name">name of the property we're getting, to mention in the log</param>
+        /// <returns></returns>
+        public T Get(Func<T> generator, ILog log, string name)
+        {
+            var wrapLog = log.Call<T>(name);
+            var result = Get(generator);
+            return wrapLog($"'{result}'", result);
+        }
+
+        /// <summary>
+        /// Determines if value has been created. Name 'IsValueCreated' is the same as in the Lazy() object
         /// </summary>
         public bool IsValueCreated;
         private T _value;

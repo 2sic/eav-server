@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Configuration
 {
-    internal class FeatureLicenseRule
+    public class FeatureLicenseRule
     {
         public FeatureLicenseRule(LicenseDefinition licenseDefinition, bool enabled)
         {

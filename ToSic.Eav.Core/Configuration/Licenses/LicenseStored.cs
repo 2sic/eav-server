@@ -82,6 +82,11 @@ namespace ToSic.Eav.Configuration.Licenses
         public string Signature { get; set; }
 
         /// <summary>
+        /// The owner of the license - usually the github account which activated this
+        /// </summary>
+        public string Owner { get; set; }
+
+        /// <summary>
         /// Internal property to work with the data, shouldn't end up in the json
         /// </summary>
         [JsonIgnore]

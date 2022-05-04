@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data
 {
@@ -37,15 +39,34 @@ namespace ToSic.Eav.Data
 
         public IPropertyLookup GetSource(string name)
         {
-            var found = Sources.Where(s => s.Key.Equals(name, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            var found = Sources.Where(s => s.Key.EqualsInsensitive(name)).ToArray();
             return found.Any() ? found[0].Value : null;
         }
 
-        [PrivateApi("Internal")]
-        public PropertyRequest FindPropertyInternal(string field, string[] dimensions, ILog parentLogOrNull)
-            => PropertyInStack(field, dimensions, 0, true, parentLogOrNull);
+        public IPropertyStack GetStack(params string[] names) => GetStack(null, names);
 
-        public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull)
+        public IPropertyStack GetStack(ILog log, params string[] names)
+        {
+            var wrapLog = log.SafeCall<IPropertyStack>();
+            // Get all required names in the order they were requested
+            var newSources = new List<KeyValuePair<string, IPropertyLookup>>();
+            foreach (var name in names)
+            {
+                var s = GetSource(name);
+                log.SafeAdd($"Add stack {name}, found: {s != null}");
+                if (s != null) newSources.Add(new KeyValuePair<string, IPropertyLookup>(name, s));
+            }
+
+            var newStack = new PropertyStack();
+            newStack.Init("New", newSources.ToArray());
+            return wrapLog(newSources.Count.ToString(), newStack);
+        }
+
+        [PrivateApi("Internal")]
+        public PropertyRequest FindPropertyInternal(string field, string[] dimensions, ILog parentLogOrNull, PropertyLookupPath path)
+            => PropertyInStack(field, dimensions, 0, true, parentLogOrNull, path);
+
+        public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull, PropertyLookupPath path)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PStack");
             var wrapLog = logOrNull.SafeCall<PropertyRequest>($"{nameof(field)}: {field}, {nameof(startAtSource)}: {startAtSource}");
@@ -56,12 +77,11 @@ namespace ToSic.Eav.Data
                 var source = SourcesReal[sourceIndex];
                 logOrNull.SafeAdd($"Testing source #{sourceIndex} : {source.Key}");
 
-                var propInfo = source.Value.FindPropertyInternal(field, dimensions, logOrNull);
-                
+                path = path.Add("PropStack", source.Key, field);
+                var propInfo = source.Value.FindPropertyInternal(field, dimensions, logOrNull, path);
                 if (propInfo?.Result == null) continue;
 
                 result = propInfo.MarkAsFinalOrNot(source.Key, sourceIndex, logOrNull, treatEmptyAsDefault);
-                
                 if (!result.IsFinal) continue;
                 
                 if (!(result.Result is IEnumerable<IEntity> entityChildren))

@@ -10,13 +10,14 @@ namespace ToSic.Eav.Apps.Run
     {
         public FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> warn) { }
 
-        public IAppFileSystemLoader Init(int appId, string path, ILog log)
+        public IAppFileSystemLoader Init(AppState app, ILog log)
         {
             // do nothing
             return this;
         }
 
         public string Path { get; set; }
+        public string PathShared { get; set; }
 
         public List<InputTypeInfo> InputTypes()
         {

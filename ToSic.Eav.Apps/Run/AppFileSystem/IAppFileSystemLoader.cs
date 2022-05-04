@@ -9,13 +9,13 @@ namespace ToSic.Eav.Apps.Run
         /// <summary>
         /// Real constructor, after DI
         /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="path"></param>
+        /// <param name="app"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        IAppFileSystemLoader Init(int appId, string path, ILog log);
+        IAppFileSystemLoader Init(AppState app, ILog log);
 
         string Path { get; set; }
+        string PathShared { get; set; }
 
         /// <summary>
         /// Load all the input types for this app from the folder

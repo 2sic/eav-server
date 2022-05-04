@@ -13,7 +13,7 @@ namespace ToSic.Eav.Persistence.Efc
         public IDictionary<int, Zone> Zones()
         {
             var log = new Log("DB.EfLoad", null, "Zones()");
-            _logHistory.Add("zone-app-map", log);
+            _logHistory.Add(LogNames.LogHistoryGlobalZoneAppMap, log);
 
             // Build the tree of zones incl. their default(Content) and Primary apps
             var zones = _dbContext.ToSicEavZones

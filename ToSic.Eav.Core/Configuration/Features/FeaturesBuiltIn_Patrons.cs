@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Configuration.Licenses;
 
 namespace ToSic.Eav.Configuration
 {
-    public partial class FeaturesCatalog
+    public partial class BuiltInFeatures
     {
-        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(LicenseCatalog.PatronBasic, true);
+        internal static List<FeatureLicenseRule> ForPatrons = BuildRule(Licenses.BuiltInLicenses.PatronBasic, true);
 
         public static readonly FeatureDefinition PasteImageFromClipboard = new FeatureDefinition(
             "PasteImageFromClipboard",

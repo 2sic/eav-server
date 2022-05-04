@@ -17,7 +17,7 @@ namespace ToSic.Eav.Data
             if (_useLightModel)
                 return base.GetBestValue(attributeName);
 
-            var set = FindPropertyInternal(attributeName, languages, null);
+            var set = FindPropertyInternal(attributeName, languages, null, null);
             var result = set.Result;
             var attributeType = set.FieldType;
 

@@ -13,15 +13,18 @@ namespace ToSic.Eav.Apps.Decorators
     public class MdRequirements: ReadBase<MdRequirements>
     {
 
-        public MdRequirements(Lazy<ILicenseService> licenseService, Lazy<IFeaturesService> featsService, Lazy<IPlatformInfo> platInfo) : base($"{AppConstants.LogName}.MdReq")
+        public MdRequirements(Lazy<ILicenseService> licenseService, Lazy<IFeaturesInternal> featsService, Lazy<IPlatformInfo> platInfo, LicenseCatalog licenseCatalog)
+            : base($"{AppConstants.LogName}.MdReq")
         {
             _licenseService = licenseService;
             _featsService = featsService;
             _platInfo = platInfo;
+            _licenseCatalog = licenseCatalog;
         }
         private readonly Lazy<ILicenseService> _licenseService;
-        private readonly Lazy<IFeaturesService> _featsService;
+        private readonly Lazy<IFeaturesInternal> _featsService;
         private readonly Lazy<IPlatformInfo> _platInfo;
+        private readonly LicenseCatalog _licenseCatalog;
 
 
         public bool RequirementMet(IEnumerable<IEntity> requirement)
@@ -84,7 +87,7 @@ namespace ToSic.Eav.Apps.Decorators
             if (string.IsNullOrWhiteSpace(licName)) return wrapLog("no req. license", true);
             
             // find license
-            var matchingLic = LicenseCatalog.Find(licName.Trim());
+            var matchingLic = _licenseCatalog.TryGet(licName.Trim()); //  LicenseCatalog.Find(licName.Trim());
             if (matchingLic == null) return wrapLog("unknown license", false);
             
             var enabled = _licenseService.Value.IsEnabled(matchingLic);

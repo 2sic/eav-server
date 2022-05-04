@@ -49,6 +49,8 @@ namespace ToSic.Eav.Repository.Efc
         private DbContentType _contentType;
 
         private int _appId;
+
+        private int? _parentAppId;
         private int _zoneId;
         #endregion
 
@@ -58,6 +60,7 @@ namespace ToSic.Eav.Repository.Efc
         /// AppId of this whole Context
         /// </summary>
         public int AppId => _appId == Constants.AppIdEmpty ? Constants.MetaDataAppId : _appId;
+        public int[] AppIds => _parentAppId == null ? new[] { AppId } : new[] { AppId, _parentAppId.Value };
 
         /// <summary>
         /// ZoneId of this whole Context
@@ -69,7 +72,8 @@ namespace ToSic.Eav.Repository.Efc
         /// <summary>
         /// Current UserName. Used for ChangeLog
         /// </summary>
-        public string UserName {
+        public string UserName
+        {
             get
             {
                 if (_userName != null) return _userName;
@@ -89,7 +93,7 @@ namespace ToSic.Eav.Repository.Efc
         #endregion
 
         #region shared logs in case of write commands
-        public List<LogItem> ImportLogToBeRefactored { get; }=  new List<LogItem>();
+        public List<LogItem> ImportLogToBeRefactored { get; } = new List<LogItem>();
 
         //public ILog Log { get; private set; }
 
@@ -100,9 +104,9 @@ namespace ToSic.Eav.Repository.Efc
         #region Constructor and Init
 
         public DbDataController(
-            EavDbContext dbContext, 
-            Lazy<Efc11Loader> efcLoaderLazy, 
-            Lazy<IUser> userLazy, 
+            EavDbContext dbContext,
+            Lazy<Efc11Loader> efcLoaderLazy,
+            Lazy<IUser> userLazy,
             IAppsCache appsCache,
             Generator<JsonSerializer> jsonSerializerGenerator,
             LogHistory logHistory
@@ -125,6 +129,17 @@ namespace ToSic.Eav.Repository.Efc
         public EavDbContext SqlDb { get; }
         internal Generator<JsonSerializer> JsonSerializerGenerator { get; }
 
+        /// <summary>
+        /// Set ZoneId, AppId and ParentAppId on current context.
+        /// </summary>
+        /// <param name="appState"></param>
+        /// <param name="parentLog"></param>
+        /// <returns></returns>
+        public DbDataController Init(AppState appState, ILog parentLog)
+        {
+            _parentAppId = appState.ParentApp?.AppState?.AppId;
+            return Init(appState.ZoneId, appState.AppId, parentLog);
+        }
 
         /// <summary>
         /// Set ZoneId and AppId on current context.
@@ -196,7 +211,7 @@ namespace ToSic.Eav.Repository.Efc
         private void PurgeAppCacheIfReady()
         {
             Log.Call($"{_purgeAppCacheOnSave}")(null);
-            if(_purgeAppCacheOnSave) _appsCache.Purge(this);
+            if (_purgeAppCacheOnSave) _appsCache.Purge(this);
         }
 
         #endregion
@@ -224,7 +239,7 @@ namespace ToSic.Eav.Repository.Efc
                 Log.Add($"Transaction {randomId} - completed"); // adds ok to end of block
                 wrapLog("transaction ok"); // adds ok to top of block
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 ownTransaction?.Rollback();
                 Log.Add("Error: " + e.Message);

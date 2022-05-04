@@ -12,6 +12,10 @@ namespace ToSic.Eav.Apps
         /// </summary>
         [PrivateApi] public ICacheStatistics CacheStatistics = new CacheStatistics();
 
+
+        // Custom event for LightSpeed
+        [PrivateApi] public event EventHandler AppStateChanged;
+
         /// <inheritdoc />
         public long CacheTimestamp => CacheExpiryDelegate.CacheTimestamp;
 
@@ -28,7 +32,15 @@ namespace ToSic.Eav.Apps
             CacheStatistics.Update(CacheTimestamp, Index.Count, message);
             Log.Add($"cache reset to stamp {CacheTimestamp} = {CacheTimestamp.ToReadable()}");
             Log.Add($"Stats: ItemCount: {Index.Count}; ResetCount: {CacheStatistics.ResetCount}  Message: '{message}'");
+
+            AppStateChanged?.Invoke(this, EventArgs.Empty); // publish event so lightspeed can flush cache
         }
+
+        /// <summary>
+        /// Call this method before AppState object is destroyed and recreate (new object will get new reference)
+        /// to ensure that dependent object are notified.  
+        /// </summary>
+        [PrivateApi] public void PreRemove() => CacheResetTimestamp("AppState object will be destroyed and recreated as new object", 1);
 
 
         /// <inheritdoc />

@@ -20,10 +20,4 @@ namespace ToSic.Eav.WebApi.Admin.Features
         [JsonProperty("signature")]
         public string Signature { get; set; }
     }
-
-    public class FeatureNewDto
-    {
-        public Guid FeatureGuid { get; set; }
-        public bool? Enabled { get; set; }
-    }
 }

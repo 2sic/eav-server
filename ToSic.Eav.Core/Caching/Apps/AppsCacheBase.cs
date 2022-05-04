@@ -124,23 +124,26 @@ namespace ToSic.Eav.Caching
 
             var cacheKey = CacheKey(appIdentity);
 
-            if (Has(cacheKey)) return Get(cacheKey);
+            AppState appState = null;
+            if (Has(cacheKey)) appState = Get(cacheKey);
+            if (appState != null) return appState;
 
             // create lock to prevent parallel initialization
             var lockKey = LoadLocks.GetOrAdd(cacheKey, new object());
             lock (lockKey)
             {
                 // now that lock is free, it could have been initialized, so re-check
-                if (Has(cacheKey)) return Get(cacheKey);
+                if (Has(cacheKey)) appState = Get(cacheKey);
+                if (appState != null) return appState;
 
                 // Init EavSqlStore once
                 var loader = GetNewRepoLoader(sp);
                 if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
-                var appState = loader.AppState(appIdentity.AppId, true);
+                appState = loader.AppState(appIdentity.AppId, true);
                 Set(cacheKey, appState);
             }
 
-            return Get(cacheKey);
+            return appState; // Get(cacheKey);
         }
 
         /// <summary>

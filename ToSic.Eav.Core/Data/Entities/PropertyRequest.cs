@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Documentation;
+﻿using ToSic.Eav.Data.PropertyLookup;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
@@ -34,6 +35,8 @@ namespace ToSic.Eav.Data
         /// An optional name
         /// </summary>
         public string Name;
+
+        public PropertyLookupPath Path;
 
         public int SourceIndex = -1;
 

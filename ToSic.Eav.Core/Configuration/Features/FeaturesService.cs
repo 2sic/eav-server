@@ -9,7 +9,10 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("hide implementation")]
     public class FeaturesService: IFeaturesInternal
     {
-        public IEnumerable<FeatureState> All => (_all ?? (_all = Merge(Stored, FeaturesCatalog.Initial)));
+        public FeaturesService(FeaturesCatalog featuresCatalog) => _featuresCatalog = featuresCatalog;
+        private readonly FeaturesCatalog _featuresCatalog;
+
+        public IEnumerable<FeatureState> All => (_all ?? (_all = Merge(Stored, _featuresCatalog.List)));
         private static List<FeatureState> _all;
 
         /// <summary>
@@ -52,15 +55,15 @@ namespace ToSic.Eav.Configuration
 
         [PrivateApi]
         public string MsgMissingSome(IEnumerable<Guid> ids)
-            => $"Features {string.Join(", ", ids.Where(i => !Enabled(i)).Select(id => $"{InfoLinkRoot}{id}"))} not enabled - see also {HelpLink}";
+            => $"Features {string.Join(", ", ids.Where(i => !Enabled(i)).Select(id => $"https://2sxc.org/r/f/{id}"))} not enabled - see also https://2sxc.org/help?tag=features";
 
         #region Links
 
-        /// <inheritdoc />
-        public string HelpLink => "https://2sxc.org/help?tag=features";
+        ///// <inheritdoc />
+        //public string HelpLink => "https://2sxc.org/help?tag=features";
 
-        /// <inheritdoc />
-        public string InfoLinkRoot => "https://2sxc.org/r/f/";
+        ///// <inheritdoc />
+        //public string InfoLinkRoot => "https://2sxc.org/r/f/";
 
         #endregion
 
@@ -102,7 +105,7 @@ namespace ToSic.Eav.Configuration
                     licenseEnabled = true; // The license is active, so it's allowed to enable this
                     msgShort = enabledRule.LicenseDefinition.Name;
                     message = $" by default with license {enabledRule.LicenseDefinition.Name}";
-                    expiry = specialExpiry ?? LicenseCatalog.UnlimitedExpiry;
+                    expiry = specialExpiry ?? BuiltInLicenses.UnlimitedExpiry;
                 }
 
                 // Check if the configuration would enable this feature

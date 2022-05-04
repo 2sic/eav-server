@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data
 {
@@ -14,5 +15,7 @@ namespace ToSic.Eav.Data
         
         IPropertyLookup GetSource(string name);
         
+        IPropertyStack GetStack(params string[] names);
+        IPropertyStack GetStack(ILog log, params string[] names);
     }
 }

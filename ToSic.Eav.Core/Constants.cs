@@ -35,8 +35,10 @@ namespace ToSic.Eav
         public const string PrimaryAppFolder = "Primary";
 
         public const int AppIdEmpty = 0;
+        public const string AppNameIdEmpty = "none";
 
         public const int NullId = -2742;
+        public const string NullNameId = "unknown";
         public const int IdNotInitialized = -999;
         public const string UrlNotInitialized = "url-not-initialized";
 

@@ -3,7 +3,7 @@ using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
-    public sealed class AppFinder: HasLog<AppFinder>
+    public sealed class AppFinder: HasLog
     {
         #region Constructor / DI
 

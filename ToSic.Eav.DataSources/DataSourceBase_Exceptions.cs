@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using static ToSic.Eav.DataSources.DataSourceErrorHandling;
 
 namespace ToSic.Eav.DataSources
 {
@@ -36,7 +35,7 @@ namespace ToSic.Eav.DataSources
         /// <remarks>
         /// Introduced in 2sxc 11.13
         /// </remarks>
-        [PrivateApi("The name of this API is not final")]
+        [PublicApi]
         protected ImmutableArray<IEntity> ErrorStream;
 
         /// <summary>

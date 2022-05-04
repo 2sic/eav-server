@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.Languages
     public class AppUserLanguageCheck: HasLog<AppUserLanguageCheck>
     {
         public AppUserLanguageCheck(LazyInitLog<IZoneMapper> zoneMapperLazy, IContextOfSite ctx, Generator<AppPermissionCheck> checkGenerator, Lazy<IAppStates> appStatesLazy,
-            Lazy<IFeaturesService> featuresLazy)
+            Lazy<IFeaturesInternal> featuresLazy)
             : base($"{LogNames.Eav}.LngChk")
         {
             _zoneMapperLazy = zoneMapperLazy.SetLog(Log);
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Apps.Languages
         private readonly IContextOfSite _ctx;
         private readonly Generator<AppPermissionCheck> _checkGenerator;
         private readonly Lazy<IAppStates> _appStatesLazy;
-        private readonly Lazy<IFeaturesService> _featuresLazy;
+        private readonly Lazy<IFeaturesInternal> _featuresLazy;
 
         /// <summary>
         /// Test if the current user has explicit language editing permissions.
@@ -44,7 +44,7 @@ namespace ToSic.Eav.Apps.Languages
 
             // Note: it's important that all cases where we don't detect a forbidden
             // we return null, and DON'T access _ctx.UserMayEdit, as it will recurse to here again
-            if (!_featuresLazy.Value.IsEnabled(FeaturesCatalog.PermissionsByLanguage)) 
+            if (!_featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage)) 
                 return wrapLog("feat disabled", null);
 
             // Check if we have any language rules
@@ -61,10 +61,18 @@ namespace ToSic.Eav.Apps.Languages
         {
             var wrapLog = Log.Call<List<AppUserLanguageState>>();
 
-            var languages = _zoneMapperLazy.Ready.CulturesWithState(_ctx.Site);
+            // to solves the issue with globals settings languages that can not be saved if 
+            // app languages are different from languages in global app and because global
+            // settings are in primary appid=1, zoneId=1 without portal site we just return empty list for it
+            // in other cases we get the languages from the app state or from context (http headers)
+            var zoneMapper = _zoneMapperLazy.Ready;
+            var site = appStateOrNull != null ? zoneMapper.SiteOfZone(appStateOrNull.ZoneId) : _ctx.Site;
+            if (site == null) return wrapLog("null site", new List<AppUserLanguageState>());
+            
+            var languages = zoneMapper.CulturesWithState(site);
 
             // Check if ML-Permissions-Feature is enabled, otherwise don't check detailed permissions
-            var mlFeatureEnabled = _featuresLazy.Value.IsEnabled(FeaturesCatalog.PermissionsByLanguage);
+            var mlFeatureEnabled = _featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage);
             var allowAllLanguages = !mlFeatureEnabled || _ctx.User.IsSuperUser;
 
             if (allowAllLanguages || appStateOrNull == null)

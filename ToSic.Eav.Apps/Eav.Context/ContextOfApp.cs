@@ -19,7 +19,7 @@ namespace ToSic.Eav.Context
         public class ContextOfAppDependencies
         {
             public ContextOfAppDependencies(IAppStates appStates, 
-                Lazy<IFeaturesService> featsLazy, 
+                Lazy<IFeaturesInternal> featsLazy, 
                 LazyInitLog<AppUserLanguageCheck> langCheckLazy, 
                 GeneratorLog<IEnvironmentPermission> environmentPermissionGenerator)
             {
@@ -29,7 +29,7 @@ namespace ToSic.Eav.Context
                 LangCheckLazy = langCheckLazy;
             }
             public IAppStates AppStates { get; }
-            public Lazy<IFeaturesService> FeatsLazy { get; }
+            public Lazy<IFeaturesInternal> FeatsLazy { get; }
             public LazyInitLog<AppUserLanguageCheck> LangCheckLazy { get; }
             internal readonly GeneratorLog<IEnvironmentPermission> EnvironmentPermissionGenerator;
             internal bool InitDone;
@@ -107,7 +107,7 @@ namespace ToSic.Eav.Context
                     .UserMay(GrantSets.WriteSomething);
 
                 // Check if language permissions may alter edit
-                if (_userMayEdit == true && Deps.FeatsLazy.Value.IsEnabled(FeaturesCatalog.PermissionsByLanguage))
+                if (_userMayEdit == true && Deps.FeatsLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
                     _userMayEdit = Deps.LangCheckLazy.Ready.UserRestrictedByLanguagePermissions(AppState) ?? _userMayEdit;
 
                 return wrapLog($"{_userMayEdit.Value}", _userMayEdit.Value);

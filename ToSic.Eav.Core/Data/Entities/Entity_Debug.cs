@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Debug;
+using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
@@ -46,7 +47,7 @@ namespace ToSic.Eav.Data
                     .Where(att => att.Value.Type != DataTypes.Entity && att.Value.Type != DataTypes.VoidEmpty)
                     .Select(att =>
                     {
-                        var property = FindPropertyInternal(att.Key, languages, parentLogOrNull);
+                        var property = FindPropertyInternal(att.Key, languages, parentLogOrNull, new PropertyLookupPath().Add("EntityDump"));
                         var item = new PropertyDumpItem
                         {
                             Path = pathRoot + att.Key,

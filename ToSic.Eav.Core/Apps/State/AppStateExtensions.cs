@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Metadata;
-
-namespace ToSic.Eav.Apps
+﻿namespace ToSic.Eav.Apps
 {
     public static class AppStateExtensions
     {
@@ -13,5 +11,17 @@ namespace ToSic.Eav.Apps
             var parentAppGuid = states?.ParentApp?.AppState?.NameId;
             return (!string.IsNullOrEmpty(parentAppGuid) && parentAppGuid != Constants.PresetName);
         }
+
+        // TODO: @STV - try to use this where possible
+        public static bool IsContentApp(this AppState appState)
+            => appState.NameId == Constants.DefaultAppGuid;
+
+        // TODO: @STV - try to use this where possible
+        public static bool IsGlobalSettingsApp(this AppState appState)
+            => appState.AppId == Constants.MetaDataAppId;
+
+        // TODO: @STV - try to use this where possible
+        public static bool IsSiteSettingsApp(this AppState appState)
+            => appState.NameId == Constants.PrimaryAppGuid;
     }
 }

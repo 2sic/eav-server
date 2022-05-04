@@ -9,7 +9,7 @@ namespace ToSic.Eav.Configuration
         public LoaderBase(/*SystemFingerprint fingerprint,*/ LogHistory logHistory, ILog parentLog, string logName, string initialMessage) : base(logName, parentLog, initialMessage)
         {
             //Fingerprint = fingerprint;
-            logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
+            logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
         }
         //public IFingerprint Fingerprint { get; }
     }

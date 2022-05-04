@@ -4,9 +4,9 @@ using ToSic.Eav.Configuration.Licenses;
 
 namespace ToSic.Eav.Configuration
 {
-    public partial class FeaturesCatalog
+    public partial class BuiltInFeatures
     {
-        internal static List<FeatureLicenseRule> ForEnterpriseCms = BuildRule(LicenseCatalog.EnterpriseCms, true);
+        internal static List<FeatureLicenseRule> ForEnterpriseCms = BuildRule(Licenses.BuiltInLicenses.EnterpriseCms, true);
 
         // WIP / Beta in v13
         public static readonly FeatureDefinition SharedApps = new FeatureDefinition(

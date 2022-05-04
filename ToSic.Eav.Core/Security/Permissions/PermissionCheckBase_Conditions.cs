@@ -67,7 +67,7 @@ namespace ToSic.Eav.Security
         /// </summary>
         private bool VerifyUserIsThisUser(string identity, IUser user)
         {
-            if (!_features.Enabled(FeaturesCatalog.PermissionCheckUsers.Guid)) return false;
+            if (!_features.Enabled(BuiltInFeatures.PermissionCheckUsers.Guid)) return false;
             return identity == user.Guid.ToString();
         }
 
@@ -80,7 +80,7 @@ namespace ToSic.Eav.Security
         /// <returns></returns>
         private bool VerifyUserIsInGroup(string identity, IUser user)
         {
-            if (!_features.Enabled(FeaturesCatalog.PermissionCheckGroups.Guid)) return false;
+            if (!_features.Enabled(BuiltInFeatures.PermissionCheckGroups.Guid)) return false;
 
             if (string.IsNullOrWhiteSpace(identity)) return false;
 

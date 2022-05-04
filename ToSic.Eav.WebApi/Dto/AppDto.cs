@@ -24,5 +24,7 @@
         /// Determines if this app was inherited from another App
         /// </summary>
         public bool IsInherited { get; set; }
+
+        public AppMetadataDto Lightspeed { get; set; }
     }
 }

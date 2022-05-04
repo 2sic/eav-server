@@ -1,40 +1,15 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Configuration.Licenses;
-using ToSic.Eav.Documentation;
+﻿using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
+using static ToSic.Eav.Configuration.BuiltInFeatures;
 
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi]
-    public partial class FeaturesCatalog
+    public class FeaturesCatalog: GlobalCatalogBase<FeatureDefinition>
     {
-        // IMPORTANT
-        // The guids of these licenses must match the ones in the 2sxc.org features list
-        // So always create the definition there first, then use the GUID of that definition here
-
-        // Todo: Lightspeed Cache
-
-
-        // TODO: MAYBE SUB-FEATURES FOR global apps
-        // - Inherit views - auto-on if global on
-        // - Inherit data - auto-on if global on
-        // - Inherit queries
-
-        /// <summary>
-        /// The catalog contains known features, and knows if they are used in the UI
-        /// This is important, because the installation specific list often won't know about
-        /// Ui or not. 
-        /// </summary>
-        /// <remarks>
-        /// this is a temporary solution, because most features are from 2sxc (not eav)
-        /// so later on this must be injected or something
-        /// </remarks>
-        [PrivateApi]
-        public static List<FeatureDefinition> Initial => _initial ?? (_initial = BuildFeatureDefinitions());
-        private static List<FeatureDefinition> _initial;
-
-        private static List<FeatureDefinition> BuildFeatureDefinitions() =>
-            new List<FeatureDefinition>
-            {
+        public FeaturesCatalog(LogHistory logHistory): base(logHistory, LogNames.Eav + ".FeatCt", new CodeRef())
+        {
+            Register(
                 // Released features since the dawn of features
                 PublicEditForm,
                 PublicUploadFiles,
@@ -52,25 +27,22 @@ namespace ToSic.Eav.Configuration
                 WysiwygPasteFormatted,
                 NoSponsoredByToSic,
 
-                // Patrons Perfectionist
-                ImageServiceMultiFormat,    // v13
-                ImageServiceMultipleSizes,
-                ImageServiceSetSizes,
-                ImageServiceUseFactors,
-                LightSpeedOutputCache,
-
                 // 2sxc 10.24+
                 WebFarmCache,
 
                 // 2sxc 13 - Global Apps
                 SharedApps,
                 PermissionsByLanguage,
-            };
 
+                // Beta features
+                BlockFileResolveOutsideOfEntityAdam
+            );
+        }
 
-        internal static List<FeatureLicenseRule> BuildRule(LicenseDefinition licDef, bool enabled) => new List<FeatureLicenseRule>
-        {
-            new FeatureLicenseRule(licDef, enabled)
-        };
+        // TODO: MAYBE SUB-FEATURES FOR global apps
+        // - Inherit views - auto-on if global on
+        // - Inherit data - auto-on if global on
+        // - Inherit queries
+        
     }
 }

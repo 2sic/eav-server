@@ -41,8 +41,11 @@ namespace ToSic.Eav
             services.TryAddTransient<IDbConfiguration, DbConfiguration>();
             services.TryAddTransient<GlobalPaths>();
             services.TryAddTransient<SystemLoader>();
+            services.TryAddTransient<FeatureConfigManager>();
 
             // Make sure that IFeaturesInternal and IFeatures use the same singleton!
+            services.AddSingleton<LicenseCatalog>();    // Must be singleton
+            services.AddSingleton<FeaturesCatalog>();   // Must be singleton
             services.TryAddSingleton<IFeaturesInternal, FeaturesService>();    // this must come first!
             services.TryAddSingleton<IFeaturesService>(x => x.GetRequiredService<IFeaturesInternal>());
 

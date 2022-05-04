@@ -28,19 +28,6 @@ namespace ToSic.Eav.Configuration
         /// <returns>true if all features are enabled, false if any one of them is not</returns>
         bool Enabled(IEnumerable<Guid> guids);
 
-        /// <summary>
-        /// Checks if a list of features are enabled, in case you need many features to be activated.
-        /// </summary>
-        /// <param name="nameIds">list/array of name IDs</param>
-        /// <returns>true if all features are enabled, false if any one of them is not</returns>
-        /// <remarks>
-        /// Added in v13.01
-        /// </remarks>
-        [PrivateApi("Hide - was never public on this interface")]
-        bool IsEnabled(params string[] nameIds);
-
-        [PrivateApi("New in 13.05, not public at all")]
-        bool IsEnabled(params FeatureDefinition[] features);
 
         /// <summary>
         /// Informs you if the enabled features are valid or not - meaning if they have been countersigned by the 2sxc features system.

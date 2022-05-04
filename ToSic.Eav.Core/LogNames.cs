@@ -21,6 +21,11 @@
         /// </summary>
         public const string Basic = "BAS";
 
-        public static string LogHistoryGlobalTypes = "global-types";
+        public static string LogHistoryGlobalAndStartUp = "global-start-up";
+
+        public static string LogHistoryGlobalZoneAppMap = "global-zone-app-map";
+        public static string LogHistoryGlobalInstallation = "global-installation";
+
+        public static string LogHistoryGlobalAppStateLoader = "global-app-state-loader";
     }
 }

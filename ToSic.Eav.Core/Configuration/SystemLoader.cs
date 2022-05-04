@@ -1,6 +1,7 @@
-﻿using System;
-using System.IO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
@@ -13,26 +14,31 @@ using ToSic.Eav.Security.Fingerprint;
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi]
-    public class SystemLoader: LoaderBase
+    public class SystemLoader : LoaderBase
     {
         #region Constructor / DI
 
-        public SystemLoader(SystemFingerprint fingerprint, IRuntime runtime, Lazy<IGlobalConfiguration> globalConfiguration, IAppsCache appsCache, IFeaturesInternal features, LogHistory logHistory) 
+        public SystemLoader(SystemFingerprint fingerprint, IRuntime runtime, Lazy<IGlobalConfiguration> globalConfiguration, IAppsCache appsCache, 
+            IFeaturesInternal features, FeatureConfigManager featureConfigManager, LicenseCatalog licenseCatalog, LogHistory logHistory)
             : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
             Fingerprint = fingerprint;
             _globalConfiguration = globalConfiguration;
             _appsCache = appsCache;
             _logHistory = logHistory;
-            logHistory.Add(LogNames.LogHistoryGlobalTypes, Log);
+            logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
             _appStateLoader = runtime.Init(Log);
             Features = features;
+            _featureConfigManager = featureConfigManager;
+            _licenseCatalog = licenseCatalog;
         }
         public SystemFingerprint Fingerprint { get; }
         private readonly IRuntime _appStateLoader;
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
         private readonly IAppsCache _appsCache;
         public readonly IFeaturesInternal Features;
+        private readonly FeatureConfigManager _featureConfigManager;
+        private readonly LicenseCatalog _licenseCatalog;
         private readonly LogHistory _logHistory;
 
         #endregion
@@ -48,7 +54,7 @@ namespace ToSic.Eav.Configuration
 
             // Pre-Load the Assembly list into memory to log separately
             var assemblyLoadLog = new Log(LogNames.Eav + "AssLdr", null, "Load Assemblies");
-            _logHistory.Add(LogNames.LogHistoryGlobalTypes, assemblyLoadLog);
+            _logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, assemblyLoadLog);
             AssemblyHandling.GetTypes(assemblyLoadLog);
 
             // Build the cache of all system-types. Must happen before everything else
@@ -66,7 +72,7 @@ namespace ToSic.Eav.Configuration
         {
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_logHistory, Log).LoadLicenses(Fingerprint.GetFingerprint(),
+            new LicenseLoader(_logHistory, _licenseCatalog, Log).LoadLicenses(Fingerprint.GetFingerprint(),
                 _globalConfiguration.Value.GlobalFolder);
 
             // Now do a normal reload of configuration and features
@@ -77,31 +83,81 @@ namespace ToSic.Eav.Configuration
         private bool _startupAlreadyRan;
 
         /// <summary>
-        /// Reset the features to force reloading of the features
+        /// Reset the features stored by loading from 'features.json'.
         /// </summary>
         [PrivateApi]
-        public void ReloadFeatures()
+        public bool ReloadFeatures() => SetFeaturesStored(LoadFeaturesStored());
+
+
+        private bool SetFeaturesStored(FeatureListStored stored = null)
         {
-            var wrapLog = Log.Call();
-            var features = new FeatureListStored();
-
-            // load features in simple way
-            var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
-
-            // ensure that path to store files already exits
-            Directory.CreateDirectory(configurationsPath);
-
-            var featureFilePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
-            if (File.Exists(featureFilePath))
-            {
-                var featStr = File.ReadAllText(featureFilePath);
-                features = JsonConvert.DeserializeObject<FeatureListStored>(featStr);
-            }
-
-            Features.Stored = features;
+            Features.Stored = stored ?? new FeatureListStored();
             Features.CacheTimestamp = DateTime.Now.Ticks;
-            wrapLog("ok");
+            return true;
         }
 
+        
+        /// <summary>
+        /// Load features stored from 'features.json'.
+        /// When old format is detected, it is converted to new format.
+        /// </summary>
+        /// <returns></returns>
+        private FeatureListStored LoadFeaturesStored()
+        {
+            var wrapLog = Log.Call<FeatureListStored>();
+
+            try
+            {
+                var (filePath, fileContent) = _featureConfigManager.LoadFeaturesFile();
+                if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileContent)) 
+                    return wrapLog("ok, but 'features.json' is missing", null);
+
+                // handle old 'features.json' format
+                var stored = _featureConfigManager.ConvertOldFeaturesFile(filePath, fileContent);
+                if (stored != null) 
+                    return wrapLog("converted to new features.json", stored);
+
+                // return features stored
+                return wrapLog("ok, features loaded", JsonConvert.DeserializeObject<FeatureListStored>(fileContent));
+            }
+            catch (Exception e)
+            {
+                Log.Exception(e);
+                return wrapLog("load feature failed:" + e.Message, null);
+            }
+        }
+
+
+        /// <summary>
+        /// Update existing features config in "features.json". 
+        /// </summary>
+        [PrivateApi]
+        public bool UpdateFeatures(List<FeatureManagementChange> changes)
+        {
+            var wrapLog = Log.Call<bool>($"c:{changes?.Count ?? -1}");
+            var saved = _featureConfigManager.SaveFeaturesUpdate(changes);
+            SetFeaturesStored(FeatureListStoredBuilder(changes));
+            return wrapLog("ok, updated", saved);
+        }
+
+
+        private FeatureListStored FeatureListStoredBuilder(List<FeatureManagementChange> changes)
+        {
+            var updatedIds = changes.Select(f => f.FeatureGuid);
+
+            var storedFeaturesButNotUpdated = Features.All
+                .Where(f => f.EnabledStored.HasValue && !updatedIds.Contains(f.Guid))
+                .Select(FeatureConfigManager.FeatureConfigBuilder).ToList();
+            
+            var updatedFeatures = changes
+                .Where(f => f.Enabled.HasValue)
+                .Select(FeatureConfigManager.FeatureConfigBuilder).ToList();
+
+            return new FeatureListStored
+            {
+                Features = storedFeaturesButNotUpdated.Union(updatedFeatures).ToList(),
+                Fingerprint = Fingerprint.GetFingerprint()
+            };
+        }
     }
 }

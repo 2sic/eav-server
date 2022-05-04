@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 
@@ -12,11 +13,10 @@ namespace ToSic.Eav.Repositories
         /// <summary>
         /// Real constructor, after DI
         /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="path"></param>
+        /// <param name="app"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        IAppRepositoryLoader Init(int appId, string path, ILog log);
+        IAppRepositoryLoader Init(AppState app, ILog log);
 
         /// <summary>
         /// Get all ContentTypes for specified AppId.

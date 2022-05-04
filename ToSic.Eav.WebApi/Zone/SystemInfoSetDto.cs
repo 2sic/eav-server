@@ -27,6 +27,8 @@
         public string Main { get; internal set; }
 
         public int Count { get; internal set; }
+
+        public string Owner { get; internal set; }
     }
     
 

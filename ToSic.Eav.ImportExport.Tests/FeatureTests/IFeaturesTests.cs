@@ -24,7 +24,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
         [TestMethod]
         public void PasteClipboardActive()
         {
-            var x = Features.Enabled(FeaturesCatalog.PasteImageFromClipboard.Guid);
+            var x = Features.Enabled(BuiltInFeatures.PasteImageFromClipboard.Guid);
             Assert.IsTrue(x, "this should be enabled and non-expired");
         }
 
