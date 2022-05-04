@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps
             ) : base(dependencies, logName)
         {
             _appRuntime = appRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts, Log));
-            _dbDataController = dbDataController.SetInit(c => c.Init(ZoneId, AppId, Log));
+            _dbDataController = dbDataController.SetInit(c => c.Init(AppState, Log));
             _entitiesManager = entitiesManager.SetInit(m => m.Init(this, Log));
             _queryManager = queryManager.SetInit(m => m.Init(this, Log));
         }
