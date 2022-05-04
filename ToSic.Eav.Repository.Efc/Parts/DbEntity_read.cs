@@ -63,7 +63,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         /// <returns>Entity or throws InvalidOperationException</returns>
         internal ToSicEavEntities GetMostCurrentDbEntity(Guid entityGuid)
-            // GetEntity should never return a draft entity that has a published version
+        // GetEntity should never return a draft entity that has a published version
         {
             var x = GetEntitiesByGuid(entityGuid);
             return x.Single(e => !e.PublishedEntityId.HasValue);
@@ -74,21 +74,21 @@ namespace ToSic.Eav.Repository.Efc.Parts
             => EntityQuery.Where(e => e.EntityGuid == entityGuid
                                       && !e.ChangeLogDeleted.HasValue
                                       && !e.AttributeSet.ChangeLogDeleted.HasValue
-                                      && e.AppId == DbContext.AppId);
+                                      && DbContext.AppIds.Contains(e.AppId));
 
         /// <summary>
         /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
         /// </summary>
         /// <returns>Entity or throws InvalidOperationException</returns>
         internal Dictionary<Guid, int> GetMostCurrentDbEntities(Guid[] entityGuid)
-            // GetEntity should never return a draft entity that has a published version
+        // GetEntity should never return a draft entity that has a published version
         {
             var callLog = Log.Call(useTimer: true);
             var result = GetEntitiesByGuid(entityGuid)
                 .ToList() // necessary for EF 3 - before GroupBy
                 .GroupBy(e => e.EntityGuid)
                 .ToDictionary(
-                    g => g.Key, 
+                    g => g.Key,
                     g => g.Single(e => !e.PublishedEntityId.HasValue).EntityId);
             callLog(result.Count.ToString());
             return result;
@@ -99,7 +99,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             => EntityQuery.Where(e => entityGuid.Contains(e.EntityGuid)
                                       && !e.ChangeLogDeleted.HasValue
                                       && !e.AttributeSet.ChangeLogDeleted.HasValue
-                                      && e.AppId == DbContext.AppId);
+                                      && DbContext.AppIds.Contains(e.AppId));
 
 
         /// <summary>
