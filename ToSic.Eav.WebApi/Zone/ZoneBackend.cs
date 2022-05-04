@@ -1,4 +1,7 @@
-﻿using ToSic.Eav.Apps;
+﻿using System;
+using System.Linq;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
@@ -13,7 +16,8 @@ namespace ToSic.Eav.WebApi.Zone
             SystemFingerprint fingerprint,
             IZoneMapper zoneMapper,
             IPlatformInfo platform,
-            ISite site
+            ISite site,
+            Lazy<ILicenseService> licenseService
             ) : base("Bck.Zones")
         {
             _appStates = appStates;
@@ -21,12 +25,14 @@ namespace ToSic.Eav.WebApi.Zone
             _zoneMapper = zoneMapper;
             _platform = platform;
             _site = site;
+            _licenseService = licenseService;
         }
         private readonly IAppStates _appStates;
         private readonly SystemFingerprint _fingerprint;
         private readonly IZoneMapper _zoneMapper;
         private readonly IPlatformInfo _platform;
         private readonly ISite _site;
+        private readonly Lazy<ILicenseService> _licenseService;
 
         public SystemInfoSetDto GetSystemInfo()
         {
@@ -51,10 +57,14 @@ namespace ToSic.Eav.WebApi.Zone
                 PlatformVersion = EavSystemInfo.VersionToNiceFormat(_platform.Version)
             };
 
+            var licenses = _licenseService.Value;
+            // Todo: make owner contain a CSV of all owners in enabled license file(s)
+            var primary = licenses.Enabled.Any() ? licenses.Enabled.First().Value : null;
             var license = new LicenseInfoDto
             {
-                Count = 0,
-                Main = "none"
+                Count = licenses.All.Count,
+                Main = "none",
+                Owner = primary?.Owner
             };
 
             var info = new SystemInfoSetDto

@@ -28,7 +28,7 @@
 
         public int Count { get; internal set; }
 
-        public string RegisteredTo { get; internal set; }
+        public string Owner { get; internal set; }
     }
     
 

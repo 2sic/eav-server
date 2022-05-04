@@ -45,5 +45,7 @@ namespace ToSic.Eav.Configuration.Licenses
         public bool ValidFingerprint { get; internal set; }
 
         public bool ValidVersion { get; internal set; }
+        
+        public string Owner { get; internal set; }
     }
 }

@@ -136,6 +136,7 @@ namespace ToSic.Eav.Configuration.Licenses
                     ValidFingerprint = validFp,
                     ValidSignature = validSig,
                     ValidVersion = validVersion,
+                    Owner = licenseStored.Owner,
                 })
                 .ToList();
 
