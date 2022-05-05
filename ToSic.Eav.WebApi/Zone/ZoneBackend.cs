@@ -4,6 +4,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
 
@@ -58,13 +59,15 @@ namespace ToSic.Eav.WebApi.Zone
             };
 
             var licenses = _licenseService.Value;
-            // Todo: make owner contain a CSV of all owners in enabled license file(s)
-            var primary = licenses.Enabled.Any() ? licenses.Enabled.First().Value : null;
+            var owner = string.Join(",", licenses.Enabled
+                .Select(s => s.Value.Owner)
+                .Where(o => o.HasValue())
+                .Distinct());
             var license = new LicenseInfoDto
             {
                 Count = licenses.All.Count,
                 Main = "none",
-                Owner = primary?.Owner
+                Owner = owner
             };
 
             var info = new SystemInfoSetDto
