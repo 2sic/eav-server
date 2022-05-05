@@ -17,6 +17,9 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
 {
     public class LicenseControllerReal : WebApiBackendBase<LicenseControllerReal>, ILicenseController
     {
+        // auto-download license file
+        private const string DefaultLicenseFileName = "default.license.json";
+
         public LicenseControllerReal(IServiceProvider serviceProvider, 
             Lazy<ILicenseService> licenseServiceLazy, 
             Lazy<IFeaturesInternal> featuresLazy,
@@ -132,7 +135,6 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
 
             string content;
             string fileName;
-
             using (var client = new WebClient())
             {
                 var initialProtocol = ServicePointManager.SecurityProtocol;
@@ -157,7 +159,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
 
                     // get license file name from response
                     var header = new ContentDisposition(client.ResponseHeaders["Content-Disposition"]);
-                    fileName = header.FileName;
+                    fileName = DefaultLicenseFileName /*header.FileName*/;
                 }
                 catch (WebException e)
                 {
