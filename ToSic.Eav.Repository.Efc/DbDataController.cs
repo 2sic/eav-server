@@ -284,6 +284,7 @@ namespace ToSic.Eav.Repository.Efc
         private IRepositoryLoader _loader;
 
         public void DoWhileQueuingVersioning(Action action) => Versioning.DoAndSaveHistoryQueue(action);
+        public void DoWhileQueueingRelationships(Action action) => Relationships.DoWhileQueueingRelationships(action);
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
         {
