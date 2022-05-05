@@ -134,7 +134,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             Log.Add($"retrieve license from url:{url}");
 
             string content;
-            string fileName;
+
             using (var client = new WebClient())
             {
                 var initialProtocol = ServicePointManager.SecurityProtocol;
@@ -154,12 +154,6 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                     var licenseFileResultDto = JsonConvert.DeserializeObject<LicenseFileResultDto>(content);
                     if (!licenseFileResultDto.Success) 
                         return wrapLog(licenseFileResultDto.Message, licenseFileResultDto);
-
-                    // probably license file is ok
-
-                    // get license file name from response
-                    var header = new ContentDisposition(client.ResponseHeaders["Content-Disposition"]);
-                    fileName = DefaultLicenseFileName /*header.FileName*/;
                 }
                 catch (WebException e)
                 {
@@ -172,12 +166,12 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                 }
             }
 
-            var success = SaveLicenseFile(fileName, content);
+            var success = SaveLicenseFile(DefaultLicenseFileName, content);
 
             // reload license and features
             _systemLoaderLazy.Ready.StartUpFeatures();
 
-            return wrapLog("ok", new LicenseFileResultDto { Success = success, Message = $"License file {fileName} retrieved and installed"});
+            return wrapLog("ok", new LicenseFileResultDto { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."});
         }
 
         private bool SaveLicenseFile(FileUploadDto file) => SaveLicenseFile(file.Name, file.Contents);
