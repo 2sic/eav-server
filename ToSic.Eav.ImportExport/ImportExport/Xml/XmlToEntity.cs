@@ -191,8 +191,9 @@ namespace ToSic.Eav.ImportExport.Xml
 		    
             // find out if it's a system type, and use that if it exists
             var globalType = _presetApp.GetContentType(typeName);
-            var guid = Guid.Parse(xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
-                                  throw new NullReferenceException("can't import an entity without a guid identifier"));
+            var guidString = xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
+                             throw new NullReferenceException("can't import an entity without a guid identifier");
+            var guid = Guid.Parse(guidString);
 		    var attribs = finalAttributes.ToDictionary(x => x.Key, y => (object) y.Value);
 
 		    var targetEntity = globalType != null

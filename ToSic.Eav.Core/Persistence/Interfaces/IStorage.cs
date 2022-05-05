@@ -41,6 +41,12 @@ namespace ToSic.Eav.Persistence.Interfaces
 
         #endregion
 
+        #region RelationshipQueue
+
+        void DoWhileQueueingRelationships(Action action);
+
+        #endregion
+
 
         #region Loader
 

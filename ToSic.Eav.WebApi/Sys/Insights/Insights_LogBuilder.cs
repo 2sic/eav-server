@@ -69,15 +69,21 @@ namespace ToSic.Eav.WebApi.Sys
                     var count = 0;
                     msg += P($"Logs Overview: {set.Count}\n");
                     msg += Table().Id("table").Wrap(
-                        HeadFields("#", "Timestamp", "Key", "TopLevel Name", "Lines", "First Message"), Tbody(set
-                            .Select(log => RowFields(
-                                $"{++count}",
-                                log.Created.ToString("O"),
-                                $"{key}",
-                                LinkTo(log.FullIdentifier, nameof(Logs), key: key, more: $"position={count}"),
-                                $"{log.Entries.Count}",
-                                log.Entries.FirstOrDefault()?.Message)
-                            )
+                        HeadFields("#", "Timestamp", "Key", "TopLevel Name", "Lines", "First Message", "Info", "Time"), Tbody(set
+                            .Select(log =>
+                            {
+                                var firstIfExists = log.Entries.FirstOrDefault();
+                                return RowFields(
+                                    $"{++count}",
+                                    log.Created.ToString("O"),
+                                    $"{key}",
+                                    LinkTo(log.FullIdentifier, nameof(Logs), key: key, more: $"position={count}"),
+                                    $"{log.Entries.Count}",
+                                    firstIfExists?.Message,
+                                    HtmlEncode(firstIfExists?.Result),
+                                    ShowTime(firstIfExists)
+                                );
+                            })
                             .ToArray<object>()));
                     msg += "\n\n";
                     msg += JsTableSort();
@@ -173,6 +179,7 @@ namespace ToSic.Eav.WebApi.Sys
 
         private static string ShowTime(Entry e)
         {
+            if (e == null) return "";
             if (e.Elapsed == TimeSpan.Zero) return "";
             var seconds = e.Elapsed.TotalSeconds;
             var ms = seconds * 1000;

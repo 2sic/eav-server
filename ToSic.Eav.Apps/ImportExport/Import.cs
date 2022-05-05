@@ -21,7 +21,8 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public class Import: HasLog
     {
-        private const int ChunkSize = 500;
+        private const int ChunkLimitToStartChunking = 2500;
+        private const int ChunkSizeAboveLimit = 500;
 
         #region Constructor / DI
 
@@ -133,17 +134,36 @@ namespace ToSic.Eav.Apps.ImportExport
                     newEntities = newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
                         .Where(e => e != null).ToList();
-                    var newIEntities = newEntities.Cast<IEntity>().ToList().ChunkBy(ChunkSize);
+
+                    // HACK 2022-05-05 2dm Import Problem
+                    // If we use chunks of 500, then relationships are not imported
+                    // in situations where the target is in a future chunk (because the relationship can't find a matching target item)
+                    // Large imports are rare in Apps, but on data-import it's common
+                    // For now the hack is to allow up to 2500 in one chunk, otherwise make them smaller
+                    // this is not a good final solution
+                    // In general we should improve the import to 
+                    var chunkSize = /*ChunkSizeAboveLimit;*/ newEntities.Count >= ChunkLimitToStartChunking ? ChunkSizeAboveLimit : ChunkLimitToStartChunking;
+
+                    var newIEntities = newEntities.Cast<IEntity>().ToList().ChunkBy(chunkSize);
                     logImpEnts(null);
 
                     // Import in chunks
                     var cNum = 0;
+                    // HACK 2022-05-05 2dm experimental, but not activated
+                    // This would be an idea to queue the relationships across all items, but then it will probably become very slow and if it fails, nothing is imported
+
+                    // Must queue relationships around everything, otherwise relationships in different chunks may not be found on chunk import
+                    //Storage.DoInTransaction(
+                    //    () => Storage.DoWhileQueueingRelationships(
+                    //        () => 
                     newIEntities.ForEach(chunk =>
-                    {
-                        cNum++;
-                        Log.Add($"Importing Chunk {cNum} #{(cNum - 1) * ChunkSize + 1} - #{cNum * ChunkSize}");
-                        Storage.DoInTransaction(() => Storage.Save(chunk, SaveOptions));
-                    }); 
+                        {
+                            cNum++;
+                            Log.Add($"Importing Chunk {cNum} #{(cNum - 1) * chunkSize + 1} - #{cNum * chunkSize}");
+                            Storage.DoInTransaction(() => Storage.Save(chunk, SaveOptions));
+                        })
+                        //))
+                        ;
                 }
 
                 #endregion
