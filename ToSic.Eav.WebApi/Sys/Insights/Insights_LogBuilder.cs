@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi.Sys
                           " | ",
                           LinkTo(HtmlEncode("⏸"), nameof(PauseLogs), more: "toggle=true"),
                           $" collecting #{_logHistory.Count} of max {_logHistory.MaxCollect} (keep max {_logHistory.Size} per set, then FIFO)"
-                          + (showFlush ? "(" + LinkTo("🚽 flush " + key, nameof(LogsFlush), key: key).ToString() + ")" : "")
+                          + (showFlush ? " " + LinkTo("flush " + key, nameof(LogsFlush), key: key).ToString() : "")
                       );
             return msg.ToString();
         }

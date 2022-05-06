@@ -44,10 +44,6 @@ namespace ToSic.Eav.Logging.Simple
         {
             var entry = WrapStart(openingMessage, useTimer, code, out var timer);
             var open = true;
-            //var entry = AddInternal(openingMessage, code);
-            //entry.WrapOpen = true;
-            //var timer = useTimer ? Stopwatch.StartNew() : null;
-            //WrapDepth++;
             return (message, result) =>
             {
                 if (!open) 
@@ -55,11 +51,6 @@ namespace ToSic.Eav.Logging.Simple
                 open = false;
 
                 WrapFinish(entry, message, timer);
-                //WrapDepth--;
-                //entry.AppendResult(message);
-                //if (timer == null) return result;
-                //timer.Stop();
-                //entry.Elapsed = timer.Elapsed;
                 return result;
             };
         }
