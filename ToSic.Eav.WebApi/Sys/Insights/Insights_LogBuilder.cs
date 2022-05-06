@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
@@ -11,18 +12,19 @@ namespace ToSic.Eav.WebApi.Sys
     public partial class InsightsControllerReal
     {
 
-        internal string LogHeader(string key = null)
+        internal string LogHeader(string key, bool showFlush)
         {
             var msg =
                       + Div("back to " + LinkTo("2sxc insights home", nameof(Help)))
                       + H1($"2sxc Insights: Log {key}")
                       + P("Status: ",
-                          Strong(_logHistory.Pause ? "paused" : "running"),
-                          " ",
+                          Strong(_logHistory.Pause ? "paused" : "collecting"),
+                          ", toggle: ",
                           LinkTo(HtmlEncode("▶"), nameof(PauseLogs), more: "toggle=false"),
                           " | ",
                           LinkTo(HtmlEncode("⏸"), nameof(PauseLogs), more: "toggle=true"),
                           $" collecting #{_logHistory.Count} of max {_logHistory.MaxCollect} (keep max {_logHistory.Size} per set, then FIFO)"
+                          + (showFlush ? "(" + LinkTo(HtmlEncode("🚽 flush " + key), nameof(LogsFlush), key: key).ToString() + ")" : "")
                       );
             return msg.ToString();
         }
@@ -62,44 +64,33 @@ namespace ToSic.Eav.WebApi.Sys
         internal string LogHistory(LogHistory logHistory, string key)
         {
             var msg = "";
-            //try
-            //{
-                if (logHistory.Logs.TryGetValue(key, out var set))
-                {
-                    var count = 0;
-                    msg += P($"Logs Overview: {set.Count}\n");
-                    msg += Table().Id("table").Wrap(
-                        HeadFields("#", "Timestamp", "Key", "TopLevel Name", "Lines", "First Message", "Info", "Time"), Tbody(set
-                            .Select(log =>
-                            {
-                                var firstIfExists = log.Entries.FirstOrDefault();
-                                return RowFields(
-                                    $"{++count}",
-                                    log.Created.ToString("O"),
-                                    $"{key}",
-                                    LinkTo(log.FullIdentifier, nameof(Logs), key: key, more: $"position={count}"),
-                                    $"{log.Entries.Count}",
-                                    firstIfExists?.Message,
-                                    HtmlEncode(firstIfExists?.Result),
-                                    ShowTime(firstIfExists)
-                                );
-                            })
-                            .ToArray<object>()));
-                    msg += "\n\n";
-                    msg += JsTableSort();
-                }
-                else
-                {
-                    msg += "item not found";
-                }
+            if (!logHistory.Logs.TryGetValue(key, out var set))
+                return msg + "item not found";
+
+            var count = 0;
+            msg += P($"Logs Overview: {set.Count}\n");
+            msg += Table().Id("table").Wrap(
+                HeadFields("#", "Timestamp", "Key", "TopLevel Name", "Lines", "First Message", "Info", "Time"),
+                Tbody(set
+                    .Select(log =>
+                    {
+                        var firstIfExists = log.Entries.FirstOrDefault();
+                        return RowFields(
+                            $"{++count}",
+                            log.Created.ToString("O"),
+                            $"{key}",
+                            LinkTo(log.FullIdentifier, nameof(Logs), key: key, more: $"position={count}"),
+                            $"{log.Entries.Count}",
+                            HtmlEncode((firstIfExists?.Message).Ellipsis(75, "…")),
+                            HtmlEncode(firstIfExists?.Result),
+                            ShowTime(firstIfExists)
+                        );
+                    })
+                    .ToArray<object>()));
+            msg += "\n\n";
+            msg += JsTableSort();
 
 
-            //}
-            //catch (Exception e)
-            //{
-            //    // ignored
-            //    throw;
-            //}
             return msg;
         }
 
