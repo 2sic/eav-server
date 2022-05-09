@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Debug;
+﻿using System.Linq;
+using ToSic.Eav.Data.Debug;
 
 namespace ToSic.Eav.WebApi.Dto
 {
@@ -9,7 +10,7 @@ namespace ToSic.Eav.WebApi.Dto
             Path = original.Path;
             Priority = original.SourcePriority;
             Source = original.SourceName;
-            TotalResults = original.AllOptions?.Count ?? 0;
+            TotalResults = original.AllOptions?.GroupBy(i => i.SourceName)?.Count() ?? 0; // do not count "duplicate" by SourceName
             Type = original.Property.FieldType;
             Value = original.Property.Result;
         }
