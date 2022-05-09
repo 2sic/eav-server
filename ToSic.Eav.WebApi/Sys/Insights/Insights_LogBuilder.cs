@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Eav.Plumbing;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
@@ -81,7 +82,7 @@ namespace ToSic.Eav.WebApi.Sys
                             $"{key}",
                             LinkTo(log.FullIdentifier, nameof(Logs), key: key, more: $"position={count}"),
                             $"{log.Entries.Count}",
-                            HtmlEncode((firstIfExists?.Message ?? string.Empty).Ellipsis(75, "…")),
+                            HtmlEncode((firstIfExists?.Message.NeverNull()).Ellipsis(75, "…")),
                             HtmlEncode(firstIfExists?.Result),
                             ShowTime(firstIfExists)
                         );
