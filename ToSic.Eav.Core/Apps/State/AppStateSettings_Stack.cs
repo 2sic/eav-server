@@ -25,8 +25,6 @@ namespace ToSic.Eav.Apps
             return wrapLog($"Has {sources.Count}", sources);
         }
 
-        //private AppStateStackCache _stackCache;
-
         public const string PiggyBackId = "app-stack-";
 
         private AppStateStackCache GetOrGenerate(AppThingsIdentifiers target)
@@ -38,10 +36,6 @@ namespace ToSic.Eav.Apps
         private AppStateStackCache Get(AppThingsIdentifiers target)
         {
             var wrapLog = Log.Call<AppStateStackCache>();
-            //if (_stackCache != null) return _stackCache;
-
-            // Not yet, so we must build the stack
-            //var appStates = _serviceProvider.Build<IAppStates>();
 
             // Site should be skipped on the global zone
             Log.Add($"Owner: {Owner.Show()}");
