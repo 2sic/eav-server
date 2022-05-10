@@ -6,6 +6,8 @@
         {
         }
 
+        public void Done() => DoneInternal(null);
+
         public void Done(string message) => DoneInternal(message);
     }
 }
