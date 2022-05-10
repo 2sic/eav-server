@@ -55,6 +55,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (view.Equals(nameof(AttributePermissions), InvariantCultureIgnoreCase)) return AttributePermissions(appId, type, nameId);
             if (view.Equals(nameof(TypeMetadata), InvariantCultureIgnoreCase)) return TypeMetadata(appId, type);
             if (view.Equals(nameof(TypePermissions), InvariantCultureIgnoreCase)) return TypePermissions(appId, type);
+            if (view.Equals(nameof(LightSpeedStats), InvariantCultureIgnoreCase)) return LightSpeedStats();
 
             return $"Error: View name {view} unknown";
         }

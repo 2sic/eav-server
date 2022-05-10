@@ -14,7 +14,7 @@ namespace ToSic.Eav.WebApi.Sys
         public const string LogSuffix = "Insight";
         #region Constructor / DI
 
-        public InsightsControllerReal(IServiceProvider serviceProvider, IAppStates appStates, SystemManager systemManager, IAppsCache appsCache, LogHistory logHistory, Lazy<ILicenseService> licenseServiceLazy, IUser user)
+        public InsightsControllerReal(IServiceProvider serviceProvider, IAppStates appStates, SystemManager systemManager, IAppsCache appsCache, LogHistory logHistory, Lazy<ILicenseService> licenseServiceLazy, IUser user, LightSpeedStats lightSpeedStats)
             : base("Api.SysIns")
         {
             _serviceProvider = serviceProvider;
@@ -23,6 +23,7 @@ namespace ToSic.Eav.WebApi.Sys
             _logHistory = logHistory;
             _licenseServiceLazy = licenseServiceLazy;
             _user = user;
+            _lightSpeedStats = lightSpeedStats;
             SystemManager = systemManager.Init(Log);
         }
         private readonly IServiceProvider _serviceProvider;
@@ -31,6 +32,7 @@ namespace ToSic.Eav.WebApi.Sys
         private readonly LogHistory _logHistory;
         private readonly Lazy<ILicenseService> _licenseServiceLazy;
         private readonly IUser _user;
+        private readonly LightSpeedStats _lightSpeedStats;
         protected readonly SystemManager SystemManager;
 
         #endregion

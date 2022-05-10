@@ -66,6 +66,8 @@ namespace ToSic.Eav
             //services.TryAddTransient<IFingerprint, Fingerprint>();
             services.TryAddTransient<SystemFingerprint>();
 
+            services.TryAddSingleton<LightSpeedStats>();
+
             return services;
         }
 
