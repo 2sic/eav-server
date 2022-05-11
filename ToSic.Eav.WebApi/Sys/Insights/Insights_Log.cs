@@ -8,19 +8,19 @@ namespace ToSic.Eav.WebApi.Sys
         private string Logs()
         {
             Log.Add("debug log load");
-            return LogHeader("Overview") + LogHistoryOverview(_logHistory);
+            return LogHeader("Overview", false) + LogHistoryOverview(_logHistory);
         }
 
         private string Logs(string key)
         {
             Log.Add($"debug log load for {key}");
-            return LogHeader(key) + LogHistory(_logHistory, key);
+            return LogHeader(key, true) + LogHistory(_logHistory, key);
         }
 
         private string Logs(string key, int position)
         {
             Log.Add($"debug log load for {key}/{position}");
-            var msg = PageStyles() + LogHeader($"{key}[{position}]");
+            var msg = PageStyles() + LogHeader($"{key}[{position}]", false);
 
             if (!_logHistory.Logs.TryGetValue(key, out var set))
                 return msg + $"position {position} not found in log set {key}";

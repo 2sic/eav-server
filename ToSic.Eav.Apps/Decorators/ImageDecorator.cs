@@ -6,6 +6,7 @@ namespace ToSic.Eav.Apps.Decorators
     {
         // Marks Requirements Metadata 13.04
         public static string TypeName = "cb27a0f2-f921-48d0-a3bc-37c0e77b1d0c";
+        public static string NiceTypeName = "ImageDecorator";
 
         public const string FieldDescription = "Description";
         public const string FieldCropBehavior = "CropBehavior";

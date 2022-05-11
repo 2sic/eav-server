@@ -19,12 +19,8 @@ namespace ToSic.Testing.Shared
         {
             // ReSharper disable once VirtualMemberCallInConstructor
             ServiceProvider = SetupServices(new ServiceCollection()).BuildServiceProvider();
-
-            // this will run after the base constructor, which configures DI
-            var dbConfiguration = Build<IDbConfiguration>();
-            dbConfiguration.ConnectionString = TestConstants.ConStr;
-
-            StartupGlobalFoldersAndFingerprint();
+            // ReSharper disable once VirtualMemberCallInConstructor
+            Configure();
         }
 
         protected virtual IServiceCollection SetupServices(IServiceCollection services)
@@ -42,6 +38,18 @@ namespace ToSic.Testing.Shared
             globalConfig.GlobalFolder = globalConfig.DataFolder;
             // Try to reset some special static variables which may cary over through many tests
             SystemFingerprint.ResetForTest();
+        }
+
+        /// <summary>
+        /// Run configure steps
+        /// </summary>
+        protected virtual void Configure()
+        {
+            // this will run after the base constructor, which configures DI
+            var dbConfiguration = Build<IDbConfiguration>();
+            dbConfiguration.ConnectionString = TestConstants.ConStr;
+
+            StartupGlobalFoldersAndFingerprint();
         }
 
     }

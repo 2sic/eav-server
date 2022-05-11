@@ -20,7 +20,7 @@ namespace ToSic.Eav.Logging.Simple
         /// <summary>
         /// Add a message
         /// </summary>
-        private Entry AddInternal(string message, CodeRef code)
+        internal Entry AddInternal(string message, CodeRef code, bool useTimer = false)
         {
             var e = new Entry(this, message, WrapDepth, code);
             AddToEntriesAndParent(e);

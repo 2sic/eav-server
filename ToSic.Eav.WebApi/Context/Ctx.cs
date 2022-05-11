@@ -6,15 +6,15 @@ namespace ToSic.Eav.WebApi.Context
     {
         // ReSharper disable once UnusedMember.Global
         None = 0,
-        AppBasic = 1,
-        AppEdit = 2,
-        AppAdvanced = 4,
-
-        Language = 8,
-        Page = 16,
-        Site = 32,
-        System = 64,
-        All = AppBasic | AppEdit | AppAdvanced | Language | Page | Site | System ,
+        AppBasic = 1 << 0,
+        AppEdit = 1 << 1,
+        AppAdvanced = 1 << 2,
+        Language = 1 << 3,
+        Page = 1 << 4,
+        Site = 1 << 5,
+        System = 1 << 6,
+        User = 1 << 7,
+        All = AppBasic | AppEdit | AppAdvanced | Language | Page | Site | System | User ,
     }
 
 }

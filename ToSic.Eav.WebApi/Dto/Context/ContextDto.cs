@@ -99,5 +99,10 @@ namespace ToSic.Eav.WebApi.Dto
     /// </summary>
     public class ContextUserDto
     {
+        public int Id { get; set; }
+        public bool IsAnonymous { get; set; }
+        public bool IsSystemAdmin { get; set; }
+
+        public bool IsSiteAdmin { get; set; }
     }
 }

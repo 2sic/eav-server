@@ -50,7 +50,6 @@ namespace ToSic.Eav.Context
         /// <summary>
         /// This is still WIP. 
         /// </summary>
-        [WorkInProgressApi("Not fully clear yet if we'll support this or not, may change.")]
         bool IsAnonymous { get; }
     }
 }

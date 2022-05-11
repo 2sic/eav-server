@@ -95,7 +95,7 @@ namespace ToSic.Eav.WebApi.Sys
 
         private string GlobalTypesLog()
         {
-            var msg = PageStyles() + LogHeader();
+            var msg = PageStyles() + LogHeader(null, false);
             var log = Runtime.LoadLog;
             return msg + (log == null
                 ? P("log is null").ToString()
@@ -129,5 +129,6 @@ namespace ToSic.Eav.WebApi.Sys
 
             return MetadataTable(msg, metadata);
         }
+        
     }
 }

@@ -40,6 +40,7 @@ namespace ToSic.Eav.Apps
         /// Call this method before AppState object is destroyed and recreate (new object will get new reference)
         /// to ensure that dependent object are notified.  
         /// </summary>
+        // IMPORTANT: This is called by the farm cache, which is not part of this solution. That's why you don't have any access-counts
         [PrivateApi] public void PreRemove() => CacheResetTimestamp("AppState object will be destroyed and recreated as new object", 1);
 
 

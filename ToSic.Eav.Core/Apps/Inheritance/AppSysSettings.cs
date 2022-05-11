@@ -12,7 +12,7 @@
         /// <summary>
         /// Just a kind of version info so we can see what version of EAV created this in the DB
         /// </summary>
-        public string Version { get; set; } = "13.10.01";
+        public string Version { get; set; } = "13.11.00";
 
         /// <summary>
         /// Determines if this app inherits from another app.

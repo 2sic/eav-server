@@ -29,6 +29,9 @@ namespace ToSic.Eav.Configuration.Licenses
         public List<LicenseState> All => AllCache;
 
         /// <inheritdoc />
+        /// <remarks>
+        /// We use the real static LicenseDefinition as an index, because this ensures that people can't inject other license objects to bypass security.
+        /// </remarks>
         public IImmutableDictionary<LicenseDefinition, LicenseState> Enabled => EnabledCache;
 
         /// <inheritdoc />
