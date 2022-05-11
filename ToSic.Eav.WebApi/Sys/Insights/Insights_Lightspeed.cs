@@ -1,4 +1,5 @@
-﻿using static ToSic.Razor.Blade.Tag;
+﻿using ToSic.Eav.Plumbing;
+using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
 {
@@ -12,7 +13,7 @@ namespace ToSic.Eav.WebApi.Sys
             {
                 var countStats = _lightSpeedStats.ItemsCount;
                 var sizeStats = _lightSpeedStats.Size;
-                msg += P($"Assigned Items: {countStats.Count}");
+                msg += P($"Apps in Cache: {countStats.Count}");
                 msg += "<table id='table'>"
                        + HeadFields("#", "ZoneId", "AppId", "Name", "Items in Cache", "Ca. Memory Use", "NameId")
                        + "<tbody>";
@@ -24,27 +25,29 @@ namespace ToSic.Eav.WebApi.Sys
                     var appState = AppState(md.Key);
                     msg += RowFields(
                         ++count,
-                        appState.ZoneId,
-                        md.Key,
+                        SpecialField.Right(appState.ZoneId),
+                        SpecialField.Right(md.Key),
                         appState.Name,
-                        md.Value,
-                        sizeStats.TryGetValue(md.Key, out var size) ? ByteToKByte(size) : "unknown",
+                        SpecialField.Right(md.Value),
+                        SpecialField.Right(sizeStats.TryGetValue(md.Key, out var size) ? ByteToKByte(size) : "unknown"),
                         appState.NameId
                     );
                     totalItems += md.Value;
                     totalMemory += size;
                 }
+                msg += "</tbody>";
+                msg += "<tfoot>";
                 msg += RowFields(
                     B("Total:"),
                     "",
                     "",
                     "",
-                    B($"{totalItems}"),
-                    B(ByteToKByte(totalMemory)),
+                    SpecialField.Right(B($"{totalItems}")),
+                    SpecialField.Right(B(ByteToKByte(totalMemory))),
                     ""
                 );
 
-                msg += "</tbody>";
+                msg += "</tfoot>";
                 msg += "</table>";
                 msg += "\n\n";
                 msg += JsTableSort();
@@ -63,9 +66,9 @@ namespace ToSic.Eav.WebApi.Sys
 
             const int mb = kb * kb;
             if (bytes < 10 * mb)
-                return (bytes / kb).ToString("N0") + "kb";
+                return ((double)bytes / kb).ToAposString() + "kb";
 
-            return (bytes / mb).ToString("N" + "mb");
+            return ((double)bytes / mb).ToAposString() + "mb";
         }
     }
 }

@@ -7,6 +7,20 @@ using ToSic.Razor.Markup;
 
 namespace ToSic.Eav.WebApi.Sys
 {
+    internal class SpecialField
+    {
+
+        public SpecialField(object value, string styles)
+        {
+            Styles = styles;
+            Value = value;
+        }
+        public object Value { get; }
+        public string Styles { get; }
+
+        public static SpecialField Right(object value) => new SpecialField(value, "text-align: right; padding - right: 5px;");
+    }
+
     public partial class InsightsControllerReal
     {
         protected static ITag HeadFields(params object[] fields)
@@ -15,9 +29,26 @@ namespace ToSic.Eav.WebApi.Sys
             ));
 
         protected static ITag RowFields(params object[] fields)
-            => Tag.Tr(fields.Select(fresh => Tag.Td((fresh ?? "").ToString())).ToArray<object>());
+            => Tag.Tr(
+                fields
+                    .Select(fresh =>
+                    {
+                        var data = fresh;
+                        string styles = null;
+                        if (fresh is SpecialField special)
+                        {
+                            data = special.Value;
+                            styles = special.Styles;
+                        }
+                        
+                        var td = Tag.Td((data ?? "").ToString());
+                        if (styles != null)
+                            td.Style(styles);
+                        return td;
+                    })
+                .ToArray<object>());
 
-        protected const string JsTableSortCdn = "https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.0.2/";
+        protected const string JsTableSortCdn = "https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/";
 
         protected static TagBase JsTableSort(string id = "table")
             => Tag.Script().Src(JsTableSortCdn + "tablesort.min.js")
