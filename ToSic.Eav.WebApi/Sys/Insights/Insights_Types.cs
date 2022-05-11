@@ -129,43 +129,6 @@ namespace ToSic.Eav.WebApi.Sys
 
             return MetadataTable(msg, metadata);
         }
-
-        private string LightSpeedStats()
-        {
-            var msg = H1($"LightSpeed stats\n").ToString();
-            try
-            {
-                msg += P($"Assigned Items: {_lightSpeedStats.ItemsCount.Count}\n");
-                msg += "<table id='table'>"
-                       + HeadFields("#", "AppId", "Count")
-                       + "<tbody>";
-                var count = 0;
-                var total = 0;
-                foreach (var md in _lightSpeedStats.ItemsCount)
-                {
-                    msg = msg + RowFields(
-                        ++count,
-                        md.Key,
-                        md.Value
-                    );
-                    total += md.Value;
-                }
-                msg = msg + RowFields(
-                    "Total:",
-                    count,
-                    total
-                );
-
-                msg += "</tbody>";
-                msg += "</table>";
-                msg += "\n\n";
-                msg += JsTableSort();
-            }
-            catch
-            {
-                // ignored
-            }
-            return msg;
-        }
+        
     }
 }
