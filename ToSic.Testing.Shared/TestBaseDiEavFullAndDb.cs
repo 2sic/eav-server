@@ -12,15 +12,17 @@ namespace ToSic.Testing.Shared
     /// </summary>
     public abstract class TestBaseDiEavFullAndDb: TestBaseDiEmpty
     {
-        protected TestBaseDiEavFullAndDb()
+        //protected TestBaseDiEavFullAndDb(): base()
+        //{
+        //    // this will run after the base constructor, which configures DI
+
+        //}
+
+        protected override void Configure()
         {
-            //// this will run after the base constructor, which configures DI
-            //var dbConfiguration = Build<IDbConfiguration>();
-            //dbConfiguration.ConnectionString = TestConstants.ConStr;
+            base.Configure();
 
-            //StartupGlobalFoldersAndFingerprint();
-
-            // Make sure global types are loaded
+            // Make sure global data is loaded
             Build<SystemLoader>().StartUp();
         }
 
