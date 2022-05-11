@@ -14,24 +14,34 @@ namespace ToSic.Eav.WebApi.Sys
                 var sizeStats = _lightSpeedStats.Size;
                 msg += P($"Assigned Items: {countStats.Count}");
                 msg += "<table id='table'>"
-                       + HeadFields("#", "AppId", "Items in Cache", "Estimated Size")
+                       + HeadFields("#", "ZoneId", "AppId", "Name", "Items in Cache", "Ca. Memory Use", "NameId")
                        + "<tbody>";
                 var count = 0;
-                var total = 0;
+                var totalItems = 0;
+                var totalMemory = 0L;
                 foreach (var md in countStats)
                 {
+                    var appState = AppState(md.Key);
                     msg += RowFields(
                         ++count,
+                        appState.ZoneId,
                         md.Key,
+                        appState.Name,
                         md.Value,
-                        sizeStats.TryGetValue(md.Key, out var size) ? ByteToKByte(size) : "unknown"
+                        sizeStats.TryGetValue(md.Key, out var size) ? ByteToKByte(size) : "unknown",
+                        appState.NameId
                     );
-                    total += md.Value;
+                    totalItems += md.Value;
+                    totalMemory += size;
                 }
                 msg += RowFields(
-                    "Total:",
-                    countStats.Count,
-                    total
+                    B("Total:"),
+                    "",
+                    "",
+                    "",
+                    B($"{totalItems}"),
+                    B(ByteToKByte(totalMemory)),
+                    ""
                 );
 
                 msg += "</tbody>";
