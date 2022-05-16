@@ -1,12 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Plumbing.DI
 {
-    public class ServiceSwitcher<T> where T : ISwitchableService
+    public class ServiceSwitcher<T>: HasLog, ILazyLike<T> where T : ISwitchableService
     {
-        public ServiceSwitcher(IEnumerable<T> allServices) => AllServices = allServices?.ToList();
+        // TODO
+        // - constructor with name
+        // - add to global log history when regenerating incl. choice
+        // create name based overload
+
+        public ServiceSwitcher(IEnumerable<T> allServices) : base(LogNames.Eav + ".SrvSwt")
+        {
+            AllServices = allServices?.ToList();
+        }
+
         public readonly List<T> AllServices;
 
 
@@ -30,5 +40,7 @@ namespace ToSic.Eav.Plumbing.DI
         private T _preferredService;
 
         public bool IsValueCreated => _preferredService != null;
+
+        public T ByNameId(string nameId) => AllServices.Find(s => s.NameId.Equals(nameId));
     }
 }

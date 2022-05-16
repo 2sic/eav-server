@@ -35,5 +35,12 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests
             Assert.IsTrue(switcher.IsValueCreated, "should be created by now");
         }
 
+        [TestMethod]
+        public void FindFallback()
+        {
+            var switcher = Build<ServiceSwitcherSingleton<ITestSwitchableService>>();
+            Assert.AreEqual(TestSwitchableFallback.Name, switcher.ByNameId(TestSwitchableFallback.Name).NameId, "should find by name");
+        }
+
     }
 }
