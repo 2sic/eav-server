@@ -12,6 +12,7 @@ using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.Plumbing.DI;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
@@ -84,6 +85,11 @@ namespace ToSic.Eav
             services.AddTransient(typeof(LazyInitLog<>));
             services.AddTransient(typeof(Generator<>));
             services.AddTransient(typeof(GeneratorLog<>));
+
+            // Service Switchers
+            services.TryAddTransient(typeof(ServiceSwitcher<>));
+            services.TryAddScoped(typeof(ServiceSwitcherScoped<>)); // note: it's for scoped, and we must use another object name here
+            services.TryAddTransient(typeof(ServiceSwitcherSingleton<>)); // note: it's for singletons, but the service is transient on purpose!
 
             // History (very core service)
             services.TryAddTransient<LogHistory>();
