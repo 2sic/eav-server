@@ -23,7 +23,7 @@ namespace ToSic.Testing.Shared
             base.Configure();
 
             // Make sure global data is loaded
-            Build<SystemLoader>().StartUp();
+            Build<EavSystemLoader>().StartUp();
         }
 
         protected override IServiceCollection SetupServices(IServiceCollection services)

@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             Lazy<ILicenseService> licenseServiceLazy, 
             Lazy<IFeaturesInternal> featuresLazy,
             Lazy<IGlobalConfiguration> globalConfiguration,
-            LazyInitLog<SystemLoader> systemLoaderLazy,
+            LazyInitLog<EavSystemLoader> systemLoaderLazy,
             Lazy<LicenseCatalog> licenseCatalog
             ) : base(serviceProvider, "Bck.Lics")
         {
@@ -38,7 +38,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         private readonly Lazy<IFeaturesInternal> _featuresLazy;
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
         private readonly Lazy<LicenseCatalog> _licenseCatalog;
-        private readonly LazyInitLog<SystemLoader> _systemLoaderLazy;
+        private readonly LazyInitLog<EavSystemLoader> _systemLoaderLazy;
 
         private string ConfigurationsPath
         {

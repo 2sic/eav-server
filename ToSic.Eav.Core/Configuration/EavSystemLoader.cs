@@ -14,11 +14,11 @@ using ToSic.Eav.Security.Fingerprint;
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi]
-    public class SystemLoader : LoaderBase
+    public class EavSystemLoader : LoaderBase
     {
         #region Constructor / DI
 
-        public SystemLoader(SystemFingerprint fingerprint, IRuntime runtime, Lazy<IGlobalConfiguration> globalConfiguration, IAppsCache appsCache, 
+        public EavSystemLoader(SystemFingerprint fingerprint, IRuntime runtime, Lazy<IGlobalConfiguration> globalConfiguration, IAppsCache appsCache, 
             IFeaturesInternal features, FeatureConfigManager featureConfigManager, LicenseCatalog licenseCatalog, LogHistory logHistory)
             : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
