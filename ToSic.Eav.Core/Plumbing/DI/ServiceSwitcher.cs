@@ -10,7 +10,6 @@ namespace ToSic.Eav.Plumbing.DI
         // TODO
         // - constructor with name
         // - add to global log history when regenerating incl. choice
-        // create name based overload
 
         public ServiceSwitcher(IEnumerable<T> allServices) : base(LogNames.Eav + ".SrvSwt")
         {
@@ -20,24 +19,25 @@ namespace ToSic.Eav.Plumbing.DI
         public readonly List<T> AllServices;
 
 
-        public T Value
+        public T Value => _preferredService.Get(FindServiceInSwitcher); // _preferredService != null ? _preferredService : _preferredService = FindServiceInSwitcher();
+        private readonly ValueGetOnce<T> _preferredService = new ValueGetOnce<T>();
+
+        private T FindServiceInSwitcher()
         {
-            get
-            {
-                if (_preferredService != null) return _preferredService;
+            var wrapLog = Log.Call2<T>();
+            var all = AllServices;
+            if (all == null || !all.Any())
+                throw new ArgumentException(
+                    $"There ware no services for the type '{typeof(T).FullName}', cannot find best option");
 
-                var all = AllServices;
-                if (all == null || !all.Any()) 
-                    throw new ArgumentException($"There ware no services for the type '{typeof(T).FullName}', cannot find best option");
+            foreach (var svc in all.OrderByDescending(s => s.Priority))
+                if (svc.IsViable())
+                    return wrapLog.Done($"Will keep '{svc.NameId}'", svc);
+                else Log.Add($"Service '{svc.NameId}' not viable");
 
-                foreach (var svc in all.OrderByDescending(s => s.Priority))
-                    if (svc.IsViable())
-                        return _preferredService = svc;
-
-                throw new ArgumentException($"No viable services found for type '{typeof(T).FullName}'");
-            }
+            throw new ArgumentException($"No viable services found for type '{typeof(T).FullName}'");
         }
-        private T _preferredService;
+
 
         public bool IsValueCreated => _preferredService != null;
 
