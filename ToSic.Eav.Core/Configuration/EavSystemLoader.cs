@@ -18,15 +18,21 @@ namespace ToSic.Eav.Configuration
     {
         #region Constructor / DI
 
-        public EavSystemLoader(SystemFingerprint fingerprint, IRuntime runtime, Lazy<IGlobalConfiguration> globalConfiguration, AppsCacheSwitch appsCache, 
-            IFeaturesInternal features, FeatureConfigManager featureConfigManager, LicenseCatalog licenseCatalog, LogHistory logHistory)
-            : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
+        public EavSystemLoader(
+            SystemFingerprint fingerprint, 
+            IRuntime runtime, 
+            Lazy<IGlobalConfiguration> globalConfiguration, 
+            AppsCacheSwitch appsCache, 
+            IFeaturesInternal features, 
+            FeatureConfigManager featureConfigManager, 
+            LicenseCatalog licenseCatalog, 
+            LogHistory logHistory
+        ) : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
             Fingerprint = fingerprint;
             _globalConfiguration = globalConfiguration;
             _appsCache = appsCache;
             _logHistory = logHistory;
-            logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
             _appStateLoader = runtime.Init(Log);
             Features = features;
             _featureConfigManager = featureConfigManager;
@@ -72,14 +78,12 @@ namespace ToSic.Eav.Configuration
         {
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_logHistory, _licenseCatalog, Log).LoadLicenses(Fingerprint.GetFingerprint(),
-                _globalConfiguration.Value.GlobalFolder);
+            new LicenseLoader(_logHistory, _licenseCatalog, Log)
+                .LoadLicenses(Fingerprint.GetFingerprint(), _globalConfiguration.Value.GlobalFolder);
 
             // Now do a normal reload of configuration and features
             ReloadFeatures();
         }
-
-
         private bool _startupAlreadyRan;
 
         /// <summary>
