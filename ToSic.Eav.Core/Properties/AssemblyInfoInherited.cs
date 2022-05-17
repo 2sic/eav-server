@@ -9,7 +9,7 @@ using static ToSic.Eav.SharedAssemblyInfo;
 
 [assembly: AssemblyVersion(AssemblyVersion)]
 [assembly: AssemblyFileVersion(AssemblyVersion)]
-[assembly: AssemblyInformationalVersion(ToSic.Eav.SharedAssemblyInfo.AssemblyVersion)] 
+[assembly: AssemblyInformationalVersion(AssemblyVersion)] 
 [assembly: AssemblyProduct(EavProduct)]
 [assembly: AssemblyCompany(Company)]
 [assembly: AssemblyCopyright(EavCopyright)] 
