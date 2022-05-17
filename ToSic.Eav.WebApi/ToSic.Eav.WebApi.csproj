@@ -2,14 +2,17 @@
 
   <PropertyGroup>
     <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
-    <Version>13.11.01</Version>
-	  <Company>2sic Internet Solutions GmbH</Company>
-	  <Authors>2sic Internet Solutions GmbH</Authors>
-	  <Copyright>Copyright AGPL © 2sic 2022</Copyright>
+	<Company>2sic Internet Solutions GmbH</Company>
+	<Authors>2sic Internet Solutions GmbH</Authors>
+	<Copyright>Copyright AGPL © 2sic 2022</Copyright>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <Deterministic>true</Deterministic>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
+
+	<!-- Don't generate assembly properties from this XML which should come from the core file, like version -->
+	<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+	<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
@@ -25,6 +28,10 @@
     <Reference Include="ToSic.Razor">
 	    <HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\netstandard2.0\ToSic.Razor.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfoInherited.cs" Link="Properties\AssemblyInfoInherited.cs" />
   </ItemGroup>
 
   <ItemGroup>
