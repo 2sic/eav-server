@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Run;
 
 namespace ToSic.Testing.Shared
 {
@@ -12,18 +12,12 @@ namespace ToSic.Testing.Shared
     /// </summary>
     public abstract class TestBaseDiEavFullAndDb: TestBaseDiEmpty
     {
-        //protected TestBaseDiEavFullAndDb(): base()
-        //{
-        //    // this will run after the base constructor, which configures DI
-
-        //}
-
         protected override void Configure()
         {
             base.Configure();
 
             // Make sure global data is loaded
-            Build<EavSystemLoader>().StartUp();
+            Build<SystemLoader>().StartUp();
         }
 
         protected override IServiceCollection SetupServices(IServiceCollection services)
