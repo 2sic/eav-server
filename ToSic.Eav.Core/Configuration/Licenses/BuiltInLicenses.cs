@@ -72,16 +72,10 @@ namespace ToSic.Eav.Configuration.Licenses
             "DNN installations which run as a Farm can enable WebFarm caching to ensure the servers are in sync when something is edited."
         );
 
-        //public static readonly LicenseDefinition LightSpeed = new LicenseDefinition(201, 
-        //    "Lightspeed",
-        //    new Guid("4c4c7f24-649e-4ddc-b3cd-dd093552222d"),
-        //    "BETA: LightSpeed is a special high-performance output cache which caches all output and automatically rebuilds when data it depends on is updated."
-        //);
-
         public static readonly LicenseDefinition EnterpriseCms = new LicenseDefinition(202, 
             "EnterpriseCms",
             new Guid("da7274c1-b893-4edb-8acb-ae2995a07321"),
-            "BETA: Site Farms (name not final) is enables features to share app definitions across many sites. "
+            "Extreme CMS features for complex sites with extra needs, like global, shared Apps across many portals. "
         );
 
         public static readonly LicenseDefinition CoreBeta = new LicenseDefinition(1000,

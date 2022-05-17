@@ -27,5 +27,7 @@
         public static string LogHistoryGlobalInstallation = "global-installation";
 
         public static string LogHistoryGlobalAppStateLoader = "global-app-state-loader";
+
+        public static string LogHistorySystemPatches = "system-patches";
     }
 }
