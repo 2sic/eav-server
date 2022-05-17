@@ -18,7 +18,7 @@ namespace ToSic.Eav.Configuration
     {
         #region Constructor / DI
 
-        public EavSystemLoader(SystemFingerprint fingerprint, IRuntime runtime, Lazy<IGlobalConfiguration> globalConfiguration, IAppsCache appsCache, 
+        public EavSystemLoader(SystemFingerprint fingerprint, IRuntime runtime, Lazy<IGlobalConfiguration> globalConfiguration, AppsCacheSwitch appsCache, 
             IFeaturesInternal features, FeatureConfigManager featureConfigManager, LicenseCatalog licenseCatalog, LogHistory logHistory)
             : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Configuration
         public SystemFingerprint Fingerprint { get; }
         private readonly IRuntime _appStateLoader;
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
-        private readonly IAppsCache _appsCache;
+        private readonly AppsCacheSwitch _appsCache;
         public readonly IFeaturesInternal Features;
         private readonly FeatureConfigManager _featureConfigManager;
         private readonly LicenseCatalog _licenseCatalog;
@@ -60,7 +60,7 @@ namespace ToSic.Eav.Configuration
             // Build the cache of all system-types. Must happen before everything else
             Log.Add("Try to load global app-state");
             var presetApp = _appStateLoader.LoadFullAppState();
-            _appsCache.Add(presetApp);
+            _appsCache.Value.Add(presetApp);
 
             StartUpFeatures();
         }

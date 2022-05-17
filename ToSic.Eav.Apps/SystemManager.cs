@@ -9,13 +9,13 @@ namespace ToSic.Eav.Apps
     {
         #region Constructor
 
-        public SystemManager(IAppStates appStates, IAppsCache appsCache): base("App.SysMng")
+        public SystemManager(IAppStates appStates, AppsCacheSwitch appsCache): base("App.SysMng")
         {
             _appStates = appStates;
             _appsCache = appsCache;
         }
         private readonly IAppStates _appStates;
-        private readonly IAppsCache _appsCache;
+        private readonly AppsCacheSwitch _appsCache;
 
         #endregion
 
@@ -46,9 +46,9 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Call($"{appIdentity.Show()}, {global}");
             if (global)
-                _appsCache.PurgeZones();
+                _appsCache.Value.PurgeZones();
             else
-                _appsCache.Purge(appIdentity);
+                _appsCache.Value.Purge(appIdentity);
             wrapLog.Invoke("ok");
         }
 

@@ -55,6 +55,10 @@ namespace ToSic.Eav
             services.TryAddTransient<IAppStates, AppStates>();
             services.TryAddTransient<AppSettingsStack>();
 
+            // v13 #SwitchableAppsCache
+            services.AddSingleton<IAppsCacheSwitchable, AppsCache>();
+            services.AddTransient<AppsCacheSwitch>();   // Transient should work... wip
+
 
             // Permissions helper
             services.TryAddTransient<PermissionCheckBase.Dependencies>();

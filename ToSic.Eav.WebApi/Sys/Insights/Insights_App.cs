@@ -27,13 +27,14 @@ namespace ToSic.Eav.WebApi.Sys
             msg += "<table id='table'>"
                 + HeadFields("Zone ↕", "App ↕", Eav.Data.Attributes.GuidNiceName, "InCache", "Name ↕", "Folder ↕", "Details", "Actions", "Hash", "Timestamp", "List-Timestamp")
                 + "<tbody>";
+
             foreach (var zone in zones)
             {
                 var apps = zone.Value.Apps
                     .Select(a =>
                     {
                         var appIdentity = new AppIdentity(zone.Value.ZoneId, a.Key);
-                        var inCache = _appsCache.Has(appIdentity);
+                        var inCache = _appStates.IsCached(appIdentity);
                         var appState = inCache
                             ? _appStates.Get(appIdentity)
                             : null;

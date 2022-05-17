@@ -17,9 +17,19 @@ namespace ToSic.Eav.Caching
     /// The real cache must implement this and also provide platform specific adjustments so that the caching is in sync with the Environment.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public abstract class AppsCacheBase : IAppsCache
+    public abstract class AppsCacheBase : IAppsCacheSwitchable
     {
         // TODO: WILL PROBABLY need an update on the farm cache which doesn't have these dependencies yet
+
+        #region Switchable
+
+        public virtual string NameId => "Base";
+
+        public virtual bool IsViable() => true;
+
+        public virtual int Priority => 0;
+
+        #endregion
 
         /// <summary>
         /// The repository loader. Must generate a new one on every access, to be sure that it doesn't stay in memory for long. 
@@ -192,5 +202,6 @@ namespace ToSic.Eav.Caching
                 throw new Exception($"Error trying to run {nameof(ZoneIdOfApp)}({appId}) - probably something wrong with the {nameof(appId)}", ex);
             }
         }
+
     }
 }

@@ -30,7 +30,7 @@ namespace ToSic.Eav.Apps.Parts
             SystemManager systemManager,
             IServiceProvider serviceProvider,
             LazyInitLog<EntitySaver> entitySaverLazy,
-            IAppsCache appsCache, // Note: Singleton
+            AppsCacheSwitch appsCache, // Note: Singleton
             LazyInit<JsonSerializer> jsonSerializer,
             Generator<ExportListXml> exportListXmlGenerator
             ) : base("App.EntMan")
@@ -52,7 +52,7 @@ namespace ToSic.Eav.Apps.Parts
         private IImportExportEnvironment _environment;
         private readonly IServiceProvider _serviceProvider;
         private readonly LazyInitLog<EntitySaver> _entitySaverLazy;
-        private readonly IAppsCache _appsCache;
+        private readonly AppsCacheSwitch _appsCache;
         private readonly Generator<ExportListXml> _exportListXmGenerator;
         protected readonly SystemManager SystemManager;
         private LazyInit<JsonSerializer> Serializer { get; }
@@ -110,7 +110,7 @@ namespace ToSic.Eav.Apps.Parts
                 dc.DoButSkipAppCachePurge(() => intIds = dc.Save(entities, saveOptions));
 
                 // Tell the cache to do a partial update
-                _appsCache.Update(_serviceProvider, Parent, intIds, Log);
+                _appsCache.Value.Update(_serviceProvider, Parent, intIds, Log);
                 return intIds;
             }
 

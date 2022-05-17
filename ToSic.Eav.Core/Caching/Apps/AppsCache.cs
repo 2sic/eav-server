@@ -9,8 +9,19 @@ namespace ToSic.Eav.Caching
     /// The default Apps Cache system running on a normal environment. 
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class AppsCache: AppsCacheBase
+    public class AppsCache: AppsCacheBase, IAppsCacheSwitchable
     {
+        #region SwitchableService
+
+        public const string DefaultNameId = "DefaultCache";
+
+        public override string NameId => DefaultNameId;
+
+        public override bool IsViable() => true;
+
+        public override int Priority => 1;
+
+        #endregion
 
         public override IReadOnlyDictionary<int, Zone> Zones(IServiceProvider sp)
         {
@@ -31,7 +42,6 @@ namespace ToSic.Eav.Caching
         #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
 
         private static readonly IDictionary<string, AppState> Caches = new Dictionary<string, AppState>();
-
 
         /// <inheritdoc />
         protected override bool Has(string cacheKey) => Caches.ContainsKey(cacheKey);
@@ -66,5 +76,6 @@ namespace ToSic.Eav.Caching
 
         /// <inheritdoc />
         public override void PurgeZones() => ZoneAppCache = null;
+
     }
 }
