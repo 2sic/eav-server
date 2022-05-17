@@ -3,26 +3,20 @@
     <TargetFrameworks>net472;netstandard2.0;</TargetFrameworks>
     <Configurations>Debug;Release;efc and WebApi;debug eav only;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RootNamespace>ToSic.Eav</RootNamespace>
-    <!--<Version>13.11.01</Version>-->
-	<Company>2sic Internet Solutions GmbH</Company>
-	<Authors>2sic Internet Solutions GmbH</Authors>
-	<Copyright>Copyright AGPL © 2sic 2022</Copyright>
 
-    <!-- TODO: @STV this isn't 100% working yet -->
-	<!-- Don't generate assembly properties from this XML which should come from the core file, like version - these lines must be in sync in all ToSic.Eav.*.csproj files -->
-	<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-	<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-	<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <!-- Don't generate assembly properties from this XML which should come from the core file, like version - these lines must be in sync in all ToSic.Eav.*.csproj files -->
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <!-- end: Don't generate... -->
 
-	  <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-	  <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-
-
-	  <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+ 
     <Deterministic>true</Deterministic>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
   </PropertyGroup>

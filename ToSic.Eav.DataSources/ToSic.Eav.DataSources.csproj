@@ -4,16 +4,18 @@
     <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
     <AssemblyName>ToSic.Eav.DataSources</AssemblyName>
     <RootNamespace>ToSic.Eav.DataSources</RootNamespace>
-	<Company>2sic Internet Solutions GmbH</Company>
-	<Authors>2sic Internet Solutions GmbH</Authors>
-	<Copyright>Copyright AGPL © 2sic 2022</Copyright>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <Deterministic>true</Deterministic>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
 
-    <!-- Don't generate assembly properties from this XML which should come from the core file, like version -->
-	<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-	<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <!-- Don't generate assembly properties from this XML which should come from the core file, like version - these lines must be in sync in all ToSic.Eav.*.csproj files -->
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <!-- end: Don't generate... -->
   </PropertyGroup>
 
   <ItemGroup>

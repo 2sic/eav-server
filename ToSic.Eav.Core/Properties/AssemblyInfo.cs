@@ -8,8 +8,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ToSic.Eav.Core")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ToSic.Eav.Core")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
