@@ -227,6 +227,19 @@ namespace ToSic.Eav.Repository.Efc
             wrapLog.Done("completed");
         }
 
+        internal void DoAndSaveWithoutChangeDetection(Action action, string message = null)
+        {
+            var wrapLog = Log.Call(message: message, useTimer: true);
+            action.Invoke();
+
+            var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
+            SqlDb.ChangeTracker.AutoDetectChangesEnabled = false;
+            SqlDb.SaveChanges();
+            SqlDb.ChangeTracker.AutoDetectChangesEnabled = preserve;
+
+            wrapLog("completed");
+        }
+
 
         public void DoInTransaction(Action action)
         {

@@ -32,7 +32,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             };
 
             DbContext.SqlDb.Add(dbEnt);
-            DbContext.SqlDb.SaveChanges();
+            DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(dbEnt), "save new");
             return wrapLog.ReturnAsOk(dbEnt);
         }
     }

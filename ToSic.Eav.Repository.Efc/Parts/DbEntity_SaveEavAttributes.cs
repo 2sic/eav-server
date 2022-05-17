@@ -120,7 +120,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // 3. now run the inner code
             action.Invoke();
             // 4. now check if we were the outermost call, in if yes, save the data
-            DbContext.DoAndSave(AttributeQueueRun);
+            DbContext.DoAndSaveWithoutChangeDetection(AttributeQueueRun);
             _attributeQueueActive = false;
             wrapLog.Done("completed");
         }
