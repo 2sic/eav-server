@@ -3,7 +3,7 @@
     /// <summary>
     /// Contains information for all assemblies to use
     /// </summary>
-    public static class AssemblyInfo
+    public static class SharedAssemblyInfo
     {
         public const string AssemblyVersion = "13.11.01";
         public const string Company = "2sic internet solutions, Switzerland";

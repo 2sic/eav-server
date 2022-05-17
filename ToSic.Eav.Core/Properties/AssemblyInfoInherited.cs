@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using static ToSic.Eav.AssemblyInfo;
+using static ToSic.Eav.SharedAssemblyInfo;
 
 // Use the globally defined assembly version information in all projects
 // This file lies in the ToSic.Eav.Core project and is used as linked in other EAV projects
@@ -9,7 +9,7 @@ using static ToSic.Eav.AssemblyInfo;
 
 [assembly: AssemblyVersion(AssemblyVersion)]
 [assembly: AssemblyFileVersion(AssemblyVersion)]
-[assembly: AssemblyInformationalVersion(ToSic.Eav.AssemblyInfo.AssemblyVersion)] 
+[assembly: AssemblyInformationalVersion(ToSic.Eav.SharedAssemblyInfo.AssemblyVersion)] 
 [assembly: AssemblyProduct(EavProduct)]
 [assembly: AssemblyCompany(Company)]
 [assembly: AssemblyCopyright(EavCopyright)] 
