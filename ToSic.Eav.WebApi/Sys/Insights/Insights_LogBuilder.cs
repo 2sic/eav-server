@@ -82,7 +82,7 @@ namespace ToSic.Eav.WebApi.Sys
                             $"{key}",
                             LinkTo(log.FullIdentifier, nameof(Logs), key: key, more: $"position={count}"),
                             $"{log.Entries.Count}",
-                            HtmlEncode((firstIfExists?.Message?.NeverNull()).Ellipsis(75, "…")),
+                            HtmlEncode((firstIfExists?.Message).NeverNull().Ellipsis(75, "…")),
                             HtmlEncode(firstIfExists?.Result),
                             ShowTime(firstIfExists)
                         );
