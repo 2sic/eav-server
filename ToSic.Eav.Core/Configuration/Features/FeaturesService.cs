@@ -57,15 +57,6 @@ namespace ToSic.Eav.Configuration
         public string MsgMissingSome(IEnumerable<Guid> ids)
             => $"Features {string.Join(", ", ids.Where(i => !Enabled(i)).Select(id => $"https://2sxc.org/r/f/{id}"))} not enabled - see also https://2sxc.org/help?tag=features";
 
-        #region Links
-
-        ///// <inheritdoc />
-        //public string HelpLink => "https://2sxc.org/help?tag=features";
-
-        ///// <inheritdoc />
-        //public string InfoLinkRoot => "https://2sxc.org/r/f/";
-
-        #endregion
 
         #region Static Caches
 
@@ -78,6 +69,7 @@ namespace ToSic.Eav.Configuration
                 _stored = value;
                 _all = null;
                 _enabledFeatures = null;
+                CacheTimestamp = DateTime.Now.Ticks;
             }
         }
         private static FeatureListStored _stored;
@@ -138,6 +130,8 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         [PrivateApi]
         public long CacheTimestamp { get; set; }
+
+        public bool CacheChanged(long newCacheTimeStamp) => CacheTimestamp != newCacheTimeStamp;
 
         #endregion
         

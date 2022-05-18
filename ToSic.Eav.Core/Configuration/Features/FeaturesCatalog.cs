@@ -29,6 +29,7 @@ namespace ToSic.Eav.Configuration
 
                 // 2sxc 10.24+
                 WebFarmCache,
+                WebFarmCacheDebug,
 
                 // 2sxc 13 - Global Apps
                 SharedApps,

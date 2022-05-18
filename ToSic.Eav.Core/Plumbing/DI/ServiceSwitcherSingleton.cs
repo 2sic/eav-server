@@ -10,12 +10,30 @@ namespace ToSic.Eav.Plumbing.DI
     /// <typeparam name="T"></typeparam>
     public class ServiceSwitcherSingleton<T>: HasLog, ILazyLike<T> where T : ISwitchableService
     {
-        public ServiceSwitcherSingleton(LazyInitLog<ServiceSwitcher<T>> serviceSwitcher) : base(
-            $"{LogNames.Eav}.SrvSwS")
-            => _serviceSwitcher = serviceSwitcher.SetLog(Log);
+
+        public ServiceSwitcherSingleton(
+            LogHistory logHistory,
+            LazyInitLog<ServiceSwitcher<T>> serviceSwitcher
+        ) : base($"{LogNames.Eav}.SrvSwS")
+        {
+            _logHistory = logHistory;
+            _serviceSwitcher = serviceSwitcher.SetLog(Log);
+        }
+        private readonly LogHistory _logHistory;
         private readonly LazyInitLog<ServiceSwitcher<T>> _serviceSwitcher;
 
-        public T Value => _preferredService != null ? _preferredService : _preferredService = _serviceSwitcher.Ready.Value;
+        public T Value => GetSingletonSwitchableService();
+
+        private T GetSingletonSwitchableService()
+        {
+            // Already loaded
+            if (_preferredService != null) return _preferredService;
+
+            _logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
+            var call = Log.Call2<T>(message: "re-check singleton service");
+            _preferredService = _serviceSwitcher.Ready.Value;
+            return call.Done($"found {_preferredService.NameId}", _preferredService);
+        }
 
         /// <summary>
         /// Note: This must be static, as the service itself is transient, not singleton!
@@ -25,5 +43,7 @@ namespace ToSic.Eav.Plumbing.DI
         public bool IsValueCreated => _preferredService != null;
 
         public T ByNameId(string nameId) => _serviceSwitcher.Ready.ByNameId(nameId);
+
+        protected void Reset() => _preferredService = default;
     }
 }

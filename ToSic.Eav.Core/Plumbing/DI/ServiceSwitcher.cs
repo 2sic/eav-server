@@ -19,7 +19,7 @@ namespace ToSic.Eav.Plumbing.DI
         public readonly List<T> AllServices;
 
 
-        public T Value => _preferredService.Get(FindServiceInSwitcher); // _preferredService != null ? _preferredService : _preferredService = FindServiceInSwitcher();
+        public T Value => _preferredService.Get(FindServiceInSwitcher);
         private readonly ValueGetOnce<T> _preferredService = new ValueGetOnce<T>();
 
         private T FindServiceInSwitcher()
