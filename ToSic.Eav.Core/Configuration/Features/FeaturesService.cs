@@ -101,7 +101,7 @@ namespace ToSic.Eav.Configuration
                 }
 
                 // Check if the configuration would enable this feature
-                var inConfig = config.Features.FirstOrDefault(cf => cf.Id == f.Guid);
+                var inConfig = config?.Features.FirstOrDefault(cf => cf.Id == f.Guid);
                 if (inConfig != null)
                 {
                     enabled = licenseEnabled && inConfig.Enabled;
@@ -115,12 +115,12 @@ namespace ToSic.Eav.Configuration
             }).ToList();
 
             // Find additional, un matching features which are not known in the catalog
-            var missingFeatures = config.Features
+            var missingFeatures = config?.Features
                 .Where(f => featuresCat.All(fd => fd.Guid != f.Id))
                 .Select(f => new FeatureState(new FeatureDefinition(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually", 
                     licenseEnabled: false, enabledByDefault: false,  enabledStored: f.Enabled));
 
-            var final = allFeats.Union(missingFeatures).ToList();
+            var final = (missingFeatures == null ? allFeats : allFeats.Union(missingFeatures)).ToList();
             return final;
         }
 
