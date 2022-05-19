@@ -34,6 +34,7 @@ namespace ToSic.Eav.Logging
         /// Creates a safe wrap-log function which works if the log exists or not
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Disabled 2022-05-19 2dm, shouldn't be in use outside of the project, remove in v14")]
         public static Func<string, T, T> SafeCall<T>(this ILog log,
             string parameters = null,
             string message = null,
@@ -71,6 +72,7 @@ namespace ToSic.Eav.Logging
         /// Creates a safe wrap-log action which works if the log exists or not
         /// </summary>
         /// <returns></returns>
+        [Obsolete("obsolete since 2022-05-19, should not be used outside of 2sxc, remove in v14")]
         public static Action<string> SafeCall(this ILog log,
             string parameters = null,
             string message = null,

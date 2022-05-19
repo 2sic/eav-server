@@ -86,7 +86,7 @@ namespace ToSic.Eav.Apps
         private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(ILog buildLog = null)
         {
             var log = buildLog ?? new Log("");
-            var wrapLog = buildLog.SafeCall<List<KeyValuePair<string, IPropertyLookup>>>();
+            var wrapLog = buildLog.Call2<List<KeyValuePair<string, IPropertyLookup>>>();
 
             void LogSource(string name, AppStateMetadata state) 
                 => log.SafeAdd($"{name}: {state != null}; MD: {state?.MetadataItem?.EntityId}; CustomItem: {state?.CustomItem?.EntityId}; ScopeAny: {state?.SystemItem?.EntityId};");
@@ -139,7 +139,7 @@ namespace ToSic.Eav.Apps
 
             // System Presets
             sources.Add(new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, preset.SystemItem));
-            return wrapLog("ok", sources);
+            return wrapLog.Return(sources, "ok");
         }
 
         #endregion

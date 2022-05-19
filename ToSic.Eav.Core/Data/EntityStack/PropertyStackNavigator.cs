@@ -65,7 +65,7 @@ namespace ToSic.Eav.Data
         public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull, PropertyLookupPath path)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PSNav");
-            var safeWrap = logOrNull.SafeCall<PropertyRequest>(
+            var safeWrap = logOrNull.Call2<PropertyRequest>(
                 $"{nameof(field)}:{field}, {nameof(dimensions)}:{string.Join(",", dimensions)}, {nameof(startAtSource)}:{startAtSource}");
 
             // Catch errors with infinite recursions
@@ -74,7 +74,7 @@ namespace ToSic.Eav.Data
             {
                 parentLogOrNull.SafeAdd("Maximum lookup depth achieved");
                 var err = new PropertyRequest { Result = MaxLookupError, Name = "error", Path = path, Source = "error", SourceIndex = OwnIndexInParent };
-                return safeWrap("error", err);
+                return safeWrap.Return(err, "error");
             }
 
             PropertyRequest resultOfOwn = null;
@@ -84,7 +84,7 @@ namespace ToSic.Eav.Data
             {
                 path = path.Add("StackOwnItem", field);
                 resultOfOwn = GetResultOfOwnItem(field, dimensions, logOrNull, treatEmptyAsDefault, path);
-                if (resultOfOwn != null && resultOfOwn.IsFinal) return safeWrap("final", resultOfOwn);
+                if (resultOfOwn != null && resultOfOwn.IsFinal) return safeWrap.Return(resultOfOwn, "final");
             }
 
             path = path.Add("↩️");
@@ -98,36 +98,36 @@ namespace ToSic.Eav.Data
             path = path.Add("StackSibling", nextIndexOnParent.ToString(), ParentField);
             var sibling = Parent.PropertyInStack(ParentField, dimensions, nextIndexOnParent, true, logOrNull, path);
             
-            if (sibling == null || !sibling.IsFinal) return safeWrap("no useful sibling found", new PropertyRequest());
+            if (sibling == null || !sibling.IsFinal) return safeWrap.Return(new PropertyRequest(), "no useful sibling found");
             
             path = sibling.Path;    // Keep path as it was generated to find this sibling
 
             logOrNull.SafeAdd($"Another sibling found. Name:{sibling.Name} #{sibling.SourceIndex}. Will try to check it's properties. ");
             if (sibling.Result is IEnumerable<IEntity> siblingEntities && siblingEntities.Any())
             {
-                var wrapInner = logOrNull.SafeCall(null, "It's a list of entities as expected.");
+                var wrapInner = logOrNull.Call2(null, "It's a list of entities as expected.");
                 var entityNav = new EntityWithStackNavigation(siblingEntities.First(), Parent, ParentField, sibling.SourceIndex, Depth + 1);
                 path = path.Add("StackIEntity", field);
                 var result = entityNav.FindPropertyInternal(field, dimensions, logOrNull, path);
-                wrapInner(null);
-                return safeWrap(null, result);
+                wrapInner.Done();
+                return safeWrap.Return(result);
             }
 
             if (sibling.Result is IEnumerable<IPropertyLookup> siblingStack && siblingStack.Any())
             {
                 logOrNull.SafeAdd("Another sibling found, it's a list of IPropertyLookups.");
-                var wrapInner = logOrNull.SafeCall(null, "It's a list of entities as expected.");
+                var wrapInner = logOrNull.Call2(null, "It's a list of entities as expected.");
                 var propNav = new PropertyStackNavigator(siblingStack.First(), Parent, ParentField, sibling.SourceIndex, Depth + 1);
                 path = path.Add("StackIPropertyLookup", field);
                 var result = propNav.PropertyInStack(field, dimensions, 0, true, logOrNull, path);
-                wrapInner(null);
-                return safeWrap(null, result);
+                wrapInner.Done();
+                return safeWrap.Return(result);
             }
             
             // We got here, so we found nothing
             // This means result is not final or after checking the parent again, no better source was found
             // In this case, return the initial child result, which already said it's not final
-            return safeWrap("no sibling can return data, return empty result", new PropertyRequest());
+            return safeWrap.Return(new PropertyRequest(), "no sibling can return data, return empty result");
         }
 
         
@@ -137,25 +137,25 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         private PropertyRequest GetResultOfOwnItem(string field, string[] dimensions, ILog logOrNull, bool treatEmptyAsDefault, PropertyLookupPath path)
         {
-            var safeWrap = logOrNull.SafeCall<PropertyRequest>();
+            var safeWrap = logOrNull.Call2<PropertyRequest>();
 
             // 2022-05-02 2dm - there seem to be cases where this wrapper is created without an own entity.
             // Not yet sure why, but in this case we must be sure to not return something.
-            if (_contents == null) return safeWrap("no entity", null);
+            if (_contents == null) return safeWrap.ReturnNull("no entity");
 
             path = path.Add("OwnItem", field);
             var childResult = _contents.FindPropertyInternal(field, dimensions, logOrNull, path);
-            if (childResult == null) return safeWrap("null", null);
+            if (childResult == null) return safeWrap.ReturnNull("null");
             
             // Test if final was already checked, otherwise update it
             if (!childResult.IsFinal)
                 childResult.MarkAsFinalOrNot(null, 0, logOrNull, treatEmptyAsDefault);
 
             // if it is final, return that
-            if (!childResult.IsFinal) return safeWrap("not final", childResult);
+            if (!childResult.IsFinal) return safeWrap.Return(childResult, "not final");
             
             // test if the returned stuff is one or more entities, in which case they should implement stack-fallback
-            if (!(childResult.Result is IEnumerable<IEntity> entList)) return safeWrap("not null/entities, final", childResult);
+            if (!(childResult.Result is IEnumerable<IEntity> entList)) return safeWrap.Return(childResult, "not null/entities, final");
 
             logOrNull?.SafeAdd("Result is IEnumerable<IEntity> - will wrap in navigation");
             var entArray = entList.ToArray();
@@ -163,7 +163,7 @@ namespace ToSic.Eav.Data
                 childResult.Result =
                     entArray.Select(e => new EntityWithStackNavigation(e, this, field, IndexOfNextItem, Depth + 1));
 
-            return safeWrap("entities, final", childResult);
+            return safeWrap.Return(childResult, "entities, final");
         }
     }
     

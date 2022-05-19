@@ -57,7 +57,7 @@ namespace ToSic.Eav.Data
 
         public IPropertyStack GetStack(ILog log, params string[] names)
         {
-            var wrapLog = log.SafeCall<IPropertyStack>();
+            var wrapLog = log.Call2<IPropertyStack>();
             // Get all required names in the order they were requested
             var newSources = new List<KeyValuePair<string, IPropertyLookup>>();
             foreach (var name in names)
@@ -69,7 +69,7 @@ namespace ToSic.Eav.Data
 
             var newStack = new PropertyStack();
             newStack.Init("New", newSources.ToArray());
-            return wrapLog(newSources.Count.ToString(), newStack);
+            return wrapLog.Return(newStack, newSources.Count.ToString());
         }
 
         [PrivateApi("Internal")]
@@ -79,7 +79,7 @@ namespace ToSic.Eav.Data
         public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull, PropertyLookupPath path)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PStack");
-            var wrapLog = logOrNull.SafeCall<PropertyRequest>($"{nameof(field)}: {field}, {nameof(startAtSource)}: {startAtSource}");
+            var wrapLog = logOrNull.Call2<PropertyRequest>($"{nameof(field)}: {field}, {nameof(startAtSource)}: {startAtSource}");
             // Start with empty result, may be filled in later on
             var result = new PropertyRequest();
             for (var sourceIndex = startAtSource; sourceIndex < SourcesReal.Count; sourceIndex++)
@@ -95,17 +95,17 @@ namespace ToSic.Eav.Data
                 if (!result.IsFinal) continue;
                 
                 if (!(result.Result is IEnumerable<IEntity> entityChildren))
-                    return wrapLog("simple value, final", result);
+                    return wrapLog.Return(result, "simple value, final");
 
                 var navigationWrapped = entityChildren.Select(e =>
                     new EntityWithStackNavigation(e, this, field, result.SourceIndex, 0)).ToList();
                 result.Result = navigationWrapped;
 
-                return wrapLog("wrapped as Entity-Stack, final", result);
+                return wrapLog.Return(result, "wrapped as Entity-Stack, final");
             }
 
             // All loops completed, maybe one got a temporary result, return that
-            return wrapLog("not-final", result);
+            return wrapLog.Return(result, "not-final");
         }
         
     }
