@@ -39,7 +39,7 @@ namespace ToSic.Eav.Plumbing.DI
         }
 
 
-        public bool IsValueCreated => _preferredService != null;
+        public bool IsValueCreated => _preferredService.IsValueCreated;
 
         public T ByNameId(string nameId) => AllServices.Find(s => s.NameId.Equals(nameId));
     }
