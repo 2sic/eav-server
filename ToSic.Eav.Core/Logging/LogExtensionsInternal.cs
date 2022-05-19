@@ -9,12 +9,12 @@ namespace ToSic.Eav.Logging
         /// <summary>
         /// Add a message
         /// </summary>
-        internal static Entry AddInternal(this Log log, string message, CodeRef code)
+        internal static Entry AddInternal(this ILog log, string message, CodeRef code)
         {
             // Null-check
-            if (log == null) return new Entry(null, null, 0, code);
+            if (!(log is Log realLog)) return new Entry(null, null, 0, code);
 
-            var e = new Entry(log, message, log.WrapDepth, code);
+            var e = new Entry(log, message, realLog.WrapDepth, code);
             log.AddToEntriesAndParent(e);
             return e;
         }

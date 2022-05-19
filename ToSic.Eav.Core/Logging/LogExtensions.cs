@@ -15,85 +15,20 @@ namespace ToSic.Eav.Logging
         /// <param name="parentLog">The parent log</param>
         public static void LinkLog(this IHasLog hasLog, ILog parentLog) => hasLog.Log.LinkTo(parentLog);
 
-        public static void SafeAdd(this ILog log, string message,
-                [CallerFilePath] string cPath = null,
-                [CallerMemberName] string cName = null,
-                [CallerLineNumber] int cLine = 0
-        ) => log?.Add(message, cPath, cName, cLine);
+        public static void A(this ILog log,
+            string message,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+        ) => log?.AddInternal(message, new CodeRef(cPath, cName, cLine));
         
-        public static void SafeAdd(this ILog log, bool enabled, string message,
-                [CallerFilePath] string cPath = null,
-                [CallerMemberName] string cName = null,
-                [CallerLineNumber] int cLine = 0
-        )
-        {
-            if (enabled) log?.Add(message, cPath, cName, cLine);
-        }
-
-        #region Obsolete SafeCall things - remove it v14
-
-        
-
-        /// <summary>
-        /// Creates a safe wrap-log function which works if the log exists or not
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("Disabled 2022-05-19 2dm, shouldn't be in use outside of the project, remove in v14")]
-        public static Func<string, T, T> SafeCall<T>(this ILog log,
-            string parameters = null,
-            string message = null,
-            bool useTimer = false,
+        public static void A(this ILog log, 
+            bool enabled, 
+            string message,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0
-            )
-        {
-            return log != null 
-                ? log.Call<T>(parameters, message, useTimer, cPath, cName, cLine) 
-                : (msg, result) => result;
-        }
-
-        /// <summary>
-        /// Creates a safe wrap-log function which works if the log exists or not
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("obsolete since 2022-05-19, should not be used outside of 2sxc, remove in v14")]
-        public static Func<string, T, T> SafeCall<T>(this ILog log,
-            bool enabled,
-            string parameters = null,
-            string message = null,
-            bool useTimer = false,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
-            )
-        {
-            return enabled && log != null 
-                ? log.Call<T>(parameters, message, useTimer, cPath, cName, cLine) 
-                : (msg, result) => result;
-        }
-
-        /// <summary>
-        /// Creates a safe wrap-log action which works if the log exists or not
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("obsolete since 2022-05-19, should not be used outside of 2sxc, remove in v14")]
-        public static Action<string> SafeCall(this ILog log,
-            string parameters = null,
-            string message = null,
-            bool useTimer = false,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
-        )
-        {
-            return log != null
-                ? log.Call(parameters, message, useTimer, cPath, cName, cLine)
-                : (msg) => { } ;
-        }
-
-        #endregion
-
+        ) { if (enabled) log?.AddInternal(message, new CodeRef(cPath, cName, cLine)); }
 
 
         public static ILog SubLogOrNull(this ILog log, string name, bool enabled = true)

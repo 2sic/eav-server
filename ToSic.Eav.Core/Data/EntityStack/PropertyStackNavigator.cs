@@ -72,7 +72,7 @@ namespace ToSic.Eav.Data
             // This shouldn't happen, but if it ever does we don't want the server to run into buffer overflows
             if (path.Parts.Count > 1000)
             {
-                parentLogOrNull.SafeAdd("Maximum lookup depth achieved");
+                safeWrap.A("Maximum lookup depth achieved");
                 var err = new PropertyRequest { Result = MaxLookupError, Name = "error", Path = path, Source = "error", SourceIndex = OwnIndexInParent };
                 return safeWrap.Return(err, "error");
             }
@@ -88,7 +88,7 @@ namespace ToSic.Eav.Data
             }
 
             path = path.Add("↩️");
-            logOrNull.SafeAdd("Couldn't find a result  yet, will retry the parent");
+            safeWrap.A("Couldn't find a result  yet, will retry the parent");
 
             // If it didn't work, check if parent has another option
             // Not found yet, ask parent if it may have another
@@ -102,7 +102,7 @@ namespace ToSic.Eav.Data
             
             path = sibling.Path;    // Keep path as it was generated to find this sibling
 
-            logOrNull.SafeAdd($"Another sibling found. Name:{sibling.Name} #{sibling.SourceIndex}. Will try to check it's properties. ");
+            safeWrap.A($"Another sibling found. Name:{sibling.Name} #{sibling.SourceIndex}. Will try to check it's properties. ");
             if (sibling.Result is IEnumerable<IEntity> siblingEntities && siblingEntities.Any())
             {
                 var wrapInner = logOrNull.Call2(null, "It's a list of entities as expected.");
@@ -115,7 +115,7 @@ namespace ToSic.Eav.Data
 
             if (sibling.Result is IEnumerable<IPropertyLookup> siblingStack && siblingStack.Any())
             {
-                logOrNull.SafeAdd("Another sibling found, it's a list of IPropertyLookups.");
+                safeWrap.A("Another sibling found, it's a list of IPropertyLookups.");
                 var wrapInner = logOrNull.Call2(null, "It's a list of entities as expected.");
                 var propNav = new PropertyStackNavigator(siblingStack.First(), Parent, ParentField, sibling.SourceIndex, Depth + 1);
                 path = path.Add("StackIPropertyLookup", field);
@@ -157,7 +157,7 @@ namespace ToSic.Eav.Data
             // test if the returned stuff is one or more entities, in which case they should implement stack-fallback
             if (!(childResult.Result is IEnumerable<IEntity> entList)) return safeWrap.Return(childResult, "not null/entities, final");
 
-            logOrNull?.SafeAdd("Result is IEnumerable<IEntity> - will wrap in navigation");
+            safeWrap.A("Result is IEnumerable<IEntity> - will wrap in navigation");
             var entArray = entList.ToArray();
             if (entArray.Any() && !(entArray.First() is EntityWithStackNavigation))
                 childResult.Result =

@@ -25,7 +25,7 @@ namespace ToSic.Eav.Plumbing
             
             var wrapLog = log.Call2<List<Type>>(startTimer: true);
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            log.SafeAdd($"GetTypes() - found {assemblies.Length} assemblies");
+            wrapLog.A($"GetTypes() - found {assemblies.Length} assemblies");
 
             _typeCache = assemblies.SelectMany(a => GetLoadableTypes(a, log)).ToList();
 

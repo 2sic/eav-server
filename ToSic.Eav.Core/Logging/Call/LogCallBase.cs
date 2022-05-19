@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Logging.Call
 {
     public class LogCallBase
     {
-
+        /// <summary>
+        /// Keep constructor internal
+        /// </summary>
         internal LogCallBase(ILog log, 
             CodeRef code,
             bool isProp,
@@ -35,6 +38,29 @@ namespace ToSic.Eav.Logging.Call
         public Stopwatch Stopwatch { get; }
 
         protected bool IsOpen;
+
+        #region Basic Adds
+
+        public void A(
+            string message,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+        ) => LogOrNull?.Add(message, cPath, cName, cLine);
+
+        public void A(
+            bool enabled, 
+            string message,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+        )
+        {
+            if (enabled) LogOrNull?.Add(message, cPath, cName, cLine);
+        }
+
+
+        #endregion
 
         public void DoInTimer(Action action)
         {

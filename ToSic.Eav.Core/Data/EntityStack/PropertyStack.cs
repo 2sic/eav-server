@@ -63,7 +63,7 @@ namespace ToSic.Eav.Data
             foreach (var name in names)
             {
                 var s = GetSource(name);
-                log.SafeAdd($"Add stack {name}, found: {s != null}");
+                wrapLog.A($"Add stack {name}, found: {s != null}");
                 if (s != null) newSources.Add(new KeyValuePair<string, IPropertyLookup>(name, s));
             }
 
@@ -85,7 +85,7 @@ namespace ToSic.Eav.Data
             for (var sourceIndex = startAtSource; sourceIndex < SourcesReal.Count; sourceIndex++)
             {
                 var source = SourcesReal[sourceIndex];
-                logOrNull.SafeAdd($"Testing source #{sourceIndex} : {source.Key}");
+                wrapLog.A($"Testing source #{sourceIndex} : {source.Key}");
 
                 path = path.Add($"PropertyStack[{sourceIndex}]", source.Key, field);
                 var propInfo = source.Value.FindPropertyInternal(field, dimensions, logOrNull, path);

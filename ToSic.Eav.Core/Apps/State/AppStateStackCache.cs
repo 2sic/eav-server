@@ -85,11 +85,10 @@ namespace ToSic.Eav.Apps
 
         private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(ILog buildLog = null)
         {
-            var log = buildLog ?? new Log("");
             var wrapLog = buildLog.Call2<List<KeyValuePair<string, IPropertyLookup>>>();
 
             void LogSource(string name, AppStateMetadata state) 
-                => log.SafeAdd($"{name}: {state != null}; MD: {state?.MetadataItem?.EntityId}; CustomItem: {state?.CustomItem?.EntityId}; ScopeAny: {state?.SystemItem?.EntityId};");
+                => wrapLog.A($"{name}: {state != null}; MD: {state?.MetadataItem?.EntityId}; CustomItem: {state?.CustomItem?.EntityId}; ScopeAny: {state?.SystemItem?.EntityId};");
 
             var thingType = Target.Target;
             var appStack = Owner.ThingInApp(thingType);
