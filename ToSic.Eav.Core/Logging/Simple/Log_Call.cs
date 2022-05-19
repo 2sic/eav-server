@@ -18,13 +18,14 @@ namespace ToSic.Eav.Logging.Simple
             );
 
         /// <inheritdoc />
+        [Obsolete("Do not use any more!")]
         public Action<string> Call(Func<string> parameters, Func<string> message = null,
             bool useTimer = false,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
-            => Call(parameters: Try(parameters),
-                message: message != null ? Try(message) : null,
+            => Call(parameters: LogExtensionsInternal.Try(parameters),
+                message: message != null ? LogExtensionsInternal.Try(message) : null,
                 useTimer: useTimer,
                 cPath: cPath,
                 cName: cName,

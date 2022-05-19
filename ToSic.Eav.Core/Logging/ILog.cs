@@ -84,6 +84,7 @@ namespace ToSic.Eav.Logging
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
+        [Obsolete("Do not use any more!")]
         Action<string> Call(
             Func<string> parameters, 
             Func<string> message = null, 

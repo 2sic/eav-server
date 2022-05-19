@@ -92,8 +92,8 @@ namespace ToSic.Eav.Logging
             return new Log(name, log);
         }
 
-        public static Entry AddAndReturnEntry(this ILog log, string message, CodeRef codeRef)
-            => (log as Log)?.AddInternal(message, codeRef);
+        //public static Entry AddAndReturnEntry(this ILog log, string message, CodeRef codeRef)
+        //    => (log as Log)?.AddInternal(message, codeRef);
 
         public static LogCall<T> Call2<T>(this ILog log,
             string parameters = null,
@@ -114,6 +114,36 @@ namespace ToSic.Eav.Logging
             [CallerLineNumber] int cLine = 0
         ) => new LogCall(log, new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
 
+
+        public static LogCall Call2(this ILog log, 
+            Func<string> parameters, 
+            Func<string> message = null,
+            bool startTimer = false,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0)
+            => log.Call2(parameters: LogExtensionsInternal.Try(parameters),
+                message: message != null ? LogExtensionsInternal.Try(message) : null,
+                startTimer: startTimer,
+                cPath: cPath,
+                cName: cName,
+                cLine: cLine
+            );
+
+        public static LogCall<T> Call2<T>(this ILog log, 
+            Func<string> parameters, 
+            Func<string> message = null,
+            bool startTimer = false,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0)
+            => log.Call2<T>(parameters: LogExtensionsInternal.Try(parameters),
+                message: message != null ? LogExtensionsInternal.Try(message) : null,
+                startTimer: startTimer,
+                cPath: cPath,
+                cName: cName,
+                cLine: cLine
+            );
         #region Intercept
 
         /// <summary>

@@ -51,7 +51,7 @@ namespace ToSic.Eav.Logging.Simple
             Rename(name);
             LinkTo(parent);
             if (initialMessage == null) return;
-            AddInternal(initialMessage, code);
+            this.AddInternal(initialMessage, code);
         }
 
         /// <summary>
