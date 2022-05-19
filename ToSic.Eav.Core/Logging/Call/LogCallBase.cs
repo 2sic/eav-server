@@ -77,7 +77,7 @@ namespace ToSic.Eav.Logging.Call
 
 
 
-        protected void WrapFinish(Entry entry, string message, Stopwatch timer)
+        protected void WrapFinish(Entry entry, string message)
         {
             if (LogOrNull == null) return;
 
@@ -86,9 +86,9 @@ namespace ToSic.Eav.Logging.Call
             var final = LogOrNull.AddInternalReuse(null, null);
             final.WrapClose = true;
             final.AppendResult(message);
-            if (timer == null) return;
-            timer.Stop();
-            entry.Elapsed = timer.Elapsed;
+            if (Stopwatch == null) return;
+            Stopwatch.Stop();
+            entry.Elapsed = Stopwatch.Elapsed;
         }
 
         protected void DoneInternal(string message)
@@ -99,7 +99,7 @@ namespace ToSic.Eav.Logging.Call
                 LogOrNull.AddInternal("Log Warning: Wrapper already closed from previous call", null);
             IsOpen = false;
 
-            WrapFinish(Entry, message, Stopwatch);
+            WrapFinish(Entry, message);
         }
 
     }
