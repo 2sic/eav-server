@@ -120,19 +120,19 @@ namespace ToSic.Eav.Logging
         /// Intercept the result of an inner method, log it, then pass result on
         /// </summary>
         /// <returns></returns>
-        public static T Intercept2<T>(this ILog log,
+        public static T Return<T>(this ILog log,
             Func<T> generate,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0
-        ) => log.Intercept2(null, generate, cPath, cName, cLine);
+        ) => log.Return(null, generate, cPath, cName, cLine);
 
 
         /// <summary>
         /// Intercept the result of an inner method, log it, then pass result on
         /// </summary>
         /// <returns></returns>
-        public static T Intercept2<T>(this ILog log,
+        public static T Return<T>(this ILog log,
             string message, 
             Func<T> generate,
             [CallerFilePath] string cPath = null,
@@ -140,7 +140,7 @@ namespace ToSic.Eav.Logging
             [CallerLineNumber] int cLine = 0
         )
         {
-            var callLog = log.Call2<T>(message, code: new CodeRef(cPath, cName, cLine));
+            var callLog = log.Call2<T>(message: message, code: new CodeRef(cPath, cName, cLine));
             var result = generate();
             return callLog.ReturnAndLog(result);
         }

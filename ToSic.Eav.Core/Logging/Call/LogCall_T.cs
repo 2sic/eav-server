@@ -13,16 +13,33 @@
             return result;
         }
 
+        public T Return(T result, string message)
+        {
+            DoneInternal(message);
+            return result;
+        }
 
         public T Return(T result)
         {
             DoneInternal(null);
             return result;
         }
+
         public T ReturnAndLog(T result)
         {
             DoneInternal($"{result}");
             return result;
+        }
+
+        public T ReturnNull()
+        {
+            DoneInternal(null);
+            return default;
+        }
+        public T ReturnNull(string message)
+        {
+            DoneInternal(message);
+            return default;
         }
 
     }

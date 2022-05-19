@@ -45,7 +45,7 @@ namespace ToSic.Eav.Core.Tests.LogTests
             var call = log.Call2<string>();
             
             Assert.AreEqual(1, log.Entries.Count);  // Should have one when starting
-            var result = call.Done("ok", "result");
+            var result = call.Return("result", "ok");
             Assert.AreEqual("result", result);
 
             Assert.AreEqual(2, log.Entries.Count);  // Another for results
