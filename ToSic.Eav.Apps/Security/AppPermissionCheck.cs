@@ -120,19 +120,6 @@ namespace ToSic.Eav.Apps.Security
         /// </summary>
         protected override IUser User => Context.User;
 
-        /// <summary>
-        /// Check if user is super user
-        /// </summary>
-        /// <returns></returns>
-        protected bool UserIsSuperuser() => Log.Intercept(nameof(UserIsSuperuser), () => Context.User?.IsSuperUser ?? false);
-
-        /// <summary>
-        /// Check if user is valid admin of current portal / zone
-        /// </summary>
-        /// <returns></returns>
-        public bool UserIsSiteAdmin() => Log.Intercept(nameof(UserIsSiteAdmin), () => Context.User?.IsAdmin ?? false);
-
-
         #endregion
     }
 }
