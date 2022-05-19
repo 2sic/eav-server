@@ -6,6 +6,7 @@ using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.Plumbing.Linq;
 
 namespace ToSic.Eav.Data
 {
@@ -32,10 +33,19 @@ namespace ToSic.Eav.Data
             => _sources ?? throw new Exception($"Can't access {nameof(IPropertyStack)}.{nameof(Sources)} as it hasn't been initialized yet.");
         private IImmutableList<KeyValuePair<string, IPropertyLookup>> _sources;
 
-        public IImmutableList<KeyValuePair<string, IPropertyLookup>> SourcesReal 
-            => _sourcesReal ?? (_sourcesReal = _sources.Where(ep => ep.Value != null).ToImmutableArray());
+        public IImmutableList<KeyValuePair<string, IPropertyLookup>> SourcesReal => _sourcesReal.Get(GeneratorSourcesReal);
+        private readonly ValueGetOnce<IImmutableList<KeyValuePair<string, IPropertyLookup>>> _sourcesReal = new ValueGetOnce<IImmutableList<KeyValuePair<string, IPropertyLookup>>>();
 
-        private IImmutableList<KeyValuePair<string, IPropertyLookup>> _sourcesReal;
+        private IImmutableList<KeyValuePair<string, IPropertyLookup>> GeneratorSourcesReal()
+        {
+            var real = _sources.Where(ep => ep.Value != null)
+                // Must de-duplicate sources. EG AppSystem and AppAncestorSystem could be the same entity
+                // And in that case future lookups could result in endless loops
+                .DistinctBy(src => src.Value)
+                .ToImmutableArray();
+            return real;
+        }
+
 
         public IPropertyLookup GetSource(string name)
         {
@@ -77,7 +87,7 @@ namespace ToSic.Eav.Data
                 var source = SourcesReal[sourceIndex];
                 logOrNull.SafeAdd($"Testing source #{sourceIndex} : {source.Key}");
 
-                path = path.Add("PropStack", source.Key, field);
+                path = path.Add($"PropertyStack[{sourceIndex}]", source.Key, field);
                 var propInfo = source.Value.FindPropertyInternal(field, dimensions, logOrNull, path);
                 if (propInfo?.Result == null) continue;
 
@@ -88,7 +98,7 @@ namespace ToSic.Eav.Data
                     return wrapLog("simple value, final", result);
 
                 var navigationWrapped = entityChildren.Select(e =>
-                    new EntityWithStackNavigation(e, this, field, result.SourceIndex)).ToList();
+                    new EntityWithStackNavigation(e, this, field, result.SourceIndex, 0)).ToList();
                 result.Result = navigationWrapped;
 
                 return wrapLog("wrapped as Entity-Stack, final", result);
