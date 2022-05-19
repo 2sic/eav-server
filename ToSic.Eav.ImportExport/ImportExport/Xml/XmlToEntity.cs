@@ -306,7 +306,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
 	            readOnly = bool.Parse(textVal);
 
-	            Log.Add($"node for {envLang.EnvironmentKey} on Dim:{sourceLanguage.DimensionId}; readOnly: {readOnly}");
+	            Log.A($"node for {envLang.EnvironmentKey} on Dim:{sourceLanguage.DimensionId}; readOnly: {readOnly}");
 	            break;
 	        }
 	        wrap((sourceValueNode != null).ToString());

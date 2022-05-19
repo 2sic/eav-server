@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources
 {
@@ -92,7 +93,7 @@ namespace ToSic.Eav.DataSources
                 return wrapLog("error", SetError("Field Map Error", fieldMapErrors));
             #endregion
             
-            Log.Add($"Field Map created - has {fieldMap.Length} parts");
+            Log.A($"Field Map created - has {fieldMap.Length} parts");
             
             if (!GetRequiredInList(out var originals))
                 return wrapLog("error", originals);
@@ -126,7 +127,7 @@ namespace ToSic.Eav.DataSources
                             if (!attributes.ContainsKey(entry.OriginalField))
                             {
                                 // do not create values for fields which do not exist
-                                Log.Add(
+                                Log.A(
                                     $"Field mapping ignored for entity {entity.EntityId} and language {entry.Language} because source attribute {entry.OriginalField} does not exist.");
                                 continue;
                             }
@@ -143,7 +144,7 @@ namespace ToSic.Eav.DataSources
                     {
                         if (!attributes.ContainsKey(map.Source))
                         {
-                            Log.Add(
+                            Log.A(
                                 $"Field mapping not possible for entity {entity.EntityId} because source attribute {map.Source} does not exist.");
                             continue;
                         }

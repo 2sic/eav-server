@@ -12,14 +12,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private string GenerateJsonOrReportWhyNot(IEntity newEnt, bool logDetails)
         {
             string jsonExport;
-            if (logDetails) Log.Add($"will serialize-json id:{newEnt.EntityId}");
+            if (logDetails) Log.A($"will serialize-json id:{newEnt.EntityId}");
             try
             {
                 jsonExport = Serializer.Serialize(newEnt);
             }
             catch
             {
-                if (logDetails) Log.Add("Error serializing - will repeat with detailed with logging");
+                if (logDetails) Log.A("Error serializing - will repeat with detailed with logging");
                 Serializer.LinkLog(Log);
                 jsonExport = Serializer.Serialize(newEnt);
             }

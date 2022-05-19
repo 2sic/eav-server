@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
@@ -32,7 +33,7 @@ namespace ToSic.Eav.Persistence.Efc
                 var fileTypes = InitFileSystemContentTypes(app);
                 if (fileTypes == null || fileTypes.Count == 0) return wrapLog("no app file types", dbTypes);
 
-                Log.Add($"Will check {fileTypes.Count} items");
+                Log.A($"Will check {fileTypes.Count} items");
 
                 // remove previous items with same name, as the "static files" have precedence
                 var typeToMerge = dbTypes.ToList();
@@ -41,7 +42,7 @@ namespace ToSic.Eav.Persistence.Efc
                 typeToMerge.RemoveAll(t => fileTypes.Contains(t, comparer));
                 foreach (var fType in fileTypes)
                 {
-                    Log.Add($"Will add {fType.Name}");
+                    Log.A($"Will add {fType.Name}");
                     typeToMerge.Add(fType);
                 }
 

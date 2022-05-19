@@ -15,7 +15,7 @@ namespace ToSic.Eav.Plumbing
         /// <remarks>Objects that implement IDataSource</remarks>
         public static IEnumerable<Type> FindInherited(Type type, ILog log = null)
         {
-            log?.Add($"FindInherited of type {type.FullName}");
+            log.A($"FindInherited of type {type.FullName}");
             return GetTypes(log).Where(t => type.IsAssignableFrom(t) && (!t.IsAbstract || t.IsInterface) && t != type);
         }
 
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Plumbing
             // try to log
             try
             {
-                log?.Add($"GetLoadableTypes(assembly: {assembly.FullName})");
+                log.A($"GetLoadableTypes(assembly: {assembly.FullName})");
             }
             catch {  /*ignore */}
 
@@ -56,7 +56,7 @@ namespace ToSic.Eav.Plumbing
             }
             catch (ReflectionTypeLoadException e)
             {
-                log?.Add($"had ReflectionTypeLoadException {e.Message} \n" +
+                log.A($"had ReflectionTypeLoadException {e.Message} \n" +
                          "will continue with using Types.Where");
                 return e.Types.Where(t => t != null);
             }

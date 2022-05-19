@@ -41,7 +41,7 @@ namespace ToSic.Eav.Configuration
             foreach (var f in items)
                 if (f != null)
                 {
-                    Log.Add($"Adding {f.NameId}");
+                    Log.A($"Adding {f.NameId}");
                     _master.AddOrUpdate(f.NameId, f, (key, existing) => f);
                 }
 

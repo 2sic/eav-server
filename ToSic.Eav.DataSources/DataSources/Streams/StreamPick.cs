@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -77,7 +78,7 @@ namespace ToSic.Eav.DataSources
             var wrapLog = Log.Call<IImmutableList<IEntity>>();
             Configuration.Parse();
             var name = StreamName;
-            Log.Add($"StreamName to Look for: '{name}'");
+            Log.A($"StreamName to Look for: '{name}'");
 			if(string.IsNullOrWhiteSpace(StreamName)) 
                 return wrapLog("no name", ImmutableArray<IEntity>.Empty);
             
@@ -89,7 +90,7 @@ namespace ToSic.Eav.DataSources
             
             // Error not found
             var msg = $"StreamPick can't find stream by the name '{StreamName}'";
-            Log.Add(msg);
+            Log.A(msg);
             return wrapLog("error", ErrorHandler.CreateErrorList(source: this, title: "Can't find Stream",
                 message: $"Trying to pick the stream '{StreamName}' but it doesn't exist on the In."));
 

@@ -66,8 +66,8 @@ namespace ToSic.Eav.DataSources.Caching
             var itemInCache = Get(key);
             var found = itemInCache != null;
             var valid = found && (!dataStream.CacheRefreshOnSourceRefresh || !itemInCache.CacheChanged(dataStream.Caching.CacheTimestamp));
-            Log.Add($"ListCache found:{found}; valid:{valid}; timestamp:{dataStream.Caching.CacheTimestamp} = {dataStream.Caching.CacheTimestamp.ToReadable()}");
-            Log.Add($"ListCache key:'{key}'");
+            Log.A($"ListCache found:{found}; valid:{valid}; timestamp:{dataStream.Caching.CacheTimestamp} = {dataStream.Caching.CacheTimestamp.ToReadable()}");
+            Log.A($"ListCache key:'{key}'");
             wrapLog(valid.ToString());
             return valid ? itemInCache : null;
         }
@@ -91,13 +91,13 @@ namespace ToSic.Eav.DataSources.Caching
             var lockKey = LoadLocks.GetOrAdd(key, new object());
             lock (lockKey)
             {
-                Log.Add("came out of lock");
+                Log.A("came out of lock");
                 // now that lock is free, it could have been initialized, so re-check
                 cacheItem = GetValidCacheItemOrNull(stream);
                 if (cacheItem != null)
                     return wrapLog("still valid, use cache", cacheItem);
 
-                Log.Add($"Re-Building cache of data stream {stream.Name}");
+                Log.A($"Re-Building cache of data stream {stream.Name}");
                 var entities = builderFunc();
                 var useSlidingExpiration = stream.CacheRefreshOnSourceRefresh;
                 Set(key, entities, stream.Caching.CacheTimestamp, durationInSeconds, useSlidingExpiration);

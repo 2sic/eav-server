@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using ToSic.Eav.Helpers;
+using ToSic.Eav.Logging;
 using ToSic.Eav.WebApi.Plumbing;
 
 namespace ToSic.Eav.WebApi.ApiExplorer
@@ -40,7 +41,7 @@ namespace ToSic.Eav.WebApi.ApiExplorer
         {
             var wrapLog = Log.Call<bool>();
 
-            Log.Add($"Controller Path from appRoot: {path}");
+            Log.A($"Controller Path from appRoot: {path}");
 
             if (string.IsNullOrWhiteSpace(path) || path.Contains(".."))
             {

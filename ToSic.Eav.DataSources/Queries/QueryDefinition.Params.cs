@@ -52,17 +52,17 @@ namespace ToSic.Eav.DataSources.Queries
 
             // extract the lines which look like key=value
             var paramMatches = ParamRegex.Matches(paramsText);
-            log.Add($"found {paramMatches.Count} params");
+            log.A($"found {paramMatches.Count} params");
 
             foreach (Match testParam in paramMatches)
             {
                 var key = testParam.Groups[KeyProperty].Value.ToLowerInvariant();
                 var value = testParam.Groups[KeyValue].Value;
-                log.Add($"Params:{key}={value}");
+                log.A($"Params:{key}={value}");
                 if (!paramsDic.ContainsKey(key))
                     paramsDic[key] = value; // add not-yet-added-value
                 else
-                    log.Add($"Params:{key} already existed, will leave as is");
+                    log.A($"Params:{key} already existed, will leave as is");
             }
 
             return wrapLog(paramsDic.Count.ToString(), paramsDic);
@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         public void Reset()
         {
-            Log.Add($"{nameof(Reset)}()");
+            Log.A($"{nameof(Reset)}()");
             _params = null;
             _paraLookUp = null;
         }

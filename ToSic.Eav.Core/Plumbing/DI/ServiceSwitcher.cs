@@ -33,7 +33,7 @@ namespace ToSic.Eav.Plumbing.DI
             foreach (var svc in all.OrderByDescending(s => s.Priority))
                 if (svc.IsViable())
                     return wrapLog.Return(svc, $"Will keep '{svc.NameId}'");
-                else Log.Add($"Service '{svc.NameId}' not viable");
+                else Log.A($"Service '{svc.NameId}' not viable");
 
             throw new ArgumentException($"No viable services found for type '{typeof(T).FullName}'");
         }

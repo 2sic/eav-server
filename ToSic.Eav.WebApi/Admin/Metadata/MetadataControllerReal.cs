@@ -53,7 +53,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
 
             if(entityList == null)
             {
-                Log.Add($"error: entityList is null");
+                Log.A($"error: entityList is null");
                 throw new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel");
             }
 
@@ -70,7 +70,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
             }
             catch (Exception e)
             {
-                Log.Add("Error getting recommendations");
+                Log.A("Error getting recommendations");
                 Log.Exception(e);
             }
 
@@ -78,7 +78,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
             {
                 var title = appState.FindTargetTitle(targetType, key);
                 mdFor.Title = title;
-                Log.Add($"title:{title}");
+                Log.A($"title:{title}");
             }
             catch { /* experimental / ignore */ }
 
@@ -119,7 +119,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
                 Target = _metadataTargets.GetName(targetType),
                 TargetType = targetType,
             };
-            Log.Add($"Target: {mdFor.Target} ({targetType})");
+            Log.A($"Target: {mdFor.Target} ({targetType})");
 
             switch (keyType)
             {
@@ -135,7 +135,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
                     mdFor.Number = keyInt;
                     return wrapLog($"number:{keyInt}", (appState.GetMetadata(targetType, keyInt, contentType), mdFor));
                 default:
-                    Log.Add("error: key type unknown");
+                    Log.A("error: key type unknown");
                     throw new Exception("key type unknown:" + keyType);
             }
         }

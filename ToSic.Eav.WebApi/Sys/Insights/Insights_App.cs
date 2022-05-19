@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Debug;
 using ToSic.Eav.Caching;
+using ToSic.Eav.Logging;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
@@ -14,7 +15,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, out var message))
                 return message;
 
-            Log.Add($"debug app-load {appId}");
+            Log.A($"debug app-load {appId}");
             return PageStyles() + DumpTree($"2sxc load log for app {appId}", AppRt(appId).AppState.Log);
         }
 
@@ -88,14 +89,14 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, out var message))
                 return message;
 
-            Log.Add($"debug app-internals for {appId}");
+            Log.A($"debug app-internals for {appId}");
             var appRead = AppRt(appId);
             var pkg = appRead.AppState;
 
             var msg = H1($"App internals for {appId}").ToString();
             try
             {
-                Log.Add("general stats");
+                Log.A("general stats");
                 msg += P(
                      Tags.Nl2Br($"AppId: {pkg.AppId}\n"
                          + $"Timestamp First : {pkg.CacheStatistics.FirstTimestamp} = {pkg.CacheStatistics.FirstTimestamp.ToReadable()}\n"

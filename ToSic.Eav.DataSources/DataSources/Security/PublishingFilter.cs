@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -53,7 +54,7 @@ namespace ToSic.Eav.DataSources
 	    private IImmutableList<IEntity> PublishingFilterList()
 	    {
             Configuration.Parse();
-            Log.Add($"get incl. draft:{ShowDrafts}");
+            Log.A($"get incl. draft:{ShowDrafts}");
 	        var outStreamName = ShowDrafts 
                 ? Constants.DraftsStreamName 
                 : Constants.PublishedStreamName;

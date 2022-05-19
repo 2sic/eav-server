@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -98,7 +99,7 @@ namespace ToSic.Eav.DataSources
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .ToArray();
             
-            Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}]");
+            Log.A($"attrib filter names:[{string.Join(",", attributeNames)}]");
             
             // Determine if we should remove or keep the things in the list
             var keepNamedAttributes = Mode != ModeRemove;

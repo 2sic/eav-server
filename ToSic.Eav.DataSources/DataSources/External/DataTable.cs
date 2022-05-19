@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -125,7 +126,7 @@ namespace ToSic.Eav.DataSources
 		{
             Configuration.Parse();
 
-            Log.Add($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
+            Log.A($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
             var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
 		    return result;
 		}

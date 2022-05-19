@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if (!IsCompatible(doc))
 			{
-				Messages.Add(new Message(Log.Add("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
+				Messages.Add(new Message(Log.AddAndReuse("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
 				return false;
 			}
 
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if (appGuid == null)
             {
-                Messages.Add(new Message(Log.Add("Something is wrong in the xml structure, can't get an app-guid"), Message.MessageTypes.Error));
+                Messages.Add(new Message(Log.AddAndReuse("Something is wrong in the xml structure, can't get an app-guid"), Message.MessageTypes.Error));
                 return false;
             }
 
@@ -64,7 +64,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if (appId <= 0)
 			{
-				Messages.Add(new Message(Log.Add("App was not created. Please try again or make sure the package you are importing is correct."), Message.MessageTypes.Error));
+				Messages.Add(new Message(Log.AddAndReuse("App was not created. Please try again or make sure the package you are importing is correct."), Message.MessageTypes.Error));
 				return false;
 			}
 

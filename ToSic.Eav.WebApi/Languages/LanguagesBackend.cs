@@ -67,7 +67,7 @@ namespace ToSic.Eav.WebApi.Languages
 
         public void Toggle(string cultureCode, bool enable, string niceName)
         {
-            Log.Add($"switch language:{cultureCode}, to:{enable}");
+            Log.A($"switch language:{cultureCode}, to:{enable}");
             // Activate or Deactivate the Culture
             _zoneManager.Value.Init(_site.ZoneId, Log).SaveLanguage(cultureCode, niceName, enable);
         }

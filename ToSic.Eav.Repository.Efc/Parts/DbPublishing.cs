@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -22,13 +23,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var wrapLog = Log.Call($"{entityId}");
             var unpublishedEntity = DbContext.Entities.GetDbEntity(entityId);
             if (!unpublishedEntity.IsPublished)
-                Log.Add("found item is draft, will use this to publish");
+                Log.A("found item is draft, will use this to publish");
             else
             {
-                Log.Add("found item is published - will try to find draft");
+                Log.A("found item is published - will try to find draft");
                 // try to get the draft if it exists
                 var draftId = GetDraftBranchEntityId(entityId);
-                Log.Add($"found draft: {draftId}");
+                Log.A($"found draft: {draftId}");
                 if (!draftId.HasValue)
                     throw new EntityAlreadyPublishedException($"EntityId {entityId} is already published");
                 unpublishedEntity = DbContext.Entities.GetDbEntity(draftId.Value);
@@ -37,28 +38,28 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Publish Draft-Entity
             if (!unpublishedEntity.PublishedEntityId.HasValue)
             {
-                Log.Add("there was no published (not branched), so will just set this to published");
+                Log.A("there was no published (not branched), so will just set this to published");
                 unpublishedEntity.IsPublished = true;
             }
             // Replace currently published Entity with draft Entity and delete the draft
             else
             {
                 var publishedId = unpublishedEntity.PublishedEntityId.Value;
-                Log.Add("There is a published item, will update that with the draft-data and delete the draft afterwards");
+                Log.A("There is a published item, will update that with the draft-data and delete the draft afterwards");
                 var publishedEntity = DbContext.Entities.GetDbEntity(publishedId);
                 var json = unpublishedEntity.Json;
                 var isJson = !string.IsNullOrEmpty(json);
-                Log.Add($"this is a json:{isJson}");
+                Log.A($"this is a json:{isJson}");
 
                 if (isJson)
                 {
-                    Log.Add($"Must convert back to entity, to then modify the EntityId. The json: {json}");
+                    Log.A($"Must convert back to entity, to then modify the EntityId. The json: {json}");
                     // update the content-id
                     draftToPublishForJson.ResetEntityId(publishedId);
                     var serializer = DbContext.JsonSerializerGenerator.New;
                     json = serializer.Serialize(draftToPublishForJson);
 
-                    Log.Add($"changed - final json: {json}");
+                    Log.A($"changed - final json: {json}");
                 }
 
                 publishedEntity.Json = json;  // if it's using the new format
@@ -70,7 +71,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 DbContext.Entities.DeleteEntity(unpublishedEntity.EntityId, false);
             }
 
-            Log.Add("About to save...");
+            Log.A("About to save...");
             DbContext.SqlDb.SaveChanges();
             wrapLog($"ok {entityId}");
         }
@@ -84,7 +85,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns></returns>
         internal ToSicEavEntities ClearDraftBranchAndSetPublishedState(ToSicEavEntities publishedEntity, int? draftId = null, bool newPublishedState = true)
         {
-            Log.Add($"clear draft branch for i:{publishedEntity.EntityId}, draft:{draftId}, state:{newPublishedState}");
+            Log.A($"clear draft branch for i:{publishedEntity.EntityId}, draft:{draftId}, state:{newPublishedState}");
             var unpublishedEntityId = draftId ?? DbContext.Publishing.GetDraftBranchEntityId(publishedEntity.EntityId);
 
             // if additional draft exists, must clear that first
@@ -106,7 +107,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .Where(e => e.PublishedEntityId == entityId && !e.ChangeLogDeleted.HasValue)
                 .Select(e => (int?) e.EntityId)
                 .SingleOrDefault();
-            Log.Add($"GetDraftBranchEntityId({entityId}) found {draftId}");
+            Log.A($"GetDraftBranchEntityId({entityId}) found {draftId}");
             return draftId;
         }
 

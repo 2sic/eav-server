@@ -236,14 +236,14 @@ namespace ToSic.Eav.Repository.Efc
             {
                 action.Invoke();
                 ownTransaction?.Commit();
-                Log.Add($"Transaction {randomId} - completed"); // adds ok to end of block
+                Log.A($"Transaction {randomId} - completed"); // adds ok to end of block
                 wrapLog("transaction ok"); // adds ok to top of block
             }
             catch (Exception e)
             {
                 ownTransaction?.Rollback();
-                Log.Add("Error: " + e.Message);
-                Log.Add($"Transaction {randomId} failed / rollback");
+                Log.A("Error: " + e.Message);
+                Log.A($"Transaction {randomId} failed / rollback");
                 wrapLog("transaction failed / rollback");
                 throw;
             }

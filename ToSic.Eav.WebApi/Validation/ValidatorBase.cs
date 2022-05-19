@@ -22,8 +22,8 @@ namespace ToSic.Eav.WebApi.Validation
         {
             var wrapLog = Log.Call();
             preparedException = HasErrors ? HttpException.BadRequest(Errors): null;
-            if (logMessage != null) Log.Add($"{nameof(logMessage)}:{logMessage}");
-            if (HasErrors) Log.Add($"Errors:{Errors}");
+            if (logMessage != null) Log.A($"{nameof(logMessage)}:{logMessage}");
+            if (HasErrors) Log.A($"Errors:{Errors}");
             wrapLog(HasErrors ? "found errors" : "all ok");
             return !HasErrors;
         }
@@ -35,7 +35,7 @@ namespace ToSic.Eav.WebApi.Validation
         /// <param name="addition"></param>
         protected void Add(string addition)
         {
-            Log.Add($"Add problem to list:{addition}");
+            Log.A($"Add problem to list:{addition}");
             Errors += (Errors == string.Empty ? "" : "\n") + addition;
         }
     }

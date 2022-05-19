@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -99,7 +100,7 @@ namespace ToSic.Eav.DataSources
                 .Skip(itemsToSkip)
                 .Take(PageSize)
                 .ToImmutableArray();
-            Log.Add($"get page:{PageNumber} with size{PageSize} found:{result.Length}");
+            Log.A($"get page:{PageNumber} with size{PageSize} found:{result.Length}");
             return wrapLog("ok", result);
 	    }
 

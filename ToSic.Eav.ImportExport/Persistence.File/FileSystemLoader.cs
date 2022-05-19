@@ -32,7 +32,7 @@ namespace ToSic.Eav.Persistence.File
         public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
         {
             Log.LinkTo(parentLog);
-            Log.Add($"init with appId:{appId}, path:{path}, ignore:{ignoreMissing}");
+            Log.A($"init with appId:{appId}, path:{path}, ignore:{ignoreMissing}");
             AppId = appId;
             Path = path + (path.EndsWith("\\") ? "" : "\\");
             RepoType = repoType;
@@ -154,7 +154,7 @@ namespace ToSic.Eav.Persistence.File
         /// <returns></returns>
         private IContentType LoadAndBuildCt(JsonSerializer ser, string path, int id)
         {
-            Log.Add("Loading " + path);
+            Log.A("Loading " + path);
             var infoIfError = "couldn't read type-file";
             try
             {
@@ -169,12 +169,12 @@ namespace ToSic.Eav.Persistence.File
             }
             catch (IOException e)
             {
-                Log.Add("Failed loading type - couldn't import type-file, IO exception: " + e);
+                Log.A("Failed loading type - couldn't import type-file, IO exception: " + e);
                 return null;
             }
             catch (Exception e)
             {
-                Log.Add($"Failed loading type - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
+                Log.A($"Failed loading type - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
                 return null;
             }
         }
@@ -193,7 +193,7 @@ namespace ToSic.Eav.Persistence.File
         /// <returns></returns>
         private IEntity LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource relationshipSource = null)
         {
-            Log.Add("Loading " + path);
+            Log.A("Loading " + path);
             try
             {
                 var json = System.IO.File.ReadAllText(path);
@@ -202,13 +202,13 @@ namespace ToSic.Eav.Persistence.File
             }
             catch (IOException e)
             {
-                Log.Add($"Failed loading type - couldn't read file on '{path}'");
+                Log.A($"Failed loading type - couldn't read file on '{path}'");
                 Log.Exception(e);
                 return null;
             }
             catch (Exception e)
             {
-                Log.Add($"Failed loading type - couldn't deserialize '{path}' for unknown reason.");
+                Log.A($"Failed loading type - couldn't deserialize '{path}' for unknown reason.");
                 Log.Exception(e);
                 return null;
             }
@@ -227,7 +227,7 @@ namespace ToSic.Eav.Persistence.File
             if (Directory.Exists(path)) return wrapLog("ok", true);
             if (!IgnoreMissingStuff)
                 throw new DirectoryNotFoundException("directory '" + path + "' not found, and couldn't ignore");
-            Log.Add("path: doesn't exist, but ignore");
+            Log.A("path: doesn't exist, but ignore");
             return wrapLog("not found", false);
         }
 

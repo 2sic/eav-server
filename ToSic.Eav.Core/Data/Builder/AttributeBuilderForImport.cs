@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -26,9 +27,9 @@ namespace ToSic.Eav.Data.Builder
             // pre-convert links if necessary...
             if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString() && value is string stringValue)
             {
-                Log.Add($"Will resolve hyperlink for '{stringValue}'");
+                Log.A($"Will resolve hyperlink for '{stringValue}'");
                 value = _valueConverter.Value.ToReference(stringValue);
-                Log.Add($"New value: '{stringValue}'");
+                Log.A($"New value: '{stringValue}'");
             }
 
             // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized

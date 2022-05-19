@@ -114,13 +114,13 @@ namespace ToSic.Eav.DataSources.Queries
 
 	        #region init all DataQueryParts
 
-	        Log.Add($"add parts to pipe#{queryDef.Entity.EntityId} ");
+	        Log.A($"add parts to pipe#{queryDef.Entity.EntityId} ");
 	        var dataSources = new Dictionary<string, IDataSource>();
             var parts = queryDef.Parts;
-            Log.Add($"parts:{parts.Count}");
+            Log.A($"parts:{parts.Count}");
 			
             // More logging in unexpected case that we do not have parts.
-            if (parts.Count == 0) Log.Add($"qd.Entity.Metadata:{queryDef.Entity.Metadata.Count()}");
+            if (parts.Count == 0) Log.A($"qd.Entity.Metadata:{queryDef.Entity.Metadata.Count()}");
 
             foreach (var dataQueryPart in parts)
 	        {
@@ -148,7 +148,7 @@ namespace ToSic.Eav.DataSources.Queries
                     dataSource.Label = dataQueryPart.Entity.GetBestTitle();
                 } catch { /* ignore */ }
 
-	            Log.Add($"add '{assemblyAndType}' as " +
+	            Log.A($"add '{assemblyAndType}' as " +
 	                    $"part#{dataQueryPart.Id}({dataQueryPart.Guid.ToString().Substring(0, 6)}...)");
 	            dataSources.Add(dataQueryPart.Guid.ToString(), dataSource);
 	        }

@@ -122,6 +122,7 @@ namespace ToSic.Eav.Logging
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
         /// <returns>The same warning text which was added</returns>
+        [Obsolete("Will remove soon - probably v15 as it's probably internal only")]
         string Add(string message,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
@@ -134,7 +135,7 @@ namespace ToSic.Eav.Logging
         /// <param name="message"></param>
         /// <returns>The same warning text which was added</returns>
         [Obsolete("Will remove soon - probably v14 as it's probably internal only")]
-        string Warn(string message);
+        void Warn(string message);
 
         /// <summary>
         /// Add a message by calling a function. This will be inside a try/catch, to prevent crashes because of looping on nulls etc.

@@ -64,7 +64,7 @@ namespace ToSic.Eav.Logging
                 Log.Rename(name);
                 this.LinkLog(parentLog);
                 if (initialMessage == null) return;
-                Log.Add(initialMessage, code?.Path, code?.Name, code?.Line ?? 0);
+                Log.A(initialMessage, code?.Path, code?.Name, code?.Line ?? 0);
             }
         }
 

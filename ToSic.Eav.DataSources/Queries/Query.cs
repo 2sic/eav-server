@@ -83,7 +83,7 @@ namespace ToSic.Eav.DataSources.Queries
             // hook up in, just in case we get parameters from an In
             if (source == null) return this;
 
-            Log.Add("found target for Query, will attach");
+            Log.A("found target for Query, will attach");
             In = source.In;
             return this;
         }
@@ -120,7 +120,7 @@ namespace ToSic.Eav.DataSources.Queries
             // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
             if(!_requiresRebuildOfOut)
             {
-                Log.Add("Can't set param - query already compiled");
+                Log.A("Can't set param - query already compiled");
                 wrapLog("error");
                 throw new Exception("Can't set param any more, the query has already been compiled. " +
                                     "Always set params before accessing the data. " +
@@ -148,7 +148,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <inheritdoc />
         public void Reset()
         {
-            Log.Add("Reset query");
+            Log.A("Reset query");
             Definition.Reset();
             _requiresRebuildOfOut = true;
         }
@@ -164,12 +164,12 @@ namespace ToSic.Eav.DataSources.Queries
             // This will only purge query-in used for parameter
             base.PurgeList(cascade);
 
-            Log.Add("Now purge the lists which the Query has on the Out");
+            Log.A("Now purge the lists which the Query has on the Out");
             foreach (var stream in Source.Out)
                 stream.Value.PurgeList(cascade);
-            if (!Source.Out.Any()) Log.Add("No streams on Source.Out found to clear");
+            if (!Source.Out.Any()) Log.A("No streams on Source.Out found to clear");
 
-            Log.Add("Update RequiresRebuildOfOut");
+            Log.A("Update RequiresRebuildOfOut");
             _requiresRebuildOfOut = true;
             callLog("ok");
 

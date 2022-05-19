@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -156,7 +157,7 @@ namespace ToSic.Eav.DataSources
                 .Cast<IEntity>()
                 .ToImmutableArray();
 
-		    Log.Add($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
+		    Log.A($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
 		    return wrapLog("ok", result);
 		}
 

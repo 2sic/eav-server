@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Persistence.File
 {
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Persistence.File
     {
         public List<IContentType> LoadGlobalContentTypes(int typeIdSeed)
         {
-            Log.Add("loading types");
+            Log.A("loading types");
 
             // 3 - return content types
             var types = new List<IContentType>();
@@ -25,7 +26,7 @@ namespace ToSic.Eav.Persistence.File
             types = SetInternalTypes(types);
 
 
-            Log.Add($"found {types.Count} types");
+            Log.A($"found {types.Count} types");
             return types;
         }
 
@@ -39,7 +40,7 @@ namespace ToSic.Eav.Persistence.File
                     .ToDictionary(t => t.NameId, t => t);
 
                 var entitiesToRetype = types.SelectMany(t => t.Metadata).ToList();
-                Log.Add($"Metadata found to retype: {entitiesToRetype.Count}");
+                Log.A($"Metadata found to retype: {entitiesToRetype.Count}");
                 changeCount += UpdateTypes("ContentType Metadata", entitiesToRetype, typeDic);
 
                 entitiesToRetype = types.SelectMany(t => t.Attributes.SelectMany(a => a.Metadata)).ToList();
@@ -47,7 +48,7 @@ namespace ToSic.Eav.Persistence.File
             }
             catch (Exception ex)
             {
-                Log.Add("Error adding types");
+                Log.A("Error adding types");
                 Log.Exception(ex);
             }
 
@@ -62,10 +63,10 @@ namespace ToSic.Eav.Persistence.File
 
             foreach (var badGroups in typesGrouped.Where(g => g.Count() > 1))
             {
-                Log.Add("Warning: This type exists more than once - possibly defined in more plugins: " +
+                Log.A("Warning: This type exists more than once - possibly defined in more plugins: " +
                      $"'{badGroups.First().NameId}' / '{badGroups.First().Name}'");
                 foreach (var bad in badGroups)
-                    Log.Add($"Source: {bad.RepositoryAddress}");
+                    Log.A($"Source: {bad.RepositoryAddress}");
             }
 
             var typesUngrouped = typesGrouped.Select(g => g.First());
@@ -82,11 +83,11 @@ namespace ToSic.Eav.Persistence.File
                     typeDic.TryGetValue(entity.Type.NameId, out var realType);
                     if (realType == null)
                     {
-                        Log.Add("TypeUnchanged:" + entity.Type.NameId);
+                        Log.A("TypeUnchanged:" + entity.Type.NameId);
                         continue;
                     }
                     changeCount++;
-                    Log.Add($"TypeChange:{entity.Type.NameId} - {realType.Name}");
+                    Log.A($"TypeChange:{entity.Type.NameId} - {realType.Name}");
                     (entity as Entity).UpdateType(realType, true);
                 }
 

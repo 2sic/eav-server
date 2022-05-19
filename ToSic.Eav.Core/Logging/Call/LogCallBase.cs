@@ -46,7 +46,7 @@ namespace ToSic.Eav.Logging.Call
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0
-        ) => LogOrNull?.Add(message, cPath, cName, cLine);
+        ) => LogOrNull?.A(message, cPath, cName, cLine);
 
         public void A(
             bool enabled, 
@@ -54,11 +54,7 @@ namespace ToSic.Eav.Logging.Call
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0
-        )
-        {
-            if (enabled) LogOrNull?.Add(message, cPath, cName, cLine);
-        }
-
+        ) => LogOrNull?.A(enabled, message, cPath, cName, cLine);
 
         #endregion
 

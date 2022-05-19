@@ -106,7 +106,7 @@ namespace ToSic.Eav.ImportExport.Zip
                     if (!string.IsNullOrEmpty(directoryName))
                     {
                         if(!Directory.Exists(directoryName))
-                            Log.Add($"Create temp path:{directoryName} (len:{directoryName.Length})");
+                            Log.A($"Create temp path:{directoryName} (len:{directoryName.Length})");
                         Directory.CreateDirectory(directoryName);
                     }
 
@@ -117,10 +117,10 @@ namespace ToSic.Eav.ImportExport.Zip
                     var isCode = FileNames.IsKnownCodeExtension(fileName);
                     if (isCode)
                     {
-                        Log.Add($"code file detected:{fullPath}");
+                        Log.A($"code file detected:{fullPath}");
                         if (!allowCodeImport)
                         {
-                            Log.Add("Code file import not permitted - will throw error");
+                            Log.A("Code file import not permitted - will throw error");
                             wrapLog("error");
                             throw new Exception("Importing code files is not permitted - you need super-user permissions to do this. " +
                                                 $"The process was stopped on the file '{fileName}'");

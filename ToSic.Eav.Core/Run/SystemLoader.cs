@@ -34,7 +34,7 @@ namespace ToSic.Eav.Run
         {
             var call = Log.Call2();
             DoRegistrations();
-            Log.Add("Will now run StartUp on EAv SystemLoader - logs are tracked separately");
+            Log.A("Will now run StartUp on EAv SystemLoader - logs are tracked separately");
             _systemLoaderLazy.Value.StartUp();
             call.Done();
         }
@@ -57,7 +57,7 @@ namespace ToSic.Eav.Run
             }
             catch (Exception ex)
             {
-                Log.Add($"Error on registration of {registration.NameId}");
+                Log.A($"Error on registration of {registration.NameId}");
                 Log.Exception(ex);
             }
             callReg.Done();

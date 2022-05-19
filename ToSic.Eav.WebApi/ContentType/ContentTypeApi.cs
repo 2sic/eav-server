@@ -50,7 +50,7 @@ namespace ToSic.Eav.WebApi
         public ContentTypeApi Init(int appId, ILog parentLog)
         {
             Log.LinkTo(parentLog);
-            Log.Add($"Will use app {appId}");
+            Log.A($"Will use app {appId}");
             _appId = appId;
             AppManager = _appManagerLazy.Value.Init(appId, Log);
             return this;
@@ -74,7 +74,7 @@ namespace ToSic.Eav.WebApi
             // are editing the resources etc. 
             if (scope == Data.Scopes.App)
             {
-                Log.Add($"is scope {scope}, will do extra processing");
+                Log.A($"is scope {scope}, will do extra processing");
                 var appState = _appStates.Get(AppManager);
                 // make sure additional settings etc. exist
                 _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log); 
@@ -94,7 +94,7 @@ namespace ToSic.Eav.WebApi
 
         private ContentTypeDto ContentTypeAsDto(IContentType t, int count = -1)
 	    {
-	        Log.Add($"for json a:{t.AppId}, type:{t.Name}");
+	        Log.A($"for json a:{t.AppId}, type:{t.Name}");
 	        var details = t.Metadata.DetailsOrNull;
 
             var nameOverride = details?.Title;
@@ -139,17 +139,17 @@ namespace ToSic.Eav.WebApi
 
 	    public bool Delete(string staticName)
 	    {
-	        Log.Add($"delete a#{_appId}, name:{staticName}");
+	        Log.A($"delete a#{_appId}, name:{staticName}");
             GetDb().ContentType.Delete(staticName);
 	        return true;
 	    }
 
 	    public bool Save(Dictionary<string, string> item)
 	    {
-	        Log.Add($"save a#{_appId}, item count:{item?.Count}");
+	        Log.A($"save a#{_appId}, item count:{item?.Count}");
 	        if (item == null)
 	        {
-	            Log.Add("item was null, will cancel");
+	            Log.A("item was null, will cancel");
 	            return false;
 	        }
 
@@ -165,7 +165,7 @@ namespace ToSic.Eav.WebApi
 
         public bool CreateGhost(string sourceStaticName)
 	    {
-	        Log.Add($"create ghost a#{_appId}, type:{sourceStaticName}");
+	        Log.A($"create ghost a#{_appId}, type:{sourceStaticName}");
 	        GetDb().ContentType.CreateGhost(sourceStaticName);
             return true;
 	    }
@@ -177,7 +177,7 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         public IEnumerable<ContentTypeFieldDto> GetFields(string staticName)
         {
-            Log.Add($"get fields a#{_appId}, type:{staticName}");
+            Log.A($"get fields a#{_appId}, type:{staticName}");
             var appState = _appStates.Get(_appId);
             if (!(appState.GetContentType(staticName) is IContentType type))
                 throw new Exception("type should be a ContentType - something broke");
@@ -274,7 +274,7 @@ namespace ToSic.Eav.WebApi
 
         public bool Reorder(int contentTypeId, string newSortOrder)
         {
-            Log.Add($"reorder type#{contentTypeId}, order:{newSortOrder}");
+            Log.A($"reorder type#{contentTypeId}, order:{newSortOrder}");
 
             var sortOrderList = newSortOrder.Trim('[', ']').Split(',').Select(int.Parse).ToList();
             GetDb().ContentType.SortAttributes(contentTypeId, sortOrderList);
@@ -283,39 +283,39 @@ namespace ToSic.Eav.WebApi
 
 	    public string[] DataTypes()
 	    {
-	        Log.Add($"get data types");
+	        Log.A($"get data types");
             return GetDb().Attributes.DataTypeNames();
 	    }
 
 
         public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
-	        Log.Add($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
+	        Log.A($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
             var attDef = new ContentTypeAttribute(AppManager.AppId, staticName, type, false, 0, sortOrder);
             return AppManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
 	    }
 
         public bool SetInputType(int attributeId, string inputType)
         {
-            Log.Add($"update input type attrib:{attributeId}, input:{inputType}");
+            Log.A($"update input type attrib:{attributeId}, input:{inputType}");
             return AppManager.ContentTypes.UpdateInputType(attributeId, inputType);
         }
 
 	    public bool DeleteField(int contentTypeId, int attributeId)
 	    {
-	        Log.Add($"delete field type#{contentTypeId}, attrib:{attributeId}");
+	        Log.A($"delete field type#{contentTypeId}, attrib:{attributeId}");
             return GetDb().Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
 	    }
 
 	    public void SetTitle(int contentTypeId, int attributeId)
 	    {
-	        Log.Add($"set title type#{contentTypeId}, attrib:{attributeId}");
+	        Log.A($"set title type#{contentTypeId}, attrib:{attributeId}");
 	        GetDb().Attributes.SetTitleAttribute(attributeId, contentTypeId);
 	    }
 
         public bool Rename(int contentTypeId, int attributeId, string newName)
         {
-            Log.Add($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
+            Log.A($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
             GetDb().Attributes.RenameAttribute(attributeId, contentTypeId, newName);
             return true;
         }

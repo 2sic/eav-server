@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 			if (!IsCompatible(doc))
 			{
-				Messages.Add(new Message(Log.Add("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
+				Messages.Add(new Message(Log.AddAndReuse("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
 				return false;
 			}
 
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			var xmlSource = doc.Element(XmlConstants.RootNode);
             if (xmlSource == null)
             {
-                Messages.Add(new Message(Log.Add("Xml doesn't have expected root node: " + XmlConstants.RootNode), Message.MessageTypes.Error));
+                Messages.Add(new Message(Log.AddAndReuse("Xml doesn't have expected root node: " + XmlConstants.RootNode), Message.MessageTypes.Error));
                 return false;
             }
             PrepareFolderIdCorrectionListAndCreateMissingFolders(xmlSource);
@@ -48,7 +48,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
 		    if (sourceDimensions == null || sourceDefaultLanguage == null)
 		    {
-                Messages.Add(new Message(Log.Add("Can't find source dimensions or source-default language."), Message.MessageTypes.Error));
+                Messages.Add(new Message(Log.AddAndReuse("Can't find source dimensions or source-default language."), Message.MessageTypes.Error));
                 return false;
             }
 

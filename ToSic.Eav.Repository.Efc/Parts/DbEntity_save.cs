@@ -41,7 +41,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             if (logDetails)
             {
-                Log.Add($"lang checks - zone language⋮{_zoneLangs.Count}, usedLanguages⋮{usedLanguages.Count}");
+                Log.A($"lang checks - zone language⋮{_zoneLangs.Count}, usedLanguages⋮{usedLanguages.Count}");
                 Log.A(() => $"langs zone:[{string.Join(",", _zoneLangs.Select(z => z.EnvironmentKey))}] used:[{string.Join(",", usedLanguages.Select(u => u.Key))}]");
             }
 
@@ -51,7 +51,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // check if saving should be with db-type or with the plain json
             var saveJson = UseJson(newEnt);
             string jsonExport;
-            if(logDetails) Log.Add($"save json:{saveJson}");
+            if(logDetails) Log.A($"save json:{saveJson}");
             #endregion Step 1
 
 
@@ -66,7 +66,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var hasAdditionalDraft = draftInfo.Item2;
 
             var isNew = newEnt.EntityId <= 0;   // remember how we want to work...
-            if (logDetails) Log.Add($"entity id:{newEnt.EntityId} - will treat as new:{isNew}");
+            if (logDetails) Log.A($"entity id:{newEnt.EntityId} - will treat as new:{isNew}");
 
             var contentTypeId = GetContentTypeAndAttribIds(newEnt, out var attributeDefs, logDetails);
 
@@ -90,7 +90,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     if (newEnt.EntityGuid == Guid.Empty)
                     {
-                        if (logDetails) Log.Add("New entity guid was null, will throw exception");
+                        if (logDetails) Log.A("New entity guid was null, will throw exception");
                         throw new ArgumentException("can't create entity in DB with guid null - entities must be fully prepared before sending to save");
                     }
 
@@ -183,7 +183,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     DbContext.Relationships.ChangeRelationships(newEnt, dbEnt, attributeDefs, so);
                 }
                 else if (isNew)
-                    if (logDetails) Log.Add("won't save properties / relationships in db model as it's json");
+                    if (logDetails) Log.A("won't save properties / relationships in db model as it's json");
                 else
                     DropEavAttributesForJsonItem(newEnt);
 
@@ -230,11 +230,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // only do this, if we were given an EntityId, otherwise we assume new entity
             if (newEnt.EntityId <= 0)
             {
-                if (logDetails) Log.Add("entity id == 0 means new, so skip draft lookup");
+                if (logDetails) Log.A("entity id == 0 means new, so skip draft lookup");
                 wrapLog("0 (zero)");
                 return new Tuple<int?, bool>(null, false);// null;
             }
-            if (logDetails) Log.Add("entity id > 0 - will check draft/branching");
+            if (logDetails) Log.A("entity id > 0 - will check draft/branching");
 
             // find a draft of this - note that it won't find anything, if the item itself is the draft
             var ent = (Entity) newEnt;
@@ -246,29 +246,29 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             var hasDraft = existingDraftId != null && ent.EntityId != existingDraftId; // only true, if there is an "attached" draft; false if the item itself is draft
 
-            if (logDetails) Log.Add($"draft check: id:{ent.EntityId} {nameof(existingDraftId)}:{existingDraftId}, " +
+            if (logDetails) Log.A($"draft check: id:{ent.EntityId} {nameof(existingDraftId)}:{existingDraftId}, " +
                     $"{nameof(hasDraft)}:{hasDraft}");
 
             // if it's being saved as published, or the draft will be without an old original, then exit 
             if (ent.IsPublished || !ent.PlaceDraftInBranch)
             {
-                if (logDetails) Log.Add($"new is published or branching is not wanted, so we won't branch - returning draft-id:{existingDraftId}");
+                if (logDetails) Log.A($"new is published or branching is not wanted, so we won't branch - returning draft-id:{existingDraftId}");
                 wrapLog(existingDraftId?.ToString() ?? "null");
                 return new Tuple<int?, bool>(existingDraftId, hasDraft);// existingDraftId;
             }
 
-            if (logDetails) Log.Add($"will save as draft, and setting is PlaceDraftInBranch:{ent.PlaceDraftInBranch}=true");
+            if (logDetails) Log.A($"will save as draft, and setting is PlaceDraftInBranch:{ent.PlaceDraftInBranch}=true");
 
-            if (logDetails) Log.Add($"Will look for original {ent.EntityId} to check if it's not published.");
+            if (logDetails) Log.A($"Will look for original {ent.EntityId} to check if it's not published.");
             // check if the original is also not published, with must prevent a second branch!
             var entityInDb = DbContext.Entities.GetDbEntity(ent.EntityId);
             if (!entityInDb.IsPublished)
             {
-                if (logDetails) Log.Add("original in DB is not published, will overwrite and not branch again");
+                if (logDetails) Log.A("original in DB is not published, will overwrite and not branch again");
             }
             else
             {
-                if (logDetails) Log.Add("original is published, so we'll draft in a branch");
+                if (logDetails) Log.A("original is published, so we'll draft in a branch");
                 ent.SetPublishedIdForSaving(ent.EntityId); // set this, in case we'll create a new one
                 ent.ResetEntityId(existingDraftId ?? 0); // set to the draft OR 0 = new
                 hasDraft = false; // not additional any more, as we're now pointing this as primary

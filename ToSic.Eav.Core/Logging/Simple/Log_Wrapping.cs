@@ -47,7 +47,7 @@ namespace ToSic.Eav.Logging.Simple
             return (message, result) =>
             {
                 if (!open) 
-                    Add("Log Warning: Wrapper already closed from previous call");
+                    this.A("Log Warning: Wrapper already closed from previous call");
                 open = false;
 
                 WrapFinish(entry, message, timer);

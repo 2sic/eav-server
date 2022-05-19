@@ -91,7 +91,7 @@ namespace ToSic.Eav.DataSources
 
             if (take > 0 && maxTake > take) maxTake = take;
 
-            log.Add($"take:{take}, maxTake:{maxTake}");
+            log.A($"take:{take}, maxTake:{maxTake}");
             if (take > 0 && maxTake > take) maxTake = take;
             // changed this a bit because of #1815
             // var realTake = maxTake - 1; // either length of array, or take, but -1 as zero-based
@@ -100,7 +100,7 @@ namespace ToSic.Eav.DataSources
             {
                 var swapIndex = Generator.Next(i, maxIndex);   // get num between index and max
                 if (DebugShuffleDs)
-                    log.Add($"i:{i}, maxI:{maxIndex}, maxT:{maxTake} swap:{swapIndex} - will put {swapIndex} on {i}");
+                    log.A($"i:{i}, maxI:{maxIndex}, maxT:{maxTake} swap:{swapIndex} - will put {swapIndex} on {i}");
                 var temp = retArray[i];                 // get item at index i...
                 retArray[i] = retArray[swapIndex];      // set index i to new item
                 retArray[swapIndex] = temp;             // place temp-item to swap-slot

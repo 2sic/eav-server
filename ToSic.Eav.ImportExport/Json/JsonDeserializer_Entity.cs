@@ -64,21 +64,21 @@ namespace ToSic.Eav.ImportExport.Json
             if (jEnt.For != null)
             {
                 var md = jEnt.For;
-                Log.Add($"this is metadata; will construct 'For' object. Type: {md.Target} ({md.TargetType})");
+                Log.A($"this is metadata; will construct 'For' object. Type: {md.Target} ({md.TargetType})");
                 ismeta.TargetType = md.TargetType != 0 ? md.TargetType : MetadataTargets.GetId(md.Target); // #TargetTypeIdInsteadOfTarget
                 ismeta.KeyGuid = md.Guid;
                 ismeta.KeyNumber = md.Number;
                 ismeta.KeyString = md.String;
             }
 
-            Log.Add("build entity");
+            Log.A("build entity");
             var newEntity = MultiBuilder.Entity.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
                 AppPackageOrNull, DateTime.MinValue, DateTime.Now, jEnt.Owner, jEnt.Version);
 
             // check if metadata was included
             if (jEnt.Metadata != null)
             {
-                Log.Add("found more metadata, will deserialize");
+                Log.A("found more metadata, will deserialize");
                 var mdItems = jEnt.Metadata
                     .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
                     .ToList();
@@ -91,7 +91,7 @@ namespace ToSic.Eav.ImportExport.Json
                 if (allowDynamic)
                     BuildAttribsOfUnknownContentType(jEnt.Attributes, newEntity, dynRelationshipsSource);
                 else
-                    Log.Add("will not resolve attributes because dynamic not allowed, but skip was ok");
+                    Log.A("will not resolve attributes because dynamic not allowed, but skip was ok");
             }
             else
             {

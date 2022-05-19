@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSources
                 case ValueTypes.Number:
                     return wrapLog("decimal comparison", NumberComparison(fieldName, operation, languages, expected));
                 case ValueTypes.Entity:
-                    Log.Add("Would apply entity comparison, but this doesn't work");
+                    Log.A("Would apply entity comparison, but this doesn't work");
                     _errCallback("Can't apply Value comparison to Relationship",
                         "Can't compare values which contain related entities - use the RelationshipFilter instead.");
                     return wrapLog("error", null);
@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSources
             //        return wrapLog("datetime comparison", DateTimeComparison(fieldName, operation, languages, expected));
             //    case IEnumerable<IEntity> _:
             //    case IEntity _:
-            //        Log.Add("Would apply entity comparison, but this doesn't work");
+            //        Log.A("Would apply entity comparison, but this doesn't work");
             //        _errCallback("Can't apply Value comparison to Relationship",
             //            "Can't compare values which contain related entities - use the RelationshipFilter instead.");
             //        return wrapLog("error", null);
@@ -146,7 +146,7 @@ namespace ToSic.Eav.DataSources
             #region check for special case "between" with two values to compare
             if (operation == OpBetween || operation == OpNotBetween)
             {
-                Log.Add("Operator is between or !between");
+                Log.A("Operator is between or !between");
                 var (useBetween, start, end) = BetweenParts(expected);
                 if (useBetween)
                 {
@@ -217,7 +217,7 @@ namespace ToSic.Eav.DataSources
             #region handle special case "between" with 2 values
             if (operation == OpBetween || operation == OpNotBetween)
             {
-                Log.Add("Operator is between or !between");
+                Log.A("Operator is between or !between");
                 var (useBetween, start, end) = BetweenParts(expected);
                 if (useBetween)
                 {
@@ -283,12 +283,12 @@ namespace ToSic.Eav.DataSources
             string low = "", high = "";
             if (hasAnd > -1)
             {
-                Log.Add("has 'and'");
+                Log.A("has 'and'");
                 low = expected.Substring(0, hasAnd).Trim();
                 high = expected.Substring(hasAnd + 4).Trim();
-                Log.Add($"has 'and'. low: {low}, high: {high}");
+                Log.A($"has 'and'. low: {low}, high: {high}");
             }
-            else Log.Add("No 'and' found, low/high will be empty");
+            else Log.A("No 'and' found, low/high will be empty");
 
             wrapLog("ok");
             return (hasAnd > -1, low, high);

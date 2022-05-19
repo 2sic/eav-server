@@ -25,7 +25,7 @@ namespace ToSic.Eav.Logging.Simple
                     return;
                 }
 
-                Add($"Depth {recursion} in {ex.Source}: {ex}"); // use the default ToString of an exception
+                this.A($"Depth {recursion} in {ex.Source}: {ex}"); // use the default ToString of an exception
 
                 if (ex.InnerException != null)
                 {

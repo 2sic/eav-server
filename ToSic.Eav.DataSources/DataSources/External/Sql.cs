@@ -9,6 +9,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -224,7 +225,7 @@ namespace ToSic.Eav.DataSources
 		{
             CustomConfigurationParse();
 
-            Log.Add($"get from sql:{SelectCommand}");
+            Log.A($"get from sql:{SelectCommand}");
 
             // Check if SQL contains forbidden terms
             if (ForbiddenTermsInSelect.IsMatch(SelectCommand))
@@ -293,14 +294,14 @@ namespace ToSic.Eav.DataSources
 			            if (!columNames.Contains(casedEntityId))
 			                casedEntityId = columNames.FirstOrDefault(c =>
 			                    string.Equals(c, casedEntityId, StringComparison.InvariantCultureIgnoreCase));
-			            Log.Add($"will used '{casedEntityId}' as entity field (null if not found)");
+			            Log.A($"will used '{casedEntityId}' as entity field (null if not found)");
 
 			            // try alternate casing - new: just take first column if the defined one isn't found - worst case it doesn't have a title
 			            if (!columNames.Contains(casedTitle))
 			                casedTitle = columNames.FirstOrDefault(c =>
 			                                 string.Equals(c, casedTitle, StringComparison.InvariantCultureIgnoreCase))
 			                             ?? columNames.FirstOrDefault();
-			            Log.Add($"will use '{casedTitle}' as title field");
+			            Log.A($"will use '{casedTitle}' as title field");
 
                         #endregion
 
@@ -332,7 +333,7 @@ namespace ToSic.Eav.DataSources
 			    }
 			}
 
-		    Log.Add($"found:{list.Count}");
+		    Log.A($"found:{list.Count}");
 			return list.ToImmutableArray();
 		}
 	}

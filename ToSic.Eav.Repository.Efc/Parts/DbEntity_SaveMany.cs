@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -19,7 +20,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var ids = new List<int>();
 
             if (entities == null || entities.Count == 0)
-                Log.Add("Entities to save are null, skip");
+                Log.A("Entities to save are null, skip");
             else
             {
                 var idx = 0;
@@ -35,7 +36,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                                     {
                                         idx++;
                                         var logDetails = idx < MaxToLogDetails;
-                                        if (idx == MaxToLogDetails) Log.Add($"Hit #{idx}, will stop logging details");
+                                        if (idx == MaxToLogDetails) Log.A($"Hit #{idx}, will stop logging details");
                                         DbContext.DoAndSave(() => ids.Add(SaveEntity(e, saveOptions, logDetails)),
                                             "SaveMany");
                                     }

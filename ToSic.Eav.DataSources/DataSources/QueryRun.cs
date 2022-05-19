@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSources
@@ -91,22 +92,22 @@ namespace ToSic.Eav.DataSources
             // quit if nothing found
             if (configEntity == null)
             {
-                Log.Add("no configuration found - empty list");
+                Log.A("no configuration found - empty list");
                 return wrapLog("silent error", null /*emptyResult*/);
             }
 
-            Log.Add($"Found query settings'{configEntity.GetBestTitle()}' ({configEntity.EntityId}), will continue");
+            Log.A($"Found query settings'{configEntity.GetBestTitle()}' ({configEntity.EntityId}), will continue");
 
 
             var queryDef = configEntity.Children(FieldQuery).FirstOrDefault();
             if (queryDef == null)
             {
-                Log.Add("can't find query in configuration - empty list");
+                Log.A("can't find query in configuration - empty list");
                 return wrapLog("silent error", null /*emptyResult*/);
             }
             #endregion
 
-            Log.Add($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
+            Log.A($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
 
             // create the query & set params
             var query = new Query(DataSourceFactory).Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), ShowDrafts, null, Log);
@@ -138,7 +139,7 @@ namespace ToSic.Eav.DataSources
             var fieldParams = runEntity.Value<string>(FieldParams);
             var newParamsDic = QueryDefinition.GenerateParamsDic(fieldParams, Log);
             var resultingParams = Configuration.Parse(newParamsDic);
-            Log.Add($"Resolved wrapper params - found {resultingParams.Count} ["
+            Log.A($"Resolved wrapper params - found {resultingParams.Count} ["
                     + string.Join(",", resultingParams.Select(p => p.Key + "=" + p.Value))
                     + "]");
             return resultingParams;

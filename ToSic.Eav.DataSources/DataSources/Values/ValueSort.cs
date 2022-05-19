@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -100,7 +101,7 @@ namespace ToSic.Eav.DataSources
 
 			Configuration.Parse();
 
-            Log.Add("will apply value-sort");
+            Log.A("will apply value-sort");
 			var sortAttributes = Attributes.Split(',').Select(s => s.Trim()).ToArray();
 			var sortDirections = Directions.Split(',').Select(s => s.Trim()).ToArray();
 			var descendingCodes = new[] { "desc","d","0",">" };

@@ -31,10 +31,10 @@ namespace ToSic.Eav.WebApi.ImportExport
 
         public ImportResultDto Import(Stream stream, int zoneId, string renameApp)
         {
-            Log.Add("import app start");
+            Log.A("import app start");
             var result = new ImportResultDto();
 
-            if (!string.IsNullOrEmpty(renameApp)) Log.Add($"new app name: {renameApp}");
+            if (!string.IsNullOrEmpty(renameApp)) Log.A($"new app name: {renameApp}");
 
             var zipImport = _zipImport;
             try

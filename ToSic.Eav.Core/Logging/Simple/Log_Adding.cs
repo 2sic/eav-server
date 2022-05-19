@@ -7,6 +7,7 @@ namespace ToSic.Eav.Logging.Simple
     {
 
         /// <inheritdoc />
+        [Obsolete("Will remove soon - probably v15 as it's probably internal only")]
         public string Add(string message,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
@@ -17,15 +18,15 @@ namespace ToSic.Eav.Logging.Simple
         }
 
         [Obsolete("Will remove soon - probably v14 as it's probably internal only")]
-        public string Warn(string message) => Add("WARNING: " + message);
+        public void Warn(string message) => this.W(message);
 
         /// <inheritdoc />
-        [Obsolete("Will remove soon - probably v14 as it's probably internal only")]
+        [Obsolete("Will remove soon - probably v15 as it's probably internal only")]
         public void Add(Func<string> messageMaker,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0) 
-            => Add(LogExtensionsInternal.Try(messageMaker), cPath, cName, cLine);
+            => this.A(messageMaker, cPath, cName, cLine);
 
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Generics;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Intermediate;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.Persistence.Efc
             get {
                 if (_primaryLanguage != null) return _primaryLanguage;
                 _primaryLanguage = _environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
-                Log.Add($"Primary language from environment (for attribute sorting): {_primaryLanguage}");
+                Log.A($"Primary language from environment (for attribute sorting): {_primaryLanguage}");
                 return _primaryLanguage;
             }
             set => _primaryLanguage = value;
@@ -63,7 +64,7 @@ namespace ToSic.Eav.Persistence.Efc
             sqlTime.Stop();
             var entityIdsFound = rawEntities.Select(e => e.EntityId).ToList();
             var entityIdChunks = entityIdsFound.ChunkBy(IdChunkSize);
-            Log.Add($"Found {entityIdsFound.Count} raw entities in {sqlTime.ElapsedMilliseconds}ms - chunked into {entityIdChunks.Count} chunks");
+            Log.A($"Found {entityIdsFound.Count} raw entities in {sqlTime.ElapsedMilliseconds}ms - chunked into {entityIdChunks.Count} chunks");
 
             sqlTime.Start();
             // Load relationships in batches / chunks
@@ -73,14 +74,14 @@ namespace ToSic.Eav.Persistence.Efc
             // in some strange cases we get duplicate keys - this should try to report what's happening
             var relatedEntities = GroupUniqueRelationships(allChunks);
 
-            Log.Add($"Found {relatedEntities.Count} entity relationships in {sqlTime.ElapsedMilliseconds}ms");
+            Log.A($"Found {relatedEntities.Count} entity relationships in {sqlTime.ElapsedMilliseconds}ms");
 
 
             #region load attributes & values
 
             var chunkedAttributes = entityIdChunks.Select(GetAttributesOfEntityChunk);
             var attributes = chunkedAttributes.SelectMany(chunk => chunk).ToDictionary(i => i.Key, i => i.Value);
-            Log.Add($"Found {attributes.Count} attributes");
+            Log.A($"Found {attributes.Count} attributes");
             #endregion
 
             sqlTime.Stop();
@@ -95,7 +96,7 @@ namespace ToSic.Eav.Persistence.Efc
             var entityTimer = Stopwatch.StartNew();
             foreach (var rawEntity in rawEntities)
             {
-                if (AddLogCount++ == MaxLogDetailsCount) Log.Add($"Will stop logging each item now, as we've already logged {AddLogCount} items");
+                if (AddLogCount++ == MaxLogDetailsCount) Log.A($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
                 var newEntity = BuildNewEntity(app, rawEntity, serializer, relatedEntities, attributes, PrimaryLanguage);
 
@@ -105,7 +106,7 @@ namespace ToSic.Eav.Persistence.Efc
             }
 
             entityTimer.Stop();
-            Log.Add($"entities timer:{entityTimer.Elapsed}");
+            Log.A($"entities timer:{entityTimer.Elapsed}");
 
             #endregion
 
