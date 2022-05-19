@@ -2,6 +2,7 @@
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
@@ -30,8 +31,8 @@ namespace ToSic.Eav.Apps
                 CacheTimestampPrivate.CacheTimestamp++;
 
             CacheStatistics.Update(CacheTimestamp, Index.Count, message);
-            Log.Add($"cache reset to stamp {CacheTimestamp} = {CacheTimestamp.ToReadable()}");
-            Log.Add($"Stats: ItemCount: {Index.Count}; ResetCount: {CacheStatistics.ResetCount}  Message: '{message}'");
+            Log.A($"cache reset to stamp {CacheTimestamp} = {CacheTimestamp.ToReadable()}");
+            Log.A($"Stats: ItemCount: {Index.Count}; ResetCount: {CacheStatistics.ResetCount}  Message: '{message}'");
 
             AppStateChanged?.Invoke(this, EventArgs.Empty); // publish event so lightspeed can flush cache
         }

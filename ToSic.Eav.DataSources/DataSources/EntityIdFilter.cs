@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -76,7 +77,7 @@ namespace ToSic.Eav.DataSources
 
 		    var result = entityIds.Select(eid => originals.One(eid)).Where(e => e != null).ToImmutableArray();
 
-		    Log.Add(() => $"get ids:[{string.Join(",",entityIds)}] found:{result.Length}");
+		    Log.A(() => $"get ids:[{string.Join(",",entityIds)}] found:{result.Length}");
             return wrapLog("ok", result);
         }
 

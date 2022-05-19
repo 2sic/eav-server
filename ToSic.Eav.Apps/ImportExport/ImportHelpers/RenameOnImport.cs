@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
         {
             From = from;
             To = to;
-            Log.Add($"user decided to install app in different folder:{to}, " +
+            Log.A($"user decided to install app in different folder:{to}, " +
                 $"because app is already installed in folder:{from}");
 
         }
@@ -36,23 +36,23 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
             var appGuidNode = xmlDoc.XPathSelectElement("//SexyContent/Header/App")?.Attribute(Attributes.GuidNiceName);
             if(appGuidNode == null) throw new Exception("app guid node not found - totally unexpected");
             var originalAppId = appGuidNode.Value;
-            Log.Add($"original AppID:{originalAppId}");
+            Log.A($"original AppID:{originalAppId}");
 
             // same App is already installed, so we have to change AppId 
             appGuidNode.Value = string.Empty;
-            Log.Add($"original AppID is now empty");
+            Log.A($"original AppID is now empty");
 
             // change folder to install app
             xmlDoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='Folder']")
                 .SetAttributeValue("Value", name);
-            Log.Add($"change folder to install app:{name}");
+            Log.A($"change folder to install app:{name}");
 
             // find Value element with OriginalId attribute
             var valueElementWithOriginalIdAttribute = appConfig.Elements(XmlConstants.ValueNode).FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId");
             // if missing add new Value element with OriginalId attribute
             if (valueElementWithOriginalIdAttribute == null)
             {
-                Log.Add($"Value element with OriginalId attribute is missing, so we are adding new one with OriginalId:{originalAppId}");
+                Log.A($"Value element with OriginalId attribute is missing, so we are adding new one with OriginalId:{originalAppId}");
                 var valueElement = new XElement("Value");
                 valueElement.SetAttributeValue("Key", "OriginalId");
                 valueElement.SetAttributeValue("Value", originalAppId);
@@ -63,11 +63,11 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
             {
                 // if OriginalID is empty, than add original AppId to it
                 var originalId = valueElementWithOriginalIdAttribute.Attribute(XmlConstants.ValueAttr)?.Value;
-                Log.Add($"current OriginalId:{originalId}");
+                Log.A($"current OriginalId:{originalId}");
 
                 if (string.IsNullOrEmpty(originalId))
                 {
-                    Log.Add($"current OriginalId is empty, so adding OriginalId:{originalAppId}");
+                    Log.A($"current OriginalId is empty, so adding OriginalId:{originalAppId}");
                     appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId").SetAttributeValue("OriginalId", originalAppId);
                 }
             }
@@ -83,7 +83,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
                     var position = originalFolderRelativePath.IndexOf(originalFolder);
                     if (position == -1) continue;
                     var newFolderRelativePath = originalFolderRelativePath.Remove(position, originalFolder.Length).Insert(position, name);
-                    Log.Add($"replace first occurrence of original app name in folder relative path:{newFolderRelativePath}");
+                    Log.A($"replace first occurrence of original app name in folder relative path:{newFolderRelativePath}");
                     folderItem.SetAttributeValue(XmlConstants.FolderNodePath, newFolderRelativePath);
                 }
             }
@@ -99,7 +99,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
                     var position = originalFileRelativePath.IndexOf(originalFolder);
                     if (position == -1) continue;
                     var newFileRelativePath = originalFileRelativePath.Remove(position, originalFolder.Length).Insert(position, name);
-                    Log.Add($"replace first occurrence of original app name in file relative path:{newFileRelativePath}");
+                    Log.A($"replace first occurrence of original app name in file relative path:{newFileRelativePath}");
                     fileItem.SetAttributeValue(XmlConstants.FolderNodePath, newFileRelativePath);
                 }
             }
@@ -113,7 +113,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
             var newAdamTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles, AdamConstants.AdamRootFolder, To);
             if (Directory.Exists(originalAdamTempRoot))
             {
-                Log.Add($"rename app folder name in temp PortalFiles/adam from:{originalAdamTempRoot} to:{newAdamTempRoot}");
+                Log.A($"rename app folder name in temp PortalFiles/adam from:{originalAdamTempRoot} to:{newAdamTempRoot}");
                 Directory.Move(originalAdamTempRoot, newAdamTempRoot);
             }
         }

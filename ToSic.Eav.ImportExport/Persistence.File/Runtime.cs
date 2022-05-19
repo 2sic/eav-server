@@ -58,7 +58,7 @@ namespace ToSic.Eav.Persistence.File
                         Log.Add($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
                         Log.Exception(e);
                     }
-                Log.Add(() => string.Join(",", _paths));
+                Log.A(() => string.Join(",", _paths));
                 return wrapLog($"{_paths.Count} paths", _paths);
             }
         }

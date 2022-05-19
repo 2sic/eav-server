@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 
@@ -35,7 +36,7 @@ namespace ToSic.Eav.Apps
 
         public void SaveLanguage(string cultureCode, string cultureText, bool active)
         {
-            Log.Add($"save languages code:{cultureCode}, txt:{cultureText}, act:{active}");
+            Log.A($"save languages code:{cultureCode}, txt:{cultureText}, act:{active}");
             DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
             _systemManagerLazy.Ready.PurgeZoneList();
         }

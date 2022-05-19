@@ -87,7 +87,7 @@ namespace ToSic.Eav.Apps.Security
         /// <returns></returns>
         protected IPermissionCheck BuildPermissionChecker(IContentType type = null, IEntity item = null)
         {
-            Log.Add($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
+            Log.A($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
 
             // user has edit permissions on this app, and it's the same app as the user is coming from
             var modifiedContext = Context.Clone(Log);

@@ -20,7 +20,7 @@ namespace ToSic.Eav.Logging.Simple
 
         private Entry WrapStart(string openingMessage, bool useTimer, CodeRef code, out Stopwatch timer)
         {
-            var entry = this.AddInternal(openingMessage, code);
+            var entry = this.AddInternalReuse(openingMessage, code);
             entry.WrapOpen = true;
             timer = useTimer ? Stopwatch.StartNew() : null;
             WrapDepth++;
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Logging.Simple
         {
             WrapDepth--;
             entry.AppendResult(message);
-            var final = this.AddInternal(null, null);
+            var final = this.AddInternalReuse(null, null);
             final.WrapClose = true;
             final.AppendResult(message);
             if (timer == null) return;

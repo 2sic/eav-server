@@ -222,7 +222,7 @@ namespace ToSic.Eav.ImportExport.Json
                         langList = string.Join(",", a.Typed.Select(LanguageKey));
                     }
                     catch { /* ignore */ }
-                    log.Warn($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
+                    log.W($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
                     throw;
                 }
                 try
@@ -231,7 +231,7 @@ namespace ToSic.Eav.ImportExport.Json
                 }
                 catch
                 {
-                    log.Warn($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
+                    log.W($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
                     throw;
                 }
 

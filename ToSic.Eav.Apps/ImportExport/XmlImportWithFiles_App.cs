@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Logging;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
@@ -67,7 +68,7 @@ namespace ToSic.Eav.Apps.ImportExport
 				return false;
 			}
 
-            Log.Add("Purging all Zones");
+            Log.A("Purging all Zones");
             Deps.SystemManager.PurgeZoneList();
             return wrapLog("done", ImportXml(zoneId, appId, doc));
 		}

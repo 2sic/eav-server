@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps
@@ -47,7 +48,7 @@ namespace ToSic.Eav.Apps
             }
             catch (Exception ex)
             {
-                Log.Add("Error");
+                Log.A("Error");
                 Log.Exception(ex);
             }
             finally
@@ -80,7 +81,7 @@ namespace ToSic.Eav.Apps
 
             // If the loader wasn't able to fill name/folder, then the data was not a json
             // so we must try to fix this now
-            Log.Add("Trying to load Name/Folder from App package entity");
+            Log.A("Trying to load Name/Folder from App package entity");
             var config = List.FirstOrDefault(md => md.Type.NameId == AppLoadConstants.TypeAppConfig);
             if (string.IsNullOrWhiteSpace(Name)) Name = config?.Value<string>(AppLoadConstants.FieldName);
             if (string.IsNullOrWhiteSpace(Folder)) Folder = config?.Value<string>(AppLoadConstants.FieldFolder);

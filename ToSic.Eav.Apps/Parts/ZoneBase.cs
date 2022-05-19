@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             Log.LinkTo(parentLog);
             ZoneId = zoneId;
-            Log.Add($"zone base for z#{zoneId}");
+            Log.A($"zone base for z#{zoneId}");
             return this as T;
         }
 

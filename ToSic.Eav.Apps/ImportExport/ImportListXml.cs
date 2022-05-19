@@ -81,10 +81,10 @@ namespace ToSic.Eav.Apps.ImportExport
                 ErrorLog.Add(ImportErrorCode.InvalidContentType);
                 return this;
             }
-            Log.Add("Content type ok:" + contentType.Name);
+            Log.A("Content type ok:" + contentType.Name);
 
             ExistingEntities = App.List.Where(e => e.Type == contentType).ToList();
-            Log.Add($"Existing entities: {ExistingEntities.Count}");
+            Log.A($"Existing entities: {ExistingEntities.Count}");
 
             _languages = languages?.ToList();
             if (_languages == null || !_languages.Any())
@@ -92,7 +92,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             _languages = _languages.Select(l => l.ToLowerInvariant()).ToList();
             _docLangPrimary = documentLanguageFallback.ToLowerInvariant();
-            Log.Add($"Languages: {languages.Count()}, fallback: {_docLangPrimary}");
+            Log.A($"Languages: {languages.Count()}, fallback: {_docLangPrimary}");
             _deleteSetting = deleteSetting;
             ResolveLinks = resolveLinkMode == ImportResolveReferenceMode.Resolve;
 
@@ -108,7 +108,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 ErrorLog.Add(ImportErrorCode.Unknown, exception.ToString());
             }
             Timer.Stop();
-            Log.Add($"Prep time: {Timer.ElapsedMilliseconds}ms");
+            Log.A($"Prep time: {Timer.ElapsedMilliseconds}ms");
             TimeForMemorySetup = Timer.ElapsedMilliseconds;
             
             return this;
@@ -217,11 +217,11 @@ namespace ToSic.Eav.Apps.ImportExport
                             ResolveLinks);
                     val.Languages.Add(new Language {Key = nodeLang, ReadOnly = valueReadOnly});
 
-                    Log.Add($"Nr. {nodesCount} ok");
+                    Log.A($"Nr. {nodesCount} ok");
                 }
             }
 
-            Log.Add($"Prepared {ImportEntities.Count} entities for import");
+            Log.A($"Prepared {ImportEntities.Count} entities for import");
             return callLog("done", true);
         }
 

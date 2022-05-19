@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -88,7 +89,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     #endregion
 
-                    if (logDetails) Log.Add(() =>
+                    if (logDetails) Log.A(() =>
                         $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count}, dim⋮{toSicEavValuesDimensions?.Count}");
 
                     var newVal = new ToSicEavValues

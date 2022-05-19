@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -41,14 +42,14 @@ namespace ToSic.Eav.Apps
             AppConfiguration = appState.SettingsInApp.AppConfiguration;
             // in some cases these things may be null, if the app was created not allowing side-effects
             // This can usually happen when new apps are being created
-            Log.Add($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppConfiguration != null}");
+            Log.A($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppConfiguration != null}");
 
             // resolve some values for easier access
             Name = appState.Name ?? Constants.ErrorAppName;
             Folder = appState.Folder ?? Constants.ErrorAppName;
 
             Hidden = AppConfiguration?.Value<bool>(AppConstants.FieldHidden) ?? false;
-            Log.Add($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
+            Log.A($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
             wrapLog(null);
         }
         #endregion

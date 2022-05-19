@@ -15,10 +15,12 @@ namespace ToSic.Eav.Logging.Simple
             this.AddInternal(message, new CodeRef(cPath, cName, cLine));
             return message;
         }
-        
+
+        [Obsolete("Will remove soon - probably v14 as it's probably internal only")]
         public string Warn(string message) => Add("WARNING: " + message);
 
         /// <inheritdoc />
+        [Obsolete("Will remove soon - probably v14 as it's probably internal only")]
         public void Add(Func<string> messageMaker,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,

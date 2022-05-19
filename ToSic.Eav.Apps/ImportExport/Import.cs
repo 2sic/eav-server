@@ -84,7 +84,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 #region import AttributeSets if any were included but rollback transaction if necessary
 
                 if (newTypes == null)
-                    Log.Add("No types to import");
+                    Log.A("No types to import");
                 else
                     Storage.DoInTransaction(() =>
                     {
@@ -126,7 +126,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 #region import Entities, but rollback transaction if necessary
 
                 if (newEntities == null)
-                    Log.Add("Not entities to import");
+                    Log.A("Not entities to import");
                 else
                 {
                     var logImpEnts = Log.Call(message: "Pre-Import Entities merge", useTimer: true);
@@ -159,7 +159,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     newIEntities.ForEach(chunk =>
                         {
                             cNum++;
-                            Log.Add($"Importing Chunk {cNum} #{(cNum - 1) * chunkSize + 1} - #{cNum * chunkSize}");
+                            Log.A($"Importing Chunk {cNum} #{(cNum - 1) * chunkSize + 1} - #{cNum * chunkSize}");
                             Storage.DoInTransaction(() => Storage.Save(chunk, SaveOptions));
                         })
                         //))
@@ -190,7 +190,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var callLog = Log.Call<bool>();
             var existing = appState.GetContentType(contentType.NameId);
 
-            Log.Add("New CT, must reset attributes");
+            Log.A("New CT, must reset attributes");
             // must ensure that attribute Metadata is officially seen as new
             // but the import data could have an Id, so we must reset it here.
             foreach (var attribute in contentType.Attributes)
@@ -204,13 +204,13 @@ namespace ToSic.Eav.Apps.ImportExport
             if (existing == null)
                 return callLog("existing not found, won't merge", true);
 
-            Log.Add("found existing, will merge");
+            Log.A("found existing, will merge");
             foreach (var newAttribute in contentType.Attributes)
             {
                 var oldAttr = existing.Attributes.FirstOrDefault(a => a.Name == newAttribute.Name);
                 if (oldAttr == null)
                 {
-                    Log.Add($"New attr {newAttribute.Name} not found on original, merge not needed");
+                    Log.A($"New attr {newAttribute.Name} not found on original, merge not needed");
                     continue;
                 }
 
@@ -259,7 +259,7 @@ namespace ToSic.Eav.Apps.ImportExport
             _mergeCountToStopLogging++;
             var logDetails = _mergeCountToStopLogging <= LogMaxMerges;
             if (_mergeCountToStopLogging == LogMaxMerges)
-                Log.Add($"Hit {LogMaxMerges} merges, will stop logging details");
+                Log.A($"Hit {LogMaxMerges} merges, will stop logging details");
             var callLog = Log.Call<Entity>();
             #region try to get AttributeSet or otherwise cancel & log error
 

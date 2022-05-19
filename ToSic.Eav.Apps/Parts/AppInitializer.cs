@@ -135,13 +135,13 @@ namespace ToSic.Eav.Apps.Parts
             foreach (var item in newItems)
                 if (item.InAppType && FindContentType(item.SetName, item.InAppType) == null)
                 {
-                    Log.Add("couldn't find type, will create");
+                    Log.A("couldn't find type, will create");
                     // create App-Man if not created yet
                     AppManager.ContentTypes.Create(item.SetName, item.SetName, item.Label, Scopes.App);
                     addedTypes = true;
                 }
                 else
-                    Log.Add($"Type '{item.SetName}' found");
+                    Log.A($"Type '{item.SetName}' found");
 
             return wrapLog("ok", addedTypes);
         }
@@ -155,7 +155,7 @@ namespace ToSic.Eav.Apps.Parts
             // if it's still null, we have a problem...
             if (ct == null)
             {
-                Log.Add("type is still null, error");
+                Log.A("type is still null, error");
                 wrapLog("error");
                 throw new Exception("something went wrong - can't find type in app, but it's not a global type, so I must cancel");
             }

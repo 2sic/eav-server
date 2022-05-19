@@ -2,6 +2,7 @@
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 
@@ -42,7 +43,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #region Prepare dimensions (languages) based on header...
             var sourceDimensions = BuildSourceDimensionsList(xmlSource);
-		    Log.Add($"build source dims list⋮{sourceDimensions?.Count}");
+		    Log.A($"build source dims list⋮{sourceDimensions?.Count}");
 
             var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
 		    if (sourceDimensions == null || sourceDefaultLanguage == null)
@@ -55,7 +56,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
 				: new int?();
 
-		    Log.Add($"source def dim:{sourceDefaultDimensionId}");
+		    Log.A($"source def dim:{sourceDefaultDimensionId}");
 
             _targetDimensions = Deps.AppStates.Languages(zoneId, true);
 
@@ -73,7 +74,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
 
-            Log.Add($"Purging {ZoneId}/{AppId}");
+            Log.A($"Purging {ZoneId}/{AppId}");
             Deps.SystemManager.Purge(ZoneId, AppId);
 
 			Messages.AddRange(GetExportImportMessagesFromImportLog(import.Storage.ImportLogToBeRefactored));

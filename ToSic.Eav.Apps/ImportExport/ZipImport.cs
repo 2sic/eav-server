@@ -65,7 +65,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 // For now only it should only contain the "Apps" folder.
                 foreach (var directoryPath in Directory.GetDirectories(temporaryDirectory))
                 {
-                    Log.Add($"folder:{directoryPath}");
+                    Log.A($"folder:{directoryPath}");
                     if (Path.GetFileName(directoryPath) != "Apps") continue;
                     var packageDir = Path.Combine(temporaryDirectory, "Apps");
                     // Loop through each app directory
@@ -95,7 +95,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if (finalException != null)
             {
-                Log.Add("had found errors during import, will throw");
+                Log.A("had found errors during import, will throw");
                 wrapLog("error", false);
                 throw finalException; // must throw, to enable logging outside
             }
@@ -114,7 +114,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
             catch
             {
-                Log.Add("Delete ran into issues, will ignore. " +
+                Log.A("Delete ran into issues, will ignore. " +
                         "Probably files/folders are used by another process like anti-virus. " +
                         "Just leave temp folder as is");
                 wrapLog("error");
@@ -153,7 +153,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if (imp.IsAppImport)
             {
-                Log.Add("will do app-import");
+                Log.A("will do app-import");
 
                 // Version Checks (new in 08.03.03)
                 new VersionCheck(Env, Log).EnsureVersions(imp.AppConfig);
@@ -163,13 +163,13 @@ namespace ToSic.Eav.Apps.ImportExport
                 // user decided to install app in different folder, because same App is already installed
                 if (!string.IsNullOrEmpty(rename))
                 {
-                    Log.Add($"User rename to '{rename}'");
+                    Log.A($"User rename to '{rename}'");
                     var renamer = new RenameOnImport(folder, rename, Log);
                     renamer.FixAppXmlForImportAsDifferentApp(imp);
                     renamer.FixPortalFilesAdamAppFolderName(appDirectory);
                     folder = rename;
                 }
-                else Log.Add("No rename of app requested");
+                else Log.A("No rename of app requested");
 
                 // Throw error if the app directory already exists
                 var appPath = Env.TargetPath(folder);
@@ -182,7 +182,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
             else
             {
-                Log.Add("will do content import");
+                Log.A("will do content import");
                 appId = _initialAppId ?? _appStates.DefaultAppId(_zoneId);
 
                 if (importer.IsCompatible(imp.XmlDoc))

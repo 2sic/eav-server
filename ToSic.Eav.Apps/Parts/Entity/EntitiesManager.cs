@@ -6,6 +6,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Plumbing;
@@ -143,7 +144,7 @@ namespace ToSic.Eav.Apps.Parts
                 if (entity.Attributes.TryGetValue(a.Name, out var attr))
                 {
                     attr.Values.Clear();
-                    Log.Add("Cleared " + a.Name);
+                    Log.A("Cleared " + a.Name);
                 }
 
             return wrapLog("cleared", true);

@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.Security
             Init(ctx, appIdentity, parentLog, permissions: permissions);
             // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
             var wrapLog = Log.Call<AppPermissionCheck>($"ctx, app: {appIdentity}, log");
-            Log.Add($"Permissions: {permissions?.Count}");
+            Log.A($"Permissions: {permissions?.Count}");
             return wrapLog("ok", this);
         }
 

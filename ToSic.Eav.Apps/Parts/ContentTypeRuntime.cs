@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -148,7 +149,7 @@ namespace ToSic.Eav.Apps.Parts
             }
             catch (Exception e)
             {
-                Log.Add("Error: " + e.Message);
+                Log.A("Error: " + e.Message);
                 return wrapLog("error", new List<InputTypeInfo>());
             }
         }

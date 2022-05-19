@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -99,7 +100,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public bool Delete(int id)
         {
-            Log.Add($"delete a#{Parent.AppId}, id:{id}");
+            Log.A($"delete a#{Parent.AppId}, id:{id}");
             // Commented in v13, new implementation is based on AppState.Relationships
             //var canDeleteResult = Parent.Entities.CanDeleteEntityBasedOnDbRelationships(id);
             var canDeleteResult = Parent.Entities.CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(id);
@@ -165,7 +166,7 @@ namespace ToSic.Eav.Apps.Parts
         private Dictionary<string, Guid> SavePartsAndGenerateRenameMap(List<Dictionary<string, object>> partsDefinitions,
             Guid queryEntityGuid)
         {
-            Log.Add($"save parts guid:{queryEntityGuid}");
+            Log.A($"save parts guid:{queryEntityGuid}");
             var newDataSources = new Dictionary<string, Guid>();
 
             foreach (var ds in partsDefinitions)
@@ -218,7 +219,7 @@ namespace ToSic.Eav.Apps.Parts
             IEnumerable<Guid> newDataSources, 
             QueryDefinition qDef)
         {
-            Log.Add($"delete part a#{Parent.AppId}, pipe:{qDef.Entity.EntityGuid}");
+            Log.A($"delete part a#{Parent.AppId}, pipe:{qDef.Entity.EntityGuid}");
             // Get EntityGuids currently stored in EAV
             var existingEntityGuids = qDef.Parts.Select(e => e.Guid);
 
@@ -241,7 +242,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="renamedDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
         private void SaveHeader(int id, Dictionary<string, object> values, List<Connection> wirings, IDictionary<string, Guid> renamedDataSources)
         {
-            Log.Add($"save pipe a#{Parent.AppId}, pipe:{id}");
+            Log.A($"save pipe a#{Parent.AppId}, pipe:{id}");
             wirings = RenameWiring(wirings, renamedDataSources);
 
             // Validate Stream Wirings, as we should never save bad wirings

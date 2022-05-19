@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -68,7 +69,7 @@ namespace ToSic.Eav.Apps.Parts
             foreach (var canDelete in canDeleteList)
                 if (!canDelete.Value.Item1 && !force && !skipIfCant)
                     throw new InvalidOperationException(
-                        Log.Add($"Can't delete Item {canDelete.Key}. It is used by others. {canDelete.Value.Item2}"));
+                        Log.AddAndReuse($"Can't delete Item {canDelete.Key}. It is used by others. {canDelete.Value.Item2}"));
 
             return canDeleteList;
         }
@@ -159,7 +160,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public bool Delete(Guid guid)
         {
-            Log.Add($"delete guid:{guid}");
+            Log.A($"delete guid:{guid}");
             // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
             // force: true - force-delete the data-source part
             return Delete(Parent.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId, force: true);

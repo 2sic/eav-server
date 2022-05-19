@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
         public static AppState GetPrimaryApp(this IAppStates appStates, int zoneId, ILog loggerOrNull)
         {
             var primaryAppId = appStates.IdentityOfPrimary(zoneId);
-            loggerOrNull?.Add($"{nameof(GetPrimaryApp)}: {primaryAppId?.Show()}");
+            loggerOrNull.A($"{nameof(GetPrimaryApp)}: {primaryAppId?.Show()}");
             return appStates.Get(primaryAppId);
         }
     }

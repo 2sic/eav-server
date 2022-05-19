@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -45,7 +46,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private void UpdateEntityRelationshipsAndSave(List<RelationshipUpdatePackage> packages)
         {
             var wrapLog = Log.Call(useTimer: true);
-            packages.ForEach(p => Log.Add(() => $"i:{p.Entity.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]"));
+            packages.ForEach(p => Log.A(() => $"i:{p.Entity.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]"));
             // remove existing Relationships that are not in new list
             var existingRelationships = packages.SelectMany(p => p.Entity.RelationshipsWithThisAsParent
                 .Where(e => e.AttributeId == p.AttributeId))

@@ -25,7 +25,7 @@ namespace ToSic.Eav.Logging.Call
             if (LogOrNull == null) return;
 
             var openingMessage = (isProp ? ".": "") + $"{code.Name}({parameters}) {message}";
-            var entry = Entry = LogOrNull.AddInternal(openingMessage, code);
+            var entry = Entry = LogOrNull.AddInternalReuse(openingMessage, code);
             entry.WrapOpen = true;
             LogOrNull.WrapDepth++;
             IsOpen = true;
@@ -87,7 +87,7 @@ namespace ToSic.Eav.Logging.Call
 
             LogOrNull.WrapDepth--;
             entry.AppendResult(message);
-            var final = LogOrNull.AddInternal(null, null);
+            var final = LogOrNull.AddInternalReuse(null, null);
             final.WrapClose = true;
             final.AppendResult(message);
             if (timer == null) return;

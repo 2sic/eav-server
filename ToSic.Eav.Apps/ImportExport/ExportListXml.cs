@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns>A string containing the blank xml scheme</returns>
         public string EmptyListTemplate()
         {
-            Log.Add("export schema xml");
+            Log.A("export schema xml");
             if (ContentType == null) 
                 return null;
 
@@ -79,7 +79,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             if (ContentType == null) return null;
 
-            Log.Add($"start export lang selected:{languageSelected} with fallback:{languageFallback} and type:{ContentType.Name}");
+            Log.A($"start export lang selected:{languageSelected} with fallback:{languageFallback} and type:{ContentType.Name}");
 
             #region build languages-list, but this must still be case-sensitive
             // note: reason for case-sensitive is that older imports need the en-US or will fail
@@ -107,7 +107,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Get the attribute definitions
             var attribsOfType = ContentType.Attributes;
-            Log.Add($"will export {entList.Count} entities X {attribsOfType.Count} attribs");
+            Log.A($"will export {entList.Count} entities X {attribsOfType.Count} attribs");
 
             foreach (var entity in entList)
                 foreach (var language in languages)

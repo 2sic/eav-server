@@ -84,13 +84,13 @@ namespace ToSic.Eav.Apps.Languages
             }
 
             var set = GetLanguagePermissions(appStateOrNull, languages);
-            Log.Add($"Found {set.Count} sets");
+            Log.A($"Found {set.Count} sets");
             var hasPermissions = set.Any(s => s.Permissions.Any());
 
             // Find primary app, or stop if we're already there
             if (!hasPermissions && appStateOrNull.NameId != Constants.PrimaryAppGuid)
             {
-                Log.Add("No permissions, and not primary app - will try that");
+                Log.A("No permissions, and not primary app - will try that");
                 var primaryId = _appStatesLazy.Value.PrimaryAppId(appStateOrNull.ZoneId);
                 var primaryApp = _appStatesLazy.Value.Get(primaryId);
                 set = GetLanguagePermissions(primaryApp, languages);
@@ -98,7 +98,7 @@ namespace ToSic.Eav.Apps.Languages
             }
 
             var defaultAllowed = _ctx.User.IsSuperUser || !hasPermissions;
-            Log.Add($"HasPermissions: {hasPermissions}, Initial Allowed: {defaultAllowed}");
+            Log.A($"HasPermissions: {hasPermissions}, Initial Allowed: {defaultAllowed}");
 
             var newSet = set.Select(s =>
             {

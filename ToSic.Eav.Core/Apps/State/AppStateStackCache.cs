@@ -48,7 +48,7 @@ namespace ToSic.Eav.Apps
             if (_fullStackSynched != null)
             {
                 if (_fullStackSynched.CacheChanged())
-                    buildLog.Add("Cache changed, will rebuild");
+                    buildLog.A("Cache changed, will rebuild");
                 else
                     return wrapLog("existing", _fullStackSynched.Value);
             }

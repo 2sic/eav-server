@@ -111,7 +111,7 @@ namespace ToSic.Eav.ImportExport.Zip
                     }
 
                     if (fullPath.Length > 240)
-                        Log.Warn($"file name is very long - could cause trouble:{fullPath}");
+                        Log.W($"file name is very long - could cause trouble:{fullPath}");
 
                     // enhanced security check
                     var isCode = FileNames.IsKnownCodeExtension(fileName);

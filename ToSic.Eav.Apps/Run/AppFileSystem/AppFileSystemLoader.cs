@@ -116,7 +116,7 @@ namespace ToSic.Eav.Apps.Run
             try
             {
                 var extPaths = ExtensionPaths();
-                Log.Add($"Found {extPaths.Count} extensions with .data folder");
+                Log.A($"Found {extPaths.Count} extensions with .data folder");
                 var allTypes = extPaths.SelectMany(p => LoadTypesFromOneExtensionPath(p, entitiesSource))
                     .Distinct(new EqualityComparer_ContentType())
                     .ToList();
@@ -124,7 +124,7 @@ namespace ToSic.Eav.Apps.Run
             }
             catch (Exception e)
             {
-                Log.Add("error " + e.Message);
+                Log.A("error " + e.Message);
             }
 
             return wrapLog("error", new List<IContentType>());
@@ -150,12 +150,12 @@ namespace ToSic.Eav.Apps.Run
             var di = new DirectoryInfo(path);
             if (!di.Exists) return wrapLog("directory not found", new List<InputTypeInfo>());
             var inputFolders = di.GetDirectories(FieldFolderPrefix + "*");
-            Log.Add($"found {inputFolders.Length} field-directories");
+            Log.A($"found {inputFolders.Length} field-directories");
 
             var withIndexJs = inputFolders
                 .Where(fld => fld.GetFiles(JsFile).Any())
                 .Select(fld => fld.Name).ToArray();
-            Log.Add($"found {withIndexJs.Length} folders with {JsFile}");
+            Log.A($"found {withIndexJs.Length} folders with {JsFile}");
 
             var types = withIndexJs.Select(name =>
                 {

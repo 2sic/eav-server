@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -34,7 +35,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (logDetails)
             {
                 Log.Add($"header checked type:{contentTypeId}, attribDefs⋮{attributes?.Count}");
-                if (attributes != null) Log.Add(() => $"attribs: [{string.Join(",", attributes.Select(a => a.AttributeId + ":" + a.StaticName))}]");
+                if (attributes != null) Log.A(() => $"attribs: [{string.Join(",", attributes.Select(a => a.AttributeId + ":" + a.StaticName))}]");
             }
             attributeDefinition = attributes;
             return contentTypeId;

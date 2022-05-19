@@ -133,6 +133,7 @@ namespace ToSic.Eav.Logging
         /// </summary>
         /// <param name="message"></param>
         /// <returns>The same warning text which was added</returns>
+        [Obsolete("Will remove soon - probably v14 as it's probably internal only")]
         string Warn(string message);
 
         /// <summary>
@@ -142,6 +143,7 @@ namespace ToSic.Eav.Logging
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
+        [Obsolete("Will remove soon - probably v14 as it's probably internal only")]
         void Add(Func<string> messageMaker,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,

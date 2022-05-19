@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Parts
@@ -31,7 +32,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public int GetOrCreate(Guid newGuid, string typeName, Dictionary<string, object> values)
         {
-            Log.Add($"get or create guid:{newGuid}, type:{typeName}, val-count:{values.Count}");
+            Log.A($"get or create guid:{newGuid}, type:{typeName}, val-count:{values.Count}");
             if (Parent.DataController.Entities.EntityExists(newGuid))
             {
                 // check if it's deleted - if yes, resurrect

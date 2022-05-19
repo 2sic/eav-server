@@ -21,6 +21,22 @@ namespace ToSic.Eav.Logging
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0
         ) => log?.AddInternal(message, new CodeRef(cPath, cName, cLine));
+
+
+        public static void A(this ILog log,
+            Func<string> messageMaker,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+        ) => log?.AddInternal(LogExtensionsInternal.Try(messageMaker), new CodeRef(cPath, cName, cLine));
+
+        public static string AddAndReuse(this ILog log,
+            string message,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+        ) => log?.AddInternalReuse(message, new CodeRef(cPath, cName, cLine)).Message;
+
         
         public static void A(this ILog log, 
             bool enabled, 
@@ -30,15 +46,15 @@ namespace ToSic.Eav.Logging
             [CallerLineNumber] int cLine = 0
         ) { if (enabled) log?.AddInternal(message, new CodeRef(cPath, cName, cLine)); }
 
+        public static void W(this ILog log, string message) 
+            => log.A("WARNING: " + message);
+
 
         public static ILog SubLogOrNull(this ILog log, string name, bool enabled = true)
         {
             if (log == null || !enabled) return null;
             return new Log(name, log);
         }
-
-        //public static Entry AddAndReturnEntry(this ILog log, string message, CodeRef codeRef)
-        //    => (log as Log)?.AddInternal(message, codeRef);
 
         public static LogCall<T> Call2<T>(this ILog log,
             string parameters = null,

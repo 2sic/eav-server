@@ -3,6 +3,7 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
@@ -18,7 +19,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		{
             var wrap = Log.Call();
             var list = xmlContentTypes.ToList();
-            Log.Add($"items: {list.Count}");
+            Log.A($"items: {list.Count}");
 
             var importAttributeSets = new List<IContentType>();
 
@@ -56,12 +57,12 @@ namespace ToSic.Eav.Apps.ImportExport
                     ((IMetadataInternals)attribute.Metadata).Use(BuildEntities(md, (int)TargetTypes.Attribute));
                     attributes.Add(attribute);
 
-                    Log.Add($"Attribute: {name} ({fieldTypeName}) with {md.Count} metadata items");
+                    Log.A($"Attribute: {name} ({fieldTypeName}) with {md.Count} metadata items");
 
                     // Set Title Attribute
                     if (bool.Parse(xmlField.Attribute(XmlConstants.IsTitle).Value))
                     {
-                        Log.Add("set title on this attribute");
+                        Log.A("set title on this attribute");
                         attribute.IsTitle = true;
                     }
                 }
@@ -88,7 +89,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             if(isSharedType & !AllowUpdateOnSharedTypes)
             {
-                Log.Add("trying to update a shared type, but not allowed");
+                Log.A("trying to update a shared type, but not allowed");
                 wrapLog("error");
                 return null;
             }

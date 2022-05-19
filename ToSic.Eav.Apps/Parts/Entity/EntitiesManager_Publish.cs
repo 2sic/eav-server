@@ -1,18 +1,20 @@
-﻿namespace ToSic.Eav.Apps.Parts
+﻿using ToSic.Eav.Logging;
+
+namespace ToSic.Eav.Apps.Parts
 {
     public partial class EntitiesManager
     {
         private void PublishWithoutPurge(int entityId)
         {
-            Log.Add($"PublishWithoutPurge({entityId})");
+            Log.A($"PublishWithoutPurge({entityId})");
 
             // 1. make sure we're publishing the draft, because the entityId might be the published one...
             var contEntity = Parent.Read.Entities.Get(entityId);
             if (contEntity == null)
-                Log.Add($"Will skip, couldn't find the entity {entityId}");
+                Log.A($"Will skip, couldn't find the entity {entityId}");
             else
             {
-                Log.Add($"found id: {contEntity.EntityId}, " +
+                Log.A($"found id: {contEntity.EntityId}, " +
                         $"rid: {contEntity.RepositoryId}, isPublished: {contEntity.IsPublished}");
 
                 var maybeDraft = contEntity.IsPublished
@@ -21,14 +23,14 @@
 
                 var repoId = maybeDraft.RepositoryId;
 
-                Log.Add($"publish requested for:{entityId}, " +
+                Log.A($"publish requested for:{entityId}, " +
                         $"will publish: {repoId} if published false (it's: {maybeDraft.IsPublished})");
 
                 if (!maybeDraft.IsPublished)
                     Parent.DataController.Publishing.PublishDraftInDbEntity(repoId, maybeDraft);
             }
 
-            Log.Add($"/PublishWithoutPurge({entityId})");
+            Log.A($"/PublishWithoutPurge({entityId})");
         }
 
         /// <summary>
@@ -36,7 +38,7 @@
         /// </summary>
         public void Publish(int[] entityIds)
         {
-            Log.Add(() => "Publish(" + entityIds.Length + " items [" + string.Join(",", entityIds) + "])");
+            Log.A(() => "Publish(" + entityIds.Length + " items [" + string.Join(",", entityIds) + "])");
             foreach (var eid in entityIds)
                 try
                 {
@@ -45,7 +47,7 @@
                 catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { /* ignore */ }
             // for now, do a full purge as it's the safest. in the future, maybe do a partial cache-update
             SystemManager.PurgeApp(Parent.AppId);
-            Log.Add("/Publish(...)");
+            Log.A("/Publish(...)");
         }
 
         /// <summary>

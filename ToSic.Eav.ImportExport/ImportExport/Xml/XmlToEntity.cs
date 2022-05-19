@@ -277,7 +277,7 @@ namespace ToSic.Eav.ImportExport.Xml
             // this should probably never happen, but just in case...
             if (sourceValueNode == null)
 	        {
-	            Log.Warn("node still null - this indicates a problem! will just use first match");
+	            Log.W("node still null - this indicates a problem! will just use first match");
 	            sourceValueNode = xmlValuesOfAttrib.First();
 	        }
 	        wrap((sourceValueNode != null).ToString());

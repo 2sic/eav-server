@@ -69,7 +69,7 @@ namespace ToSic.Eav.Apps.Parts
             if (appConfig != null && appResources != null && appSettings != null)
                 return callLogFindParts("all ok", true);
 
-            log.Add($"App Config: {appConfig != null}, Resources: {appResources != null}, Settings: {appSettings != null}");
+            log.A($"App Config: {appConfig != null}, Resources: {appResources != null}, Settings: {appSettings != null}");
 
             return callLogFindParts("some missing", false);
         }
