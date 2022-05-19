@@ -13,5 +13,17 @@
             return result;
         }
 
+
+        public T Return(T result)
+        {
+            DoneInternal(null);
+            return result;
+        }
+        public T ReturnAndLog(T result)
+        {
+            DoneInternal($"{result}");
+            return result;
+        }
+
     }
 }

@@ -40,22 +40,6 @@ namespace ToSic.Eav.Logging
 
         int Depth { get; set; }
 
-        /// <summary>
-        /// Intercept the result of an inner method, log it, then pass result on
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="message"></param>
-        /// <param name="generate"></param>
-        /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
-        /// <param name="cName">auto pre filled by the compiler - the method name</param>
-        /// <param name="cLine">auto pre filled by the compiler - the code line</param>
-        /// <returns></returns>
-        [PrivateApi("not widely used yet, keep secret")] 
-        T Intercept<T>(string message, Func<T> generate,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
-            );
 
         /// <summary>
         /// Dump result to an internal format - not very important in public use cases
