@@ -30,6 +30,10 @@ namespace ToSic.Eav.Logging
             if (enabled) log?.Add(message, cPath, cName, cLine);
         }
 
+        #region Obsolete SafeCall things - remove it v14
+
+        
+
         /// <summary>
         /// Creates a safe wrap-log function which works if the log exists or not
         /// </summary>
@@ -53,6 +57,7 @@ namespace ToSic.Eav.Logging
         /// Creates a safe wrap-log function which works if the log exists or not
         /// </summary>
         /// <returns></returns>
+        [Obsolete("obsolete since 2022-05-19, should not be used outside of 2sxc, remove in v14")]
         public static Func<string, T, T> SafeCall<T>(this ILog log,
             bool enabled,
             string parameters = null,
@@ -87,6 +92,9 @@ namespace ToSic.Eav.Logging
                 : (msg) => { } ;
         }
 
+        #endregion
+
+
 
         public static ILog SubLogOrNull(this ILog log, string name, bool enabled = true)
         {
@@ -106,6 +114,18 @@ namespace ToSic.Eav.Logging
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0
         ) => new LogCall<T>(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+
+        public static LogCall<T> Call2<T>(this ILog log,
+            bool enabled,
+            string parameters = null,
+            string message = null,
+            bool startTimer = false,
+            CodeRef code = null,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+        ) => new LogCall<T>(enabled ? log : null, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+
 
         public static LogCall Call2(this ILog log,
             string parameters = null,
