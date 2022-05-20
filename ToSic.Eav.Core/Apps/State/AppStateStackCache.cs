@@ -85,7 +85,7 @@ namespace ToSic.Eav.Apps
 
         private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(ILog buildLog = null)
         {
-            var wrapLog = buildLog.Call2<List<KeyValuePair<string, IPropertyLookup>>>();
+            var wrapLog = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup>>>();
 
             void LogSource(string name, AppStateMetadata state) 
                 => wrapLog.A($"{name}: {state != null}; MD: {state?.MetadataItem?.EntityId}; CustomItem: {state?.CustomItem?.EntityId}; ScopeAny: {state?.SystemItem?.EntityId};");

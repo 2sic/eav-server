@@ -26,7 +26,7 @@ namespace ToSic.Eav.Data.PiggyBack
         [PrivateApi]
         public static TData GetOrCreateInPiggyBack<TData>(this IPropertyLookup entryPoint, string field, Func<string, TData> factory, ILog logOrNull) where TData : class
         {
-            var wrapLog = logOrNull.Call2<TData>();
+            var wrapLog = logOrNull.Fn<TData>();
             var advProperty = entryPoint.FindPropertyInternal(field, Array.Empty<string>(), logOrNull, null);
 
             // Skip if nothing to process

@@ -30,7 +30,7 @@ namespace ToSic.Eav.Plumbing.DI
             if (_preferredService != null) return _preferredService;
 
             _logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
-            var call = Log.Call2<T>(message: "re-check singleton service");
+            var call = Log.Fn<T>(message: "re-check singleton service");
             _preferredService = _serviceSwitcher.Ready.Value;
             return call.Return(_preferredService, $"found {_preferredService.NameId}");
         }

@@ -20,7 +20,7 @@ namespace ToSic.Eav.Data
         public static PropertyRequest TryToNavigateToEntityInList(this IEntity entity, string field, object parentDynEntity, ILog parentLogOrNull, PropertyLookupPath path)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull("Sxc.SubLst");
-            var safeWrap = logOrNull.Call2<PropertyRequest>();
+            var safeWrap = logOrNull.Fn<PropertyRequest>();
 
             var dynChildField = entity.Type?.DynamicChildrenField;
             if (string.IsNullOrEmpty(dynChildField)) return safeWrap.ReturnNull("no dyn-child");

@@ -57,7 +57,7 @@ namespace ToSic.Eav.Data
 
         public IPropertyStack GetStack(ILog log, params string[] names)
         {
-            var wrapLog = log.Call2<IPropertyStack>();
+            var wrapLog = log.Fn<IPropertyStack>();
             // Get all required names in the order they were requested
             var newSources = new List<KeyValuePair<string, IPropertyLookup>>();
             foreach (var name in names)
@@ -79,7 +79,7 @@ namespace ToSic.Eav.Data
         public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull, PropertyLookupPath path)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PStack");
-            var wrapLog = logOrNull.Call2<PropertyRequest>($"{nameof(field)}: {field}, {nameof(startAtSource)}: {startAtSource}");
+            var wrapLog = logOrNull.Fn<PropertyRequest>($"{nameof(field)}: {field}, {nameof(startAtSource)}: {startAtSource}");
             // Start with empty result, may be filled in later on
             var result = new PropertyRequest();
             for (var sourceIndex = startAtSource; sourceIndex < SourcesReal.Count; sourceIndex++)

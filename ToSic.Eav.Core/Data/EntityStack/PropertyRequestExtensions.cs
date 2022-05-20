@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         public static PropertyRequest MarkAsFinalOrNot(this PropertyRequest result, string sourceName, int sourceIndex, ILog logOrNull, bool treatEmptyAsDefault)
         {
-            var safeWrap = logOrNull.Call2<PropertyRequest>();
+            var safeWrap = logOrNull.Fn<PropertyRequest>();
             // Check nulls and prevent multiple executions
             if (result == null) return safeWrap.ReturnNull("null");
             if (result.IsFinal) return safeWrap.Return(result, "already final");

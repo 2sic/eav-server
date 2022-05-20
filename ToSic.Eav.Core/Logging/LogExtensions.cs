@@ -56,7 +56,7 @@ namespace ToSic.Eav.Logging
             return new Log(name, log);
         }
 
-        public static LogCall<T> Call2<T>(this ILog log,
+        public static LogCall<T> Fn<T>(this ILog log,
             string parameters = null,
             string message = null,
             bool startTimer = false,
@@ -66,7 +66,7 @@ namespace ToSic.Eav.Logging
             [CallerLineNumber] int cLine = 0
         ) => new LogCall<T>(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
 
-        public static LogCall<T> Call2<T>(this ILog log,
+        public static LogCall<T> Fn<T>(this ILog log,
             bool enabled,
             string parameters = null,
             string message = null,
@@ -78,7 +78,7 @@ namespace ToSic.Eav.Logging
         ) => new LogCall<T>(enabled ? log : null, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
 
 
-        public static LogCall Call2(this ILog log,
+        public static LogCall Fn(this ILog log,
             string parameters = null,
             string message = null,
             bool startTimer = false,
@@ -88,14 +88,14 @@ namespace ToSic.Eav.Logging
         ) => new LogCall(log, new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
 
 
-        public static LogCall Call2(this ILog log, 
+        public static LogCall Fn(this ILog log, 
             Func<string> parameters, 
             Func<string> message = null,
             bool startTimer = false,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
-            => log.Call2(parameters: LogExtensionsInternal.Try(parameters),
+            => log.Fn(parameters: LogExtensionsInternal.Try(parameters),
                 message: message != null ? LogExtensionsInternal.Try(message) : null,
                 startTimer: startTimer,
                 cPath: cPath,
@@ -103,14 +103,14 @@ namespace ToSic.Eav.Logging
                 cLine: cLine
             );
 
-        public static LogCall<T> Call2<T>(this ILog log, 
+        public static LogCall<T> Fn<T>(this ILog log, 
             Func<string> parameters, 
             Func<string> message = null,
             bool startTimer = false,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
-            => log.Call2<T>(parameters: LogExtensionsInternal.Try(parameters),
+            => log.Fn<T>(parameters: LogExtensionsInternal.Try(parameters),
                 message: message != null ? LogExtensionsInternal.Try(message) : null,
                 startTimer: startTimer,
                 cPath: cPath,
@@ -144,7 +144,7 @@ namespace ToSic.Eav.Logging
             [CallerLineNumber] int cLine = 0
         )
         {
-            var callLog = log.Call2<T>(message: message, code: new CodeRef(cPath, cName, cLine));
+            var callLog = log.Fn<T>(message: message, code: new CodeRef(cPath, cName, cLine));
             var result = generate();
             return callLog.ReturnAndLog(result);
         }

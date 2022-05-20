@@ -32,7 +32,7 @@ namespace ToSic.Eav.Run
 
         public void StartUp()
         {
-            var call = Log.Call2();
+            var call = Log.Fn();
             DoRegistrations();
             Log.A("Will now run StartUp on EAv SystemLoader - logs are tracked separately");
             _systemLoaderLazy.Value.StartUp();
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Run
 
         private void DoRegistrations()
         {
-            var call = Log.Call2();
+            var call = Log.Fn();
             foreach (var registration in _registrations) 
                 DoRegistration(registration);
             call.Done();
@@ -49,7 +49,7 @@ namespace ToSic.Eav.Run
 
         private void DoRegistration(IStartUpRegistrations registration)
         {
-            var callReg = Log.Call2(registration.NameId);
+            var callReg = Log.Fn(registration.NameId);
             try
             {
                 registration.Init(Log);

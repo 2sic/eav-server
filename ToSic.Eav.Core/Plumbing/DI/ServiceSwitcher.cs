@@ -24,7 +24,7 @@ namespace ToSic.Eav.Plumbing.DI
 
         private T FindServiceInSwitcher()
         {
-            var wrapLog = Log.Call2<T>();
+            var wrapLog = Log.Fn<T>();
             var all = AllServices;
             if (all == null || !all.Any())
                 throw new ArgumentException(

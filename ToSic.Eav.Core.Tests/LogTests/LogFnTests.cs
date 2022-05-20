@@ -6,13 +6,13 @@ using ToSic.Eav.Logging.Simple;
 namespace ToSic.Eav.Core.Tests.LogTests
 {
     [TestClass]
-    public class LogCall2Tests
+    public class LogFnTests
     {
         [TestMethod]
         public void NoReturnBasic()
         {
             var log = new Log("Test");
-            var call = log.Call2();
+            var call = log.Fn();
             Assert.AreEqual(1, log.Entries.Count);
             call.Done("ok");
             
@@ -25,7 +25,7 @@ namespace ToSic.Eav.Core.Tests.LogTests
         public void NoReturnAll()
         {
             var log = new Log("Test");
-            var call = log.Call2($"something: {7}", "start msg", true);
+            var call = log.Fn($"something: {7}", "start msg", true);
             Assert.IsTrue(call.Stopwatch.ElapsedMilliseconds < 1);
             Assert.AreEqual(1, log.Entries.Count);
             System.Threading.Thread.Sleep(10); // wait 10 ms
@@ -42,7 +42,7 @@ namespace ToSic.Eav.Core.Tests.LogTests
         public void GenericBasic()
         {
             var log = new Log("Test");
-            var call = log.Call2<string>();
+            var call = log.Fn<string>();
             
             Assert.AreEqual(1, log.Entries.Count);  // Should have one when starting
             var result = call.Return("result", "ok");

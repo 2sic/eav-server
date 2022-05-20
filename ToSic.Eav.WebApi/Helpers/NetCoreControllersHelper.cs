@@ -30,7 +30,7 @@ namespace ToSic.Eav.WebApi.Helpers
         public void OnActionExecuting(ActionExecutingContext context, string historyLogGroup)
         {
             // Create a log entry with timing
-            _actionTimerWrap = LogOrNull.Call2($"action executing url: {context.HttpContext.Request.GetDisplayUrl()}", startTimer: true);
+            _actionTimerWrap = LogOrNull.Fn($"action executing url: {context.HttpContext.Request.GetDisplayUrl()}", startTimer: true);
 
             // Get the ServiceProvider of the current request
             _serviceProvider = context.HttpContext.RequestServices;

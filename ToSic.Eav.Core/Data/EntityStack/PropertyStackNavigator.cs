@@ -65,7 +65,7 @@ namespace ToSic.Eav.Data
         public PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull, PropertyLookupPath path)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PSNav");
-            var safeWrap = logOrNull.Call2<PropertyRequest>(
+            var safeWrap = logOrNull.Fn<PropertyRequest>(
                 $"{nameof(field)}:{field}, {nameof(dimensions)}:{string.Join(",", dimensions)}, {nameof(startAtSource)}:{startAtSource}");
 
             // Catch errors with infinite recursions
@@ -105,7 +105,7 @@ namespace ToSic.Eav.Data
             safeWrap.A($"Another sibling found. Name:{sibling.Name} #{sibling.SourceIndex}. Will try to check it's properties. ");
             if (sibling.Result is IEnumerable<IEntity> siblingEntities && siblingEntities.Any())
             {
-                var wrapInner = logOrNull.Call2(null, "It's a list of entities as expected.");
+                var wrapInner = logOrNull.Fn(null, "It's a list of entities as expected.");
                 var entityNav = new EntityWithStackNavigation(siblingEntities.First(), Parent, ParentField, sibling.SourceIndex, Depth + 1);
                 path = path.Add("StackIEntity", field);
                 var result = entityNav.FindPropertyInternal(field, dimensions, logOrNull, path);
@@ -116,7 +116,7 @@ namespace ToSic.Eav.Data
             if (sibling.Result is IEnumerable<IPropertyLookup> siblingStack && siblingStack.Any())
             {
                 safeWrap.A("Another sibling found, it's a list of IPropertyLookups.");
-                var wrapInner = logOrNull.Call2(null, "It's a list of entities as expected.");
+                var wrapInner = logOrNull.Fn(null, "It's a list of entities as expected.");
                 var propNav = new PropertyStackNavigator(siblingStack.First(), Parent, ParentField, sibling.SourceIndex, Depth + 1);
                 path = path.Add("StackIPropertyLookup", field);
                 var result = propNav.PropertyInStack(field, dimensions, 0, true, logOrNull, path);
@@ -137,7 +137,7 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         private PropertyRequest GetResultOfOwnItem(string field, string[] dimensions, ILog logOrNull, bool treatEmptyAsDefault, PropertyLookupPath path)
         {
-            var safeWrap = logOrNull.Call2<PropertyRequest>();
+            var safeWrap = logOrNull.Fn<PropertyRequest>();
 
             // 2022-05-02 2dm - there seem to be cases where this wrapper is created without an own entity.
             // Not yet sure why, but in this case we must be sure to not return something.

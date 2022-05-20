@@ -116,7 +116,7 @@ namespace ToSic.Eav.Security
 
         public bool UserMay(List<Grants> grants)
         {
-            var wrapLog = Log.Call2<bool>(() => $"[{string.Join(",", grants)}]");
+            var wrapLog = Log.Fn<bool>(() => $"[{string.Join(",", grants)}]");
             GrantedBecause = Conditions.Undefined;
             var result = _environmentPermission.EnvironmentAllows(grants) || PermissionsAllow(grants);
             return wrapLog.Return(result, $"{result} ({GrantedBecause})");
@@ -130,7 +130,7 @@ namespace ToSic.Eav.Security
         /// <returns></returns>
         public bool PermissionsAllow(IReadOnlyCollection<Grants> grants)
         {
-            var wrapLog = Log.Call2<bool>(() => $"[{string.Join(", ", grants)}]", () => $"for {PermissionList.Count()} permission items");
+            var wrapLog = Log.Fn<bool>(() => $"[{string.Join(", ", grants)}]", () => $"for {PermissionList.Count()} permission items");
             var result = PermissionList.Any(
                 perm => PermissionAllows(perm,
                     grants.Select(g => (char) g).ToArray()));
