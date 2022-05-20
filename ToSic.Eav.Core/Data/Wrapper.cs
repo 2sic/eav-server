@@ -20,5 +20,7 @@ namespace ToSic.Eav.Data
         public T GetContents() => _contents;
 
         protected Wrapper(T contents) => _contents = contents;
+
+        protected void Init(T contents) => _contents = contents;
     }
 }
