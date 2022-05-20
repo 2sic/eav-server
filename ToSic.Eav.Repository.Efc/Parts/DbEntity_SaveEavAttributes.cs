@@ -28,8 +28,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (val.Count == 0) return callLog.ReturnFalse("no changes");
 
             var dims = val.SelectMany(v => v.ToSicEavValuesDimensions);
-            DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(dims));
-            DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(val));
+            DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(dims));
+            DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(val));
             return callLog.ReturnTrue("ok");
         }
 
@@ -97,9 +97,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         AttributeId = attribDef.AttributeId,
                         Value = value.Serialized ?? "",
                         ChangeLogCreated = changeId, // todo: remove some time later
-                        ToSicEavValuesDimensions = toSicEavValuesDimensions
+                        ToSicEavValuesDimensions = toSicEavValuesDimensions,
+                        EntityId = dbEnt.EntityId
                     };
-                    AttributeQueueAdd(() => dbEnt.ToSicEavValues.Add(newVal));
+                    AttributeQueueAdd(() => DbContext.SqlDb.ToSicEavValues.Add(newVal));
                     //dbEnt.ToSicEavValues.Add(newVal);
                 }
                 wrapAttrib.Done();
@@ -125,13 +126,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
             wrapLog.Done("completed");
         }
 
+        // ReSharper disable once RedundantDefaultMemberInitializer
         private bool _attributeQueueActive = false;
-        private List<Action> _attributeUpdateQueue= new List<Action>();
+        private readonly List<Action> _attributeUpdateQueue = new List<Action>();
 
-        private void AttributeQueueAdd(Action next)
-        {
-            _attributeUpdateQueue.Add(next);
-        }
+        private void AttributeQueueAdd(Action next) => _attributeUpdateQueue.Add(next);
 
         private void AttributeQueueRun()
         {

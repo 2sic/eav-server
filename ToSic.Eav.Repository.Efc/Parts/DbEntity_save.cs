@@ -104,7 +104,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     if (saveJson)
                     {
                         var wrapSaveJson = Log.Fn($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
-                        dbEnt.Json = jsonExport ;
+                        dbEnt.Json = jsonExport;
                         dbEnt.ContentType = newEnt.Type.NameId;
                         DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(dbEnt), "update json");
                         wrapSaveJson.Done("ok");
@@ -213,6 +213,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             return wrapLog.Return(dbEnt.EntityId, "done id:" + dbEnt?.EntityId);
         }
+
+
+
+
+
 
         /// <summary>
         /// Get the draft-id and branching info, 

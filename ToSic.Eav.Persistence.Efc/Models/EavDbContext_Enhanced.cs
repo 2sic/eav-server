@@ -30,6 +30,15 @@ namespace ToSic.Eav.Persistence.Efc.Models
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
+        public int SaveChangesWithoutChangeDetection()
+        {
+            var preserve = ChangeTracker.AutoDetectChangesEnabled;
+            ChangeTracker.AutoDetectChangesEnabled = false;
+            var r = base.SaveChanges();
+            ChangeTracker.AutoDetectChangesEnabled = preserve;
+            return r;
+        }
+
         #endregion
 
         #region potential debugging code if needed - all commented out for now

@@ -56,9 +56,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (existingRelationships.Count > 0)
             {
                 Log.A($"found existing rels⋮{existingRelationships.Count}");
-                foreach (var relationToDelete in existingRelationships)
-                    DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
-                DbContext.SqlDb.SaveChanges(); // this is necessary after remove, because otherwise EF state tracking gets messed up
+                DbContext.SqlDb.ToSicEavEntityRelationships.RemoveRange(existingRelationships);
+                DbContext.SqlDb.SaveChangesWithoutChangeDetection(); // this is necessary after remove, because otherwise EF state tracking gets messed up
             }
 
             packages.ForEach(p =>
@@ -66,15 +65,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 var newEntityIds = p.Targets.ToList();
                 // Create new relationships which didn't exist before
                 for (var i = 0; i < newEntityIds.Count; i++)
-                    p.Entity.RelationshipsWithThisAsParent.Add(new ToSicEavEntityRelationships
+                    DbContext.SqlDb.ToSicEavEntityRelationships.Add(new ToSicEavEntityRelationships
                     {
                         AttributeId = p.AttributeId,
                         ChildEntityId = newEntityIds[i],
-                        SortOrder = i
+                        SortOrder = i,
+                        ParentEntityId = p.Entity.EntityId
                     });
             });
 
-            DbContext.SqlDb.SaveChanges(); // now save the changed relationships
+            DbContext.SqlDb.SaveChangesWithoutChangeDetection(); // now save the changed relationships
+
             wrapLog.Done("ok");
         }
 

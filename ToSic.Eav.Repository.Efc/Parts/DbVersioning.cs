@@ -82,7 +82,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             var callLog = Log.Fn(startTimer: true);
             DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue);
-            DbContext.SqlDb.SaveChanges();
+            DbContext.SqlDb.SaveChangesWithoutChangeDetection();
             _queue.Clear();
             callLog.Done();
         }
