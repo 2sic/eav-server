@@ -55,7 +55,7 @@ namespace ToSic.Eav.Obsolete
                 catch (Exception ex)
                 {
                     Log.A("Error logging additional info.");
-                    Log.Exception(ex);
+                    Log.Ex(ex);
                 }
 
                 // Stop logging a general case if it's already been logged very often

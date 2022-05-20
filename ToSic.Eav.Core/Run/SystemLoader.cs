@@ -58,7 +58,7 @@ namespace ToSic.Eav.Run
             catch (Exception ex)
             {
                 Log.A($"Error on registration of {registration.NameId}");
-                Log.Exception(ex);
+                Log.Ex(ex);
             }
             callReg.Done();
         }

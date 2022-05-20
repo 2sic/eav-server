@@ -124,7 +124,7 @@ namespace ToSic.Eav.Configuration
             }
             catch (Exception e)
             {
-                Log.Exception(e);
+                Log.Ex(e);
                 return wrapLog("save features failed:" + e.Message, false);
             }
         }
@@ -144,7 +144,7 @@ namespace ToSic.Eav.Configuration
             }
             catch (Exception e)
             {
-                Log.Exception(e);
+                Log.Ex(e);
                 return wrapLog("save file failed:" + e.Message, false);
             }
         }
@@ -185,7 +185,7 @@ namespace ToSic.Eav.Configuration
             }
             catch (Exception e)
             {
-                Log.Exception(e);
+                Log.Ex(e);
                 return wrapLog("save features failed:" + e.Message, false);
             }
         }

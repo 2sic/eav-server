@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources
 {
@@ -60,7 +61,7 @@ namespace ToSic.Eav.DataSources
         {
             Parameters.ProtectAgainstMissingParameterNames(noParamOrder, "CreateErrorList", "various");
 
-            source?.Log?.Exception(exception);
+            source?.Log?.Ex(exception);
 
             // Construct the IEntity and return as ImmutableArray
             var entity = CreateErrorEntity(source, streamName, title, message);

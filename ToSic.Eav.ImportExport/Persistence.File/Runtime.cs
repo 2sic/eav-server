@@ -56,7 +56,7 @@ namespace ToSic.Eav.Persistence.File
                     catch(Exception e)
                     {
                         Log.A($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
-                        Log.Exception(e);
+                        Log.Ex(e);
                     }
                 Log.A(() => string.Join(",", _paths));
                 return wrapLog($"{_paths.Count} paths", _paths);
@@ -122,7 +122,7 @@ namespace ToSic.Eav.Persistence.File
                 catch (Exception ex)
                 {
                     Log.A("Error: Failed adding Entities");
-                    Log.Exception(ex);
+                    Log.Ex(ex);
                 }
 
                 wrapLog("ok");

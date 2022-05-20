@@ -157,7 +157,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                 }
                 catch (WebException e)
                 {
-                    Log.Exception(e);
+                    Log.Ex(e);
                     throw new Exception("Could not download license file from '" + url + "'.", e);
                 }
                 finally
@@ -196,7 +196,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             }
             catch (Exception e)
             {
-                Log.Exception(e);
+                Log.Ex(e);
                 throw;
             }
 

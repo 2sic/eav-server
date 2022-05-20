@@ -62,7 +62,7 @@ namespace ToSic.Eav.Configuration.Licenses
             catch (Exception ex)
             {
                 // Just log and ignore
-                Log.Exception(ex);
+                Log.Ex(ex);
                 wrapLog("error");
             }
         }
@@ -102,7 +102,7 @@ namespace ToSic.Eav.Configuration.Licenses
             catch (Exception ex)
             {
                 // Just log, and ignore
-                Log.Exception(ex);
+                Log.Ex(ex);
             }
             Log.A($"Signature: {validSig}");
 

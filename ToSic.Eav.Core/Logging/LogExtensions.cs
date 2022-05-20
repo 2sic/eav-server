@@ -117,6 +117,10 @@ namespace ToSic.Eav.Logging
                 cName: cName,
                 cLine: cLine
             );
+        
+        public static void Ex(this ILog log, Exception ex) => log?.Exception(ex);
+
+
         #region Intercept
 
         /// <summary>

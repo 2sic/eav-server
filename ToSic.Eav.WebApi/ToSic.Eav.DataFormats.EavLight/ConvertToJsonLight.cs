@@ -190,7 +190,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             catch (Exception e)
             {
                 Log.A("Couldn't drop NULL values, will ignore and continue");
-                Log.Exception(e);
+                Log.Ex(e);
             }
 
             try
@@ -206,7 +206,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             catch (Exception e)
             {
                 Log.A("Couldn't drop ZERO values, will ignore and continue");
-                Log.Exception(e);
+                Log.Ex(e);
             }
 
             try
@@ -220,7 +220,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             catch (Exception e)
             {
                 Log.A("Couldn't drop EMPTY string values, will ignore and continue");
-                Log.Exception(e);
+                Log.Ex(e);
             }
 
             try
@@ -234,7 +234,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             catch (Exception e)
             {
                 Log.A("Couldn't drop FALSE boolean values, will ignore and continue");
-                Log.Exception(e);
+                Log.Ex(e);
             }
         }
     }

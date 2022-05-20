@@ -59,7 +59,7 @@ namespace ToSic.Eav.WebApi.Languages
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
+                Log.Ex(ex);
                 return new List<SiteLanguageDto>();
             }
 

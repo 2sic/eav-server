@@ -45,7 +45,7 @@ namespace ToSic.Eav.ImportExport.Json
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
+                Log.Ex(ex);
             }
 
             return wrapLog(null, package);

@@ -126,7 +126,7 @@ namespace ToSic.Eav.Configuration
             }
             catch (Exception e)
             {
-                Log.Exception(e);
+                Log.Ex(e);
                 return wrapLog("load feature failed:" + e.Message, null);
             }
         }

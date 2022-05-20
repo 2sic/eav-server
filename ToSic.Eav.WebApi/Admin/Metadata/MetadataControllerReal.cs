@@ -71,7 +71,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
             catch (Exception e)
             {
                 Log.A("Error getting recommendations");
-                Log.Exception(e);
+                Log.Ex(e);
             }
 
             try

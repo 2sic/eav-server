@@ -49,7 +49,7 @@ namespace ToSic.Eav.Apps
             catch (Exception ex)
             {
                 Log.A("Error");
-                Log.Exception(ex);
+                Log.Ex(ex);
             }
             finally
             {

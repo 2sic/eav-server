@@ -49,7 +49,7 @@ namespace ToSic.Eav.Persistence.File
             catch (Exception ex)
             {
                 Log.A("Error adding types");
-                Log.Exception(ex);
+                Log.Ex(ex);
             }
 
             return wrapLog($"{changeCount}", types);

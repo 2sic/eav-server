@@ -196,7 +196,7 @@ namespace ToSic.Eav.DataSources.Queries
 				var notInitialized = wirings.Where(w => !initializedWirings.Any(i => i.From == w.From && i.Out == w.Out && i.To == w.To && i.In == w.In));
 				var error = string.Join(", ", notInitialized);
 				var exception = new Exception("Some Stream-Wirings were not created: " + error);
-				Log.Exception(exception);
+				Log.Ex(exception);
 				throw exception;
 			}
 		    logWrap("ok");

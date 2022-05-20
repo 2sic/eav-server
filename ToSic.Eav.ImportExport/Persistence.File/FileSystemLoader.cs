@@ -203,13 +203,13 @@ namespace ToSic.Eav.Persistence.File
             catch (IOException e)
             {
                 Log.A($"Failed loading type - couldn't read file on '{path}'");
-                Log.Exception(e);
+                Log.Ex(e);
                 return null;
             }
             catch (Exception e)
             {
                 Log.A($"Failed loading type - couldn't deserialize '{path}' for unknown reason.");
-                Log.Exception(e);
+                Log.Ex(e);
                 return null;
             }
         }
