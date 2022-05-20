@@ -6,7 +6,7 @@ using ToSic.Eav.Logging.Simple;
 namespace ToSic.Eav.Logging
 {
 
-    public static class LogExtensions
+    public static partial class LogExtensions
     {
         /// <summary>
         /// Attach this log to another parent log, which should also know about events logged here.
@@ -118,9 +118,6 @@ namespace ToSic.Eav.Logging
                 cLine: cLine
             );
         
-        public static void Ex(this ILog log, Exception ex) => log?.Exception(ex);
-
-
         #region Intercept
 
         /// <summary>

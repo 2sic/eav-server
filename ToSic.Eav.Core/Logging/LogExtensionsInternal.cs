@@ -3,7 +3,7 @@ using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Logging
 {
-    internal static class LogExtensionsInternal
+    internal static partial class LogExtensionsInternal
     {
 
         /// <summary>
