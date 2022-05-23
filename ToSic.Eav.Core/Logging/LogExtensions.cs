@@ -124,6 +124,7 @@ namespace ToSic.Eav.Logging
         /// Intercept the result of an inner method, log it, then pass result on
         /// </summary>
         /// <returns></returns>
+// TODO: This should be renamed to DoAndReturn() for clarity
         public static T Return<T>(this ILog log,
             Func<T> generate,
             [CallerFilePath] string cPath = null,
@@ -136,6 +137,7 @@ namespace ToSic.Eav.Logging
         /// Intercept the result of an inner method, log it, then pass result on
         /// </summary>
         /// <returns></returns>
+// TODO: This should be renamed to DoAndReturn() for clarity
         public static T Return<T>(this ILog log,
             string message, 
             Func<T> generate,
