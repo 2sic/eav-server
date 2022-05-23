@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
@@ -53,7 +54,7 @@ namespace ToSic.Eav.Apps
             if (FirstLoadCompleted)
                 DynamicUpdatesCount++;
 
-            if (log) Log.Add($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{DynamicUpdatesCount}");
+            if (log) Log.A($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{DynamicUpdatesCount}");
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace ToSic.Eav.Apps
         {
             if (!Loading)
                 throw new Exception("trying to init metadata, but not in loading state. set that first!");
-            Log.Add("remove all items");
+            Log.A("remove all items");
             Index.Clear();
             _metadataManager.Reset();
         }

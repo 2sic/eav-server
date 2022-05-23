@@ -21,7 +21,7 @@ namespace ToSic.Eav.Persistence.Logging
         public void Add(ImportErrorCode errorCode, string errorDetail = null, int? lineNumber = null, string lineDetail = null)
         {
             Errors.Add(new ImportError(errorCode, errorDetail, lineNumber, lineDetail));
-            Log.Add($"Imp-Err {errorCode} on line {lineDetail} details {lineDetail} msg: {errorDetail}");
+            Log.A($"Imp-Err {errorCode} on line {lineDetail} details {lineDetail} msg: {errorDetail}");
         }
 
         public IEnumerator<ImportError> GetEnumerator() => Errors.GetEnumerator();

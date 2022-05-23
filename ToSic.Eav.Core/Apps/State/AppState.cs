@@ -17,11 +17,11 @@ namespace ToSic.Eav.Apps
         [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
         public AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base($"App.St-{id.AppId}", new CodeRef())
         {
-            Log.Add($"AppState for App {id.AppId}");
+            Log.A($"AppState for App {id.AppId}");
             Init(id, new CodeRef(), parentLog);
 
             ParentApp = parentApp;
-            Log.Add($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");
+            Log.A($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");
             CacheExpiryDelegate = CreateExpiryDelegate(parentApp);
 
             NameId = nameId;

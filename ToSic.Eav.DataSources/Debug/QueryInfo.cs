@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources.Debug
                 }
                 catch
                 {
-                    Log.Add("Error trying to build list of streams on DS");
+                    Log.A("Error trying to build list of streams on DS");
                 }
 
                 // Try to add the target to Data-Source-Stats;
@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources.Debug
                 }
                 catch
                 {
-                    Log.Add("Error adding target lists");
+                    Log.A("Error adding target lists");
                 }
 
                 // Try to add the source to the data-source-stats
@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSources.Debug
                 }
                 catch
                 {
-                    Log.Add("Error adding DataSourceInfo");
+                    Log.A("Error adding DataSourceInfo");
                 }
 
                 // Get Sub-Streams recursive
@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources.Debug
                 }
                 catch
                 {
-                    Log.Add("Error in recursion");
+                    Log.A("Error in recursion");
                 }
             }
 

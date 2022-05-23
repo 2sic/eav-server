@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -195,7 +196,7 @@ namespace ToSic.Eav.DataSources
 			//if (lang == "default") lang = ""; // no language is automatically the default language
 
 			var lowAttribName = compAttr.ToLowerInvariant();
-		    Log.Add($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{mode}', child/parent:'{childParent}'");
+		    Log.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{mode}', child/parent:'{childParent}'");
 
             if(!GetRequiredInList(out var originals)) 
                 return wrapLog("error", originals);
@@ -221,7 +222,7 @@ namespace ToSic.Eav.DataSources
 		        : filter.Split(new[] {Separator}, StringSplitOptions.RemoveEmptyEntries);
 
 
-		    Log.Add($"will compare mode:{mode} on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
+		    Log.A($"will compare mode:{mode} on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
 
             // pick the correct list-comparison - atm ca. 6 options
 		    var modeCompare = PickMode(mode, relationship, comparisonOnRelatedItem, filterList);
@@ -259,7 +260,7 @@ namespace ToSic.Eav.DataSources
 	        switch (modeToPick)
 	        {
 	            case CompareModes.contains:
-	                Log.Add("will use contains one / all");
+	                Log.A("will use contains one / all");
 	                if (valuesToFind.Length > 1)
 	                    return entity =>
 	                    {
@@ -270,25 +271,25 @@ namespace ToSic.Eav.DataSources
 	                    return entity => entity.Relationships.Children[relationship]
 	                        .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? ""));
 	            case CompareModes.containsany: // Condition that of the needed relationships, at least one must exist
-                    Log.Add("will use contains any");
+                    Log.A("will use contains any");
                     return entity =>
 	                {
 	                    var rels = entity.Relationships.Children[relationship];
 	                    return valuesToFind.Any(v => rels.Any(r => internalCompare(r, v)));
 	                };
 	            case CompareModes.any:
-	                Log.Add("will use has-any");
+	                Log.A("will use has-any");
 	                return entity => entity.Relationships.Children[relationship].Any();
                 case CompareModes.first: 
                     // Condition that of the needed relationships, the first must be what we want
-                    Log.Add("will use first is");
+                    Log.A("will use first is");
                     return entity =>
                     {
                         var first = entity.Relationships.Children[relationship].FirstOrDefault();
                         return first != null && valuesToFind.Any(v => internalCompare(first, v));
                     };
 	            case CompareModes.count:
-	                Log.Add("will use count");
+	                Log.A("will use count");
 	                if(int.TryParse(valuesToFind.FirstOrDefault() ?? "0", out int count))
                         return entity => entity.Relationships.Children[relationship].Count() == count;
 
@@ -322,7 +323,7 @@ namespace ToSic.Eav.DataSources
 	        switch (type)
 	        {
 	            case CompareType.Any:
-	                Log.Add($"will compare on a normal attribute:{fieldName}");
+	                Log.A($"will compare on a normal attribute:{fieldName}");
 	                return e =>
 	                {
 	                    try
@@ -338,10 +339,10 @@ namespace ToSic.Eav.DataSources
                         }
 					};
                 case CompareType.Id:
-                    Log.Add("will compare on ID");
+                    Log.A("will compare on ID");
 	                return e => e?.EntityId.ToString();
                 case CompareType.Title:
-                    Log.Add("will compare on title");
+                    Log.A("will compare on title");
 					return e => e?.GetBestTitle()?.ToLowerInvariant();
                     // 2021-03-29
                     //return e => e?.Title?[0]?.ToString().ToLowerInvariant();

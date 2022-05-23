@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 
@@ -78,7 +79,7 @@ namespace ToSic.Eav.Persistence.Efc
 
             if (sysSettings.AncestorAppId == appId)
             {
-                Log.Add($"Error: Got an {nameof(sysSettings.AncestorAppId)} of {appId}. " +
+                Log.A($"Error: Got an {nameof(sysSettings.AncestorAppId)} of {appId}. " +
                         "It's the same as the app itself - this should never happen. Stop.");
                 return wrapLog("error", 0);
             }
@@ -126,7 +127,7 @@ namespace ToSic.Eav.Persistence.Efc
                     app.Folder = nameAndFolder?.Item2;
                 }
                 else
-                    Log.Add("skipping metadata load");
+                    Log.A("skipping metadata load");
 
                 if (startAt <= AppStateLoadSequence.ContentTypeLoad)
                     startAt = AppStateLoadSequence.ContentTypeLoad;
@@ -139,18 +140,18 @@ namespace ToSic.Eav.Persistence.Efc
                     dbTypes = LoadExtensionsTypesAndMerge(app, dbTypes);
                     app.InitContentTypes(dbTypes);
                     typeTimer.Stop();
-                    Log.Add($"timers types:{typeTimer.Elapsed}");
+                    Log.A($"timers types:{typeTimer.Elapsed}");
                 }
                 else
-                    Log.Add("skipping content-type load");
+                    Log.A("skipping content-type load");
 
                 // load data
                 if (startAt <= AppStateLoadSequence.ItemLoad)
                     LoadEntities(app, entityIds);
                 else
-                    Log.Add("skipping items load");
+                    Log.A("skipping items load");
 
-                Log.Add($"timers sql:sqlAll:{_sqlTotalTime}");
+                Log.A($"timers sql:sqlAll:{_sqlTotalTime}");
                 wrapLog("ok");
             });
 
@@ -177,7 +178,7 @@ namespace ToSic.Eav.Persistence.Efc
                 var json = dbEntity.FirstOrDefault()?.Json;
                 if (string.IsNullOrEmpty(json)) return wrapLog("no json", nullTuple);
 
-                Log.Add("app Entity found - this json: " + json);
+                Log.A("app Entity found - this json: " + json);
                 var serializer = ServiceProvider.Build<IDataDeserializer>();
                 serializer.Initialize(appId, new List<IContentType>(), null, Log);
                 if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
@@ -192,7 +193,7 @@ namespace ToSic.Eav.Persistence.Efc
             catch (Exception ex)
             {
                 // Ignore, but log
-                Log.Add("error " + ex.Message);
+                Log.A("error " + ex.Message);
             }
 
             return wrapLog("error", nullTuple);

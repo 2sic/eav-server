@@ -61,11 +61,11 @@ namespace ToSic.Eav.Apps.Parts
 
         private int CreateInDb(string appGuid, int? inheritAppId)
         {
-            Log.Add("create new app");
+            Log.A("create new app");
             var app = _db.Init(_zoneId, null, Log).App.AddApp(null, appGuid, inheritAppId);
 
             SystemManager.PurgeZoneList();
-            Log.Add($"app created a:{app.AppId}, guid:{appGuid}");
+            Log.A($"app created a:{app.AppId}, guid:{appGuid}");
             return app.AppId;
         }
 

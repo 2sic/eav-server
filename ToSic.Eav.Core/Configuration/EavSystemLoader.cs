@@ -14,19 +14,25 @@ using ToSic.Eav.Security.Fingerprint;
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi]
-    public class SystemLoader : LoaderBase
+    public class EavSystemLoader : LoaderBase
     {
         #region Constructor / DI
 
-        public SystemLoader(SystemFingerprint fingerprint, IRuntime runtime, Lazy<IGlobalConfiguration> globalConfiguration, IAppsCache appsCache, 
-            IFeaturesInternal features, FeatureConfigManager featureConfigManager, LicenseCatalog licenseCatalog, LogHistory logHistory)
-            : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
+        public EavSystemLoader(
+            SystemFingerprint fingerprint, 
+            IRuntime runtime, 
+            Lazy<IGlobalConfiguration> globalConfiguration, 
+            AppsCacheSwitch appsCache, 
+            IFeaturesInternal features, 
+            FeatureConfigManager featureConfigManager, 
+            LicenseCatalog licenseCatalog, 
+            LogHistory logHistory
+        ) : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
             Fingerprint = fingerprint;
             _globalConfiguration = globalConfiguration;
             _appsCache = appsCache;
             _logHistory = logHistory;
-            logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
             _appStateLoader = runtime.Init(Log);
             Features = features;
             _featureConfigManager = featureConfigManager;
@@ -35,7 +41,7 @@ namespace ToSic.Eav.Configuration
         public SystemFingerprint Fingerprint { get; }
         private readonly IRuntime _appStateLoader;
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
-        private readonly IAppsCache _appsCache;
+        private readonly AppsCacheSwitch _appsCache;
         public readonly IFeaturesInternal Features;
         private readonly FeatureConfigManager _featureConfigManager;
         private readonly LicenseCatalog _licenseCatalog;
@@ -58,9 +64,9 @@ namespace ToSic.Eav.Configuration
             AssemblyHandling.GetTypes(assemblyLoadLog);
 
             // Build the cache of all system-types. Must happen before everything else
-            Log.Add("Try to load global app-state");
+            Log.A("Try to load global app-state");
             var presetApp = _appStateLoader.LoadFullAppState();
-            _appsCache.Add(presetApp);
+            _appsCache.Value.Add(presetApp);
 
             StartUpFeatures();
         }
@@ -72,14 +78,12 @@ namespace ToSic.Eav.Configuration
         {
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_logHistory, _licenseCatalog, Log).LoadLicenses(Fingerprint.GetFingerprint(),
-                _globalConfiguration.Value.GlobalFolder);
+            new LicenseLoader(_logHistory, _licenseCatalog, Log)
+                .LoadLicenses(Fingerprint.GetFingerprint(), _globalConfiguration.Value.GlobalFolder);
 
             // Now do a normal reload of configuration and features
             ReloadFeatures();
         }
-
-
         private bool _startupAlreadyRan;
 
         /// <summary>
@@ -122,7 +126,7 @@ namespace ToSic.Eav.Configuration
             }
             catch (Exception e)
             {
-                Log.Exception(e);
+                Log.Ex(e);
                 return wrapLog("load feature failed:" + e.Message, null);
             }
         }

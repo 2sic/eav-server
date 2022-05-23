@@ -50,5 +50,7 @@ namespace ToSic.Eav.Apps
         IReadOnlyDictionary<int, Zone> Zones { get; }
 
         #endregion
+
+        bool IsCached(IAppIdentity appId);
     }
 }

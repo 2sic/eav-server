@@ -64,7 +64,7 @@ namespace ToSic.Eav.Api.Api01
         /// <param name="checkWritePermissions"></param>
         public SimpleDataController Init(int zoneId, int appId, bool checkWritePermissions = true)
         {
-            var wrapLog = Log.Call<SimpleDataController>($"{zoneId}, {appId}");
+            var wrapLog = Log.Fn<SimpleDataController>($"{zoneId}, {appId}");
             _appId = appId;
             
             // when zoneId is not that same as in current context, we need to set right site for provided zoneId
@@ -74,19 +74,20 @@ namespace ToSic.Eav.Api.Api01
             _context = _dbDataLazy.Value.Init(zoneId, appId, Log);
             _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId), Log);
             _checkWritePermissions = checkWritePermissions;
-            Log.Add($"Default language:{_defaultLanguageCode}");
-            return wrapLog(null, this);
+            Log.A($"Default language:{_defaultLanguageCode}");
+            return wrapLog.Return(this);
         }
 
         private string GetDefaultLanguage(int zoneId)
         {
-            var wrapLog = Log.Call<string>($"{zoneId}");
+            var wrapLog = Log.Fn<string>($"{zoneId}");
 
             var site = _zoneMapper.SiteOfZone(zoneId);
-            if (site == null) return wrapLog("site is null", "");
+            if (site == null) return wrapLog.Return("","site is null");
+
 
             var usesLanguages = _zoneMapper.CulturesWithState(site).Any(c => c.IsEnabled);
-            return wrapLog($"ok, usesLanguages:{usesLanguages}", usesLanguages ? site.DefaultCultureCode : "");
+            return wrapLog.Return(usesLanguages ? site.DefaultCultureCode : "", $"ok, usesLanguages:{usesLanguages}");
         }
         
         #endregion
@@ -117,7 +118,7 @@ namespace ToSic.Eav.Api.Api01
                 throw new ArgumentException(msg);
             }
 
-            Log.Add($"Type {contentTypeName} found. Will build entities to save...");
+            Log.A($"Type {contentTypeName} found. Will build entities to save...");
 
             var importEntity = multiValues.Select(values => BuildEntity(type, values, target, null, out var draftAndBranch)).ToList();
 
@@ -133,7 +134,7 @@ namespace ToSic.Eav.Api.Api01
 
             if (values.All(v => v.Key.ToLowerInvariant() != Attributes.EntityFieldGuid))
             {
-                Log.Add("Add new generated guid, as none was provided.");
+                Log.A("Add new generated guid, as none was provided.");
                 values.Add(Attributes.EntityFieldGuid, Guid.NewGuid());
             }
 
@@ -141,7 +142,7 @@ namespace ToSic.Eav.Api.Api01
             string owner = null;
             if (values.Any(v => v.Key.ToLowerInvariant() == Attributes.EntityFieldOwner))
             {
-                Log.Add("Get owner, when is provided.");
+                Log.A("Get owner, when is provided.");
                 owner = values[Attributes.EntityFieldOwner].ToString();
                 values.Remove(Attributes.EntityFieldOwner);
             }
@@ -150,7 +151,7 @@ namespace ToSic.Eav.Api.Api01
             var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>(), owner);
             if (target != null)
             {
-                Log.Add("Set metadata target which was provided.");
+                Log.A("Set metadata target which was provided.");
                 importEntity.SetMetadata(target);
             }
 
@@ -173,7 +174,7 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values)
         {
-            Log.Add($"update i:{entityId}");
+            Log.A($"update i:{entityId}");
             var original = _appManager.AppState.List.FindRepoId(entityId);
 
             var importEntity = BuildEntity(original.Type, values, null, original.IsPublished, out var draftAndBranch) as Entity;
@@ -199,7 +200,7 @@ namespace ToSic.Eav.Api.Api01
 
         private Dictionary<string, object> ConvertEntityRelations(Dictionary<string, object> values)
         {
-            Log.Add("convert entity relations");
+            Log.A("convert entity relations");
             var result = new Dictionary<string, object>();
             foreach (var value in values)
                 if (value.Value is IEnumerable<int> ids)
@@ -220,11 +221,11 @@ namespace ToSic.Eav.Api.Api01
 
         private void AddValues(Entity entity, IContentType contentType, Dictionary<string, object> valuePairs, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink, bool? existingIsPublished, out (bool, bool)? draftAndBranch)
         {
-            var wrapLog = Log.Call($"..., ..., values: {valuePairs?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}");
+            var wrapLog = Log.Fn($"..., ..., values: {valuePairs?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}");
             draftAndBranch = null;
             if (valuePairs == null)
             {
-                wrapLog("no values");
+                wrapLog.Done("no values");
                 return;
             }
 
@@ -250,14 +251,14 @@ namespace ToSic.Eav.Api.Api01
 
                     if (draftAndBranch.HasValue) entity.IsPublished = draftAndBranch.Value.Item1; // published
 
-                    Log.Add($"IsPublished: {entity.IsPublished}");
+                    Log.A($"IsPublished: {entity.IsPublished}");
                     continue;
                 }
 
                 // Ignore entity guid - it's already set earlier
                 if (keyValuePair.Key.ToLowerInvariant() == Attributes.EntityFieldGuid)
                 {
-                    Log.Add("entity-guid, ignore here");
+                    Log.A("entity-guid, ignore here");
                     continue;
                 }
 
@@ -267,11 +268,11 @@ namespace ToSic.Eav.Api.Api01
                 {
                     var unWrappedValue = UnWrapJValue(keyValuePair.Value);
                     AttributeBuilder.Ready.AddValue(entity.Attributes, attribute.Name, unWrappedValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
-                    Log.Add($"Attribute '{keyValuePair.Key}' will become '{unWrappedValue}' ({attribute.Type})");
+                    Log.A($"Attribute '{keyValuePair.Key}' will become '{unWrappedValue}' ({attribute.Type})");
                 }
             }
-
-            wrapLog("done");
+            
+            wrapLog.Done("done");
         }
 
         private static object UnWrapJValue(object original)

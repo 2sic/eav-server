@@ -20,16 +20,16 @@ namespace ToSic.Eav.Data
         public static PropertyRequest TryToNavigateToEntityInList(this IEntity entity, string field, object parentDynEntity, ILog parentLogOrNull, PropertyLookupPath path)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull("Sxc.SubLst");
-            var safeWrap = logOrNull.SafeCall<PropertyRequest>();
+            var safeWrap = logOrNull.Fn<PropertyRequest>();
 
             var dynChildField = entity.Type?.DynamicChildrenField;
-            if (string.IsNullOrEmpty(dynChildField)) return safeWrap("no dyn-child", null);
+            if (string.IsNullOrEmpty(dynChildField)) return safeWrap.ReturnNull("no dyn-child");
 
 
             var children = entity.Children(dynChildField);
-            if (children == null) return safeWrap("no child", null);
-            if (!children.Any()) return safeWrap("no children", null);
-            if (children.First().EntityId == 0) return safeWrap("Child is placeholder, no real entries", null);
+            if (children == null) return safeWrap.ReturnNull("no child");
+            if (!children.Any()) return safeWrap.ReturnNull("no children");
+            if (children.First().EntityId == 0) return safeWrap.ReturnNull("Child is placeholder, no real entries");
 
 
             try
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Data
                 var dynEntityWithTitle = children
                     .FirstOrDefault(de => field.Equals(de.GetBestTitle(), StringComparison.InvariantCultureIgnoreCase));
 
-                if (dynEntityWithTitle == null) return safeWrap("no matching child", null);
+                if (dynEntityWithTitle == null) return safeWrap.ReturnNull("no matching child");
 
                 var result = new PropertyRequest
                 {
@@ -49,11 +49,11 @@ namespace ToSic.Eav.Data
                     Path = path
                 };
 
-                return safeWrap("named-entity", result);
+                return safeWrap.Return(result, "named-entity");
             }
             catch
             {
-                return safeWrap("error", null);
+                return safeWrap.ReturnNull("error");
             }
         }
     }

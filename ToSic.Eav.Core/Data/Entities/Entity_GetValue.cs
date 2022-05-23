@@ -50,7 +50,7 @@ namespace ToSic.Eav.Data
             try
             {
                 var logOrNull = parentLogOrNull?.SubLogOrNull($"{LogNames.Eav}.Entity");
-                logOrNull.SafeAdd("Nothing found in properties, will try Sub-Item navigation");
+                logOrNull.A("Nothing found in properties, will try Sub-Item navigation");
                 var subItem = this.TryToNavigateToEntityInList(field, this, logOrNull, path.Add("SubEntity", field));
                 if (subItem != null) return subItem;
             } catch { /* ignore */ }

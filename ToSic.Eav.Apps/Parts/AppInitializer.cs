@@ -135,28 +135,28 @@ namespace ToSic.Eav.Apps.Parts
             foreach (var item in newItems)
                 if (item.InAppType && FindContentType(item.SetName, item.InAppType) == null)
                 {
-                    Log.Add("couldn't find type, will create");
+                    Log.A("couldn't find type, will create");
                     // create App-Man if not created yet
                     AppManager.ContentTypes.Create(item.SetName, item.SetName, item.Label, Scopes.App);
                     addedTypes = true;
                 }
                 else
-                    Log.Add($"Type '{item.SetName}' found");
+                    Log.A($"Type '{item.SetName}' found");
 
             return wrapLog("ok", addedTypes);
         }
-
+        
         private void MetadataEnsureTypeAndSingleEntity(AddItemTask item)
         {
-            var wrapLog = Log.Call($"{item.SetName} and {item.Label} for app {AppState.AppId} - inApp: {item.InAppType}");
+            var wrapLog = Log.Fn($"{item.SetName} and {item.Label} for app {AppState.AppId} - inApp: {item.InAppType}");
 
             var ct = FindContentType(item.SetName, item.InAppType);
 
             // if it's still null, we have a problem...
             if (ct == null)
             {
-                Log.Add("type is still null, error");
-                wrapLog("error");
+                Log.A("type is still null, error");
+                wrapLog.Done("error");
                 throw new Exception("something went wrong - can't find type in app, but it's not a global type, so I must cancel");
             }
 
@@ -166,7 +166,7 @@ namespace ToSic.Eav.Apps.Parts
             newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
             AppManager.Entities.Save(newEnt);
 
-            wrapLog(null);
+            wrapLog.Done();
         }
 
         private IContentType FindContentType(string setName, bool inAppType)

@@ -31,7 +31,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public bool ImportUrl(string packageUrl, bool isAppImport)
         {
-            Log.Add($"import zip from url:{packageUrl}, isApp:{isAppImport}");
+            Log.A($"import zip from url:{packageUrl}, isApp:{isAppImport}");
             var path = _globalConfiguration.TemporaryFolder;
             if (path == null)
                 throw new NullReferenceException("path for temporary is null - this won't work");
@@ -47,11 +47,11 @@ namespace ToSic.Eav.Apps.ImportExport
                 var initialProtocol = ServicePointManager.SecurityProtocol;
                 try
                 {
-                    Log.Add("Will upgrade TLS connection so we can connect with TLS 1.1 or 1.2");
+                    Log.A("Will upgrade TLS connection so we can connect with TLS 1.1 or 1.2");
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
 
-                    Log.Add($"try to download:{packageUrl} to:{destinationPath}");
+                    Log.A($"try to download:{packageUrl} to:{destinationPath}");
                     client.DownloadFile(packageUrl, destinationPath);
                 }
                 catch (WebException e)

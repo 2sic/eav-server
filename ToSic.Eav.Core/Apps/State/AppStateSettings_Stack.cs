@@ -2,6 +2,7 @@
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using static ToSic.Eav.Configuration.ConfigurationStack;
 
 namespace ToSic.Eav.Apps
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Call<List<KeyValuePair<string, IPropertyLookup>>>(target.Target.ToString());
 
-            Log.Add($"Has View: {viewPart != null}");
+            Log.A($"Has View: {viewPart != null}");
             // "View" Settings/Resources - always add, no matter if null, so the key always exists
             var sources = new List<KeyValuePair<string, IPropertyLookup>>
             {
@@ -38,18 +39,18 @@ namespace ToSic.Eav.Apps
             var wrapLog = Log.Call<AppStateStackCache>();
 
             // Site should be skipped on the global zone
-            Log.Add($"Owner: {Owner.Show()}");
+            Log.A($"Owner: {Owner.Show()}");
             var site = Owner.ZoneId == Constants.DefaultZoneId ? null : _appStates.GetPrimaryApp(Owner.ZoneId, Log);
-            Log.Add($"Site: {site?.Show()}");
+            Log.A($"Site: {site?.Show()}");
             var global = _appStates.Get(Constants.GlobalIdentity);
-            Log.Add($"Global: {global?.Show()}");
+            Log.A($"Global: {global?.Show()}");
             var preset = _appStates.GetPresetApp();
-            Log.Add($"Preset: {preset?.Show()}");
+            Log.A($"Preset: {preset?.Show()}");
 
             // Find the ancestor, but only use it if it's not the preset
             var appAncestor = Owner.ParentApp.AppState;
             var ancestorIfNotPreset = appAncestor == null || appAncestor.AppId == Constants.PresetAppId ? null : appAncestor;
-            Log.Add($"Ancestor: {appAncestor?.Show()} - use: {ancestorIfNotPreset} (won't use if ancestor is preset App {Constants.PresetAppId}");
+            Log.A($"Ancestor: {appAncestor?.Show()} - use: {ancestorIfNotPreset} (won't use if ancestor is preset App {Constants.PresetAppId}");
 
             var stackCache = new AppStateStackCache(Owner, ancestorIfNotPreset, site, global, preset, target);
 

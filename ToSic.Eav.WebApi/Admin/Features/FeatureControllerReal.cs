@@ -13,7 +13,7 @@ namespace ToSic.Eav.WebApi.Admin.Features
 
         public FeatureControllerReal(
             IServiceProvider serviceProvider,
-            LazyInitLog<SystemLoader> systemLoaderLazy
+            LazyInitLog<EavSystemLoader> systemLoaderLazy
             ) : base(serviceProvider, "Bck.Feats")
         {
             _systemLoaderLazy = systemLoaderLazy.SetLog(Log);
@@ -23,7 +23,7 @@ namespace ToSic.Eav.WebApi.Admin.Features
         /// <summary>
         /// Must be lazy, to avoid log being filled with sys-loading infos when this service is being used
         /// </summary>
-        private readonly LazyInitLog<SystemLoader> _systemLoaderLazy;
+        private readonly LazyInitLog<EavSystemLoader> _systemLoaderLazy;
 
         #endregion
 

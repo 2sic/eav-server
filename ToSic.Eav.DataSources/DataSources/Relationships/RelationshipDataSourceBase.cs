@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources
 {
@@ -53,11 +54,11 @@ namespace ToSic.Eav.DataSources
 
             var fieldName = FieldName;
             if (string.IsNullOrWhiteSpace(fieldName)) fieldName = null;
-            Log.Add($"Field Name: {fieldName}");
+            Log.A($"Field Name: {fieldName}");
             
             var typeName = ContentTypeName;
             if (string.IsNullOrWhiteSpace(typeName)) typeName = null;
-            Log.Add($"Content Type Name: {typeName}");
+            Log.A($"Content Type Name: {typeName}");
 
             var find = InnerGet(fieldName, typeName);
 

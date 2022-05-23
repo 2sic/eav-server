@@ -42,7 +42,7 @@ namespace ToSic.Eav.LookUp
         public LookUpEngine(ILookUpEngine original, ILog parentLog, bool makeOwnCopyOfSources = false): this(parentLog)
 		{
 		    if (original == null) return;
-            var wrapLog = Log.Call(null, $"clone: {original.Log.Id}; LogDetailed: {LogDetailed}");
+            var wrapLog = Log.Fn(null, $"clone: {original.Log.Id}; LogDetailed: {LogDetailed}");
             if (makeOwnCopyOfSources)
             {
                 Link(original.Downstream);
@@ -52,7 +52,7 @@ namespace ToSic.Eav.LookUp
             else
                 Link(original);
 
-            wrapLog($"cloned {original.Sources.Count}");
+            wrapLog.Done($"cloned {original.Sources.Count}");
         }
 
         [PrivateApi("still wip")]
@@ -85,12 +85,12 @@ namespace ToSic.Eav.LookUp
                 // check if the string contains a token or not
                 if (!TokenReplace.ContainsTokens(o.Value))
                 {
-                    if (LogDetailed) Log.Add($"token '{o.Key}={o.Value}' has no sub-tokens");
+                    if (LogDetailed) Log.A($"token '{o.Key}={o.Value}' has no sub-tokens");
                     continue;
                 }
 
                 var result = instanceTokenReplace.ReplaceTokens(o.Value, depth); // with 2 further recurrences
-                if (LogDetailed) Log.Add($"token '{o.Key}={o.Value}' is now '{result}'");
+                if (LogDetailed) Log.A($"token '{o.Key}={o.Value}' is now '{result}'");
                 values[o.Key] = result;
             }
             #endregion
@@ -121,7 +121,7 @@ namespace ToSic.Eav.LookUp
         /// <inheritdoc />
         public void Add(ILookUp lookUp)
         {
-            if (LogDetailed) Log.Add($"Add source: '{lookUp.Name}'");
+            if (LogDetailed) Log.A($"Add source: '{lookUp.Name}'");
             Sources[lookUp.Name] = lookUp;
         }
 

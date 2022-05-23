@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Parts
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
         // todo: should be in metadata manager?
         public void SaveMetadata(Target target, string typeName, Dictionary<string, object> values)
         {
-            var wrapLog = Log.Call("target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
+            var wrapLog = Log.Fn("target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
 
             if (target.TargetType != (int)TargetTypes.Attribute || target.KeyNumber == null || target.KeyNumber == 0)
                 throw new NotSupportedException("atm this command only creates metadata for entities with id-keys");
@@ -28,7 +29,7 @@ namespace ToSic.Eav.Apps.Parts
                 saveEnt.SetMetadata(target);
                 Save(saveEnt);
             }
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
     }
 }

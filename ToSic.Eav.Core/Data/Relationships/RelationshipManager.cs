@@ -76,7 +76,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
 	    public List<IEntity> FindChildren(string field = null, string type = null, ILog log = null)
 	    {
-            var wrap = log?.Call($"field:{field}; type:{type}");
+            var wrap = log?.Fn($"field:{field}; type:{type}");
 	        List<IEntity> rels;
 	        if (string.IsNullOrEmpty(field))
 	            rels = ChildRelationships().Select(r => r.Child).ToList();
@@ -100,23 +100,28 @@ namespace ToSic.Eav.Data
             // Optionally filter by type
 	        if (!string.IsNullOrEmpty(type) && rels.Any())
 	            rels = rels.OfType(type).ToList();
-	        wrap?.Invoke(rels.Count.ToString());
+	        wrap?.Done(rels.Count.ToString());
 	        return rels;
 	    }
 
         /// <inheritdoc />
         public List<IEntity> FindParents(string type = null, string field = null, ILog log = null)
 	    {
-	        var wrap = log?.Call($"type:{type}; field:{field}");
+	        var wrap = log?.Fn($"type:{type}; field:{field}");
             var list = ParentRelationships() as IEnumerable<EntityRelationship>;
 	        if (!string.IsNullOrEmpty(type))
 	            list = list.Where(r => r.Parent.Type.Is(type));
 
-	        if (string.IsNullOrEmpty(field)) return list.Select(r => r.Parent).ToList();
+	        if (string.IsNullOrEmpty(field))
+            {
+                var rez = list.Select(r => r.Parent).ToList();
+                wrap?.Done(rez.Count.ToString());
+                return rez;
+            };
 
 	        list = list.Where(r => r.Parent.Relationships.FindChildren(field).Any(c => c == r.Child));
 	        var result = list.Select(r => r.Parent).ToList();
-            wrap?.Invoke(result.Count.ToString());
+            wrap?.Done(result.Count.ToString());
             return result;
 	    }
 		#endregion

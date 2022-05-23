@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Validation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport
@@ -59,7 +60,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 ?? Document.Element(XmlConstants.Root97);
 
             if (documentRoot == null)
-                throw new Exception(Log.Add("can't import - document doesn't have a root element"));
+                throw new Exception(Log.AddAndReuse("can't import - document doesn't have a root element"));
 
             // #2 make sure it has elements to import
             DocumentElements = documentRoot.Elements(XmlConstants.Entity).ToList();

@@ -10,9 +10,9 @@ namespace ToSic.Eav.Data
     [PrivateApi]
     public class EntityWithStackNavigation: EntityWrapper
     {
-        public EntityWithStackNavigation(IEntity entity, IPropertyStackLookup parent, string field, int index) : base(entity)
+        public EntityWithStackNavigation(IEntity entity, IPropertyStackLookup parent, string field, int index, int depth) : base(entity)
         {
-            PropertyStackNavigator = new PropertyStackNavigator(entity, parent, field, index);
+            PropertyStackNavigator = new PropertyStackNavigator(entity, parent, field, index, depth);
         }
 
         
@@ -21,11 +21,11 @@ namespace ToSic.Eav.Data
         public override PropertyRequest FindPropertyInternal(string field, string[] languages, ILog parentLogOrNull, PropertyLookupPath path)
         {
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".EntNav");
-            var wrapLog = logOrNull.SafeCall<PropertyRequest>(
+            var wrapLog = logOrNull.Fn<PropertyRequest>(
                 $"EntityId: {Entity?.EntityId}, Title: {Entity?.GetBestTitle()}, {nameof(field)}: {field}");
             var result = PropertyStackNavigator.PropertyInStack(field, languages, 0, true, logOrNull, path);
 
-            return wrapLog(result?.Result != null ? "found" : null, result);
+            return wrapLog.Return(result, result?.Result != null ? "found" : null);
         }
     }
 }

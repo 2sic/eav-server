@@ -3,6 +3,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -61,7 +62,7 @@ namespace ToSic.Eav.DataSources
             var wrapLog = Log.Call<IImmutableList<IEntity>>();
 
             Configuration.Parse();
-            Log.Add($"get list with type:{TypeName}");
+            Log.A($"get list with type:{TypeName}");
 
 	        try
             {

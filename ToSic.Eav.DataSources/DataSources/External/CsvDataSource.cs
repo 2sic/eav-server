@@ -8,6 +8,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 using ContentTypeBuilder = ToSic.Eav.Data.Builder.ContentTypeBuilder;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -60,13 +61,13 @@ namespace ToSic.Eav.DataSources
             // Handle cases where it's a "file:72"
             if (ValueConverterBase.CouldBeReference(csvPath))
             {
-                Log.Add($"This seems to be a reference: '{csvPath}'");
+                Log.A($"This seems to be a reference: '{csvPath}'");
                 csvPath = _serverPaths.FullPathOfReference(csvPath);
-                Log.Add($"Resolved to '{csvPath}'");
+                Log.A($"Resolved to '{csvPath}'");
                 return wrapLog(csvPath, csvPath);
             }
 
-            Log.Add("Doesn't seem to be a reference, will use as is");
+            Log.A("Doesn't seem to be a reference, will use as is");
 
             // if it's a full path, use that, otherwise do map-path assuming it must be in the app
             // this is for backward compatibility, because old samples used "[App:Path]/something.csv" which returns a relative path
@@ -144,7 +145,7 @@ namespace ToSic.Eav.DataSources
             var entityList = new List<IEntity>();
 
             var csvPath = GetServerPath(FilePath);
-            Log.Add($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
+            Log.A($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
 
             if (string.IsNullOrWhiteSpace(csvPath))
                 return wrapLog("error", SetError("No Path Given", "There was no path for loading the CSV file."));
@@ -152,7 +153,7 @@ namespace ToSic.Eav.DataSources
             var pathPart = Path.GetDirectoryName(csvPath);
             if (!Directory.Exists(pathPart))
             {
-                Log.Add($"Didn't find path '{pathPart}'");
+                Log.A($"Didn't find path '{pathPart}'");
                 return wrapLog("error", SetError("Path not found",
                     _user?.IsSuperUser == true
                         ? $"Path for Super User only: '{pathPart}'"

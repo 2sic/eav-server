@@ -2,6 +2,7 @@
 using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 
@@ -26,7 +27,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 			if (!IsCompatible(doc))
 			{
-				Messages.Add(new Message(Log.Add("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
+				Messages.Add(new Message(Log.AddAndReuse("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
 				return false;
 			}
 
@@ -34,7 +35,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			var xmlSource = doc.Element(XmlConstants.RootNode);
             if (xmlSource == null)
             {
-                Messages.Add(new Message(Log.Add("Xml doesn't have expected root node: " + XmlConstants.RootNode), Message.MessageTypes.Error));
+                Messages.Add(new Message(Log.AddAndReuse("Xml doesn't have expected root node: " + XmlConstants.RootNode), Message.MessageTypes.Error));
                 return false;
             }
             PrepareFolderIdCorrectionListAndCreateMissingFolders(xmlSource);
@@ -42,12 +43,12 @@ namespace ToSic.Eav.Apps.ImportExport
 
             #region Prepare dimensions (languages) based on header...
             var sourceDimensions = BuildSourceDimensionsList(xmlSource);
-		    Log.Add($"build source dims list⋮{sourceDimensions?.Count}");
+		    Log.A($"build source dims list⋮{sourceDimensions?.Count}");
 
             var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
 		    if (sourceDimensions == null || sourceDefaultLanguage == null)
 		    {
-                Messages.Add(new Message(Log.Add("Can't find source dimensions or source-default language."), Message.MessageTypes.Error));
+                Messages.Add(new Message(Log.AddAndReuse("Can't find source dimensions or source-default language."), Message.MessageTypes.Error));
                 return false;
             }
 
@@ -55,7 +56,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
 				: new int?();
 
-		    Log.Add($"source def dim:{sourceDefaultDimensionId}");
+		    Log.A($"source def dim:{sourceDefaultDimensionId}");
 
             _targetDimensions = Deps.AppStates.Languages(zoneId, true);
 
@@ -73,7 +74,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
 
-            Log.Add($"Purging {ZoneId}/{AppId}");
+            Log.A($"Purging {ZoneId}/{AppId}");
             Deps.SystemManager.Purge(ZoneId, AppId);
 
 			Messages.AddRange(GetExportImportMessagesFromImportLog(import.Storage.ImportLogToBeRefactored));

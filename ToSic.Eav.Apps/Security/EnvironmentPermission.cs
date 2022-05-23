@@ -43,13 +43,13 @@ namespace ToSic.Eav.Apps.Security
         /// Check if user is super user
         /// </summary>
         /// <returns></returns>
-        protected bool UserIsSuperuser() => Log.Intercept(nameof(UserIsSuperuser), () => Context.User?.IsSuperUser ?? false);
+        protected bool UserIsSuperuser() => Log.Return(() => Context.User?.IsSuperUser ?? false);
 
         /// <summary>
         /// Check if user is valid admin of current portal / zone
         /// </summary>
         /// <returns></returns>
-        protected bool UserIsSiteAdmin() => Log.Intercept(nameof(UserIsSiteAdmin), () => Context.User?.IsAdmin ?? false);
+        protected bool UserIsSiteAdmin() => Log.Return(() => Context.User?.IsAdmin ?? false);
 
 
         /// <summary>

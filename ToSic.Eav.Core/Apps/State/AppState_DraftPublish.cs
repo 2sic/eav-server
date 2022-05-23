@@ -3,6 +3,7 @@ using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
@@ -37,7 +38,7 @@ namespace ToSic.Eav.Apps
         {
             if (newEntity.IsPublished || !publishedId.HasValue) return;
 
-            if (log) Log.Add($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
+            if (log) Log.A($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
 
             // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
             newEntity.PublishedEntity = Index[publishedId.Value];
@@ -63,18 +64,18 @@ namespace ToSic.Eav.Apps
 
             if (msg != null)
             {
-                if (log) Log.Add("remove obsolete draft - nothing to change because: " + msg);
+                if (log) Log.A("remove obsolete draft - nothing to change because: " + msg);
                 return;
             }
 
             var draftId = draftEnt?.RepositoryId;
             if (draftId != null)
             {
-                if (log) Log.Add($"remove obsolete draft - found draft, will remove {draftId.Value}");
+                if (log) Log.A($"remove obsolete draft - found draft, will remove {draftId.Value}");
                 Index.Remove(draftId.Value);
             }
             else
-                if (log) Log.Add("remove obsolete draft - no draft, won't remove");
+                if (log) Log.A("remove obsolete draft - no draft, won't remove");
         }
 
     }

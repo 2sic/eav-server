@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.Apps
@@ -41,7 +42,7 @@ namespace ToSic.Eav.Apps
         /// <param name="configurationValues">this is needed for providing parameters to the data-query-system</param>
         private void InitData(bool showDrafts, ILookUpEngine configurationValues)
         {
-            Log.Add($"init data drafts:{showDrafts}, hasConf:{configurationValues != null}");
+            Log.A($"init data drafts:{showDrafts}, hasConf:{configurationValues != null}");
             _configurationProvider = configurationValues;
             ShowDrafts = showDrafts;
         }

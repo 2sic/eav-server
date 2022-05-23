@@ -20,7 +20,7 @@ namespace ToSic.Eav.WebApi.Helpers
         public Controller Parent { get; }
         public ILog LogOrNull { get; }
 
-        private Action<string> _actionTimerWrap; // it is used across events to track action execution total time
+        private LogCall _actionTimerWrap; // it is used across events to track action execution total time
 
         public IServiceProvider ServiceProvider => _serviceProvider ?? throw new Exception($"{nameof(ServiceProvider)} is only available after calling {nameof(OnActionExecuting)}");
         private IServiceProvider _serviceProvider;
@@ -29,7 +29,7 @@ namespace ToSic.Eav.WebApi.Helpers
         public void OnActionExecuting(ActionExecutingContext context, string historyLogGroup)
         {
             // Create a log entry with timing
-            _actionTimerWrap = LogOrNull.SafeCall($"action executing url: {context.HttpContext.Request.GetDisplayUrl()}", useTimer: true);
+            _actionTimerWrap = LogOrNull.Fn($"action executing url: {context.HttpContext.Request.GetDisplayUrl()}", startTimer: true);
 
             // Get the ServiceProvider of the current request
             _serviceProvider = context.HttpContext.RequestServices;
@@ -56,7 +56,7 @@ namespace ToSic.Eav.WebApi.Helpers
                 }
             }
 
-            _actionTimerWrap("ok");
+            _actionTimerWrap.Done("ok");
             _actionTimerWrap = null; // just to mark that Action Delegate is not in use any more, so GC can collect it
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Intermediate;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -139,9 +140,9 @@ namespace ToSic.Eav.Persistence.Efc
         {
             var callLog = Log.Call($"items: {relationships.Count}", useTimer: true);
 
-            Log.Add("experiment!");
+            Log.A("experiment!");
             var unique = relationships.Distinct(new RelationshipComparer()).ToList();
-            Log.Add("Distinct relationships: " + unique.Count);
+            Log.A("Distinct relationships: " + unique.Count);
 
             var relatedEntities = unique // relationships
                 .GroupBy(g => g.ParentEntityId)

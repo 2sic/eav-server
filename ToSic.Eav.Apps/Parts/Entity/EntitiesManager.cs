@@ -6,6 +6,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Plumbing;
@@ -30,7 +31,7 @@ namespace ToSic.Eav.Apps.Parts
             SystemManager systemManager,
             IServiceProvider serviceProvider,
             LazyInitLog<EntitySaver> entitySaverLazy,
-            IAppsCache appsCache, // Note: Singleton
+            AppsCacheSwitch appsCache, // Note: Singleton
             LazyInit<JsonSerializer> jsonSerializer,
             Generator<ExportListXml> exportListXmlGenerator
             ) : base("App.EntMan")
@@ -52,7 +53,7 @@ namespace ToSic.Eav.Apps.Parts
         private IImportExportEnvironment _environment;
         private readonly IServiceProvider _serviceProvider;
         private readonly LazyInitLog<EntitySaver> _entitySaverLazy;
-        private readonly IAppsCache _appsCache;
+        private readonly AppsCacheSwitch _appsCache;
         private readonly Generator<ExportListXml> _exportListXmGenerator;
         protected readonly SystemManager SystemManager;
         private LazyInit<JsonSerializer> Serializer { get; }
@@ -76,7 +77,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
-            var wrapLog = Log.Call("", message: "save count:" + entities.Count + ", with Options:" + (saveOptions != null));
+            var wrapLog = Log.Fn<List<int>>("", message: "save count:" + entities.Count + ", with Options:" + (saveOptions != null));
 
             // Run the change in a lock/transaction
             // This is to avoid parallel creation of new entities
@@ -110,7 +111,7 @@ namespace ToSic.Eav.Apps.Parts
                 dc.DoButSkipAppCachePurge(() => intIds = dc.Save(entities, saveOptions));
 
                 // Tell the cache to do a partial update
-                _appsCache.Update(_serviceProvider, Parent, intIds, Log);
+                _appsCache.Value.Update(_serviceProvider, Parent, intIds, Log);
                 return intIds;
             }
 
@@ -118,8 +119,7 @@ namespace ToSic.Eav.Apps.Parts
             List<int> ids = null;
             appState.DoInLock(Log, () => ids = InnerSaveInLock());
 
-            wrapLog($"ids:{ids.Count}");
-            return ids;
+            return wrapLog.Return(ids, $"ids:{ids.Count}");
         }
 
 
@@ -143,7 +143,7 @@ namespace ToSic.Eav.Apps.Parts
                 if (entity.Attributes.TryGetValue(a.Name, out var attr))
                 {
                     attr.Values.Clear();
-                    Log.Add("Cleared " + a.Name);
+                    Log.A("Cleared " + a.Name);
                 }
 
             return wrapLog("cleared", true);

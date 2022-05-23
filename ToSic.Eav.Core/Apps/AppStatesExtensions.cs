@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps
     public static class AppStatesExtensions
     {
         public static AppState GetPresetOrNull(this IAppStates states) =>
-            (states as AppStates)?.Cache.Has(PresetIdentity) ?? false
+            (states as AppStates)?.AppsCacheSwitch.Value.Has(PresetIdentity) ?? false
                 ? states.Get(PresetIdentity)
                 : null;
 
@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
         public static AppState GetPrimaryApp(this IAppStates appStates, int zoneId, ILog loggerOrNull)
         {
             var primaryAppId = appStates.IdentityOfPrimary(zoneId);
-            loggerOrNull?.Add($"{nameof(GetPrimaryApp)}: {primaryAppId?.Show()}");
+            loggerOrNull.A($"{nameof(GetPrimaryApp)}: {primaryAppId?.Show()}");
             return appStates.Get(primaryAppId);
         }
     }

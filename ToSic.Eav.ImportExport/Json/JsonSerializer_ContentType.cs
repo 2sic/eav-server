@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.ImportExport.Json.V1;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -39,12 +40,12 @@ namespace ToSic.Eav.ImportExport.Json
                         .Where(e => e != null) // filter out possible null items
                         .ToList();
 
-                Log.Add($"Sub items: {mdParts.Count}");
+                Log.A($"Sub items: {mdParts.Count}");
                 package.Entities = mdParts.Select(e => ToJson(e, 0)).ToArray();
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
+                Log.Ex(ex);
             }
 
             return wrapLog(null, package);

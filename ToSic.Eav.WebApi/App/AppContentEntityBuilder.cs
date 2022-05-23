@@ -27,7 +27,7 @@ namespace ToSic.Eav.WebApi.App
         /// <returns></returns>
         public Dictionary<string, object> CreateEntityDictionary(string contentType, Dictionary<string, object> newContentItem, AppState appState)
         {
-            Log.Add($"create ent dic a#{appState.AppId}, type:{contentType}");
+            Log.A($"create ent dic a#{appState.AppId}, type:{contentType}");
             // Retrieve content-type definition and check all the fields that this content-type has
             //var appState = Eav.Apps.State.Get(appId);
             var listOfTypes = appState.GetContentType(contentType);
@@ -116,7 +116,7 @@ namespace ToSic.Eav.WebApi.App
         /// <param name="foundValue"></param>
         private int CreateSingleRelationshipItem(object foundValue)
         {
-            Log.Add("create relationship");
+            Log.A("create relationship");
             try
             {
                 // the object foundNumber is either just an Id, or an Id/Title combination
@@ -135,7 +135,7 @@ namespace ToSic.Eav.WebApi.App
                             foundNumber = (int)foundId;
                     }
                 }
-                Log.Add($"relationship found:{foundNumber}");
+                Log.A($"relationship found:{foundNumber}");
                 return foundNumber;
             }
             catch

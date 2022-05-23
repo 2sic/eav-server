@@ -13,9 +13,9 @@ namespace ToSic.Eav.WebApi.Sys
 
         public string EnableDebug(Func<int, string> activateForDuration, int duration = 1)
         {
-            Log.Add("Extended logging will set for duration:" + duration);
+            Log.A("Extended logging will set for duration:" + duration);
             var msg = activateForDuration(duration);
-            Log.Add(msg);
+            Log.A(msg);
             return msg;
         }
     }

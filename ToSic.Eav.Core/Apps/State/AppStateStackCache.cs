@@ -48,7 +48,7 @@ namespace ToSic.Eav.Apps
             if (_fullStackSynched != null)
             {
                 if (_fullStackSynched.CacheChanged())
-                    buildLog.Add("Cache changed, will rebuild");
+                    buildLog.A("Cache changed, will rebuild");
                 else
                     return wrapLog("existing", _fullStackSynched.Value);
             }
@@ -60,7 +60,7 @@ namespace ToSic.Eav.Apps
 
         private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack(ILog buildLog)
         {
-            var wrapLog = buildLog.Call();
+            var wrapLog = buildLog.Fn<SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>>();
             var cacheExpiry = GetMultiSourceCacheExpiry();
             // 2022-03-11 2dm - we're currently including the build log
             // we assume it won't remain in memory, but there is a small risk of a memory leak here
@@ -69,8 +69,7 @@ namespace ToSic.Eav.Apps
             var cachedStack = new SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>(cacheExpiry, 
                 () => RebuildStack(buildLog));
 
-            wrapLog("built");
-            return cachedStack;
+            return wrapLog.Return(cachedStack, "built");
         }
 
         private CacheExpiringMultiSource GetMultiSourceCacheExpiry()
@@ -85,11 +84,10 @@ namespace ToSic.Eav.Apps
 
         private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(ILog buildLog = null)
         {
-            var log = buildLog ?? new Log("");
-            var wrapLog = buildLog.SafeCall<List<KeyValuePair<string, IPropertyLookup>>>();
+            var wrapLog = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup>>>();
 
             void LogSource(string name, AppStateMetadata state) 
-                => log.SafeAdd($"{name}: {state != null}; MD: {state?.MetadataItem?.EntityId}; CustomItem: {state?.CustomItem?.EntityId}; ScopeAny: {state?.SystemItem?.EntityId};");
+                => wrapLog.A($"{name}: {state != null}; MD: {state?.MetadataItem?.EntityId}; CustomItem: {state?.CustomItem?.EntityId}; ScopeAny: {state?.SystemItem?.EntityId};");
 
             var thingType = Target.Target;
             var appStack = Owner.ThingInApp(thingType);
@@ -139,7 +137,7 @@ namespace ToSic.Eav.Apps
 
             // System Presets
             sources.Add(new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, preset.SystemItem));
-            return wrapLog("ok", sources);
+            return wrapLog.Return(sources, "ok");
         }
 
         #endregion

@@ -57,15 +57,6 @@ namespace ToSic.Eav.Configuration
         public string MsgMissingSome(IEnumerable<Guid> ids)
             => $"Features {string.Join(", ", ids.Where(i => !Enabled(i)).Select(id => $"https://2sxc.org/r/f/{id}"))} not enabled - see also https://2sxc.org/help?tag=features";
 
-        #region Links
-
-        ///// <inheritdoc />
-        //public string HelpLink => "https://2sxc.org/help?tag=features";
-
-        ///// <inheritdoc />
-        //public string InfoLinkRoot => "https://2sxc.org/r/f/";
-
-        #endregion
 
         #region Static Caches
 
@@ -78,6 +69,7 @@ namespace ToSic.Eav.Configuration
                 _stored = value;
                 _all = null;
                 _enabledFeatures = null;
+                CacheTimestamp = DateTime.Now.Ticks;
             }
         }
         private static FeatureListStored _stored;
@@ -109,7 +101,7 @@ namespace ToSic.Eav.Configuration
                 }
 
                 // Check if the configuration would enable this feature
-                var inConfig = config.Features.FirstOrDefault(cf => cf.Id == f.Guid);
+                var inConfig = config?.Features.FirstOrDefault(cf => cf.Id == f.Guid);
                 if (inConfig != null)
                 {
                     enabled = licenseEnabled && inConfig.Enabled;
@@ -123,12 +115,12 @@ namespace ToSic.Eav.Configuration
             }).ToList();
 
             // Find additional, un matching features which are not known in the catalog
-            var missingFeatures = config.Features
+            var missingFeatures = config?.Features
                 .Where(f => featuresCat.All(fd => fd.Guid != f.Id))
                 .Select(f => new FeatureState(new FeatureDefinition(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually", 
                     licenseEnabled: false, enabledByDefault: false,  enabledStored: f.Enabled));
 
-            var final = allFeats.Union(missingFeatures).ToList();
+            var final = (missingFeatures == null ? allFeats : allFeats.Union(missingFeatures)).ToList();
             return final;
         }
 
@@ -138,6 +130,8 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         [PrivateApi]
         public long CacheTimestamp { get; set; }
+
+        public bool CacheChanged(long newCacheTimeStamp) => CacheTimestamp != newCacheTimeStamp;
 
         #endregion
         

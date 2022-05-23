@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Logging;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
@@ -14,7 +15,7 @@ namespace ToSic.Eav.Apps.ImportExport
     {
 		public bool IsCompatible(XDocument doc)
 		{
-		    Log.Add("is compatible check");
+		    Log.A("is compatible check");
 		    var rns = doc.Elements(XmlConstants.RootNode);
 		    var rn = doc.Element(XmlConstants.RootNode);
 			// Return if no Root Node "SexyContent"
@@ -30,7 +31,7 @@ namespace ToSic.Eav.Apps.ImportExport
 				return false;
 			}
 
-		    Log.Add("is compatible completed");
+		    Log.A("is compatible completed");
             return true;
 		}
 

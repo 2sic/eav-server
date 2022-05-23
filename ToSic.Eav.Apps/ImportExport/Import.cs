@@ -78,13 +78,13 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities)
         {
-            var callLog = Log.Call($"types: {newTypes?.Count}; entities: {newEntities?.Count}", useTimer: true);
+            var callLog = Log.Fn($"types: {newTypes?.Count}; entities: {newEntities?.Count}", startTimer: true);
             Storage.DoWithDelayedCacheInvalidation(() =>
             {
                 #region import AttributeSets if any were included but rollback transaction if necessary
 
                 if (newTypes == null)
-                    Log.Add("No types to import");
+                    Log.A("No types to import");
                 else
                     Storage.DoInTransaction(() =>
                     {
@@ -92,7 +92,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         // important: must always create a new loader, because it will cache content-types which hurts the import
                         Storage.DoWhileQueuingVersioning(() =>
                         {
-                            var logImpTypes = Log.Call(message: "Import Types in Sys-Scope", useTimer: true);
+                            var logImpTypes = Log.Fn(message: "Import Types in Sys-Scope", startTimer: true);
                             // load everything, as content-type metadata is normal entities
                             // but disable initialized, as this could cause initialize stuff we're about to import
                             var appStateTemp = Storage.Loader.AppState(AppId, false); 
@@ -106,9 +106,9 @@ namespace ToSic.Eav.Apps.ImportExport
                                 .Where(a => a.Scope?.StartsWith(Scopes.System) ?? false).ToList();
                             if (sysAttributeSets.Any())
                                 MergeAndSaveContentTypes(appStateTemp, sysAttributeSets);
-                            logImpTypes(null);
+                            logImpTypes.Done();
 
-                            logImpTypes = Log.Call(message: "Import Types in non-Sys scopes", useTimer: true);
+                            logImpTypes = Log.Fn(message: "Import Types in non-Sys scopes", startTimer: true);
                             // now reload the app state as it has new content-types
                             // and it may need these to load the remaining attributes of the content-types
                             appStateTemp = Storage.Loader.AppState(AppId, false);
@@ -117,7 +117,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
                             if (nonSysAttribSets.Any())
                                 MergeAndSaveContentTypes(appStateTemp, nonSysAttribSets);
-                            logImpTypes(null);
+                            logImpTypes.Done();
                         });
                     });
 
@@ -126,10 +126,10 @@ namespace ToSic.Eav.Apps.ImportExport
                 #region import Entities, but rollback transaction if necessary
 
                 if (newEntities == null)
-                    Log.Add("Not entities to import");
+                    Log.A("Not entities to import");
                 else
                 {
-                    var logImpEnts = Log.Call(message: "Pre-Import Entities merge", useTimer: true);
+                    var logImpEnts = Log.Fn(message: "Pre-Import Entities merge", startTimer: true);
                     var appStateTemp = Storage.Loader.AppState(AppId, false); // load all entities
                     newEntities = newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
@@ -145,7 +145,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     var chunkSize = /*ChunkSizeAboveLimit;*/ newEntities.Count >= ChunkLimitToStartChunking ? ChunkSizeAboveLimit : ChunkLimitToStartChunking;
 
                     var newIEntities = newEntities.Cast<IEntity>().ToList().ChunkBy(chunkSize);
-                    logImpEnts(null);
+                    logImpEnts.Done();
 
                     // Import in chunks
                     var cNum = 0;
@@ -159,7 +159,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     newIEntities.ForEach(chunk =>
                         {
                             cNum++;
-                            Log.Add($"Importing Chunk {cNum} #{(cNum - 1) * chunkSize + 1} - #{cNum * chunkSize}");
+                            Log.A($"Importing Chunk {cNum} #{(cNum - 1) * chunkSize + 1} - #{cNum * chunkSize}");
                             Storage.DoInTransaction(() => Storage.Save(chunk, SaveOptions));
                         })
                         //))
@@ -168,18 +168,18 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 #endregion
             });
-            callLog("done");
+            callLog.Done("done");
         }
 
         private void MergeAndSaveContentTypes(AppState appState, List<IContentType> contentTypes)
         {
-            var callLog = Log.Call(useTimer: true);
+            var callLog = Log.Fn(startTimer: true);
             // Here's the problem! #badmergeofmetadata
             contentTypes.ForEach(type => MergeContentTypeUpdateWithExisting(appState, type));
             var so = _importExportEnvironment.SaveOptions(ZoneId);// SaveOptions.Build(ZoneId);
             so.DiscardAttributesNotInType = true;
             Storage.Save(contentTypes.Cast<IContentType>().ToList(), so);
-            callLog("done");
+            callLog.Done("done");
         }
         
         
@@ -187,10 +187,10 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private bool MergeContentTypeUpdateWithExisting(AppState appState, IContentType contentType)
         {
-            var callLog = Log.Call<bool>();
+            var callLog = Log.Fn<bool>();
             var existing = appState.GetContentType(contentType.NameId);
 
-            Log.Add("New CT, must reset attributes");
+            Log.A("New CT, must reset attributes");
             // must ensure that attribute Metadata is officially seen as new
             // but the import data could have an Id, so we must reset it here.
             foreach (var attribute in contentType.Attributes)
@@ -202,15 +202,15 @@ namespace ToSic.Eav.Apps.ImportExport
             }
 
             if (existing == null)
-                return callLog("existing not found, won't merge", true);
+                return callLog.Return(true, "existing not found, won't merge");
 
-            Log.Add("found existing, will merge");
+            Log.A("found existing, will merge");
             foreach (var newAttribute in contentType.Attributes)
             {
                 var oldAttr = existing.Attributes.FirstOrDefault(a => a.Name == newAttribute.Name);
                 if (oldAttr == null)
                 {
-                    Log.Add($"New attr {newAttribute.Name} not found on original, merge not needed");
+                    Log.A($"New attr {newAttribute.Name} not found on original, merge not needed");
                     continue;
                 }
 
@@ -231,7 +231,7 @@ namespace ToSic.Eav.Apps.ImportExport
             merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
             contentType.Metadata.Use(merged);
 
-            return callLog("done", true);
+            return callLog.Return(true, "done");
         }
 
         private IEntity MergeOneMd<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)
@@ -259,7 +259,7 @@ namespace ToSic.Eav.Apps.ImportExport
             _mergeCountToStopLogging++;
             var logDetails = _mergeCountToStopLogging <= LogMaxMerges;
             if (_mergeCountToStopLogging == LogMaxMerges)
-                Log.Add($"Hit {LogMaxMerges} merges, will stop logging details");
+                Log.A($"Hit {LogMaxMerges} merges, will stop logging details");
             var callLog = Log.Call<Entity>();
             #region try to get AttributeSet or otherwise cancel & log error
 

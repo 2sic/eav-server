@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ToSic.Eav.Logging;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
@@ -7,19 +8,19 @@ namespace ToSic.Eav.WebApi.Sys
     {
         private string Logs()
         {
-            Log.Add("debug log load");
+            Log.A("debug log load");
             return LogHeader("Overview", false) + LogHistoryOverview(_logHistory);
         }
 
         private string Logs(string key)
         {
-            Log.Add($"debug log load for {key}");
+            Log.A($"debug log load for {key}");
             return LogHeader(key, true) + LogHistory(_logHistory, key);
         }
 
         private string Logs(string key, int position)
         {
-            Log.Add($"debug log load for {key}/{position}");
+            Log.A($"debug log load for {key}/{position}");
             var msg = PageStyles() + LogHeader($"{key}[{position}]", false);
 
             if (!_logHistory.Logs.TryGetValue(key, out var set))
@@ -36,14 +37,14 @@ namespace ToSic.Eav.WebApi.Sys
 
         private string PauseLogs(bool pause)
         {
-            Log.Add($"pause log {pause}");
+            Log.A($"pause log {pause}");
             _logHistory.Pause = pause;
             return $"pause set to {pause}";
         }
 
         private string LogsFlush(string key)
         {
-            Log.Add($"flush log for {key}");
+            Log.A($"flush log for {key}");
             _logHistory.Flush(key);
             return $"flushed log history for {key}";
         }

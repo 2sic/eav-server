@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using static System.String;
 
 // ReSharper disable once CheckNamespace
@@ -36,19 +37,19 @@ namespace ToSic.Eav.DataFormats.EavLight
             string[] streamsList;
             if (streams != null)
             {
-                Log.Add("Will use provided list of streams.");
+                Log.A("Will use provided list of streams.");
                 streamsList = streams.ToArray();
             }
             else
             {
-                Log.Add("No streams specified, will create list with all names.");
+                Log.A("No streams specified, will create list with all names.");
                 streamsList = source.Out.Select(p => p.Key).ToArray();
             }
 
-            Log.Add("Streams: ", Join(",", streamsList));
+            Log.A("Streams: " + Join(",", streamsList));
 
             // pre-process the guids list to ensure they are guids
-            var realGuids = new Guid[0];
+            var realGuids = Array.Empty<Guid>();
             if (filterGuids?.Length > 0)
                 realGuids = filterGuids
                     .Select(g => Guid.TryParse(g, out var validGuid) ? validGuid as Guid? : null)

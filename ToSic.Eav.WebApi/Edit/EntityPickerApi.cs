@@ -32,17 +32,17 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         public IEnumerable<EntityForPickerDto> GetAvailableEntities(int appId, string[] items, string contentTypeName, bool withDrafts)
         {
-            Log.Add($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
+            Log.A($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
             AppRuntime.Init(appId, withDrafts, Log);
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
             {
                 contentType = AppRuntime.AppState.GetContentType(contentTypeName);
-                Log.Add($"tried to get '{contentTypeName}' - found: {contentType != null}");
+                Log.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
                 if (contentType == null)
                 {
-                    Log.Add("Since a type was specified and not found, will return empty list");
+                    Log.A("Since a type was specified and not found, will return empty list");
                     return new List<EntityForPickerDto>();
                 }
             }
@@ -52,24 +52,24 @@ namespace ToSic.Eav.WebApi
             // optionally filter by type
             if (contentType != null)
             {
-                Log.Add($"filter by type:{contentType.Name}");
+                Log.A($"filter by type:{contentType.Name}");
                 temp = AppRuntime.Entities.Get(contentTypeName);
             }
             else
             {
                 temp = AppRuntime.Entities.OnlyContent(_user.IsSuperUser); // only super user should also get Configuration
-                Log.Add("won't filter by type because it's null");
+                Log.A("won't filter by type because it's null");
             }
 
             // optionally filter by IDs
             if (items != null && items.Length > 0)
             {
-                Log.Add("filter by ids");
+                Log.A("filter by ids");
                 var guids = items.Select(Guid.Parse);
                 temp = temp.Where(e => guids.Contains(e.EntityGuid));
             }
             else
-                Log.Add("won't filter by IDs");
+                Log.A("won't filter by IDs");
 
             var languagePriorities = _cultureResolver.SafeLanguagePriorityCodes();
 
@@ -82,7 +82,7 @@ namespace ToSic.Eav.WebApi
                 .OrderBy(l => l.Text.ToString())
                 .ToList();
 
-            Log.Add($"found⋮{entities.Count}");
+            Log.A($"found⋮{entities.Count}");
             return entities;
         }
 

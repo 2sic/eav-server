@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSources
@@ -86,7 +87,7 @@ namespace ToSic.Eav.DataSources
                 _out.Add(typeName, deferredStream);
             }
 
-            Log.Add($"Added with drafts:{showDrafts} streams: {typeList}");
+            Log.A($"Added with drafts:{showDrafts} streams: {typeList}");
 
             wrapLog(null);
         }

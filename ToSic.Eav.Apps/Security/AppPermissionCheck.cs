@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.Security
             Init(ctx, appIdentity, parentLog, permissions: permissions);
             // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
             var wrapLog = Log.Call<AppPermissionCheck>($"ctx, app: {appIdentity}, log");
-            Log.Add($"Permissions: {permissions?.Count}");
+            Log.A($"Permissions: {permissions?.Count}");
             return wrapLog("ok", this);
         }
 
@@ -99,10 +99,10 @@ namespace ToSic.Eav.Apps.Security
         {
             Init(parentLog, targetType ?? targetItem?.Type, targetItem, permissions);
             _environmentPermission.Init(ctx, appIdentity);
-            var logWrap = Log.Call($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
+            var logWrap = Log.Fn($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
             Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
             AppIdentity = appIdentity;
-            logWrap(null);
+            logWrap.Done();
         }
 
         protected IContextOfSite Context { get; private set; }
@@ -119,19 +119,6 @@ namespace ToSic.Eav.Apps.Security
         /// Override base accessor for this
         /// </summary>
         protected override IUser User => Context.User;
-
-        /// <summary>
-        /// Check if user is super user
-        /// </summary>
-        /// <returns></returns>
-        protected bool UserIsSuperuser() => Log.Intercept(nameof(UserIsSuperuser), () => Context.User?.IsSuperUser ?? false);
-
-        /// <summary>
-        /// Check if user is valid admin of current portal / zone
-        /// </summary>
-        /// <returns></returns>
-        public bool UserIsSiteAdmin() => Log.Intercept(nameof(UserIsSiteAdmin), () => Context.User?.IsAdmin ?? false);
-
 
         #endregion
     }

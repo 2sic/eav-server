@@ -48,22 +48,22 @@ namespace ToSic.Eav.Configuration.Licenses
         [PrivateApi]
         internal void LoadLicenses(string fingerprint, string globalFolder)
         {
-            var wrapLog = Log.Call(useTimer: true);
+            var wrapLog = Log.Fn(startTimer: true);
             try
             {
                 var licensesStored = LicensesStoredInConfigFolder(globalFolder);
-                Log.Add($"Found {licensesStored.Count} licenseStored in files");
+                Log.A($"Found {licensesStored.Count} licenseStored in files");
                 var licenses = licensesStored.SelectMany(ls => LicensesStateBuilder(ls, fingerprint)).ToList();
                 var autoEnabled = AutoEnabledLicenses();
                 LicenseService.Update(autoEnabled.Union(licenses).ToList());
-                Log.Add($"Found {licenses.Count} licenses");
-                wrapLog("ok");
+                Log.A($"Found {licenses.Count} licenses");
+                wrapLog.Done("ok");
             }
             catch (Exception ex)
             {
                 // Just log and ignore
-                Log.Exception(ex);
-                wrapLog("error");
+                Log.Ex(ex);
+                wrapLog.Done("error");
             }
         }
 
@@ -80,7 +80,7 @@ namespace ToSic.Eav.Configuration.Licenses
                 .Select(JsonConvert.DeserializeObject<LicenseStored>)
                 .Where(licenses => licenses != null).ToList();
 
-            Log.Add($"licensesStored: {licensesStored.Count}");
+            Log.A($"licensesStored: {licensesStored.Count}");
             return wrapLog("ok", licensesStored);
         }
 
@@ -102,14 +102,14 @@ namespace ToSic.Eav.Configuration.Licenses
             catch (Exception ex)
             {
                 // Just log, and ignore
-                Log.Exception(ex);
+                Log.Ex(ex);
             }
-            Log.Add($"Signature: {validSig}");
+            Log.A($"Signature: {validSig}");
 
             // Check fingerprints
             var fps = licenseStored.FingerprintsArray;
             var validFp = fps.Any(fingerprint.Equals);
-            Log.Add($"Fingerprint: {validFp}");
+            Log.A($"Fingerprint: {validFp}");
 
             var validVersion = licenseStored.Versions?
                 .Split(',')
@@ -117,13 +117,13 @@ namespace ToSic.Eav.Configuration.Licenses
                 .Any(v => int.TryParse(v, out var licVersion) && SystemInformation.Version.Major == licVersion)
                 ?? false;
 
-            Log.Add($"Version: {validVersion}");
+            Log.A($"Version: {validVersion}");
 
             var validDate = DateTime.Now.CompareTo(licenseStored.Expires) <= 0;
-            Log.Add($"Expired: {validDate}");
+            Log.A($"Expired: {validDate}");
 
             var licenses = licenseStored.LicensesArray;
-            Log.Add($"Licenses: {licenses.Length}");
+            Log.A($"Licenses: {licenses.Length}");
 
             var licenseStates = licenses.Select(l => new LicenseState
                 {

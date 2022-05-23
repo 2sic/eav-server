@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -124,7 +125,7 @@ namespace ToSic.Eav.DataSources
                 // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
                 if (AutoCaching)
                 {
-                    Source?.Log.Add($"{nameof(AutoCaching)}:{AutoCaching}");
+                    Source?.Log.A($"{nameof(AutoCaching)}:{AutoCaching}");
                     var cacheItem = new ListCache(Source?.Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
                     _list = cacheItem.List;
                 }
@@ -176,14 +177,14 @@ namespace ToSic.Eav.DataSources
         {
             var log = Source.Log;
             var callLog = log.Call(message: $"PurgeList on Stream: {Name}, {nameof(cascade)}:{cascade}");
-            log.Add("kill the very local temp cache");
+            log.A("kill the very local temp cache");
             _list = new ImmutableArray<IEntity>();
             _listLoaded = false;
-            log.Add("kill in list-cache");
+            log.A("kill in list-cache");
             new ListCache(Source.Log).Remove(this);
             if (cascade)
             {
-                log.Add("tell upstream source to flush as well");
+                log.A("tell upstream source to flush as well");
                 Source.PurgeList(true);
             }
             callLog("ok");

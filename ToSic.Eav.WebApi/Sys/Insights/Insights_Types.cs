@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.File;
 using static ToSic.Razor.Blade.Tag;
 
@@ -14,7 +15,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (appId == null)
                 return "please add appid to the url parameters";
 
-            Log.Add($"debug app types for {appId}");
+            Log.A($"debug app types for {appId}");
             var appRead = AppRt(appId);
             var pkg = appRead.AppState;
 
@@ -28,7 +29,7 @@ namespace ToSic.Eav.WebApi.Sys
             var msg = H1($"App types for {appId}\n").ToString();
             try
             {
-                Log.Add("getting content-type stats");
+                Log.A("getting content-type stats");
                 var types = typesA
                     .OrderBy(t => t.RepositoryType)
                     .ThenBy(t => t.Scope)
@@ -107,7 +108,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, type, out var message))
                 return message;
 
-            Log.Add($"debug app metadata for {appId} and {type}");
+            Log.A($"debug app metadata for {appId} and {type}");
             var typ = AppState(appId).GetContentType(type);
 
             var msg = H1($"Metadata for {typ.Name} ({typ.NameId}) in {appId}\n").ToString();
@@ -121,7 +122,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, type, out var message))
                 return message;
 
-            Log.Add($"debug app metadata for {appId} and {type}");
+            Log.A($"debug app metadata for {appId} and {type}");
             var typ = AppState(appId).GetContentType(type);
 
             var msg = H1($"Permissions for {typ.Name} ({typ.NameId}) in {appId}\n").ToString();

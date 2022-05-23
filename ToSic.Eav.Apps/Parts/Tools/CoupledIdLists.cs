@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// <param name="ids"></param>
         public DicNameObj Add(int? index, int?[] ids)
         {
-            Log.Add($"add content/pres at order:{index}");
+            Log.A($"add content/pres at order:{index}");
             index = index ?? Lists.First().Value.Count;
             var i = 0;
             Lists.ForEach(l => l.InsertOrAppend(index.Value, ids[i++]));
@@ -51,7 +51,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// <param name="index">Index to remove, 0 based</param>
         public DicNameObj Remove(int index)
         {
-            Log.Add($"remove content and pres items order:{index}");
+            Log.A($"remove content and pres items order:{index}");
             Lists.ForEach(l => l.RemoveIfInRange(index));
             return Lists.ToObject();
         }
@@ -99,7 +99,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
                     var primaryId = copy[index];
                     copy[index] = usedMarker;
                     l.Add(primaryId);
-                    Log.Add($"Added at [{index}] value {primaryId}");
+                    Log.A($"Added at [{index}] value {primaryId}");
                 }
             });
 
@@ -114,7 +114,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// <returns></returns>
         public DicNameObj Replace(int index, Tuple<bool, int?>[] values)
         {
-            Log.Call($"index: {index}")(null);
+            Log.Fn($"index: {index}").Done();
             if (index == -1)
                 throw new Exception("Sort order is never -1 any more; deprecated");
 
@@ -147,9 +147,9 @@ namespace ToSic.Eav.Apps.Parts.Tools
         private void SyncListLengths()
         {
             var expectedLength = Lists.First().Value.Count;
-            var wrapLog = Log.Call($"length: {expectedLength}");
+            var wrapLog = Log.Fn($"length: {expectedLength}");
             Lists.Skip(1).ForEach(l => l.SetLength(expectedLength));
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
     }
 }

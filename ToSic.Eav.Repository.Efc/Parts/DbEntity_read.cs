@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         {
             get
             {
-                DbContext.Log.Add(nameof(EntityQuery));
+                DbContext.Log.A(nameof(EntityQuery));
                 return DbContext.SqlDb.ToSicEavEntities
                     .Include(e => e.RelationshipsWithThisAsParent)
                     .Include(e => e.RelationshipsWithThisAsChild)

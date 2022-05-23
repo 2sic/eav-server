@@ -43,7 +43,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         {
             Log.LinkTo(parentLog);
             _appManager = _appManagerLazy.Value.Init(appId, Log);
-            Log.Add($"For app: {appId}");
+            Log.A($"For app: {appId}");
             return this;
         }
 
@@ -56,7 +56,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             ExportLanguageResolution exportLanguageReferences,
             string selectedIds)
         {
-            Log.Add($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
+            Log.A($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
             SecurityHelpers.ThrowIfNotAdmin(user);
 
             //var appManager = new AppManager(appId, Log);
@@ -93,7 +93,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         [HttpGet]
         public THttpResponseType DownloadTypeAsJson(IUser user, string name)
         {
-            Log.Add($"get fields type:{name}");
+            Log.A($"get fields type:{name}");
             SecurityHelpers.ThrowIfNotAdmin(user);
             var type = _appManager.Read.ContentTypes.Get(name);
             var serializer = _jsonSerializer.New.Init(_appManager.AppState, Log);
@@ -106,7 +106,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         [HttpGet]
         public THttpResponseType DownloadEntityAsJson(IUser user, int id, string prefix, bool withMetadata)
         {
-            Log.Add($"get fields id:{id}");
+            Log.A($"get fields id:{id}");
             SecurityHelpers.ThrowIfNotAdmin(user);
             var entity = _appManager.Read.Entities.Get(id);
             var serializer = _jsonSerializer.New.Init(_appManager.AppState, Log);

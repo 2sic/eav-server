@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -56,7 +57,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private Entity GetImportEntity(Guid entityGuid)
         {
             var result = ImportEntities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
-            if (result != null) Log.Add($"Will modify entity from existing import list {entityGuid}");
+            if (result != null) Log.A($"Will modify entity from existing import list {entityGuid}");
             return result;
         }
 
@@ -65,9 +66,9 @@ namespace ToSic.Eav.Apps.ImportExport
         private Entity AppendEntity(Guid entityGuid)
         {
             if(_appendEntityCount++ < 100)
-                Log.Add($"Add entity to import list {entityGuid}");
-            if (_appendEntityCount == 100) Log.Add("Add entity: will stop listing each one...");
-            if (_appendEntityCount % 100 == 0) Log.Add("Add entity: Current count:" + _appendEntityCount);
+                Log.A($"Add entity to import list {entityGuid}");
+            if (_appendEntityCount == 100) Log.A("Add entity: will stop listing each one...");
+            if (_appendEntityCount % 100 == 0) Log.A("Add entity: Current count:" + _appendEntityCount);
             var entity = new Entity(_appId, entityGuid, ContentType, new Dictionary<string, object>());
             ImportEntities.Add(entity);
             return entity;

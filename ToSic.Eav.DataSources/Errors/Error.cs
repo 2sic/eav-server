@@ -2,6 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources
 {
@@ -45,8 +46,8 @@ namespace ToSic.Eav.DataSources
         private ImmutableArray<IEntity> GenerateExceptionStream()
         {
             var wrapLog = Log.Call<ImmutableArray<IEntity>>();
-            Log.Add("This is a fake Error / Exception");
-            Log.Add("The Error DataSource creates an exception on purpose, to test exception functionality in Visual Query");
+            Log.A("This is a fake Error / Exception");
+            Log.A("The Error DataSource creates an exception on purpose, to test exception functionality in Visual Query");
             return wrapLog("fake error", SetError(Title, Message));
         }
     }

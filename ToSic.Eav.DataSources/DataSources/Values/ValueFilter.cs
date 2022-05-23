@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -123,7 +124,7 @@ namespace ToSic.Eav.DataSources
         {
             var wrapLog = Log.Call<IImmutableList<IEntity>>();
 
-            Log.Add("applying value filter...");
+            Log.A("applying value filter...");
 			var fieldName = Attribute;
 
             var languages = _valueLanguageService.PrepareLanguageList(Languages, Log);

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security
@@ -20,7 +21,7 @@ namespace ToSic.Eav.Security
                 // check general permissions
                 var condition = permission.Condition;
                 var identity = permission.Identity;
-                Log.Add($"condition:{condition}, identity:{identity}");
+                Log.A($"condition:{condition}, identity:{identity}");
 
                 // check custom permission based on the user Guid or owner
                 if (User.Guid != null)
@@ -32,7 +33,7 @@ namespace ToSic.Eav.Security
                     // check if an identity was provided
                     if (!string.IsNullOrWhiteSpace(identity))
                     {
-                        Log.Add($"Check if user is user or group - identity: {identity}");
+                        Log.A($"Check if user is user or group - identity: {identity}");
                         if (VerifyUserIsThisUser(identity, User))
                             return wrapLog("is-this-user: true", IsGrantedBecause(Conditions.Owner));
 

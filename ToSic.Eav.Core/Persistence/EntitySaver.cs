@@ -34,7 +34,7 @@ namespace ToSic.Eav.Persistence
                 ? Log.Call<Entity>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}" )
                 : null;
             if (saveOptions == null) throw new ArgumentNullException(nameof(saveOptions));
-            Log.Add(() => "opts " + saveOptions.LogInfo);
+            Log.A(() => "opts " + saveOptions.LogInfo);
             #region Step 0: initial error checks
             if(update == null) throw new Exception("can't prepare entities for saving, no new item with attributes provided");
 
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Persistence
             var origAttribs = _multiBuilder.Attribute.Clone(original?.Attributes); //.Copy();
             var newAttribs = _multiBuilder.Attribute.Clone(update.Attributes); //.Copy();
 
-            Log.Add($"has orig:{originalWasSaved}, origAtts⋮{origAttribs?.Count}, newAtts⋮{newAttribs.Count}");
+            Log.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribs?.Count}, newAtts⋮{newAttribs.Count}");
 
             // Optionally remove original values not in the update - but only if no option prevents this
             if (originalWasSaved && !saveOptions.PreserveUntouchedAttributes && !saveOptions.SkipExistingAttributes)
@@ -143,7 +143,7 @@ namespace ToSic.Eav.Persistence
         /// </remarks>
         private void StripUnknownLanguages(Dictionary<string, IAttribute> attribs, SaveOptions saveOptions)
         {
-            Log.Add("strip unknown langs");
+            Log.A("strip unknown langs");
             var languages = saveOptions.Languages;
 
             foreach (var attribElm in attribs)
@@ -243,7 +243,7 @@ namespace ToSic.Eav.Persistence
             var isPublished = newE.Value(Attributes.EntityFieldIsPublished);
             if (isPublished != null)
             {
-                Log.Add("Found property for published, will move");
+                Log.A("Found property for published, will move");
                 newE.Attributes.Remove(Attributes.EntityFieldIsPublished);
 
                 if(isPublished is bool b)
@@ -256,7 +256,7 @@ namespace ToSic.Eav.Persistence
             var probablyGuid = newE.Value(Attributes.EntityFieldGuid);
             if (probablyGuid != null)
             {
-                Log.Add("Found property for published, will move");
+                Log.A("Found property for published, will move");
                 newE.Attributes.Remove(Attributes.EntityFieldGuid);
                 if (Guid.TryParse(probablyGuid.ToString(), out var eGuid))
                     newE.SetGuid(eGuid);

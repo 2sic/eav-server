@@ -28,6 +28,8 @@ namespace ToSic.Eav.Plumbing
             return this;
         }
 
+        public bool HasInit => _initCall != null;
+
         public T Ready
         {
             get

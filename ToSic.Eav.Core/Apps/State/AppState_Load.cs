@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps
@@ -26,14 +27,14 @@ namespace ToSic.Eav.Apps
         [PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
         public void Load(Action loader)
         {
-            var wrapLog = Log.Call(message: $"zone/app:{ZoneId}/{AppId} - Hash: {GetHashCode()}", useTimer: true);
+            var wrapLog = Log.Fn(message: $"zone/app:{ZoneId}/{AppId} - Hash: {GetHashCode()}", startTimer: true);
 
             try
             {
                 // first set a lock, to ensure that only one update/load is running at the same time
                 lock (this)
                 {
-                    var inLockLog = Log.Call($"loading: {Loading}", "app loading start in lock");
+                    var inLockLog = Log.Fn($"loading: {Loading}", "app loading start in lock");
 
                     // only if loading is true will the AppState object accept changes
                     Loading = true;
@@ -42,20 +43,20 @@ namespace ToSic.Eav.Apps
                     EnsureNameAndFolderInitialized();
                     if (!FirstLoadCompleted) FirstLoadCompleted = true;
 
-                    inLockLog($"done - dynamic load count: {DynamicUpdatesCount}");
+                    inLockLog.Done($"done - dynamic load count: {DynamicUpdatesCount}");
                 }
             }
             catch (Exception ex)
             {
-                Log.Add("Error");
-                Log.Exception(ex);
+                Log.A("Error");
+                Log.Ex(ex);
             }
             finally
             {
                 // set loading to false again, to ensure that AppState won't accept changes
                 Loading = false;
 
-                wrapLog?.Invoke("ok");
+                wrapLog.Done("ok");
             }
         }
 
@@ -80,7 +81,7 @@ namespace ToSic.Eav.Apps
 
             // If the loader wasn't able to fill name/folder, then the data was not a json
             // so we must try to fix this now
-            Log.Add("Trying to load Name/Folder from App package entity");
+            Log.A("Trying to load Name/Folder from App package entity");
             var config = List.FirstOrDefault(md => md.Type.NameId == AppLoadConstants.TypeAppConfig);
             if (string.IsNullOrWhiteSpace(Name)) Name = config?.Value<string>(AppLoadConstants.FieldName);
             if (string.IsNullOrWhiteSpace(Folder)) Folder = config?.Value<string>(AppLoadConstants.FieldFolder);

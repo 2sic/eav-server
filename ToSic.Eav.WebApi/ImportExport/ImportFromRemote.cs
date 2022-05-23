@@ -35,7 +35,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         public Tuple<bool, List<Message>> InstallPackage(int zoneId, int appId, bool isApp, string packageUrl)
         {
             var callLog = Log.Call($"{nameof(zoneId)}:{zoneId}, {nameof(appId)}:{appId}, {nameof(isApp)}:{isApp}, url:{packageUrl}");
-            Log.Add("install package:" + packageUrl);
+            Log.A("install package:" + packageUrl);
             if(!_user.IsAdmin) throw new Exception("must be admin");
             bool success;
 

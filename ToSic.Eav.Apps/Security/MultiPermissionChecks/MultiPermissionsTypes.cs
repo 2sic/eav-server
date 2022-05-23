@@ -79,7 +79,7 @@ namespace ToSic.Eav.Apps.Security
         /// <returns></returns>
         private IPermissionCheck BuildTypePermissionChecker(string typeName)
         {
-            Log.Add($"BuildTypePermissionChecker({typeName})");
+            Log.A($"BuildTypePermissionChecker({typeName})");
             // now do relevant security checks
             return BuildPermissionChecker(AppState.GetContentType(typeName));
         }

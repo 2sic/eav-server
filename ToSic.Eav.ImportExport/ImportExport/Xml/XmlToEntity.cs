@@ -277,7 +277,7 @@ namespace ToSic.Eav.ImportExport.Xml
             // this should probably never happen, but just in case...
             if (sourceValueNode == null)
 	        {
-	            Log.Warn("node still null - this indicates a problem! will just use first match");
+	            Log.W("node still null - this indicates a problem! will just use first match");
 	            sourceValueNode = xmlValuesOfAttrib.First();
 	        }
 	        wrap((sourceValueNode != null).ToString());
@@ -306,7 +306,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
 	            readOnly = bool.Parse(textVal);
 
-	            Log.Add($"node for {envLang.EnvironmentKey} on Dim:{sourceLanguage.DimensionId}; readOnly: {readOnly}");
+	            Log.A($"node for {envLang.EnvironmentKey} on Dim:{sourceLanguage.DimensionId}; readOnly: {readOnly}");
 	            break;
 	        }
 	        wrap((sourceValueNode != null).ToString());

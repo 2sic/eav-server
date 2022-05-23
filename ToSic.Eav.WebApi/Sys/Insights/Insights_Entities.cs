@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
@@ -18,7 +19,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, type, out var message))
                 return message;
 
-            Log.Add($"debug app attributes for {appId} and {type}");
+            Log.A($"debug app attributes for {appId} and {type}");
             var appRead = AppRt(appId);
 
             var typ = appRead.ContentTypes.Get(type);
@@ -26,7 +27,7 @@ namespace ToSic.Eav.WebApi.Sys
             var msg = "" + H1($"Entities for {type} ({typ?.Name}/{typ?.NameId}) in {appId}\n");
             try
             {
-                Log.Add("getting content-type stats");
+                Log.A("getting content-type stats");
                 var entities = type == "all"
                     ? appRead.Entities.All.ToImmutableArray()
                     : appRead.Entities.Get(type).ToImmutableArray();
@@ -67,7 +68,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, entity, out var message))
                 return message;
 
-            Log.Add($"debug app entity metadata for {appId} and entity {entity}");
+            Log.A($"debug app entity metadata for {appId} and entity {entity}");
             var appRead = AppRt(appId);
             var ent = appRead.Entities.Get(entity.Value);
 
@@ -82,7 +83,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, entity, out var message))
                 return message;
 
-            Log.Add($"debug app entity permissions for {appId} and entity {entity}");
+            Log.A($"debug app entity permissions for {appId} and entity {entity}");
             var appRead = AppRt(appId);
             var ent = appRead.Entities.Get(entity.Value);
 
@@ -97,7 +98,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, nameId, out var message))
                 return message;
 
-            Log.Add($"debug app entity metadata for {appId} and entity {nameId}");
+            Log.A($"debug app entity metadata for {appId} and entity {nameId}");
             var appRead = AppRt(appId);
 
             IEntity ent;

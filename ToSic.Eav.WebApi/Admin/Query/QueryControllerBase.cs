@@ -47,7 +47,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// </summary>
 		public QueryDefinitionDto Get(int appId, int? id = null)
         {
-            Log.Add($"get pipe a#{appId}, id:{id}");
+            Log.A($"get pipe a#{appId}, id:{id}");
             var query = new QueryDefinitionDto();
 
             if (!id.HasValue) return query;
@@ -110,7 +110,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// <param name="id">PipelineEntityId</param>
         public QueryDefinitionDto Save(QueryDefinitionDto data, int appId, int id)
 		{
-		    Log.Add($"save pipe: a#{appId}, id#{id}");
+		    Log.A($"save pipe: a#{appId}, id#{id}");
 
             // assemble list of all new data-source guids, for later re-mapping when saving
             var newDsGuids = data.DataSources.Select(d => (string)d["EntityGuid"])
@@ -214,7 +214,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         {
             try
             {
-                Log.Add("import content" + args.DebugInfo);
+                Log.A("import content" + args.DebugInfo);
 
                 var deser = _dependencies.JsonSerializer.New.Init(_appManager.AppState, Log);
                 var ents = deser.Deserialize(args.GetContentString());

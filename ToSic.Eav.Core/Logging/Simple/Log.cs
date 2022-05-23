@@ -51,7 +51,7 @@ namespace ToSic.Eav.Logging.Simple
             Rename(name);
             LinkTo(parent);
             if (initialMessage == null) return;
-            AddInternal(initialMessage, code);
+            this.AddInternal(initialMessage, code);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace ToSic.Eav.Logging.Simple
                 }
                 // show an error, if it the new parent is different from the old one
                 else if (Parent.FullIdentifier != parent.FullIdentifier)
-                    Add("LOGGER WARNING - this logger already has a parent, but trying to attach to new parent. " +
+                    this.A("LOGGER WARNING - this logger already has a parent, but trying to attach to new parent. " +
                         $"Existing parent: {Parent.FullIdentifier}. " +
                         $"New Parent (ignored): {parent.FullIdentifier}");
             }

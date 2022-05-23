@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc.Models;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -45,7 +46,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private void UpdateEntityRelationshipsAndSave(List<RelationshipUpdatePackage> packages)
         {
             var wrapLog = Log.Call(useTimer: true);
-            packages.ForEach(p => Log.Add(() => $"i:{p.Entity.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]"));
+            packages.ForEach(p => Log.A(() => $"i:{p.Entity.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]"));
             // remove existing Relationships that are not in new list
             var existingRelationships = packages.SelectMany(p => p.Entity.RelationshipsWithThisAsParent
                 .Where(e => e.AttributeId == p.AttributeId))
@@ -54,7 +55,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Delete all existing relationships (important, because the order, which is part of the key, is important afterwards)
             if (existingRelationships.Count > 0)
             {
-                Log.Add($"found existing rels⋮{existingRelationships.Count}");
+                Log.A($"found existing rels⋮{existingRelationships.Count}");
                 foreach (var relationToDelete in existingRelationships)
                     DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
                 DbContext.SqlDb.SaveChanges(); // this is necessary after remove, because otherwise EF state tracking gets messed up
@@ -82,7 +83,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void AddToQueue(int attributeId, List<Guid?> newValue, int entityId, bool flushAll)
         {
-            Log.Add($"add to queue for i:{entityId}, guids⋮{newValue.Count}");
+            Log.A($"add to queue for i:{entityId}, guids⋮{newValue.Count}");
             _saveQueue.Add(new RelationshipToSave
             {
                 AttributeId = attributeId,
@@ -97,7 +98,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void AddToQueue(int attributeId, List<int?> newValue, int entityId, bool flushAll)
         {
-            Log.Add($"add to int for i:{entityId}, ints⋮{newValue.Count}");
+            Log.A($"add to int for i:{entityId}, ints⋮{newValue.Count}");
             _saveQueue.Add(new RelationshipToSave
             {
                 AttributeId = attributeId,
@@ -125,21 +126,21 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 {
                     FlushChildrenRelationships(fullFlush);
 
-                    Log.Add($"will add relationships⋮{_saveQueue.Count}");
+                    Log.A($"will add relationships⋮{_saveQueue.Count}");
 
                     var parentIds = _saveQueue.Select(rel => rel.ParentEntityId).ToArray();
                     if (parentIds.Any(p => p <= 0)) throw new Exception("some parent has no id provided, can't update relationships");
                     var parents = DbContext.Entities.GetDbEntities(parentIds);
-                    Log.Add("Found parents to map:" + parents.Length);
+                    Log.A("Found parents to map:" + parents.Length);
 
                     var allTargets = _saveQueue
                         .Where(rel => rel.ChildEntityGuids != null)
                         .SelectMany(rel => rel.ChildEntityGuids.Where(g => g.HasValue).Select(g => g.Value))
                         .Distinct()
                         .ToArray();
-                    Log.Add("Total target IDs: " + allTargets.Length);
+                    Log.A("Total target IDs: " + allTargets.Length);
                     var dbTargetIds = DbContext.Entities.GetMostCurrentDbEntities(allTargets);
-                    Log.Add("Total target entities (should match): " + dbTargetIds.Count);
+                    Log.A("Total target entities (should match): " + dbTargetIds.Count);
 
                     var updates = new List<RelationshipUpdatePackage>();
                     foreach (var relationship in _saveQueue)

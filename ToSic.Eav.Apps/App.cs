@@ -98,7 +98,7 @@ namespace ToSic.Eav.Apps
                 appIdentity = new AppIdentity(Site.ZoneId, appIdentity.AppId);
 
             Init(appIdentity, new CodeRef(), parentLog);
-            Log.Add($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
+            Log.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
             // Look up name in cache
             // 2020-11-25 changed to use State.Get. before it was this...

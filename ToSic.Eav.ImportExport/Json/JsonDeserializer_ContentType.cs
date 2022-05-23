@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -40,14 +41,14 @@ namespace ToSic.Eav.ImportExport.Json
                     jsonType.Sharing?.ParentAppId ?? 0,
                     jsonType.Sharing?.AlwaysShare ?? false);
 
-                Log.Add("deserialize metadata");
+                Log.A("deserialize metadata");
                 var ctMeta =
                     jsonType.Metadata?.Select(je => Deserialize(je, AssumeUnknownTypesAreDynamic, false, relationshipsSource)).ToList()
                     ?? new List<IEntity>();
                 allEntities.AddRange(ctMeta);
                 type.Metadata.Use(ctMeta);
 
-                Log.Add("deserialize attributes");
+                Log.A("deserialize attributes");
                 var attribs = jsonType.Attributes.Select((attr, pos) =>
                 {
                     var attDef = new ContentTypeAttribute(AppId, attr.Name, attr.Type, attr.IsTitle, 0, pos);

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Logging.Call
+﻿namespace ToSic.Eav.Logging
 {
     public class LogCall: LogCallBase
     {
@@ -6,8 +6,8 @@
         {
         }
 
-        public void Done() => DoneInternal(null);
+        public void Done() => this.DoneInternal(null);
 
-        public void Done(string message) => DoneInternal(message);
+        public void Done(string message) => this.DoneInternal(message);
     }
 }

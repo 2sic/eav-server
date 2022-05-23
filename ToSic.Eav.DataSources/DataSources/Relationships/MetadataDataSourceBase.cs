@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources
 {
@@ -40,7 +41,7 @@ namespace ToSic.Eav.DataSources
 
             var typeName = ContentTypeName;
             if (string.IsNullOrWhiteSpace(typeName)) typeName = null;
-            Log.Add($"Content Type Name: {typeName}");
+            Log.A($"Content Type Name: {typeName}");
 
             IEnumerable<IEntity> relationships = SpecificGet(originals, typeName);
 

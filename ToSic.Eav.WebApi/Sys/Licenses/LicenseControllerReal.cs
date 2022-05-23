@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Mime;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Adam;
 using ToSic.Eav.WebApi.Assets;
@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             Lazy<ILicenseService> licenseServiceLazy, 
             Lazy<IFeaturesInternal> featuresLazy,
             Lazy<IGlobalConfiguration> globalConfiguration,
-            LazyInitLog<SystemLoader> systemLoaderLazy,
+            LazyInitLog<EavSystemLoader> systemLoaderLazy,
             Lazy<LicenseCatalog> licenseCatalog
             ) : base(serviceProvider, "Bck.Lics")
         {
@@ -38,7 +38,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         private readonly Lazy<IFeaturesInternal> _featuresLazy;
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
         private readonly Lazy<LicenseCatalog> _licenseCatalog;
-        private readonly LazyInitLog<SystemLoader> _systemLoaderLazy;
+        private readonly LazyInitLog<EavSystemLoader> _systemLoaderLazy;
 
         private string ConfigurationsPath
         {
@@ -131,7 +131,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
 
             var fingerprint = _systemLoaderLazy.Ready.Fingerprint.GetFingerprint();
             var url = $"https://patrons.2sxc.org/api/license/get?fingerprint={fingerprint}";
-            Log.Add($"retrieve license from url:{url}");
+            Log.A($"retrieve license from url:{url}");
 
             string content;
 
@@ -140,10 +140,10 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                 var initialProtocol = ServicePointManager.SecurityProtocol;
                 try
                 {
-                    Log.Add("Will upgrade TLS connection so we can connect with TLS 1.1 or 1.2");
+                    Log.A("Will upgrade TLS connection so we can connect with TLS 1.1 or 1.2");
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-                    Log.Add($"try to download:{url}");
+                    Log.A($"try to download:{url}");
                     content = client.DownloadString(url);
 
                     // verify it's json etc.
@@ -157,7 +157,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                 }
                 catch (WebException e)
                 {
-                    Log.Exception(e);
+                    Log.Ex(e);
                     throw new Exception("Could not download license file from '" + url + "'.", e);
                 }
                 finally
@@ -196,7 +196,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             }
             catch (Exception e)
             {
-                Log.Exception(e);
+                Log.Ex(e);
                 throw;
             }
 

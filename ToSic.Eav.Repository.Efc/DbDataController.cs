@@ -107,7 +107,7 @@ namespace ToSic.Eav.Repository.Efc
             EavDbContext dbContext,
             Lazy<Efc11Loader> efcLoaderLazy,
             Lazy<IUser> userLazy,
-            IAppsCache appsCache,
+            AppsCacheSwitch appsCache,
             Generator<JsonSerializer> jsonSerializerGenerator,
             LogHistory logHistory
             ) : base("Db.Data")
@@ -123,7 +123,7 @@ namespace ToSic.Eav.Repository.Efc
 
         private readonly Lazy<Efc11Loader> _efcLoaderLazy;
         private readonly Lazy<IUser> _userLazy;
-        private readonly IAppsCache _appsCache;
+        private readonly AppsCacheSwitch _appsCache;
         private readonly LogHistory _logHistory;
 
         public EavDbContext SqlDb { get; }
@@ -211,7 +211,7 @@ namespace ToSic.Eav.Repository.Efc
         private void PurgeAppCacheIfReady()
         {
             Log.Call($"{_purgeAppCacheOnSave}")(null);
-            if (_purgeAppCacheOnSave) _appsCache.Purge(this);
+            if (_purgeAppCacheOnSave) _appsCache.Value.Purge(this);
         }
 
         #endregion
@@ -236,14 +236,14 @@ namespace ToSic.Eav.Repository.Efc
             {
                 action.Invoke();
                 ownTransaction?.Commit();
-                Log.Add($"Transaction {randomId} - completed"); // adds ok to end of block
+                Log.A($"Transaction {randomId} - completed"); // adds ok to end of block
                 wrapLog("transaction ok"); // adds ok to top of block
             }
             catch (Exception e)
             {
                 ownTransaction?.Rollback();
-                Log.Add("Error: " + e.Message);
-                Log.Add($"Transaction {randomId} failed / rollback");
+                Log.A("Error: " + e.Message);
+                Log.A($"Transaction {randomId} failed / rollback");
                 wrapLog("transaction failed / rollback");
                 throw;
             }

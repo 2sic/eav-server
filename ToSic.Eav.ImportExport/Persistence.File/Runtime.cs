@@ -43,22 +43,22 @@ namespace ToSic.Eav.Persistence.File
                 _paths = new List<string>();
                 // find all RepositoryInfoOfFolder and let them tell us what paths to use
                 var types = AssemblyHandling.FindInherited(typeof(FolderBasedRepository), Log).ToList();
-                Log.Add($"found {types.Count} Path providers");
+                Log.A($"found {types.Count} Path providers");
 
                 foreach (var typ in types)
                     try
                     {
-                        Log.Add($"adding {typ.FullName}");
+                        Log.A($"adding {typ.FullName}");
                         var instance = (FolderBasedRepository) ActivatorUtilities.CreateInstance(_serviceProvider, typ, Array.Empty<object>());
                         var paths = instance.RootPaths;
                         if (paths != null) _paths.AddRange(paths);
                     }
                     catch(Exception e)
                     {
-                        Log.Add($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
-                        Log.Exception(e);
+                        Log.A($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
+                        Log.Ex(e);
                     }
-                Log.Add(() => string.Join(",", _paths));
+                Log.A(() => string.Join(",", _paths));
                 return wrapLog($"{_paths.Count} paths", _paths);
             }
         }
@@ -107,22 +107,22 @@ namespace ToSic.Eav.Persistence.File
                     // That's because it's loaded from the JSON, where the metadata is part of the json-file.
                     // This should probably not cause any problems, but it's important to know
                     // We may optimize / change this some day
-                    Log.Add("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
+                    Log.A("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
                     var appTypes = appState.ContentTypes.ToList();
                     Loaders.ForEach(l => l.ResetSerializer(appTypes));
 
-                    Log.Add("Load items");
+                    Log.A("Load items");
                     foreach (var entityItemFolder in FsDataConstants.EntityItemFolders)
                     {
-                        Log.Add($"Load {entityItemFolder} items");
+                        Log.A($"Load {entityItemFolder} items");
                         var configs = LoadGlobalItems(entityItemFolder)?.ToList() ?? new List<IEntity>();
                         foreach (var c in configs) appState.Add(c as Entity, null, true);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Add("Error: Failed adding Entities");
-                    Log.Exception(ex);
+                    Log.A("Error: Failed adding Entities");
+                    Log.Ex(ex);
                 }
 
                 wrapLog("ok");
@@ -130,43 +130,6 @@ namespace ToSic.Eav.Persistence.File
 
             return outerWrapLog("ok", appState);
         }
-
-        ///// <summary>
-        ///// Reload App Configuration Items from the File System
-        ///// </summary>
-        //public void ReloadConfigEntities()
-        //{
-        //    var mainWrap = Log.Call();
-        //    var appStates = _serviceProvider.Build<IAppStates>();
-        //    var appState = appStates.GetPresetApp();
-
-        //    var previousConfig = appState.List.FirstOrDefaultOfType(FeatureConstants.TypeName);
-        //    var prevId = previousConfig?.EntityId;
-
-        //    appState.Load(() =>
-        //    {
-        //        var wrapLog = Log.Call(message: "Inside loader");
-        //        try
-        //        {
-        //            Log.Add("Load config items");
-        //            var configs = LoadGlobalItems(FsDataConstants.ConfigFolder)?.ToList() ?? new List<IEntity>();
-        //            Log.Add($"Found {configs.Count} items");
-        //            var featuresOnly = configs.OfType(FeatureConstants.TypeName).ToList();
-        //            Log.Add($"Found {featuresOnly.Count} items which are {FeatureConstants.TypeName} - expected: 1");
-        //            Log.Add("Ids of previous and new should match, otherwise we may run into problems. " +
-        //                    $"Prev: {prevId}, New: {featuresOnly.FirstOrDefault()?.EntityId}");
-        //            foreach (var c in featuresOnly) appState.Add(c as Entity, null, true);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Log.Add("Error updating config");
-        //            Log.Exception(ex);
-        //        }
-
-        //        wrapLog("done");
-        //    });
-
-        //    mainWrap("ok");
-        //}
+        
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources
 {
@@ -71,7 +72,7 @@ namespace ToSic.Eav.DataSources
             var callLog = Log.Call($"{cascade}", $"on {GetType().Name}");
             foreach (var stream in In)
                 stream.Value.PurgeList(cascade);
-            if (!In.Any()) Log.Add("No streams found to clear");
+            if (!In.Any()) Log.A("No streams found to clear");
             callLog("ok");
         }
     }

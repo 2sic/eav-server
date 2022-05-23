@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         {
             Log.LinkTo(parentLog);
             _appManager = _appManagerLazy.Value.Init(appId, Log);
-            Log.Add($"For app: {appId}");
+            Log.A($"For app: {appId}");
             return this;
         }
 
@@ -44,7 +44,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         [HttpPost]
         public ContentImportResultDto XmlPreview(ContentImportArgsDto args)
         {
-            Log.Add("eval content - start" + args.DebugInfo);
+            Log.A("eval content - start" + args.DebugInfo);
 
             var import = GetXmlImport(args);
             return import.ErrorLog.HasErrors
@@ -80,7 +80,7 @@ namespace ToSic.Eav.WebApi.ImportExport
 
         private ImportListXml GetXmlImport(ContentImportArgsDto args)
         {
-            Log.Add("get xml import " + args.DebugInfo);
+            Log.A("get xml import " + args.DebugInfo);
             var contextLanguages = _appStates.Languages(_appManager.ZoneId) /*_appManager.Read.Zone.Languages()*/.Select(l => l.EnvironmentKey).ToArray();
 
             using (var contentSteam = new MemoryStream(global::System.Convert.FromBase64String(args.ContentBase64)))

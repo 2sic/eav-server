@@ -1,12 +1,13 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using ToSic.Eav.Logging.Simple;
 
-namespace ToSic.Eav.Logging.Call
+namespace ToSic.Eav.Logging
 {
     public class LogCallBase
     {
-
+        /// <summary>
+        /// Keep constructor internal
+        /// </summary>
         internal LogCallBase(ILog log, 
             CodeRef code,
             bool isProp,
@@ -14,64 +15,53 @@ namespace ToSic.Eav.Logging.Call
             string message = null,
             bool startTimer = false)
         {
-            Log = log as Log;
-            var openingMessage = (isProp ? ".": "") + $"{code.Name}({parameters}) {message}";
-            var entry = Entry = Log.AddInternal(openingMessage, code);
-            entry.WrapOpen = true;
+            // Always init the stopwatch, as it could be used later even without a parent log
             Stopwatch = startTimer ? Stopwatch.StartNew() : new Stopwatch();
-            Log.WrapDepth++;
+
+            // Keep the log, but quit if it's not valid
+            LogOrNull = log as Log;
+            if (LogOrNull == null) return;
+
+            var openingMessage = (isProp ? ".": "") + $"{code.Name}({parameters}) {message}";
+            var entry = Entry = LogOrNull.AddInternalReuse(openingMessage, code);
+            entry.WrapOpen = true;
+            LogOrNull.WrapDepth++;
             IsOpen = true;
         }
 
-        public readonly Log Log;
+        public readonly Log LogOrNull;
 
         public Entry Entry { get; }
 
         public Stopwatch Stopwatch { get; }
 
-        protected bool IsOpen;
+        internal bool IsOpen;
+        
 
-        public void DoInTimer(Action action)
-        {
-            var timer = Stopwatch;
-            var running = timer.IsRunning;
-            if (!running) timer.Start();
-            action();
-            if (!running) timer.Stop();
-        }
+        //protected void WrapFinish(Entry entry, string message)
+        //{
+        //    if (LogOrNull == null) return;
 
-        public TResult DoInTimer<TResult>(Func<TResult> action)
-        {
-            var timer = Stopwatch;
-            var running = timer.IsRunning;
-            if (!running) timer.Start();
-            var result = action();
-            if (!running) timer.Stop();
-            return result;
-        }
+        //    LogOrNull.WrapDepth--;
+        //    entry.AppendResult(message);
+        //    var final = LogOrNull.AddInternalReuse(null, null);
+        //    final.WrapClose = true;
+        //    final.AppendResult(message);
+        //    if (Stopwatch == null) return;
+        //    Stopwatch.Stop();
+        //    entry.Elapsed = Stopwatch.Elapsed;
+        //}
 
+        //internal void DoneInternal(string message)
+        //{
+        //    if (LogOrNull == null) return;
 
+        //    if (!IsOpen)
+        //        LogOrNull.AddInternal("Log Warning: Wrapper already closed from previous call", null);
+        //    IsOpen = false;
 
-        protected void WrapFinish(Entry entry, string message, Stopwatch timer)
-        {
-            Log.WrapDepth--;
-            entry.AppendResult(message);
-            var final = Log.AddInternal(null, null);
-            final.WrapClose = true;
-            final.AppendResult(message);
-            if (timer == null) return;
-            timer.Stop();
-            entry.Elapsed = timer.Elapsed;
-        }
-
-        protected void DoneInternal(string message)
-        {
-            if (!IsOpen)
-                Log.Add("Log Warning: Wrapper already closed from previous call");
-            IsOpen = false;
-
-            WrapFinish(Entry, message, Stopwatch);
-        }
+        //    this.WrapFinish(Entry, message);
+        //}
 
     }
 }

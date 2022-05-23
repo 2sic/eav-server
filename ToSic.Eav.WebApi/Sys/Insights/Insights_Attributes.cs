@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
@@ -12,13 +13,13 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, type, out var message))
                 return message;
 
-            Log.Add($"debug app attributes for {appId} and {type}");
+            Log.A($"debug app attributes for {appId} and {type}");
             var typ = AppState(appId).GetContentType(type);
 
             var msg = "" + H1($"Attributes for {typ.Name} ({typ.NameId}) in {appId}\n");
             try
             {
-                Log.Add("getting content-type stats");
+                Log.A("getting content-type stats");
                 var attribs = typ.Attributes;
                 msg += P($"attribs: {attribs.Count}\n");
                 msg += "<table id='table'>"
@@ -56,7 +57,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, type, nameId, out var message))
                 return message;
 
-            Log.Add($"debug app metadata for {appId} and {type}");
+            Log.A($"debug app metadata for {appId} and {type}");
             var typ = AppState(appId.Value).GetContentType(type);
             var att = typ.Attributes.First(a => a.Name == nameId)
                       ?? throw CreateBadRequest($"can't find attribute {nameId}");
@@ -72,7 +73,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, type, attribute, out var message))
                 return message;
 
-            Log.Add($"debug app metadata for {appId} and {type}");
+            Log.A($"debug app metadata for {appId} and {type}");
             var typ = AppState(appId).GetContentType(type);
             var att = typ.Attributes.First(a => a.Name == attribute)
                       ?? throw CreateBadRequest($"can't find attribute {attribute}");

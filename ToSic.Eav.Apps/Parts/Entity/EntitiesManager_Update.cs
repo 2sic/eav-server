@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
 using UpdateList = System.Collections.Generic.Dictionary<string, object>;
 
@@ -15,9 +16,9 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
         public void UpdateParts(int id, UpdateList values, (bool published, bool branch)? draftAndBranch = null)
         {
-            var wrapLog = Log.Call($"id:{id}");
+            var wrapLog = Log.Fn($"id:{id}");
             UpdatePartsFromValues(Parent.AppState.List.FindRepoId(id), values, draftAndBranch);
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         /// <summary>
@@ -28,9 +29,9 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
         public void UpdateParts(int id, Entity values, (bool published, bool branch)? draftAndBranch = null)
         {
-            var wrapLog = Log.Call($"id:{id}");
+            var wrapLog = Log.Fn($"id:{id}");
             UpdatePartFromEntity(Parent.AppState.List.FindRepoId(id), values, draftAndBranch);
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         /// <summary>

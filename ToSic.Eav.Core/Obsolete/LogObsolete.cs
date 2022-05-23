@@ -36,36 +36,36 @@ namespace ToSic.Eav.Obsolete
 
                 var msg = $"Obsolete: {longId} is deprecated since '{since}' "
                           + (till == null ? "and has been removed." : $"and will be removed in {till}.");
-                Log.Add(msg);
-                Log.Add($"For further information, check: {link}");
+                Log.A(msg);
+                Log.A($"For further information, check: {link}");
 
                 try
                 {
                     if (addMore != null)
                     {
-                        Log.Add("Additional Info:");
+                        Log.A("Additional Info:");
                         addMore.Invoke(Log);
                     }
                     else
                     {
-                        Log.Add(
+                        Log.A(
                             "No additional info - probably because the code is being called from a static object, which doesn't know about the context.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Add("Error logging additional info.");
-                    Log.Exception(ex);
+                    Log.A("Error logging additional info.");
+                    Log.Ex(ex);
                 }
 
                 // Stop logging a general case if it's already been logged very often
                 if (countGeneral == MaxGeneralToLog)
-                    Log.Add(
+                    Log.A(
                         $"This is the last log we'll add for the case '{obsoleteId}', further messages won't be logged for this problem.");
 
                 // Stop logging a specific case if it has already been logged
                 if (countSpecific == MaxSpecificToLog)
-                    Log.Add(
+                    Log.A(
                         $"This is the only log we'll add for the id '{longId}', further messages won't be logged for this.");
 
 

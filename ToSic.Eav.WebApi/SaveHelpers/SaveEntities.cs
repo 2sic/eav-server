@@ -29,7 +29,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
             var entitiesToImport = itemsToImport.Select(e => e.Entity).ToList();
 
-            Log.Add("will save " + entitiesToImport.Count + " items");
+            Log.A("will save " + entitiesToImport.Count + " items");
             appMan.Entities.Save(entitiesToImport);
             wrapLog(null);
         }
@@ -54,7 +54,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                     var foundEntity = appEntities.Get(e.Header.Guid);
                     var state = foundEntity == null ? "not found" : foundEntity.IsPublished ? "published" : "draft";
                     var draft = foundEntity?.GetDraft();
-                    Log.Add(
+                    Log.A(
                         $"draft check: entity {e.Header.Guid} ({state}) - additional draft: {draft != null} - will return the draft");
                     return
                         draft ??

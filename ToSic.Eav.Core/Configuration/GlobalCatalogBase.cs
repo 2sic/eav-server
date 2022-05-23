@@ -36,19 +36,19 @@ namespace ToSic.Eav.Configuration
         /// <param name="items"></param>
         public void Register(params T[] items)
         {
-            var wrapLog = Log.Call($"Will add {items.Length} items");
+            var wrapLog = Log.Fn($"Will add {items.Length} items");
             // add all features if it doesn't yet exist, otherwise update
             foreach (var f in items)
                 if (f != null)
                 {
-                    Log.Add($"Adding {f.NameId}");
+                    Log.A($"Adding {f.NameId}");
                     _master.AddOrUpdate(f.NameId, f, (key, existing) => f);
                 }
 
             // Reset the read-only dictionary
             Dictionary = new ReadOnlyDictionary<string, T>(_master);
             List = new ReadOnlyCollection<T>(_master.Values.ToList());
-            wrapLog($"now contains {List.Count} items");
+            wrapLog.Done($"now contains {List.Count} items");
         }
 
         private readonly ConcurrentDictionary<string, T> _master = new ConcurrentDictionary<string, T>(StringComparer.InvariantCultureIgnoreCase);

@@ -14,22 +14,22 @@ namespace ToSic.Eav.Apps
         /// <param name="transaction"></param>
         public void DoInLock(ILog parentLog, Action transaction)
         {
-            var wrapLog = parentLog.Call();
+            var wrapLog = parentLog.Fn();
 
             try
             {
                 lock (_transactionLock)
                 {
-                    var inLock = parentLog.Call(message: "in lock");
+                    var inLock = parentLog.Fn(message: "in lock");
                     transaction();
-                    inLock.Invoke(null);
+                    inLock.Done();
                 }
             }
             finally{
 
             }
 
-            wrapLog.Invoke("ok");
+            wrapLog.Done("ok");
         }
     }
 }

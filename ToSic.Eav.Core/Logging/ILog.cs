@@ -40,22 +40,6 @@ namespace ToSic.Eav.Logging
 
         int Depth { get; set; }
 
-        /// <summary>
-        /// Intercept the result of an inner method, log it, then pass result on
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="message"></param>
-        /// <param name="generate"></param>
-        /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
-        /// <param name="cName">auto pre filled by the compiler - the method name</param>
-        /// <param name="cLine">auto pre filled by the compiler - the code line</param>
-        /// <returns></returns>
-        [PrivateApi("not widely used yet, keep secret")] 
-        T Intercept<T>(string message, Func<T> generate,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
-            );
 
         /// <summary>
         /// Dump result to an internal format - not very important in public use cases
@@ -100,6 +84,7 @@ namespace ToSic.Eav.Logging
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
+        [Obsolete("Do not use any more!")]
         Action<string> Call(
             Func<string> parameters, 
             Func<string> message = null, 
@@ -137,6 +122,7 @@ namespace ToSic.Eav.Logging
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
         /// <returns>The same warning text which was added</returns>
+        [Obsolete("Will remove soon - probably v15 as it's probably internal only")]
         string Add(string message,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
@@ -148,7 +134,8 @@ namespace ToSic.Eav.Logging
         /// </summary>
         /// <param name="message"></param>
         /// <returns>The same warning text which was added</returns>
-        string Warn(string message);
+        [Obsolete("Will remove soon - probably v14 as it's probably internal only")]
+        void Warn(string message);
 
         /// <summary>
         /// Add a message by calling a function. This will be inside a try/catch, to prevent crashes because of looping on nulls etc.
@@ -157,6 +144,7 @@ namespace ToSic.Eav.Logging
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
+        [Obsolete("Will remove soon - probably v14 as it's probably internal only")]
         void Add(Func<string> messageMaker,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,

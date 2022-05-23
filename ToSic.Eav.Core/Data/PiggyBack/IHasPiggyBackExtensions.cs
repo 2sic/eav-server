@@ -26,19 +26,19 @@ namespace ToSic.Eav.Data.PiggyBack
         [PrivateApi]
         public static TData GetOrCreateInPiggyBack<TData>(this IPropertyLookup entryPoint, string field, Func<string, TData> factory, ILog logOrNull) where TData : class
         {
-            var wrapLog = logOrNull.SafeCall<TData>();
+            var wrapLog = logOrNull.Fn<TData>();
             var advProperty = entryPoint.FindPropertyInternal(field, Array.Empty<string>(), logOrNull, null);
 
             // Skip if nothing to process
             if (!(advProperty?.Result is string valString) || string.IsNullOrWhiteSpace(valString))
-                return wrapLog("empty / not found", null);
+                return wrapLog.ReturnNull("empty / not found");
 
             // If our source has a PiggyBack cache, use this
             if (advProperty.Source is IHasPiggyBack piggyBackCache)
-                return wrapLog("piggyback", piggyBackCache.GetPiggyBack("auto-pgb-" + field, () => factory(valString)));
+                return wrapLog.Return(piggyBackCache.GetPiggyBack("auto-pgb-" + field, () => factory(valString)), "piggyback");
 
             // Otherwise just create
-            return wrapLog("no piggyback", factory(valString));
+            return wrapLog.Return(factory(valString), "no piggyback");
         }
 
 
