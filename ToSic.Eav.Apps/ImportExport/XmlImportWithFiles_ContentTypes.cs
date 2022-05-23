@@ -89,8 +89,7 @@ namespace ToSic.Eav.Apps.ImportExport
             if(isSharedType & !AllowUpdateOnSharedTypes)
             {
                 Log.A("trying to update a shared type, but not allowed");
-                wrapLog("error");
-                return null;
+                return wrapLog.ReturnNull("error"); 
             }
             #endregion
 
