@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		private List<IContentType> GetImportContentTypes(IEnumerable<XElement> xmlContentTypes)
 		{
-            var wrap = Log.Call();
+            var wrap = Log.Fn<List<IContentType>>();
             var list = xmlContentTypes.ToList();
             Log.A($"items: {list.Count}");
 
@@ -31,15 +31,14 @@ namespace ToSic.Eav.Apps.ImportExport
                     importAttributeSets.Add(ct);
             }
 
-		    wrap($"found {importAttributeSets.Count}");
-			return importAttributeSets;
-		}
+		    return wrap.Return(importAttributeSets, $"found {importAttributeSets.Count}");
+        }
 
 	    private IContentType BuildContentTypeFromXml(XElement xmlContentType)
 	    {
 	        var ctElement = xmlContentType.Element(XmlConstants.Attributes);
 	        var typeName = xmlContentType.Attribute(XmlConstants.Name).Value;
-	        var wrapLog = Log.Call(typeName);
+	        var wrapLog = Log.Fn<IContentType>(typeName);
 
 	        var attributes = new List<IContentTypeAttribute>();
             if (ctElement != null)
@@ -103,9 +102,8 @@ namespace ToSic.Eav.Apps.ImportExport
 	            description: xmlContentType.Attribute(XmlConstants.Description).Value,
 	            AllowUpdateOnSharedTypes && isSharedType
 	        );
-	        wrapLog("ok");
-	        return ct;
-	    }
+	        return wrapLog.Return(ct, "ok");
+        }
 
 	}
 

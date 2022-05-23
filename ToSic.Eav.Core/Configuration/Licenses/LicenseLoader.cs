@@ -48,7 +48,7 @@ namespace ToSic.Eav.Configuration.Licenses
         [PrivateApi]
         internal void LoadLicenses(string fingerprint, string globalFolder)
         {
-            var wrapLog = Log.Call(useTimer: true);
+            var wrapLog = Log.Fn(startTimer: true);
             try
             {
                 var licensesStored = LicensesStoredInConfigFolder(globalFolder);
@@ -57,13 +57,13 @@ namespace ToSic.Eav.Configuration.Licenses
                 var autoEnabled = AutoEnabledLicenses();
                 LicenseService.Update(autoEnabled.Union(licenses).ToList());
                 Log.A($"Found {licenses.Count} licenses");
-                wrapLog("ok");
+                wrapLog.Done("ok");
             }
             catch (Exception ex)
             {
                 // Just log and ignore
                 Log.Ex(ex);
-                wrapLog("error");
+                wrapLog.Done("error");
             }
         }
 

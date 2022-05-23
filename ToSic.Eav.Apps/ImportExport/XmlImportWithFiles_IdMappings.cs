@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.Logging;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow
@@ -17,7 +18,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private void PrepareFileIdCorrectionList(XElement sexyContentNode)
 		{
-            var callLog = Log.Call();
+            var callLog = Log.Fn();
 			if (!sexyContentNode.Elements(XmlConstants.PortalFiles).Any())
 				return;
 
@@ -28,16 +29,16 @@ namespace ToSic.Eav.Apps.ImportExport
 		        v => v.Attribute(XmlConstants.FolderNodePath).Value
 		    );
             Deps._environment.MapExistingFilesToImportSet(filesAndPaths, _fileIdCorrectionList);
-            callLog("ok");
+            callLog.Done("ok");
         }
 
 
 	    private void PrepareFolderIdCorrectionListAndCreateMissingFolders(XElement sexyContentNode)
         {
-            var callLog = Log.Call();
+            var callLog = Log.Fn();
             if (!sexyContentNode.Elements(XmlConstants.FolderGroup).Any()) 
                 return;
-
+            
             var portalFiles = sexyContentNode.Element(XmlConstants.FolderGroup)?.Elements(XmlConstants.Folder);
             if (portalFiles == null) return;
 
@@ -46,7 +47,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 v => v.Attribute(XmlConstants.FolderNodePath).Value
             );
             Deps._environment.CreateFoldersAndMapToImportIds(foldersAndPath, _folderIdCorrectionList, Messages);
-            callLog("ok");
+            callLog.Done("ok");
         }
 
 

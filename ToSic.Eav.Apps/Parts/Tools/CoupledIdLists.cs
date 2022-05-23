@@ -114,7 +114,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// <returns></returns>
         public DicNameObj Replace(int index, Tuple<bool, int?>[] values)
         {
-            Log.Call($"index: {index}")(null);
+            Log.Fn($"index: {index}").Done();
             if (index == -1)
                 throw new Exception("Sort order is never -1 any more; deprecated");
 
@@ -147,9 +147,9 @@ namespace ToSic.Eav.Apps.Parts.Tools
         private void SyncListLengths()
         {
             var expectedLength = Lists.First().Value.Count;
-            var wrapLog = Log.Call($"length: {expectedLength}");
+            var wrapLog = Log.Fn($"length: {expectedLength}");
             Lists.Skip(1).ForEach(l => l.SetLength(expectedLength));
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
     }
 }

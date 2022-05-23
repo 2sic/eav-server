@@ -64,7 +64,7 @@ namespace ToSic.Eav.Api.Api01
         /// <param name="checkWritePermissions"></param>
         public SimpleDataController Init(int zoneId, int appId, bool checkWritePermissions = true)
         {
-            var wrapLog = Log.Call<SimpleDataController>($"{zoneId}, {appId}");
+            var wrapLog = Log.Fn<SimpleDataController>($"{zoneId}, {appId}");
             _appId = appId;
             
             // when zoneId is not that same as in current context, we need to set right site for provided zoneId
@@ -75,18 +75,19 @@ namespace ToSic.Eav.Api.Api01
             _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId), Log);
             _checkWritePermissions = checkWritePermissions;
             Log.A($"Default language:{_defaultLanguageCode}");
-            return wrapLog(null, this);
+            return wrapLog.Return(this);
         }
 
         private string GetDefaultLanguage(int zoneId)
         {
-            var wrapLog = Log.Call<string>($"{zoneId}");
+            var wrapLog = Log.Fn<string>($"{zoneId}");
 
             var site = _zoneMapper.SiteOfZone(zoneId);
-            if (site == null) return wrapLog("site is null", "");
+            if (site == null) return wrapLog.Return("","site is null");
+
 
             var usesLanguages = _zoneMapper.CulturesWithState(site).Any(c => c.IsEnabled);
-            return wrapLog($"ok, usesLanguages:{usesLanguages}", usesLanguages ? site.DefaultCultureCode : "");
+            return wrapLog.Return(usesLanguages ? site.DefaultCultureCode : "", $"ok, usesLanguages:{usesLanguages}");
         }
         
         #endregion
@@ -220,11 +221,11 @@ namespace ToSic.Eav.Api.Api01
 
         private void AddValues(Entity entity, IContentType contentType, Dictionary<string, object> valuePairs, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink, bool? existingIsPublished, out (bool, bool)? draftAndBranch)
         {
-            var wrapLog = Log.Call($"..., ..., values: {valuePairs?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}");
+            var wrapLog = Log.Fn($"..., ..., values: {valuePairs?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}");
             draftAndBranch = null;
             if (valuePairs == null)
             {
-                wrapLog("no values");
+                wrapLog.Done("no values");
                 return;
             }
 
@@ -270,8 +271,8 @@ namespace ToSic.Eav.Api.Api01
                     Log.A($"Attribute '{keyValuePair.Key}' will become '{unWrappedValue}' ({attribute.Type})");
                 }
             }
-
-            wrapLog("done");
+            
+            wrapLog.Done("done");
         }
 
         private static object UnWrapJValue(object original)

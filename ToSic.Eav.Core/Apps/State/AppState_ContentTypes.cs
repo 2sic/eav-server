@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Apps
 {
@@ -24,7 +25,7 @@ namespace ToSic.Eav.Apps
 		[PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
 		public void InitContentTypes(IList<IContentType> contentTypes)
         {
-            var wrapLog = Log.Call(message: $"init content types {contentTypes?.Count}", useTimer: true);
+            var wrapLog = Log.Fn(message: $"init content types {contentTypes?.Count}", startTimer: true);
 	        if (!Loading)
 	            throw new Exception("trying to set content-types, but not in loading state. set that first!");
 
@@ -42,13 +43,13 @@ namespace ToSic.Eav.Apps
 	        // build types by name
 	        BuildCacheForTypesByName(_appTypesFromRepository);
 	        //ContentTypesShouldBeReloaded = false;
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
 
         private void BuildCacheForTypesByName(IList<IContentType> allTypes)
         {
-            var wrapLog = Log.Call(message: $"build cache for type names for {allTypes.Count} items", useTimer: true);
+            var wrapLog = Log.Fn(message: $"build cache for type names for {allTypes.Count} items", startTimer: true);
 	        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
 	        var keepTypes = allTypes;
@@ -62,7 +63,7 @@ namespace ToSic.Eav.Apps
 	        foreach (var type in keepTypes)
 	            if (!_appTypesByName.ContainsKey(type.Name))
 	                _appTypesByName.Add(type.Name, type);
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
 	    private ImmutableArray<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> appTypes)

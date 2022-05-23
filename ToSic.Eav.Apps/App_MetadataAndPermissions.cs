@@ -31,7 +31,7 @@ namespace ToSic.Eav.Apps
         /// </summary>
         protected void InitializeResourcesSettingsAndMetadata()
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn();
 
             var appState = AppState;
             Metadata = appState.Metadata;
@@ -50,7 +50,7 @@ namespace ToSic.Eav.Apps
 
             Hidden = AppConfiguration?.Value<bool>(AppConstants.FieldHidden) ?? false;
             Log.A($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
-            wrapLog(null);
+            wrapLog.Done();
         }
         #endregion
 

@@ -44,12 +44,12 @@ namespace ToSic.Eav.Apps
         /// <param name="global">if true, will flush everything</param>
         public void Purge(IAppIdentity appIdentity, bool global = false)
         {
-            var wrapLog = Log.Call($"{appIdentity.Show()}, {global}");
+            var wrapLog = Log.Fn($"{appIdentity.Show()}, {global}");
             if (global)
                 _appsCache.Value.PurgeZones();
             else
                 _appsCache.Value.Purge(appIdentity);
-            wrapLog.Invoke("ok");
+            wrapLog.Done("ok");
         }
 
         /// <summary>
@@ -58,9 +58,9 @@ namespace ToSic.Eav.Apps
         /// <param name="appId"></param>
         public void PurgeApp(int appId)
         {
-            var wrapLog = Log.Call($"{appId}");
+            var wrapLog = Log.Fn($"{appId}");
             Purge(_appStates.IdentityOfApp(appId));
-            wrapLog.Invoke("ok");
+            wrapLog.Done("ok");
         }
 
         /// <summary>
@@ -68,10 +68,10 @@ namespace ToSic.Eav.Apps
         /// </summary>
         public void DoAndPurge(int zoneId, int appId, Action action, bool global = false)
         {
-            var wrapLog = Log.Call($"{zoneId}, {appId}, fn(...), {global}");
+            var wrapLog = Log.Fn($"{zoneId}, {appId}, fn(...), {global}");
             action.Invoke();
             Purge(zoneId, appId, global);
-            wrapLog.Invoke("ok");
+            wrapLog.Done("ok");
         }
         #endregion
 

@@ -60,7 +60,7 @@ namespace ToSic.Eav.Apps
 
         private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack(ILog buildLog)
         {
-            var wrapLog = buildLog.Call();
+            var wrapLog = buildLog.Fn<SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>>();
             var cacheExpiry = GetMultiSourceCacheExpiry();
             // 2022-03-11 2dm - we're currently including the build log
             // we assume it won't remain in memory, but there is a small risk of a memory leak here
@@ -69,8 +69,7 @@ namespace ToSic.Eav.Apps
             var cachedStack = new SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>(cacheExpiry, 
                 () => RebuildStack(buildLog));
 
-            wrapLog("built");
-            return cachedStack;
+            return wrapLog.Return(cachedStack, "built");
         }
 
         private CacheExpiringMultiSource GetMultiSourceCacheExpiry()

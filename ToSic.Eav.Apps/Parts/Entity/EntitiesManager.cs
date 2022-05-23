@@ -77,7 +77,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
-            var wrapLog = Log.Call("", message: "save count:" + entities.Count + ", with Options:" + (saveOptions != null));
+            var wrapLog = Log.Fn<List<int>>("", message: "save count:" + entities.Count + ", with Options:" + (saveOptions != null));
 
             // Run the change in a lock/transaction
             // This is to avoid parallel creation of new entities
@@ -119,8 +119,7 @@ namespace ToSic.Eav.Apps.Parts
             List<int> ids = null;
             appState.DoInLock(Log, () => ids = InnerSaveInLock());
 
-            wrapLog($"ids:{ids.Count}");
-            return ids;
+            return wrapLog.Return(ids, $"ids:{ids.Count}");
         }
 
 

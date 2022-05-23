@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 
         internal void EnsureVersions(XElement appConfig)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn();
             var reqVersionNode = appConfig.Elements(XmlConstants.ValueNode)
                 .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "RequiredVersion")
                 ?.Attribute(XmlConstants.ValueAttr)?.Value;
@@ -27,12 +27,12 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
                 ?.Attribute(XmlConstants.ValueAttr)?.Value;
 
             CheckRequiredEnvironmentVersions(reqVersionNode, reqVersionNodeDnn);
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodeDnn)
         {
-            var wrapLog = Log.Call($"{reqVersionNode}, {reqVersionNodeDnn}");
+            var wrapLog = Log.Fn($"{reqVersionNode}, {reqVersionNodeDnn}");
             if (reqVersionNode != null)
             {
                 var vEav = Version.Parse(_environment.ModuleVersion);
@@ -50,7 +50,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
                     throw new Exception("this app requires host/dnn version " + reqVersionNodeDnn +
                                         ", installed is " + vHost + ". cannot continue. see also 2sxc.org/en/help?tag=app");
             }
-            wrapLog("completed");
+            wrapLog.Done("completed");
         }
 
     }

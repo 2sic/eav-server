@@ -145,10 +145,10 @@ namespace ToSic.Eav.Apps.Parts
 
             return wrapLog("ok", addedTypes);
         }
-
+        
         private void MetadataEnsureTypeAndSingleEntity(AddItemTask item)
         {
-            var wrapLog = Log.Call($"{item.SetName} and {item.Label} for app {AppState.AppId} - inApp: {item.InAppType}");
+            var wrapLog = Log.Fn($"{item.SetName} and {item.Label} for app {AppState.AppId} - inApp: {item.InAppType}");
 
             var ct = FindContentType(item.SetName, item.InAppType);
 
@@ -156,7 +156,7 @@ namespace ToSic.Eav.Apps.Parts
             if (ct == null)
             {
                 Log.A("type is still null, error");
-                wrapLog("error");
+                wrapLog.Done("error");
                 throw new Exception("something went wrong - can't find type in app, but it's not a global type, so I must cancel");
             }
 
@@ -166,7 +166,7 @@ namespace ToSic.Eav.Apps.Parts
             newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
             AppManager.Entities.Save(newEnt);
 
-            wrapLog(null);
+            wrapLog.Done();
         }
 
         private IContentType FindContentType(string setName, bool inAppType)

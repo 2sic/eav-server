@@ -3,6 +3,7 @@ using System.Linq;
 using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 
@@ -80,24 +81,24 @@ namespace ToSic.Eav.Apps
         /// <inheritdoc />
         public void Update(int entityId, Dictionary<string, object> values, string userName = null)
         {
-            var wrapLog = Log.Call($"app update i:{entityId}");
+            var wrapLog = Log.Fn($"app update i:{entityId}");
             // userName is not used (to change owner of updated entity).
             DataController.Ready.Update(entityId, values);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
-            wrapLog(null);
+            wrapLog.Done();
         }
 
 
         /// <inheritdoc />
         public void Delete(int entityId, string userName = null)
         {
-            var wrapLog = Log.Call($"app delete i:{entityId}");
+            var wrapLog = Log.Fn($"app delete i:{entityId}");
             // userName is not used (to change owner of deleted entity).
             DataController.Ready.Delete(entityId);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
-            wrapLog(null);
+            wrapLog.Done();
         }
 
         /// <summary>

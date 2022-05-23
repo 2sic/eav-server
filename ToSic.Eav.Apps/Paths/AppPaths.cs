@@ -66,11 +66,11 @@ namespace ToSic.Eav.Apps.Paths
         /// </summary>
         private void LogAppPathDetails(string property, string result)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn();
             Log.A($"App State: {_appState.LogState()}");
             Log.A($"Site: {_site.Id}; Zone: {_site.ZoneId};");
             Log.A($"{property}: {result}");
-            wrapLog(null);
+            wrapLog.Done();
         }
 
         private string InterceptAndLog(string name, string result)

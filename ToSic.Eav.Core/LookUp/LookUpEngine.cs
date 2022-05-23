@@ -42,7 +42,7 @@ namespace ToSic.Eav.LookUp
         public LookUpEngine(ILookUpEngine original, ILog parentLog, bool makeOwnCopyOfSources = false): this(parentLog)
 		{
 		    if (original == null) return;
-            var wrapLog = Log.Call(null, $"clone: {original.Log.Id}; LogDetailed: {LogDetailed}");
+            var wrapLog = Log.Fn(null, $"clone: {original.Log.Id}; LogDetailed: {LogDetailed}");
             if (makeOwnCopyOfSources)
             {
                 Link(original.Downstream);
@@ -52,7 +52,7 @@ namespace ToSic.Eav.LookUp
             else
                 Link(original);
 
-            wrapLog($"cloned {original.Sources.Count}");
+            wrapLog.Done($"cloned {original.Sources.Count}");
         }
 
         [PrivateApi("still wip")]

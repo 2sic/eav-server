@@ -70,13 +70,12 @@ namespace ToSic.Eav.Apps.Run
         {
             Log.LinkTo(log);
 
-            var wrapLog = Log.Call($"{app.AppId}, {app.Folder}, ...");
+            var wrapLog = Log.Fn<IAppFileSystemLoader>($"{app.AppId}, {app.Folder}, ...");
             _appState = app;
             _appPaths = Deps.AppPathsLazy.Value?.Init(Site, app, log);
             InitPathAfterAppId();
 
-            wrapLog(null);
-            return this;
+            return wrapLog.Return(this);
         }
 
         IAppRepositoryLoader IAppRepositoryLoader.Init(AppState app, ILog log) => Init(app, log) as IAppRepositoryLoader;

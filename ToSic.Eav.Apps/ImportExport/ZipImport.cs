@@ -105,19 +105,19 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private void TryToCleanUpTemporary(string temporaryDirectory)
         {
-            var wrapLog = Log.Call(temporaryDirectory);
+            var wrapLog = Log.Fn(temporaryDirectory);
             try
             {
                 // Finally delete the temporary directory
                 Directory.Delete(temporaryDirectory, true);
-                wrapLog("ok");
+                wrapLog.Done("ok");
             }
             catch
             {
                 Log.A("Delete ran into issues, will ignore. " +
                         "Probably files/folders are used by another process like anti-virus. " +
                         "Just leave temp folder as is");
-                wrapLog("error");
+                wrapLog.Done("error");
             }
         }
 
@@ -134,18 +134,18 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="importMessages"></param>
         private void ImportApp(string rename, string appDirectory, List<Message> importMessages)
         {
-            var wrapLog = Log.Call($"{nameof(rename)}:'{rename}', {nameof(appDirectory)}:'{appDirectory}', ...");
+            var wrapLog = Log.Fn($"{nameof(rename)}:'{rename}', {nameof(appDirectory)}:'{appDirectory}', ...");
             
             // Import XML file(s)
             foreach (var xmlFileName in Directory.GetFiles(appDirectory, "App.xml"))
                 ImportAppXmlAndFiles(rename, appDirectory, xmlFileName, importMessages);
             
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         private void ImportAppXmlAndFiles(string rename, string appDirectory, string xmlFileName, List<Message> importMessages)
         {
-            var wrapLog = Log.Call($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
+            var wrapLog = Log.Fn($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
             
             int appId;
             var importer = _xmlImpExpFilesLazy.Value.Init(null, false, Log); // new XmlImportWithFiles(Log);
@@ -159,7 +159,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 new VersionCheck(Env, Log).EnsureVersions(imp.AppConfig);
 
                 var folder = imp.AppFolder;
-
+                
                 // user decided to install app in different folder, because same App is already installed
                 if (!string.IsNullOrEmpty(rename))
                 {
@@ -200,7 +200,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // Must happen after CopyAppFiles(...)
             _systemManager.Init(Log).PurgeApp(appId);
 
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         /// <summary>
@@ -212,12 +212,12 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <remarks>The zip file still uses the old "2sexy" folder name instead of "2sxc"</remarks>
         private void CopyAppFiles(List<Message> importMessages, int appId, string tempFolder)
         {
-            var wrapLog = Log.Call($"..., {appId}, {tempFolder}");
+            var wrapLog = Log.Fn($"..., {appId}, {tempFolder}");
             var templateRoot = Env.TemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, "2sexy");
             if (Directory.Exists(appTemplateRoot))
                 new FileManager(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         /// <summary>
@@ -229,17 +229,17 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <remarks>The zip file still uses the "2sexyGlobal" folder name instead of "2sxcGlobal"</remarks>
         private void CopyAppGlobalFiles(List<Message> importMessages, int appId, string tempFolder)
         {
-            var wrapLog = Log.Call($"..., {appId}, {tempFolder}");
+            var wrapLog = Log.Fn($"..., {appId}, {tempFolder}");
             var globalTemplatesRoot = Env.GlobalTemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, "2sexyGlobal");
             if (Directory.Exists(appTemplateRoot))
                 new FileManager(appTemplateRoot).CopyAllFiles(globalTemplatesRoot, false, importMessages);
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         private void HandlePortalFilesFolder(string appDirectory)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn();
             // Handle PortalFiles folder
             var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
             if (Directory.Exists(portalTempRoot))
@@ -247,7 +247,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var messages = Env.TransferFilesToSite(portalTempRoot, string.Empty);
                 Messages.AddRange(messages);
             }
-            wrapLog(null);
+            wrapLog.Done();
         }
 
     }

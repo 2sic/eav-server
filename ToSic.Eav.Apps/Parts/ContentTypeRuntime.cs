@@ -40,18 +40,18 @@ namespace ToSic.Eav.Apps.Parts
             // Inner helper to log each intermediate state
             void LogListOfInputTypes(string title, List<InputTypeInfo> inputsToLog)
             {
-                var wrapLog2 = Log.Call($"{title}, {inputsToLog.Count}");
+                var wrapLog2 = Log.Fn($"{title}, {inputsToLog.Count}");
                 try
                 {
-                    wrapLog2(string.Join(",", inputsToLog.Select(it => it.Type)));
+                    wrapLog2.Done(string.Join(",", inputsToLog.Select(it => it.Type)));
                 }
                 catch (Exception)
                 {
-                    wrapLog2("error");
+                    wrapLog2.Done("error");
                 }
             }
 
-            var wrapLog = Log.Call<List<InputTypeInfo>>();
+            var wrapLog = Log.Fn<List<InputTypeInfo>>();
 
             // Initial list is the global, file-system based types
             var globalDef = GetGlobalInputTypesBasedOnContentTypes();
@@ -84,7 +84,7 @@ namespace ToSic.Eav.Apps.Parts
             // Sort for better debugging
             inputTypes = inputTypes.OrderBy(i => i.Type).ToList();
 
-            return wrapLog($"found {inputTypes.Count}", inputTypes);
+            return wrapLog.Return(inputTypes, $"found {inputTypes.Count}");
         }
 
         /// <summary>
