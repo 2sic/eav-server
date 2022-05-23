@@ -1,9 +1,7 @@
-﻿using System;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
 using ToSic.Eav.Logging.Simple;
 
-namespace ToSic.Eav.Logging.Call
+namespace ToSic.Eav.Logging
 {
     public class LogCallBase
     {
@@ -37,70 +35,33 @@ namespace ToSic.Eav.Logging.Call
 
         public Stopwatch Stopwatch { get; }
 
-        protected bool IsOpen;
+        internal bool IsOpen;
+        
 
-        #region Basic Adds
+        //protected void WrapFinish(Entry entry, string message)
+        //{
+        //    if (LogOrNull == null) return;
 
-        public void A(
-            string message,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
-        ) => LogOrNull?.A(message, cPath, cName, cLine);
+        //    LogOrNull.WrapDepth--;
+        //    entry.AppendResult(message);
+        //    var final = LogOrNull.AddInternalReuse(null, null);
+        //    final.WrapClose = true;
+        //    final.AppendResult(message);
+        //    if (Stopwatch == null) return;
+        //    Stopwatch.Stop();
+        //    entry.Elapsed = Stopwatch.Elapsed;
+        //}
 
-        public void A(
-            bool enabled, 
-            string message,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
-        ) => LogOrNull?.A(enabled, message, cPath, cName, cLine);
+        //internal void DoneInternal(string message)
+        //{
+        //    if (LogOrNull == null) return;
 
-        #endregion
+        //    if (!IsOpen)
+        //        LogOrNull.AddInternal("Log Warning: Wrapper already closed from previous call", null);
+        //    IsOpen = false;
 
-        public void DoInTimer(Action action)
-        {
-            var running = Stopwatch.IsRunning;
-            if (!running) Stopwatch.Start();
-            action();
-            if (!running) Stopwatch.Stop();
-        }
-
-        public TResult DoInTimer<TResult>(Func<TResult> action)
-        {
-            var running = Stopwatch.IsRunning;
-            if (!running) Stopwatch.Start();
-            var result = action();
-            if (!running) Stopwatch.Stop();
-            return result;
-        }
-
-
-
-        protected void WrapFinish(Entry entry, string message)
-        {
-            if (LogOrNull == null) return;
-
-            LogOrNull.WrapDepth--;
-            entry.AppendResult(message);
-            var final = LogOrNull.AddInternalReuse(null, null);
-            final.WrapClose = true;
-            final.AppendResult(message);
-            if (Stopwatch == null) return;
-            Stopwatch.Stop();
-            entry.Elapsed = Stopwatch.Elapsed;
-        }
-
-        protected void DoneInternal(string message)
-        {
-            if (LogOrNull == null) return;
-
-            if (!IsOpen)
-                LogOrNull.AddInternal("Log Warning: Wrapper already closed from previous call", null);
-            IsOpen = false;
-
-            WrapFinish(Entry, message);
-        }
+        //    this.WrapFinish(Entry, message);
+        //}
 
     }
 }

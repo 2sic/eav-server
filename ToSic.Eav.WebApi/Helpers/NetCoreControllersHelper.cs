@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Call;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.WebApi.Helpers

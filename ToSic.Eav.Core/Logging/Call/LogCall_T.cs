@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Logging.Call
+﻿namespace ToSic.Eav.Logging
 {
     public class LogCall<T>: LogCallBase
     {
@@ -8,34 +8,18 @@
         {
         }
 
-        public T Return(T result)
-        {
-            DoneInternal(null);
-            return result;
-        }
+        public T Return(T result) => this.Return(result, null);
 
         public T Return(T result, string message)
         {
-            DoneInternal(message);
+            this.DoneInternal(message);
             return result;
         }
 
-        public T ReturnAndLog(T result)
-        {
-            DoneInternal($"{result}");
-            return result;
-        }
+        public T ReturnAndLog(T result) => this.Return(result, $"{result}");
 
-        public T ReturnNull()
-        {
-            DoneInternal(null);
-            return default;
-        }
-        public T ReturnNull(string message)
-        {
-            DoneInternal(message);
-            return default;
-        }
+        public T ReturnNull() => this.Return(default, null);
 
+        public T ReturnNull(string message) => this.Return(default, message);
     }
 }
