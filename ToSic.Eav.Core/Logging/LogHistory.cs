@@ -11,6 +11,8 @@ namespace ToSic.Eav.Logging
     // let run for a while, and ca. 2sxc 13 rename back to "History" once we drop that global/static object
     public class LogHistory
     {
+        public const string WarningPrefix = "warning-";
+
         // Note: this is treated like a constant for now...
         public readonly int MaxCollect = 500;
 

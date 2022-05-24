@@ -12,7 +12,7 @@ namespace ToSic.Eav.Obsolete
     /// </summary>
     public class LogObsolete: HasLog
     {
-        public const string ObsoleteNameInHistory = "warning-obsolete";
+        public const string ObsoleteNameInHistory = LogHistory.WarningPrefix + "-obsolete";
         public const int MaxGeneralToLog = 25;
         public const int MaxSpecificToLog = 1;
         private const string MainError = "error";
@@ -82,13 +82,11 @@ namespace ToSic.Eav.Obsolete
 
                 // Stop logging a general case if it's already been logged very often
                 if (countGeneral == MaxGeneralToLog)
-                    Log.A(
-                        $"This is the last log we'll add for the case '{obsoleteId}', further messages won't be logged for this problem.");
+                    Log.A($"This is the last log we'll add for the case '{obsoleteId}', further messages won't be logged for this problem.");
 
                 // Stop logging a specific case if it has already been logged
                 if (countSpecific == MaxSpecificToLog)
-                    Log.A(
-                        $"This is the only log we'll add for the id '{longId}', further messages won't be logged for this.");
+                    Log.A($"This is the only log we'll add for the id '{longId}', further messages won't be logged for this.");
 
 
                 var history = new LogHistory();
