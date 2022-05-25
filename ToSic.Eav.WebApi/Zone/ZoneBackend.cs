@@ -18,7 +18,8 @@ namespace ToSic.Eav.WebApi.Zone
             IZoneMapper zoneMapper,
             IPlatformInfo platform,
             ISite site,
-            Lazy<ILicenseService> licenseService
+            Lazy<ILicenseService> licenseService,
+            LogHistory logHistory
             ) : base("Bck.Zones")
         {
             _appStates = appStates;
@@ -27,6 +28,7 @@ namespace ToSic.Eav.WebApi.Zone
             _platform = platform;
             _site = site;
             _licenseService = licenseService;
+            _logHistory = logHistory;
         }
         private readonly IAppStates _appStates;
         private readonly SystemFingerprint _fingerprint;
@@ -34,6 +36,7 @@ namespace ToSic.Eav.WebApi.Zone
         private readonly IPlatformInfo _platform;
         private readonly ISite _site;
         private readonly Lazy<ILicenseService> _licenseService;
+        private readonly LogHistory _logHistory;
 
         public SystemInfoSetDto GetSystemInfo()
         {
@@ -70,14 +73,33 @@ namespace ToSic.Eav.WebApi.Zone
                 Owner = owner
             };
 
+            var warningsObsolete = CountInsightsMessages(Obsolete.LogObsolete.ObsoleteNameInHistory);
+            var warningsOther = CountInsightsMessages(LogHistory.WarningsPrefix) - warningsObsolete;
+
+            var warningsDto = new MessagesDto
+            {
+                WarningsObsolete = warningsObsolete,
+                WarningsOther = warningsOther
+            };
+
             var info = new SystemInfoSetDto
             {
                 License = license,
                 Site = siteStats,
-                System = sysInfo
+                System = sysInfo,
+                Messages = warningsDto
             };
 
             return wrapLog("ok", info);
+        }
+
+        private int CountInsightsMessages(string prefix)
+        {
+            var warnings = _logHistory.Logs
+                .Where(l => l.Key.StartsWith(prefix))
+                .Select(l => l.Value.Count)
+                .Sum();
+            return warnings;
         }
     }
 }

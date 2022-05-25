@@ -60,6 +60,23 @@ namespace ToSic.Eav.Configuration.Licenses
                 .Select(g => g.First())
                 .ToImmutableDictionary(l => l.License, l => l); ;
             CacheTimestamp = DateTime.Now.Ticks;
+            AllLicensesAreInvalid = AreAllLicensesInvalid();
+        }
+
+        public bool HaveValidLicense => !AllLicensesAreInvalid;
+        
+        internal static bool AllLicensesAreInvalid = false;
+
+        internal static bool AreAllLicensesInvalid()
+        {
+            // if we do not have license for validation, than it can not be invalid
+            if (AllCache.Count(l => l.License.AutoEnable != true) == 0) return false;
+            
+            // any valid license?
+            foreach (var license in AllCache.Where(l => l.License.AutoEnable != true))
+                if (license.Valid)
+                    return false;
+            return true;
         }
         #endregion
     }

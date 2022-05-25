@@ -12,11 +12,17 @@ namespace ToSic.Eav.Apps
 
         public static AppState GetPresetApp(this IAppStates states) => states.Get(PresetIdentity);
 
-        public static AppState GetPrimaryApp(this IAppStates appStates, int zoneId, ILog loggerOrNull)
+        public static AppState GetPrimaryApp(this IAppStates appStates, int zoneId, ILog log)
         {
             var primaryAppId = appStates.IdentityOfPrimary(zoneId);
-            loggerOrNull.A($"{nameof(GetPrimaryApp)}: {primaryAppId?.Show()}");
+            log.A($"{nameof(GetPrimaryApp)}: {primaryAppId?.Show()}");
             return appStates.Get(primaryAppId);
+        }
+
+        public static AppState GetPrimaryAppOfAppId(this IAppStates appStates, int appId, ILog log)
+        {
+            var zoneId = appStates.IdentityOfApp(appId).ZoneId;
+            return appStates.GetPrimaryApp(zoneId, log);
         }
     }
 }

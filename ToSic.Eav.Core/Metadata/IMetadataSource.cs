@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -10,7 +11,9 @@ namespace ToSic.Eav.Metadata
     /// Mainly used in the Store, Cache-Systems and Apps.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public interface IMetadataSource: ICacheExpiring
+    public interface IMetadataSource: 
+        ICacheExpiring, 
+        IAppIdentity    // this is used for creating additional metadata on this source
     {
         /// <summary>
         /// Get any metadata from the current data source (usually an app)

@@ -6,8 +6,8 @@
         {
         }
 
-        public void Done() => this.DoneInternal(null);
+        //public void Done() => this.DoneInternal(null);
 
-        public void Done(string message) => this.DoneInternal(message);
+        //public void Done(string message) => this.DoneInternal(message);
     }
 }

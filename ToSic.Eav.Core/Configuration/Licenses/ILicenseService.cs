@@ -36,5 +36,10 @@ namespace ToSic.Eav.Configuration.Licenses
         /// </summary>
         /// <returns></returns>
         bool IsEnabled(LicenseDefinition license);
+
+        /// <summary>
+        /// Check if any license is valid.
+        /// </summary>
+        bool HaveValidLicense { get;  }
     }
 }

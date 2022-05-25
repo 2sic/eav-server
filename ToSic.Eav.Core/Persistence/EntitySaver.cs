@@ -227,18 +227,17 @@ namespace ToSic.Eav.Persistence
 
         private Dictionary<string, IAttribute> KeepOnlyKnownKeys(Dictionary<string, IAttribute> orig, List<string> keys)
         {
-            var callLog = Log.Call("keep only known keys");
+            var callLog = Log.Fn<Dictionary<string, IAttribute>>("keep only known keys");
             var lowerKeys = keys.Select(k => k.ToLowerInvariant()).ToList();
             var result = orig
                 .Where(a => lowerKeys.Contains(a.Key.ToLowerInvariant()))
                 .ToDictionary(a => a.Key, a => a.Value);
-            callLog($"{result.Count}");
-            return result;
+            return callLog.Return(result, $"{result.Count}");
         }
 
         private bool CorrectPublishedAndGuidImports(Entity newE,  bool logDetails)
         {
-            var callLog = logDetails ? Log.Call() : null;
+            var callLog = logDetails ? Log.Fn<bool>() : null;
             // check IsPublished
             var isPublished = newE.Value(Attributes.EntityFieldIsPublished);
             if (isPublished != null)
@@ -262,8 +261,7 @@ namespace ToSic.Eav.Persistence
                     newE.SetGuid(eGuid);
             }
 
-            callLog?.Invoke("ok");
-            return true;
+            return callLog.ReturnTrue("ok");
         }
 
     }

@@ -31,6 +31,13 @@ namespace ToSic.Eav.Plumbing
             return a.Equals(b, StringComparison.InvariantCultureIgnoreCase);
         }
 
+        public static bool ContainsInsensitive(this string a, string b)
+        {
+            if (a == null && b == null) return true;
+            if (a == null || b == null) return false;
+            return a.IndexOf(b, 0, StringComparison.CurrentCultureIgnoreCase) != -1;
+        }
+
 
         /// <summary>
         /// Make sure a string can be used as key - the core mission is to ensure that null-values are not the same as empty strings.

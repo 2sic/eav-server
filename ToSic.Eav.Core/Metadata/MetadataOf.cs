@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
@@ -226,6 +227,12 @@ namespace ToSic.Eav.Metadata
 
         private ITarget _target;
         private readonly string _metadataIdentifier;
+
+        #endregion
+
+        #region Context for data to be created
+
+        public IAppIdentity Context(string type) => GetMetadataSource();
 
         #endregion
 

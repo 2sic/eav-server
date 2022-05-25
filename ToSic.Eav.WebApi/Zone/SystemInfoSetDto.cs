@@ -7,6 +7,15 @@
         public SystemInfoDto System { get; internal set; }
 
         public LicenseInfoDto License { get; internal set; }
+
+        public MessagesDto Messages { get; internal set; }
+    }
+
+    public class MessagesDto
+    {
+        public int WarningsOther { get; set; }
+        public int WarningsObsolete { get; set; }
+        // public int Errors { get; set; }
     }
 
     public class SystemInfoDto

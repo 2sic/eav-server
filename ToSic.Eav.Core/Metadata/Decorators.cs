@@ -26,6 +26,7 @@
         public static string IsSharedDecoratorId = "18d2b1db-e1ed-45bc-8746-cd8885651063";
 
         // Note Decorator 13.03
+        public static string NoteDecoratorName = "NoteDecorator";
         public static string NoteDecoratorId = "5e958dc6-2922-4d68-835c-7b9711538b12";
 
         // Edit UI configuration 13.03
