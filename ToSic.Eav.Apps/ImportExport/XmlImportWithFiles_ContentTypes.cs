@@ -101,7 +101,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	            description: xmlContentType.Attribute(XmlConstants.Description).Value,
 	            AllowUpdateOnSharedTypes && isSharedType
 	        );
-	        return wrapLog.Return(ct, "ok");
+	        return wrapLog.ReturnAsOk(ct);
         }
 
 	}

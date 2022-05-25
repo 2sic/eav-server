@@ -137,7 +137,7 @@ namespace ToSic.Eav.Apps
 
             // System Presets
             sources.Add(new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, preset.SystemItem));
-            return wrapLog.Return(sources, "ok");
+            return wrapLog.ReturnAsOk(sources);
         }
 
         #endregion
