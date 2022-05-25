@@ -12,12 +12,12 @@ namespace ToSic.Eav.Obsolete
     /// </summary>
     public class LogObsolete: HasLog
     {
-        public const string ObsoleteNameInHistory = LogHistory.WarningPrefix + "-obsolete";
+        public const string ObsoleteNameInHistory = LogHistory.WarningsPrefix + "obsolete";
         public const int MaxGeneralToLog = 25;
         public const int MaxSpecificToLog = 1;
         private const string MainError = "error";
 
-        public LogObsolete(string obsoleteId, string caseIdentifier, string since, string till, string link, Action<ILog> addMore) : base(LogNames.Eav + ".Obsolet")
+        public LogObsolete(string obsoleteId, string caseIdentifier, string since, string till, string link, Action<ILog> addMore) : base(LogNames.Eav + ".Obsolt")
         {
             try
             {

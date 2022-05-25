@@ -74,7 +74,7 @@ namespace ToSic.Eav.WebApi.Zone
             };
 
             var warningsObsolete = CountInsightsMessages(Obsolete.LogObsolete.ObsoleteNameInHistory);
-            var warningsOther = CountInsightsMessages(LogHistory.WarningPrefix) - warningsObsolete;
+            var warningsOther = CountInsightsMessages(LogHistory.WarningsPrefix) - warningsObsolete;
 
             var warningsDto = new MessagesDto
             {
