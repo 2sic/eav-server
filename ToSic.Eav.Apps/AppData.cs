@@ -32,8 +32,6 @@ namespace ToSic.Eav.Apps
         /// Get a correctly instantiated instance of the simple data controller once needed.
         /// </summary>
         /// <returns>An data controller to create, update and delete entities</returns>
-        //private SimpleDataController DataController() => _dataController ?? (_dataController = _lazyDataController.Ready.Init(ZoneId, AppId));
-        //private SimpleDataController _dataController;
         private LazyInit<SimpleDataController> DataController { get; }
 
         /// <inheritdoc />

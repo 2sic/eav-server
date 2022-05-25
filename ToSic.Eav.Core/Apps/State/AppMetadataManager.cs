@@ -11,7 +11,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Apps
 {
     [PrivateApi("internal use only, don't publish this object")]
-    internal class AppMetadataManager: HasLog, IMetadataSource
+    internal class AppMetadataManager: HasLog, IMetadataSource, IAppIdentity
     {
         #region cache value objects: Types, _guid, _number, _string
         /// <summary>
@@ -35,6 +35,15 @@ namespace ToSic.Eav.Apps
         private Dictionary<int, Dictionary<string, List<IEntity>>> _string;
 
         private readonly AppState _app;
+
+        #endregion
+
+        #region IAppIdentity
+
+        public int ZoneId => _app.ZoneId;
+
+        public int AppId => _app.AppId;
+
 
         #endregion
 

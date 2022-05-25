@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -23,5 +24,14 @@ namespace ToSic.Eav.Metadata
         /// The complete list of metadata items, incl. the hidden ones
         /// </summary>
         List<IEntity> AllWithHidden { get; }
+
+        /// <summary>
+        /// Context of metadata to be created.
+        /// NOTE: type parameter is still not used, WIP
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        IAppIdentity Context(string type);
+
     }
 }
