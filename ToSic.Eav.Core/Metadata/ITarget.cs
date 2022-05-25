@@ -54,6 +54,9 @@ namespace ToSic.Eav.Metadata
 
         [JsonIgnore]
         [PrivateApi("WIP v13")] string Title { get; set; }
+
+        [PrivateApi("WIP for v14")]
+        string[] Recommendations { get; set; }
     }
 
 }
