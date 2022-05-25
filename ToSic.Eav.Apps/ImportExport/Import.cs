@@ -202,7 +202,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
 
             if (existing == null)
-                return callLog.Return(true, "existing not found, won't merge");
+                return callLog.ReturnTrue("existing not found, won't merge");
 
             Log.A("found existing, will merge");
             foreach (var newAttribute in contentType.Attributes)
@@ -231,7 +231,7 @@ namespace ToSic.Eav.Apps.ImportExport
             merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
             contentType.Metadata.Use(merged);
 
-            return callLog.Return(true, "done");
+            return callLog.ReturnTrue("done");
         }
 
         private IEntity MergeOneMd<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)

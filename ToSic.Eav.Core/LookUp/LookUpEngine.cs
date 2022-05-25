@@ -128,14 +128,14 @@ namespace ToSic.Eav.LookUp
         /// <inheritdoc />
         public void AddOverride(ILookUp lookUp)
         {
-            var wrapLog = LogDetailed ? Log.Call() : null;
+            var wrapLog = LogDetailed ? Log.Fn() : null;
 	        if (Sources.ContainsKey(lookUp.Name))
 	            Sources[lookUp.Name] =
 	                new LookUpInLookUps(lookUp.Name, lookUp,
 	                    Sources[lookUp.Name]);
 	        else
 	            Sources.Add(lookUp.Name, lookUp);
-            wrapLog?.Invoke("ok");
+            wrapLog.Done("ok");
         }
 
         /// <inheritdoc />
