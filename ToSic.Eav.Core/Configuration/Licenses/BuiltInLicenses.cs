@@ -49,7 +49,7 @@ namespace ToSic.Eav.Configuration.Licenses
         );
 
         public static readonly LicenseDefinition PatronSentinel = new LicenseDefinition(110, 
-            "Patron Sentinel (BETA, to be released on Towel-Day 2022)",
+            "Patron Sentinel",
             new Guid("f1e00b9c-1363-4cf6-a8bc-60a215a4130a"),
             "Patrons / supporters of 2sxc who really care extra high security such as CSP (Content Security Policies) and other features."
         );
