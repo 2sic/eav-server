@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys
@@ -123,7 +124,7 @@ namespace ToSic.Eav.DataSources.Sys
 
         private void BuildQuery()
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn();
 
             var qName = QueryName;
             if (string.IsNullOrWhiteSpace(qName))
@@ -143,7 +144,7 @@ namespace ToSic.Eav.DataSources.Sys
             var builtQuery = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
                 false, Configuration.LookUpEngine);
             _query = builtQuery.Item1;
-            wrapLog(null);
+            wrapLog.Done();
         }
 
 	    private IDataSource _query;

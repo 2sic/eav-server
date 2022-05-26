@@ -34,7 +34,7 @@ namespace ToSic.Eav.WebApi.ImportExport
 
         public Tuple<bool, List<Message>> InstallPackage(int zoneId, int appId, bool isApp, string packageUrl)
         {
-            var callLog = Log.Call($"{nameof(zoneId)}:{zoneId}, {nameof(appId)}:{appId}, {nameof(isApp)}:{isApp}, url:{packageUrl}");
+            var callLog = Log.Fn<Tuple<bool, List<Message>>>($"{nameof(zoneId)}:{zoneId}, {nameof(appId)}:{appId}, {nameof(isApp)}:{isApp}, url:{packageUrl}");
             Log.A("install package:" + packageUrl);
             if(!_user.IsAdmin) throw new Exception("must be admin");
             bool success;
@@ -51,8 +51,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 throw new Exception("An error occurred while installing the app: " + ex.Message, ex);
             }
 
-            callLog(success.ToString());
-            return new Tuple<bool, List<Message>>(success, importer.Messages);
+            return callLog.Return(new Tuple<bool, List<Message>>(success, importer.Messages), success.ToString());
         }
 
 

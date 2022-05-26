@@ -1,6 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Efc.Models;
 
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private ToSicEavEntities CreateDbRecord(IEntity newEnt, int changeId, int contentTypeId)
         {
-            var wrapLog = Log.Call($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
+            var wrapLog = Log.Fn<ToSicEavEntities>($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
             var dbEnt = new ToSicEavEntities
             {
                 AppId = DbContext.AppId,
@@ -32,8 +33,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             DbContext.SqlDb.Add(dbEnt);
             DbContext.SqlDb.SaveChanges();
-            wrapLog("ok");
-            return dbEnt;
+            return wrapLog.ReturnAsOk(dbEnt);
         }
     }
 }

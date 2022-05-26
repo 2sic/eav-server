@@ -34,7 +34,7 @@ namespace ToSic.Eav.Persistence.Efc
 
         private void LoadEntities(AppState app, int[] entityIds = null)
         {
-            var wrapLog = Log.Call($"{app.AppId}, {entityIds?.Length ?? 0}", useTimer: true);
+            var wrapLog = Log.Fn($"{app.AppId}, {entityIds?.Length ?? 0}", startTimer: true);
             AddLogCount = 0; // reset, so anything in this call will be logged again up to 1000 entries
             var appId = app.AppId;
 
@@ -112,7 +112,7 @@ namespace ToSic.Eav.Persistence.Efc
 
 
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
 

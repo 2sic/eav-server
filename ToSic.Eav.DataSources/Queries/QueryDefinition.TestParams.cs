@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -33,11 +34,11 @@ namespace ToSic.Eav.DataSources.Queries
         /// <returns></returns>
         private IEnumerable<ILookUp> GenerateTestValueLookUps()
         {
-            var wrapLog = Log.Call($"{Entity.EntityId}");
+            var wrapLog = Log.Fn<IEnumerable<ILookUp>>($"{Entity.EntityId}");
             // Parse Test-Parameters in Format [Token:Property]=Value
             var testParameters = TestParameters;
             if (testParameters == null)
-                return null;
+                return wrapLog.ReturnNull();
             // extract the lines which look like [source:property]=value
             var testValueTokens = TestParamRegex.Matches(testParameters);
 
@@ -57,8 +58,7 @@ namespace ToSic.Eav.DataSources.Queries
                 // Add the static value
                 currentLookUp.Properties.Add(testParam.Groups[KeyProperty].Value, testParam.Groups[KeyValue].Value);
             }
-            wrapLog("ok");
-            return result;
+            return wrapLog.ReturnAsOk(result);
         }
 
     }

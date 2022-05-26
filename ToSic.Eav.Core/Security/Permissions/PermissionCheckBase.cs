@@ -22,7 +22,7 @@ namespace ToSic.Eav.Security
             {
                 // already constructed, use that
                 if (_permissionList != null) return _permissionList;
-                var logWrap = Log.Call();
+                var logWrap = Log.Fn<IEnumerable<Permission>>();
                 var partsToConsider = new[]
                 {
                     TargetItem?.Metadata.Permissions,
@@ -36,8 +36,7 @@ namespace ToSic.Eav.Security
                         => current.Concat(permList))
                     .ToList();
 
-                logWrap($"found {PermissionList.Count()} items");
-                return _permissionList;
+                return logWrap.Return(_permissionList, $"found {PermissionList.Count()} items");
             }
         }
 
@@ -90,7 +89,7 @@ namespace ToSic.Eav.Security
             Log.LinkTo(parentLog);
             var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
 
-            var wrapLog = Log.Call($"type:{targetType?.NameId}, " +
+            var wrapLog = Log.Fn($"type:{targetType?.NameId}, " +
                                             $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
                                             $"permList1: {permissions1?.Count()}, " +
                                             $"permList2: {permList2?.Count}");
@@ -103,7 +102,7 @@ namespace ToSic.Eav.Security
                 _additionalMetadata = _additionalMetadata.Concat(permList2);
 
             GrantedBecause = Conditions.Undefined;
-            wrapLog("ready");
+            wrapLog.Done("ready");
         }
 
         #endregion
@@ -145,17 +144,16 @@ namespace ToSic.Eav.Security
         /// <returns></returns>
         private bool PermissionAllows(Permission permissionEntity, char[] desiredActionCode)
         {
-            var wrapLog = Log.Call($"{new string(desiredActionCode)}");
+            var wrapLog = Log.Fn<bool>($"{new string(desiredActionCode)}");
             // Check if it's a grant for the desired action - otherwise stop here
             var grant = permissionEntity.Grant;
             // If Grant doesn't contain desired action, stop here
             // otherwise check if it applies
             var result = grant.IndexOfAny(desiredActionCode) != -1 
                 && VerifyConditionApplies(permissionEntity);
-            wrapLog($"{result}");
-            return result;
+            return wrapLog.ReturnAndLog(result);
         }
-
+        
 
         /// <summary>
         /// The current user, as provided by injection

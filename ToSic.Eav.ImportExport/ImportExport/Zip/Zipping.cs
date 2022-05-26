@@ -88,7 +88,7 @@ namespace ToSic.Eav.ImportExport.Zip
         /// </summary>
         public void ExtractZipFile(Stream zipStream, string outFolder, bool allowCodeImport)
         {
-            var wrapLog = Log.Call($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
+            var wrapLog = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
             var file = new ZipFile(zipStream);
 
             try
@@ -121,7 +121,7 @@ namespace ToSic.Eav.ImportExport.Zip
                         if (!allowCodeImport)
                         {
                             Log.A("Code file import not permitted - will throw error");
-                            wrapLog("error");
+                            wrapLog.Done("error");
                             throw new Exception("Importing code files is not permitted - you need super-user permissions to do this. " +
                                                 $"The process was stopped on the file '{fileName}'");
                         }
@@ -139,7 +139,7 @@ namespace ToSic.Eav.ImportExport.Zip
                 file.Close();
             }
 
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         #endregion

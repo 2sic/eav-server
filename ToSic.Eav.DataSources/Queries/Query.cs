@@ -93,7 +93,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// </summary>
 		private void CreateOutWithAllStreams()
         {
-            var wrapLog = Log.Call(message:$"Query: '{Definition.Entity.GetBestTitle()}'", useTimer: true);
+            var wrapLog = Log.Fn(message:$"Query: '{Definition.Entity.GetBestTitle()}'", startTimer: true);
 
             // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
             // and the current In
@@ -105,7 +105,7 @@ namespace ToSic.Eav.DataSources.Queries
                 new List<ILookUp> {paramsOverride}, _showDrafts);
             _source = queryInfos.Item1;
             _out = new StreamDictionary(this, _source.Out);
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = DataSourceFactory.QueryBuilder.Init(Log));
@@ -116,19 +116,19 @@ namespace ToSic.Eav.DataSources.Queries
         /// <inheritdoc />
         public void Params(string key, string value)
         {
-            var wrapLog = Log.Call($"{key}, {value}");
+            var wrapLog = Log.Fn($"{key}, {value}");
             // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
             if(!_requiresRebuildOfOut)
             {
                 Log.A("Can't set param - query already compiled");
-                wrapLog("error");
+                wrapLog.Done("error");
                 throw new Exception("Can't set param any more, the query has already been compiled. " +
                                     "Always set params before accessing the data. " +
                                     "To Re-Run the query with other params, call Reset() first.");
             }
 
             Definition.Params[key] = value;
-            wrapLog(null);
+            wrapLog.Done();
         }
 
 
@@ -159,7 +159,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <param name="cascade"></param>
         public override void PurgeList(bool cascade = false)
         {
-            var callLog = Log.Call($"{cascade}", $"on {GetType().Name}");
+            var callLog = Log.Fn($"{cascade}", $"on {GetType().Name}");
             // PurgeList on all In, as would usually happen
             // This will only purge query-in used for parameter
             base.PurgeList(cascade);
@@ -171,7 +171,7 @@ namespace ToSic.Eav.DataSources.Queries
 
             Log.A("Update RequiresRebuildOfOut");
             _requiresRebuildOfOut = true;
-            callLog("ok");
+            callLog.Done("ok");
 
         }
     }

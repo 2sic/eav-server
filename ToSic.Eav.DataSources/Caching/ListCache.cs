@@ -60,7 +60,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// <returns></returns>
         private ListCacheItem GetValidCacheItemOrNull(IDataStream dataStream)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn<ListCacheItem>();
             // Check if it's in the cache, and if it requires re-loading
             var key = CacheKey(dataStream);
             var itemInCache = Get(key);
@@ -68,8 +68,7 @@ namespace ToSic.Eav.DataSources.Caching
             var valid = found && (!dataStream.CacheRefreshOnSourceRefresh || !itemInCache.CacheChanged(dataStream.Caching.CacheTimestamp));
             Log.A($"ListCache found:{found}; valid:{valid}; timestamp:{dataStream.Caching.CacheTimestamp} = {dataStream.Caching.CacheTimestamp.ToReadable()}");
             Log.A($"ListCache key:'{key}'");
-            wrapLog(valid.ToString());
-            return valid ? itemInCache : null;
+            return wrapLog.Return(valid ? itemInCache : null, valid.ToString());
         }
 
         /// <inheritdoc />
@@ -120,7 +119,7 @@ namespace ToSic.Eav.DataSources.Caching
         public void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, int durationInSeconds = 0,
             bool slidingExpiration = true)
         {
-            var callLog = Log.Call($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
+            var callLog = Log.Fn($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
             var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
             var expiration = new TimeSpan(0, 0, duration);
             var policy = slidingExpiration
@@ -129,9 +128,9 @@ namespace ToSic.Eav.DataSources.Caching
 
             var cache = MemoryCache.Default;
             cache.Set(key, new ListCacheItem(list, sourceTimestamp), policy);
-            callLog("ok");
+            callLog.Done("ok");
         }
-
+        
 
         /// <inheritdoc />
         public void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true)
@@ -144,9 +143,9 @@ namespace ToSic.Eav.DataSources.Caching
         /// <inheritdoc />
         public void Remove(string key)
         {
-            var callLog = Log.Call(key);
+            var callLog = Log.Fn(key);
             MemoryCache.Default.Remove(key);
-            callLog("ok");
+            callLog.Done("ok");
         }
 
         /// <inheritdoc />

@@ -16,7 +16,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns></returns>
         internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
         {
-            var wrapLog = Log.Call($"count:{entities?.Count}");
+            var wrapLog = Log.Fn<List<int>>($"count:{entities?.Count}");
             var ids = new List<int>();
 
             if (entities == null || entities.Count == 0)
@@ -42,8 +42,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                                     }
                                 }))));
             }
-            wrapLog($"id count:{ids.Count}");
-            return ids;
+            return wrapLog.Return(ids, $"id count:{ids.Count}");
         }
 
     }

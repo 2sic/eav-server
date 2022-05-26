@@ -65,8 +65,7 @@ namespace ToSic.Eav.WebApi
         // todo: rename to "List" to match external name, once feature/oqtane2 branch isn't used any more
         public IEnumerable<ContentTypeDto> Get(string scope = null, bool withStatistics = false)
         {
-            var wrapLog = Log.Call($"scope:{scope}, stats:{withStatistics}");
-
+            var wrapLog = Log.Fn<IEnumerable<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
 
             // 2020-01-15 2sxc 10.27.00 Special side-effect, pre-generate the resources, settings etc. if they didn't exist yet
             // this is important on "Content" apps, because these don't auto-initialize when loading from the DB
@@ -88,8 +87,7 @@ namespace ToSic.Eav.WebApi
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
                 .Select(t => ContentTypeAsDto(t, appMan.Read.Entities.Get(t.Name).Count()));
-            wrapLog("ok");
-            return filteredType;
+            return wrapLog.ReturnAsOk(filteredType);
 	    }
 
         private ContentTypeDto ContentTypeAsDto(IContentType t, int count = -1)
@@ -129,12 +127,11 @@ namespace ToSic.Eav.WebApi
 
 	    public ContentTypeDto GetSingle(string contentTypeStaticName, string scope = null)
 	    {
-	        var wrapLog = Log.Call($"a#{_appId}, type:{contentTypeStaticName}, scope:{scope}");
+	        var wrapLog = Log.Fn<ContentTypeDto>($"a#{_appId}, type:{contentTypeStaticName}, scope:{scope}");
             var appState = _appStates.Get(_appId);
 
             var ct = appState.GetContentType(contentTypeStaticName);
-            wrapLog(null);
-            return ContentTypeAsDto(ct);
+            return wrapLog.Return(ContentTypeAsDto(ct));
 	    }
 
 	    public bool Delete(string staticName)

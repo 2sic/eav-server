@@ -138,7 +138,7 @@ namespace ToSic.Eav.Persistence.Efc
 
         private Dictionary<int, IEnumerable<TempRelationshipList>> GroupUniqueRelationships(IReadOnlyCollection<ToSicEavEntityRelationships> relationships)
         {
-            var callLog = Log.Call($"items: {relationships.Count}", useTimer: true);
+            var callLog = Log.Fn<Dictionary<int, IEnumerable<TempRelationshipList>>>($"items: {relationships.Count}", startTimer: true);
 
             Log.A("experiment!");
             var unique = relationships.Distinct(new RelationshipComparer()).ToList();
@@ -157,11 +157,8 @@ namespace ToSic.Eav.Persistence.Efc
                                 .Select(c => c.ChildEntityId)
                                 .ToList()
                         }));
-            callLog("ok");
-            return relatedEntities;
+            return callLog.ReturnAsOk(relatedEntities);
         }
-
-
     }
 
     internal class RelationshipComparer : IEqualityComparer<ToSicEavEntityRelationships>

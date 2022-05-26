@@ -18,7 +18,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
         public void UpdateGuidAndPublishedAndSaveMany(AppManager appMan, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
         {
-            var wrapLog = Log.Call("");
+            var wrapLog = Log.Fn("");
             foreach (var bundle in itemsToImport)
             {
                 var curEntity = (Entity)bundle.Entity;
@@ -26,20 +26,20 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                 if (enforceDraft)
                     EnforceDraft(curEntity);
             }
-
+            
             var entitiesToImport = itemsToImport.Select(e => e.Entity).ToList();
 
             Log.A("will save " + entitiesToImport.Count + " items");
             appMan.Entities.Save(entitiesToImport);
-            wrapLog(null);
+            wrapLog.Done();
         }
 
         private void EnforceDraft(Entity currEntity)
         {
-            var wrapLog = Log.Call($"will set published/isbranch on {currEntity.EntityGuid}");
+            var wrapLog = Log.Fn($"will set published/isbranch on {currEntity.EntityGuid}");
             currEntity.IsPublished = false;
             currEntity.PlaceDraftInBranch = true;
-            wrapLog(null);
+            wrapLog.Done();
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
         /// <returns></returns>
         public Dictionary<Guid, int> GenerateIdList(EntityRuntime appEntities, IEnumerable<BundleWithHeader> items)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn<Dictionary<Guid, int>>();
             var idList = items.Select(e =>
                 {
                     var foundEntity = appEntities.Get(e.Header.Guid);
@@ -62,8 +62,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                 })
                 .Where(e => e != null)
                 .ToDictionary(f => f.EntityGuid, f => f.EntityId);
-            wrapLog(null);
-            return idList;
+            return wrapLog.Return(idList);
         }
 
     }

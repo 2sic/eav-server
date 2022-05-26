@@ -20,7 +20,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns>The published Entity</returns>
         internal void PublishDraftInDbEntity(int entityId, IEntity draftToPublishForJson)
         {
-            var wrapLog = Log.Call($"{entityId}");
+            var wrapLog = Log.Fn($"{entityId}");
             var unpublishedEntity = DbContext.Entities.GetDbEntity(entityId);
             if (!unpublishedEntity.IsPublished)
                 Log.A("found item is draft, will use this to publish");
@@ -73,7 +73,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             Log.A("About to save...");
             DbContext.SqlDb.SaveChanges();
-            wrapLog($"ok {entityId}");
+            wrapLog.Done($"ok {entityId}");
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="entityIds">EntityId of the Published Entity</param>
         internal Dictionary<int, int?> GetDraftBranchMap(List<int> entityIds)
         {
-            var wrapLog = Log.Call($"items: {entityIds.Count}", useTimer: true);
+            var wrapLog = Log.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", startTimer: true);
             var nullList = entityIds.Cast<int?>().ToList();
             var ids = DbContext.SqlDb.ToSicEavEntities
                 .Where(e => nullList.Contains(e.PublishedEntityId) && !e.ChangeLogDeleted.HasValue)
@@ -125,8 +125,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .ToList();
             // note: distinct is necessary, because new entities all have 0 as the id
             var dic = entityIds.Distinct().ToDictionary(e => e, e => ids.FirstOrDefault(i => i.PublishedEntityId == e)?.EntityId);
-            wrapLog($"found {ids.Count}");
-            return dic;
+            return wrapLog.Return(dic, $"found {ids.Count}");
         }
     }
     

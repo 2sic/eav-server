@@ -33,14 +33,13 @@ namespace ToSic.Eav.WebApi.Languages
 
         public IList<SiteLanguageDto> GetLanguages()
         {
-            var callLog = Log.Call();
+            var callLog = Log.Fn<IList<SiteLanguageDto>>();
             // ReSharper disable once PossibleInvalidOperationException
             var cultures = _zoneMapper.Ready.CulturesWithState(_site)
                 .Select(c => new SiteLanguageDto { Code = c.Code, Culture = c.Culture, IsEnabled = c.IsEnabled })
                 .ToList();
 
-            callLog("found:" + cultures.Count);
-            return cultures;
+            return callLog.Return(cultures, "found:" + cultures.Count);
         }
 
         public List<SiteLanguageDto> GetLanguagesOfApp(AppState appState, bool withCount = false)

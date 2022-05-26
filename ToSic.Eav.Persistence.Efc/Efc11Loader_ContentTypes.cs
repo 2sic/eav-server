@@ -86,7 +86,7 @@ namespace ToSic.Eav.Persistence.Efc
             // 1. Collect AppIds used in content-types and attributes here
             // 2. After loading the types, access the app-state of each of these IDs to ensure it's loaded already
 
-            var wrapLog = Log.Call(useTimer: true);
+            var wrapLog = Log.Fn<ImmutableList<IContentType>>(startTimer: true);
             // Load from DB
             var sqlTime = Stopwatch.StartNew();
             var query = _dbContext.ToSicEavAttributeSets
@@ -157,8 +157,7 @@ namespace ToSic.Eav.Persistence.Efc
 
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
 
-            wrapLog("");
-            return newTypes.ToImmutableList();
+            return wrapLog.Return(newTypes.ToImmutableList());
         }
 
     }

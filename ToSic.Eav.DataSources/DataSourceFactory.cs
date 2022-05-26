@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSources
         /// <returns>A single DataSource</returns>
         public IDataSource GetDataSource(string sourceName, IAppIdentity app, IDataSource upstream = null, ILookUpEngine lookUps = null)
         {
-            var wrapLog = Log.Call(parameters: $"name: {sourceName}");
+            var wrapLog = Log.Fn<IDataSource>(parameters: $"name: {sourceName}");
             // try to find with assembly name, or otherwise with GlobalName / previous names
             var type = DataSourceCatalog.FindType(sourceName);
 
@@ -78,8 +78,7 @@ namespace ToSic.Eav.DataSources
                 };
             }
             var result = GetDataSource(type, app, upstream, lookUps);
-            wrapLog("ok");
-            return result;
+            return wrapLog.ReturnAsOk(result);
         }
 
         /// <summary>
@@ -92,11 +91,10 @@ namespace ToSic.Eav.DataSources
         /// <returns>A single DataSource</returns>
         private IDataSource GetDataSource(Type type, IAppIdentity app, IDataSource upstream, ILookUpEngine lookUps)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn<IDataSource>();
             var newDs = _serviceProvider.Build<DataSourceBase>(type);
             ConfigureNewDataSource(newDs, app, upstream, lookUps);
-            wrapLog("ok");
-            return newDs;
+            return wrapLog.ReturnAsOk(newDs);
         }
 
 
@@ -128,15 +126,14 @@ namespace ToSic.Eav.DataSources
 
         public T GetDataSource<T>(IAppIdentity appIdentity, IDataSource upstream, ILookUpEngine lookUps = null) where T : IDataSource
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn<T>();
 
             if (upstream == null && lookUps == null)
                 throw new Exception("Can't get GetDataSource<T> because both upstream and lookUps are null.");
 
             var newDs = _serviceProvider.Build<T>();
             ConfigureNewDataSource(newDs, appIdentity, upstream, lookUps ?? upstream.Configuration.LookUpEngine);
-            wrapLog("ok");
-            return newDs;
+            return wrapLog.ReturnAsOk(newDs);
         }
 
         #endregion
@@ -155,7 +152,7 @@ namespace ToSic.Eav.DataSources
             bool showDrafts = false,
             ILookUpEngine configProvider = null)
         {
-            var wrapLog = Log.Call(parameters: $"#{app.Show()}, draft:{showDrafts}, config:{configProvider != null}");
+            var wrapLog = Log.Fn<IDataSource>(parameters: $"#{app.Show()}, draft:{showDrafts}, config:{configProvider != null}");
 
             configProvider = configProvider ?? _lookupResolveLazy.Value.GetLookUpEngine(0);
 
@@ -164,8 +161,7 @@ namespace ToSic.Eav.DataSources
             var publishingFilter = GetDataSource<PublishingFilter>(app, dataSource, configProvider);
             publishingFilter.ShowDrafts = showDrafts;
 
-            wrapLog("ok");
-            return publishingFilter;
+            return wrapLog.ReturnAsOk(publishingFilter);
         }
 
         #endregion
@@ -186,10 +182,10 @@ namespace ToSic.Eav.DataSources
             IDataSource upstream = null,
             ILookUpEngine configLookUp = null) where T : IDataSource
         {
-            var wrapLog = Log.Call($"DataSource {newSource.Name} ({newSource.LogId})");
+            var wrapLog = Log.Fn($"DataSource {newSource.Name} ({newSource.LogId})");
             if (!(newSource is DataSourceBase newDs))
             {
-                wrapLog("can't configure, not a base source");
+                wrapLog.Done("can't configure, not a base source");
                 return;
             }
 
@@ -208,7 +204,7 @@ namespace ToSic.Eav.DataSources
             newDs._dataSourceErrorHandlingLazy = _dataSourceErrorsLazy;
 
             newDs.InitLog(newDs.LogId, Log);
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         #endregion

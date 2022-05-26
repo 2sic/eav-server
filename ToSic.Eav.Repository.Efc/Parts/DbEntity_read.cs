@@ -84,15 +84,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal Dictionary<Guid, int> GetMostCurrentDbEntities(Guid[] entityGuid)
         // GetEntity should never return a draft entity that has a published version
         {
-            var callLog = Log.Call(useTimer: true);
+            var callLog = Log.Fn<Dictionary<Guid, int>>(startTimer: true);
             var result = GetEntitiesByGuid(entityGuid)
                 .ToList() // necessary for EF 3 - before GroupBy
                 .GroupBy(e => e.EntityGuid)
                 .ToDictionary(
                     g => g.Key,
                     g => g.Single(e => !e.PublishedEntityId.HasValue).EntityId);
-            callLog(result.Count.ToString());
-            return result;
+            return callLog.Return(result, result.Count.ToString());
         }
 
         // 2020-10-07 2dm experiment with fewer requests

@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <returns></returns>
         public QueryDefinition GetQueryDefinition(int appId, int queryEntityId)
 	    {
-            var wrapLog = Log.Call($"def#{queryEntityId} for a#{appId}");
+            var wrapLog = Log.Fn<QueryDefinition>($"def#{queryEntityId} for a#{appId}");
 
 	        try
             {
@@ -55,15 +55,13 @@ namespace ToSic.Eav.DataSources.Queries
                 // use findRepo, as it uses the cache, which gives the list of all items
 	            var dataQuery = appEntities.FindRepoId(queryEntityId);
 	            var result = new QueryDefinition(dataQuery, appId, Log);
-                wrapLog(null);
-                return result;
+                return wrapLog.Return(result);
             }
 	        catch (KeyNotFoundException)
 	        {
 	            throw new Exception("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId);
 	        }
-
-	    }
+        }
 
         public const string ConfigKeyPartSettings = "settings";
 	    public const string ConfigKeyPipelineSettings = "pipelinesettings";
@@ -169,7 +167,7 @@ namespace ToSic.Eav.DataSources.Queries
 			// Init
             var wirings = queryDef.Connections;
 			var initializedWirings = new List<Connection>();
-		    var logWrap = Log.Call($"count⋮{wirings.Count}");
+		    var logWrap = Log.Fn($"count⋮{wirings.Count}");
 
 			// 1. wire Out-Streams of DataSources with no In-Streams
 			var dataSourcesWithNoInStreams = dataSources.Where(d => wirings.All(w => w.To != d.Key));
@@ -199,7 +197,7 @@ namespace ToSic.Eav.DataSources.Queries
 				Log.Ex(exception);
 				throw exception;
 			}
-		    logWrap("ok");
+		    logWrap.Done("ok");
 		}
 
 		/// <summary>

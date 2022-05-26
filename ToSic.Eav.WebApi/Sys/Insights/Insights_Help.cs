@@ -1,4 +1,5 @@
-﻿using ToSic.Razor.Blade;
+﻿using ToSic.Eav.Logging;
+using ToSic.Razor.Blade;
 using ToSic.Razor.Html5;
 using static ToSic.Razor.Blade.Tag;
 
@@ -8,7 +9,7 @@ namespace ToSic.Eav.WebApi.Sys
     {
         private string Help()
         {
-            var logWrap = Log.Call();
+            var logWrap = Log.Fn<string>();
 
             const string typeattribs = "typeattributes?appid=&type=";
             const string typeMeta = "typemetadata?appid=&type=";
@@ -61,8 +62,7 @@ namespace ToSic.Eav.WebApi.Sys
                         Li("look at entity permissions using entity-id:" + DemoLink($"{nameof(EntityPermissions)}?appid=&entity="))
                     )
                 ;
-            logWrap("ok");
-            return result.ToString();
+            return logWrap.ReturnAsOk(result.ToString());
         }
 
         protected A DemoLink(string labelAndLink) => Tag.A(labelAndLink).Href(labelAndLink);

@@ -65,7 +65,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         [HttpPost]
         public ContentImportResultDto XmlImport(ContentImportArgsDto args)
         {
-            var wrapLog = Log.Call(args.DebugInfo);
+            var wrapLog = Log.Fn<ContentImportResultDto>(args.DebugInfo);
 
             var import = GetXmlImport(args);
             if (!import.ErrorLog.HasErrors)
@@ -74,8 +74,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 _systemManager.Init(Log).PurgeApp(args.AppId);
             }
 
-            wrapLog("done, errors: " + import.ErrorLog.HasErrors);
-            return new ContentImportResultDto(!import.ErrorLog.HasErrors, null);
+            return wrapLog.Return(new ContentImportResultDto(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);
         }
 
         private ImportListXml GetXmlImport(ContentImportArgsDto args)

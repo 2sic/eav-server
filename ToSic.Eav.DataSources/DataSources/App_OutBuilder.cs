@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         private void CreateAppOutWithAllStreams()
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn();
             IDataStream upstream;
             try
             {
@@ -89,7 +89,7 @@ namespace ToSic.Eav.DataSources
 
             Log.A($"Added with drafts:{showDrafts} streams: {typeList}");
 
-            wrapLog(null);
+            wrapLog.Done();
         }
 
         /// <summary>

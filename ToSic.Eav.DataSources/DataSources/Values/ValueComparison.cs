@@ -112,7 +112,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         private Func<IEntity, bool> BoolComparison(string fieldName, string operation, string[] languages, string expected)
         {
-            var wrapLog = Log.Call(expected);
+            var wrapLog = Log.Fn<Func<IEntity, bool>>(expected);
 
             var boolFilter = bool.Parse(expected);
 
@@ -120,16 +120,13 @@ namespace ToSic.Eav.DataSources
             {
                 case OpEquals:
                 case OpExactly:
-                    wrapLog("ok");
-                    return e => e.GetBestValue(fieldName, languages) as bool? == boolFilter;
+                    return wrapLog.ReturnAsOk(e => e.GetBestValue(fieldName, languages) as bool? == boolFilter);
                 case OpNotEquals:
-                    wrapLog("ok");
-                    return e => e.GetBestValue(fieldName, languages) as bool? != boolFilter;
+                    return wrapLog.ReturnAsOk(e => e.GetBestValue(fieldName, languages) as bool? != boolFilter);
             }
 
             _errCallback(ErrorInvalidOperator, $"Bad operator for boolean compare, can't find comparison '{operation}'");
-            wrapLog("error");
-            return null;
+            return wrapLog.ReturnNull("error");
         }
 
 
@@ -277,7 +274,7 @@ namespace ToSic.Eav.DataSources
         #region "between" helper
         private (bool useBetween, string start, string end) BetweenParts(string expected)
         {
-            var wrapLog = Log.Call(expected);
+            var wrapLog = Log.Fn<(bool, string, string)>(expected);
             expected = expected.ToLowerInvariant();
             var hasAnd = expected.IndexOf(" and ", Ordinal);
             string low = "", high = "";
@@ -290,8 +287,7 @@ namespace ToSic.Eav.DataSources
             }
             else Log.A("No 'and' found, low/high will be empty");
 
-            wrapLog("ok");
-            return (hasAnd > -1, low, high);
+            return wrapLog.ReturnAsOk((hasAnd > -1, low, high));
         }
         #endregion 
 
