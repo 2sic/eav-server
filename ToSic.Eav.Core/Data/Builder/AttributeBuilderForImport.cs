@@ -23,7 +23,7 @@ namespace ToSic.Eav.Data.Builder
             object value, string valueType, string language = null, bool languageReadOnly = false,
             bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null)
         {
-            var wrapLog = Log.Call<IValue>($"..., {attributeName}, {value} ({valueType}), {language}, ..., {nameof(resolveHyperlink)}: {resolveHyperlink}");
+            var wrapLog = Log.Fn<IValue>($"..., {attributeName}, {value} ({valueType}), {language}, ..., {nameof(resolveHyperlink)}: {resolveHyperlink}");
             // pre-convert links if necessary...
             if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString() && value is string stringValue)
             {
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Data.Builder
                 attrib.Values.Add(valueWithLanguages);
             }
 
-            return wrapLog(null, valueWithLanguages);
+            return wrapLog.Return(valueWithLanguages);
         }
         #endregion
     }

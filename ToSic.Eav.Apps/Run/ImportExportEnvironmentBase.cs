@@ -58,10 +58,10 @@ namespace ToSic.Eav.Apps.Run
 
         public SaveOptions SaveOptions(int zoneId)
         {
-            var wrapLog = Log.Call<SaveOptions>($"{nameof(zoneId)}:{zoneId}");
+            var wrapLog = Log.Fn<SaveOptions>($"{nameof(zoneId)}:{zoneId}");
             var langs = _appStates.Languages(zoneId, true); /*new ZoneRuntime().Init(zoneId, Log).Languages(true)*/
             var opts = new SaveOptions(DefaultLanguage, langs);
-            return wrapLog($"langs: {langs.Count}", opts);
+            return wrapLog.Return(opts, $"langs: {langs.Count}");
         }
     }
 }

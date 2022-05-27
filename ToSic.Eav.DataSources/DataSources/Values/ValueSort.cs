@@ -94,7 +94,7 @@ namespace ToSic.Eav.DataSources
 
 		private IImmutableList<IEntity> GetValueSort()
 		{
-			var wrapLog = Log.Call<IImmutableList<IEntity>>();
+			var wrapLog = Log.Fn<IImmutableList<IEntity>>();
 
 			// todo: maybe do something about languages?
 			// todo: test decimal / number types
@@ -110,11 +110,11 @@ namespace ToSic.Eav.DataSources
             LanguageList = _valLanguages.PrepareLanguageList(Languages, Log);
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
+                return wrapLog.Return(originals, "error");
 
             // check if no list parameters specified
 		    if (sortAttributes.Length == 1 && string.IsNullOrWhiteSpace(sortAttributes[0]))
-		        return wrapLog("no params", originals);
+		        return wrapLog.Return(originals, "no params");
 
 			// 2022-03-09 2dm
 			// Previously we had some code which extracted "unsortable" items
@@ -138,7 +138,7 @@ namespace ToSic.Eav.DataSources
 
 			// if list is blank, then it didn't find the attribute to sort by - so just return unsorted
 			// note 2020-10-07 this may have been a bug previously, returning an empty list instead
-            if (!results.Any()) return wrapLog("sort-attribute not found in data", originals);
+            if (!results.Any()) return wrapLog.Return(originals, "sort-attribute not found in data");
 
             // Keep entities which cannot sort by the required values (removed previously from results)
             //var unsortable = originals.Where(e => !results.Contains(e)).ToImmutableArray();
@@ -179,7 +179,7 @@ namespace ToSic.Eav.DataSources
             }
 
             final = final/*.AddRange(unsortable)*/.ToImmutableArray();
-			return wrapLog("ok", final);
+			return wrapLog.ReturnAsOk(final);
 		}
 
         private Func<IEntity, object> GetPropertyToSortFunc(char propertyCode, string fieldName, string[] languages)

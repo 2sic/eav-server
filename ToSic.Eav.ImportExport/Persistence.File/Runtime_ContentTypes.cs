@@ -32,7 +32,7 @@ namespace ToSic.Eav.Persistence.File
 
         private List<IContentType> SetInternalTypes(List<IContentType> types)
         {
-            var wrapLog = Log.Call<List<IContentType>>(useTimer: true);
+            var wrapLog = Log.Fn<List<IContentType>>(startTimer: true);
             var changeCount = 0;
             try
             {
@@ -52,12 +52,12 @@ namespace ToSic.Eav.Persistence.File
                 Log.Ex(ex);
             }
 
-            return wrapLog($"{changeCount}", types);
+            return wrapLog.Return(types, $"{changeCount}");
         }
-
+        
         private IEnumerable<IContentType> EliminateDuplicateTypes(List<IContentType> types)
         {
-            var wrapLog = Log.Call<IEnumerable<IContentType>>();
+            var wrapLog = Log.Fn<IEnumerable<IContentType>>();
             // In rare cases there can be a mistake and the same type may be duplicate!
             var typesGrouped = types.GroupBy(t => t.NameId).ToList();
 
@@ -70,12 +70,12 @@ namespace ToSic.Eav.Persistence.File
             }
 
             var typesUngrouped = typesGrouped.Select(g => g.First());
-            return wrapLog(null, typesUngrouped);
+            return wrapLog.Return(typesUngrouped);
         }
 
         private int UpdateTypes(string name, IEnumerable<IEntity> entitiesToRetype, IDictionary<string, IContentType> typeDic)
         {
-            var wrapLog = Log.Call<int>(name, useTimer: true);
+            var wrapLog = Log.Fn<int>(name, startTimer: true);
             var changeCount = 0;
             foreach (var entity in entitiesToRetype)
                 if (entity.Type.IsDynamic)
@@ -91,7 +91,7 @@ namespace ToSic.Eav.Persistence.File
                     (entity as Entity).UpdateType(realType, true);
                 }
 
-            return wrapLog($"{changeCount}", changeCount);
+            return wrapLog.ReturnAndLog(changeCount);
         }
     }
 }

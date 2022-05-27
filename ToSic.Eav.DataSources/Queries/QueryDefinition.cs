@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources.Queries
             {
                 if (_parts!= null) return _parts;
 
-                var wrapLog = Log.Call<List<QueryPartDefinition>>();
+                var wrapLog = Log.Fn<List<QueryPartDefinition>>();
 
                 //Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
 
@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSources.Queries
                 _parts = temp
                     .Select(e => new QueryPartDefinition(e, Log))
                     .ToList();
-                return wrapLog($"{_parts.Count}", _parts);
+                return wrapLog.Return(_parts, $"{_parts.Count}");
             }
         }
 

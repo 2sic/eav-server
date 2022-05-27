@@ -95,13 +95,13 @@ namespace ToSic.Eav.WebApi.ImportExport
         {
             try
             {
-                var callLog = Log.Call<bool>(null, "import json item" + args.DebugInfo);
+                var callLog = Log.Fn<bool>(null, "import json item" + args.DebugInfo);
                 var deserializer = _jsonSerializerLazy.Value.Init(_appManager.AppState, Log);
                 // Since we're importing directly into this app, we prefer local content-types
                 deserializer.PreferLocalAppTypes = true;
 
                 _appManager.Entities.Import(new List<IEntity> {deserializer.Deserialize(args.GetContentString()) });
-                return callLog("ok", true);
+                return callLog.ReturnTrue("ok");
             }
             catch (ArgumentException)
             {

@@ -31,7 +31,7 @@ namespace ToSic.Eav.Persistence.Efc
         {
             _logHistory.Add(LogNames.LogHistoryGlobalAppStateLoader, Log);
 
-            var wrapLog = Log.Call<AppState>($"AppId: {appId}");
+            var wrapLog = Log.Fn<AppState>($"AppId: {appId}");
             var appIdentity =_appStates.IdentityOfApp(appId);
             var appGuidName = _appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
 
@@ -61,51 +61,51 @@ namespace ToSic.Eav.Persistence.Efc
 
             var appState = Update(new AppState(parent, appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
 
-            return wrapLog("ok", appState);
+            return wrapLog.ReturnAsOk(appState);
         }
 
         private int GetAncestorAppIdOrZero(int appId)
         {
-            var wrapLog = Log.Call<int>($"{nameof(appId)}:{appId}");
+            var wrapLog = Log.Fn<int>($"{nameof(appId)}:{appId}");
             // Prefetch this App (new in v13 for ancestor apps)
             var appInDb = _dbContext.ToSicEavApps.FirstOrDefault(a => a.AppId == appId);
             var appSysSettings = appInDb?.SysSettings;
             if (string.IsNullOrWhiteSpace(appSysSettings))
-                return wrapLog("none found", 0);
+                return wrapLog.Return(0, "none found");
 
             var sysSettings = JsonConvert.DeserializeObject<AppSysSettings>(appInDb.SysSettings);
             if (!sysSettings.Inherit || sysSettings.AncestorAppId == 0) 
-                return wrapLog("data found but inherit not active", 0);
+                return wrapLog.Return(0, "data found but inherit not active");
 
             if (sysSettings.AncestorAppId == appId)
             {
                 Log.A($"Error: Got an {nameof(sysSettings.AncestorAppId)} of {appId}. " +
                         "It's the same as the app itself - this should never happen. Stop.");
-                return wrapLog("error", 0);
+                return wrapLog.Return(0, "error");
             }
 
-            return wrapLog($"found {sysSettings.AncestorAppId}", sysSettings.AncestorAppId);
+            return wrapLog.Return(sysSettings.AncestorAppId, $"found {sysSettings.AncestorAppId}");
         }
 
         /// <inheritdoc />
         public AppState AppState(int appId, bool ensureInitialized)
         {
-            var wrapLog = Log.Call<AppState>($"{appId}, {ensureInitialized}", useTimer: true);
+            var wrapLog = Log.Fn<AppState>($"{appId}, {ensureInitialized}", startTimer: true);
 
             var appState = LoadBasicAppState(appId);
-            if (!ensureInitialized) return wrapLog("won't check initialized", appState);
+            if (!ensureInitialized) return wrapLog.Return(appState, "won't check initialized");
 
             // Note: Ignore ensureInitialized on the content app
             // The reason is that this app - even when empty - is needed in the cache before data is imported
             // So if we initialize it, then things will result in duplicate settings/resources/configuration
             // Note that to ensure the Content app works, we must perform the same check again in the 
             // API Endpoint which will edit this data
-            if (appState.NameId == Constants.DefaultAppGuid) return wrapLog("default app, don't auto-init", appState);
+            if (appState.NameId == Constants.DefaultAppGuid) return wrapLog.Return(appState, "default app, don't auto-init");
 
             var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log)
                 ? LoadBasicAppState(appId)
                 : appState;
-            return wrapLog("with init check", result);
+            return wrapLog.Return(result, "with init check");
         }
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null)
@@ -165,30 +165,30 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns></returns>
         private Tuple<string, string> PreLoadAppPath(int appId)
         {
-            var wrapLog = Log.Call<Tuple<string, string>>();
+            var wrapLog = Log.Fn<Tuple<string, string>>();
             var nullTuple = new Tuple<string, string>(null, null);
             try
             {
                 // Get all Entities in the 2SexyContent-App scope
                 var dbEntity = GetRawEntities(Array.Empty<int>(), appId, false, AppLoadConstants.TypeAppConfig);
-                if (!dbEntity.Any()) return wrapLog("not in db", nullTuple);
+                if (!dbEntity.Any()) return wrapLog.Return(nullTuple, "not in db");
 
                 // Get the first one as it should be the one containing the App-Configuration
                 // WARNING: This looks a bit fishy, I think it shouldn't just assume the first one is the right one
                 var json = dbEntity.FirstOrDefault()?.Json;
-                if (string.IsNullOrEmpty(json)) return wrapLog("no json", nullTuple);
+                if (string.IsNullOrEmpty(json)) return wrapLog.Return(nullTuple, "no json");
 
                 Log.A("app Entity found - this json: " + json);
                 var serializer = ServiceProvider.Build<IDataDeserializer>();
                 serializer.Initialize(appId, new List<IContentType>(), null, Log);
                 if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
-                    return wrapLog("can't deserialize", nullTuple);
+                    return wrapLog.Return(nullTuple, "can't deserialize");
                 var path = appEntity.Value<string>(AppLoadConstants.FieldFolder);
                 var name = appEntity.Value<string>(AppLoadConstants.FieldName);
 
                 return string.IsNullOrWhiteSpace(path) 
-                    ? wrapLog("no folder", new Tuple<string, string>(name, path)) 
-                    : wrapLog(path, new Tuple<string, string>(name, path));
+                    ? wrapLog.Return(new Tuple<string, string>(name, path), "no folder") 
+                    : wrapLog.Return(new Tuple<string, string>(name, path), path);
             }
             catch (Exception ex)
             {
@@ -196,7 +196,7 @@ namespace ToSic.Eav.Persistence.Efc
                 Log.A("error " + ex.Message);
             }
 
-            return wrapLog("error", nullTuple);
+            return wrapLog.Return(nullTuple, "error");
         }
 
         #endregion

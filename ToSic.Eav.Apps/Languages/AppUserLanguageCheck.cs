@@ -40,26 +40,26 @@ namespace ToSic.Eav.Apps.Languages
         /// <returns>true in most admin-cases, false if feature enabled AND permissions configured AND not allowed</returns>
         public bool? UserRestrictedByLanguagePermissions(AppState appStateOrNull)
         {
-            var wrapLog = Log.Call<bool?>($"{appStateOrNull?.Name}({appStateOrNull?.AppId})");
+            var wrapLog = Log.Fn<bool?>($"{appStateOrNull?.Name}({appStateOrNull?.AppId})");
 
             // Note: it's important that all cases where we don't detect a forbidden
             // we return null, and DON'T access _ctx.UserMayEdit, as it will recurse to here again
             if (!_featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage)) 
-                return wrapLog("feat disabled", null);
+                return wrapLog.ReturnNull("feat disabled");
 
             // Check if we have any language rules
             var languages = LanguagesWithPermissions(appStateOrNull);
-            if (languages == null || !languages.Any()) return wrapLog("no config", null);
+            if (languages == null || !languages.Any()) return wrapLog.ReturnNull("no config");
 
             // Check rules on current language
             var currentCode = _ctx.Site.CurrentCultureCode;
             var currentLang = languages.FirstOrDefault(lp => lp.Code.Equals(currentCode, InvariantCultureIgnoreCase));
-            return wrapLog($"permission: {currentLang?.IsAllowed}", currentLang?.IsAllowed);
+            return wrapLog.Return(currentLang?.IsAllowed, $"permission: {currentLang?.IsAllowed}");
         }
 
         public List<AppUserLanguageState> LanguagesWithPermissions(AppState appStateOrNull)
         {
-            var wrapLog = Log.Call<List<AppUserLanguageState>>();
+            var wrapLog = Log.Fn<List<AppUserLanguageState>>();
 
             // to solves the issue with globals settings languages that can not be saved if 
             // app languages are different from languages in global app and because global
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Apps.Languages
             // in other cases we get the languages from the app state or from context (http headers)
             var zoneMapper = _zoneMapperLazy.Ready;
             var site = appStateOrNull != null ? zoneMapper.SiteOfZone(appStateOrNull.ZoneId) : _ctx.Site;
-            if (site == null) return wrapLog("null site", new List<AppUserLanguageState>());
+            if (site == null) return wrapLog.Return(new List<AppUserLanguageState>(), "null site");
             
             var languages = zoneMapper.CulturesWithState(site);
 
@@ -80,7 +80,7 @@ namespace ToSic.Eav.Apps.Languages
                 var noAppResult = languages
                     .Select(l => new AppUserLanguageState(l, true, -1))
                     .ToList();
-                return wrapLog($"no-app {noAppResult.Count}", noAppResult);
+                return wrapLog.Return(noAppResult, $"no-app {noAppResult.Count}");
             }
 
             var set = GetLanguagePermissions(appStateOrNull, languages);
@@ -123,7 +123,7 @@ namespace ToSic.Eav.Apps.Languages
             var result = newSet
                 .Select(s => new AppUserLanguageState(s.Language, s.Allowed, s.PermissionCount))
                 .ToList();
-            return wrapLog($"ok {result.Count}", result);
+            return wrapLog.Return(result, $"ok {result.Count}");
         }
 
         /// <summary>

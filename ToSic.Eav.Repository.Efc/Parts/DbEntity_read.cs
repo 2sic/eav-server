@@ -37,9 +37,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns>Entity or throws InvalidOperationException</returns>
         internal ToSicEavEntities GetDbEntity(int entityId)
         {
-            var callLog = DbContext.Log.Call<ToSicEavEntities>($"Get {entityId}");
+            var callLog = DbContext.Log.Fn<ToSicEavEntities>($"Get {entityId}");
             var found = EntityQuery.Single(e => e.EntityId == entityId);
-            return callLog("ok", found);
+            return callLog.ReturnAsOk(found);
         }
 
         /// <summary>
@@ -48,9 +48,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns>Entity or throws InvalidOperationException</returns>
         internal ToSicEavEntities[] GetDbEntities(int[] repositoryIds)
         {
-            var callLog = DbContext.Log.Call<ToSicEavEntities[]>($"Get {repositoryIds.Length}", useTimer: true);
+            var callLog = DbContext.Log.Fn<ToSicEavEntities[]>($"Get {repositoryIds.Length}", startTimer: true);
             var found = EntityQuery.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
-            return callLog(found.Length.ToString(), found);
+            return callLog.Return(found, found.Length.ToString());
         }
 
         //private ToSicEavEntities GetDbEntity(int entityId, string includes)

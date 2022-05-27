@@ -139,18 +139,18 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         private List<InputTypeInfo> GetAppExtensionInputTypes()
         {
-            var wrapLog = Log.Call<List<InputTypeInfo>>();
+            var wrapLog = Log.Fn<List<InputTypeInfo>>();
             try
             {
                 var appState = Parent.AppState;
                 var appLoader = _appFileSystemLoaderLazy.Value.Init(appState, Log);
                 var inputTypes = appLoader.InputTypes();
-                return wrapLog(null, inputTypes);
+                return wrapLog.Return(inputTypes);
             }
             catch (Exception e)
             {
                 Log.A("Error: " + e.Message);
-                return wrapLog("error", new List<InputTypeInfo>());
+                return wrapLog.Return(new List<InputTypeInfo>(), "error");
             }
         }
 

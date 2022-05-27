@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -30,7 +31,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         public bool AddMissingPrimaryApps()
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Fn<bool>();
 
             var zonesWithoutPrimary = DbContext.SqlDb.ToSicEavZones
                 .Include(z => z.ToSicEavApps)
@@ -40,7 +41,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .Where(z => z.ToSicEavApps.All(a => a.Name != Constants.PrimaryAppGuid))
                 .ToList();
 
-            if (!zonesWithoutPrimary.Any()) return wrapLog("no missing primary", false);
+            if (!zonesWithoutPrimary.Any()) return wrapLog.ReturnFalse("no missing primary");
 
             var newZones = zonesWithoutPrimary
                 .Select(zone => new ToSicEavApps
@@ -51,7 +52,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             DbContext.DoAndSave(() => DbContext.SqlDb.AddRange(newZones));
 
-            return wrapLog($"added {newZones.Count}", true);
+            return wrapLog.ReturnTrue($"added {newZones.Count}");
         }
     }
 }

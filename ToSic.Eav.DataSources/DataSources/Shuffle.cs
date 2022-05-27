@@ -66,12 +66,12 @@ namespace ToSic.Eav.DataSources
         {
             Configuration.Parse();
 
-            var wrapLog = Log.Call<IImmutableList<IEntity>>($"Take: {Take}");
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>($"Take: {Take}");
             
             if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
+                return wrapLog.Return(originals, "error");
 
-            return wrapLog("ok", ShuffleInternal(originals, Take, Log));
+            return wrapLog.ReturnAsOk(ShuffleInternal(originals, Take, Log));
 	    }
 
         #region Shuffle based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
@@ -79,11 +79,11 @@ namespace ToSic.Eav.DataSources
 
         private static IImmutableList<T> ShuffleInternal<T>(IImmutableList<T> sequence, int take, ILog log)
         {
-            var wrapLog = log.Call<IImmutableList<T>>();
+            var wrapLog = log.Fn<IImmutableList<T>>();
             
             // check if there is actually any data
             if (!sequence.Any())
-                return wrapLog("0 items found to shuffle", sequence);
+                return wrapLog.Return(sequence, "0 items found to shuffle");
 
             var retArray = sequence.ToArray();
             var maxIndex = retArray.Length; // not Length -1, as the random-generator will always be below this
@@ -109,7 +109,7 @@ namespace ToSic.Eav.DataSources
             var result = retArray
                 .Take(maxTake)
                 .ToImmutableArray(); // .ToList();
-            return wrapLog(maxTake.ToString(), result);
+            return wrapLog.Return(result, maxTake.ToString());
         }
         #endregion
 

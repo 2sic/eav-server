@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
         NiceName = "CSV Data",
         UiHint = "Load data from a CSV file",
         Icon = "description",
-        Type = DataSourceType.Source, 
+        Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource",
@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         private string GetServerPath(string csvPath)
         {
-            var wrapLog = Log.Call<string>($"csvPath: {csvPath}");
+            var wrapLog = Log.Fn<string>($"csvPath: {csvPath}");
 
             // Handle cases where it's a "file:72"
             if (ValueConverterBase.CouldBeReference(csvPath))
@@ -64,7 +64,7 @@ namespace ToSic.Eav.DataSources
                 Log.A($"This seems to be a reference: '{csvPath}'");
                 csvPath = _serverPaths.FullPathOfReference(csvPath);
                 Log.A($"Resolved to '{csvPath}'");
-                return wrapLog(csvPath, csvPath);
+                return wrapLog.ReturnAndLog(csvPath);
             }
 
             Log.A("Doesn't seem to be a reference, will use as is");
@@ -72,7 +72,7 @@ namespace ToSic.Eav.DataSources
             // if it's a full path, use that, otherwise do map-path assuming it must be in the app
             // this is for backward compatibility, because old samples used "[App:Path]/something.csv" which returns a relative path
             var result = csvPath.Contains(":") ? csvPath : _serverPaths.FullContentPath(csvPath);
-            return wrapLog(result, result);
+            return wrapLog.ReturnAndLog(result);
         }
 
 
@@ -139,7 +139,7 @@ namespace ToSic.Eav.DataSources
 
         private ImmutableArray<IEntity> GetList()
         {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
             Configuration.Parse();
 
             var entityList = new List<IEntity>();
@@ -148,24 +148,25 @@ namespace ToSic.Eav.DataSources
             Log.A($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
 
             if (string.IsNullOrWhiteSpace(csvPath))
-                return wrapLog("error", SetError("No Path Given", "There was no path for loading the CSV file."));
+                return wrapLog.Return(SetError("No Path Given", "There was no path for loading the CSV file."), "error");
 
             var pathPart = Path.GetDirectoryName(csvPath);
             if (!Directory.Exists(pathPart))
             {
                 Log.A($"Didn't find path '{pathPart}'");
-                return wrapLog("error", SetError("Path not found",
+                return wrapLog.Return(SetError("Path not found",
                     _user?.IsSuperUser == true
                         ? $"Path for Super User only: '{pathPart}'"
-                        : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights."));
+                        : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights."),
+                    "error");
             }
-            
-            if(!File.Exists(csvPath))
-                return wrapLog("error",
-                    SetError("CSV File Not Found",
+
+            if (!File.Exists(csvPath))
+                return wrapLog.Return(SetError("CSV File Not Found",
                         _user?.IsSuperUser == true
                             ? $"Path for Super User only: '{csvPath}'"
-                            : "For security reasons the path isn't mentioned here. You'll find it in the Insights."));
+                            : "For security reasons the path isn't mentioned here. You'll find it in the Insights."),
+                    "error");
 
             const string commonErrorsIdTitle =
                 "A common mistake is to use the wrong delimiter (comma / semi-colon) in which case this may also fail. ";
@@ -200,7 +201,7 @@ namespace ToSic.Eav.DataSources
                             // on first round, check the headers fields
                             // Try to find - first case-sensitive, then insensitive
                             idColumnIndex = Array.FindIndex(parser.FieldHeaders, name => name == IdColumnName);
-                            if (idColumnIndex == -1) 
+                            if (idColumnIndex == -1)
                                 idColumnIndex = Array.FindIndex(parser.FieldHeaders, name => name.Equals(IdColumnName, StringComparison.InvariantCultureIgnoreCase));
                             if (idColumnIndex == -1)
                                 return SetError("ID Column not found",
@@ -228,7 +229,7 @@ namespace ToSic.Eav.DataSources
                     int entityId;
                     // No ID column specified, so use the row number
                     if (string.IsNullOrEmpty(IdColumnName))
-                        entityId = parser.Row; 
+                        entityId = parser.Row;
                     // check if id can be parsed from the current row
                     else if (!int.TryParse(fields[idColumnIndex], out entityId))
                     {
@@ -244,7 +245,7 @@ namespace ToSic.Eav.DataSources
                     entityList.Add(new Entity(Constants.TransientAppId, entityId, csvType, entityValues, titleColName));
                 }
             }
-            return wrapLog($"{entityList.Count}", entityList.ToImmutableArray());
+            return wrapLog.Return(entityList.ToImmutableArray(), $"{entityList.Count}");
         }
     }
 }

@@ -42,11 +42,11 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
         private bool UpdatePartsFromValues(IEntity orig, UpdateList values, (bool published, bool branch)? draftAndBranch = null)
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Fn<bool>();
             var tempEnt = CreatePartialEntityOld(orig, values);
-            if (tempEnt == null) return wrapLog("nothing to import", false);
+            if (tempEnt == null) return wrapLog.ReturnFalse("nothing to import");
             var result = UpdatePartFromEntity(orig, tempEnt, draftAndBranch);
-            return wrapLog($"{result}", true);
+            return wrapLog.ReturnTrue($"{result}");
         }
 
         /// <summary>
@@ -57,9 +57,9 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
         private bool UpdatePartFromEntity(IEntity orig, Entity partialEntity, (bool published, bool branch)? draftAndBranch = null)
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Fn<bool>();
             if (partialEntity == null)
-                return wrapLog("nothing to import", false);
+                return wrapLog.ReturnFalse("nothing to import");
 
             var saveOptions = Environment.SaveOptions(Parent.ZoneId);
             saveOptions.PreserveUntouchedAttributes = true;
@@ -75,16 +75,16 @@ namespace ToSic.Eav.Apps.Parts
             }
 
             Save(saveEnt, saveOptions);
-            return wrapLog("ok", true);
+            return wrapLog.ReturnTrue("ok");
         }
 
         private Entity CreatePartialEntityOld(IEntity orig, UpdateList values)
         {
-            var wrapLog = Log.Call<Entity>();
+            var wrapLog = Log.Fn<Entity>();
             if (values == null || !values.Any())
-                return wrapLog("nothing to save", null);
+                return wrapLog.ReturnNull("nothing to save");
 
-            return wrapLog("ok", new Entity(Parent.AppId, 0, orig.Type, values));
+            return wrapLog.ReturnAsOk(new Entity(Parent.AppId, 0, orig.Type, values));
         }
     }
 }

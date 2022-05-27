@@ -6,6 +6,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -73,7 +74,7 @@ namespace ToSic.Eav.DataSources.Sys
 
         private ImmutableArray<IEntity> GetList()
         {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
             
             Configuration.Parse();
             var builder = DataBuilder;
@@ -122,7 +123,7 @@ namespace ToSic.Eav.DataSources.Sys
             });
 
             var final = list.ToImmutableArray();
-            return wrapLog($"{final.Length}", final);
+            return wrapLog.Return(final, $"{final.Length}");
         }
 
 	}

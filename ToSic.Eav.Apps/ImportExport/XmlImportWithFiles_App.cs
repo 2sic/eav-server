@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns>AppId of the new imported app</returns>
         public bool ImportApp(int zoneId, XDocument doc, out int appId)
         {
-            var wrapLog = Log.Call<bool>($"zone:{zoneId}");
+            var wrapLog = Log.Fn<bool>($"zone:{zoneId}");
 
             appId = 0;
             int? parentAppId = null;
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             Log.A("Purging all Zones");
             Deps.SystemManager.PurgeZoneList();
-            return wrapLog("done", ImportXml(zoneId, appId, doc));
+            return wrapLog.Return(ImportXml(zoneId, appId, doc), "done");
 		}
 
         private static int? GetParentAppId(XElement xmlSource, Repository.Efc.DbDataController eavDc)

@@ -58,18 +58,18 @@ namespace ToSic.Eav.Apps.Security
         /// <returns></returns>
         protected bool CurrentZoneMatchesSiteZone()
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Fn<bool>();
             
             // Check if we are running out-of http-context
-            if (Context.Site == null || Context.Site.Id == Eav.Constants.NullId) return wrapLog("no", false);
+            if (Context.Site == null || Context.Site.Id == Eav.Constants.NullId) return wrapLog.ReturnFalse("no");
             
             // Check if no app is provided, like when an app hasn't been selected yet, so it's an empty module, must be on current portal
-            if (AppIdentity == null) return wrapLog("no app, so context unchanged", true); 
+            if (AppIdentity == null) return wrapLog.ReturnTrue("no app, so context unchanged"); 
 
             // If we have the full context, we must check if the site has changed
             // This will important for other security checks, only allow zone-change for super users
             var result = Context.Site.ZoneId == AppIdentity.ZoneId;
-            return wrapLog($"{result}", result);
+            return wrapLog.ReturnAndLog(result);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -50,18 +51,18 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private IImmutableList<IEntity> GetUnique()
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
 
             if (!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
+                return wrapLog.Return(originals, "error");
 
             var result = originals
                 .Distinct()
                 .ToImmutableArray();
             
-            return wrapLog("ok", result);
+            return wrapLog.ReturnAsOk(result);
         }
 
 
@@ -71,19 +72,19 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
 	    private IImmutableList<IEntity> GetDuplicates()
 	    {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
 	        if (!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
-
+                return wrapLog.Return(originals, "error");
+            
             var result = originals
                 .GroupBy(s => s)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
                 .ToImmutableArray();
             
-            return wrapLog("ok", result);
+            return wrapLog.ReturnAsOk(result);
         }
     }
 }

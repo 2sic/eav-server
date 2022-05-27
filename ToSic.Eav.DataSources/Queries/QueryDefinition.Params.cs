@@ -44,11 +44,11 @@ namespace ToSic.Eav.DataSources.Queries
         [PrivateApi]
         public static IDictionary<string, string> GenerateParamsDic(string paramsText, ILog log)
         {
-            var wrapLog = log.Call<IDictionary<string,string>>();
+            var wrapLog = log.Fn<IDictionary<string,string>>();
 
             var paramsDic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
-            if (string.IsNullOrWhiteSpace(paramsText)) return wrapLog("no params", paramsDic);
+            if (string.IsNullOrWhiteSpace(paramsText)) return wrapLog.Return(paramsDic, "no params");
 
             // extract the lines which look like key=value
             var paramMatches = ParamRegex.Matches(paramsText);
@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSources.Queries
                     log.A($"Params:{key} already existed, will leave as is");
             }
 
-            return wrapLog(paramsDic.Count.ToString(), paramsDic);
+            return wrapLog.Return(paramsDic, paramsDic.Count.ToString());
         }
 
         /// <summary>

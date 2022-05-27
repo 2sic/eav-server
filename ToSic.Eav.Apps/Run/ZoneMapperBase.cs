@@ -31,10 +31,10 @@ namespace ToSic.Eav.Apps.Run
         /// <inheritdoc />
         public ISite SiteOfApp(int appId)
         {
-            var wrapLog = Log.Call<ISite>($"{appId}", "Must look for SiteId");
+            var wrapLog = Log.Fn<ISite>($"{appId}", "Must look for SiteId");
             var appIdentifier = AppStates.IdentityOfApp(appId);
             var tenant = SiteOfZone(appIdentifier.ZoneId);
-            return wrapLog(null, tenant);
+            return wrapLog.Return(tenant);
         }
 
         /// <inheritdoc />

@@ -26,7 +26,7 @@ namespace ToSic.Eav.Run
         /// </summary>
         public string GlobalPathTo(string path, PathTypes pathType)
         {
-            var wrapLog = Log.Call<string>($"path:{path},pathType:{pathType}");
+            var wrapLog = Log.Fn<string>($"path:{path},pathType:{pathType}");
             var assetPath = Combine(_config.Value.AssetsVirtualUrl.Backslash(), path);
             string assetLocation;
             switch (pathType)
@@ -43,7 +43,7 @@ namespace ToSic.Eav.Run
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pathType), pathType, null);
             }
-            return wrapLog("ok", assetLocation);
+            return wrapLog.ReturnAsOk(assetLocation);
         }
     }
 }

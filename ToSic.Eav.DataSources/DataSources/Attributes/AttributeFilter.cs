@@ -87,7 +87,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
 		private IImmutableList<IEntity> GetList()
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             var raw = AttributeNames;
@@ -109,11 +109,11 @@ namespace ToSic.Eav.DataSources
                           || attributeNames.Length == 1 && string.IsNullOrWhiteSpace(attributeNames[0]);
 
             if (!GetRequiredInList(out var sourceList)) 
-                return wrapLog("error", sourceList);
+                return wrapLog.Return(sourceList, "error");
 
             // Case #1 if we don't change anything, short-circuit and return original
             if (noFieldNames && !keepNamedAttributes)
-                return wrapLog($"keep original {sourceList.Count}", sourceList);
+                return wrapLog.Return(sourceList, $"keep original {sourceList.Count}");
 
             var result = sourceList
                 .Select(e =>
@@ -131,7 +131,7 @@ namespace ToSic.Eav.DataSources
                 .Cast<IEntity>()
                 .ToImmutableList();
 
-		    return wrapLog($"modified {result.Count}", result);
+		    return wrapLog.Return(result, $"modified {result.Count}");
 		}
         
     }

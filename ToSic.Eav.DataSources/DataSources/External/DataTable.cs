@@ -136,7 +136,7 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		private ImmutableArray<IEntity> ConvertToEntityDictionary(global::System.Data.DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
 		{
-			var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+			var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
 
 			// Validate Columns
 			if (!source.Columns.Contains(entityIdField))
@@ -163,7 +163,7 @@ namespace ToSic.Eav.DataSources
 			}
 
             var final = result.ToImmutableArray();
-			return wrapLog($"{final.Length}", final);
+			return wrapLog.Return(final, $"{final.Length}");
 		}
 	}
 }

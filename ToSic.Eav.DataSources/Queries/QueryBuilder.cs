@@ -73,9 +73,9 @@ namespace ToSic.Eav.DataSources.Queries
             bool showDrafts)
         {
 	        #region prepare shared / global value providers
-
+            
 	        overrideLookUps = overrideLookUps?.ToList();
-            var wrapLog = Log.Call<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
+            var wrapLog = Log.Fn<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
                 $"{queryDef.Title}({queryDef.Id}), " +
                 $"hasLookUp:{lookUpEngineToClone != null}, " +
                 $"overrides: {overrideLookUps?.Count()}, " +
@@ -156,7 +156,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 	        InitWirings(queryDef, dataSources);
 			var result = new Tuple<IDataSource, Dictionary<string, IDataSource>>(outTarget, dataSources);
-			return wrapLog($"parts:{parts.Count}", result);
+			return wrapLog.Return(result, $"parts:{parts.Count}");
 	    }
 
 	    /// <summary>
@@ -240,10 +240,10 @@ namespace ToSic.Eav.DataSources.Queries
 
 	    public Tuple<IDataSource, Dictionary<string, IDataSource>> GetDataSourceForTesting(QueryDefinition queryDef, bool showDrafts, ILookUpEngine configuration = null)
 	    {
-            var wrapLog = Log.Call<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
+            var wrapLog = Log.Fn<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
                 $"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}");
             var testValueProviders = queryDef.TestParameterLookUps;
-            return wrapLog(null, BuildQuery(queryDef, configuration, testValueProviders, showDrafts));
+            return wrapLog.Return(BuildQuery(queryDef, configuration, testValueProviders, showDrafts));
         }
 
 

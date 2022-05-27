@@ -15,7 +15,7 @@ namespace ToSic.Eav.Security
         /// <returns></returns>
         private bool VerifyConditionApplies(Permission permission)
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Fn<bool>();
             try
             {
                 // check general permissions
@@ -28,31 +28,31 @@ namespace ToSic.Eav.Security
                 {
                     // check owner conditions (only possible on target entities, not content-types)
                     if (VerifyUserIsItemOwner(condition, TargetItem, User))
-                        return wrapLog("is-owner: true", IsGrantedBecause(Conditions.Identity));
+                        return wrapLog.Return(IsGrantedBecause(Conditions.Identity), "is-owner: true");
 
                     // check if an identity was provided
                     if (!string.IsNullOrWhiteSpace(identity))
                     {
                         Log.A($"Check if user is user or group - identity: {identity}");
                         if (VerifyUserIsThisUser(identity, User))
-                            return wrapLog("is-this-user: true", IsGrantedBecause(Conditions.Owner));
+                            return wrapLog.Return(IsGrantedBecause(Conditions.Owner), "is-this-user: true");
 
                         if (VerifyUserIsInGroup(identity, User))
-                            return wrapLog("is-in-specified-group: true", IsGrantedBecause(Conditions.Group));
+                            return wrapLog.Return(IsGrantedBecause(Conditions.Group), "is-in-specified-group: true");
                     }
                 }
 
                 // this checks if the condition is a environment condition
                 // for example, if it's a DNN code for "user may view something"
                 if (_environmentPermission.VerifyConditionOfEnvironment(condition))
-                    return wrapLog("environment: true", IsGrantedBecause(Conditions.EnvironmentInstance));
+                    return wrapLog.Return(IsGrantedBecause(Conditions.EnvironmentInstance), "environment: true");
 
-                return wrapLog("no-match: false", false);
+                return wrapLog.ReturnFalse("no-match: false");
             }
             catch
             {
                 // something happened, in this case we assume that this rule doesn't grant anything
-                return wrapLog("error: false", false);
+                return wrapLog.ReturnFalse("error: false");
             }
         }
 

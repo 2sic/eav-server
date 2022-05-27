@@ -54,7 +54,7 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         protected virtual IAppData BuildData()
         {
-            var wrapLog = Log.Call<IAppData>();
+            var wrapLog = Log.Fn<IAppData>();
             if (ConfigurationProvider == null)
                 throw new Exception("Cannot provide Data for the object App as crucial information is missing. " +
                                     "Please call InitData first to provide this data.");
@@ -64,7 +64,7 @@ namespace ToSic.Eav.Apps
 
             var appDataWithCreate = DataSourceFactory.GetDataSource<AppData>(initialSource);
 
-            return wrapLog("ok", appDataWithCreate);
+            return wrapLog.ReturnAsOk(appDataWithCreate);
         }
 
         #endregion

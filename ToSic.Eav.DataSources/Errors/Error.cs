@@ -45,10 +45,10 @@ namespace ToSic.Eav.DataSources
 
         private ImmutableArray<IEntity> GenerateExceptionStream()
         {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
             Log.A("This is a fake Error / Exception");
             Log.A("The Error DataSource creates an exception on purpose, to test exception functionality in Visual Query");
-            return wrapLog("fake error", SetError(Title, Message));
+            return wrapLog.Return(SetError(Title, Message), "fake error");
         }
     }
 }

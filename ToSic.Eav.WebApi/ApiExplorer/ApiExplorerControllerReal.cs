@@ -23,23 +23,23 @@ namespace ToSic.Eav.WebApi.ApiExplorer
 
         public THttpResponseType Inspect(string path, Func<string, Assembly> getAssembly)
         {
-            var wrapLog = Log.Call<THttpResponseType>();
+            var wrapLog = Log.Fn<THttpResponseType>();
 
             if (PreCheckAndCleanPath(ref path, out var error)) return error;
 
             try
             {
-                return wrapLog(null, AnalyzeClassAndCreateDto(path, getAssembly(path)));
+                return wrapLog.Return(AnalyzeClassAndCreateDto(path, getAssembly(path)));
             }
             catch (Exception exc)
             {
-                return wrapLog($"Error: {exc.Message}.", ResponseMaker.InternalServerError(exc));
+                return wrapLog.Return(ResponseMaker.InternalServerError(exc), $"Error: {exc.Message}.");
             }
         }
 
         private bool PreCheckAndCleanPath(ref string path, out THttpResponseType error)
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Fn<bool>();
 
             Log.A($"Controller Path from appRoot: {path}");
 
@@ -48,19 +48,19 @@ namespace ToSic.Eav.WebApi.ApiExplorer
                 var msg = $"Error: bad parameter {path}";
                 {
                     error = ResponseMaker.InternalServerError(msg);
-                    return wrapLog(msg, true);
+                    return wrapLog.ReturnTrue(msg);
                 }
             }
 
             // Ensure make windows path slashes to make later work easier
             path = path.Backslash();
             error = default; // null
-            return false;
+            return wrapLog.ReturnFalse();
         }
 
         private THttpResponseType AnalyzeClassAndCreateDto(string path, Assembly assembly)
         {
-            var wrapLog = Log.Call<THttpResponseType>();
+            var wrapLog = Log.Fn<THttpResponseType>();
             var controllerName = path.Substring(path.LastIndexOf('\\') + 1);
             controllerName = controllerName.Substring(0, controllerName.IndexOf('.'));
             var controller =
@@ -71,19 +71,18 @@ namespace ToSic.Eav.WebApi.ApiExplorer
                 var msg =
                     $"Error: can't find controller class: {controllerName} in file {Path.GetFileNameWithoutExtension(path)}. " +
                     $"This can happen if the controller class does not have the same name as the file.";
-                    return wrapLog("error", ResponseMaker.InternalServerError(msg));
+                    return wrapLog.Return(ResponseMaker.InternalServerError(msg), "error");
             }
 
             var controllerDto = BuildApiControllerDto(controller);
 
             var responseMessage = ResponseMaker.Json(controllerDto);
-            return wrapLog("ok", responseMessage);
-
+            return wrapLog.ReturnAsOk(responseMessage);
         }
 
         private ApiControllerDto BuildApiControllerDto(Type controller)
         {
-            var wrapLog = Log.Call<ApiControllerDto>();
+            var wrapLog = Log.Fn<ApiControllerDto>();
             var controllerSecurity = Inspector.GetSecurity(controller);
             var controllerDto = new ApiControllerDto
             {
@@ -115,12 +114,12 @@ namespace ToSic.Eav.WebApi.ApiExplorer
                     }),
                 security = controllerSecurity
             };
-            return wrapLog(null, controllerDto);
+            return wrapLog.Return(controllerDto);
         }
 
         private ApiSecurityDto MergeSecurity(ApiSecurityDto contSec, ApiSecurityDto methSec)
         {
-            var wrapLog = Log.Call<ApiSecurityDto>();
+            var wrapLog = Log.Fn<ApiSecurityDto>();
             var ignoreSecurity = contSec.ignoreSecurity || methSec.ignoreSecurity;
             var allowAnonymous = contSec.allowAnonymous || methSec.allowAnonymous;
             var view = contSec.view || methSec.view;
@@ -146,7 +145,7 @@ namespace ToSic.Eav.WebApi.ApiExplorer
                 requireContext = !ignoreSecurity && requireContext,
                 requireVerificationToken = !ignoreSecurity && requireVerificationToken,
             };
-            return wrapLog(null, result);
+            return wrapLog.Return(result);
         }
     }
 }

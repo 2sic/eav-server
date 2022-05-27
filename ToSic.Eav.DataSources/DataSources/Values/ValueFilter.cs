@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         NiceName = "Value Filter",
         UiHint = "Keep items which have a property with the expected value",
         Icon = "filter_list",
-        Type = DataSourceType.Filter, 
+        Type = DataSourceType.Filter,
         GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
         In = new[] { Constants.DefaultStreamNameRequired, Constants.FallbackStreamName },
         DynamicOut = false,
@@ -42,36 +42,36 @@ namespace ToSic.Eav.DataSources
 		/// The attribute whose value will be scanned / filtered.
 		/// </summary>
 		public string Attribute
-		{
-			get => Configuration[AttrKey];
+        {
+            get => Configuration[AttrKey];
             set => Configuration[AttrKey] = value;
         }
 
-		/// <summary>
-		/// The filter that will be used - for example "Daniel" when looking for an entity w/the value Daniel
-		/// </summary>
-		public string Value
-		{
-			get => Configuration[ExpectedKey];
-		    set => Configuration[ExpectedKey] = value;
-		}
+        /// <summary>
+        /// The filter that will be used - for example "Daniel" when looking for an entity w/the value Daniel
+        /// </summary>
+        public string Value
+        {
+            get => Configuration[ExpectedKey];
+            set => Configuration[ExpectedKey] = value;
+        }
 
-		/// <summary>
-		/// Language to filter for. At the moment it is not used, or it is trying to find "any"
-		/// </summary>
-		public string Languages
-		{
-			get => Configuration[ValueLanguages.LangKey];
-		    set => Configuration[ValueLanguages.LangKey] = value;
-		}
+        /// <summary>
+        /// Language to filter for. At the moment it is not used, or it is trying to find "any"
+        /// </summary>
+        public string Languages
+        {
+            get => Configuration[ValueLanguages.LangKey];
+            set => Configuration[ValueLanguages.LangKey] = value;
+        }
 
         /// <summary>
         /// The comparison operator, == by default, many possibilities exist
         /// depending on the original types we're comparing
         /// </summary>
 		public string Operator
-		{
-			get => Configuration[OperatorKey];
+        {
+            get => Configuration[OperatorKey];
             set => Configuration[OperatorKey] = value;
         }
 
@@ -79,10 +79,10 @@ namespace ToSic.Eav.DataSources
         /// Amount of items to take - then stop filtering. For performance optimization.
         /// </summary>
 		public string Take
-		{
-			get => Configuration[TakeKey];
-		    set => Configuration[TakeKey] = value;
-		}
+        {
+            get => Configuration[TakeKey];
+            set => Configuration[TakeKey] = value;
+        }
         #endregion
 
         /// <inheritdoc />
@@ -90,14 +90,14 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new ValueFilter
         /// </summary>
         [PrivateApi]
-		public ValueFilter(ValueLanguages valLanguages)
-		{
+        public ValueFilter(ValueLanguages valLanguages)
+        {
             Provide(GetValueFilterOrFallback);
-		    ConfigMask(AttrKey, $"[Settings:{AttrKey}]");
-		    ConfigMask(ExpectedKey, $"[Settings:{ExpectedKey}]");
-		    ConfigMask(OperatorKey, $"[Settings:{OperatorKey}||==]");
-		    ConfigMask(TakeKey, $"[Settings:{TakeKey}]");
-		    ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
+            ConfigMask(AttrKey, $"[Settings:{AttrKey}]");
+            ConfigMask(ExpectedKey, $"[Settings:{ExpectedKey}]");
+            ConfigMask(OperatorKey, $"[Settings:{OperatorKey}||==]");
+            ConfigMask(TakeKey, $"[Settings:{TakeKey}]");
+            ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
 
             _valueLanguageService = valLanguages.Init(Log);
         }
@@ -105,7 +105,7 @@ namespace ToSic.Eav.DataSources
 
         private IImmutableList<IEntity> GetValueFilterOrFallback()
         {
-            var callLog = Log.Call<IImmutableList<IEntity>>();
+            var callLog = Log.Fn<IImmutableList<IEntity>>();
 
             // todo: maybe do something about languages?
             Configuration.Parse();
@@ -113,33 +113,33 @@ namespace ToSic.Eav.DataSources
             // Get the data, then see if anything came back
             var res = GetValueFilter();
             return res.Any()
-                ? callLog("found", res)
+                ? callLog.Return(res, "found")
                 : In.HasStreamWithItems(Constants.FallbackStreamName)
-                    ? callLog("fallback", In[Constants.FallbackStreamName].List.ToImmutableList())
-                    : callLog("final", res);
+                    ? callLog.Return(In[Constants.FallbackStreamName].List.ToImmutableList(), "fallback")
+                    : callLog.Return(res, "final");
         }
 
 
         private IImmutableList<IEntity> GetValueFilter()
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
 
             Log.A("applying value filter...");
-			var fieldName = Attribute;
+            var fieldName = Attribute;
 
             var languages = _valueLanguageService.PrepareLanguageList(Languages, Log);
 
             // Get the In-list and stop if error orempty
-            if (!GetRequiredInList(out var originals)) return wrapLog("error", originals);
-            if (!originals.Any()) return wrapLog("empty", originals);
+            if (!GetRequiredInList(out var originals)) return wrapLog.Return(originals, "error");
+            if (!originals.Any()) return wrapLog.Return(originals, "empty");
 
-		    var op = Operator.ToLowerInvariant();
+            var op = Operator.ToLowerInvariant();
 
             // Case 1/2: Handle basic "none" and "all" operators
-            if (op == CompareOperators.OpNone) 
-                return wrapLog(CompareOperators.OpNone, ImmutableArray.Create<IEntity>());
+            if (op == CompareOperators.OpNone)
+                return wrapLog.Return(ImmutableArray.Create<IEntity>(), CompareOperators.OpNone);
             if (op == CompareOperators.OpAll)
-                return wrapLog(CompareOperators.OpAll, ApplyTake(originals).ToImmutableArray());
+                return wrapLog.Return(ApplyTake(originals).ToImmutableArray(), CompareOperators.OpAll);
 
             // Case 3: Real filter
             // Find first Entity which has this property being not null to detect type
@@ -152,7 +152,7 @@ namespace ToSic.Eav.DataSources
 
             // if I can't find any, return empty list
             if (firstEntity == null)
-                return wrapLog("empty", ImmutableArray<IEntity>.Empty);
+                return wrapLog.Return(ImmutableArray<IEntity>.Empty, "empty");
 
             // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
             // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
@@ -171,64 +171,64 @@ namespace ToSic.Eav.DataSources
             var compMaker = new ValueComparison((title, message) => SetError(title, message), Log);
             var compare = compMaker.GetComparison(fieldType, /*firstValue,*/ fieldName, op, languages, Value);
 
-            return !ErrorStream.IsDefaultOrEmpty 
-                ? wrapLog("error", ErrorStream) 
-                : wrapLog("ok", GetFilteredWithLinq(originals, compare));
+            return !ErrorStream.IsDefaultOrEmpty
+                ? wrapLog.Return(ErrorStream, "error")
+                : wrapLog.ReturnAsOk(GetFilteredWithLinq(originals, compare));
 
             // Note: the alternate GetFilteredWithLoop has more logging, activate in serious cases
             // Note that the code might not be 100% identical, but it should help find issues
-		}
+        }
 
-        
-	    private ImmutableArray<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
+
+        private ImmutableArray<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
         {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
             try
             {
                 var results = originals.Where(compare);
                 results = ApplyTake(results);
-	            return wrapLog("ok", results.ToImmutableArray());
-	        }
-	        catch (Exception ex)
+                return wrapLog.ReturnAsOk(results.ToImmutableArray());
+            }
+            catch (Exception ex)
             {
-                return wrapLog("error", SetError("Unexpected Error",
+                return wrapLog.Return(SetError("Unexpected Error",
                     "Experienced error while executing the filter LINQ. " +
                     "Probably something with type-mismatch or the same field using different types or null. " +
                     "The exception was logged to Insights.",
-                    ex));
+                    ex), "error");
             }
-	    }
+        }
 
         private IEnumerable<IEntity> ApplyTake(IEnumerable<IEntity> results)
         {
-            var wrapLog = Log.Call<IEnumerable<IEntity>>();
-            return int.TryParse(Take, out var tk) ? wrapLog($"take {tk}", results.Take(tk)) : wrapLog("take all", results);
+            var wrapLog = Log.Fn<IEnumerable<IEntity>>();
+            return int.TryParse(Take, out var tk) ? wrapLog.Return(results.Take(tk), $"take {tk}") : wrapLog.Return(results, "take all");
         }
 
 
         /// <summary>
-	    /// A helper function to apply the filter without LINQ - ideal when trying to debug exactly what value crashed
-	    /// </summary>
-	    /// <param name="inList"></param>
-	    /// <param name="attr"></param>
-	    /// <param name="lang"></param>
-	    /// <param name="filter"></param>
-	    /// <returns></returns>
-	    // ReSharper disable once UnusedMember.Local
-	    private IEnumerable<IEntity> GetFilteredWithLoop(IEnumerable<IEntity> inList, string attr, string lang, string filter)
-	    {
+        /// A helper function to apply the filter without LINQ - ideal when trying to debug exactly what value crashed
+        /// </summary>
+        /// <param name="inList"></param>
+        /// <param name="attr"></param>
+        /// <param name="lang"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        // ReSharper disable once UnusedMember.Local
+        private IEnumerable<IEntity> GetFilteredWithLoop(IEnumerable<IEntity> inList, string attr, string lang, string filter)
+        {
             var result = new List<IEntity>();
             var langArr = new[] { lang };
             foreach (var res in inList)
-            //try
-            //{
+                //try
+                //{
                 //if (res.Value[attr][lang].ToString() == filter)
                 if ((res.GetBestValue(attr, langArr) ?? "").ToString() == filter)
                     result.Add(res);
             //}
             //catch { }
             return result;
-	    }
-		
-	}
+        }
+
+    }
 }

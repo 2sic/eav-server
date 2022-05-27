@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Catalog
         /// <returns></returns>
         public ICollection<string> GetOutStreamNames(DataSourceInfo dsInfo)
         {
-            var wrapLog = Log.Call<ICollection<string>>();
+            var wrapLog = Log.Fn<ICollection<string>>();
             // 2021-03-23 2dm - disabled this, as it prevented interfaces from instantiating
             // Since DI will find the correct DataSource it should work even with abstract classes, since they should be implemented
             //if (dataSource.Type.IsAbstract) return null;
@@ -33,11 +33,11 @@ namespace ToSic.Eav.DataSources.Catalog
                 var dataSourceInstance = ServiceProvider.Build<IDataSource>(dsInfo.Type);
 
                 // skip this if out-connections cannot be queried
-                return dataSourceInstance.Out.Keys;
+                return wrapLog.Return(dataSourceInstance.Out.Keys);
             }
             catch
             {
-                return wrapLog("error", null);
+                return wrapLog.ReturnNull("error");
             }
         }
     }

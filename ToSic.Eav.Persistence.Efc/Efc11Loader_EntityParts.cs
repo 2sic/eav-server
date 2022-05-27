@@ -13,7 +13,7 @@ namespace ToSic.Eav.Persistence.Efc
     {
         private int[] GetEntityIdOfPartnerEntities(int[] repositoryIds)
         {
-            var wrapLog = Log.Call<int[]>();
+            var wrapLog = Log.Fn<int[]>();
             var relatedIds = from e in _dbContext.ToSicEavEntities
                 where e.PublishedEntityId.HasValue && !e.IsPublished && repositoryIds.Contains(e.EntityId) &&
                       !repositoryIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
@@ -21,14 +21,14 @@ namespace ToSic.Eav.Persistence.Efc
 
             var combined = repositoryIds.Union(relatedIds).ToArray();
 
-            return wrapLog("ok", combined);
+            return wrapLog.ReturnAsOk(combined);
         }
 
 
         private List<TempEntity> GetRawEntities(int[] entityIds, int appId, bool filterByEntityIds, string filterByType = null)
         {
             var wrapLog =
-                Log.Call<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterByEntityIds}");
+                Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterByEntityIds}");
             var query = _dbContext.ToSicEavEntities
                 .Include(e => e.AttributeSet)
                 // 2020-11-13 2dm - believe we're loading data here that is never used, as it's not in the returned data
@@ -66,12 +66,12 @@ namespace ToSic.Eav.Persistence.Efc
                     Json = e.Json,
                 })
                 .ToList();
-            return wrapLog("ok", rawEntities);
+            return wrapLog.ReturnAsOk(rawEntities);
         }
 
         private Dictionary<int, IEnumerable<TempAttributeWithValues>> GetAttributesOfEntityChunk(List<int> entityIdsFound)
         {
-            var wrapLog = Log.Call<Dictionary<int, IEnumerable<TempAttributeWithValues>>>(
+            var wrapLog = Log.Fn<Dictionary<int, IEnumerable<TempAttributeWithValues>>>(
                 $"ids: {entityIdsFound.Count}");
             
             // just get once, we'll need it in a deep loop
@@ -113,7 +113,7 @@ namespace ToSic.Eav.Persistence.Efc
                                 } as ILanguage).ToList(),
                             })
                     }));
-            return wrapLog("ok", attributes);
+            return wrapLog.ReturnAsOk(attributes);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns></returns>
         private List<ToSicEavEntityRelationships> GetRelationshipChunk(int appId, ICollection<int> entityIdsFound)
         {
-            var wrapLog = Log.Call<List<ToSicEavEntityRelationships>>($"app: {appId}, ids: {entityIdsFound.Count}");
+            var wrapLog = Log.Fn<List<ToSicEavEntityRelationships>>($"app: {appId}, ids: {entityIdsFound.Count}");
             var relationships = _dbContext.ToSicEavEntityRelationships
                 .Include(rel => rel.Attribute)
                 .Where(rel => rel.ParentEntity.AppId == appId)
@@ -133,7 +133,7 @@ namespace ToSic.Eav.Persistence.Efc
                             || entityIdsFound.Contains(r.ChildEntityId.Value) // check if it's referred to as a child
                             || entityIdsFound.Contains(r.ParentEntityId)) // check if it's referred to as a parent
                 .ToList();
-            return wrapLog("ok", relationships);
+            return wrapLog.ReturnAsOk(relationships);
         }
 
         private Dictionary<int, IEnumerable<TempRelationshipList>> GroupUniqueRelationships(IReadOnlyCollection<ToSicEavEntityRelationships> relationships)

@@ -60,7 +60,7 @@ namespace ToSic.Eav.Serialization
 
         protected IContentType GetContentType(string staticName)
         {
-            var wrapLog = Log.Call<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}");
+            var wrapLog = Log.Fn<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}");
 
             // There is a complex lookup we must protocol, to better detect issues, which is why we assemble a message
             var msg = "";
@@ -71,13 +71,13 @@ namespace ToSic.Eav.Serialization
             if (PreferLocalAppTypes)
             {
                 var type = App.GetContentType(staticName);
-                if (type != null) return wrapLog(msg + "app: found", type);
+                if (type != null) return wrapLog.Return(type, msg + "app: found");
                 msg += "app: not found, ";
             }
 
             var globalType = GlobalApp?.GetContentType(staticName);
 
-            if (globalType != null) return wrapLog(msg + "global: found", globalType);
+            if (globalType != null) return wrapLog.Return(globalType, msg + "global: found");
             msg += "global: not found, ";
 
             if (_types != null)
@@ -91,7 +91,7 @@ namespace ToSic.Eav.Serialization
                 globalType = App.GetContentType(staticName);
             }
 
-            return wrapLog(msg + (globalType == null ? "not " : "") + "found", globalType);
+            return wrapLog.Return(globalType, msg + (globalType == null ? "not " : "") + "found");
         }
 
 

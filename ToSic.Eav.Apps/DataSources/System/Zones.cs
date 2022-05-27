@@ -5,6 +5,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -59,7 +60,7 @@ namespace ToSic.Eav.DataSources.Sys
 
         private ImmutableArray<IEntity> GetList()
         {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
             
             // Get cache, which manages a list of zones
             var zones = _appStates.Zones;
@@ -88,7 +89,7 @@ namespace ToSic.Eav.DataSources.Sys
                     typeName: ZoneContentTypeName);
             });
             var results = list.ToImmutableArray();
-            return wrapLog($"{results.Length}", results);
+            return wrapLog.Return(results, $"{results.Length}");
         }
 
 	}

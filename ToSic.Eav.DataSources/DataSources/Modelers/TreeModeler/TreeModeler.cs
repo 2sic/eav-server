@@ -4,6 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.DataSources
 {
@@ -19,14 +20,14 @@ namespace ToSic.Eav.DataSources
         NiceName = "Relationship/Tree Modeler",
         UiHint = "Connect items to create relationships or trees",
         Icon = "account_tree",
-        PreviousNames = new []
+        PreviousNames = new[]
         {
             "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
             "ToSic.Eav.DataSources.TreeBuilder, ToSic.Eav.DataSources.SharePoint"
         },
         Type = DataSourceType.Modify,
         ExpectsDataOfType = "d167054a-fe0f-4e98-b1f1-0a9990873e86",
-        In = new [] { Constants.DefaultStreamName + "*"},
+        In = new[] { Constants.DefaultStreamName + "*" },
         HelpLink = "https://r.2sxc.org/DsTreeModeler")]
     [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
     // ReSharper disable once UnusedMember.Global
@@ -40,7 +41,7 @@ namespace ToSic.Eav.DataSources
         private const string TargetChildrenAttributeConfigKey = "TargetChildrenAttribute";
         private const string TargetParentAttributeConfigKey = "TargetParentAttribute";
 
-        
+
         /// <summary>
         /// This determines what property is used as ID on the parent.
         /// Currently only allows "EntityId" and "EntityGuid"
@@ -50,7 +51,7 @@ namespace ToSic.Eav.DataSources
             get => Configuration[ParentIdentifierAttributeConfigKey];
             set => Configuration[ParentIdentifierAttributeConfigKey] = value;
         }
-        
+
         /// <summary>
         /// The property on a child which contains the parent ID
         /// </summary>
@@ -59,7 +60,7 @@ namespace ToSic.Eav.DataSources
             get => Configuration[ChildParentAttributeConfigKey];
             set => Configuration[ChildParentAttributeConfigKey] = value;
         }
-        
+
         /// <summary>
         /// The name of the new field on the parent, which will reference the children
         /// </summary>
@@ -68,7 +69,7 @@ namespace ToSic.Eav.DataSources
             get => Configuration[TargetChildrenAttributeConfigKey];
             set => Configuration[TargetChildrenAttributeConfigKey] = value;
         }
-        
+
         /// <summary>
         /// Name of the new field on a child, which will reference the parent. 
         /// </summary>
@@ -79,7 +80,7 @@ namespace ToSic.Eav.DataSources
         }
 
         #endregion
-        
+
         /// <summary>
         /// Initializes this data source
         /// </summary>
@@ -108,11 +109,11 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private IImmutableList<IEntity> GetList()
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
+                return wrapLog.Return(originals, "error");
 
             ITreeMapper treeMapper;
             switch (Identifier)
@@ -124,11 +125,12 @@ namespace ToSic.Eav.DataSources
                     treeMapper = new TreeMapper<int>(_multiBuilder);
                     break;
                 default:
-                    return wrapLog("error", SetError("Invalid Identifier",
-                        "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute."));
+                    return wrapLog.Return(SetError("Invalid Identifier",
+                        "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute."),
+                        "error");
             }
-            var res  = treeMapper.GetEntitiesWithRelationships(originals, Identifier, ParentReferenceField, NewChildrenField, NewParentField);
-            return wrapLog($"{res.Count}", res);
+            var res = treeMapper.GetEntitiesWithRelationships(originals, Identifier, ParentReferenceField, NewChildrenField, NewParentField);
+            return wrapLog.Return(res, $"{res.Count}");
         }
 
     }

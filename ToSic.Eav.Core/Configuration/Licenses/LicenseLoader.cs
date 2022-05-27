@@ -69,7 +69,7 @@ namespace ToSic.Eav.Configuration.Licenses
 
         public List<LicenseStored> LicensesStoredInConfigFolder(string globalFolder)
         {
-            var wrapLog = Log.Call<List<LicenseStored>>();
+            var wrapLog = Log.Fn<List<LicenseStored>>();
             var configurationsPath = Path.Combine(globalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
             
             // ensure that path to store files already exits
@@ -81,14 +81,14 @@ namespace ToSic.Eav.Configuration.Licenses
                 .Where(licenses => licenses != null).ToList();
 
             Log.A($"licensesStored: {licensesStored.Count}");
-            return wrapLog("ok", licensesStored);
+            return wrapLog.ReturnAsOk(licensesStored);
         }
-
+        
         private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored, string fingerprint)
         {
-            var wrapLog = Log.Call<List<LicenseState>>();
+            var wrapLog = Log.Fn<List<LicenseState>>();
 
-            if (licenseStored == null) return wrapLog("null", new List<LicenseState>());
+            if (licenseStored == null) return wrapLog.Return(new List<LicenseState>(), "null");
 
             // Check signature valid
             var resultForSignature = licenseStored.GenerateIdentity();
@@ -140,7 +140,7 @@ namespace ToSic.Eav.Configuration.Licenses
                 })
                 .ToList();
 
-            return wrapLog(licenseStates.Count.ToString(), licenseStates);
+            return wrapLog.Return(licenseStates, licenseStates.Count.ToString());
         }
         
 

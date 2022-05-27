@@ -177,12 +177,12 @@ namespace ToSic.Eav.Caching
         /// <inheritdoc />
         public virtual AppState Update(IServiceProvider sp, IAppIdentity app, IEnumerable<int> entities, ILog log)
         {
-            var wrapLog = log.Call<AppState>();
+            var wrapLog = log.Fn<AppState>();
             // if it's not cached yet, ignore the request as partial update won't be necessary
-            if (!Has(app)) return wrapLog("not cached, won't update", null);
+            if (!Has(app)) return wrapLog.ReturnNull("not cached, won't update");
             var appState = Get(sp, app);
             GetNewRepoLoader(sp).Init(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
-            return wrapLog("ok", appState);
+            return wrapLog.ReturnAsOk(appState);
         }
 
         #endregion

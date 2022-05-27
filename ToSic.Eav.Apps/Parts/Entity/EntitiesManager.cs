@@ -129,15 +129,15 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="entity"></param>
         private bool ClearEphemeralAttributes(IEntity entity)
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Fn<bool>();
             var attributes = entity.Type?.Attributes;
-            if(attributes == null || !attributes.Any()) return wrapLog("no attributes", false);
+            if(attributes == null || !attributes.Any()) return wrapLog.ReturnFalse("no attributes");
 
             var toClear = attributes.Where(a =>
                 a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral) == true)
                 .ToList();
 
-            if (!toClear.Any()) return wrapLog("no ephemeral attributes", false);
+            if (!toClear.Any()) return wrapLog.ReturnFalse("no ephemeral attributes");
             
             foreach (var a in toClear)
                 if (entity.Attributes.TryGetValue(a.Name, out var attr))
@@ -146,7 +146,7 @@ namespace ToSic.Eav.Apps.Parts
                     Log.A("Cleared " + a.Name);
                 }
 
-            return wrapLog("cleared", true);
+            return wrapLog.ReturnTrue("cleared");
         }
     }
 }

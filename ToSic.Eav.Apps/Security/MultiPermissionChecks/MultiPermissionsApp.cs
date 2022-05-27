@@ -43,7 +43,7 @@ namespace ToSic.Eav.Apps.Security
         public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app, ILog parentLog, string logName = null)
         {
             Init(parentLog, logName ?? "Api.PermApp");
-            var wrapLog = Log.Call<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
+            var wrapLog = Log.Fn<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
             Context = context;
             App = app;
 
@@ -53,7 +53,7 @@ namespace ToSic.Eav.Apps.Security
                 // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
                 // todo: probably enhance with a Site.IsMultiZone check
                 : _dp.ZoneMapper.Ready.SiteOfZone(App.ZoneId) ?? context.Site;
-            return wrapLog($"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}", this);
+            return wrapLog.Return(this, $"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
         }
         /// <summary>
         /// The current app which will be used and can be re-used externally
@@ -68,13 +68,13 @@ namespace ToSic.Eav.Apps.Security
 
         protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
             => new Dictionary<string, IPermissionCheck> { { "App", BuildPermissionChecker() } };
-
+        
         public bool ZoneIsOfCurrentContextOrUserIsSuper(out string error)
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Fn<bool>();
             var zoneSameOrSuperUser = SamePortal || Context.User.IsSuperUser;
             error = zoneSameOrSuperUser ? null: $"accessing app {App.AppId} in zone {App.ZoneId} is not allowed for this user";
-            return wrapLog(zoneSameOrSuperUser ? $"SamePortal:{SamePortal} - ok": "not ok, generate error", zoneSameOrSuperUser);
+            return wrapLog.Return(zoneSameOrSuperUser, zoneSameOrSuperUser ? $"SamePortal:{SamePortal} - ok": "not ok, generate error");
         }
 
 

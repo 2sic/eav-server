@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.WebApi
 {
@@ -9,11 +10,11 @@ namespace ToSic.Eav.WebApi
 
         public IDictionary<string, string> Scopes()
         {
-            var wrapLog = Log.Call<IDictionary<string, string>>();
+            var wrapLog = Log.Fn<IDictionary<string, string>>();
             var appState = _appStates.Get(_appId);
 
             var results = appState.ContentTypes.GetAllScopesWithLabels();
-            return wrapLog(null, results);
+            return wrapLog.Return(results);
         }
 
         #endregion

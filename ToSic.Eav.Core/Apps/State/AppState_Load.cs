@@ -59,10 +59,10 @@ namespace ToSic.Eav.Apps
                 wrapLog.Done("ok");
             }
         }
-
+        
         private bool EnsureNameAndFolderInitialized()
         {
-            var callLog = Log.Call<bool>($"Name: {Name}, Folder: {Folder}, AppGuidName: {NameId}");
+            var callLog = Log.Fn<bool>($"Name: {Name}, Folder: {Folder}, AppGuidName: {NameId}");
 
             // Before we do anything, check primary App
             // Otherwise other checks (like is name empty) will fail, because it's not empty
@@ -72,12 +72,12 @@ namespace ToSic.Eav.Apps
             {
                 Folder = PrimaryAppFolder;
                 Name = PrimaryAppName;
-                return callLog($"Primary App. Name: {Name}, Folder:{Folder}", true);
+                return callLog.ReturnTrue($"Primary App. Name: {Name}, Folder:{Folder}");
             }
 
             // Only do something if Name or Folder are still invalid
             if (!string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Folder))
-                return callLog($"No change. Name: {Name}, Folder:{Folder}", false);
+                return callLog.ReturnFalse($"No change. Name: {Name}, Folder:{Folder}");
 
             // If the loader wasn't able to fill name/folder, then the data was not a json
             // so we must try to fix this now
@@ -95,7 +95,7 @@ namespace ToSic.Eav.Apps
                 if (string.IsNullOrWhiteSpace(Folder)) Folder = ContentAppFolder;
             }
 
-            return callLog($"Name: {Name}, Folder:{Folder}", true);
+            return callLog.ReturnTrue($"Name: {Name}, Folder:{Folder}");
         }
     }
 }

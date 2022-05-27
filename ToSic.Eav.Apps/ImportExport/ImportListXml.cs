@@ -122,7 +122,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         private bool ValidateAndImportToMemory()
         {
-            var callLog = Log.Call<bool>(useTimer: true);
+            var callLog = Log.Fn<bool>(startTimer: true);
             var nodesCount = 0;
             var entityGuidManager = new ImportItemGuidManager();
 
@@ -222,7 +222,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
 
             Log.A($"Prepared {ImportEntities.Count} entities for import");
-            return callLog("done", true);
+            return callLog.ReturnTrue("done");
         }
 
 
@@ -232,8 +232,8 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns>True if succeeded</returns>
         public bool PersistImportToRepository()
         {
-            var callLog = Log.Call<bool>(useTimer: true);
-            if (ErrorLog.HasErrors) return false;
+            var callLog = Log.Fn<bool>(startTimer: true);
+            if (ErrorLog.HasErrors) return callLog.ReturnFalse();
 
             Timer.Start();
             if (_deleteSetting == ImportDeleteUnmentionedItems.All)
@@ -248,7 +248,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             Timer.Stop();
             TimeForDbImport = Timer.ElapsedMilliseconds;
-            return callLog("ok", true);
+            return callLog.ReturnTrue("ok");
         }
         
     }

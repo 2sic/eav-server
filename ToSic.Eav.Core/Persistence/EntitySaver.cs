@@ -31,7 +31,7 @@ namespace ToSic.Eav.Persistence
         public Entity CreateMergedForSaving(IEntity original, IEntity update, SaveOptions saveOptions, bool logDetails = true)
         {
             var callLog = logDetails 
-                ? Log.Call<Entity>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}" )
+                ? Log.Fn<Entity>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}" )
                 : null;
             if (saveOptions == null) throw new ArgumentNullException(nameof(saveOptions));
             Log.A(() => "opts " + saveOptions.LogInfo);
@@ -115,7 +115,7 @@ namespace ToSic.Eav.Persistence
 
             var result = _multiBuilder.Entity.Clone(idProvidingEntity, mergedAttribs, null);
             CorrectPublishedAndGuidImports(result, logDetails);
-            return callLog?.Invoke("ok", result) ?? result;
+            return callLog?.ReturnAsOk(result) ?? result;
         }
 
         private void AddIsPublishedAttribute(IDictionary<string, IAttribute> attributes, bool? isPublished) 
@@ -193,7 +193,7 @@ namespace ToSic.Eav.Persistence
         /// <returns></returns>
         private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions)
         {
-            var callLog = Log.Call<IAttribute>();
+            var callLog = Log.Fn<IAttribute>();
             // everything in the update will be kept, and optionally some stuff in the original may be preserved
             var result = update;
             foreach (var orgVal in ValuesOrderedForProcessing(original, saveOptions))
@@ -219,7 +219,7 @@ namespace ToSic.Eav.Persistence
                 result.Values.Add(val);
             }
 
-            return callLog("ok", result);
+            return callLog.ReturnAsOk(result);
         }
 
         private DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());

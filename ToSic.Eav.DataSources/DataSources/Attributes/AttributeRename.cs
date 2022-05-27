@@ -93,7 +93,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
 		private IImmutableList<IEntity> GetList()
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             var mapRaw = AttributeMap;
@@ -146,7 +146,7 @@ namespace ToSic.Eav.DataSources
                 newType = new ContentTypeBuilder().Transient(AppId, typeName, typeName);
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
+                return wrapLog.Return(originals, "error");
 
             var result = originals
                 .Select(entity => _multiBuilder.Entity.Clone(entity,
@@ -158,7 +158,7 @@ namespace ToSic.Eav.DataSources
                 .ToImmutableArray();
 
 		    Log.A($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
-		    return wrapLog("ok", result);
+		    return wrapLog.ReturnAsOk(result);
 		}
 
 

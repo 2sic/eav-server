@@ -75,12 +75,12 @@ namespace ToSic.Eav.DataSources.Caching
         public ListCacheItem GetOrBuild(IDataStream stream, Func<IImmutableList<IEntity>> builderFunc,
             int durationInSeconds = 0)
         {
-            var wrapLog = Log.Call<ListCacheItem>();
+            var wrapLog = Log.Fn<ListCacheItem>();
             var key = CacheKey(stream);
 
             var cacheItem = GetValidCacheItemOrNull(stream);
             if (cacheItem != null)
-                return wrapLog("found, use cache", cacheItem);
+                return wrapLog.Return(cacheItem, "found, use cache");
 
             // If reloading is required, set a lock first
             // This is super important to prevent parallel loading of the same data
@@ -94,14 +94,14 @@ namespace ToSic.Eav.DataSources.Caching
                 // now that lock is free, it could have been initialized, so re-check
                 cacheItem = GetValidCacheItemOrNull(stream);
                 if (cacheItem != null)
-                    return wrapLog("still valid, use cache", cacheItem);
+                    return wrapLog.Return(cacheItem,"still valid, use cache");
 
                 Log.A($"Re-Building cache of data stream {stream.Name}");
                 var entities = builderFunc();
                 var useSlidingExpiration = stream.CacheRefreshOnSourceRefresh;
                 Set(key, entities, stream.Caching.CacheTimestamp, durationInSeconds, useSlidingExpiration);
 
-                return wrapLog("generated and placed in cache", Get(key));
+                return wrapLog.Return(Get(key), "generated and placed in cache");
             }
         }
 

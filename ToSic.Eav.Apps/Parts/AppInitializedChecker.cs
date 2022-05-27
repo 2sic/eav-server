@@ -29,15 +29,15 @@ namespace ToSic.Eav.Apps.Parts
         {
             var log = new Log("Eav.AppChk", parentLog);
 
-            var callLog = log.Call<bool>($"..., {appName}");
+            var callLog = log.Fn<bool>($"..., {appName}");
             if (CheckIfAllPartsExist(appIdentity, out _, out _, out _, log))
-                return callLog("ok", false);
+                return callLog.ReturnFalse("ok");
 
             // something is missing, so we must build them
             ServiceProvider.Build<AppInitializer>()
                 .Init(appIdentity, log)
                 .InitializeApp(appName);
-            return callLog(null, true);
+            return callLog.ReturnTrue();
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace ToSic.Eav.Apps.Parts
             out IEntity appSettings,
             ILog log)
         {
-            var callLogFindParts = log.Call<bool>();
+            var callLogFindParts = log.Fn<bool>();
             appConfig = appIdentity.GetMetadata(TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppConfig).FirstOrDefault();
             appResources = appIdentity.GetMetadata(TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppResources).FirstOrDefault();
             appSettings = appIdentity.GetMetadata(TargetTypes.App, appIdentity.AppId, AppLoadConstants.TypeAppSettings).FirstOrDefault();
@@ -67,11 +67,11 @@ namespace ToSic.Eav.Apps.Parts
 
             // if nothing must be done, return now
             if (appConfig != null && appResources != null && appSettings != null)
-                return callLogFindParts("all ok", true);
+                return callLogFindParts.ReturnTrue("all ok");
 
             log.A($"App Config: {appConfig != null}, Resources: {appResources != null}, Settings: {appSettings != null}");
 
-            return callLogFindParts("some missing", false);
+            return callLogFindParts.ReturnFalse("some missing");
         }
 
     }

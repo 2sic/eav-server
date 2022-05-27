@@ -288,9 +288,9 @@ namespace ToSic.Eav.Repository.Efc
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
         {
-            var callLog = Log.Call<List<int>>(useTimer: true);
+            var callLog = Log.Fn<List<int>>(startTimer: true);
             _logHistory.Add("save-data", Log);
-            return callLog("ok", Entities.SaveEntity(entities, saveOptions));
+            return callLog.ReturnAsOk(Entities.SaveEntity(entities, saveOptions));
         }
 
         public void Save(List<IContentType> contentTypes, SaveOptions saveOptions)

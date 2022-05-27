@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 using static ToSic.Eav.Configuration.FsDataConstants;
 
 namespace ToSic.Eav.Persistence.File
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Persistence.File
 
         public IEnumerable<IEntity> LoadGlobalItems(string groupIdentifier)
         {
-            var wrapLog = Log.Call<IEnumerable<IEntity>>(groupIdentifier);
+            var wrapLog = Log.Fn<IEnumerable<IEntity>>(groupIdentifier);
 
             if(!EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
                 throw new ArgumentOutOfRangeException(nameof(groupIdentifier), "atm we can only load items of type " + string.Join("/", EntityItemFolders));
@@ -25,7 +26,7 @@ namespace ToSic.Eav.Persistence.File
                 EntityIdSeed += GlobalEntitySourceSkip; // update the seed for next rounds or other uses of the seed
             }
 
-            return wrapLog($"{entities.Count} items of type {groupIdentifier}", entities);
+            return wrapLog.Return(entities, $"{entities.Count} items of type {groupIdentifier}");
         }
     }
 }

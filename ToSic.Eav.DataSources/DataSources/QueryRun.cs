@@ -72,7 +72,7 @@ namespace ToSic.Eav.DataSources
 
         private Query BuildQuery()
         {
-            var wrapLog = Log.Call<Query>();
+            var wrapLog = Log.Fn<Query>();
             // parse config to be sure we get the right query name etc.
             Configuration.Parse();
 
@@ -93,7 +93,7 @@ namespace ToSic.Eav.DataSources
             if (configEntity == null)
             {
                 Log.A("no configuration found - empty list");
-                return wrapLog("silent error", null /*emptyResult*/);
+                return wrapLog.ReturnNull("silent error");
             }
 
             Log.A($"Found query settings'{configEntity.GetBestTitle()}' ({configEntity.EntityId}), will continue");
@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources
             if (queryDef == null)
             {
                 Log.A("can't find query in configuration - empty list");
-                return wrapLog("silent error", null /*emptyResult*/);
+                return wrapLog.ReturnNull("silent error");
             }
             #endregion
 
@@ -112,7 +112,7 @@ namespace ToSic.Eav.DataSources
             // create the query & set params
             var query = new Query(DataSourceFactory).Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), ShowDrafts, null, Log);
             query.Params(ResolveParams(configEntity));
-            return wrapLog("ok", query);
+            return wrapLog.ReturnAsOk(query);
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -238,22 +239,22 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
 		private IImmutableList<IEntity> GetList(string inStreamName = Constants.DefaultStreamName)
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             var original = In[inStreamName].List.ToImmutableList();
 
             var enhanced = AddSerializationRules(original);
             
-		    return wrapLog($"{enhanced.Count}", enhanced);
+		    return wrapLog.Return(enhanced, $"{enhanced.Count}");
 		}
 
         private IImmutableList<IEntity> AddSerializationRules(IImmutableList<IEntity> before)
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             // Skip if no rules defined
             var noRules = string.IsNullOrWhiteSpace(string.Join("", Configuration));
-            if(noRules) return wrapLog("no rules, unmodified", before);
+            if(noRules) return wrapLog.Return(before, "no rules, unmodified");
 
             var id = TryParseIncludeRule(IncludeId);
             var title = TryParseIncludeRule(IncludeTitle);
@@ -315,7 +316,7 @@ namespace ToSic.Eav.DataSources
             var result = before
                 .Select(e => (IEntity)new EntityDecorator12<EntitySerializationDecorator>(e, decorator));
 
-            return wrapLog("modified", result.ToImmutableList());
+            return wrapLog.Return(result.ToImmutableList(), "modified");
         }
         
         private bool? TryParseIncludeRule(string original)

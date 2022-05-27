@@ -45,7 +45,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
         /// </summary>
         public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null)
         {
-            var wrapLog = Log.Call<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
+            var wrapLog = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
 
             var appState = _appStates.Get(appId);
 
@@ -101,7 +101,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
                 }
 
 
-            return wrapLog("ok", result);
+            return wrapLog.ReturnAsOk(result);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
         private (IEnumerable<IEntity> entityList, JsonMetadataFor mdFor)
             GetEntityListAndMd(int targetType, string keyType, string key, string contentType, IMetadataSource appState)
         {
-            var wrapLog = Log.Call<(IEnumerable<IEntity>, JsonMetadataFor)>();
+            var wrapLog = Log.Fn<(IEnumerable<IEntity>, JsonMetadataFor)>();
             var mdFor = new JsonMetadataFor
             {
                 // #TargetTypeIdInsteadOfTarget
@@ -124,16 +124,16 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
             switch (keyType)
             {
                 case "guid":
-                    if (!Guid.TryParse(key, out var guidKey)) return wrapLog($"error: invalid guid:{key}", (null, mdFor));
+                    if (!Guid.TryParse(key, out var guidKey)) return wrapLog.Return((null, mdFor), $"error: invalid guid:{key}");
                     mdFor.Guid = guidKey;
-                    return wrapLog($"guid:{guidKey}", (appState.GetMetadata(targetType, guidKey, contentType), mdFor));
+                    return wrapLog.Return((appState.GetMetadata(targetType, guidKey, contentType), mdFor), $"guid:{guidKey}");
                 case "string":
                     mdFor.String = key;
-                    return wrapLog("string:{key}", (appState.GetMetadata(targetType, key, contentType), mdFor));
+                    return wrapLog.Return((appState.GetMetadata(targetType, key, contentType), mdFor), "string:{key}");
                 case "number":
-                    if (!int.TryParse(key, out var keyInt)) return wrapLog($"error: invalid number:{key}", (null, mdFor));
+                    if (!int.TryParse(key, out var keyInt)) return wrapLog.Return((null, mdFor), $"error: invalid number:{key}");
                     mdFor.Number = keyInt;
-                    return wrapLog($"number:{keyInt}", (appState.GetMetadata(targetType, keyInt, contentType), mdFor));
+                    return wrapLog.Return((appState.GetMetadata(targetType, keyInt, contentType), mdFor), $"number:{keyInt}");
                 default:
                     Log.A("error: key type unknown");
                     throw new Exception("key type unknown:" + keyType);

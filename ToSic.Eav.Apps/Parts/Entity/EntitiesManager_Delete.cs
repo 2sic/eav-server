@@ -22,17 +22,14 @@ namespace ToSic.Eav.Apps.Parts
         /// <exception cref="Exception"></exception>
         public bool Delete(int[] ids, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null)
         {
-            var callLog = Log.Call<bool>($"delete id:{ids.Length}, type:{contentType}, force:{force}", useTimer: true);
+            var callLog = Log.Fn<bool>($"delete id:{ids.Length}, type:{contentType}, force:{force}", startTimer: true);
 
             // do optional type-check and if necessary, throw error
             BatchCheckTypesMatch(ids, contentType);
 
             // get related metadata ids
             var metaDataIds = new List<int>();             
-            foreach (var id in ids)
-            {
-                CollectMetaDataIdsRecursively(id, ref metaDataIds);
-            }
+            foreach (var id in ids) CollectMetaDataIdsRecursively(id, ref metaDataIds);
 
             var deleteIds = ids.ToList<int>();
             if (metaDataIds.Any()) deleteIds.AddRange(metaDataIds);
@@ -45,7 +42,7 @@ namespace ToSic.Eav.Apps.Parts
 
             SystemManager.PurgeApp(Parent.AppId);
 
-            return callLog(ok.ToString(), ok);
+            return callLog.ReturnAndLog(ok);
         }
 
         private void CollectMetaDataIdsRecursively(int id, ref List<int> metaDataIds)
@@ -168,12 +165,12 @@ namespace ToSic.Eav.Apps.Parts
 
         public bool Delete(List<int> ids)
         {
-            var callLog = Log.Call<bool>($"ids:{ids.Count}", useTimer: true);
+            var callLog = Log.Fn<bool>($"ids:{ids.Count}", startTimer: true);
             var result = Delete(ids.ToArray(), null, false, true);
             //var result = ids.Aggregate(true, (current, entityId) => current && Delete(entityId, null, false, true));
-            return callLog(result.ToString(), result);
+            return callLog.ReturnAndLog(result);
         }
 
     }
-
+    
 }

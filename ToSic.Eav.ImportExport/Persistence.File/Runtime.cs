@@ -38,7 +38,7 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_paths != null) return _paths;
-                var wrapLog = Log.Call<List<string>>(message: "start building path-list");
+                var wrapLog = Log.Fn<List<string>>(message: "start building path-list");
 
                 _paths = new List<string>();
                 // find all RepositoryInfoOfFolder and let them tell us what paths to use
@@ -59,7 +59,7 @@ namespace ToSic.Eav.Persistence.File
                         Log.Ex(e);
                     }
                 Log.A(() => string.Join(",", _paths));
-                return wrapLog($"{_paths.Count} paths", _paths);
+                return wrapLog.Return(_paths, $"{_paths.Count} paths");
             }
         }
         private List<string> _paths;

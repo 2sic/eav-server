@@ -28,23 +28,23 @@ namespace ToSic.Eav.DataSources.Sys
         ExpectsDataOfType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
         HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.System.QueryInfo.html")]
 
-    public sealed class QueryInfo: DataSourceBase
-	{
+    public sealed class QueryInfo : DataSourceBase
+    {
         public QueryBuilder QueryBuilder { get; }
         private readonly Lazy<QueryManager> _queryManagerLazy;
         private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value.Init(Log));
         private QueryManager _queryManager;
 
         #region Configuration-properties (no config)
-	    public override string LogId => "DS.EavQIn";
+        public override string LogId => "DS.EavQIn";
 
         private const string QueryKey = "Query";
         private const string QueryNameField = "QueryName";
-	    private const string DefQuery = "not-configured"; // can't be blank, otherwise tokens fail
+        private const string DefQuery = "not-configured"; // can't be blank, otherwise tokens fail
         private const string StreamKey = "Stream";
         private const string StreamField = "StreamName";
-	    private const string QueryStreamsContentType = "EAV_Query_Stream";
-        
+        private const string QueryStreamsContentType = "EAV_Query_Stream";
+
         /// <summary>
         /// The content-type name
         /// </summary>
@@ -53,31 +53,31 @@ namespace ToSic.Eav.DataSources.Sys
             get => Configuration[QueryKey];
             set => Configuration[QueryKey] = value;
         }
-        
+
         public string StreamName
         {
             get => Configuration[StreamKey];
             set => Configuration[StreamKey] = value;
         }
-		#endregion
+        #endregion
 
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public QueryInfo(Lazy<QueryManager> queryManagerLazy, QueryBuilder queryBuilder)
-		{
+        public QueryInfo(Lazy<QueryManager> queryManagerLazy, QueryBuilder queryBuilder)
+        {
             QueryBuilder = queryBuilder.Init(Log);
             _queryManagerLazy = queryManagerLazy;
             Provide(GetStreams);
-			Provide("Attributes", GetAttributes);
-		    ConfigMask(QueryKey, $"[Settings:{QueryNameField}||{DefQuery}]");
-		    ConfigMask(StreamKey, $"[Settings:{StreamField}||{Constants.DefaultStreamName}]");
-		}
+            Provide("Attributes", GetAttributes);
+            ConfigMask(QueryKey, $"[Settings:{QueryNameField}||{DefQuery}]");
+            ConfigMask(StreamKey, $"[Settings:{StreamField}||{Constants.DefaultStreamName}]");
+        }
 
-	    private ImmutableArray<IEntity> GetStreams()
-	    {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+        private ImmutableArray<IEntity> GetStreams()
+        {
+            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
 
             CustomConfigurationParse();
             var builder = DataBuilder;
@@ -90,12 +90,12 @@ namespace ToSic.Eav.DataSources.Sys
                                typeName: QueryStreamsContentType))
                        .ToImmutableArray()
                    ?? ImmutableArray<IEntity>.Empty;
-            return wrapLog($"{result.Length}", result);
+            return wrapLog.Return(result, $"{result.Length}");
         }
 
-	    private IImmutableList<IEntity> GetAttributes()
-	    {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+        private IImmutableList<IEntity> GetAttributes()
+        {
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
 
             CustomConfigurationParse();
 
@@ -108,18 +108,18 @@ namespace ToSic.Eav.DataSources.Sys
                 return ImmutableArray<IEntity>.Empty;
 
             var attribInfo = DataSourceFactory.GetDataSource<Attributes>(_query);
-            if(StreamName != Constants.DefaultStreamName)
+            if (StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query, StreamName);
 
             var results = attribInfo.List.ToImmutableList();
-            return wrapLog($"{results.Count}", results);
+            return wrapLog.Return(results, $"{results.Count}");
         }
 
-	    private void CustomConfigurationParse()
-	    {
+        private void CustomConfigurationParse()
+        {
             Configuration.Parse();
             BuildQuery();
-	    }
+        }
 
 
         private void BuildQuery()
@@ -132,7 +132,7 @@ namespace ToSic.Eav.DataSources.Sys
 
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
             var found = qName.StartsWith(DataSourceConstants.GlobalEavQueryPrefix)
-                ? QueryManager.FindQuery(Constants.PresetIdentity, qName) 
+                ? QueryManager.FindQuery(Constants.PresetIdentity, qName)
                 : QueryManager.FindQuery(this, qName);
             //? _globalQueriesLazy.Value.FindQuery(qName))
             //: QueryManager.AllQueryItems(this)
@@ -141,13 +141,13 @@ namespace ToSic.Eav.DataSources.Sys
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{qName}'");
 
-            var builtQuery = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log), 
+            var builtQuery = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log),
                 false, Configuration.LookUpEngine);
             _query = builtQuery.Item1;
             wrapLog.Done();
         }
 
-	    private IDataSource _query;
+        private IDataSource _query;
 
-	}
+    }
 }

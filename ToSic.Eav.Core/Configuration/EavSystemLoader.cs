@@ -108,26 +108,26 @@ namespace ToSic.Eav.Configuration
         /// <returns></returns>
         private FeatureListStored LoadFeaturesStored()
         {
-            var wrapLog = Log.Call<FeatureListStored>();
+            var wrapLog = Log.Fn<FeatureListStored>();
 
             try
             {
                 var (filePath, fileContent) = _featureConfigManager.LoadFeaturesFile();
                 if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileContent)) 
-                    return wrapLog("ok, but 'features.json' is missing", null);
+                    return wrapLog.ReturnNull("ok, but 'features.json' is missing");
 
                 // handle old 'features.json' format
                 var stored = _featureConfigManager.ConvertOldFeaturesFile(filePath, fileContent);
                 if (stored != null) 
-                    return wrapLog("converted to new features.json", stored);
+                    return wrapLog.Return(stored, "converted to new features.json");
 
                 // return features stored
-                return wrapLog("ok, features loaded", JsonConvert.DeserializeObject<FeatureListStored>(fileContent));
+                return wrapLog.Return(JsonConvert.DeserializeObject<FeatureListStored>(fileContent), "ok, features loaded");
             }
             catch (Exception e)
             {
                 Log.Ex(e);
-                return wrapLog("load feature failed:" + e.Message, null);
+                return wrapLog.ReturnNull("load feature failed:" + e.Message);
             }
         }
 
@@ -138,10 +138,10 @@ namespace ToSic.Eav.Configuration
         [PrivateApi]
         public bool UpdateFeatures(List<FeatureManagementChange> changes)
         {
-            var wrapLog = Log.Call<bool>($"c:{changes?.Count ?? -1}");
+            var wrapLog = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
             var saved = _featureConfigManager.SaveFeaturesUpdate(changes);
             SetFeaturesStored(FeatureListStoredBuilder(changes));
-            return wrapLog("ok, updated", saved);
+            return wrapLog.Return(saved, "ok, updated");
         }
 
 

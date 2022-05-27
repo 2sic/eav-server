@@ -257,15 +257,15 @@ namespace ToSic.Eav.WebApi
 
         private bool HasCalculations(IContentTypeAttribute attribute)
         {
-            var wrapLog = Log.Call<bool>(attribute.Name);
+            var wrapLog = Log.Fn<bool>(attribute.Name);
             var allMd = attribute.Metadata.FirstOrDefaultOfType(AttributeMetadata.TypeGeneral);
-            if (allMd == null) return wrapLog("no @All", false);
+            if (allMd == null) return wrapLog.ReturnFalse("no @All");
 
             var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == AttributeMetadata.MetadataFieldAllFormulas);
-            if (calculationsAttr == null) return wrapLog("no calc property", false);
+            if (calculationsAttr == null) return wrapLog.ReturnFalse("no calc property");
 
             var calculations = calculationsAttr.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>;
-            return wrapLog(null, calculations?.Any() ?? false);
+            return wrapLog.Return(calculations?.Any() ?? false);
         }
 
 

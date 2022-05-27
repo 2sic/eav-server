@@ -44,13 +44,13 @@ namespace ToSic.Eav.DataSources
 
         private IImmutableList<IEntity> GetRelated()
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
 
             Configuration.Parse();
 
             // Make sure we have an In - otherwise error
             if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
+                return wrapLog.Return(originals, "error");
 
             var fieldName = FieldName;
             if (string.IsNullOrWhiteSpace(fieldName)) fieldName = null;
@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSources
             if (FilterDuplicates)
                 relationships = relationships.Distinct();
 
-            return wrapLog(null, relationships.ToImmutableList());
+            return wrapLog.Return(relationships.ToImmutableList());
         }
 
         /// <summary>

@@ -85,7 +85,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         {
             var dsCatalog = _dependencies.DataSourceCatalogLazy.Value.Init(Log);
 
-            var callLog = Log.Call<IEnumerable<DataSourceDto>>();
+            var callLog = Log.Fn<IEnumerable<DataSourceDto>>();
             var installedDataSources = DataSourceCatalog.GetAll(true);
 
             var result = installedDataSources
@@ -98,7 +98,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 })
                 .ToList();
 
-            return callLog(result.Count.ToString(), result);
+            return callLog.Return(result, result.Count.ToString());
 
         }
 

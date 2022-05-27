@@ -44,16 +44,16 @@ namespace ToSic.Eav.Apps
         /// <returns></returns>
         internal List<KeyValuePair<string, IPropertyLookup>> FullStack(ILog buildLog)
         {
-            var wrapLog = buildLog.Call<List<KeyValuePair<string, IPropertyLookup>>>();
+            var wrapLog = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup>>>();
             if (_fullStackSynched != null)
             {
                 if (_fullStackSynched.CacheChanged())
                     buildLog.A("Cache changed, will rebuild");
                 else
-                    return wrapLog("existing", _fullStackSynched.Value);
+                    return wrapLog.Return(_fullStackSynched.Value, "existing");
             }
             _fullStackSynched = BuildCachedStack(buildLog);
-            return wrapLog("created", _fullStackSynched.Value);
+            return wrapLog.Return(_fullStackSynched.Value, "created");
         }
 
         private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> _fullStackSynched;

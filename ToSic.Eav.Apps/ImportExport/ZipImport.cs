@@ -50,7 +50,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns></returns>
         public bool ImportZip(Stream zipStream, string temporaryDirectory, string rename = null)
         {
-            var wrapLog = Log.Call<bool>( parameters: $"{temporaryDirectory}, {nameof(rename)}:{rename}");
+            var wrapLog = Log.Fn<bool>( parameters: $"{temporaryDirectory}, {nameof(rename)}:{rename}");
             var messages = Messages;
             Exception finalException = null;
 
@@ -96,11 +96,11 @@ namespace ToSic.Eav.Apps.ImportExport
             if (finalException != null)
             {
                 Log.A("had found errors during import, will throw");
-                wrapLog("error", false);
+                wrapLog.ReturnFalse("error");
                 throw finalException; // must throw, to enable logging outside
             }
 
-            return wrapLog("ok", true);
+            return wrapLog.ReturnTrue("ok");
         }
 
         private void TryToCleanUpTemporary(string temporaryDirectory)

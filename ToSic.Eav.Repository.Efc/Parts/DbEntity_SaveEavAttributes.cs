@@ -19,18 +19,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="entityId"></param>
         private bool ClearAttributesInDbModel(int entityId)
         {
-            var callLog = Log.Call<bool>(useTimer: true);
+            var callLog = Log.Fn<bool>(startTimer: true);
             var val = DbContext.SqlDb.ToSicEavValues
                 .Include(v => v.ToSicEavValuesDimensions)
                 .Where(v => v.EntityId == entityId)
                 .ToList();
 
-            if (val.Count == 0) return callLog("no changes", false);
+            if (val.Count == 0) return callLog.ReturnFalse("no changes");
 
             var dims = val.SelectMany(v => v.ToSicEavValuesDimensions);
             DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(dims));
             DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(val));
-            return callLog("ok", true);
+            return callLog.ReturnTrue("ok");
         }
 
         private void SaveAttributesAsEav(IEntity newEnt,
