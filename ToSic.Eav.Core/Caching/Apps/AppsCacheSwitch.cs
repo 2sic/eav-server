@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Configuration;
+using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.Plumbing.DI;
 
 namespace ToSic.Eav.Caching
 {

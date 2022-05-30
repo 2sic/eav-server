@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Plumbing.DI
+namespace ToSic.Eav.DI
 {
     public class ServiceSwitcher<T>: HasLog, ILazyLike<T> where T : ISwitchableService
     {
         // TODO
-        // - constructor with name
         // - add to global log history when regenerating incl. choice
 
         public ServiceSwitcher(IEnumerable<T> allServices) : base(LogNames.Eav + ".SrvSwt")
