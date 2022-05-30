@@ -33,5 +33,9 @@
         public static string EditUiConfigurationDecoratorId = "4f6d1484-4672-43d5-9c48-94ff3ec11069";
 
         //public static string LightSpeedOutputDecoratorId = "be34f64b-7d1f-4ad0-b488-dabbbb01a186";
+
+        // OpenGraph WIP v14 - should be moved to 2sxc
+        public static string OpenGraphName = "OpenGraph";
+        public static string OpenGraphId = "1f1c8118-8ea5-4db5-8e3d-f5ef2131050b";
     }
 }
