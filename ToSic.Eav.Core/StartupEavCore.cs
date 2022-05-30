@@ -89,6 +89,7 @@ namespace ToSic.Eav
             services.AddTransient(typeof(LazyInit<>));
             services.AddTransient(typeof(LazyInitLog<>));
             services.AddTransient(typeof(Generator<>));
+            services.AddTransient(typeof(IGenerator<>), typeof(Generator<>));
             services.AddTransient(typeof(GeneratorLog<>));
 
             // Service Switchers
