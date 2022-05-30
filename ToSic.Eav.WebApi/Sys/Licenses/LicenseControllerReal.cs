@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.DI;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;

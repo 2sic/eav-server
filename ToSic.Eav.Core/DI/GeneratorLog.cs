@@ -1,7 +1,8 @@
 ﻿using System;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Plumbing
+namespace ToSic.Eav.DI
 {
     /// <summary>
     /// Enables generating additional objects of a specific type

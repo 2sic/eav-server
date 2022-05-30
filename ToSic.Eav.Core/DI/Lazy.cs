@@ -1,6 +1,7 @@
 ﻿using System;
+using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Plumbing
+namespace ToSic.Eav.DI
 {
     /// <summary>
     /// Enables lazy requesting of objects - won't be available until needed

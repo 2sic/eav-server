@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Plumbing
+﻿namespace ToSic.Eav.DI
 {
 
     public interface IGenerator<out T>
