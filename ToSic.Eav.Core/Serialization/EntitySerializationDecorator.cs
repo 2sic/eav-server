@@ -10,7 +10,7 @@ namespace ToSic.Eav.Serialization
     /// * Introduced v11.13 in a slightly different implementation
     /// * Enhanced as a standalone decorator in 12.05
     /// </remarks>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("Just fyi")]
+    [PrivateApi("Just fyi, was previously published as internal till v14")]
     public class EntitySerializationDecorator: IDecorator<IEntity>, IEntityIdSerialization
     {
         public bool? SerializeId { get; set; } = null;
