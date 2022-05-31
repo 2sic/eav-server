@@ -200,6 +200,8 @@ namespace ToSic.Eav.Apps.ImportExport
                 foreach (var permission in attribute.Metadata.Permissions)
                     permission.Entity.ResetEntityId();
             }
+            foreach (var metadata in contentType.Metadata)
+                metadata.ResetEntityId();
 
             if (existing == null)
                 return callLog.Return(true, "existing not found, won't merge");
