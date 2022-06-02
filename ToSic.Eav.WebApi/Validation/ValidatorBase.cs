@@ -20,12 +20,11 @@ namespace ToSic.Eav.WebApi.Validation
         /// <returns></returns>
         protected bool BuildExceptionIfHasIssues(out HttpExceptionAbstraction preparedException, string logMessage = null)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn<bool>();
             preparedException = HasErrors ? HttpException.BadRequest(Errors): null;
             if (logMessage != null) Log.A($"{nameof(logMessage)}:{logMessage}");
             if (HasErrors) Log.A($"Errors:{Errors}");
-            wrapLog(HasErrors ? "found errors" : "all ok");
-            return !HasErrors;
+            return wrapLog.Return(!HasErrors, HasErrors ? "found errors" : "all ok");
         }
 
 

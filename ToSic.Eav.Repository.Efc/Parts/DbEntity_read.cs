@@ -37,9 +37,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns>Entity or throws InvalidOperationException</returns>
         internal ToSicEavEntities GetDbEntity(int entityId)
         {
-            var callLog = DbContext.Log.Call<ToSicEavEntities>($"Get {entityId}");
+            var callLog = DbContext.Log.Fn<ToSicEavEntities>($"Get {entityId}");
             var found = EntityQuery.Single(e => e.EntityId == entityId);
-            return callLog("ok", found);
+            return callLog.ReturnAsOk(found);
         }
 
         /// <summary>
@@ -48,9 +48,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns>Entity or throws InvalidOperationException</returns>
         internal ToSicEavEntities[] GetDbEntities(int[] repositoryIds)
         {
-            var callLog = DbContext.Log.Call<ToSicEavEntities[]>($"Get {repositoryIds.Length}", useTimer: true);
+            var callLog = DbContext.Log.Fn<ToSicEavEntities[]>($"Get {repositoryIds.Length}", startTimer: true);
             var found = EntityQuery.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
-            return callLog(found.Length.ToString(), found);
+            return callLog.Return(found, found.Length.ToString());
         }
 
         //private ToSicEavEntities GetDbEntity(int entityId, string includes)
@@ -84,15 +84,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal Dictionary<Guid, int> GetMostCurrentDbEntities(Guid[] entityGuid)
         // GetEntity should never return a draft entity that has a published version
         {
-            var callLog = Log.Call(useTimer: true);
+            var callLog = Log.Fn<Dictionary<Guid, int>>(startTimer: true);
             var result = GetEntitiesByGuid(entityGuid)
                 .ToList() // necessary for EF 3 - before GroupBy
                 .GroupBy(e => e.EntityGuid)
                 .ToDictionary(
                     g => g.Key,
                     g => g.Single(e => !e.PublishedEntityId.HasValue).EntityId);
-            callLog(result.Count.ToString());
-            return result;
+            return callLog.Return(result, result.Count.ToString());
         }
 
         // 2020-10-07 2dm experiment with fewer requests

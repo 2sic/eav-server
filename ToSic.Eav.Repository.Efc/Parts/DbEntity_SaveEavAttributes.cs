@@ -19,18 +19,18 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="entityId"></param>
         private bool ClearAttributesInDbModel(int entityId)
         {
-            var callLog = Log.Call<bool>(useTimer: true);
+            var callLog = Log.Fn<bool>(startTimer: true);
             var val = DbContext.SqlDb.ToSicEavValues
                 .Include(v => v.ToSicEavValuesDimensions)
                 .Where(v => v.EntityId == entityId)
                 .ToList();
 
-            if (val.Count == 0) return callLog("no changes", false);
+            if (val.Count == 0) return callLog.ReturnFalse("no changes");
 
             var dims = val.SelectMany(v => v.ToSicEavValuesDimensions);
             DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(dims));
             DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(val));
-            return callLog("ok", true);
+            return callLog.ReturnTrue("ok");
         }
 
         private void SaveAttributesAsEav(IEntity newEnt,
@@ -41,11 +41,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
             List<DimensionDefinition> zoneLanguages,
             bool logDetails)
         {
-            var wrapLog = Log.Call($"id:{newEnt.EntityId}", useTimer: true);
+            var wrapLog = Log.Fn($"id:{newEnt.EntityId}", startTimer: true);
             if (!_attributeQueueActive) throw new Exception("Attribute save-queue not ready - should be wrapped");
             foreach (var attribute in newEnt.Attributes.Values)
             {
-                var wrapAttrib = Log.Call($"attrib:{attribute.Name}", "InnerAttribute");
+                var wrapAttrib = Log.Fn($"attrib:{attribute.Name}", "InnerAttribute");
                 // find attribute definition
                 var attribDef =
                     dbAttributes.SingleOrDefault(
@@ -55,12 +55,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     if (!so.DiscardAttributesNotInType)
                         throw new Exception(
                             $"trying to save attribute {attribute.Name} but can\'t find definition in DB");
-                    wrapAttrib("attribute not found, will skip according to save-options");
+                    wrapAttrib.Done("attribute not found, will skip according to save-options");
                     continue;
                 }
                 if (attribDef.Type == ValueTypes.Entity.ToString())
                 {
-                    wrapAttrib("type is entity, skip for now as relationships are processed later");
+                    wrapAttrib.Done("type is entity, skip for now as relationships are processed later");
                     continue;
                 }
 
@@ -102,15 +102,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     AttributeQueueAdd(() => dbEnt.ToSicEavValues.Add(newVal));
                     //dbEnt.ToSicEavValues.Add(newVal);
                 }
-                wrapAttrib(null);
+                wrapAttrib.Done();
             }
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         internal void DoWhileQueueingAttributes(Action action)
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-            var wrapLog = Log.Call($"attribute queue:{randomId} start");
+            var wrapLog = Log.Fn($"attribute queue:{randomId} start");
             if(_attributeUpdateQueue.Any()) throw new Exception("Attribute queue started while already containing stuff - bad!");
             _attributeQueueActive = true;
             // 1. check if it's the outermost call, in which case afterwards we import
@@ -122,7 +122,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // 4. now check if we were the outermost call, in if yes, save the data
             DbContext.DoAndSave(AttributeQueueRun);
             _attributeQueueActive = false;
-            wrapLog("completed");
+            wrapLog.Done("completed");
         }
 
         private bool _attributeQueueActive = false;
@@ -135,10 +135,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private void AttributeQueueRun()
         {
-            var wrap = Log.Call(useTimer: true);
+            var wrap = Log.Fn(startTimer: true);
             _attributeUpdateQueue.ForEach(a => a.Invoke());
             _attributeUpdateQueue.Clear();
-            wrap(null);
+            wrap.Done();
         }
     }
 }

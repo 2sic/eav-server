@@ -46,13 +46,13 @@ namespace ToSic.Eav.Apps.Security
         /// <returns>True if all pass, false if any one fails</returns>
         public bool EnsureAll(List<Grants> grants, out string error)
         {
-            var wrap = Log.Call<bool>();
+            var wrap = Log.Fn<bool>();
             foreach (var set in PermissionCheckers)
                 if (!set.Value.Ensure(grants, out error))
-                    return wrap(false.ToString(), false);
+                    return wrap.ReturnFalse();
 
             error = null;
-            return wrap(true.ToString(), true);
+            return wrap.ReturnTrue();
         }
 
         /// <summary>
@@ -62,10 +62,10 @@ namespace ToSic.Eav.Apps.Security
         /// <returns>True if all pass, false if any one fails</returns>
         public bool EnsureAny(List<Grants> grants)
         {
-            var wrap = Log.Call<bool>();
+            var wrap = Log.Fn<bool>();
             return PermissionCheckers.Any(set => set.Value.Ensure(grants, out _)) 
-                ? wrap(true.ToString(), true) 
-                : wrap(false.ToString(), false);
+                ? wrap.ReturnTrue() 
+                : wrap.ReturnFalse();
         }
 
     }

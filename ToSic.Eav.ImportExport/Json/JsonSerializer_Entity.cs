@@ -22,13 +22,10 @@ namespace ToSic.Eav.ImportExport.Json
         public JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
         {
             // var log = new Log("Jsn.Serlzr", Log);
-            var wrapLog = Log.Call($"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
+            var wrapLog = Log.Fn<JsonEntity>($"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
             // do a null-check, because sometimes code could ask to serialize not-yet existing entities
             if (entity == null)
-            {
-                wrapLog("is null");
-                return null;
-            }
+                return wrapLog.ReturnNull("is null");
 
             JsonMetadataFor jsonFor = null;
             if (entity.MetadataFor.IsMetadata)
@@ -102,8 +99,7 @@ namespace ToSic.Eav.ImportExport.Json
                 For = jsonFor,
                 Metadata = itemMeta
             };
-            wrapLog("ok");
-            return jEnt;
+            return wrapLog.ReturnAsOk(jEnt);
         }
 
         /// <summary>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
@@ -15,7 +14,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         public IContentType DeserializeContentType(string serialized)
         {
-            var wrap = Log.Call($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...");
+            var wrap = Log.Fn<IContentType>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...");
             try
             {
                 var jsonPackage = UnpackAndTestGenericJsonV1(serialized);
@@ -60,15 +59,13 @@ namespace ToSic.Eav.ImportExport.Json
                 }).ToList();
 
                 type.Attributes = attribs;
-                wrap($"deserialized {type.Name} with {attribs.Count} attributes");
-                
+
                 // new in 1.2 2sxc v12 - build relation relationships manager
-                
-                return type;
+                return wrap.Return(type, $"deserialized {type.Name} with {attribs.Count} attributes");
             }
             catch (Exception e)
             {
-                wrap("failed, error '" + e.GetType().FullName + "':" + e.Message);
+                wrap.ReturnNull("failed, error '" + e.GetType().FullName + "':" + e.Message);
                 throw;
             }
         }

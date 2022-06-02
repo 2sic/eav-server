@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Data;
+using ToSic.Eav.DI;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
@@ -40,7 +41,7 @@ namespace ToSic.Eav.Apps
             string userName = null,
             ITarget target = null)
         {
-            var wrapLog = Log.Call<IEntity>(contentTypeName);
+            var wrapLog = Log.Fn<IEntity>(contentTypeName);
             if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
             var ids = DataController.Ready.Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
             var id = ids.FirstOrDefault();
@@ -48,7 +49,7 @@ namespace ToSic.Eav.Apps
             FlushDataSnapshot();
             // try to find it again (AppState.List contains also draft items)
             var created = AppState.List.One(id);
-            return wrapLog(null, created);
+            return wrapLog.Return(created);
         }
 
         private static void ProvideOwnerInValues(Dictionary<string, object> values, string userIdentityToken)
@@ -63,7 +64,7 @@ namespace ToSic.Eav.Apps
             IEnumerable<Dictionary<string, object>> multiValues, 
             string userName = null)
         {
-            var wrapLog = Log.Call<IEnumerable<IEntity>>(null, $"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}");
+            var wrapLog = Log.Fn<IEnumerable<IEntity>>(null, $"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}");
             
             if (!string.IsNullOrEmpty(userName))
                 foreach (var values in multiValues)
@@ -73,7 +74,7 @@ namespace ToSic.Eav.Apps
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             var created = List.Where(e => ids.Contains(e.EntityId)).ToList();
-            return wrapLog(null, created);
+            return wrapLog.Return(created);
         }
 
         /// <inheritdoc />

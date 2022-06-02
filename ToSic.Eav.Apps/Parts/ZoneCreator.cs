@@ -21,13 +21,13 @@ namespace ToSic.Eav.Apps.Parts
 
 
         #endregion
-
+        
         public int Create(string name)
         {
-            var wrapCall = Log.Call<int>($"create zone:{name}");
+            var wrapCall = Log.Fn<int>($"create zone:{name}");
             var zoneId = _db.Init(null, null, Log).Zone.AddZone(name);
             SystemManager.PurgeZoneList();
-            return wrapCall($"created zone {zoneId}", zoneId);
+            return wrapCall.Return(zoneId, $"created zone {zoneId}");
         }
 
     }

@@ -88,12 +88,12 @@ namespace ToSic.Eav.DataSources
 
 	    private IImmutableList<IEntity> GetList()
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1)*PageSize;
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
+                return wrapLog.Return(originals, "error");
 
 
             var result = originals
@@ -101,17 +101,17 @@ namespace ToSic.Eav.DataSources
                 .Take(PageSize)
                 .ToImmutableArray();
             Log.A($"get page:{PageNumber} with size{PageSize} found:{result.Length}");
-            return wrapLog("ok", result);
+            return wrapLog.ReturnAsOk(result);
 	    }
-
+        
         private IImmutableList<IEntity> GetPaging()
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             // Calculate any additional stuff
             if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
+                return wrapLog.Return(originals, "error");
 
             var itemCount = originals.Count;
             var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
@@ -130,7 +130,7 @@ namespace ToSic.Eav.DataSources
 
             // Assemble list of this for the stream
             var list = new List<IEntity> {entity};
-            return wrapLog("ok", list.ToImmutableArray());
+            return wrapLog.ReturnAsOk(list.ToImmutableArray());
         }
 
 	}

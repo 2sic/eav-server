@@ -7,6 +7,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Dto;
@@ -186,19 +187,18 @@ namespace ToSic.Eav.WebApi
 
         public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType)
         {
-            var wrapLog = Log.Call(useTimer: true);
+            var wrapLog = Log.Fn<IEnumerable<Dictionary<string, object>>>(startTimer: true);
             EntityToDic.ConfigureForAdminUse();
             var originals = AppRead.Entities.Get(contentType).ToList();
             var list = EntityToDic.Convert(originals).ToList();
 
-            var timer = Log.Call(null, "truncate dictionary", useTimer: true);
+            var timer = Log.Fn(null, "truncate dictionary", startTimer: true);
             var result = list
                 .Select(li => li.ToDictionary(x1 => x1.Key, x2 => Truncate(x2.Value, 50)))
                 .ToList();
-            timer("ok");
+            timer.Done("ok");
 
-            wrapLog(result.Count.ToString());
-            return result;
+            return wrapLog.Return(result, result.Count.ToString());
         }
 
 

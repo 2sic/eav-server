@@ -62,12 +62,12 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// <returns></returns>
         public DicNameObj Move(int sourceIndex, int targetIndex)
         {
-            var wrapLog = Log.Call<DicNameObj>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
+            var wrapLog = Log.Fn<DicNameObj>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
             var hasChanges = Lists.Values
                 .Aggregate(false, (prev, l) => l.Move(sourceIndex, targetIndex) || prev);
             return hasChanges
-                ? wrapLog("ok", Lists.ToObject())
-                : wrapLog("outside of range, no changes", null);
+                ? wrapLog.ReturnAsOk(Lists.ToObject())
+                : wrapLog.ReturnNull("outside of range, no changes");
         }
 
         /// <summary>
@@ -77,13 +77,13 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// <returns></returns>
         public DicNameObj Reorder(int[] newSequence)
         {
-            var wrapLog = Log.Call<DicNameObj>($"seq:[{string.Join(",", newSequence)}]");
+            var wrapLog = Log.Fn<DicNameObj>($"seq:[{string.Join(",", newSequence)}]");
 
             // some error checks
             if (newSequence.Length != Lists.First().Value.Count)
             {
                 const string msg = "Error: Can't re-order - list length is different";
-                wrapLog(msg, null);
+                wrapLog.ReturnNull(msg);
                 throw new Exception(msg);
             }
 
@@ -103,7 +103,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
                 }
             });
 
-            return wrapLog("ok", Lists.ToObject());
+            return wrapLog.ReturnAsOk(Lists.ToObject());
         }
 
         /// <summary>

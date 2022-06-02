@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Plumbing.DI
+namespace ToSic.Eav.DI
 {
     /// <summary>
     /// Similar to the <see cref="ServiceSwitcher{T}"/> but special.

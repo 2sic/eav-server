@@ -85,7 +85,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         {
             var dsCatalog = _dependencies.DataSourceCatalogLazy.Value.Init(Log);
 
-            var callLog = Log.Call<IEnumerable<DataSourceDto>>();
+            var callLog = Log.Fn<IEnumerable<DataSourceDto>>();
             var installedDataSources = DataSourceCatalog.GetAll(true);
 
             var result = installedDataSources
@@ -98,7 +98,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 })
                 .ToList();
 
-            return callLog(result.Count.ToString(), result);
+            return callLog.Return(result, result.Count.ToString());
 
         }
 
@@ -157,7 +157,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
         protected QueryRunDto RunDevInternal(int appId, int id, LookUpEngine lookUps, int top, Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup)
 		{
-            var wrapLog = Log.Call($"a#{appId}, {nameof(id)}:{id}, top: {top}");
+            var wrapLog = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
             // Get the query, run it and track how much time this took
 		    var qDef = QueryBuilder.GetQueryDefinition(appId, id);
@@ -165,7 +165,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             var outSource = builtQuery.Item1;
             
             
-            var serializeWrap = Log.Call("Serialize", useTimer: true);
+            var serializeWrap = Log.Fn("Serialize", startTimer: true);
             var timer = new Stopwatch();
             timer.Start();
             var converter = _dependencies.EntToDicLazy.Value;
@@ -173,14 +173,13 @@ namespace ToSic.Eav.WebApi.Admin.Query
             converter.MaxItems = top;
 		    var results = converter.Convert(partLookup(builtQuery));
             timer.Stop();
-            serializeWrap("ok");
+            serializeWrap.Done("ok");
 
             // Now get some more debug info
             var debugInfo = _dependencies.QueryInfoLazy.Value.BuildQueryInfo(qDef, outSource, Log);
 
-            wrapLog(null);
             // ...and return the results
-			return new QueryRunDto
+			return wrapLog.Return(new QueryRunDto
 			{
 				Query = results, 
 				Streams = debugInfo.Streams.Select(si =>
@@ -194,7 +193,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
                     Milliseconds = timer.ElapsedMilliseconds,
                     Ticks = timer.ElapsedTicks
                 }
-			};
+			});
 		}
 
 

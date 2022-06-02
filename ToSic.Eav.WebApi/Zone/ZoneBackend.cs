@@ -40,7 +40,7 @@ namespace ToSic.Eav.WebApi.Zone
 
         public SystemInfoSetDto GetSystemInfo()
         {
-            var wrapLog = Log.Call<SystemInfoSetDto>($"{_site.Id}");
+            var wrapLog = Log.Fn<SystemInfoSetDto>($"{_site.Id}");
 
             var zoneId = _site.ZoneId;
 
@@ -90,7 +90,7 @@ namespace ToSic.Eav.WebApi.Zone
                 Messages = warningsDto
             };
 
-            return wrapLog("ok", info);
+            return wrapLog.ReturnAsOk(info);
         }
 
         private int CountInsightsMessages(string prefix)

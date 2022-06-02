@@ -19,23 +19,23 @@ namespace ToSic.Eav.DataSources
 
         public Func<IEntity, bool> GetComparison(ValueTypes type, /*object firstValue,*/ string fieldName, string operation, string[] languages, string expected)
         {
-            var wrapLog = Log.Call<Func<IEntity, bool>>();
+            var wrapLog = Log.Fn<Func<IEntity, bool>>();
             operation = operation.ToLowerInvariant();
 
             // First try to figure out based on known type
             switch (type)
             {
                 case ValueTypes.Boolean:
-                    return wrapLog("bool comparison", BoolComparison(fieldName, operation, languages, expected));
+                    return wrapLog.Return(BoolComparison(fieldName, operation, languages, expected), "bool comparison");
                 case ValueTypes.DateTime:
-                    return wrapLog("datetime comparison", DateTimeComparison(fieldName, operation, languages, expected));
+                    return wrapLog.Return(DateTimeComparison(fieldName, operation, languages, expected), "datetime comparison");
                 case ValueTypes.Number:
-                    return wrapLog("decimal comparison", NumberComparison(fieldName, operation, languages, expected));
+                    return wrapLog.Return(NumberComparison(fieldName, operation, languages, expected), "decimal comparison");
                 case ValueTypes.Entity:
                     Log.A("Would apply entity comparison, but this doesn't work");
                     _errCallback("Can't apply Value comparison to Relationship",
                         "Can't compare values which contain related entities - use the RelationshipFilter instead.");
-                    return wrapLog("error", null);
+                    return wrapLog.ReturnNull("error");
                 case ValueTypes.Undefined:
                 case ValueTypes.Hyperlink:
                 case ValueTypes.String:
@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources
                 case ValueTypes.Custom:
                 case ValueTypes.Json:
                 default:
-                    return wrapLog("string comparison", StringComparison(fieldName, operation, languages, expected));
+                    return wrapLog.Return(StringComparison(fieldName, operation, languages, expected), "string comparison");
             }
 
             // Fallback - if known type didn't work, try based on the object data
@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         private Func<IEntity, bool> StringComparison(string fieldName, string operation, string[] languages, string expected)
         {
-            var wrapLog = Log.Call<Func<IEntity, bool>>(expected);
+            var wrapLog = Log.Fn<Func<IEntity, bool>>(expected);
 
             Func<object, bool> StringCompareInner()
             {
@@ -100,10 +100,10 @@ namespace ToSic.Eav.DataSources
             if (stringCompare == null)
             {
                 _errCallback(ErrorInvalidOperator, $"Bad operator for string compare, can't find comparison '{operation}'");
-                return wrapLog("error", null);
+                return wrapLog.ReturnNull("error");
             }
 
-            return wrapLog("ok", e => stringCompare(e.GetBestValue(fieldName, languages)));
+            return wrapLog.ReturnAsOk(e => stringCompare(e.GetBestValue(fieldName, languages)));
         }
 
 
@@ -112,7 +112,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         private Func<IEntity, bool> BoolComparison(string fieldName, string operation, string[] languages, string expected)
         {
-            var wrapLog = Log.Call(expected);
+            var wrapLog = Log.Fn<Func<IEntity, bool>>(expected);
 
             var boolFilter = bool.Parse(expected);
 
@@ -120,16 +120,13 @@ namespace ToSic.Eav.DataSources
             {
                 case OpEquals:
                 case OpExactly:
-                    wrapLog("ok");
-                    return e => e.GetBestValue(fieldName, languages) as bool? == boolFilter;
+                    return wrapLog.ReturnAsOk(e => e.GetBestValue(fieldName, languages) as bool? == boolFilter);
                 case OpNotEquals:
-                    wrapLog("ok");
-                    return e => e.GetBestValue(fieldName, languages) as bool? != boolFilter;
+                    return wrapLog.ReturnAsOk(e => e.GetBestValue(fieldName, languages) as bool? != boolFilter);
             }
 
             _errCallback(ErrorInvalidOperator, $"Bad operator for boolean compare, can't find comparison '{operation}'");
-            wrapLog("error");
-            return null;
+            return wrapLog.ReturnNull("error");
         }
 
 
@@ -138,7 +135,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         private Func<IEntity, bool> NumberComparison(string fieldName, string operation, string[] languages, string expected)
         {
-            var wrapLog = Log.Call<Func<IEntity, bool>>(expected);
+            var wrapLog = Log.Fn<Func<IEntity, bool>>(expected);
 
             var minOrExpected = decimal.MinValue;
             var max = decimal.MaxValue;
@@ -166,10 +163,10 @@ namespace ToSic.Eav.DataSources
             if (numberCompare == null)
             {
                 _errCallback(ErrorInvalidOperator, $"Bad operator for number compare, can't find comparison '{operation}'");
-                return wrapLog("error", null);
+                return wrapLog.ReturnNull("error");
             }
 
-            return wrapLog("ok", e =>
+            return wrapLog.ReturnAsOk(e =>
             {
                 var value = e.GetBestValue(fieldName, languages);
                 if (value == null) return false;
@@ -209,7 +206,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         private Func<IEntity, bool> DateTimeComparison(string fieldName, string operation, string[] languages, string expected)
         {
-            var wrapLog = Log.Call<Func<IEntity, bool>>(expected);
+            var wrapLog = Log.Fn<Func<IEntity, bool>>(expected);
 
             var max = DateTime.MaxValue;
             var expectedDtm = DateTime.MinValue;
@@ -238,10 +235,10 @@ namespace ToSic.Eav.DataSources
             if (innerFunc == null)
             {
                 _errCallback(ErrorInvalidOperator, $"Bad operator for datetime compare, can't find comparison '{operation}'");
-                return wrapLog("error", null);
+                return wrapLog.ReturnNull("error");
             }
 
-            return wrapLog("ok", e =>
+            return wrapLog.ReturnAsOk(e =>
             {
                 try
                 {
@@ -277,7 +274,7 @@ namespace ToSic.Eav.DataSources
         #region "between" helper
         private (bool useBetween, string start, string end) BetweenParts(string expected)
         {
-            var wrapLog = Log.Call(expected);
+            var wrapLog = Log.Fn<(bool, string, string)>(expected);
             expected = expected.ToLowerInvariant();
             var hasAnd = expected.IndexOf(" and ", Ordinal);
             string low = "", high = "";
@@ -290,8 +287,7 @@ namespace ToSic.Eav.DataSources
             }
             else Log.A("No 'and' found, low/high will be empty");
 
-            wrapLog("ok");
-            return (hasAnd > -1, low, high);
+            return wrapLog.ReturnAsOk((hasAnd > -1, low, high));
         }
         #endregion 
 

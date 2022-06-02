@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.DI;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
@@ -102,10 +103,10 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         /// <exception cref="ArgumentException"></exception>
         public LicenseFileResultDto Upload(HttpUploadedFile uploadInfo)
         {
-            var wrapLog = Log.Call<LicenseFileResultDto>();
+            var wrapLog = Log.Fn<LicenseFileResultDto>();
 
             if (!uploadInfo.HasFiles())
-                return wrapLog("no file in upload", new LicenseFileResultDto { Success = false, Message = "no file in upload" });
+                return wrapLog.Return(new LicenseFileResultDto { Success = false, Message = "no file in upload" }, "no file in upload");
 
             var files = new List<FileUploadDto>();
             for (var i = 0; i < uploadInfo.Count; i++)
@@ -119,7 +120,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             // reload license and features
             _systemLoaderLazy.Ready.StartUpFeatures();
 
-            return wrapLog("ok", new LicenseFileResultDto { Success = true, Message = "ok" });
+            return wrapLog.ReturnAsOk(new LicenseFileResultDto { Success = true, Message = "ok" });
         }
 
 
@@ -127,7 +128,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         /// <inheritdoc />
         public LicenseFileResultDto Retrieve()
         {
-            var wrapLog = Log.Call<LicenseFileResultDto>();
+            var wrapLog = Log.Fn<LicenseFileResultDto>();
 
             var fingerprint = _systemLoaderLazy.Ready.Fingerprint.GetFingerprint();
             var url = $"https://patrons.2sxc.org/api/license/get?fingerprint={fingerprint}";
@@ -153,7 +154,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                     // check for error
                     var licenseFileResultDto = JsonConvert.DeserializeObject<LicenseFileResultDto>(content);
                     if (!licenseFileResultDto.Success) 
-                        return wrapLog(licenseFileResultDto.Message, licenseFileResultDto);
+                        return wrapLog.Return(licenseFileResultDto, licenseFileResultDto.Message);
                 }
                 catch (WebException e)
                 {
@@ -171,14 +172,14 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             // reload license and features
             _systemLoaderLazy.Ready.StartUpFeatures();
 
-            return wrapLog("ok", new LicenseFileResultDto { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."});
+            return wrapLog.ReturnAsOk(new LicenseFileResultDto { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."});
         }
 
         private bool SaveLicenseFile(FileUploadDto file) => SaveLicenseFile(file.Name, file.Contents);
 
         private bool SaveLicenseFile(string fileName, string content)
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Fn<bool>();
 
             var filePath = Path.Combine(ConfigurationsPath, fileName);
 
@@ -200,7 +201,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                 throw;
             }
 
-            return wrapLog($"ok, save license:{filePath}", true);
+            return wrapLog.ReturnTrue($"ok, save license:{filePath}");
         }
 
         private static void RenameOldFile(string filePath)

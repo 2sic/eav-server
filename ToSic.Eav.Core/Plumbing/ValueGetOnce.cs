@@ -37,9 +37,9 @@ namespace ToSic.Eav.Plumbing
         /// <returns></returns>
         public T Get(Func<T> generator, ILog log, string name)
         {
-            var wrapLog = log.Call<T>(name);
+            var wrapLog = log.Fn<T>(name);
             var result = Get(generator);
-            return wrapLog($"'{result}'", result);
+            return wrapLog.ReturnAndLog(result);
         }
 
         /// <summary>

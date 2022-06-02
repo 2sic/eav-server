@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -61,7 +62,7 @@ namespace ToSic.Eav.DataSources
 
         private ImmutableArray<IEntity> GetList()
         {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
             var streams = GetValidInStreams();
 
             var result = streams
@@ -73,14 +74,14 @@ namespace ToSic.Eav.DataSources
             //    .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, stream) => current.Concat(stream))
             //    .ToImmutableArray();
 
-            return wrapLog(result.Length.ToString(), result);
+            return wrapLog.Return(result, result.Length.ToString());
         }
 
         private List<IEnumerable<IEntity>> GetValidInStreams()
         {
             if (_validInStreams != null) return _validInStreams;
 
-            var wrapLog = Log.Call<List<IEnumerable<IEntity>>>();
+            var wrapLog = Log.Fn<List<IEnumerable<IEntity>>>();
             
             _validInStreams = In
                 .OrderBy(pair => pair.Key)
@@ -88,30 +89,30 @@ namespace ToSic.Eav.DataSources
                 .Select(v => v.Value.List)
                 .ToList();
 
-            return wrapLog(_validInStreams.Count.ToString(), _validInStreams);
+            return wrapLog.Return(_validInStreams, _validInStreams.Count.ToString());
         }
-
+        
         private List<IEnumerable<IEntity>> _validInStreams;
 
         private ImmutableArray<IEntity> GetDistinct()
         {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
             var result = List.Distinct().ToImmutableArray();
-            return wrapLog(result.Length.ToString(), result);
+            return wrapLog.Return(result, result.Length.ToString());
         }
 
         private ImmutableArray<IEntity> GetAnd()
         {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
 
             var streams = GetValidInStreams();
             var streamCount = streams.Count;
             var first = streams.FirstOrDefault();
             var firstList = first?.ToList(); // must be separate, because we 
             if (streamCount == 0 || firstList == null || !firstList.Any())
-                return wrapLog("no real In", ImmutableArray.Create<IEntity>());
+                return wrapLog.Return(ImmutableArray.Create<IEntity>(), "no real In");
 
-            if (streamCount == 1) return wrapLog("Just 1 In", firstList.ToImmutableArray());
+            if (streamCount == 1) return wrapLog.Return(firstList.ToImmutableArray(), "Just 1 In");
 
             var others = streams
                 .Skip(1)
@@ -123,12 +124,12 @@ namespace ToSic.Eav.DataSources
                 .Where(e => itemsInOthers.Contains(e))
                 .ToImmutableArray();
 
-            return wrapLog(final.Length.ToString(), final);
+            return wrapLog.Return(final, final.Length.ToString());
         }
 
         private ImmutableArray<IEntity> GetXor()
         {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
 
             var result = List
                 .GroupBy(e => e)
@@ -136,7 +137,7 @@ namespace ToSic.Eav.DataSources
                 .Select(g => g.First())
                 .ToImmutableArray();
 
-            return wrapLog(result.Length.ToString(), result);
+            return wrapLog.Return(result, result.Length.ToString());
         }
 
     }

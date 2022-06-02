@@ -6,6 +6,7 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
@@ -87,10 +88,10 @@ namespace ToSic.Eav.Apps.Run
         /// <returns></returns>
         protected virtual bool InitPathAfterAppId()
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Fn<bool>();
             Path = System.IO.Path.Combine(_appPaths.PhysicalPath, Constants.FolderAppExtensions);
             PathShared = System.IO.Path.Combine(_appPaths.PhysicalPathShared, Constants.FolderAppExtensions);
-            return wrapLog($"p:{Path}, ps:{PathShared}", true);
+            return wrapLog.ReturnTrue($"p:{Path}, ps:{PathShared}");
         }
 
         #endregion
@@ -100,18 +101,18 @@ namespace ToSic.Eav.Apps.Run
         /// <inheritdoc />
         public List<InputTypeInfo> InputTypes()
         {
-            var wrapLog = Log.Call<List<InputTypeInfo>>();
+            var wrapLog = Log.Fn<List<InputTypeInfo>>();
 
             var types = GetInputTypes(Path, AppConstants.AppPathPlaceholder);
             types.AddRange(GetInputTypes(PathShared, AppConstants.AppPathSharedPlaceholder));
 
-            return wrapLog($"{types.Count}", types);
+            return wrapLog.Return(types, $"{types.Count}");
         }
         
         /// <inheritdoc />
         public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource)
         {
-            var wrapLog = Log.Call<IList<IContentType>>();
+            var wrapLog = Log.Fn<IList<IContentType>>();
             try
             {
                 var extPaths = ExtensionPaths();
@@ -119,24 +120,24 @@ namespace ToSic.Eav.Apps.Run
                 var allTypes = extPaths.SelectMany(p => LoadTypesFromOneExtensionPath(p, entitiesSource))
                     .Distinct(new EqualityComparer_ContentType())
                     .ToList();
-                return wrapLog("ok", allTypes);
+                return wrapLog.ReturnAsOk(allTypes);
             }
             catch (Exception e)
             {
                 Log.A("error " + e.Message);
             }
 
-            return wrapLog("error", new List<IContentType>());
+            return wrapLog.Return(new List<IContentType>(), "error");
         }
 
 
         private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
         {
-            var wrapLog = Log.Call<IList<IContentType>>(extensionPath);
+            var wrapLog = Log.Fn<IList<IContentType>>(extensionPath);
             var fsLoader = Deps.FslGenerator.New // Deps.ServiceProvider.Build<FileSystemLoader>()
                 .Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource, Log);
             var types = fsLoader.ContentTypes();
-            return wrapLog("ok", types);
+            return wrapLog.ReturnAsOk(types);
         }
 
 
@@ -145,9 +146,9 @@ namespace ToSic.Eav.Apps.Run
 
         private List<InputTypeInfo> GetInputTypes(string path, string placeholder)
         {
-            var wrapLog = Log.Call<List<InputTypeInfo>>();
+            var wrapLog = Log.Fn<List<InputTypeInfo>>();
             var di = new DirectoryInfo(path);
-            if (!di.Exists) return wrapLog("directory not found", new List<InputTypeInfo>());
+            if (!di.Exists) return wrapLog.Return(new List<InputTypeInfo>(), "directory not found");
             var inputFolders = di.GetDirectories(FieldFolderPrefix + "*");
             Log.A($"found {inputFolders.Length} field-directories");
 
@@ -165,7 +166,7 @@ namespace ToSic.Eav.Apps.Run
                         $"{placeholder}/{Eav.Constants.FolderAppExtensions}/{name}/{JsFile}", false);
                 })
                 .ToList();
-            return wrapLog($"{types.Count}", types);
+            return wrapLog.Return(types, $"{types.Count}");
         }
 
         private static string NiceName(string name)

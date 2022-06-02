@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Plumbing.DI
+﻿namespace ToSic.Eav.DI
 {
     public interface ISwitchableService
     {

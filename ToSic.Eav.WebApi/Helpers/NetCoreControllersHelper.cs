@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 

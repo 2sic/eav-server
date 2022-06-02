@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private bool RunDocumentValidityChecks()
         {
-            var wrapLog = Log.Call<bool>(useTimer: true);
+            var wrapLog = Log.Fn<bool>(startTimer: true);
             // #1 Assure that each element has a GUID and language child element
             foreach (var element in DocumentElements)
             {
@@ -35,24 +35,24 @@ namespace ToSic.Eav.Apps.ImportExport
             // count languages
             var documentElementLanguagesCount = documentElementLanguagesAll.Select(item => item.Count);
 
-            if (documentElementLanguagesCount.All(count => count == 1)) return wrapLog("ok", true);
+            if (documentElementLanguagesCount.All(count => count == 1)) return wrapLog.ReturnTrue("ok");
 
-            if (!documentElementLanguagesAll.Any(lang => _languages.Except(lang).Any())) return wrapLog("ok", true);
+            if (!documentElementLanguagesAll.Any(lang => _languages.Except(lang).Any())) return wrapLog.ReturnTrue("ok");
 
             ErrorLog.Add(ImportErrorCode.MissingElementLanguage,
                 "Langs=" + string.Join(", ", _languages));
-            return wrapLog("error", false);
+            return wrapLog.ReturnFalse("error");
         }
 
         private bool LoadStreamIntoDocumentElement(Stream dataStream)
         {
-            var wrapLog = Log.Call<bool>(useTimer: true);
+            var wrapLog = Log.Fn<bool>(startTimer: true);
             Document = XDocument.Load(dataStream);
             dataStream.Position = 0;
             if (Document == null)
             {
                 ErrorLog.Add(ImportErrorCode.InvalidDocument);
-                return wrapLog($"error {ImportErrorCode.InvalidDocument}", false);
+                return wrapLog.ReturnFalse($"error {ImportErrorCode.InvalidDocument}");
             }
 
             // #1 Check that document-root is the expected value
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Apps.ImportExport
             if (!DocumentElements.Any())
             {
                 ErrorLog.Add(ImportErrorCode.InvalidDocument);
-                return wrapLog($"error {ImportErrorCode.InvalidDocument}", false);
+                return wrapLog.ReturnFalse($"error {ImportErrorCode.InvalidDocument}");
             }
 
             // #3 Check the content type of the document (it can be found on each element in the Type attribute)
@@ -76,10 +76,10 @@ namespace ToSic.Eav.Apps.ImportExport
                 documentTypeAttribute.Value != ContentType.Name.RemoveSpecialCharacters())
             {
                 ErrorLog.Add(ImportErrorCode.InvalidRoot);
-                return wrapLog($"error: {ImportErrorCode.InvalidRoot}", false);
+                return wrapLog.ReturnFalse($"error: {ImportErrorCode.InvalidRoot}");
             }
 
-            return wrapLog("ok", true);
+            return wrapLog.ReturnTrue("ok");
         }
 
 

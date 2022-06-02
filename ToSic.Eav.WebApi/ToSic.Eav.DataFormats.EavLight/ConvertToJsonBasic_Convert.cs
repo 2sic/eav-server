@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight
@@ -13,20 +14,18 @@ namespace ToSic.Eav.DataFormats.EavLight
         /// <inheritdoc/>
         public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntity> entities)
         {
-            var wrapLog = Log.Call(useTimer: true);
+            var wrapLog = Log.Fn<IEnumerable<EavLightEntity>>(startTimer: true);
             var topEntities = MaxItems == 0 ? entities : entities.Take(MaxItems);
             var result = topEntities.Select(GetDictionaryFromEntity).ToList();
-            wrapLog("ok");
-            return result;
+            return wrapLog.ReturnAsOk(result);
         }
 
         /// <inheritdoc/>
         public EavLightEntity Convert(IEntity entity)
         {
-            var wrapLog = Log.Call(useTimer: true);
+            var wrapLog = Log.Fn<EavLightEntity>(startTimer: true);
             var result = entity == null ? null : GetDictionaryFromEntity(entity);
-            wrapLog("ok");
-            return result;
+            return wrapLog.ReturnAsOk(result);
         }
 
         #endregion

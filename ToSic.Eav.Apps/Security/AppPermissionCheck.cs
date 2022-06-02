@@ -26,27 +26,27 @@ namespace ToSic.Eav.Apps.Security
         {
             Init(ctx, appIdentity, parentLog, targetItem?.Type, targetItem);
             // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
-            return Log.Call<AppPermissionCheck>()("ok", this);
+            return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
         }
 
         public AppPermissionCheck ForType(IContextOfSite ctx, IAppIdentity appIdentity, IContentType targetType, ILog parentLog)
         {
             Init(ctx, appIdentity, parentLog, targetType);
             // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
-            return Log.Call<AppPermissionCheck>()("ok", this);
+            return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
         }
 
         public AppPermissionCheck ForAttribute(IContextOfSite ctx, IAppIdentity appIdentity, IContentTypeAttribute attribute, ILog parentLog)
         {
             Init(ctx, appIdentity, parentLog, permissions: attribute.Permissions);
             // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
-            return Log.Call<AppPermissionCheck>()("ok", this);
+            return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
         }
 
         public AppPermissionCheck ForCustom(IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<Permission> permissions, ILog parentLog)
         {
             Init(ctx, appIdentity, parentLog, permissions: permissions);
-            return Log.Call<AppPermissionCheck>()("ok", this);
+            return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
         }
 
         /// <summary>
@@ -61,9 +61,9 @@ namespace ToSic.Eav.Apps.Security
             var permissions = FindPermissionsOfApp(appIdentity);
             Init(ctx, appIdentity, parentLog, permissions: permissions);
             // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
-            var wrapLog = Log.Call<AppPermissionCheck>($"ctx, app: {appIdentity}, log");
+            var wrapLog = Log.Fn<AppPermissionCheck>($"ctx, app: {appIdentity}, log");
             Log.A($"Permissions: {permissions?.Count}");
-            return wrapLog("ok", this);
+            return wrapLog.ReturnAsOk(this);
         }
 
         private List<Permission> FindPermissionsOfApp(IAppIdentity appIdentity)
@@ -81,7 +81,7 @@ namespace ToSic.Eav.Apps.Security
             Init(ctx, app, parentLog, targetType, targetItem, FindPermissionsOfApp(app));
 
             // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
-            return Log.Call<AppPermissionCheck>()("ok", this);
+            return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
         }
 
 

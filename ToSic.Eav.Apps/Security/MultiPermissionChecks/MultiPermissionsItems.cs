@@ -32,9 +32,9 @@ namespace ToSic.Eav.Apps.Security
         /// <returns></returns>
         private IPermissionCheck BuildItemPermissionChecker(IEntity item)
         {
-            var wrap = Log.Call<IPermissionCheck>($"{item.EntityId}");
+            var wrap = Log.Fn<IPermissionCheck>($"{item.EntityId}");
             // now do relevant security checks
-            return wrap("ok", BuildPermissionChecker(item.Type, item));
+            return wrap.ReturnAsOk(BuildPermissionChecker(item.Type, item));
         }
     }
 }

@@ -5,6 +5,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence;
@@ -210,7 +211,7 @@ namespace ToSic.Eav.Repository.Efc
 
         private void PurgeAppCacheIfReady()
         {
-            Log.Call($"{_purgeAppCacheOnSave}")(null);
+            Log.Fn($"{_purgeAppCacheOnSave}").Done();
             if (_purgeAppCacheOnSave) _appsCache.Value.Purge(this);
         }
 
@@ -220,10 +221,10 @@ namespace ToSic.Eav.Repository.Efc
 
         internal void DoAndSave(Action action, string message = null)
         {
-            var wrapLog = Log.Call(message: message, useTimer: true);
+            var wrapLog = Log.Fn(message: message, startTimer: true);
             action.Invoke();
             SqlDb.SaveChanges();
-            wrapLog("completed");
+            wrapLog.Done("completed");
         }
 
 
@@ -231,20 +232,20 @@ namespace ToSic.Eav.Repository.Efc
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
             var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
-            var wrapLog = Log.Call($"id:{randomId} - create new trans:{ownTransaction != null}", useTimer: true);
+            var wrapLog = Log.Fn($"id:{randomId} - create new trans:{ownTransaction != null}", startTimer: true);
             try
             {
                 action.Invoke();
                 ownTransaction?.Commit();
                 Log.A($"Transaction {randomId} - completed"); // adds ok to end of block
-                wrapLog("transaction ok"); // adds ok to top of block
+                wrapLog.Done("transaction ok"); // adds ok to top of block
             }
             catch (Exception e)
             {
                 ownTransaction?.Rollback();
                 Log.A("Error: " + e.Message);
                 Log.A($"Transaction {randomId} failed / rollback");
-                wrapLog("transaction failed / rollback");
+                wrapLog.Done("transaction failed / rollback");
                 throw;
             }
         }
@@ -257,23 +258,23 @@ namespace ToSic.Eav.Repository.Efc
 
         public void DoButSkipAppCachePurge(Action action)
         {
-            var callLog = Log.Call(useTimer: true);
+            var callLog = Log.Fn(startTimer: true);
             var before = _purgeAppCacheOnSave;
             _purgeAppCacheOnSave = false;
             action.Invoke();
             _purgeAppCacheOnSave = before;
-            callLog(null);
+            callLog.Done();
         }
 
         public void DoWithDelayedCacheInvalidation(Action action)
         {
-            var wrapLog = Log.Call(useTimer: true);
+            var wrapLog = Log.Fn(startTimer: true);
             _purgeAppCacheOnSave = false;
             action.Invoke();
 
             _purgeAppCacheOnSave = true;
             PurgeAppCacheIfReady();
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         /// <summary>
@@ -288,9 +289,9 @@ namespace ToSic.Eav.Repository.Efc
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
         {
-            var callLog = Log.Call<List<int>>(useTimer: true);
+            var callLog = Log.Fn<List<int>>(startTimer: true);
             _logHistory.Add("save-data", Log);
-            return callLog("ok", Entities.SaveEntity(entities, saveOptions));
+            return callLog.ReturnAsOk(Entities.SaveEntity(entities, saveOptions));
         }
 
         public void Save(List<IContentType> contentTypes, SaveOptions saveOptions)

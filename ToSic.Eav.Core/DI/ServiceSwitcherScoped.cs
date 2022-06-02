@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.Plumbing.DI
+namespace ToSic.Eav.DI
 {
     /// <summary>
     /// Same as the <see cref="ServiceSwitcher{T}"/> but must have another name so we can register it as scoped.

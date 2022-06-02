@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps
     {
         public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity viewPart)
         {
-            var wrapLog = Log.Call<List<KeyValuePair<string, IPropertyLookup>>>(target.Target.ToString());
+            var wrapLog = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(target.Target.ToString());
 
             Log.A($"Has View: {viewPart != null}");
             // "View" Settings/Resources - always add, no matter if null, so the key always exists
@@ -23,20 +23,20 @@ namespace ToSic.Eav.Apps
 
             // All in the App and below
             sources.AddRange(GetOrGenerate(target).FullStack(Log));
-            return wrapLog($"Has {sources.Count}", sources);
+            return wrapLog.Return(sources,$"Has {sources.Count}");
         }
 
         public const string PiggyBackId = "app-stack-";
 
         private AppStateStackCache GetOrGenerate(AppThingsIdentifiers target)
         {
-            var wrapLog = Log.Call<AppStateStackCache>(target.Target.ToString());
-            return wrapLog(null, Owner.PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target)));
+            var wrapLog = Log.Fn<AppStateStackCache>(target.Target.ToString());
+            return wrapLog.Return(Owner.PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target)));
         }
 
         private AppStateStackCache Get(AppThingsIdentifiers target)
         {
-            var wrapLog = Log.Call<AppStateStackCache>();
+            var wrapLog = Log.Fn<AppStateStackCache>();
 
             // Site should be skipped on the global zone
             Log.A($"Owner: {Owner.Show()}");
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Apps
 
             var stackCache = new AppStateStackCache(Owner, ancestorIfNotPreset, site, global, preset, target);
 
-            return wrapLog("created", stackCache);
+            return wrapLog.Return(stackCache, "created");
         }
     }
 }

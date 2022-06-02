@@ -1,12 +1,13 @@
 ﻿using System;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Plumbing
+namespace ToSic.Eav.DI
 {
     /// <summary>
     /// Enables generating additional objects of a specific type
     /// </summary>
-    public class GeneratorLog<T> where T : class, IHasLog
+    public class GeneratorLog<T>: IGenerator<T> where T : class, IHasLog
     {
         public GeneratorLog(IServiceProvider sp) => _sp = sp;
         private readonly IServiceProvider _sp;

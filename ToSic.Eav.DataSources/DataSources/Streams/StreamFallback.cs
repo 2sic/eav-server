@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -54,13 +55,13 @@ namespace ToSic.Eav.DataSources
 
 	    private IDataStream FindIdealFallbackStream()
 	    {
-            var wrapLog = Log.Call<IDataStream>();
+            var wrapLog = Log.Fn<IDataStream>();
 
             Configuration.Parse();
 
             // Check if there is a default-stream in with content - if yes, try to return that
             if (In.HasStreamWithItems(Constants.DefaultStreamName))
-                return wrapLog("found default", In[Constants.DefaultStreamName]);
+                return wrapLog.Return(In[Constants.DefaultStreamName], "found default");
 
             // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
 	        var streamList = In
@@ -71,10 +72,10 @@ namespace ToSic.Eav.DataSources
 	            if (stream.Value.List.Any())
 	            {
 	                ReturnedStreamName = stream.Key;
-                    return wrapLog($"will return stream:{ReturnedStreamName}", stream.Value);
+                    return wrapLog.Return(stream.Value, $"will return stream:{ReturnedStreamName}");
                 }
 
-	        return wrapLog("didn't find any stream, will return empty", null);
+	        return wrapLog.ReturnNull("didn't find any stream, will return empty");
 	    }
 	}
 }

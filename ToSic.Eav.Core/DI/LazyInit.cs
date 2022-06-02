@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.Plumbing
+namespace ToSic.Eav.DI
 {
     /// <summary>
     /// WIP - should help us create lazy objects which will auto-init if ever used

@@ -7,6 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -87,7 +88,7 @@ namespace ToSic.Eav.DataSources.Sys
 
 	    private ImmutableArray<IEntity> GetList()
 	    {
-            var wrapLog = Log.Call<ImmutableArray<IEntity>>();
+            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
 
             Configuration.Parse();
 
@@ -120,7 +121,7 @@ namespace ToSic.Eav.DataSources.Sys
 	        });
 
 	        var result = list.ToImmutableArray();
-            return wrapLog($"{result.Length}", result);
+            return wrapLog.Return(result, $"{result.Length}");
         }
 
 	    private static Dictionary<string, object> BuildDictionary(IContentType t) => new Dictionary<string, object>

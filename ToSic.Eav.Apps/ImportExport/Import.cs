@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.DI;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
@@ -200,6 +201,8 @@ namespace ToSic.Eav.Apps.ImportExport
                 foreach (var permission in attribute.Metadata.Permissions)
                     permission.Entity.ResetEntityId();
             }
+            foreach (var metadata in contentType.Metadata)
+                metadata.ResetEntityId();
 
             if (existing == null)
                 return callLog.ReturnTrue("existing not found, won't merge");
@@ -260,7 +263,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var logDetails = _mergeCountToStopLogging <= LogMaxMerges;
             if (_mergeCountToStopLogging == LogMaxMerges)
                 Log.A($"Hit {LogMaxMerges} merges, will stop logging details");
-            var callLog = Log.Call<Entity>();
+            var callLog = Log.Fn<Entity>();
             #region try to get AttributeSet or otherwise cancel & log error
 
             var dbAttrSet = appState.GetContentType(update.Type.NameId); 
@@ -268,7 +271,7 @@ namespace ToSic.Eav.Apps.ImportExport
             if (dbAttrSet == null) // AttributeSet not Found
             {
                 Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, "ContentType not found for " + update.Type.NameId));
-                return callLog("error", null);
+                return callLog.ReturnNull("error");
             }
 
             #endregion
@@ -285,7 +288,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // Simplest case - nothing existing to update: return entity
 
             if (existingEntities == null || !existingEntities.Any())
-                return callLog("is new, nothing to merge", update);
+                return callLog.Return(update, "is new, nothing to merge");
 
             Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information, $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));
 
@@ -293,7 +296,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var original = existingEntities.First();
             update.ResetEntityId(original.EntityId);
             var result = _entitySaver.Ready.CreateMergedForSaving(original, update, saveOptions, logDetails);
-            return callLog("ok", result);
+            return callLog.ReturnAsOk(result);
         }
 
         private int _mergeCountToStopLogging;

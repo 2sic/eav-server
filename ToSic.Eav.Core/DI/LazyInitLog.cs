@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Logging;
 
-namespace ToSic.Eav.Plumbing
+namespace ToSic.Eav.DI
 {
     public class LazyInitLog<T>: LazyInit<T> where T: class, IHasLog
     {

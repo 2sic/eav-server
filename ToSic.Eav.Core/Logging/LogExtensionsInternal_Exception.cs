@@ -11,21 +11,21 @@ namespace ToSic.Eav.Logging
         {
             // Null-check
             if (!(log is Log realLog)) return;
-
-            var wrapLog = realLog.Call(message: "Will log Exception Details next");
+            
+            var wrapLog = realLog.Fn(message: "Will log Exception Details next");
             var recursion = 1;
             while (true)
             {
                 // avoid infinite loops
                 if (recursion >= MaxExceptionRecursion)
                 {
-                    wrapLog("max-depth reached");
+                    wrapLog.Done("max-depth reached");
                     return;
                 }
                 
                 if (ex == null)
                 {
-                    wrapLog("Exception is null");
+                    wrapLog.Done("Exception is null");
                     return;
                 }
 
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Logging
 
                 break;
             }
-            wrapLog(null);
+            wrapLog.Done();
         }
     }
 }

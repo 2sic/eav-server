@@ -20,11 +20,11 @@ namespace ToSic.Eav.Apps
         public int FindAppId(int zoneId, string appName, bool alsoCheckFolderName = false)
         {
             var wrapLog =
-                Log.Call<int>(
+                Log.Fn<int>(
                     $"{nameof(zoneId)}:{zoneId}, {nameof(appName)}:{appName}, {nameof(alsoCheckFolderName)}:{alsoCheckFolderName}");
 
             if (string.IsNullOrEmpty(appName))
-                return wrapLog("no name", Constants.AppIdEmpty);
+                return wrapLog.Return(Constants.AppIdEmpty, "no name");
 
             var appId = _appStates.Apps(zoneId)
                 .Where(p => p.Value == appName)
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps
                 appId = AppIdFromFolderName(zoneId, appName);
 
             var final = appId > 0 ? appId : AppConstants.AppIdNotFound;
-            return wrapLog("" + final, final);
+            return wrapLog.ReturnAndLog(final);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace ToSic.Eav.Apps
         /// </summary>
         private int AppIdFromFolderName(int zoneId, string folderName)
         {
-            var wrapLog = Log.Call<int>(folderName);
+            var wrapLog = Log.Fn<int>(folderName);
             var nameLower = folderName.ToLowerInvariant();
 
             var idOfAppWithMatchingName = -1;
@@ -51,17 +51,17 @@ namespace ToSic.Eav.Apps
             {
                 var appState = _appStates.Get(new AppIdentity(zoneId, p.Key));
                 if (!string.IsNullOrEmpty(appState.Folder) && appState.Folder.ToLowerInvariant() == nameLower)
-                    return wrapLog("folder matched", p.Key);
+                    return wrapLog.Return(p.Key, "folder matched");
                 if (!string.IsNullOrEmpty(appState.Name) && appState.Name.ToLowerInvariant() == nameLower)
                     idOfAppWithMatchingName = p.Key;
             }
             
             // Folder not found - let's check if there was an app with this name
             if (idOfAppWithMatchingName != -1)
-                return wrapLog("name matched", idOfAppWithMatchingName);
+                return wrapLog.Return(idOfAppWithMatchingName, "name matched");
 
             // not found
-            return wrapLog("not found", AppConstants.AppIdNotFound);
+            return wrapLog.Return(AppConstants.AppIdNotFound, "not found");
         }
 
     }

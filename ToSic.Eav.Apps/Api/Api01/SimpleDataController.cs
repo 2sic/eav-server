@@ -8,6 +8,7 @@ using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
@@ -105,16 +106,16 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
         public IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null)
         {
-            var wrapLog = Log.Call<IEnumerable<int>>($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}");
+            var wrapLog = Log.Fn<IEnumerable<int>>($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}");
 
-            if (multiValues == null) return wrapLog("values were null", null);
+            if (multiValues == null) return wrapLog.ReturnNull("values were null");
 
             // ensure the type really exists
             var type = _appManager.Read.ContentTypes.Get(contentTypeName);
             if (type == null)
             {
                 var msg = "Error: Content type '" + contentTypeName + "' does not exist.";
-                wrapLog(msg, null);
+                wrapLog.ReturnNull(msg);
                 throw new ArgumentException(msg);
             }
 
@@ -123,15 +124,15 @@ namespace ToSic.Eav.Api.Api01
             var importEntity = multiValues.Select(values => BuildEntity(type, values, target, null, out var draftAndBranch)).ToList();
 
             var ids = _appManager.Entities.Save(importEntity);
-            return wrapLog(null, ids);
+            return wrapLog.Return(ids);
         }
 
         private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, ITarget target, bool? existingIsPublished, out (bool, bool)? draftAndBranch)
         {
-            var wrapLog = Log.Call<IEntity>($"{type.Name}, {values?.Count}, target: {target != null}");
+            var wrapLog = Log.Fn<IEntity>($"{type.Name}, {values?.Count}, target: {target != null}");
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.InvariantCultureIgnoreCase);
-
+            
             if (values.All(v => v.Key.ToLowerInvariant() != Attributes.EntityFieldGuid))
             {
                 Log.A("Add new generated guid, as none was provided.");
@@ -157,7 +158,7 @@ namespace ToSic.Eav.Api.Api01
 
             var preparedValues = ConvertEntityRelations(values);
             AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false, true, existingIsPublished, out draftAndBranch);
-            return wrapLog(null, importEntity);
+            return wrapLog.Return(importEntity);
         }
 
 

@@ -30,8 +30,8 @@ namespace ToSic.Eav.DataSources.Debug
         /// </summary>
         private void GetStreamInfosRecursive(IDataTarget target, ref List<StreamInfo> streams, ref Dictionary<Guid, DataSourceInfo> sources)
         {
-            var wrapLog = Log.Call($"{target.Guid}[{target.In.Count}]", useTimer: true);
-
+            var wrapLog = Log.Fn($"{target.Guid}[{target.In.Count}]", startTimer: true);
+            
             foreach (var stream in target.In)
             {
                 // First get all the streams (do this first so they stay together)
@@ -82,7 +82,7 @@ namespace ToSic.Eav.DataSources.Debug
                 }
             }
 
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
     }
 }

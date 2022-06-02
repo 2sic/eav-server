@@ -16,7 +16,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal void DoWhileQueueingRelationships(Action action)
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-            var wrapLog = Log.Call($"relationship queue:{randomId} start");
+            var wrapLog = Log.Fn($"relationship queue:{randomId} start");
 
             // 1. check if it's the outermost call, in which case afterwards we import
             var willPurgeQueue = _isOutermostCall;
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 _isOutermostCall = true; // reactivate, in case this is called again
             }
 
-            wrapLog("completed");
+            wrapLog.Done("completed");
         }
 
         private bool _isOutermostCall = true;
@@ -45,7 +45,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void UpdateEntityRelationshipsAndSave(List<RelationshipUpdatePackage> packages)
         {
-            var wrapLog = Log.Call(useTimer: true);
+            var wrapLog = Log.Fn(startTimer: true);
             packages.ForEach(p => Log.A(() => $"i:{p.Entity.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]"));
             // remove existing Relationships that are not in new list
             var existingRelationships = packages.SelectMany(p => p.Entity.RelationshipsWithThisAsParent
@@ -75,7 +75,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             });
 
             DbContext.SqlDb.SaveChanges(); // now save the changed relationships
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void ImportRelationshipQueueAndSave()
         {
-            var wrapLog = Log.Call("", useTimer: true);
+            var wrapLog = Log.Fn("", startTimer: true);
             // if SaveOptions determines it, clear all existing relationships first
             var fullFlush = _saveQueue
                 .Where(r => r.FlushAllEntityRelationships)
@@ -193,7 +193,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 }
             );
 
-            wrapLog(null);
+            wrapLog.Done();
             _saveQueue.Clear();
         }
 
@@ -213,13 +213,13 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal void FlushChildrenRelationships(List<int> parentIds)
         {
-            var wrapLog = Log.Call($"{parentIds?.Count} items", message: "will do full-flush", useTimer: true);
+            var wrapLog = Log.Fn($"{parentIds?.Count} items", message: "will do full-flush", startTimer: true);
             
             // Delete all existing relationships - but not the target, just the relationship
             // note: can't use .Clear(), as that will try to actually delete the children
             if (parentIds == null || parentIds.Count <= 0)
             {
-                wrapLog(null);
+                wrapLog.Done();
                 return;
             }
 
@@ -231,7 +231,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
             // intermediate save (important) so that EF state tracking works
             DbContext.SqlDb.SaveChanges();
-            wrapLog(null);
+            wrapLog.Done();
         }
 
 
@@ -253,7 +253,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal void ChangeRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<ToSicEavAttributes> attributeDefs, SaveOptions so)
         {
-            var wrapLog = Log.Call(useTimer: true);
+            var wrapLog = Log.Fn(startTimer: true);
 
             // some initial error checking
             if(dbEntity.EntityId <= 0)
@@ -299,7 +299,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     }
                 }
             });
-            wrapLog(null);
+            wrapLog.Done();
         }
     }
 

@@ -27,7 +27,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         protected JsonFormat UnpackAndTestGenericJsonV1(string serialized)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn<JsonFormat>();
             JsonFormat jsonObj;
             try
             {
@@ -36,19 +36,18 @@ namespace ToSic.Eav.ImportExport.Json
             catch (Exception ex)
             {
                 const string msg = "cannot deserialize json - bad format";
-                wrapLog(msg);
+                wrapLog.ReturnNull(msg);
                 throw new FormatException(msg, ex);
             }
 
             if (jsonObj._.V != 1)
                 throw new ArgumentOutOfRangeException(nameof(serialized), "unexpected format version");
-            wrapLog("ok");
-            return jsonObj;
+            return wrapLog.ReturnAsOk(jsonObj);
         }
 
         public IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType, IEntitiesSource dynRelationshipsSource = null)
         {
-            var wrapLog = Log.Call($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}");
+            var wrapLog = Log.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}");
 
             // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
             var contentType = GetContentType(jEnt.Type.Id)
@@ -101,13 +100,12 @@ namespace ToSic.Eav.ImportExport.Json
                 BuildAttribsOfKnownType(jEnt.Attributes, contentType, newEntity, dynRelationshipsSource);
             }
 
-            wrapLog("ok");
-            return newEntity;
+            return wrapLog.ReturnAsOk(newEntity);
         }
 
         private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn();
             BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, newEntity, null);
             BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, newEntity, null);
             BuildAttrib(jAtts.Custom, ValueTypes.Custom, newEntity, null);
@@ -116,7 +114,7 @@ namespace ToSic.Eav.ImportExport.Json
             BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, newEntity, null);
             BuildAttrib(jAtts.Number, ValueTypes.Number, newEntity, null);
             BuildAttrib(jAtts.String, ValueTypes.String, newEntity, null);
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, ValueTypes type, Entity newEntity, IEntitiesSource relationshipsSource)
@@ -133,7 +131,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         private void BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, Entity newEntity, IEntitiesSource relationshipsSource = null)
         {
-            var wrapLog = Log.Call();
+            var wrapLog = Log.Fn();
             foreach (var definition in contentType.Attributes)
             {
                 var newAtt = MultiBuilder.Attribute.CreateTyped(definition.Name, definition.Type); // ((ContentTypeAttribute) definition).CreateAttribute();
@@ -185,7 +183,7 @@ namespace ToSic.Eav.ImportExport.Json
                 if (definition.IsTitle)
                     newEntity.SetTitleField(definition.Name);
             }
-            wrapLog("ok");
+            wrapLog.Done("ok");
         }
 
         private void BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IContentTypeAttribute attrDef, IAttribute target)

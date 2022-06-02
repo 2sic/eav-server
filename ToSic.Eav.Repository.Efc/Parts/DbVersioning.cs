@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -52,10 +53,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         public void DoAndSaveHistoryQueue(Action action)
         {
-            var callLog = Log.Call(useTimer: true);
+            var callLog = Log.Fn(startTimer: true);
             action.Invoke();
             Save();
-            callLog(null);
+            callLog.Done();
         }
 
         /// <summary>
@@ -79,11 +80,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void Save()
         {
-            var callLog = Log.Call(useTimer: true);
+            var callLog = Log.Fn(startTimer: true);
             DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue);
             DbContext.SqlDb.SaveChanges();
             _queue.Clear();
-            callLog(null);
+            callLog.Done();
         }
 
         private readonly List<ToSicEavDataTimeline> _queue = new List<ToSicEavDataTimeline>();

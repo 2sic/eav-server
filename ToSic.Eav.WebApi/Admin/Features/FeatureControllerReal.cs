@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.DI;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.WebApi.Admin.Features
@@ -29,13 +31,13 @@ namespace ToSic.Eav.WebApi.Admin.Features
 
         public bool SaveNew(List<FeatureManagementChange> changes)
         {
-            var wrapLog = Log.Call<bool>();
+            var wrapLog = Log.Fn<bool>();
 
             // validity check 
             if (changes == null || changes.Count == 0) 
-                return wrapLog("no features changes", false);
+                return wrapLog.ReturnFalse("no features changes");
             
-            return wrapLog("ok", _systemLoaderLazy.Ready.UpdateFeatures(changes));
+            return wrapLog.ReturnAsOk(_systemLoaderLazy.Ready.UpdateFeatures(changes));
         }
     }
 }

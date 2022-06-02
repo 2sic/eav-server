@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
@@ -25,13 +26,13 @@ namespace ToSic.Eav.Persistence.Efc
 
         private IList<IContentType> LoadExtensionsTypesAndMerge(AppState app, IList<IContentType> dbTypes)
         {
-            var wrapLog = Log.Call<IList<IContentType>>(useTimer: true);
+            var wrapLog = Log.Fn<IList<IContentType>>(startTimer: true);
             try
             {
-                if (string.IsNullOrEmpty(app.Folder)) return wrapLog("no path", dbTypes);
+                if (string.IsNullOrEmpty(app.Folder)) return wrapLog.Return(dbTypes, "no path");
 
                 var fileTypes = InitFileSystemContentTypes(app);
-                if (fileTypes == null || fileTypes.Count == 0) return wrapLog("no app file types", dbTypes);
+                if (fileTypes == null || fileTypes.Count == 0) return wrapLog.Return(dbTypes, "no app file types");
 
                 Log.A($"Will check {fileTypes.Count} items");
 
@@ -46,11 +47,11 @@ namespace ToSic.Eav.Persistence.Efc
                     typeToMerge.Add(fType);
                 }
 
-                return wrapLog($"before {before}, now {typeToMerge.Count} types", typeToMerge);
+                return wrapLog.Return(typeToMerge, $"before {before}, now {typeToMerge.Count} types");
             }
             catch (System.Exception e)
             {
-                return wrapLog("error:" + e.Message, dbTypes);
+                return wrapLog.Return(dbTypes, "error:" + e.Message);
             }
         }
 
@@ -61,11 +62,11 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns></returns>
         private IList<IContentType> InitFileSystemContentTypes(AppState app)
         {
-            var wrapLog = Log.Call<IList<IContentType>>();
+            var wrapLog = Log.Fn<IList<IContentType>>();
             // must create a new loader for each app
             var loader = ServiceProvider.Build<IAppRepositoryLoader>().Init(app, Log);
             var types = loader.ContentTypes(app);
-            return wrapLog("ok", types);
+            return wrapLog.ReturnAsOk(types);
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace ToSic.Eav.Persistence.Efc
             // 1. Collect AppIds used in content-types and attributes here
             // 2. After loading the types, access the app-state of each of these IDs to ensure it's loaded already
 
-            var wrapLog = Log.Call(useTimer: true);
+            var wrapLog = Log.Fn<ImmutableList<IContentType>>(startTimer: true);
             // Load from DB
             var sqlTime = Stopwatch.StartNew();
             var query = _dbContext.ToSicEavAttributeSets
@@ -157,8 +158,7 @@ namespace ToSic.Eav.Persistence.Efc
 
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
 
-            wrapLog("");
-            return newTypes.ToImmutableList();
+            return wrapLog.Return(newTypes.ToImmutableList());
         }
 
     }

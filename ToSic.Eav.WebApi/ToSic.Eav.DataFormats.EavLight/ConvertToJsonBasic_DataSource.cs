@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         [PrivateApi("not public yet, as the signature is not final yet")]
         public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids)
         {
-            var wrapLog = Log.Call(useTimer: true);
+            var wrapLog = Log.Fn<IDictionary<string, IEnumerable<EavLightEntity>>>(startTimer: true);
             string[] streamsList;
             if (streams != null)
             {
@@ -70,8 +70,7 @@ namespace ToSic.Eav.DataFormats.EavLight
                         return Convert(list);
                     });
 
-            wrapLog("ok");
-            return y;
+            return wrapLog.ReturnAsOk(y);
         }
 
         /// <inheritdoc />

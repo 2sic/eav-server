@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
+using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
@@ -38,7 +39,7 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_paths != null) return _paths;
-                var wrapLog = Log.Call<List<string>>(message: "start building path-list");
+                var wrapLog = Log.Fn<List<string>>(message: "start building path-list");
 
                 _paths = new List<string>();
                 // find all RepositoryInfoOfFolder and let them tell us what paths to use
@@ -59,7 +60,7 @@ namespace ToSic.Eav.Persistence.File
                         Log.Ex(e);
                     }
                 Log.A(() => string.Join(",", _paths));
-                return wrapLog($"{_paths.Count} paths", _paths);
+                return wrapLog.Return(_paths, $"{_paths.Count} paths");
             }
         }
         private List<string> _paths;
@@ -76,15 +77,14 @@ namespace ToSic.Eav.Persistence.File
 
         public AppState LoadFullAppState()
         {
-
-            var outerWrapLog = Log.Call<AppState>(useTimer: true);
+            var outerWrapLog = Log.Fn<AppState>(startTimer: true);
 
             var appState = new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);
 
             appState.Load(() =>
             {
                 var msg = $"get app data package for a#{appState.AppId}";
-                var wrapLog = Log.Call(message: msg, useTimer: true);
+                var wrapLog = Log.Fn(message: msg, startTimer: true);
 
                 // Prepare metadata lists & relationships etc.
                 appState.InitMetadata(new Dictionary<int, string>().ToImmutableDictionary(a => a.Key, a => a.Value));
@@ -92,11 +92,11 @@ namespace ToSic.Eav.Persistence.File
                 appState.Folder = Constants.PresetName;
 
                 // prepare content-types
-                var wrapLoadTypes = Log.Call(useTimer: true);
+                var wrapLoadTypes = Log.Fn(startTimer: true);
                 // Just attach all global content-types to this app, as they belong here
                 var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
                 appState.InitContentTypes(types);
-                wrapLoadTypes($"types loaded");
+                wrapLoadTypes.Done($"types loaded");
 
                 // load data
                 try
@@ -125,10 +125,10 @@ namespace ToSic.Eav.Persistence.File
                     Log.Ex(ex);
                 }
 
-                wrapLog("ok");
+                wrapLog.Done("ok");
             });
 
-            return outerWrapLog("ok", appState);
+            return outerWrapLog.ReturnAsOk(appState);
         }
         
     }

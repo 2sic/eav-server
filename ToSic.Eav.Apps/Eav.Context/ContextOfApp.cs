@@ -1,8 +1,9 @@
 ﻿using System;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Languages;
-using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.DI;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
@@ -77,13 +78,13 @@ namespace ToSic.Eav.Context
             get
             {
                 if (_userMayEdit.HasValue) return _userMayEdit.Value;
-                var wrapLog = Log.Call<bool>();
+                var wrapLog = Log.Fn<bool>();
 
                 // Case 1: Superuser always may
                 if (User.IsSuperUser)
                 {
                     _userMayEdit = true;
-                    return wrapLog("super", _userMayEdit.Value);
+                    return wrapLog.Return(_userMayEdit.Value, "super");
                 }
 
                 // Case 2: No App-State
@@ -92,14 +93,14 @@ namespace ToSic.Eav.Context
                     _userMayEdit = base.UserMayEdit;
 
                     if (_userMayEdit.Value)
-                        return wrapLog("no app, use fallback", _userMayEdit.Value);
+                        return wrapLog.Return(_userMayEdit.Value, "no app, use fallback");
 
                     // If user isn't allowed yet, it may be that the environment allows it
                     _userMayEdit = Deps.EnvironmentPermissionGenerator.New
                         .Init(this as IContextOfSite, null)
                         .EnvironmentAllows(GrantSets.WriteSomething);
 
-                    return wrapLog("no app, use fallback", _userMayEdit.Value);
+                    return wrapLog.Return(_userMayEdit.Value, "no app, use fallback");
                 }
 
                 _userMayEdit = Dependencies.AppPermissionCheckGenerator.New
@@ -110,7 +111,7 @@ namespace ToSic.Eav.Context
                 if (_userMayEdit == true && Deps.FeatsLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
                     _userMayEdit = Deps.LangCheckLazy.Ready.UserRestrictedByLanguagePermissions(AppState) ?? _userMayEdit;
 
-                return wrapLog($"{_userMayEdit.Value}", _userMayEdit.Value);
+                return wrapLog.Return(_userMayEdit.Value, $"{_userMayEdit.Value}");
             }
         }
         private bool? _userMayEdit;

@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Errors;
 
@@ -9,7 +10,7 @@ namespace ToSic.Eav.WebApi.Security
     {
         internal static bool UserCanWriteAndPublicFormsEnabled(this MultiPermissionsApp mpa, out HttpExceptionAbstraction preparedException, out string error)
         {
-            var wrapLog = mpa.Log.Call("");
+            var wrapLog = mpa.Log.Fn<bool>("");
             // 1. check if user is restricted
             var userIsRestricted = !mpa.UserMayOnAll(GrantSets.WritePublished);
 
@@ -20,12 +21,11 @@ namespace ToSic.Eav.WebApi.Security
             {
                 error = $"low-permission users may not access this - {sysFeatures.MsgMissingSome(feats)}";
                 preparedException = HttpException.PermissionDenied(error);
-                return false;
+                return wrapLog.ReturnFalse();
             }
-            wrapLog("ok");
             preparedException = null;
             error = null;
-            return true;
+            return wrapLog.ReturnTrue("ok");
         }
 
     }

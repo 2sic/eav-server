@@ -1,11 +1,12 @@
 ﻿using System;
+using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Plumbing
+namespace ToSic.Eav.DI
 {
     /// <summary>
     /// Enables generating additional objects of a specific type
     /// </summary>
-    public class Generator<T>
+    public class Generator<T> : IGenerator<T>
     {
         public Generator(IServiceProvider sp) => _sp = sp;
         private readonly IServiceProvider _sp;

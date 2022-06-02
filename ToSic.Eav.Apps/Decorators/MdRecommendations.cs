@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
+using ToSic.Eav.DI;
 using ToSic.Eav.Helpers;
+using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using static ToSic.Eav.Apps.Decorators.MetadataRecommendation;
@@ -42,7 +44,7 @@ namespace ToSic.Eav.Apps.Decorators
 
         public IEnumerable<MetadataRecommendation> GetRecommendations(int targetTypeId, string key, string recommendedTypeName = null)
         {
-            var wrapLog = Log.Call<IEnumerable<MetadataRecommendation>>($"targetType: {targetTypeId}");
+            var wrapLog = Log.Fn<IEnumerable<MetadataRecommendation>>($"targetType: {targetTypeId}");
 
             // Option 1. Specified typeName
             // If a specific contentType was given, that's the only thing we'll recommend
@@ -50,8 +52,9 @@ namespace ToSic.Eav.Apps.Decorators
             if (!string.IsNullOrWhiteSpace(recommendedTypeName))
             {
                 var recommendedType = AppState.GetContentType(recommendedTypeName);
-                if (recommendedType == null) return wrapLog("type name not found", null);
-                return wrapLog("use existing name", new[] { new MetadataRecommendation(recommendedType, null, -1, "Use preset type", PrioMax) });
+                if (recommendedType == null) return wrapLog.ReturnNull("type name not found");
+                return wrapLog.Return(new[] { new MetadataRecommendation(recommendedType, null, -1, "Use preset type", PrioMax) }, 
+                    "use existing name");
             }
 
             // Option 2. A specific Target exists, and we want to find all options
@@ -59,7 +62,7 @@ namespace ToSic.Eav.Apps.Decorators
             // Only support TargetType which is a predefined
             // Since we only support the metadata-dialog to edit content-type, app, etc. and not anything random/custom
             if (targetTypeId < 0 || !Enum.IsDefined(typeof(TargetTypes), targetTypeId))
-                return wrapLog("invalid target type", null);
+                return wrapLog.ReturnNull("invalid target type");
 
             // 2.2 Find Content-Types marked with `MetadataFor` this specific target
             // For example Types which are marked to decorate an App
@@ -79,12 +82,12 @@ namespace ToSic.Eav.Apps.Decorators
 
             var distinct = attachedRecommendations.OrderByDescending(ar => ar.Priority).Distinct().ToList();
 
-            return wrapLog($"final: {distinct.Count}", distinct);
+            return wrapLog.Return(distinct, $"final: {distinct.Count}");
         }
 
         private List<(IContentType Type, IEntity Recommendation)> TypesWhichDeclareTheyAreForTheTarget(int targetType, string key)
         {
-            var wrapLog = Log.Call<List<(IContentType, IEntity)>>();
+            var wrapLog = Log.Fn<List<(IContentType, IEntity)>>();
             // for path comparisons, make sure we have the slashes cleaned
             var keyForward = (key ?? "").ForwardSlash().Trim();
 
@@ -145,44 +148,44 @@ namespace ToSic.Eav.Apps.Decorators
                 .Select(set => (set.Type, set.Decorator))
                 .ToList();
 
-            return wrapLog($"{result.Count}", result);
+            return wrapLog.Return(result, $"{result.Count}");
         }
 
         private List<MetadataRecommendation> GetTargetsExpectations(int targetType, string key)
         {
-            var wrapLog = Log.Call<List<MetadataRecommendation>>($"targetType: {targetType}");
+            var wrapLog = Log.Fn<List<MetadataRecommendation>>($"targetType: {targetType}");
 
             switch ((TargetTypes)targetType)
             {
                 case TargetTypes.Undefined:
                 case TargetTypes.None:
-                    return wrapLog("no target", null);
+                    return wrapLog.ReturnNull("no target");
                 case TargetTypes.Attribute:
                     // TODO - PROBABLY TRY TO FIND THE ATTRIBUTE
-                    return wrapLog("attributes not supported ATM", null);
+                    return wrapLog.ReturnNull("attributes not supported ATM");
                 case TargetTypes.App:
                     // TODO: this won't work - needs another way of finding assignments
-                    return wrapLog("app", GetExpected(AppState.Metadata, 0, "attached to App", PrioMax));
+                    return wrapLog.Return(GetExpected(AppState.Metadata, 0, "attached to App", PrioMax), "app");
                 case TargetTypes.Entity:
-                    if (!Guid.TryParse(key, out var guidKey)) return wrapLog("entity not guid", null);
+                    if (!Guid.TryParse(key, out var guidKey)) return wrapLog.ReturnNull("entity not guid");
                     var entity = AppState.List.One(guidKey);
-                    if (entity == null) return wrapLog("entity not found", null);
+                    if (entity == null) return wrapLog.ReturnNull("entity not found");
                     var onEntity = GetExpected(entity.Metadata, (int)TargetTypes.Entity, "attached to Entity", PrioMax)
                         ?? new List<MetadataRecommendation>();
 
                     // Now also ask the content-type for MD related to this
                     var onEntType = GetExpected(entity.Type.Metadata, (int)TargetTypes.Entity, "attached to entity-type", PrioHigh);
                     var merged = onEntity.Union(onEntType).ToList();
-                    return wrapLog($"entity {onEntity.Count} type {onEntType.Count} all {merged.Count}", merged);
+                    return wrapLog.Return(merged, $"entity {onEntity.Count} type {onEntType.Count} all {merged.Count}");
                 case TargetTypes.ContentType:
                     var ct = AppState.GetContentType(key);
-                    if (ct == null) return wrapLog("type not found", null);
+                    if (ct == null) return wrapLog.ReturnNull("type not found");
                     var onType = GetExpected(ct.Metadata, (int)TargetTypes.ContentType, "attached to Content-Type", PrioHigh);
-                    return wrapLog("content type", onType);
+                    return wrapLog.Return(onType, "content type");
                 case TargetTypes.Zone:
                 case TargetTypes.CmsItem:
                     // todo: maybe improve?
-                    return wrapLog("zone or CmsObject not supported", null);
+                    return wrapLog.ReturnNull("zone or CmsObject not supported");
             }
             return new List<MetadataRecommendation>();
 
@@ -198,18 +201,18 @@ namespace ToSic.Eav.Apps.Decorators
         /// <returns></returns>
         private List<MetadataRecommendation> GetExpected(IMetadataOf md, int meantFor, string debug, int priority)
         {
-            var wrapLog = Log.Call<List<MetadataRecommendation>>();
+            var wrapLog = Log.Fn<List<MetadataRecommendation>>();
 
             var all = md.OfType(ExpectedDecorator.TypeGuid).ToList();
             if (meantFor > 0) all = all.Where(r => meantFor == new ForDecorator(r).TargetType).ToList();
-            if (!all.Any()) return wrapLog("no recommendations", new List<MetadataRecommendation>());
+            if (!all.Any()) return wrapLog.Return(new List<MetadataRecommendation>(), "no recommendations");
 
             var resultAll = all.SelectMany(rEntity =>
             {
                 var rec = new ExpectedDecorator(rEntity);
                 var config = rec.Types;
                 var delWarning = rec.DeleteWarning;
-                if (string.IsNullOrWhiteSpace(config)) return wrapLog("no values in config", null);
+                if (string.IsNullOrWhiteSpace(config)) return wrapLog.ReturnNull("no values in config");
                 return config
                     .Split(',')
                     .Select(name => TypeAsRecommendation(name.Trim(), debug, priority, delWarning))
@@ -217,7 +220,7 @@ namespace ToSic.Eav.Apps.Decorators
                     .ToList();
             }).ToList();
 
-            return wrapLog($"found {resultAll.Count}", resultAll);
+            return wrapLog.Return(resultAll, $"found {resultAll.Count}");
         }
 
         /// <summary>
@@ -226,16 +229,15 @@ namespace ToSic.Eav.Apps.Decorators
         /// <returns></returns>
         private MetadataRecommendation TypeAsRecommendation(string name, string debug, int priority, string delWarning)
         {
-            var wrapLog = Log.Call<MetadataRecommendation>(name);
+            var wrapLog = Log.Fn<MetadataRecommendation>(name);
 
-            if (string.IsNullOrWhiteSpace(name)) return wrapLog("empty name", null);
+            if (string.IsNullOrWhiteSpace(name)) return wrapLog.ReturnNull("empty name");
 
             var type = AppState.GetContentType(name);
             return type == null
-                ? wrapLog("name not found", null)
-                : wrapLog("use existing name",
-                    new MetadataRecommendation(type, null, null, debug, priority)
-                        { DeleteWarning = delWarning });
+                ? wrapLog.ReturnNull("name not found")
+                : wrapLog.Return(new MetadataRecommendation(type, null, null, debug, priority)
+                        { DeleteWarning = delWarning }, "use existing name");
         }
 
     }

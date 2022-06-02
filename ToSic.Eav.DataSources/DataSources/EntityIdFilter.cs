@@ -64,27 +64,27 @@ namespace ToSic.Eav.DataSources
 
 		private IImmutableList<IEntity> GetList()
         {
-            var wrapLog = Log.Call<IImmutableList<IEntity>>();
+            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
 
             var entityIds = CustomConfigurationParse();
 
             // if CustomConfiguration resulted in an error, report now
             if (!ErrorStream.IsDefaultOrEmpty)
-                return wrapLog("error", ErrorStream);
+                return wrapLog.Return(ErrorStream, "error");
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog("error", originals);
+                return wrapLog.Return(originals, "error");
 
 		    var result = entityIds.Select(eid => originals.One(eid)).Where(e => e != null).ToImmutableArray();
 
 		    Log.A(() => $"get ids:[{string.Join(",",entityIds)}] found:{result.Length}");
-            return wrapLog("ok", result);
+            return wrapLog.ReturnAsOk(result);
         }
 
         [PrivateApi]
         private int[] CustomConfigurationParse()
         {
-            var wrapLog = Log.Call<int[]>();
+            var wrapLog = Log.Fn<int[]>();
             Configuration.Parse();
 
             #region clean up list of IDs to remove all white-space etc.
@@ -93,7 +93,7 @@ namespace ToSic.Eav.DataSources
                 var configEntityIds = EntityIds;
                 // check if we have anything to work with
                 if (string.IsNullOrWhiteSpace(configEntityIds))
-                    return wrapLog("empty", new int[0]);
+                    return wrapLog.Return(new int[0], "empty");
                 
                 var preCleanedIds = configEntityIds
                     .Split(',')
@@ -102,12 +102,12 @@ namespace ToSic.Eav.DataSources
                 foreach (var strEntityId in preCleanedIds)
                     if (int.TryParse(strEntityId, out var entityIdToAdd))
                         lstEntityIds.Add(entityIdToAdd);
-                return wrapLog(EntityIds, lstEntityIds.Distinct().ToArray());
+                return wrapLog.Return(lstEntityIds.Distinct().ToArray(), EntityIds);
             }
             catch (Exception ex)
             {
                 SetError("Can't find IDs", "Unable to load EntityIds from Configuration. Unexpected Exception.", ex);
-                return wrapLog("error", null);
+                return wrapLog.ReturnNull("error");
             }
             #endregion
         }

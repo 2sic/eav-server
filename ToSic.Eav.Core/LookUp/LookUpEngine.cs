@@ -70,12 +70,12 @@ namespace ToSic.Eav.LookUp
         
         public DicString LookUp(DicString values, int depth = 4)
         {
-            var wrapLog = Log.Call<DicString>($"values: {values.Count}, depth: {depth}");
+            var wrapLog = Log.Fn<DicString>($"values: {values.Count}, depth: {depth}");
             // start by creating a copy of the dictionary
             values = new Dictionary<string, string>(values, StringComparer.InvariantCultureIgnoreCase);
 
             if (values.Count == 0)
-                return wrapLog("no values", values);
+                return wrapLog.Return(values, "no values");
 
             var instanceTokenReplace = _reusableTokenReplace;
 
@@ -95,26 +95,26 @@ namespace ToSic.Eav.LookUp
             }
             #endregion
 
-            return wrapLog("ok", values);
+            return wrapLog.ReturnAsOk(values);
         }
 
         public DicString LookUp(DicString values, IDictionary<string, ILookUp> overrides, int depth = 4)
         {
-            var wrapLog = Log.Call<DicString>($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
+            var wrapLog = Log.Fn<DicString>($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
 
             // start by creating a copy of the dictionary
             values = new Dictionary<string, string>(values, StringComparer.InvariantCultureIgnoreCase);
 
-            if (values.Count == 0) return wrapLog("no values", values);
+            if (values.Count == 0) return wrapLog.Return(values, "no values");
 
             // if there are instance-specific additional Property-Access objects, add them to the sources-list
             // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
-            if (overrides == null || overrides.Count <= 0) return wrapLog("ok", LookUp(values, depth));
+            if (overrides == null || overrides.Count <= 0) return wrapLog.ReturnAsOk(LookUp(values, depth));
 
             var innerLookup = new LookUpEngine(this, Log);
             foreach (var pa in overrides)
                 innerLookup.Sources.Add(pa.Key, pa.Value);
-            return wrapLog("ok", innerLookup.LookUp(values, depth));
+            return wrapLog.ReturnAsOk(innerLookup.LookUp(values, depth));
         }
 
 

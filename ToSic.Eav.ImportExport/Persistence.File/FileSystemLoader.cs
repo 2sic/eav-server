@@ -6,6 +6,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Logging;
@@ -223,12 +224,12 @@ namespace ToSic.Eav.Persistence.File
         /// <returns></returns>
         private bool CheckPathExists(string path)
         {
-            var wrapLog = Log.Call<bool>("path: check exists '" + path + "'");
-            if (Directory.Exists(path)) return wrapLog("ok", true);
+            var wrapLog = Log.Fn<bool>("path: check exists '" + path + "'");
+            if (Directory.Exists(path)) return wrapLog.ReturnTrue("ok");
             if (!IgnoreMissingStuff)
                 throw new DirectoryNotFoundException("directory '" + path + "' not found, and couldn't ignore");
             Log.A("path: doesn't exist, but ignore");
-            return wrapLog("not found", false);
+            return wrapLog.ReturnFalse("not found");
         }
 
     }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.DI;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
@@ -76,7 +77,7 @@ namespace ToSic.Eav.Caching
         /// Gets the KeySchema used to store values for a specific Zone and App. Must contain {0} for ZoneId and {1} for AppId
         /// </summary>
         [PrivateApi]
-		public virtual string CacheKeySchema { get; protected set; } = "Z{0}A{1}";
+        public virtual string CacheKeySchema { get; protected set; } = "Z{0}A{1}";
 
         [PrivateApi]
         protected string CacheKey(IAppIdentity appIdentity) => string.Format(CacheKeySchema, appIdentity.ZoneId, appIdentity.AppId);
@@ -106,13 +107,13 @@ namespace ToSic.Eav.Caching
         /// Get CacheItem with specified CacheKey
         /// </summary>
         [PrivateApi("only important for developers, and they have intellisense")]
-		protected abstract AppState Get(string key);
+        protected abstract AppState Get(string key);
 
         /// <summary>
         /// Remove the CacheItem with specified CacheKey
         /// </summary>
         [PrivateApi("only important for developers, and they have intellisense")]
-		protected abstract void Remove(string key);
+        protected abstract void Remove(string key);
 
         [PrivateApi]
         public void Add(AppState appState) => Set(CacheKey(appState), appState);
@@ -159,15 +160,20 @@ namespace ToSic.Eav.Caching
         /// <summary>
         /// List of locks, to ensure that each app locks the loading process separately
         /// </summary>
-        private static readonly ConcurrentDictionary<string, object> LoadLocks 
+        private static readonly ConcurrentDictionary<string, object> LoadLocks
             = new ConcurrentDictionary<string, object>();
 
         #region Purge Cache
 
         /// <inheritdoc />
-        public void Purge(IAppIdentity app) => Remove(CacheKey(app));
+        public void Purge(IAppIdentity app)
+        {
+            var key = CacheKey(app);
+            if (Has(key)) Get(key)?.PreRemove();
+            Remove(key);
+        }
 
-	    /// <inheritdoc />
+        /// <inheritdoc />
 	    public abstract void PurgeZones();
 
         #endregion
@@ -177,12 +183,12 @@ namespace ToSic.Eav.Caching
         /// <inheritdoc />
         public virtual AppState Update(IServiceProvider sp, IAppIdentity app, IEnumerable<int> entities, ILog log)
         {
-            var wrapLog = log.Call<AppState>();
+            var wrapLog = log.Fn<AppState>();
             // if it's not cached yet, ignore the request as partial update won't be necessary
-            if (!Has(app)) return wrapLog("not cached, won't update", null);
+            if (!Has(app)) return wrapLog.ReturnNull("not cached, won't update");
             var appState = Get(sp, app);
             GetNewRepoLoader(sp).Init(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
-            return wrapLog("ok", appState);
+            return wrapLog.ReturnAsOk(appState);
         }
 
         #endregion

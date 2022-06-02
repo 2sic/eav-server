@@ -6,16 +6,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav.Configuration
 {
     public class FeatureConfigManager : HasLog
     {
         private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
+        private readonly Lazy<SystemFingerprint> _fingerprint;
 
-        public FeatureConfigManager(Lazy<IGlobalConfiguration> globalConfiguration) : base("FeatCfgMng")
+        public FeatureConfigManager(Lazy<IGlobalConfiguration> globalConfiguration, Lazy<SystemFingerprint> fingerprint) : base("FeatCfgMng")
         {
             _globalConfiguration = globalConfiguration;
+            _fingerprint = fingerprint;
         }
 
         /// <summary>
@@ -33,7 +36,7 @@ namespace ToSic.Eav.Configuration
 
             var featureFilePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
 
-            return File.Exists(featureFilePath) ? (featureFilePath, File.ReadAllText(featureFilePath)) : (null, null);
+            return File.Exists(featureFilePath) ? (featureFilePath, File.ReadAllText(featureFilePath)) : (featureFilePath, null);
         }
 
 
@@ -82,7 +85,9 @@ namespace ToSic.Eav.Configuration
             var fs = (string)json["Entity"]["Attributes"]["Custom"]["Features"]["*"];
             var oldFeatures = JObject.Parse(fs);
 
-            features.Fingerprint = (string)oldFeatures["fingerprint"];
+            // update finger print
+            //features.Fingerprint = (string)oldFeatures["fingerprint"];
+            features.Fingerprint = _fingerprint.Value.GetFingerprint();
 
             foreach (var f in (JArray)oldFeatures["features"])
             {
@@ -103,10 +108,16 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         private bool SaveFeaturesNew(FeatureListStored features)
         {
-            var wrapLog = Log.Call<bool>($"f:{features?.Features?.Count ?? -1}");
+            var wrapLog = Log.Fn<bool>($"f:{features?.Features?.Count ?? -1}");
 
             try
             {
+                // when null, prepare empty features
+                if (features == null) features = new FeatureListStored();
+
+                // update to latest fingerprint
+                features.Fingerprint = _fingerprint.Value.GetFingerprint();
+
                 // save new format (v13)
                 var fileContent = JsonConvert.SerializeObject(features,
                     //JsonSettings.Defaults()
@@ -120,12 +131,12 @@ namespace ToSic.Eav.Configuration
 
                 var filePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
 
-                return wrapLog("features new saved:", SaveFile(filePath, fileContent));
+                return wrapLog.Return(SaveFile(filePath, fileContent), "features new saved");
             }
             catch (Exception e)
             {
                 Log.Ex(e);
-                return wrapLog("save features failed:" + e.Message, false);
+                return wrapLog.ReturnFalse("save features failed:" + e.Message);
             }
         }
 
@@ -135,17 +146,17 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         private bool SaveFile(string filePath, string fileContent)
         {
-            var wrapLog = Log.Call<bool>($"fp={filePath}");
+            var wrapLog = Log.Fn<bool>($"fp={filePath}");
 
             try
             {
                 File.WriteAllText(filePath, fileContent);
-                return wrapLog("ok, file saved", true);
+                return wrapLog.ReturnTrue("ok, file saved");
             }
             catch (Exception e)
             {
                 Log.Ex(e);
-                return wrapLog("save file failed:" + e.Message, false);
+                return wrapLog.ReturnFalse("save file failed:" + e.Message);
             }
         }
 
@@ -155,11 +166,17 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         internal bool SaveFeaturesUpdate(List<FeatureManagementChange> changes)
         {
-            var wrapLog = Log.Call<bool>($"c:{changes?.Count ?? -1}");
+            var wrapLog = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
 
             try
             {
                 var (filePath, fileContent) = LoadFeaturesFile();
+                
+                // if features.json is missing, we still need empty list of stored features so we can create new one on save
+                if (fileContent == null)
+                    fileContent = JsonConvert.SerializeObject(new FeatureListStored(),
+                        new IsoDateTimeConverter() {DateTimeFormat = "yyyy-MM-ddTHH:mm:ss"});
+
                 var fileJson = JObject.Parse(fileContent);
                 foreach (var change in changes)
                 {
@@ -181,12 +198,15 @@ namespace ToSic.Eav.Configuration
                     }
                 }
 
-                return wrapLog("features saved:", SaveFile(filePath, fileJson.ToString()));
+                // update to latest fingerprint
+                fileJson["fingerprint"] = _fingerprint.Value.GetFingerprint();
+
+                return wrapLog.Return(SaveFile(filePath, fileJson.ToString()), "features saved");
             }
             catch (Exception e)
             {
                 Log.Ex(e);
-                return wrapLog("save features failed:" + e.Message, false);
+                return wrapLog.ReturnFalse("save features failed:" + e.Message);
             }
         }
 

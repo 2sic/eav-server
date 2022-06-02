@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
@@ -62,10 +63,10 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="newAppName">The app-name (for new apps) which would be the folder name as well. </param>
         public bool InitializeApp(string newAppName = null)
         {
-            var wrapLog = Log.Call<bool>($"{nameof(newAppName)}: {newAppName}");
+            var wrapLog = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
 
             if (AppInitializedChecker.CheckIfAllPartsExist(AppState, out var appConfig, out var appResources, out var appSettings, Log))
-                return wrapLog("ok", true);
+                return wrapLog.ReturnTrue("ok");
 
             // Get appName from cache - stop if it's a "Default" app
             var eavAppName = AppState.NameId;
@@ -123,14 +124,14 @@ namespace ToSic.Eav.Apps.Parts
             // Reset App-State to ensure it's reloaded with the added configuration
             SystemManager.Purge(AppState);
 
-            return wrapLog("ok", false);
+            return wrapLog.ReturnFalse("ok");
         }
 
 
 
         private bool CreateAllMissingContentTypes(List<AddItemTask> newItems)
         {
-            var wrapLog = Log.Call<bool>($"Check for {newItems.Count}");
+            var wrapLog = Log.Fn<bool>($"Check for {newItems.Count}");
             var addedTypes = false;
             foreach (var item in newItems)
                 if (item.InAppType && FindContentType(item.SetName, item.InAppType) == null)
@@ -143,7 +144,7 @@ namespace ToSic.Eav.Apps.Parts
                 else
                     Log.A($"Type '{item.SetName}' found");
 
-            return wrapLog("ok", addedTypes);
+            return wrapLog.ReturnAsOk(addedTypes);
         }
         
         private void MetadataEnsureTypeAndSingleEntity(AddItemTask item)

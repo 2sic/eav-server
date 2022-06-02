@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <returns></returns>
         public QueryDefinition GetQueryDefinition(int appId, int queryEntityId)
 	    {
-            var wrapLog = Log.Call($"def#{queryEntityId} for a#{appId}");
+            var wrapLog = Log.Fn<QueryDefinition>($"def#{queryEntityId} for a#{appId}");
 
 	        try
             {
@@ -55,15 +55,13 @@ namespace ToSic.Eav.DataSources.Queries
                 // use findRepo, as it uses the cache, which gives the list of all items
 	            var dataQuery = appEntities.FindRepoId(queryEntityId);
 	            var result = new QueryDefinition(dataQuery, appId, Log);
-                wrapLog(null);
-                return result;
+                return wrapLog.Return(result);
             }
 	        catch (KeyNotFoundException)
 	        {
 	            throw new Exception("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId);
 	        }
-
-	    }
+        }
 
         public const string ConfigKeyPartSettings = "settings";
 	    public const string ConfigKeyPipelineSettings = "pipelinesettings";
@@ -75,9 +73,9 @@ namespace ToSic.Eav.DataSources.Queries
             bool showDrafts)
         {
 	        #region prepare shared / global value providers
-
+            
 	        overrideLookUps = overrideLookUps?.ToList();
-            var wrapLog = Log.Call<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
+            var wrapLog = Log.Fn<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
                 $"{queryDef.Title}({queryDef.Id}), " +
                 $"hasLookUp:{lookUpEngineToClone != null}, " +
                 $"overrides: {overrideLookUps?.Count()}, " +
@@ -158,7 +156,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 	        InitWirings(queryDef, dataSources);
 			var result = new Tuple<IDataSource, Dictionary<string, IDataSource>>(outTarget, dataSources);
-			return wrapLog($"parts:{parts.Count}", result);
+			return wrapLog.Return(result, $"parts:{parts.Count}");
 	    }
 
 	    /// <summary>
@@ -169,7 +167,7 @@ namespace ToSic.Eav.DataSources.Queries
 			// Init
             var wirings = queryDef.Connections;
 			var initializedWirings = new List<Connection>();
-		    var logWrap = Log.Call($"count⋮{wirings.Count}");
+		    var logWrap = Log.Fn($"count⋮{wirings.Count}");
 
 			// 1. wire Out-Streams of DataSources with no In-Streams
 			var dataSourcesWithNoInStreams = dataSources.Where(d => wirings.All(w => w.To != d.Key));
@@ -199,7 +197,7 @@ namespace ToSic.Eav.DataSources.Queries
 				Log.Ex(exception);
 				throw exception;
 			}
-		    logWrap("ok");
+		    logWrap.Done("ok");
 		}
 
 		/// <summary>
@@ -242,10 +240,10 @@ namespace ToSic.Eav.DataSources.Queries
 
 	    public Tuple<IDataSource, Dictionary<string, IDataSource>> GetDataSourceForTesting(QueryDefinition queryDef, bool showDrafts, ILookUpEngine configuration = null)
 	    {
-            var wrapLog = Log.Call<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
+            var wrapLog = Log.Fn<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
                 $"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}");
             var testValueProviders = queryDef.TestParameterLookUps;
-            return wrapLog(null, BuildQuery(queryDef, configuration, testValueProviders, showDrafts));
+            return wrapLog.Return(BuildQuery(queryDef, configuration, testValueProviders, showDrafts));
         }
 
 
