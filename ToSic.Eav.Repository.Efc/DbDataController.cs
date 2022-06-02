@@ -239,6 +239,11 @@ namespace ToSic.Eav.Repository.Efc
                 SqlDb.ChangeTracker.AutoDetectChangesEnabled = false;
                 SqlDb.SaveChanges();
             }
+            catch (Exception ex)
+            {
+                wrapLog.A($"error: save changes without change detection failed, {ex.Message}");
+                Log.Ex(ex);
+            }
             finally
             {
                 SqlDb.ChangeTracker.AutoDetectChangesEnabled = preserve;
