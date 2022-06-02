@@ -13,7 +13,6 @@ using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Parts;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -230,10 +229,22 @@ namespace ToSic.Eav.Repository.Efc
 
         internal void DoAndSaveWithoutChangeDetection(Action action, string message = null)
         {
-            var wrapLog = Log.Call(message: message, useTimer: true);
+            var wrapLog = Log.Fn(message: message, startTimer: true);
+            
             action.Invoke();
-            SqlDb.SaveChangesWithoutChangeDetection();
-            wrapLog("completed");
+
+            var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
+            try
+            {
+                SqlDb.ChangeTracker.AutoDetectChangesEnabled = false;
+                SqlDb.SaveChanges();
+            }
+            finally
+            {
+                SqlDb.ChangeTracker.AutoDetectChangesEnabled = preserve;
+            }
+
+            wrapLog.Done("completed");
         }
 
 

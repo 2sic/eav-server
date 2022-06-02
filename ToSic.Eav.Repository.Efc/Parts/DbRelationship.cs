@@ -56,25 +56,25 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (existingRelationships.Count > 0)
             {
                 Log.A($"found existing rels⋮{existingRelationships.Count}");
-                DbContext.SqlDb.ToSicEavEntityRelationships.RemoveRange(existingRelationships);
-                DbContext.SqlDb.SaveChangesWithoutChangeDetection(); // this is necessary after remove, because otherwise EF state tracking gets messed up
+                // this is necessary after remove, because otherwise EF state tracking gets messed up
+                DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.ToSicEavEntityRelationships.RemoveRange(existingRelationships));
             }
 
-            packages.ForEach(p =>
-            {
-                var newEntityIds = p.Targets.ToList();
-                // Create new relationships which didn't exist before
-                for (var i = 0; i < newEntityIds.Count; i++)
-                    DbContext.SqlDb.ToSicEavEntityRelationships.Add(new ToSicEavEntityRelationships
-                    {
-                        AttributeId = p.AttributeId,
-                        ChildEntityId = newEntityIds[i],
-                        SortOrder = i,
-                        ParentEntityId = p.Entity.EntityId
-                    });
-            });
-
-            DbContext.SqlDb.SaveChangesWithoutChangeDetection(); // now save the changed relationships
+            // now save the changed relationships
+            DbContext.DoAndSaveWithoutChangeDetection(() =>
+                packages.ForEach(p =>
+                {
+                    var newEntityIds = p.Targets.ToList();
+                    // Create new relationships which didn't exist before
+                    for (var i = 0; i < newEntityIds.Count; i++)
+                        DbContext.SqlDb.ToSicEavEntityRelationships.Add(new ToSicEavEntityRelationships
+                        {
+                            AttributeId = p.AttributeId,
+                            ChildEntityId = newEntityIds[i],
+                            SortOrder = i,
+                            ParentEntityId = p.Entity.EntityId
+                        });
+                })); 
 
             wrapLog.Done("ok");
         }
