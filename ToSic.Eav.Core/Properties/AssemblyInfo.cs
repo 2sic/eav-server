@@ -28,3 +28,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("ToSic.Eav.Persistence.Efc")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Core.Tests")]
 [assembly: InternalsVisibleTo("ToSic.Testing.Shared")]
+[assembly: InternalsVisibleTo("ToSic.Sxc.WebApi")]
