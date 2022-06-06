@@ -32,7 +32,6 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<ZoneControllerReal>();
             services.TryAddTransient<LogControllerReal>();
             services.TryAddTransient<LicenseControllerReal>();
-            services.TryAddTransient<CodeControllerReal>();
 
             // Various Backends
             services.TryAddTransient<LanguagesBackend>();
@@ -76,7 +75,6 @@ namespace ToSic.Eav.WebApi
             // APIs
             services.TryAddTransient<ApiExplorerControllerReal<THttpResponseType>>();
             services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
-            services.TryAddTransient<CodeControllerReal>();
             // The ResponseMaker must be registered as generic, so that any specific registration will have priority
             services.TryAddScoped(typeof(ResponseMaker<>), typeof(ResponseMakerUnknown<>));
             return services;
