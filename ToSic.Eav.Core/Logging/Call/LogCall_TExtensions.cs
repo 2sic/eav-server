@@ -23,7 +23,7 @@
 
         // TODO: @STV - pls use this instead of most calls where "ok" is in the text
 
-        public static T ReturnAsOk<T>(this LogCall<T> logCall, T result) => logCall.Return(result, "ok");
+        public static T ReturnAsOk<T>(this LogCall<T> logCall, T result) => logCall == null ? result : logCall.Return(result, "ok");
 
 
 
