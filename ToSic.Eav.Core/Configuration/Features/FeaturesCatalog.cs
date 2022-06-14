@@ -31,9 +31,10 @@ namespace ToSic.Eav.Configuration
                 WebFarmCache,
                 WebFarmCacheDebug,
 
-                // 2sxc 13 - Global Apps
+                // 2sxc 13 - Enterprise CMS
                 SharedApps,
                 PermissionsByLanguage,
+                EditUiDisableDraft,
 
                 // Beta features
                 BlockFileResolveOutsideOfEntityAdam

@@ -81,8 +81,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private void Save()
         {
             var callLog = Log.Fn(startTimer: true);
-            DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue);
-            DbContext.SqlDb.SaveChanges();
+            DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue));
             _queue.Clear();
             callLog.Done();
         }

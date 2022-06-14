@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <summary>
         /// List of in-streams expected by this data-source - will be shown in the UI. Default is empty []. 
         /// </summary>
-        public string[] In { get; set; } = new string[0];
+        public string[] In { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Determine if this data sources can have many out-streams with custom names. Default is false.
@@ -95,7 +95,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// Names this DataSource may have had previously. <br/>
         /// This was introduced when we standardized the names, and still had historic data using old names or old namespaces. 
         /// </summary>
-	    public string[] PreviousNames { get; set; } = new string[0];
+	    public string[] PreviousNames { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// This is still an experiment, but the goal is to hide complex sources from "normal" users

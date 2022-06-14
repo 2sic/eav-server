@@ -3,6 +3,7 @@
     public enum PublishingMode
     {
         DraftOptional,
-        DraftRequired
+        DraftRequired,
+        DraftForbidden,
     }
 }

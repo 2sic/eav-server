@@ -97,14 +97,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     dbEnt = CreateDbRecord(newEnt, changeLogId, contentTypeId);
                     // update the ID - for versioning and/or json persistence
                     newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated
+
+                    // prepare export for save json OR versioning later on
                     jsonExport = GenerateJsonOrReportWhyNot(newEnt, logDetails);
 
                     if (saveJson)
                     {
                         var wrapSaveJson = Log.Fn($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
-                        dbEnt.Json = jsonExport ;
+                        dbEnt.Json = jsonExport;
                         dbEnt.ContentType = newEnt.Type.NameId;
-                        DbContext.SqlDb.SaveChanges();
+                        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(dbEnt), "update json");
                         wrapSaveJson.Done("ok");
                     }
                     logNew.Done($"i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
@@ -211,6 +213,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             return wrapLog.Return(dbEnt.EntityId, "done id:" + dbEnt?.EntityId);
         }
+
+
 
 
 

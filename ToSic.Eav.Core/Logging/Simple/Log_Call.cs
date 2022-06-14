@@ -6,6 +6,7 @@ namespace ToSic.Eav.Logging.Simple
     public partial class Log
     {
         /// <inheritdoc />
+        [Obsolete("Do not use any more! Use extension method Fn instead")]
         public Action<string> Call(string parameters = null, string message = null,
             bool useTimer = false,
             [CallerFilePath] string cPath = null,
@@ -18,7 +19,7 @@ namespace ToSic.Eav.Logging.Simple
             );
 
         /// <inheritdoc />
-        [Obsolete("Do not use any more!")]
+        [Obsolete("Do not use any more! Use extension method Fn instead")]
         public Action<string> Call(Func<string> parameters, Func<string> message = null,
             bool useTimer = false,
             [CallerFilePath] string cPath = null,
@@ -35,6 +36,7 @@ namespace ToSic.Eav.Logging.Simple
 
 
         /// <inheritdoc />
+        [Obsolete("Do not use any more! Use extension method Fn instead")]
         public Func<string, T, T> Call<T>(string parameters = null,
             string message = null,
             bool useTimer = false,

@@ -31,8 +31,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 Json = null // use null, as we must wait to serialize till we have the entityId
             };
 
-            DbContext.SqlDb.Add(dbEnt);
-            DbContext.SqlDb.SaveChanges();
+            DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(dbEnt), "save new");
             return wrapLog.ReturnAsOk(dbEnt);
         }
     }

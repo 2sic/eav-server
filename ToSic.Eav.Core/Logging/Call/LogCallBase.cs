@@ -37,31 +37,5 @@ namespace ToSic.Eav.Logging
 
         internal bool IsOpen;
         
-
-        //protected void WrapFinish(Entry entry, string message)
-        //{
-        //    if (LogOrNull == null) return;
-
-        //    LogOrNull.WrapDepth--;
-        //    entry.AppendResult(message);
-        //    var final = LogOrNull.AddInternalReuse(null, null);
-        //    final.WrapClose = true;
-        //    final.AppendResult(message);
-        //    if (Stopwatch == null) return;
-        //    Stopwatch.Stop();
-        //    entry.Elapsed = Stopwatch.Elapsed;
-        //}
-
-        //internal void DoneInternal(string message)
-        //{
-        //    if (LogOrNull == null) return;
-
-        //    if (!IsOpen)
-        //        LogOrNull.AddInternal("Log Warning: Wrapper already closed from previous call", null);
-        //    IsOpen = false;
-
-        //    this.WrapFinish(Entry, message);
-        //}
-
     }
 }

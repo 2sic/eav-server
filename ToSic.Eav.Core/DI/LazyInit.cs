@@ -28,7 +28,7 @@ namespace ToSic.Eav.DI
             return this;
         }
 
-        public bool HasInit => _initCall != null;
+        public bool HasInitCall => _initCall != null;
 
         public T Ready
         {

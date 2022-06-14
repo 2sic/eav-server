@@ -37,7 +37,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                                         idx++;
                                         var logDetails = idx < MaxToLogDetails;
                                         if (idx == MaxToLogDetails) Log.A($"Hit #{idx}, will stop logging details");
-                                        DbContext.DoAndSave(() => ids.Add(SaveEntity(e, saveOptions, logDetails)),
+                                        DbContext.DoAndSaveWithoutChangeDetection(() => ids.Add(SaveEntity(e, saveOptions, logDetails)),
                                             "SaveMany");
                                     }
                                 }))));
