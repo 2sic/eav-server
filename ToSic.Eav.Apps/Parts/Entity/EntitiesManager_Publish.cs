@@ -45,8 +45,8 @@ namespace ToSic.Eav.Apps.Parts
                     PublishWithoutPurge(eid);
                 }
                 catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { /* ignore */ }
-            // for now, do a full purge as it's the safest. in the future, maybe do a partial cache-update
-            SystemManager.PurgeApp(Parent.AppId);
+            // Tell the cache to do a partial update
+            _appsCache.Value.Update(_serviceProvider, Parent, entityIds, Log);
             Log.A("/Publish(...)");
         }
 
