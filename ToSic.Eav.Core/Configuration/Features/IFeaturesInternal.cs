@@ -38,5 +38,6 @@ namespace ToSic.Eav.Configuration
 
         FeatureListStored Stored { get; set; }
         long CacheTimestamp { get; set; }
+        event EventHandler FeaturesChanged;
     }
 }
