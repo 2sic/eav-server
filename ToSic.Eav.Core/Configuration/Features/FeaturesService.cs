@@ -125,15 +125,24 @@ namespace ToSic.Eav.Configuration
         }
 
 
-        /// <summary>
-        /// Just for debugging
-        /// </summary>
         [PrivateApi]
-        public long CacheTimestamp { get; set; }
+        public long CacheTimestamp
+        {
+            get => _cacheTimestamp;
+            set
+            {
+                _cacheTimestamp = value;
+                FeaturesChanged?.Invoke(this, EventArgs.Empty); // publish event so lightspeed can flush cache
+            }
+        }
+        private long _cacheTimestamp;
 
         public bool CacheChanged(long newCacheTimeStamp) => CacheTimestamp != newCacheTimeStamp;
 
+        // Custom event for LightSpeed
+        [PrivateApi] 
+        public event EventHandler FeaturesChanged;
+
         #endregion
-        
     }
 }
