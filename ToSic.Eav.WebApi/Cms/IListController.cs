@@ -20,5 +20,9 @@ namespace ToSic.Eav.WebApi.Cms
         /// <param name="fields"></param>
         /// <param name="index"></param>
         void Delete(Guid? parent, string fields, int index);
+
+        // TODO: MOVE TO 2SXC
+        // ReplacementListDto Replace(Guid guid, string part, int index);
+
     }
 }
