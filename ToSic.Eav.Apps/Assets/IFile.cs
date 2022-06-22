@@ -42,5 +42,13 @@ namespace ToSic.Eav.Apps.Assets
         /// <returns>the size in bytes</returns>
         // ReSharper disable once UnusedMemberInSuper.Global
         int Size { get; set; }
+
+        /// <summary>
+        /// Size information for files
+        /// </summary>
+        /// <remarks>
+        /// Added in v14.04
+        /// </remarks>
+        SizeInfo SizeInfo { get; }
     }
 }

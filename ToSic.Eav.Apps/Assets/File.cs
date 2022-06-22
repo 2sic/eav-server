@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps.Assets
 {
@@ -36,6 +37,9 @@ namespace ToSic.Eav.Apps.Assets
         public string Name { get; set; }
 
         public int Size { get; set; }
+
+        public SizeInfo SizeInfo => _sizeInfo.Get(() => new SizeInfo(Size));
+        private readonly ValueGetOnce<SizeInfo> _sizeInfo = new ValueGetOnce<SizeInfo>();
 
         [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi
         public string PhysicalPath { get; set; }
