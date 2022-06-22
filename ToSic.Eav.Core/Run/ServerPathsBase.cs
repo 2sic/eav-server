@@ -12,7 +12,7 @@ namespace ToSic.Eav.Run
         {
             if (string.IsNullOrWhiteSpace(fileReference)) return fileReference;
 
-            var parts = new ValueConverterBase.LinkParts(fileReference);
+            var parts = new LinkParts(fileReference);
             if (parts.IsPage) return fileReference;
 
             return FullPathOfReference(parts.Id);
