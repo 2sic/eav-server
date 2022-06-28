@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav
@@ -24,13 +25,21 @@ namespace ToSic.Eav
         /// <param name="protectedMethod">Name of the method we protect (for error messages)</param>
         /// <param name="paramNames">String with param-names to show, usually generated with a bunch of nameof(paramName) </param>
         /// <exception cref="Exception"></exception>
-        public static void ProtectAgainstMissingParameterNames(string criticalParameter, string protectedMethod, string paramNames)
+        public static void ProtectAgainstMissingParameterNames(string criticalParameter, string protectedMethod = null, string paramNames = null)
         {
             if (criticalParameter == null || criticalParameter != Protector)
                 throw new Exception($"when using '{protectedMethod}' you must use named parameters " +
                                     "- otherwise you are relying on the parameter order staying the same. " +
                                     "See https://r.2sxc.org/named-params " +
                                     $"This command expects these parameters: {paramNames}");
+        }
+
+        public static void Protect(
+            string criticalParameter, 
+            string paramNames = null,
+            [CallerMemberName] string methodName = null)
+        {
+            ProtectAgainstMissingParameterNames(criticalParameter, methodName, paramNames);
         }
 
         #endregion
