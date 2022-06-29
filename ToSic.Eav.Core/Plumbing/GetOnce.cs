@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 
 namespace ToSic.Eav.Plumbing
@@ -11,7 +12,8 @@ namespace ToSic.Eav.Plumbing
     /// ATM used in the ResponsiveBase, but we should also use it in other places where we have a second toggle to determine if it had been retrieved already. 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ValueGetOnce<T>
+    [PrivateApi("internal use only")]
+    public class GetOnce<T>
     {
         /// <summary>
         /// Get the value once only. If not yet retrieved, use the generator function. 

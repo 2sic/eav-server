@@ -157,7 +157,7 @@ namespace ToSic.Eav.Metadata
         /// <returns></returns>
         [PrivateApi]
         protected IMetadataSource GetMetadataSource() => _mdsGetOnce.Get(() => (_appMetadataSource ?? _metaSourceRemote?.Invoke())?.MetadataSource);
-        private readonly ValueGetOnce<IMetadataSource> _mdsGetOnce = new ValueGetOnce<IMetadataSource>();
+        private readonly GetOnce<IMetadataSource> _mdsGetOnce = new GetOnce<IMetadataSource>();
         /// <summary>
         /// The source (usually an app) which can provide all the metadata once needed
         /// </summary>

@@ -24,7 +24,7 @@ namespace ToSic.Eav.Caching
         private readonly IFeaturesInternal _featuresService;
 
         public new IAppsCacheSwitchable Value => _value.Get(GetOnceDuringCurrentRequest);
-        private readonly ValueGetOnce<IAppsCacheSwitchable> _value = new ValueGetOnce<IAppsCacheSwitchable>();
+        private readonly GetOnce<IAppsCacheSwitchable> _value = new GetOnce<IAppsCacheSwitchable>();
 
         private IAppsCacheSwitchable GetOnceDuringCurrentRequest()
         {

@@ -39,7 +39,7 @@ namespace ToSic.Eav.Apps.Assets
         public int Size { get; set; }
 
         public SizeInfo SizeInfo => _sizeInfo.Get(() => new SizeInfo(Size));
-        private readonly ValueGetOnce<SizeInfo> _sizeInfo = new ValueGetOnce<SizeInfo>();
+        private readonly GetOnce<SizeInfo> _sizeInfo = new GetOnce<SizeInfo>();
 
         [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi
         public string PhysicalPath { get; set; }

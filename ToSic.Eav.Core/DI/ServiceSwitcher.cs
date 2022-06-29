@@ -20,7 +20,7 @@ namespace ToSic.Eav.DI
 
 
         public T Value => _preferredService.Get(FindServiceInSwitcher);
-        private readonly ValueGetOnce<T> _preferredService = new ValueGetOnce<T>();
+        private readonly GetOnce<T> _preferredService = new GetOnce<T>();
 
         private T FindServiceInSwitcher()
         {
