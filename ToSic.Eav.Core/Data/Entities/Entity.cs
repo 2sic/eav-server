@@ -55,5 +55,10 @@ namespace ToSic.Eav.Data
             : this(appId, 0, contentType, values, guid: entityGuid, owner: owner)
         {}
 
+        #region CanBeEntity
+
+        IEntity ICanBeEntity.Entity => this;
+
+        #endregion
     }
 }

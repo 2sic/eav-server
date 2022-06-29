@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 
 namespace ToSic.Eav.Data
 {
     /// <summary>
     /// Trivial value converter - doesn't convert anything.
     /// </summary>
-    public class ValueConverterBase : IValueConverter
+    public partial class ValueConverterBase : IValueConverter
     {
         public const string PrefixPage = "page";
         public const string PrefixFile = "file";
@@ -27,34 +26,6 @@ namespace ToSic.Eav.Data
             // minimum "page:#" or "file:#"
             if (reference.Length < 6) return false; 
             return true;
-        }
-        
-        public class LinkParts
-        {
-            public LinkParts(string link)
-            {
-                var regularExpression = Regex.Match(link, RegExToDetectConvertable, RegexOptions.IgnoreCase);
-                IsMatch = regularExpression.Success;
-                if (IsMatch)
-                {
-                    Type = regularExpression.Groups[RegExType].Value.ToLowerInvariant();
-                    Id = int.Parse(regularExpression.Groups[RegExId].Value);
-                    Params = regularExpression.Groups[RegExParams].Value ?? "";
-                    IsPage = Type == PrefixPage;
-                }
-
-            }
-
-            public readonly bool IsMatch;
-            public readonly bool IsPage;
-            public readonly string Type;
-            public readonly int Id;
-            public readonly string Params;
-
-            public const string RegExToDetectConvertable = @"^(?<type>(file|page)):(?<id>[0-9]+)(?<params>(\?|\#).*)?$";
-            public const string RegExType = "type";
-            public const string RegExId = "id";
-            public const string RegExParams = "params";
         }
 
         public static string TryToResolveCodeToLink(Guid itemGuid, string originalValue, Func<int, string> resolvePageLink, Func<int, Guid, string> resolveFileLink)

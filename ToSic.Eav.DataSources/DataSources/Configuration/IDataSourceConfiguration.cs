@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Quick read / add for values which the DataSource will use. 
         /// </summary>
-        /// <param name="key">The property name/key, like SortOrder or similar</param>
+        /// <param name="key">The property name/key, like CaseInsensitive or similar</param>
         /// <param name="value">A string based value</param>
         string this[string key] { get; set; }
 

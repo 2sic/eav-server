@@ -33,14 +33,14 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// Update the order of the attributes in the set.
         /// </summary>
         /// <param name="contentTypeId"></param>
-        /// <param name="newSortOrder">Array of attribute ids which defines the new sort order</param>
-        public void SortAttributes(int contentTypeId, List<int> newSortOrder)
+        /// <param name="newOrder">Array of attribute ids which defines the new sort order</param>
+        public void SortAttributes(int contentTypeId, List<int> newOrder)
         {
             var attributeList = DbContext.SqlDb.ToSicEavAttributesInSets
                 .Where(a => a.AttributeSetId == contentTypeId)
                 .ToList();
             attributeList = attributeList
-                .OrderBy(a => newSortOrder.IndexOf(a.AttributeId))
+                .OrderBy(a => newOrder.IndexOf(a.AttributeId))
                 .ToList();
 
             PersistAttributeOrder(attributeList);

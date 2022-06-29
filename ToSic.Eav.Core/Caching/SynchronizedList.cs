@@ -40,10 +40,10 @@ namespace ToSic.Eav.Caching
         [PrivateApi("Experimental, trying to lower memory footprint")]
         public virtual IImmutableList<T> List => Value;
 
-        /// <inheritdoc />
+        [PrivateApi]
         public IEnumerator<T> GetEnumerator() => List.GetEnumerator();
 
-        /// <inheritdoc />
+        [PrivateApi]
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         
     }

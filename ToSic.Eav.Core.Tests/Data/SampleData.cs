@@ -10,9 +10,9 @@ namespace ToSic.Eav.Core.Tests.Data
     {
         public const int AppId = -1;
 
-        static ContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int sortOrder)
+        static ContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
         {
-            return new ContentTypeAttribute(appId, firstName, dataType, isTitle, attId, sortOrder);
+            return new ContentTypeAttribute(appId, firstName, dataType, isTitle, attId, index);
         }
 
         static readonly ContentType CtTestType = new ContentType(AppId, "TestType")

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -22,6 +23,26 @@ namespace ToSic.Eav.Plumbing
                    && type.IsGenericType && type.Name.Contains("AnonymousType")
                    && (type.Name.StartsWith("<>") || type.Name.StartsWith("VB$"))
                    && type.Attributes.HasFlag(TypeAttributes.NotPublic);
+        }
+
+        public static bool IsSimpleType(this Type type)
+        {
+            return
+                type.IsPrimitive ||
+                new Type[] {
+                    typeof(string),
+                    typeof(decimal),
+                    typeof(DateTime),
+                    typeof(DateTimeOffset),
+                    typeof(TimeSpan),
+                    typeof(Guid)
+                }.Contains(type) ||
+                type.IsEnum ||
+                // Nullable
+                (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) && IsSimpleType(type.GetGenericArguments()[0])) ||
+                // Specific object - but must check for anonymous object
+                Convert.GetTypeCode(type) != TypeCode.Object
+                ;
         }
     }
 }
