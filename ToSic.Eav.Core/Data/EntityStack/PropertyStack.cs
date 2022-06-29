@@ -34,7 +34,7 @@ namespace ToSic.Eav.Data
         private IImmutableList<KeyValuePair<string, IPropertyLookup>> _sources;
 
         public IImmutableList<KeyValuePair<string, IPropertyLookup>> SourcesReal => _sourcesReal.Get(GeneratorSourcesReal);
-        private readonly ValueGetOnce<IImmutableList<KeyValuePair<string, IPropertyLookup>>> _sourcesReal = new ValueGetOnce<IImmutableList<KeyValuePair<string, IPropertyLookup>>>();
+        private readonly GetOnce<IImmutableList<KeyValuePair<string, IPropertyLookup>>> _sourcesReal = new GetOnce<IImmutableList<KeyValuePair<string, IPropertyLookup>>>();
 
         private IImmutableList<KeyValuePair<string, IPropertyLookup>> GeneratorSourcesReal()
         {
