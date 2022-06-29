@@ -25,6 +25,7 @@ namespace ToSic.Eav
         /// <param name="protectedMethod">Name of the method we protect (for error messages)</param>
         /// <param name="paramNames">String with param-names to show, usually generated with a bunch of nameof(paramName) </param>
         /// <exception cref="Exception"></exception>
+        // TODO: REPLACE MOST calls with the Protect below, which doesn't need the name of the method calling - careful - param order is different
         public static void ProtectAgainstMissingParameterNames(string criticalParameter, string protectedMethod = null, string paramNames = null)
         {
             if (criticalParameter == null || criticalParameter != Protector)
