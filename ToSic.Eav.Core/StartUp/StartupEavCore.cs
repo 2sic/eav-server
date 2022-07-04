@@ -12,14 +12,13 @@ using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Persistence;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Fingerprint;
 
-namespace ToSic.Eav
+namespace ToSic.Eav.StartUp
 {
     public static class StartupEavCore
     {
