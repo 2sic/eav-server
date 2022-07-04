@@ -1,9 +1,7 @@
-﻿using System;
-using ToSic.Eav.Apps.Security;
+﻿using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -22,19 +20,22 @@ namespace ToSic.Eav.Context
             public ISite Site { get; }
             public IUser User { get; }
             public Generator<AppPermissionCheck> AppPermissionCheckGenerator { get; }
-            public Generator<IFeaturesInternal> FeaturesInternalGenerator { get; }
+            // 2022-07-04 2dm disabled, as it should now be handled at the requirements-level
+            //public Generator<IFeaturesInternal> FeaturesInternalGenerator { get; }
 
             public ContextOfSiteDependencies(
                 ISite site, 
                 IUser user,
-                Generator<AppPermissionCheck> appPermissionCheckGenerator,
-                Generator<IFeaturesInternal> featuresInternalGenerator
+                Generator<AppPermissionCheck> appPermissionCheckGenerator
+                // 2022-07-04 2dm disabled, as it should now be handled at the requirements-level
+                //Generator<IFeaturesInternal> featuresInternalGenerator
                 )
             {
                 Site = site;
                 User = user;
                 AppPermissionCheckGenerator = appPermissionCheckGenerator;
-                FeaturesInternalGenerator = featuresInternalGenerator;
+                // 2022-07-04 2dm disabled, as it should now be handled at the requirements-level
+                //FeaturesInternalGenerator = featuresInternalGenerator;
             }
         }
 
