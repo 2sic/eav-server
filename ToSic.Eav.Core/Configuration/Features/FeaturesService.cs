@@ -55,7 +55,20 @@ namespace ToSic.Eav.Configuration
 
         [PrivateApi]
         public string MsgMissingSome(IEnumerable<Guid> ids)
-            => $"Features {string.Join(", ", ids.Where(i => !Enabled(i)).Select(id => $"https://2sxc.org/r/f/{id}"))} not enabled - see also https://2sxc.org/help?tag=features";
+        {
+            var missing = ids
+                .Where(i => !Enabled(i))
+                .Select(id =>
+                {
+                    var feat = All.FirstOrDefault(f => f.Guid == id);
+                    return new { Id = id, feat?.NameId };
+                });
+
+            var messages = missing.Select(f => $"'{f.NameId}'");
+
+            return
+                $"Features {string.Join(", ", messages)} not enabled - see also https://r.2sxc.org/features";
+        }
 
 
         #region Static Caches
