@@ -9,8 +9,6 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("no good reason to publish this")]
     public class FeatureDefinition: IHasIdentityNameId
     {
-        public const string ConditionIsFeature = "feature";
-
         #region Constructors
 
         public FeatureDefinition(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security,
@@ -24,7 +22,7 @@ namespace ToSic.Eav.Configuration
             Ui = ui;
             Description = description;
             LicenseRules = licRules?.ToList() ?? new List<FeatureLicenseRule>(0);
-            Condition = new Condition(ConditionIsFeature, nameId);
+            Condition = new Condition(RequirementCheckFeature.ConditionIsFeature, nameId);
         }
 
 
@@ -35,7 +33,7 @@ namespace ToSic.Eav.Configuration
         internal FeatureDefinition(Guid unknownFeatureGuid)
         {
             Guid = unknownFeatureGuid;
-            Condition = new Condition(ConditionIsFeature, Guid.ToString());
+            Condition = new Condition(RequirementCheckFeature.ConditionIsFeature, Guid.ToString());
         }
 
         #endregion

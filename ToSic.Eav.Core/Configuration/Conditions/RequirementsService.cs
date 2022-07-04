@@ -1,0 +1,48 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ToSic.Eav.DI;
+using ToSic.Eav.Logging;
+
+namespace ToSic.Eav.Configuration
+{
+    /// <summary>
+    /// Internal service to check if a requirement has been met
+    /// </summary>
+    public class RequirementsService: HasLog
+    {
+        public RequirementsService(Lazy<ServiceSwitcher<IRequirementCheck>> checkers) : base(LogNames.Eav + "ReqSvc")
+            => Checkers = checkers;
+        protected Lazy<ServiceSwitcher<IRequirementCheck>> Checkers { get; }
+
+        public List<ConditionError> Check(IEnumerable<IHasRequirements> withRequirements) 
+            => withRequirements?.SelectMany(Check).ToList() ?? new List<ConditionError>();
+
+        public List<ConditionError> Check(IHasRequirements withRequirements) 
+            => Check(withRequirements?.Requirements);
+
+        public List<ConditionError> Check(List<Condition> requirements)
+        {
+            if (requirements == null || requirements.Count == 0) return new List<ConditionError>();
+            return requirements.Select(Check).Where(c => c != null).ToList();
+        }
+
+        public ConditionError Check(Condition condition)
+        {
+            if (condition == null) return null;
+
+            var checker = Checkers.Value.ByNameId(condition.Type);
+
+            // TODO: ERROR IF CHECKER NOT FOUND
+            // Must wait till we implement all checkers, ATM just feature
+            // Once other checkers like LicenseChecker are implemented
+            // We may refactor the license to just be a requirement
+            if (checker == null) return null;
+
+            if (checker.IsOk(condition)) return null;
+
+            return new ConditionError(condition,
+                $"Condition '{condition.Type}.{condition.NameId}' is not met. " + checker.InfoIfNotOk(condition));
+        }
+    }
+}

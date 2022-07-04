@@ -73,6 +73,10 @@ namespace ToSic.Eav.StartUp
 
             services.TryAddSingleton<LightSpeedStats>();
 
+            // V14 Requirements Checks - don't use try-add, as we'll add many
+            services.TryAddTransient<RequirementsService>();
+            services.AddTransient<IRequirementCheck, RequirementCheckFeature>();
+
             return services;
         }
 
