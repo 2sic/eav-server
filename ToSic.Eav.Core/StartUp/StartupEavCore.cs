@@ -20,7 +20,7 @@ using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav.StartUp
 {
-    public static class StartupEavCore
+    public static class StartUpEavCore
     {
         public static IServiceCollection AddEavCore(this IServiceCollection services)
         {

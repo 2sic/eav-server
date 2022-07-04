@@ -1,21 +1,20 @@
-﻿using ToSic.Eav.DataSources;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
-using ToSic.Eav.StartUp;
 using ToSic.Eav.WebApi;
 
-namespace ToSic.Eav
+namespace ToSic.Eav.StartUp
 {
 	/// <summary>
 	/// Global Eav Configuration
 	/// </summary>
-	public static class StartupEav
+	public static class StartUpEav
 	{
 	    /// <summary>
 	    /// Use this to setup the new DI container
