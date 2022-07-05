@@ -86,16 +86,18 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="name">name of the type</param>
         /// <returns>a type object or null if not found</returns>
+        [PublicApi]
         public IContentType GetContentType(string name)
             => _appTypesByName.ContainsKey(name)
                 ? _appTypesByName[name]
                 : ParentApp.GetContentType(name);
 
-	    /// <summary>
-	    /// Get a content-type by number / id. Will also check global types if needed.
-	    /// </summary>
-	    /// <param name="contentTypeId">id of the type as stored in the repository</param>
-	    /// <returns>a type object or null if not found</returns>
+		/// <summary>
+		/// Get a content-type by number / id. Will also check global types if needed.
+		/// </summary>
+		/// <param name="contentTypeId">id of the type as stored in the repository</param>
+		/// <returns>a type object or null if not found</returns>
+		[PublicApi]
 	    public IContentType GetContentType(int contentTypeId)
 	    {
             var found = _appTypesFromRepository.FirstOrDefault(c => c.Id == contentTypeId);
