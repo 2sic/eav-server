@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.StartUp;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests

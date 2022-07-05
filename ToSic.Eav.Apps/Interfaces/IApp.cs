@@ -76,7 +76,11 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         Query GetQuery(string name);
 
-        [PrivateApi]
+        // Note: was here a long time, marked as public in v14.7
+        /// <summary>
+        /// The stored / cached, read-only App State
+        /// </summary>
+        [PublicApi]
         AppState AppState { get; }
 
         #endregion

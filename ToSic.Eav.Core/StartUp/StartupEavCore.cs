@@ -12,16 +12,15 @@ using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Persistence;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Fingerprint;
 
-namespace ToSic.Eav
+namespace ToSic.Eav.StartUp
 {
-    public static class StartupEavCore
+    public static class StartUpEavCore
     {
         public static IServiceCollection AddEavCore(this IServiceCollection services)
         {
@@ -73,6 +72,10 @@ namespace ToSic.Eav
             services.TryAddTransient<SystemFingerprint>();
 
             services.TryAddSingleton<LightSpeedStats>();
+
+            // V14 Requirements Checks - don't use try-add, as we'll add many
+            services.TryAddTransient<RequirementsService>();
+            services.AddTransient<IRequirementCheck, RequirementCheckFeature>();
 
             return services;
         }

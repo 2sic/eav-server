@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Run;
+using ToSic.Eav.StartUp;
 
 namespace ToSic.Testing.Shared
 {

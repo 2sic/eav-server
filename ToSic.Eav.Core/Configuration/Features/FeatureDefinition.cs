@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using static ToSic.Eav.Configuration.RequirementCheckFeature;
 
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi("no good reason to publish this")]
     public class FeatureDefinition: IHasIdentityNameId
     {
-        public const string ConditionIsFeature = "feature";
-
         #region Constructors
 
         public FeatureDefinition(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security,

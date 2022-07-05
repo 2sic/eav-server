@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.WebApi.Dto;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.Formats
 {
@@ -74,8 +73,9 @@ namespace ToSic.Eav.WebApi.Formats
         public int? Index { get; set; }
 
         public bool ListHas() => Group != null || Parent != null;
-        public Guid ListParent() => Group?.Guid ?? Parent.Value;
-        public int ListIndex() => Group?.Index ?? Index.Value;
+        public Guid ListParent() => Group?.Guid ?? Parent 
+            ?? throw new ArgumentNullException(nameof(Parent),"Trying to access property 'Parent' to save in list, but it's null");
+        public int ListIndex(int fallback = 0) => Group?.Index ?? Index ?? fallback; // Fallback should be the max value
 
         public bool ListAdd() => Group?.Add ?? Add ?? false;
 
