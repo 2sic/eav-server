@@ -17,8 +17,8 @@ namespace ToSic.Eav.Apps.Parts
             Parent.Entities.UpdatePartsFromValues(target, values, SimpleDataController.DraftAndBranch(asDraft));
         }
 
-        public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft)
-            => FieldListUpdate(target, fields, asDraft, lists => lists.Add(index, values));
+        public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft, bool forceAddToEnd)
+            => FieldListUpdate(target, fields, asDraft, lists => lists.Add(forceAddToEnd ? null : (int?)index, values));
         
         public void FieldListRemove(IEntity target, string[] fields, int index, bool asDraft)
             => FieldListUpdate(target, fields, asDraft, lists => lists.Remove(index));

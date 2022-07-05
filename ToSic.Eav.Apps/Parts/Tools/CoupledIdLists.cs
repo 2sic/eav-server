@@ -39,7 +39,10 @@ namespace ToSic.Eav.Apps.Parts.Tools
         public DicNameObj Add(int? index, int?[] ids)
         {
             Log.A($"add content/pres at order:{index}");
-            index = index ?? Lists.First().Value.Count;
+            var max = Lists.First().Value.Count; // max is at the end of the list
+            index = index ?? max;
+            if (index > max) index = max;
+            if (index < 0) index = 0;
             var i = 0;
             Lists.ForEach(l => l.InsertOrAppend(index.Value, ids[i++]));
             return Lists.ToObject();
