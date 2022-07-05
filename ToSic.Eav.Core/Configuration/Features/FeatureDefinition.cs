@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
+using static ToSic.Eav.Configuration.RequirementCheckFeature;
 
 namespace ToSic.Eav.Configuration
 {
@@ -22,7 +23,7 @@ namespace ToSic.Eav.Configuration
             Ui = ui;
             Description = description;
             LicenseRules = licRules?.ToList() ?? new List<FeatureLicenseRule>(0);
-            Condition = new Condition(RequirementCheckFeature.ConditionIsFeature, nameId);
+            Condition = new Condition(ConditionIsFeature, nameId);
         }
 
 
@@ -33,7 +34,7 @@ namespace ToSic.Eav.Configuration
         internal FeatureDefinition(Guid unknownFeatureGuid)
         {
             Guid = unknownFeatureGuid;
-            Condition = new Condition(RequirementCheckFeature.ConditionIsFeature, Guid.ToString());
+            Condition = new Condition(ConditionIsFeature, Guid.ToString());
         }
 
         #endregion

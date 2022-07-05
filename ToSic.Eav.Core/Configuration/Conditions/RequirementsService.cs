@@ -15,8 +15,12 @@ namespace ToSic.Eav.Configuration
             => Checkers = checkers;
         protected Lazy<ServiceSwitcher<IRequirementCheck>> Checkers { get; }
 
-        public List<ConditionError> Check(IEnumerable<IHasRequirements> withRequirements) 
-            => withRequirements?.SelectMany(Check).ToList() ?? new List<ConditionError>();
+        public List<ConditionError> Check(IEnumerable<IHasRequirements> withRequirements)
+        {
+            var wrapLog = Log.Fn<List<ConditionError>>(startTimer: true);
+            var result = withRequirements?.SelectMany(Check).ToList() ?? new List<ConditionError>();
+            return wrapLog.Return(result, $"{result.Count} requirements failed");
+        }
 
         public List<ConditionError> Check(IHasRequirements withRequirements) 
             => Check(withRequirements?.Requirements);
