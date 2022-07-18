@@ -216,7 +216,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var templateRoot = Env.TemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, "2sexy");
             if (Directory.Exists(appTemplateRoot))
-                new FileManager(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
+                new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(templateRoot, false, importMessages);
             wrapLog.Done("ok");
         }
 
@@ -233,7 +233,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var globalTemplatesRoot = Env.GlobalTemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, "2sexyGlobal");
             if (Directory.Exists(appTemplateRoot))
-                new FileManager(appTemplateRoot).CopyAllFiles(globalTemplatesRoot, false, importMessages);
+                new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(globalTemplatesRoot, false, importMessages);
             wrapLog.Done("ok");
         }
 

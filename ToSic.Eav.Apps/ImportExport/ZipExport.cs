@@ -72,8 +72,8 @@ namespace ToSic.Eav.Apps.ImportExport
             _physicalAppPath = physicalAppPath;
             _physicalPathGlobal = physicalPathGlobal;
             Log = new Log("Zip.Exp", parentLog);
-            FileManager = new FileManager(_physicalAppPath);
-            FileManagerGlobal = new FileManager(physicalPathGlobal);
+            FileManager = new FileManager(_physicalAppPath).Init(Log);
+            FileManagerGlobal = new FileManager(physicalPathGlobal).Init(Log);
             AppRuntime.Init(new AppIdentity(_zoneId, _appId), true, Log);
             return this;
         }
