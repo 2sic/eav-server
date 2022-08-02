@@ -176,8 +176,14 @@ namespace ToSic.Eav.WebApi
         {
             Log.A($"get fields a#{_appId}, type:{staticName}");
             var appState = _appStates.Get(_appId);
+
             if (!(appState.GetContentType(staticName) is IContentType type))
-                throw new Exception("type should be a ContentType - something broke");
+            {
+                //throw new Exception("type should be a ContentType - something broke");
+                Log.A($"error, type:{staticName} is null, it is missing or it is not a ContentType - something broke");
+                return new List<ContentTypeFieldDto>();
+            }
+
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
             var hasAncestor = type.HasAncestor();
