@@ -22,7 +22,7 @@ namespace ToSic.Eav.Plumbing
         internal static List<Type> GetTypes(ILog log = null)
         {
             if (_typeCache != null) return _typeCache;
-            
+
             var wrapLog = log.Fn<List<Type>>(startTimer: true);
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             wrapLog.A($"GetTypes() - found {assemblies.Length} assemblies");
@@ -59,6 +59,12 @@ namespace ToSic.Eav.Plumbing
                 log.A($"had ReflectionTypeLoadException {e.Message} \n" +
                          "will continue with using Types.Where");
                 return e.Types.Where(t => t != null);
+            }
+            catch (Exception ex)
+            {
+                log.A($"None of the types from assembly '{assembly?.FullName}' could be loaded.");
+                log.Ex(ex);
+                return Enumerable.Empty<Type>();
             }
         }
     }
