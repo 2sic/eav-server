@@ -29,7 +29,7 @@ namespace ToSic.Eav.Configuration
         internal (string filePath, string fileContent) LoadFeaturesFile()
         {
             // folder with "features.json"
-            var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
+            var configurationsPath = _globalConfiguration.Value.ConfigFolder;
 
             // ensure that path to store files already exits
             Directory.CreateDirectory(configurationsPath);
@@ -124,7 +124,7 @@ namespace ToSic.Eav.Configuration
                     // reduce datetime serialization precision from 'yyyy-MM-ddTHH:mm:ss.FFFFFFFK'
                     new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-ddTHH:mm:ss" });
 
-                var configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
+                var configurationsPath = _globalConfiguration.Value.ConfigFolder;
 
                 // ensure that path to store files already exits
                 Directory.CreateDirectory(configurationsPath);

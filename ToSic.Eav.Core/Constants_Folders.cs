@@ -23,5 +23,15 @@
         /// This is for data-customizations on global 2sxc/environment, which won't get replaced on updates
         /// </summary>
         public const string FolderDataCustom = ".data-custom";
+
+        /// <summary>
+        /// TemporaryFolder in the global environment
+        /// </summary>
+        public const string TemporaryFolder = "_";
+
+        /// <summary>
+        /// InstructionsFolder in the global environment
+        /// </summary>
+        public const string InstructionsFolder = "ImportExport\\Instructions";
     }
 }

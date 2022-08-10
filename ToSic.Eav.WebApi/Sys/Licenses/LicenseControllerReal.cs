@@ -46,8 +46,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             get
             {
                 if (!string.IsNullOrEmpty(_configurationsPath)) return _configurationsPath;
-                _configurationsPath = Path.Combine(_globalConfiguration.Value.GlobalFolder, Constants.FolderDataCustom,
-                    FsDataConstants.ConfigFolder);
+                _configurationsPath =_globalConfiguration.Value.ConfigFolder;
 
                 // ensure that path to store files already exits
                 Directory.CreateDirectory(_configurationsPath);

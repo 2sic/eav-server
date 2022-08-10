@@ -46,12 +46,12 @@ namespace ToSic.Eav.Configuration.Licenses
         /// Pre-Load enabled / disabled global features
         /// </summary>
         [PrivateApi]
-        internal void LoadLicenses(string fingerprint, string globalFolder)
+        internal void LoadLicenses(string fingerprint, string configFolder)
         {
             var wrapLog = Log.Fn(startTimer: true);
             try
             {
-                var licensesStored = LicensesStoredInConfigFolder(globalFolder);
+                var licensesStored = LicensesStoredInConfigFolder(configFolder);
                 Log.A($"Found {licensesStored.Count} licenseStored in files");
                 var licenses = licensesStored.SelectMany(ls => LicensesStateBuilder(ls, fingerprint)).ToList();
                 var autoEnabled = AutoEnabledLicenses();
@@ -67,15 +67,14 @@ namespace ToSic.Eav.Configuration.Licenses
             }
         }
 
-        public List<LicenseStored> LicensesStoredInConfigFolder(string globalFolder)
+        public List<LicenseStored> LicensesStoredInConfigFolder(string configFolder)
         {
             var wrapLog = Log.Fn<List<LicenseStored>>();
-            var configurationsPath = Path.Combine(globalFolder, Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
             
             // ensure that path to store files already exits
-            Directory.CreateDirectory(configurationsPath);
+            Directory.CreateDirectory(configFolder);
 
-            var licensesStored = Directory.EnumerateFiles(configurationsPath, "*.license.json")
+            var licensesStored = Directory.EnumerateFiles(configFolder, "*.license.json")
                 .Select(File.ReadAllText)
                 .Select(JsonConvert.DeserializeObject<LicenseStored>)
                 .Where(licenses => licenses != null).ToList();
