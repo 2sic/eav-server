@@ -40,6 +40,12 @@ namespace ToSic.Eav.Apps.Security
 
 
         /// <summary>
+        /// Check if user is anonymous - also log the ID to assist in debugging
+        /// </summary>
+        /// <returns></returns>
+        protected bool UserIsAnonymous() => Log.Return($"UserId:{Context.User?.Id.ToString()}", () => Context.User?.IsAnonymous ?? true);
+
+        /// <summary>
         /// Check if user is super user
         /// </summary>
         /// <returns></returns>
@@ -50,7 +56,6 @@ namespace ToSic.Eav.Apps.Security
         /// </summary>
         /// <returns></returns>
         protected bool UserIsSiteAdmin() => Log.Return(() => Context.User?.IsAdmin ?? false);
-
 
         /// <summary>
         /// Verify that we're in the same zone, allowing admin/module checks
