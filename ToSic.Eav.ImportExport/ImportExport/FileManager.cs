@@ -12,6 +12,12 @@ namespace ToSic.Eav.ImportExport
 {
     public class FileManager : HasLog
     {
+        /// <summary>
+        /// optional json file in app root folder with exclude configuration
+        /// to define files and folders that will not be exported in app export
+        /// </summary>
+        private const string DotAppJson = ".app.json";
+
         public FileManager(string sourceFolder) : base("FileMan")
         {
             _sourceFolder = sourceFolder;
@@ -83,7 +89,7 @@ namespace ToSic.Eav.ImportExport
                     .ToList();
                 Log.A($"step 1, files:{_allTransferableFiles.Count()}");
 
-                _allTransferableFiles = ExcludeFilesBasedOnExcludeInPackageJson(_sourceFolder, _allTransferableFiles.ToList());
+                _allTransferableFiles = ExcludeFilesBasedOnExcludeInDotAppJson(_sourceFolder, _allTransferableFiles.ToList());
 
                 return wrapLog.ReturnAsOk(_allTransferableFiles);
             }
@@ -99,7 +105,7 @@ namespace ToSic.Eav.ImportExport
         private IEnumerable<string> _allFiles;
 
         /// <summary>
-        /// Exclude files based on 2sxc special exclude array in package.json
+        /// Exclude files based on 2sxc special exclude array in .app.json
         /// using simple wildcard patterns (like in dir cmd)
         /// </summary>
         /// <param name="sourceFolder"></param>
@@ -110,21 +116,21 @@ namespace ToSic.Eav.ImportExport
         /// https://www.nuget.org/packages/Microsoft.Extensions.FileSystemGlobbing
         /// that was skipped in initial implementation because it is additional external dependency
         /// </remarks>
-        private IEnumerable<string> ExcludeFilesBasedOnExcludeInPackageJson(string sourceFolder, List<string> allTransferableFiles)
+        private IEnumerable<string> ExcludeFilesBasedOnExcludeInDotAppJson(string sourceFolder, List<string> allTransferableFiles)
         {
             var wrapLog = Log.Fn<IEnumerable<string>>($"sourceFolder:{sourceFolder},allTransferableFiles:{allTransferableFiles.Count}");
 
-            var pathToPackageJson = Combine(sourceFolder, "package.json");
-            if (!File.Exists(pathToPackageJson)) return wrapLog.Return(allTransferableFiles, "ok, can't find 'package.json'");
+            var pathToDotAppJson = Combine(sourceFolder, DotAppJson);
+            if (!File.Exists(pathToDotAppJson)) return wrapLog.Return(allTransferableFiles, $"ok, can't find '{DotAppJson}'");
 
-            var jsonString = File.ReadAllText(pathToPackageJson);
-            if (string.IsNullOrEmpty(jsonString)) return wrapLog.Return(allTransferableFiles, "warning, package.json is empty");
+            var jsonString = File.ReadAllText(pathToDotAppJson);
+            if (string.IsNullOrEmpty(jsonString)) return wrapLog.Return(allTransferableFiles, $"warning, '{DotAppJson}' is empty");
 
             try
             {
                 var jObject = JObject.Parse(jsonString);
-                var excludeSearchPatterns = jObject["2sxc"]?["export"]?["exclude"]?.Select(e => ((string)e).Backslash().ToLowerInvariant()).ToArray();
-                if (excludeSearchPatterns == null) return wrapLog.Return(allTransferableFiles, "ok, can't find 2sxc exclude in 'package.json'");
+                var excludeSearchPatterns = jObject["export"]?["exclude"]?.Select(e => ((string)e).Backslash().ToLowerInvariant()).ToArray();
+                if (excludeSearchPatterns == null) return wrapLog.Return(allTransferableFiles, $"ok, can't find 2sxc exclude in '{DotAppJson}'");
 
                 var excludeFiles = new List<string>();
 
