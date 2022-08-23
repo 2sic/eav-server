@@ -86,17 +86,109 @@ ol {
 ol li::before {
     counter-increment: li;
     content: '.'counter(li); 
-    /* color: red; */
     display: inline-block; 
     width: 1em; margin-left: -1.5em;
     margin-right: 0.5em; 
     text-align: right; 
     direction: rtl;
+    font-weight: bold;
 }
 
-ol li ol li:: before {
-    color: blue;
+/* Hover guides - don't work, as the entire area is hovered */
+/* li:hover {
+  background-color: #ddd;
 }
+li:hover li {
+  background-color: #eee;
+}
+*/
+
+/* Put border around the first  */
+
+/* Color each level to better see which go together */
+ol li::before                   { color: black;         }
+ol ol li::before                { color: blue;          }
+ol ol ol li::before             { color: brown;         }
+ol ol ol ol li::before          { color: red;           }
+ol ol ol ol ol li::before       { color: darkorange;    }
+ol ol ol ol ol ol li::before    { color: firebrick;     }
+ol ol ol ol ol ol ol li::before { color: turquoise;     }
+ol ol ol ol ol ol ol ol li::before                   { color: black;        }
+ol ol ol ol ol ol ol ol ol li::before                { color: blue;         }
+ol ol ol ol ol ol ol ol ol ol li::before             { color: brown;        }
+ol ol ol ol ol ol ol ol ol ol ol li::before          { color: red;          }
+ol ol ol ol ol ol ol ol ol ol ol ol li::before       { color: darkorange;   }
+ol ol ol ol ol ol ol ol ol ol ol ol ol li::before    { color: firebrick;    }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol li::before { color: turquoise;    }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li::before                   { color: black;       }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li::before                { color: blue;        }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li::before             { color: brown;       }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li::before          { color: red;         }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li::before       { color: darkorange;  }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li::before    { color: firebrick;   }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li::before { color: turquoise;   }
+
+
+/* Guide Lines */
+ol li {
+  border-left-style: solid;
+  border-left-width: 1px;
+}
+
+ol li                   { border-left-color: black;         }
+ol ol li                { border-left-color: blue;          }
+ol ol ol li             { border-left-color: brown;         }
+ol ol ol ol li          { border-left-color: red;           }
+ol ol ol ol ol li       { border-left-color: darkorange;    }
+ol ol ol ol ol ol li    { border-left-color: firebrick;     }
+ol ol ol ol ol ol ol li { border-left-color: turquoise;     }
+ol ol ol ol ol ol ol ol li                   { border-left-color: black;         }
+ol ol ol ol ol ol ol ol ol li                { border-left-color: blue;          }
+ol ol ol ol ol ol ol ol ol ol li             { border-left-color: brown;         }
+ol ol ol ol ol ol ol ol ol ol ol li          { border-left-color: red;           }
+ol ol ol ol ol ol ol ol ol ol ol ol li       { border-left-color: darkorange;    }
+ol ol ol ol ol ol ol ol ol ol ol ol ol li    { border-left-color: firebrick;     }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol li { border-left-color: turquoise;     }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li                   { border-left-color: black;         }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li                { border-left-color: blue;          }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li             { border-left-color: brown;         }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li          { border-left-color: red;           }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li       { border-left-color: darkorange;    }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li    { border-left-color: firebrick;     }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li { border-left-color: turquoise;     }
+
+
+/***** Time Styling *****/
+
+span.time {
+  float: right;
+}
+span.time span.emoji {
+  font-size: smaller;
+}
+
+ol li                       span.time { color: black;         }
+ol ol li                    span.time { color: blue;          }
+ol ol ol li                 span.time { color: brown;         }
+ol ol ol ol li              span.time { color: red;           }
+ol ol ol ol ol li           span.time { color: darkorange;    }
+ol ol ol ol ol ol li        span.time { color: firebrick;     }
+ol ol ol ol ol ol ol li     span.time { color: turquoise;     }
+ol ol ol ol ol ol ol ol li                       span.time { color: black;         }
+ol ol ol ol ol ol ol ol ol li                    span.time { color: blue;          }
+ol ol ol ol ol ol ol ol ol ol li                 span.time { color: brown;         }
+ol ol ol ol ol ol ol ol ol ol ol li              span.time { color: red;           }
+ol ol ol ol ol ol ol ol ol ol ol ol li           span.time { color: darkorange;    }
+ol ol ol ol ol ol ol ol ol ol ol ol ol li        span.time { color: firebrick;     }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol li     span.time { color: turquoise;     }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li                       span.time { color: black;         }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li                    span.time { color: blue;          }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li                 span.time { color: brown;         }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li              span.time { color: red;           }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li           span.time { color: darkorange;    }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li        span.time { color: firebrick;     }
+ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li     span.time { color: turquoise;     }
+
 </style>";
 
         protected static string HoverLabel(string label, string text, string classes)

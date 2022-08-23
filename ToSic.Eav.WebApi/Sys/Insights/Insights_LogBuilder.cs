@@ -176,7 +176,11 @@ namespace ToSic.Eav.WebApi.Sys
             var seconds = e.Elapsed.TotalSeconds;
             var ms = seconds * 1000;
             var time = ms < 1000 ? $"{ms:##.####}ms" : $"{seconds:##.####}s";
-            return HtmlEncode($" ⌚ {time} ");
+            return Span(
+                " ",
+                Span(HtmlEncode($"⌚")).Class("emoji"),
+                $" {time} "
+            ).Class("time").ToString(); // "<span class='time'>" +  + "</span>";
         }
     }
 }
