@@ -162,17 +162,31 @@ ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li { border-left-
 
 span.time {
   float: right;
+  font-size: small;
 }
+/*
 span.time span.emoji {
   font-size: smaller;
 }
+*/
+
+span.time-of-total {
+  color: black;
+  font-weight: bold;
+    width: 33px;
+/*    font-size: small; */
+    display: inline-block;
+    text-align: right;
+}
 
 ol li                       span.time { color: black;         }
-ol ol li                    span.time { color: blue;          }
-ol ol ol li                 span.time { color: brown;         }
-ol ol ol ol li              span.time { color: red;           }
-ol ol ol ol ol li           span.time { color: darkorange;    }
-ol ol ol ol ol ol li        span.time { color: firebrick;     }
+ol ol li                    span.time { color: #222;          }
+ol ol ol li                 span.time { color: #444;         }
+ol ol ol ol li              span.time { color: #666;           }
+ol ol ol ol ol li           span.time { color: #888;    }
+ol ol ol ol ol ol li        span.time { color: #aaa;     }
+
+/*
 ol ol ol ol ol ol ol li     span.time { color: turquoise;     }
 ol ol ol ol ol ol ol ol li                       span.time { color: black;         }
 ol ol ol ol ol ol ol ol ol li                    span.time { color: blue;          }
@@ -188,17 +202,18 @@ ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li   
 ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li           span.time { color: darkorange;    }
 ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li        span.time { color: firebrick;     }
 ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li     span.time { color: turquoise;     }
-
+*/
 
 span.log-line:hover {
   background-color: #ddd;
 }
+
 </style>";
 
         protected static string HoverLabel(string label, string text, string classes)
             => Tag.Span(label).Class(classes).Title(text).ToString();
 
-        protected static string HtmlEncode(string text)
+        internal static string HtmlEncode(string text)
         {
             if (text == null) return "";
             var chars = HttpUtility.HtmlEncode(text).ToCharArray();

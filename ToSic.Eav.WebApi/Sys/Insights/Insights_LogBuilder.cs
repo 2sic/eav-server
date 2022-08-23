@@ -84,7 +84,7 @@ namespace ToSic.Eav.WebApi.Sys
                             $"{log.Entries.Count}",
                             HtmlEncode((firstIfExists?.Message).NeverNull().Ellipsis(75, "…")),
                             HtmlEncode(firstIfExists?.Result),
-                            ShowTime(firstIfExists)
+                            new InsightsTime().ShowTime(firstIfExists, default)
                         );
                     })
                     .ToArray<object>()));
@@ -105,23 +105,34 @@ namespace ToSic.Eav.WebApi.Sys
             lg.AppendLine("<ol>");
 
             var breadcrumb = new Stack<string>();
+            var times = new Stack<TimeSpan>();
 
+            var fullTime = log.Entries.FirstOrDefault()?.Elapsed ?? default;
+
+            var time = new InsightsTime(log.Entries.FirstOrDefault()?.Elapsed ?? default);
+            
             foreach (var e in log.Entries)
             {
                 // a wrap-close should happen before adding a line, since it must go up a level
                 if (e.WrapClose)
                 {
+                    // Go up one level
                     lg.AppendLine("</ol></li>");
                     if (breadcrumb.Count > 0) breadcrumb.Pop();
+                    if (times.Count > 0) times.Pop();
                 }
                 else
                 {
+                    // Create an entry
                     lg.AppendLine("<li>");
-                    lg.AppendLine(TreeDumpOneLine(e, breadcrumb.Count > 0 ? breadcrumb.Peek() : ""));
+                    lg.AppendLine(TreeDumpOneLine(e, breadcrumb.Count > 0 ? breadcrumb.Peek() : "", times.Count > 0 ? times.Peek() : default, time));
+                    // 
                     if (e.WrapOpen)
                     {
+                        // Go down one level
                         if (!e.WrapOpenWasClosed) lg.AppendLine("LOGGER WARNING: This logger was never closed");
                         breadcrumb.Push(e.ShortSource);
+                        times.Push(e.Elapsed);
                         lg.AppendLine("<ol>");
                     }
                     else lg.AppendLine("</li>");
@@ -133,7 +144,8 @@ namespace ToSic.Eav.WebApi.Sys
             return lg.ToString();
         }
 
-        private static string TreeDumpOneLine(Entry e, string parentName)
+
+        private static string TreeDumpOneLine(Entry e, string parentName, TimeSpan parentTime, InsightsTime time)
         {
             // if it's just a close, only repeat the result
             if (e.WrapClose)
@@ -163,7 +175,7 @@ namespace ToSic.Eav.WebApi.Sys
                    + (e.Result != null
                        ? $"{ResStart}{HtmlEncode(e.Result)}{ResEnd}"
                        : string.Empty)
-                   + ShowTime(e)
+                   + time.ShowTime(e, parentTime)
                    + (e.Code != null
                        ? " " + HoverLabel("C#", $"{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}", "codePeek")
                        : string.Empty)
@@ -171,19 +183,6 @@ namespace ToSic.Eav.WebApi.Sys
                 .Class("log-line")
                 .ToString();
         }
-
-        private static string ShowTime(Entry e)
-        {
-            if (e == null) return "";
-            if (e.Elapsed == TimeSpan.Zero) return "";
-            var seconds = e.Elapsed.TotalSeconds;
-            var ms = seconds * 1000;
-            var time = ms < 1000 ? $"{ms:##.####}ms" : $"{seconds:##.####}s";
-            return Span(
-                " ",
-                Span(HtmlEncode($"⌚")).Class("emoji"),
-                $" {time} "
-            ).Class("time").ToString(); // "<span class='time'>" +  + "</span>";
-        }
+        
     }
 }

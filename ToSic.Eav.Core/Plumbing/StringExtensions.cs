@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Plumbing
 {
@@ -26,7 +27,7 @@ namespace ToSic.Eav.Plumbing
 
         public static bool EqualsInsensitive(this string a, string b)
         {
-            if(a == null && b == null) return true;
+            if (a == null && b == null) return true;
             if (a == null) return false;
             return a.Equals(b, StringComparison.InvariantCultureIgnoreCase);
         }
@@ -36,6 +37,13 @@ namespace ToSic.Eav.Plumbing
             if (a == null && b == null) return true;
             if (a == null || b == null) return false;
             return a.IndexOf(b, 0, StringComparison.CurrentCultureIgnoreCase) != -1;
+        }
+
+        public static string Truncate(this string value, int maxLength)
+        {
+            if (value == null) return null;
+            if (maxLength == 0) return string.Empty;
+            return value.Length <= maxLength ? value : value.Substring(0, maxLength);
         }
 
 
