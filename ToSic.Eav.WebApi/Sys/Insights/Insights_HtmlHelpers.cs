@@ -189,6 +189,10 @@ ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li
 ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li        span.time { color: firebrick;     }
 ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li     span.time { color: turquoise;     }
 
+
+span.log-line:hover {
+  background-color: #ddd;
+}
 </style>";
 
         protected static string HoverLabel(string label, string text, string classes)

@@ -156,7 +156,8 @@ namespace ToSic.Eav.WebApi.Sys
 
             #endregion
 
-            return HoverLabel(label, e.Source, "logIds")
+            return Span(
+                HoverLabel(label, e.Source, "logIds")
                    + " - "
                    + HtmlEncode(e.Message)
                    + (e.Result != null
@@ -166,7 +167,9 @@ namespace ToSic.Eav.WebApi.Sys
                    + (e.Code != null
                        ? " " + HoverLabel("C#", $"{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}", "codePeek")
                        : string.Empty)
-                    + "\n";
+                    + "\n")
+                .Class("log-line")
+                .ToString();
         }
 
         private static string ShowTime(Entry e)
