@@ -1,5 +1,5 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,6 +17,7 @@ namespace ToSic.Eav.ImportExport
         /// to define files and folders that will not be exported in app export
         /// </summary>
         private const string DotAppJson = ".app.json";
+        private const string ProtectedFolder = "App_Data"; // IIS Request filtering default hidden segment
 
         public FileManager(string sourceFolder) : base("FileMan")
         {
@@ -78,18 +79,28 @@ namespace ToSic.Eav.ImportExport
 
                 var wrapLog = Log.Fn<IEnumerable<string>>();
 
-                // add folder slashes to ensure the term is part of a folder, not within a file-name
-                var exclAnyFolder = Settings.ExcludeFolders.Select(f => $"{DirectorySeparatorChar}{f}{DirectorySeparatorChar}").ToList();
-                var exclRootFolders = Settings.ExcludeRootFolders.Select(f => $"{Combine(_sourceFolder, f)}{DirectorySeparatorChar}").ToList();
-                var excFolders = exclAnyFolder.Union(exclRootFolders).ToList();
-                Log.A($"step 1, excFolders:{excFolders.Count()}");
+                var pathToDotAppJson = GetPathToDotAppJson(_sourceFolder);
+                if (File.Exists(pathToDotAppJson))
+                {
+                    // exclude files based on .app.json from v14.07.05
+                    _allTransferableFiles = ExcludeFilesBasedOnExcludeInDotAppJson(_sourceFolder, AllFiles.ToList()).ToList();
+                    Log.A($"exclude files based on {pathToDotAppJson}, files:{_allTransferableFiles.Count()}");
+                }
+                else
+                {
+                    // old hardcoded way of excluding files
+                    Log.A($"can't find {pathToDotAppJson}, exclude files on old way");
+                    // add folder slashes to ensure the term is part of a folder, not within a file-name
+                    var exclAnyFolder = Settings.ExcludeFolders.Select(f => $"{DirectorySeparatorChar}{f}{DirectorySeparatorChar}").ToList();
+                    var exclRootFolders = Settings.ExcludeRootFolders.Select(f => $"{Combine(_sourceFolder, f)}{DirectorySeparatorChar}").ToList();
+                    var excFolders = exclAnyFolder.Union(exclRootFolders).ToList();
+                    Log.A($"hardcoded, excFolders:{excFolders.Count()}");
 
-                _allTransferableFiles = AllFiles
-                    .Where(f => !excFolders.Any(ex => f.ToLowerInvariant().Contains(ex.ToLowerInvariant())))
-                    .ToList();
-                Log.A($"step 1, files:{_allTransferableFiles.Count()}");
-
-                _allTransferableFiles = ExcludeFilesBasedOnExcludeInDotAppJson(_sourceFolder, _allTransferableFiles.ToList());
+                    _allTransferableFiles = AllFiles
+                        .Where(f => !excFolders.Any(ex => f.ToLowerInvariant().Contains(ex.ToLowerInvariant())))
+                        .ToList();
+                    Log.A($"hardcoded, files:{_allTransferableFiles.Count()}");
+                }
 
                 return wrapLog.ReturnAsOk(_allTransferableFiles);
             }
@@ -164,5 +175,8 @@ namespace ToSic.Eav.ImportExport
             }
             return wrapLog.ReturnAsOk(allTransferableFiles);
         }
+
+        private static string GetPathToDotAppJson(string sourceFolder) => Combine(sourceFolder, ProtectedFolder, DotAppJson);
+
     }
 }
