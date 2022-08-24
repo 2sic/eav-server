@@ -52,7 +52,7 @@ namespace ToSic.Eav.ImportExport
                 var relativeFilePath = file.Replace(_sourceFolder, "");
                 var destinationFilePath = $"{destinationFolder}{DirectorySeparatorChar}{relativeFilePath}";
                 Log.A($"relFilePath:{relativeFilePath},destFilePath:{destinationFilePath}");
-                
+
                 Directory.CreateDirectory(GetDirectoryName(destinationFilePath) ?? string.Empty);
 
                 if (!File.Exists(destinationFilePath))
@@ -83,7 +83,7 @@ namespace ToSic.Eav.ImportExport
                 if (File.Exists(pathToDotAppJson))
                 {
                     // exclude files based on .app.json from v14.07.05
-                    _allTransferableFiles = ExcludeFilesBasedOnExcludeInDotAppJson(_sourceFolder, AllFiles.ToList()).ToList();
+                    _allTransferableFiles = ExcludeFilesBasedOnExcludeInDotAppJson(_sourceFolder).ToList();
                     Log.A($"exclude files based on {pathToDotAppJson}, files:{_allTransferableFiles.Count()}");
                 }
                 else
@@ -117,64 +117,142 @@ namespace ToSic.Eav.ImportExport
 
         /// <summary>
         /// Exclude files based on 2sxc special exclude array in .app.json
-        /// using simple wildcard patterns (like in dir cmd)
         /// </summary>
         /// <param name="sourceFolder"></param>
-        /// <param name="allTransferableFiles">array with all file paths to exclude from</param>
         /// <returns></returns>
-        /// <remarks>
-        /// better git-ignore like implementation can use globbing with Microsoft.Extensions.FileSystemGlobbing
-        /// https://www.nuget.org/packages/Microsoft.Extensions.FileSystemGlobbing
-        /// that was skipped in initial implementation because it is additional external dependency
-        /// </remarks>
-        private IEnumerable<string> ExcludeFilesBasedOnExcludeInDotAppJson(string sourceFolder, List<string> allTransferableFiles)
+        private IEnumerable<string> ExcludeFilesBasedOnExcludeInDotAppJson(string sourceFolder)
         {
-            var wrapLog = Log.Fn<IEnumerable<string>>($"sourceFolder:{sourceFolder},allTransferableFiles:{allTransferableFiles.Count}");
+            var wrapLog = Log.Fn<IEnumerable<string>>($"folderPath:{sourceFolder}");
 
-            var pathToDotAppJson = Combine(sourceFolder, DotAppJson);
-            if (!File.Exists(pathToDotAppJson)) return wrapLog.Return(allTransferableFiles, $"ok, can't find '{DotAppJson}'");
+            // validate source folder
+            if (!Directory.Exists(_sourceFolder))
+                return wrapLog.Return(new List<string>(), $"warning, can't find folder '{_sourceFolder}'");
 
-            var jsonString = File.ReadAllText(pathToDotAppJson);
-            if (string.IsNullOrEmpty(jsonString)) return wrapLog.Return(allTransferableFiles, $"warning, '{DotAppJson}' is empty");
+            // validate .app.json content
+            var jsonString = File.ReadAllText(GetPathToDotAppJson(_sourceFolder));
+            if (string.IsNullOrEmpty(jsonString))
+            {
+                // nothing to filter, just return all files for export
+                var allFiles = Directory.EnumerateFiles(_sourceFolder, "*.*", SearchOption.AllDirectories);
+                return wrapLog.Return(allFiles, $"warning, '{DotAppJson}' is empty");
+            }
 
+            List<string> excludeSearchPatterns;
+            // validate json
             try
             {
                 var jObject = JObject.Parse(jsonString);
-                var excludeSearchPatterns = jObject["export"]?["exclude"]?.Select(e => ((string)e).Backslash().ToLowerInvariant()).ToArray();
-                if (excludeSearchPatterns == null) return wrapLog.Return(allTransferableFiles, $"ok, can't find 2sxc exclude in '{DotAppJson}'");
-
-                var excludeFiles = new List<string>();
-
-                // prepare list of files to exclude using simple wildcard patterns
-                Log.A($"excludeSearchPatterns:{excludeSearchPatterns.Count()}");
-                foreach (var excludeSearchPattern in
-                         excludeSearchPatterns) // excludeSearchPattern parameter can contain a combination of valid literal path and wildcard (* and ?) characters
-                {
-                    try
-                    {
-                        var files = Directory.EnumerateFiles(sourceFolder, excludeSearchPattern, SearchOption.AllDirectories);
-                        excludeFiles.AddRange(files.Select(ex => ex.ToLowerInvariant()));
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Ex(e);
-                    }
-                }
-
-                // exclude files
-                Log.A($"excludeFiles:{excludeFiles.Count}");
-                if (excludeFiles.Any())
-                    allTransferableFiles = allTransferableFiles.Where(f => !excludeFiles.Contains(f.ToLowerInvariant())).ToList();
-
-                Log.A($"allTransferableFiles:{allTransferableFiles.Count}");
+                excludeSearchPatterns = jObject["export"]?["exclude"]?.Select(e => ((string)e).ToLowerInvariant().Trim().Backslash()).ToList();
             }
             catch (Exception e)
             {
-                Log.A("error, json is not valid");
                 Log.Ex(e);
+                var allFiles = Directory.EnumerateFiles(_sourceFolder, "*.*", SearchOption.AllDirectories);
+                return wrapLog.Return(allFiles, $"warning, json is not valid in '{DotAppJson}'");
             }
-            return wrapLog.ReturnAsOk(allTransferableFiles);
+
+            // validate exclude search patterns
+            if (excludeSearchPatterns == null || !excludeSearchPatterns.Any())
+            {
+                var allFiles = Directory.EnumerateFiles(_sourceFolder, "*.*", SearchOption.AllDirectories);
+                return wrapLog.Return(allFiles, $"warning, can't find 2sxc exclude in '{DotAppJson}'");
+            }
+
+            // prepare list of files to exclude using simple wildcard patterns
+            Log.A($"excludeSearchPatterns:{excludeSearchPatterns.Count}");
+
+            // *** EXCLUDE FOLDERS & FILES
+            var files = GetFilesRecursion(sourceFolder, excludeSearchPatterns);
+
+            return wrapLog.ReturnAsOk(files);
         }
+
+        private List<string> GetFilesRecursion(string folderPath, List<string> excludeSearchPatterns, List<string> allFiles = null)
+        {
+            if (allFiles == null) allFiles = ExcludeFiles(folderPath, excludeSearchPatterns).ToList();
+
+            foreach (var folder in ExcludeFolders(folderPath, excludeSearchPatterns).ToList())
+            {
+                allFiles.AddRange(ExcludeFiles(folder, excludeSearchPatterns).ToList());
+                GetFilesRecursion(folder, excludeSearchPatterns, allFiles);
+            }
+
+            return allFiles;
+        }
+
+        private static IEnumerable<string> ExcludeFolders(string folderPath, List<string> excludeSearchPatterns)
+        {
+            var folders = Directory.EnumerateDirectories(folderPath, "*.*", SearchOption.TopDirectoryOnly);
+            foreach (var excludeSearchPattern in excludeSearchPatterns)
+            {
+                folders = folders.Where(f => !f.ToLowerInvariant().Contains(excludeSearchPattern)).ToList();
+            }
+            return folders;
+        }
+
+        private static IEnumerable<string> ExcludeFiles(string folderPath, List<string> excludeSearchPatterns)
+        {
+            var files = Directory.EnumerateFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly);
+            foreach (var excludeSearchPattern in excludeSearchPatterns)
+            {
+                files = files.Where(f => !f.ToLowerInvariant().Contains(excludeSearchPattern)).ToList();
+            }
+            return files;
+        }
+
+        //private IEnumerable<string> ExcludeFolders(string folderPath, List<string> excludeSearchPatterns)
+        //{
+        //    var folders = Directory.EnumerateDirectories(folderPath, "*.*", SearchOption.TopDirectoryOnly);
+        //    // filter folders iteratively
+
+        //    var excludeFolder = new List<string>();
+        //    foreach (var excludeSearchPattern in excludeSearchPatterns)
+        //    {
+        //        try
+        //        {
+        //            var folderExcluded = Directory.EnumerateDirectories(folderPath, excludeSearchPattern.TrimPrefixSlash().TrimLastSlash().Backslash(), SearchOption.TopDirectoryOnly).ToList();
+        //            if (folderExcluded.Any())
+        //                excludeFolder.AddRange(folderExcluded.Select(ex => ex.ToLowerInvariant()).ToList());
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            //Log.Ex(e);
+        //        }
+        //    }
+
+        //    // exclude folders
+        //    if (excludeFolder.Any())
+        //        folders = folders.Where(f => !excludeFolder.Contains(f.ToLowerInvariant())).ToList();
+
+        //    return folders;
+        //}
+
+        //private IEnumerable<string> ExcludeFiles(string folderPath, List<string> excludeSearchPatterns)
+        //{
+        //    var files = Directory.EnumerateFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly);
+        //    // filter folders iteratively
+
+        //    var excludeFiles = new List<string>();
+        //    foreach (var excludeSearchPattern in excludeSearchPatterns)
+        //    {
+        //        try
+        //        {
+        //            var filesExcluded = Directory.EnumerateFiles(folderPath, excludeSearchPattern.TrimPrefixSlash().Backslash(), SearchOption.TopDirectoryOnly).ToList();
+        //            if (filesExcluded.Any())
+        //                excludeFiles.AddRange(filesExcluded.Select(file => file.ToLowerInvariant()).ToList());
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            //Log.Ex(e);
+        //        }
+        //    }
+
+        //    // exclude folders
+        //    if (excludeFiles.Any())
+        //        files = files.Where(f => !excludeFiles.Contains(f.ToLowerInvariant())).ToList();
+
+        //    return files;
+        //}
 
         private static string GetPathToDotAppJson(string sourceFolder) => Combine(sourceFolder, ProtectedFolder, DotAppJson);
 
