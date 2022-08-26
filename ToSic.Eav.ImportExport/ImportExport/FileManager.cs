@@ -142,7 +142,12 @@ namespace ToSic.Eav.ImportExport
             try
             {
                 var jObject = JObject.Parse(jsonString);
-                excludeSearchPatterns = jObject["export"]?["exclude"]?.Select(e => ((string)e).ToLowerInvariant().Trim().Backslash()).ToList();
+                excludeSearchPatterns = jObject["export"]?["exclude"]?
+                    .Select(e => ((string)e).Trim().Backslash())
+                    .Where(e => !string.IsNullOrEmpty(e) && !e.StartsWith("#")) // ignore empty lines, or comment lines that start with #
+                    .Select(e => e.StartsWith(@"\") ? Combine(_sourceFolder, e.Substring(1)) : e) // handle case with starting slash
+                    .Select(e => e.ToLowerInvariant())
+                    .ToList();
             }
             catch (Exception e)
             {
