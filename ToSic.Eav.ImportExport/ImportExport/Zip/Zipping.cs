@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
+using System.IO.Compression;
+using ToSic.Eav.Helpers;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Security.Files;
 
 namespace ToSic.Eav.ImportExport.Zip
 {
-    public class Zipping: HasLog
+    public class Zipping : HasLog
     {
 
         public Zipping(ILog parentLog) : base("Zip.Abstrc", parentLog, "starting")
@@ -15,15 +16,17 @@ namespace ToSic.Eav.ImportExport.Zip
 
         public MemoryStream ZipDirectoryIntoStream(string zipDirectory)
         {
-            var stream = new MemoryStream();
-            var zipStream = new ZipOutputStream(stream);
-            zipStream.SetLevel(6);
-            ZipFolder(zipDirectory, zipDirectory, zipStream);
-            zipStream.Finish();
-            return stream;
+            using (var stream = new MemoryStream())
+            {
+                using (var zipStream = new ZipArchive(stream, ZipArchiveMode.Create, true))
+                {
+                    ZipFolder(zipDirectory, zipDirectory, zipStream);
+                }
+                return stream;
+            }
         }
 
-        public void ZipFolder(string rootFolder, string currentFolder, ZipOutputStream zStream)
+        public void ZipFolder(string rootFolder, string currentFolder, ZipArchive zStream)
         {
 
             var subFolders = Directory.GetDirectories(currentFolder);
@@ -31,53 +34,14 @@ namespace ToSic.Eav.ImportExport.Zip
                 ZipFolder(rootFolder, folder, zStream);
 
             var relativePath = currentFolder.Substring(rootFolder.Length) + "\\";
-            
             foreach (var file in Directory.GetFiles(currentFolder))
                 AddFileToZip(zStream, relativePath, file);
         }
 
-
-
-        private void AddFileToZip(ZipOutputStream zStream, string relativePath, string file)
+        private void AddFileToZip(ZipArchive zStream, string relativePath, string file)
         {
-            var buffer = new byte[4096];
             var fileRelativePath = (relativePath.Length > 1 ? relativePath : string.Empty) + Path.GetFileName(file);
-
-            var fileDateTimeModified = DateTime.Now;
-            try
-            {
-                fileDateTimeModified = File.GetLastWriteTime(file);
-            }
-            catch { /* ignore */ }
-
-            var entry = new ZipEntry(fileRelativePath)
-            {
-                DateTime = fileDateTimeModified, // DateTime.Now,
-                // unicode support must be added when we drop DNN 7.4.2 support some day
-                // https://github.com/2sic/2sxc/issues/2485
-                // 2021-08-17 Future: use IsUnicodeText, but because DNN 7.4.2 still has an old ICSharp v0.86.0.518, we cannot use this property yet
-                // entry.IsUnicodeText = true;
-                // ...instead we must set the flag
-                // but it doesn't work - unsure why, but according to the ICSharp history, Unicode wasn't added till v1.0 (https://github.com/icsharpcode/SharpZipLib/wiki/Release-History)
-                // Flags = 0x0800 // 2048; // this should have the same effect as IsUnicodeText
-            };
-
-            using (var fs = File.OpenRead(file))
-            {
-                // Setting the Size provides WinXP built-in extractor compatibility,
-                // but if not available, you can set zipOutputStream.UseZip64 = UseZip64.Off instead.
-                entry.Size = fs.Length;
-
-                zStream.PutNextEntry(entry);
-
-                int sourceBytes;
-                do
-                {
-                    sourceBytes = fs.Read(buffer, 0, buffer.Length);
-                    zStream.Write(buffer, 0, sourceBytes);
-
-                } while (sourceBytes > 0);
-            }
+            zStream.CreateEntryFromFile(file, fileRelativePath, CompressionLevel.Optimal);
         }
 
 
@@ -89,23 +53,18 @@ namespace ToSic.Eav.ImportExport.Zip
         public void ExtractZipFile(Stream zipStream, string outFolder, bool allowCodeImport)
         {
             var wrapLog = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
-            var file = new ZipFile(zipStream);
-
-            try
+            using (var file = new ZipArchive(zipStream))
             {
-                foreach (ZipEntry entry in file)
+                foreach (var entry in file.Entries)
                 {
-                    if (entry.IsDirectory)
-                        continue;
-                    var fileName = entry.Name;
+                    // check for illegal file paths in zip
+                    CheckZipEntry(entry);
 
-                    var entryStream = file.GetInputStream(entry);
-
-                    var fullPath = Path.Combine(outFolder, fileName);
+                    var fullPath = Path.Combine(outFolder, entry.FullName);
                     var directoryName = Path.GetDirectoryName(fullPath);
                     if (!string.IsNullOrEmpty(directoryName))
                     {
-                        if(!Directory.Exists(directoryName))
+                        if (!Directory.Exists(directoryName))
                             Log.A($"Create temp path:{directoryName} (len:{directoryName.Length})");
                         Directory.CreateDirectory(directoryName);
                     }
@@ -114,7 +73,7 @@ namespace ToSic.Eav.ImportExport.Zip
                         Log.W($"file name is very long - could cause trouble:{fullPath}");
 
                     // enhanced security check
-                    var isCode = FileNames.IsKnownCodeExtension(fileName);
+                    var isCode = FileNames.IsKnownCodeExtension(entry.Name);
                     if (isCode)
                     {
                         Log.A($"code file detected:{fullPath}");
@@ -123,23 +82,24 @@ namespace ToSic.Eav.ImportExport.Zip
                             Log.A("Code file import not permitted - will throw error");
                             wrapLog.Done("error");
                             throw new Exception("Importing code files is not permitted - you need super-user permissions to do this. " +
-                                                $"The process was stopped on the file '{fileName}'");
+                                                $"The process was stopped on the file '{entry.FullName}'");
                         }
                     }
 
-                    // Unzip File in buffered chunks
-                    using (var streamWriter = File.Create(fullPath))
-                    {
-                        entryStream.CopyTo(streamWriter, 4096);
-                    }
+                    // Unzip File
+                    entry.ExtractToFile(fullPath);
                 }
-            }
-            finally
-            {
-                file.Close();
             }
 
             wrapLog.Done("ok");
+        }
+
+        // Check for illegal zip file path
+        public static void CheckZipEntry(ZipArchiveEntry input)
+        {
+            var fullName = input.FullName.ForwardSlash();
+            if (fullName.StartsWith("..") || fullName.Contains("/../"))
+                throw new Exception("Illegal Zip File Path");
         }
 
         #endregion
