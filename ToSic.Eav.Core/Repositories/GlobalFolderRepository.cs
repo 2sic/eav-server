@@ -29,14 +29,12 @@ namespace ToSic.Eav.Repositories
             get
             {
                 if (_config.DataFolder == null) return new List<string>();
-                var root = _config.DataFolder;
-                if (root.EndsWith(Constants.FolderData))
-                    root = root.Substring(0, root.Length - Constants.FolderData.Length).TrimLastSlash();
+                var dataRoot = DataFolder.GetDataRoot(_config.DataFolder);
                 var result = new List<string>
                     {
-                        System.IO.Path.Combine(root, Constants.FolderData),
-                        System.IO.Path.Combine(root, Constants.FolderDataBeta),
-                        System.IO.Path.Combine(root, Constants.FolderDataCustom)
+                        System.IO.Path.Combine(dataRoot, Constants.FolderData),
+                        System.IO.Path.Combine(dataRoot, Constants.FolderDataBeta),
+                        System.IO.Path.Combine(dataRoot, Constants.FolderDataCustom)
                     };
                 return result;
             }

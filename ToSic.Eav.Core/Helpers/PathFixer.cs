@@ -15,7 +15,7 @@ namespace ToSic.Eav.Helpers
 
 
         /// <summary>
-        /// Convert all "/" characters to "\" characters
+        /// Convert all "\" characters to "/" characters
         /// </summary>
         public static string ForwardSlash(this string original)
             => original?.Replace("\\", "/");

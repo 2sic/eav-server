@@ -56,9 +56,10 @@ namespace ToSic.Eav.Apps.ImportExport
 
             try
             {
-                // ensure temp directory and unzip to there
-                if (!Directory.Exists(temporaryDirectory))
-                    Directory.CreateDirectory(temporaryDirectory);
+                // create temp directory unless exists
+                Directory.CreateDirectory(temporaryDirectory);
+
+                // unzip to temp directory
                 new Zipping(Log).ExtractZipFile(zipStream, temporaryDirectory, AllowCodeImport);
 
                 // Loop through each root-folder.
@@ -135,21 +136,25 @@ namespace ToSic.Eav.Apps.ImportExport
         private void ImportApp(string rename, string appDirectory, List<Message> importMessages)
         {
             var wrapLog = Log.Fn($"{nameof(rename)}:'{rename}', {nameof(appDirectory)}:'{appDirectory}', ...");
-            
-            // Import XML file(s)
-            foreach (var xmlFileName in Directory.GetFiles(appDirectory, "App.xml"))
-                ImportAppXmlAndFiles(rename, appDirectory, xmlFileName, importMessages);
+
+            // migrate old app.xml and 2sexy/.data/app.xml to 2sexy/App_Data
+            MigrateForImportAppDataFile(appDirectory);
+
+            // Import app.xml file(s) when is located in appDirectory/2sexy/App_Data
+            foreach (var _ in Directory.GetFiles(Path.Combine(appDirectory, Constants.ToSxcFolder, Constants.AppDataProtectedFolder), Constants.AppDataFile))
+                ImportAppXmlAndFiles(rename, appDirectory, importMessages);
             
             wrapLog.Done("ok");
         }
 
-        private void ImportAppXmlAndFiles(string rename, string appDirectory, string xmlFileName, List<Message> importMessages)
+        private void ImportAppXmlAndFiles(string rename, string appDirectory, List<Message> importMessages)
         {
             var wrapLog = Log.Fn($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
             
             int appId;
             var importer = _xmlImpExpFilesLazy.Value.Init(null, false, Log); // new XmlImportWithFiles(Log);
-            var imp = new ImportXmlReader(Path.Combine(appDirectory, xmlFileName), importer, Log);
+
+            var imp = new ImportXmlReader(Path.Combine(appDirectory, Constants.ToSxcFolder, Constants.AppDataProtectedFolder, Constants.AppDataFile), importer, Log);
 
             if (imp.IsAppImport)
             {
@@ -216,7 +221,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var templateRoot = Env.TemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, "2sexy");
             if (Directory.Exists(appTemplateRoot))
-                new FileManager(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
+                new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(templateRoot, false, importMessages);
             wrapLog.Done("ok");
         }
 
@@ -233,7 +238,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var globalTemplatesRoot = Env.GlobalTemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, "2sexyGlobal");
             if (Directory.Exists(appTemplateRoot))
-                new FileManager(appTemplateRoot).CopyAllFiles(globalTemplatesRoot, false, importMessages);
+                new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(globalTemplatesRoot, false, importMessages);
             wrapLog.Done("ok");
         }
 
@@ -249,6 +254,99 @@ namespace ToSic.Eav.Apps.ImportExport
             }
             wrapLog.Done();
         }
+
+        /// <summary>
+        /// for import only, migrate app.xml or old 2sexy/.data/app.xml to 2sexy/App_Data
+        /// </summary>
+        /// <param name="appRootPath"></param>
+        /// <param name="xmlFileName"></param>
+        public static void MigrateForImportAppDataFile(string appRootPath)
+        {
+            var oldAppFilePath = Path.Combine(appRootPath, Constants.AppDataFile);
+            var oldDataAppFilePath = Path.Combine(appRootPath, Constants.ToSxcFolder, Constants.FolderData, Constants.AppDataFile);
+            if (!File.Exists(oldAppFilePath) && !File.Exists(oldDataAppFilePath)) return;
+
+            Directory.CreateDirectory(Path.Combine(appRootPath, Constants.ToSxcFolder, Constants.AppDataProtectedFolder));
+            var newFilePath = Path.Combine(appRootPath, Constants.ToSxcFolder, Constants.AppDataProtectedFolder, Constants.AppDataFile);
+
+            if (File.Exists(oldDataAppFilePath))
+            {
+                if (File.Exists(newFilePath)) File.Delete(newFilePath);
+                File.Move(oldDataAppFilePath, newFilePath);
+            }
+
+            if (File.Exists(oldAppFilePath))
+            {
+                if (File.Exists(newFilePath)) File.Delete(newFilePath);
+                File.Move(oldAppFilePath, newFilePath);
+            }
+        }
+
+
+        /// <summary>
+        /// migrate old .data/app.xml to App_Data
+        /// </summary>
+        /// <param name="appRootPath"></param>
+        public static void MigrateOldAppDataFile(string appRootPath)
+        {
+            var oldDataAppFilePath = Path.Combine(appRootPath, Constants.FolderData, Constants.AppDataFile);
+            if (!File.Exists(oldDataAppFilePath)) return;
+
+            Directory.CreateDirectory(Path.Combine(appRootPath, Constants.AppDataProtectedFolder));
+            var newFilePath = Path.Combine(appRootPath, Constants.AppDataProtectedFolder, Constants.AppDataFile);
+
+            if (File.Exists(newFilePath)) File.Delete(newFilePath);
+            File.Move(oldDataAppFilePath, newFilePath);
+
+            //// commented cody will move/copy .data to App_Data with all content
+            //var oldFolderPath = Path.Combine(appRootPath, Eav.Constants.FolderData);
+            //if (!Directory.Exists(oldFolderPath)) return;
+
+            //var newFolderPath = Path.Combine(appRootPath, Eav.Constants.AppDataProtectedFolder);
+            //if (!Directory.Exists(newFolderPath))
+            //{
+            //    Directory.Move(oldFolderPath, newFolderPath);
+            //}
+            //else
+            //{
+            //    CopyDirectory(oldFolderPath, newFolderPath, true);
+            //    Directory.Delete(oldFolderPath, true);
+            //}
+        }
+
+        ///// <summary>
+        ///// copy directory with its content
+        ///// based on https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
+        ///// </summary>
+        ///// <param name="sourceDir"></param>
+        ///// <param name="destinationDir"></param>
+        ///// <param name="recursive"></param>
+        ///// <exception cref="DirectoryNotFoundException"></exception>
+        //private static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
+        //{
+        //    // Get information about the source directory
+        //    var dir = new DirectoryInfo(sourceDir);
+
+        //    // Check if the source directory exists
+        //    if (!dir.Exists)
+        //        return; //throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+        //    // Cache directories before we start copying
+        //    var dirs = dir.GetDirectories();
+
+        //    // Create the destination directory
+        //    Directory.CreateDirectory(destinationDir);
+
+        //    // Get the files in the source directory and copy to the destination directory
+        //    foreach (var file in dir.GetFiles())
+        //        file.CopyTo(Path.Combine(destinationDir, file.Name));
+
+        //    if (!recursive) return;
+
+        //    // If recursive and copying subdirectories, recursively call this method
+        //    foreach (var subDir in dirs)
+        //        CopyDirectory(subDir.FullName, Path.Combine(destinationDir, subDir.Name), true);
+        //}
 
     }
 }

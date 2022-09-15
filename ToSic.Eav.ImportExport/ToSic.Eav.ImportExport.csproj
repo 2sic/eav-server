@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net472;netstandard2.0;</TargetFrameworks>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RootNamespace>ToSic.Eav</RootNamespace>
     <Deterministic>true</Deterministic>
@@ -17,18 +17,6 @@
     <!-- end: Don't generate... -->
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <!--ATM we're still using v.0.81 which isn't available on nuget-->
-    <!--<PackageReference Include="SharpZipLib" Version="0.86.0" />-->
-    <Reference Include="SharpZipLib">
-      <HintPath>..\Dependencies\SharpZipLib\SharpZipLib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="SharpZipLib" Version="1.2.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfoInherited.cs" Link="Properties\AssemblyInfoInherited.cs" />
   </ItemGroup>
@@ -39,6 +27,10 @@
 
   <ItemGroup>
     <Folder Include="ToSic.Eav.Convert\" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <Reference Include="System.IO.Compression" />
   </ItemGroup>
 
 </Project>

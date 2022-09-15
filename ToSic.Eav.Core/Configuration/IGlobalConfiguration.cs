@@ -31,5 +31,18 @@
         /// </summary>
         /// <returns>The folder, can be null if it was never set</returns>
         string AssetsVirtualUrl { get; set; }
+
+        /// <summary>
+        /// The absolute folder where the configurations are stored.
+        /// Used for licenses and features.
+        /// </summary>
+        string ConfigFolder { get; set; }
+
+
+        /// <summary>
+        /// The absolute folder where the instructions are stored.
+        /// Used for app exports.
+        /// </summary>
+        string InstructionsFolder { get; set; }
     }
 }

@@ -23,7 +23,7 @@ namespace ToSic.Eav.Configuration
         /// <inheritdoc />
         public string TemporaryFolder
         {
-            get => _temporaryFolder ?? Path.Combine(GlobalFolder, "_");
+            get => _temporaryFolder ?? Path.Combine(GlobalFolder, Constants.TemporaryFolder);
             set => _temporaryFolder = CorrectFolderOrErrorIfInvalid(value, nameof(TemporaryFolder));
         }
 
@@ -41,6 +41,20 @@ namespace ToSic.Eav.Configuration
             set => _assetsVirtualUrl = CorrectFolderOrErrorIfInvalid(value, nameof(AssetsVirtualUrl));
         }
 
+        /// <inheritdoc />
+        public string ConfigFolder
+        {
+            get => _configFolder ?? Path.Combine(Helpers.DataFolder.GetDataRoot(DataFolder), Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
+            set => _configFolder = CorrectFolderOrErrorIfInvalid(value, nameof(ConfigFolder));
+        }
+
+        /// <inheritdoc />
+        public string InstructionsFolder
+        {
+            get => _instructionsFolder ?? Path.Combine(Helpers.DataFolder.GetDataRoot(DataFolder), Constants.InstructionsFolder);
+            set => _instructionsFolder = CorrectFolderOrErrorIfInvalid(value, nameof(InstructionsFolder));
+        }
+
         private static string CorrectFolderOrErrorIfInvalid(string value, string fieldName) 
             => value?.Backslash().TrimLastSlash() ?? throw new Exception(ErrorMessage(fieldName));
 
@@ -52,5 +66,7 @@ namespace ToSic.Eav.Configuration
         private static string _globalFolder;
         private static string _globalSiteFolder;
         private static string _assetsVirtualUrl;
+        private static string _configFolder;
+        private static string _instructionsFolder;
     }
 }

@@ -48,7 +48,7 @@ namespace ToSic.Eav.Context
         bool IsDesigner { get; }
 
         /// <summary>
-        /// This is still WIP. 
+        /// Info if the user is anonymous / not logged in. 
         /// </summary>
         bool IsAnonymous { get; }
     }
