@@ -75,7 +75,7 @@ namespace ToSic.Eav.ImportExport
                 var pathToDotAppJson = GetPathToDotAppJson(_sourceFolder);
                 if (File.Exists(pathToDotAppJson))
                 {
-                    // exclude files based on .app.json from v14.07.05
+                    // exclude files based on .app.json from v14.08
                     _allTransferableFiles = ExcludeFilesBasedOnExcludeInDotAppJson(_sourceFolder).ToList();
                     Log.A($"exclude files based on {pathToDotAppJson}, files:{_allTransferableFiles.Count()}");
                 }
