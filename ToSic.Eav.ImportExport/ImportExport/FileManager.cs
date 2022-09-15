@@ -12,13 +12,6 @@ namespace ToSic.Eav.ImportExport
 {
     public class FileManager : HasLog
     {
-        /// <summary>
-        /// optional json file in app root folder with exclude configuration
-        /// to define files and folders that will not be exported in app export
-        /// </summary>
-        private const string DotAppJson = ".app.json";
-        private const string ProtectedFolder = "App_Data"; // IIS Request filtering default hidden segment
-
         public FileManager(string sourceFolder) : base("FileMan")
         {
             _sourceFolder = sourceFolder;
@@ -134,7 +127,7 @@ namespace ToSic.Eav.ImportExport
             {
                 // nothing to filter, just return all files for export
                 var allFiles = Directory.EnumerateFiles(_sourceFolder, "*.*", SearchOption.AllDirectories);
-                return wrapLog.Return(allFiles, $"warning, '{DotAppJson}' is empty");
+                return wrapLog.Return(allFiles, $"warning, '{Constants.DotAppJson}' is empty");
             }
 
             List<string> excludeSearchPatterns;
@@ -153,14 +146,14 @@ namespace ToSic.Eav.ImportExport
             {
                 Log.Ex(e);
                 var allFiles = Directory.EnumerateFiles(_sourceFolder, "*.*", SearchOption.AllDirectories);
-                return wrapLog.Return(allFiles, $"warning, json is not valid in '{DotAppJson}'");
+                return wrapLog.Return(allFiles, $"warning, json is not valid in '{Constants.DotAppJson}'");
             }
 
             // validate exclude search patterns
             if (excludeSearchPatterns == null || !excludeSearchPatterns.Any())
             {
                 var allFiles = Directory.EnumerateFiles(_sourceFolder, "*.*", SearchOption.AllDirectories);
-                return wrapLog.Return(allFiles, $"warning, can't find 2sxc exclude in '{DotAppJson}'");
+                return wrapLog.Return(allFiles, $"warning, can't find 2sxc exclude in '{Constants.DotAppJson}'");
             }
 
             // prepare list of files to exclude using simple wildcard patterns
@@ -259,7 +252,7 @@ namespace ToSic.Eav.ImportExport
         //    return files;
         //}
 
-        private static string GetPathToDotAppJson(string sourceFolder) => Combine(sourceFolder, ProtectedFolder, DotAppJson);
+        private static string GetPathToDotAppJson(string sourceFolder) => Combine(sourceFolder, Constants.AppDataProtectedFolder, Constants.DotAppJson);
 
     }
 }
