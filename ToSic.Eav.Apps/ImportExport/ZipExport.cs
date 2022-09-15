@@ -22,13 +22,12 @@ namespace ToSic.Eav.Apps.ImportExport
         private int _appId;
         private int _zoneId;
         private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
-        private const string SourceControlDataFolder = Constants.FolderData;
+        private const string SourceControlDataFolder = Constants.AppDataProtectedFolder; // Constants.FolderData;
         private const string SourceControlDataFile = Constants.AppDataFile;
         private readonly string _blankGuid = Guid.Empty.ToString();
         private const string ZipFolderForPortalFiles = "PortalFiles";
         private const string ZipFolderForAppStuff = "2sexy";
         private const string ZipFolderForGlobalAppStuff = "2sexyGlobal";
-        private const string AppXmlFileName = "App.xml";
 
         public FileManager FileManager;
         private string _physicalAppPath;
@@ -81,21 +80,32 @@ namespace ToSic.Eav.Apps.ImportExport
         public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false)
         {
             var path = _physicalAppPath + "\\" + SourceControlDataFolder;
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+
+            // migrate old .data to App_Data also here
+            // to ensure that older export is overwritten
+            ZipImport.MigrateOldAppDataFile(_physicalAppPath);
+
+            // create App_Data unless exists
+            Directory.CreateDirectory(path);
 
             // generate the XML & save
             var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
             var xml = xmlExport.GenerateNiceXml();
             File.WriteAllText(Path.Combine(path, SourceControlDataFile), xml);
-
         }
 
         public MemoryStream ExportApp(bool includeContentGroups = false, bool resetAppGuid = false)
         {
             // generate the XML
             var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
-    
+
+            // migrate old .data to App_Data also here
+            // to ensure that older export is overwritten
+            ZipImport.MigrateOldAppDataFile(_physicalAppPath);
+
+            // create App_Data unless exists
+            Directory.CreateDirectory(Path.Combine(_physicalAppPath, Constants.AppDataProtectedFolder));
+
             #region Copy needed files to temporary directory
 
             var messages = new List<Message>();
@@ -103,8 +113,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             var temporaryDirectoryPath = Path.Combine(_globalConfiguration.TemporaryFolder, randomShortFolderName);
 
-            if (!Directory.Exists(temporaryDirectoryPath))
-                Directory.CreateDirectory(temporaryDirectoryPath);
+            Directory.CreateDirectory(temporaryDirectoryPath); // create temp dir unless exists
 
             AddInstructionsToPackageFolder(temporaryDirectoryPath);
 
@@ -114,6 +123,8 @@ namespace ToSic.Eav.Apps.ImportExport
             var sexyDirectory = appDirectory.CreateSubdirectory(ZipFolderForAppStuff);
             var globalSexyDirectory = appDirectory.CreateSubdirectory(ZipFolderForGlobalAppStuff);
             var portalFilesDirectory = appDirectory.CreateSubdirectory(ZipFolderForPortalFiles);
+
+
 
             // Copy app folder
             if (Directory.Exists(_physicalAppPath))
@@ -130,28 +141,25 @@ namespace ToSic.Eav.Apps.ImportExport
             {
                 var portalFilePath = Path.Combine(portalFilesDirectory.FullName, Path.GetDirectoryName(file.RelativePath));
 
-                if (!Directory.Exists(portalFilePath))
-                    Directory.CreateDirectory(portalFilePath);
+                Directory.CreateDirectory(portalFilePath); // create temp dir unless exists
 
-                if (File.Exists(file.Path))
+                if (!File.Exists(file.Path)) continue;
+
+                var fullPath = Path.Combine(portalFilesDirectory.FullName, file.RelativePath);
+                try
                 {
-                    var fullPath = Path.Combine(portalFilesDirectory.FullName, file.RelativePath);
-                    try
-                    {
-                        File.Copy(file.Path, fullPath);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Error on " + fullPath + " (" + fullPath.Length + ")", e);
-                    }
+                    File.Copy(file.Path, fullPath);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Error on " + fullPath + " (" + fullPath.Length + ")", e);
                 }
             }
             #endregion
 
-
             // Save export xml
             var xml = xmlExport.GenerateNiceXml();
-            File.AppendAllText(Path.Combine(appDirectory.FullName, AppXmlFileName), xml);
+            File.WriteAllText(Path.Combine(appDirectory.FullName, Constants.ToSxcFolder, Constants.AppDataProtectedFolder, Constants.AppDataFile), xml);
 
             // Zip directory and return as stream
             var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");

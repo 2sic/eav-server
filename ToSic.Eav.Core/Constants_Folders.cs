@@ -20,6 +20,11 @@
         public const string AppDataProtectedFolder = "App_Data";
 
         /// <summary>
+        /// Folder in app export/import zip, that contains 2sxc application files
+        /// </summary>
+        public const string ToSxcFolder = "2sexy";
+
+        /// <summary>
         /// app.xml for git-sync
         /// </summary>
         public const string AppDataFile = "app.xml";
