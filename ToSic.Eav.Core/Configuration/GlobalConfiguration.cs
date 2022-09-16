@@ -55,6 +55,13 @@ namespace ToSic.Eav.Configuration
             set => _instructionsFolder = CorrectFolderOrErrorIfInvalid(value, nameof(InstructionsFolder));
         }
 
+        /// <inheritdoc />
+        public string AppDataTemplateFolder
+        {
+            get => _appDataTemplateFolder ?? Path.Combine(Helpers.DataFolder.GetDataRoot(DataFolder), Constants.AppDataProtectedFolder);
+            set => _appDataTemplateFolder = CorrectFolderOrErrorIfInvalid(value, nameof(AppDataTemplateFolder));
+        }
+
         private static string CorrectFolderOrErrorIfInvalid(string value, string fieldName) 
             => value?.Backslash().TrimLastSlash() ?? throw new Exception(ErrorMessage(fieldName));
 
@@ -68,5 +75,6 @@ namespace ToSic.Eav.Configuration
         private static string _assetsVirtualUrl;
         private static string _configFolder;
         private static string _instructionsFolder;
+        private static string _appDataTemplateFolder;
     }
 }

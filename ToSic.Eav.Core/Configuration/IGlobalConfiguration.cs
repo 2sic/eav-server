@@ -44,5 +44,11 @@
         /// Used for app exports.
         /// </summary>
         string InstructionsFolder { get; set; }
+
+        /// <summary>
+        /// The absolute folder where the template of App_Data with app.json are stored.
+        /// Used when new app is created.
+        /// </summary>
+        string AppDataTemplateFolder { get; set; }
     }
 }
