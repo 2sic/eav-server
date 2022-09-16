@@ -33,7 +33,7 @@
         /// optional json file in App_Data folder with exclude configuration
         /// to define files and folders that will not be exported in app export
         /// </summary>
-        public const string DotAppJson = "app.json";
+        public const string AppJson = "app.json";
 
         /// <summary>
         /// the .databeta (this is for testing only, will never be in the distribution)

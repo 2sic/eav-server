@@ -127,7 +127,7 @@ namespace ToSic.Eav.ImportExport
             {
                 // nothing to filter, just return all files for export
                 var allFiles = Directory.EnumerateFiles(_sourceFolder, "*.*", SearchOption.AllDirectories);
-                return wrapLog.Return(allFiles, $"warning, '{Constants.DotAppJson}' is empty");
+                return wrapLog.Return(allFiles, $"warning, '{Constants.AppJson}' is empty");
             }
 
             List<string> excludeSearchPatterns;
@@ -146,14 +146,14 @@ namespace ToSic.Eav.ImportExport
             {
                 Log.Ex(e);
                 var allFiles = Directory.EnumerateFiles(_sourceFolder, "*.*", SearchOption.AllDirectories);
-                return wrapLog.Return(allFiles, $"warning, json is not valid in '{Constants.DotAppJson}'");
+                return wrapLog.Return(allFiles, $"warning, json is not valid in '{Constants.AppJson}'");
             }
 
             // validate exclude search patterns
             if (excludeSearchPatterns == null || !excludeSearchPatterns.Any())
             {
                 var allFiles = Directory.EnumerateFiles(_sourceFolder, "*.*", SearchOption.AllDirectories);
-                return wrapLog.Return(allFiles, $"warning, can't find 2sxc exclude in '{Constants.DotAppJson}'");
+                return wrapLog.Return(allFiles, $"warning, can't find 2sxc exclude in '{Constants.AppJson}'");
             }
 
             // prepare list of files to exclude using simple wildcard patterns
@@ -252,7 +252,7 @@ namespace ToSic.Eav.ImportExport
         //    return files;
         //}
 
-        private static string GetPathToDotAppJson(string sourceFolder) => Combine(sourceFolder, Constants.AppDataProtectedFolder, Constants.DotAppJson);
+        private static string GetPathToDotAppJson(string sourceFolder) => Combine(sourceFolder, Constants.AppDataProtectedFolder, Constants.AppJson);
 
     }
 }
