@@ -75,7 +75,7 @@ namespace ToSic.Eav.ImportExport
                 var pathToDotAppJson = GetPathToDotAppJson(_sourceFolder);
                 if (File.Exists(pathToDotAppJson))
                 {
-                    // exclude files based on .app.json from v14.08
+                    // exclude files based on app.json from v14.08
                     _allTransferableFiles = ExcludeFilesBasedOnExcludeInDotAppJson(_sourceFolder).ToList();
                     Log.A($"exclude files based on {pathToDotAppJson}, files:{_allTransferableFiles.Count()}");
                 }
@@ -109,7 +109,7 @@ namespace ToSic.Eav.ImportExport
         private IEnumerable<string> _allFiles;
 
         /// <summary>
-        /// Exclude files based on 2sxc special exclude array in .app.json
+        /// Exclude files based on 2sxc special exclude array in app.json
         /// </summary>
         /// <param name="sourceFolder"></param>
         /// <returns></returns>
@@ -121,7 +121,7 @@ namespace ToSic.Eav.ImportExport
             if (!Directory.Exists(_sourceFolder))
                 return wrapLog.Return(new List<string>(), $"warning, can't find folder '{_sourceFolder}'");
 
-            // validate .app.json content
+            // validate app.json content
             var jsonString = File.ReadAllText(GetPathToDotAppJson(_sourceFolder));
             if (string.IsNullOrEmpty(jsonString))
             {
