@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.ImportExport.Json.V1
@@ -17,15 +17,15 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// </summary>
         public int TargetType;
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string String;
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public Guid? Guid;
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public int? Number;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string String;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public Guid? Guid;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int? Number;
         
         [PrivateApi("only used internally for now, name may change")]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public bool? Singleton;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool? Singleton;
 
 
         [PrivateApi("only used internally for now")]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string Title;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string Title;
     }
 }

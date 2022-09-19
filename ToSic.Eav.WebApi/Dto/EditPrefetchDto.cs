@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.WebApi.Dto
 {
@@ -8,19 +8,19 @@ namespace ToSic.Eav.WebApi.Dto
         /// <summary>
         /// Dictionary where each field contains a list of ADAM items
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Dictionary<string, Dictionary<string, IEnumerable<AdamItemDto>>> Adam { get; set; }
 
         /// <summary>
         /// Prefetched entities for entity picker
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public IEnumerable<EntityForPickerDto> Entities { get; set; }
 
         /// <summary>
         /// Prefetched links for hyperlink fields
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Dictionary<string, LinkInfoDto> Links { get; set; }
     }
 }

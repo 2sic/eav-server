@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
@@ -10,6 +10,7 @@ using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Configuration
 {
@@ -122,7 +123,7 @@ namespace ToSic.Eav.Configuration
                     return wrapLog.Return(stored, "converted to new features.json");
 
                 // return features stored
-                return wrapLog.Return(JsonConvert.DeserializeObject<FeatureListStored>(fileContent), "ok, features loaded");
+                return wrapLog.Return(JsonSerializer.Deserialize<FeatureListStored>(fileContent, SerializerOptions.SxcUnsafeJsonSerializerOptions), "ok, features loaded");
             }
             catch (Exception e)
             {

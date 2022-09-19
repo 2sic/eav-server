@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.Json;
 using Newtonsoft.Json.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
@@ -43,8 +44,8 @@ namespace ToSic.Eav.WebApi.App
                 {
                     case "string":
                     case "hyperlink":
-                        if (foundValue is string)
-                            cleanedNewItem.Add(attrName, foundValue.ToString());
+                        if (foundValue is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.String)
+                            cleanedNewItem.Add(attrName, jsonElement.ToString());
                         else
                             throw ValueMappingError(attrDef, foundValue);
                         break;

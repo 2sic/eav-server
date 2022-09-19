@@ -5,8 +5,9 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.WebApi.Plumbing
 {
@@ -29,7 +30,7 @@ namespace ToSic.Eav.WebApi.Plumbing
         public override HttpResponseMessage Json(object json)
         {
             var responseMessage = ApiController.Request.CreateResponse(HttpStatusCode.OK);
-            responseMessage.Content = new StringContent(JsonConvert.SerializeObject(json), Encoding.UTF8, MimeHelper.Json);
+            responseMessage.Content = new StringContent(JsonSerializer.Serialize(json, SerializerOptions.SxcAttributeJsonSerializerOptions), Encoding.UTF8, MimeHelper.Json);
             return responseMessage;
         }
 

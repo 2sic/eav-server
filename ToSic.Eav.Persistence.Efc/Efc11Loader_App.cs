@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -74,7 +73,7 @@ namespace ToSic.Eav.Persistence.Efc
             if (string.IsNullOrWhiteSpace(appSysSettings))
                 return wrapLog.Return(0, "none found");
 
-            var sysSettings = JsonConvert.DeserializeObject<AppSysSettings>(appInDb.SysSettings);
+            var sysSettings = JsonSerializer.Deserialize<AppSysSettings>(appInDb.SysSettings, SerializerOptions.SxcAttributeJsonSerializerOptions);
             if (!sysSettings.Inherit || sysSettings.AncestorAppId == 0) 
                 return wrapLog.Return(0, "data found but inherit not active");
 

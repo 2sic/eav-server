@@ -1,6 +1,7 @@
 ﻿using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.WebApi.Validation
 {
@@ -16,9 +17,9 @@ namespace ToSic.Eav.WebApi.Validation
 
             try
             {
-                JToken.Parse(strInput);
+                JsonNode.Parse(strInput);
             }
-            catch (JsonReaderException)
+            catch (JsonException)
             {
                 //  exception in parsing json
                 return false;

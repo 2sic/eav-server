@@ -1,12 +1,12 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Security.Fingerprint;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Configuration
 {
@@ -52,7 +52,7 @@ namespace ToSic.Eav.Configuration
         /// <returns>features stored</returns>
         internal FeatureListStored ConvertOldFeaturesFile(string filePath, string fileContent)
         {
-            var fileJson = JObject.Parse(fileContent);
+            var fileJson = JsonNode.Parse(fileContent).AsObject();
 
             // check json format in "features.json" to find is it old version (v12)
             if (fileJson["_"]?["V"] != null && (int)fileJson["_"]["V"] == 1) // detect old "features.json" format (v12)
@@ -78,18 +78,18 @@ namespace ToSic.Eav.Configuration
         /// Get features from json old format (v12)
         /// </summary>
         /// <param name="json"></param>
-        private FeatureListStored GetFeaturesFromOldFormat(JObject json)
+        private FeatureListStored GetFeaturesFromOldFormat(JsonObject json)
         {
             var features = new FeatureListStored();
 
             var fs = (string)json["Entity"]["Attributes"]["Custom"]["Features"]["*"];
-            var oldFeatures = JObject.Parse(fs);
+            var oldFeatures = JsonNode.Parse(fs).AsObject();
 
             // update finger print
             //features.Fingerprint = (string)oldFeatures["fingerprint"];
             features.Fingerprint = _fingerprint.Value.GetFingerprint();
 
-            foreach (var f in (JArray)oldFeatures["features"])
+            foreach (var f in oldFeatures["features"].AsArray())
             {
                 features.Features.Add(new FeatureConfig()
                 {
@@ -119,10 +119,7 @@ namespace ToSic.Eav.Configuration
                 features.Fingerprint = _fingerprint.Value.GetFingerprint();
 
                 // save new format (v13)
-                var fileContent = JsonConvert.SerializeObject(features,
-                    //JsonSettings.Defaults()
-                    // reduce datetime serialization precision from 'yyyy-MM-ddTHH:mm:ss.FFFFFFFK'
-                    new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-ddTHH:mm:ss" });
+                var fileContent = JsonSerializer.Serialize(features, SerializerOptions.FeaturesJsonSerializerOptions);
 
                 var configurationsPath = _globalConfiguration.Value.ConfigFolder;
 
@@ -174,27 +171,28 @@ namespace ToSic.Eav.Configuration
                 
                 // if features.json is missing, we still need empty list of stored features so we can create new one on save
                 if (fileContent == null)
-                    fileContent = JsonConvert.SerializeObject(new FeatureListStored(),
-                        new IsoDateTimeConverter() {DateTimeFormat = "yyyy-MM-ddTHH:mm:ss"});
+                    fileContent = JsonSerializer.Serialize(new FeatureListStored(), SerializerOptions.FeaturesJsonSerializerOptions);
 
-                var fileJson = JObject.Parse(fileContent);
+                // handle old 'features.json' format
+                var stored = ConvertOldFeaturesFile(filePath, fileContent);
+                if (stored != null) // if old features are converted, load fileContent features in new format
+                    (filePath, fileContent) = LoadFeaturesFile();
+
+                var fileJson = JsonNode.Parse(fileContent).AsObject();
                 foreach (var change in changes)
                 {
-                    var feature = ((JArray)fileJson["features"]).FirstOrDefault(f => (Guid)f["id"] == change.FeatureGuid);
+                    var feature = (fileJson["features"].AsArray()).FirstOrDefault(f => (Guid)f["id"] == change.FeatureGuid);
                     if (feature == null) // insert
                     {
-                        var featureConfig = JsonConvert.SerializeObject(FeatureConfigBuilder(change),
-                            //JsonSettings.Defaults()
-                            // reduce datetime serialization precision from 'yyyy-MM-ddTHH:mm:ss.FFFFFFFK'
-                            new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-ddTHH:mm:ss" });
-                        ((JArray)fileJson["features"]).Add(JObject.Parse(featureConfig));
+                        var featureConfig = JsonSerializer.Serialize(FeatureConfigBuilder(change), SerializerOptions.FeaturesJsonSerializerOptions);
+                        (fileJson["features"].AsArray()).Add(JsonNode.Parse(featureConfig).AsObject());
                     }
                     else
                     {
                         if (change.Enabled.HasValue) // update
                             feature["enabled"] = change.Enabled.Value;
                         else // delete
-                            feature.Remove();
+                            fileJson["features"].AsArray().Remove(feature);
                     }
                 }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using ToSic.Eav.Plumbing;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
@@ -59,10 +59,10 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests
         public void FromJsonAlwaysDictionaries()
         {
             var jsonArray = "[5,3,4]";
-            IsFalse(JsonConvert.DeserializeObject(jsonArray).IsAnonymous());
+            IsFalse(JsonSerializer.Deserialize<int[]>(jsonArray).IsAnonymous());
 
             var jsonObject = "{ \"key\": 27, \"key2\": 42 }";
-            IsFalse(JsonConvert.DeserializeObject(jsonObject).IsAnonymous());
+            IsFalse(JsonSerializer.Deserialize<object>(jsonObject).IsAnonymous());
 
         }
     }

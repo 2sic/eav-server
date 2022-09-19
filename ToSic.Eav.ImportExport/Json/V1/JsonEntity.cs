@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.ImportExport.Json.V1
 {
@@ -22,15 +22,15 @@ namespace ToSic.Eav.ImportExport.Json.V1
         public JsonAttributes Attributes;
 
         /// <remarks>V 1.0</remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string Owner;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public string Owner;
 
         /// <remarks>V 1.0</remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public JsonMetadataFor For;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public JsonMetadataFor For;
 
         /// <remarks>V 1.0</remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonEntity> Metadata;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public List<JsonEntity> Metadata;
 
         /// <remarks>V 1.1</remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonAsset> Assets { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public List<JsonAsset> Assets { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.ImportExport.Json.V1
 {
@@ -9,6 +9,6 @@ namespace ToSic.Eav.ImportExport.Json.V1
         public string Type;
         public string InputType;    // added 2019-09-02 for 2sxc 10.03 to enhance UI handling
         public bool IsTitle;
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonEntity> Metadata;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public List<JsonEntity> Metadata;
     }
 }

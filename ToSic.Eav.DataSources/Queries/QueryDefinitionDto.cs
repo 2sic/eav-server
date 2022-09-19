@@ -1,11 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.DataSources.Queries
 {
 
     public class QueryDefinitionDto
     {
-        public Dictionary<string, object> Pipeline;
-        public readonly List<Dictionary<string, object>> DataSources = new List<Dictionary<string, object>>();
+        [JsonConstructor]
+        public QueryDefinitionDto(Dictionary<string, object> pipeline, List<Dictionary<string, object>> dataSources) =>
+            (Pipeline, DataSources) = (pipeline, dataSources);
+
+        public QueryDefinitionDto() { }
+
+        public Dictionary<string, object> Pipeline { get; set; }
+        public List<Dictionary<string, object>> DataSources { get; } = new List<Dictionary<string, object>>();
     }
 }

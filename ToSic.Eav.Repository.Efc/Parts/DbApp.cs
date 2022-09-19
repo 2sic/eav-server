@@ -1,7 +1,8 @@
 ﻿using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
@@ -34,7 +35,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         Inherit = true,
                         AncestorAppId = inheritAppId.Value
                     };
-                    var asJson = JsonConvert.SerializeObject(sysSettings);
+                    var asJson = JsonSerializer.Serialize(sysSettings, SerializerOptions.SxcAttributeJsonSerializerOptions);
                     newApp.SysSettings = asJson;
                 }
             }

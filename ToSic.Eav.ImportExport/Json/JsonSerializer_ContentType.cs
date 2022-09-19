@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -15,7 +15,7 @@ namespace ToSic.Eav.ImportExport.Json
         {
             var package = ToPackage(contentType, false);
 
-            var simple = JsonConvert.SerializeObject(package, JsonSettings.Defaults());
+            var simple = System.Text.Json.JsonSerializer.Serialize(package, SerializerOptions.SxcAttributeJsonSerializerOptions);
             return simple;
         }
 

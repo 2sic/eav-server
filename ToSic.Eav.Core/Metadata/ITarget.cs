@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 
@@ -28,28 +28,32 @@ namespace ToSic.Eav.Metadata
         /// - It must be an int, not a <see cref="TargetTypes"/> enum, because the DB could hold values which are not in the enum
         /// </remarks>
         /// <returns>An ID from the system which registers all the types of things that can be described. See also <see cref="ITargetTypes"/>.</returns>
-        [JsonProperty("Target", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("Target")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         int TargetType { get; }
 
         /// <summary>
         /// A string key identifying a target. 
         /// </summary>
         /// <returns>The string key of the target. Null if the identifier is not a string.</returns>
-        [JsonProperty("String", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("String")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         string KeyString { get; }
 
         /// <summary>
         /// A number (int) key identifying a target. 
         /// </summary>
         /// <returns>The number key of the target. Null if the identifier is not a string.</returns>
-        [JsonProperty("Number", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("Number")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         int? KeyNumber { get; }
 
         /// <summary>
         /// A GUID key identifying a target. 
         /// </summary>
         /// <returns>The GUID key of the target. Null if the identifier is not a string.</returns>
-        [JsonProperty("Guid", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("Guid")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         Guid? KeyGuid { get; }
 
         [JsonIgnore]

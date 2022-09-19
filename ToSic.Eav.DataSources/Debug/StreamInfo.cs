@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.DataSources.Debug
 {
@@ -21,7 +20,7 @@ namespace ToSic.Eav.DataSources.Debug
         /// <remarks>
         /// Before sending in a web-api it must be converted, but the converter is not available in the DataSources project, so it must be handled at API level
         /// </remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public object /*IDictionary<string, object>*/ ErrorData;
         
         [JsonIgnore]

@@ -1,5 +1,5 @@
 using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Metadata
@@ -56,7 +56,6 @@ namespace ToSic.Eav.Metadata
 
         [JsonIgnore]
         [PrivateApi("WIP v13")] public string Title { get; set; }
-
         public string[] Recommendations { get; set; } = Array.Empty<string>();
     }
 }

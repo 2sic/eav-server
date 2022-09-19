@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using ToSic.Eav.Metadata;
 using static ToSic.Eav.Metadata.Decorators;
 
@@ -60,25 +60,25 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool? IsObsolete { get; set; }
 
         /// <summary>
         /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public string ObsoleteMessage { get; set; }
 
         /// <summary>
         /// WIP 12.10 Recommendation status
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool? IsRecommended { get; }
 
         /// <summary>
         /// WIP 12.10 Default selection status
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool? IsDefault { get; }
 
         #endregion

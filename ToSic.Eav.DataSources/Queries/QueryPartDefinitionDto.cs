@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSources.Queries
         {
             var attributes = part.Entity.AsDictionary();
 
-            attributes[QueryConstants.VisualDesignerData] = JsonConvert.DeserializeObject(part.VisualDesignerData);
+            attributes[QueryConstants.VisualDesignerData] = JsonNode.Parse(part.VisualDesignerData).AsObject();
 
             // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
             attributes[QueryConstants.PartAssemblyAndType] = part.DataSourceType;

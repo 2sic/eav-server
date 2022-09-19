@@ -17,8 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Configuration.Licenses

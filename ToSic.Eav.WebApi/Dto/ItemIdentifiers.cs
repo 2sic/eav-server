@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.WebApi.Dto;
 
@@ -11,6 +11,7 @@ namespace ToSic.Eav.WebApi.Formats
         /// <summary>
         /// simple entity identifier (to edit existing)...
         /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int EntityId { get; set; }
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace ToSic.Eav.WebApi.Formats
         /// Used in ContentBlock scenarios (where an item is in the content/presentation field)
         /// or when editing / adding things to an entity-list like slides in a swiper.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Guid? Parent { get; set; }
 
         /// <summary>
@@ -60,7 +61,7 @@ namespace ToSic.Eav.WebApi.Formats
         /// The field on the parent where this item is anchored. <see cref="Parent"/>
         /// Must be an Entity-List. 
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Field { get; set; }
 
 
@@ -88,6 +89,7 @@ namespace ToSic.Eav.WebApi.Formats
 
         #region New EditInfo for v13 / Shared Apps
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public EditInfoDto EditInfo { get; set; }
 
         #endregion
@@ -125,7 +127,7 @@ namespace ToSic.Eav.WebApi.Formats
         /// It is possible that is required to solve "inner-inner-content" issue.
         /// Moved from Group.ContentBlockAppId, because "Group" properties are flattened to its parent "Header".
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? ContentBlockAppId { get; set; }
 
         #endregion

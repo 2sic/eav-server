@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataFormats.EavLight
@@ -12,10 +12,10 @@ namespace ToSic.Eav.DataFormats.EavLight
     [InternalApi_DoNotUse_MayChangeWithoutNotice("DTO objects are only publicly documented but can change with time. You usually will not need them in your code. ")]
     public class EavLightEntityReference
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public int? Id;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int? Id;
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string Title;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public string Title;
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public Guid? Guid;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public Guid? Guid;
     }
 }

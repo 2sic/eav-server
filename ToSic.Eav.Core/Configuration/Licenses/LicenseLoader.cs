@@ -14,16 +14,17 @@
  * So asking for support to finance advanced features is not asking for much. 
  *
  */
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
@@ -76,7 +77,7 @@ namespace ToSic.Eav.Configuration.Licenses
 
             var licensesStored = Directory.EnumerateFiles(configFolder, "*.license.json")
                 .Select(File.ReadAllText)
-                .Select(JsonConvert.DeserializeObject<LicenseStored>)
+                .Select(j => JsonSerializer.Deserialize<LicenseStored>(j))
                 .Where(licenses => licenses != null).ToList();
 
             Log.A($"licensesStored: {licensesStored.Count}");

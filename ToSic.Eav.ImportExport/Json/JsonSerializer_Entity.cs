@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Serialization;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Json
@@ -14,10 +14,10 @@ namespace ToSic.Eav.ImportExport.Json
     {
         public override string Serialize(IEntity entity) => Serialize(entity, 0);
 
-        public string Serialize(IEntity entity, int metadataDepth) => JsonConvert.SerializeObject(new JsonFormat
+        public string Serialize(IEntity entity, int metadataDepth) => System.Text.Json.JsonSerializer.Serialize(new JsonFormat
         {
             Entity = ToJson(entity, metadataDepth)
-        }, JsonSettings.Defaults());
+        }, SerializerOptions.SxcUnsafeJsonSerializerOptions);
 
         public JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
         {

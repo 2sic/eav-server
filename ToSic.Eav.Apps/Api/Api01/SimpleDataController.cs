@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Apps.Security;
@@ -11,7 +12,6 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Permissions;
@@ -280,8 +280,8 @@ namespace ToSic.Eav.Api.Api01
         {
             // it is not clear why we are doing type conversion to string (so it will stay like that)
             // but string conversion is causing issue with DateTime (2sxc#2658) so we should not convert DateTime to string
-            if (original is JValue jValue && jValue.Type is JTokenType.Date) // JTokenType.Date
-                return jValue.Value as DateTime?;
+            if (original is JsonValue jValue && jValue.GetValue<JsonElement>().TryGetDateTime(out var dateTime)) // JTokenType.Date
+                return dateTime;
 
             // If it's not System.DateTime, ToString() it
             // Note 2022-02-11 2dm/STV we believe this is a forced unwrap from the JValue
