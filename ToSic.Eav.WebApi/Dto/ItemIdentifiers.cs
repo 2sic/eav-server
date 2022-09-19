@@ -62,7 +62,8 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public bool? Add
         {
-            get => _add ?? Group?.Add;
+            // 2022-09-19 2dm - WIP, part of #cleanUpDuplicateGroupHeaders
+            get => _add/* ?? Group?.Add*/;
             set => _add = value;
         }
         private bool? _add;
@@ -75,9 +76,10 @@ namespace ToSic.Eav.WebApi.Formats
         public bool ListHas() => Group != null || Parent != null;
         public Guid ListParent() => Group?.Guid ?? Parent 
             ?? throw new ArgumentNullException(nameof(Parent),"Trying to access property 'Parent' to save in list, but it's null");
-        public int ListIndex(int fallback = 0) => Group?.Index ?? Index ?? fallback; // Fallback should be the max value
+        public int ListIndex(int fallback = 0) => /*Group?.Index ??*/ Index ?? fallback; // Fallback should be the max value
 
-        public bool ListAdd() => Group?.Add ?? Add ?? false;
+        // 2022-09-19 2dm - WIP, part of #cleanUpDuplicateGroupHeaders
+        public bool ListAdd() => /*Group?.Add ??*/ Add ?? false;
 
         #endregion
 
@@ -86,6 +88,28 @@ namespace ToSic.Eav.WebApi.Formats
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public EditInfoDto EditInfo { get; set; }
 
+        #endregion
+
+
+        #region Move Group Fields to here
+
+        /// <summary>
+        /// Determines that an empty slot is allowed / possible
+        /// This will usually affect the UI in the possible options
+        /// </summary>
+        /// <remarks>
+        /// WIP in v14.09 - to replace Group.SlotCanBeEmpty
+        /// </remarks>
+        public bool IsEmptyAllowed { get; set; }
+
+        /// <summary>
+        /// LeaveBlank means that the slot - no matter if new or existing - should be blank and should NOT contain the entity
+        /// It may even mean that the slot must be blanked now
+        /// </summary>
+        /// <remarks>
+        /// WIP in 14.09 - to replace Group.SlotIsEmpty
+        /// </remarks>
+        public bool IsEmpty { get; set; }
         #endregion
     }
 
@@ -123,30 +147,23 @@ namespace ToSic.Eav.WebApi.Formats
         /// </remarks>
         public int Index { get; set; }
 
-        /// <summary>
-        /// "Add" informs the save-routine that it is an additional slot which should be saved
-        /// </summary>
-        public bool Add { get; set; }
+        // 2022-09-19 2dm - WIP, part of #cleanUpDuplicateGroupHeaders
+        ///// <summary>
+        ///// "Add" informs the save-routine that it is an additional slot which should be saved
+        ///// </summary>
+        //public bool Add { get; set; }
 
         ///// <summary>
-        ///// This property is only needed by the new UI, because it does more checking
-        ///// and because the previous information if it should really, really add (entityId=0) fails
-        ///// with the new API since it's set upon saving
+        ///// Determines that an empty slot is allowed / possible
+        ///// This will usually affect the UI in the possible options
         ///// </summary>
-        //[JsonIgnore]
-        //public bool? ReallyAddBecauseAlreadyVerified { get; set; }
- 
-        /// <summary>
-        /// Determines that an empty slot is allowed / possible
-        /// This will usually affect the UI in the possible options
-        /// </summary>
-        public bool SlotCanBeEmpty { get; set; }
+        //public bool SlotCanBeEmpty { get; set; }
 
-       /// <summary>
-        /// LeaveBlank means that the slot - no matter if new or existing - should be blank and should NOT contain the entity
-        /// It may even mean that the slot must be blanked now
-        /// </summary>
-        public bool SlotIsEmpty { get; set; }
+        ///// <summary>
+        ///// LeaveBlank means that the slot - no matter if new or existing - should be blank and should NOT contain the entity
+        ///// It may even mean that the slot must be blanked now
+        ///// </summary>
+        //public bool SlotIsEmpty { get; set; }
 
         public int ContentBlockAppId { get; set; }
     }
