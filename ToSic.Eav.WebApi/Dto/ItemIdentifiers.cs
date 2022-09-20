@@ -73,19 +73,24 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public int? Index { get; set; }
 
-        public bool ListHas() => Group != null || Parent != null;
-        public Guid ListParent() => Group?.Guid ?? Parent 
+        // 2022-09-20 stv #cleanUpDuplicateGroupHeaders - WIP
+        public bool ListHas() => IsContentBlockMode/*Group != null*/ || Parent != null;
+
+        // 2022-09-20 stv #cleanUpDuplicateGroupHeaders - WIP
+        public Guid ListParent() => /*Group?.Guid ??*/ Parent 
             ?? throw new ArgumentNullException(nameof(Parent),"Trying to access property 'Parent' to save in list, but it's null");
         public int ListIndex(int fallback = 0) => /*Group?.Index ??*/ Index ?? fallback; // Fallback should be the max value
 
         // 2022-09-19 2dm - WIP, part of #cleanUpDuplicateGroupHeaders
         public bool ListAdd() => /*Group?.Add ??*/ Add ?? false;
 
+        // 2022-09-19 2dm - WIP, part of #cleanUpDuplicateGroupHeaders
+        public int? ListContentBlockAppId() => Group?.ContentBlockAppId ?? ContentBlockAppId;
+
         #endregion
 
         #region New EditInfo for v13 / Shared Apps
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public EditInfoDto EditInfo { get; set; }
 
         #endregion
@@ -110,6 +115,23 @@ namespace ToSic.Eav.WebApi.Formats
         /// WIP in 14.09 - to replace Group.SlotIsEmpty
         /// </remarks>
         public bool IsEmpty { get; set; }
+
+        // 2022-09-20 stv #cleanUpDuplicateGroupHeaders - WIP
+        /// <summary>
+        /// If it's a content-block
+        /// </summary>
+        [JsonIgnore]
+        public bool IsContentBlockMode { get; set; } = false;
+
+        // 2022-09-20 stv #cleanUpDuplicateGroupHeaders - WIP
+        /// <summary>
+        /// ContentBlockAppId is currently not used by UI.
+        /// It is possible that is required to solve "inner-inner-content" issue.
+        /// Moved from Group.ContentBlockAppId, because "Group" properties are flattened to its parent "Header".
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int? ContentBlockAppId { get; set; }
+
         #endregion
     }
 
@@ -129,12 +151,15 @@ namespace ToSic.Eav.WebApi.Formats
         /// <summary>
         /// Entity Guid of the group
         /// </summary>
-        public Guid Guid { get; set; }
+        //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        //public Guid? Guid { get; set; } // 2022-09-20 stv #cleanUpDuplicateGroupHeaders - WIP
+
 
         /// <summary>
         /// The Set is either "content" or "listcontent", "presentation" or "listpresentation"
         /// </summary>
-        public string Part { get; set; }
+        //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        //public string Part { get; set; } // 2022-09-20 stv #cleanUpDuplicateGroupHeaders - WIP
 
         /// <summary>
         /// The index (position) in the group)
@@ -145,13 +170,15 @@ namespace ToSic.Eav.WebApi.Formats
         /// and the other person still viewing the last list (with different index).
         /// It's low risk, so we won't address this ATM.
         /// </remarks>
-        public int Index { get; set; }
+        //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        //public int? Index { get; set; } // 2022-09-20 stv #cleanUpDuplicateGroupHeaders - WIP
 
         // 2022-09-19 2dm - WIP, part of #cleanUpDuplicateGroupHeaders
         ///// <summary>
         ///// "Add" informs the save-routine that it is an additional slot which should be saved
         ///// </summary>
-        //public bool Add { get; set; }
+        //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        //public bool? Add { get; set; } // 2022-09-20 stv #cleanUpDuplicateGroupHeaders - WIP
 
         ///// <summary>
         ///// Determines that an empty slot is allowed / possible
@@ -165,7 +192,14 @@ namespace ToSic.Eav.WebApi.Formats
         ///// </summary>
         //public bool SlotIsEmpty { get; set; }
 
-        public int ContentBlockAppId { get; set; }
+        // 2022-09-20 stv #cleanUpDuplicateGroupHeaders - WIP
+        /// <summary>
+        /// ContentBlockAppId is currently not used by UI.
+        /// It is possible that is required to solve "inner-inner-content" issue.
+        /// Moved to its parent "Header", because "Group" properties are flattened, but still not deleted here.
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int? ContentBlockAppId { get; set; } // 2022-09-20 stv #cleanUpDuplicateGroupHeaders - WIP
     }
 
 }
