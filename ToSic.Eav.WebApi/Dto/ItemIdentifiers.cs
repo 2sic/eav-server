@@ -84,7 +84,7 @@ namespace ToSic.Eav.WebApi.Formats
         // 2022-09-19 2dm - WIP, part of #cleanUpDuplicateGroupHeaders
         public bool ListAdd() => /*Group?.Add ??*/ Add ?? false;
 
-        // 2022-09-19 2dm - WIP, part of #cleanUpDuplicateGroupHeaders
+        // 2022-09-20 stv #cleanUpDuplicateGroupHeaders - WIP
         public int? ListContentBlockAppId() => Group?.ContentBlockAppId ?? ContentBlockAppId;
 
         #endregion
