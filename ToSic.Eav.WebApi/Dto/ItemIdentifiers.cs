@@ -28,16 +28,10 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public JsonMetadataFor For { get; set; }
 
-        #region Old properties only for support of the old UI, will be deprecated soon
         /// <summary>
-        /// Group information, for items which are coming from a group and not using direct IDs
-        /// This also contains information about 
+        /// Prefill information for the UI to add values to new / empty fields
+        /// This is not needed on the server, but must be passed through so it's still attached to this item if in use
         /// </summary>
-        public GroupAssignment Group { get; set; }
-
-        #endregion
-
-        //// this is not needed on the server, but must be passed through so it's still attached to this item if in use
         public dynamic Prefill { get; set; }
 
 
@@ -46,45 +40,93 @@ namespace ToSic.Eav.WebApi.Formats
         #region New features in 11.01 adding things in lists
 
         /// <summary>
-        /// Experimental 11.01
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string Field { get; set; }
-
-        /// <summary>
-        /// Experimental 11.01
+        /// The Parent of this item - when an item is anchored in a list of another item.
+        /// Used in combination with <see cref="Field"/> and <see cref="Index"/>
+        /// 
+        /// Used in ContentBlock scenarios (where an item is in the content/presentation field)
+        /// or when editing / adding things to an entity-list like slides in a swiper.
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Guid? Parent { get; set; }
 
         /// <summary>
-        /// Experimental 11.01 - move from Group to here
+        /// Access the Parent GUID in scenarios where it must exist, or throw error
         /// </summary>
-        public bool? Add
-        {
-            get => _add ?? Group?.Add;
-            set => _add = value;
-        }
-        private bool? _add;
+        [JsonIgnore]
+        public Guid ParentOrError => Parent 
+                                    ?? throw new ArgumentNullException(nameof(Parent),"Trying to access 'Parent' to save in list, but it's null");
 
         /// <summary>
-        /// Experimental 11.01 - move from Group to here
+        /// The field on the parent where this item is anchored. <see cref="Parent"/>
+        /// Must be an Entity-List. 
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Field { get; set; }
+
+
+        /// <summary>
+        /// Information if the item should be added to the list or not.
+        /// It shouldn't be added if it was already there to begin with. 
+        /// </summary>
+        public bool? Add { get; set; }
+
+        /// <summary>
+        /// Safely access the Add property, with default to false
+        /// </summary>
+        [JsonIgnore]
+        public bool AddSafe => Add ?? false;
+
+        /// <summary>
+        /// Position of an item inside a field containing an entity list. <see cref="Parent"/>
         /// </summary>
         public int? Index { get; set; }
 
-        public bool ListHas() => Group != null || Parent != null;
-        public Guid ListParent() => Group?.Guid ?? Parent 
-            ?? throw new ArgumentNullException(nameof(Parent),"Trying to access property 'Parent' to save in list, but it's null");
-        public int ListIndex(int fallback = 0) => Group?.Index ?? Index ?? fallback; // Fallback should be the max value
+        public int IndexSafeOrFallback(int fallback = 0) => Index ?? fallback; // Fallback should be the max value
 
-        public bool ListAdd() => Group?.Add ?? Add ?? false;
 
         #endregion
 
         #region New EditInfo for v13 / Shared Apps
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public EditInfoDto EditInfo { get; set; }
+
+        #endregion
+
+
+        #region Move Group Fields to here
+
+        /// <summary>
+        /// Determines that an empty slot is allowed / possible
+        /// This will usually affect the UI in the possible options
+        /// </summary>
+        /// <remarks>
+        /// Added in v14.09 to replace Group.SlotCanBeEmpty
+        /// </remarks>
+        public bool IsEmptyAllowed { get; set; }
+
+        /// <summary>
+        /// LeaveBlank means that the slot - no matter if new or existing - should be blank and should NOT contain the entity
+        /// It may even mean that the slot must be blanked now
+        /// </summary>
+        /// <remarks>
+        /// Added in 14.09 to replace Group.SlotIsEmpty
+        /// </remarks>
+        public bool IsEmpty { get; set; }
+
+        /// <summary>
+        /// If it's a content-block.
+        /// Internal property so that we can detect this early on, and then re-use the status. 
+        /// </summary>
+        [JsonIgnore]
+        public bool IsContentBlockMode { get; set; } = false;
+
+        /// <summary>
+        /// ContentBlockAppId is currently not used by UI.
+        /// It is possible that is required to solve "inner-inner-content" issue.
+        /// Moved from Group.ContentBlockAppId, because "Group" properties are flattened to its parent "Header".
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int? ContentBlockAppId { get; set; }
 
         #endregion
     }
@@ -99,56 +141,5 @@ namespace ToSic.Eav.WebApi.Formats
         public TEntity Entity { get; set; }
 
     }
-
-    public class GroupAssignment
-    {
-        /// <summary>
-        /// Entity Guid of the group
-        /// </summary>
-        public Guid Guid { get; set; }
-
-        /// <summary>
-        /// The Set is either "content" or "listcontent", "presentation" or "listpresentation"
-        /// </summary>
-        public string Part { get; set; }
-
-        /// <summary>
-        /// The index (position) in the group)
-        /// </summary>
-        /// <remarks>
-        /// We know that there is a small risk here, 
-        /// because if two people work on the same item the index could be off if a person adds items 
-        /// and the other person still viewing the last list (with different index).
-        /// It's low risk, so we won't address this ATM.
-        /// </remarks>
-        public int Index { get; set; }
-
-        /// <summary>
-        /// "Add" informs the save-routine that it is an additional slot which should be saved
-        /// </summary>
-        public bool Add { get; set; }
-
-        ///// <summary>
-        ///// This property is only needed by the new UI, because it does more checking
-        ///// and because the previous information if it should really, really add (entityId=0) fails
-        ///// with the new API since it's set upon saving
-        ///// </summary>
-        //[JsonIgnore]
-        //public bool? ReallyAddBecauseAlreadyVerified { get; set; }
- 
-        /// <summary>
-        /// Determines that an empty slot is allowed / possible
-        /// This will usually affect the UI in the possible options
-        /// </summary>
-        public bool SlotCanBeEmpty { get; set; }
-
-       /// <summary>
-        /// LeaveBlank means that the slot - no matter if new or existing - should be blank and should NOT contain the entity
-        /// It may even mean that the slot must be blanked now
-        /// </summary>
-        public bool SlotIsEmpty { get; set; }
-
-        public int ContentBlockAppId { get; set; }
-    }
-
+    
 }
