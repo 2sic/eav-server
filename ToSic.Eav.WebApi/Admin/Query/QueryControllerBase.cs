@@ -116,14 +116,14 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             // assemble list of all new data-source guids, for later re-mapping when saving
             var newDsGuids = data.DataSources.Where(d => d.ContainsKey("EntityGuid"))
-                .Select(d => ((JsonElement)d["EntityGuid"]).ToString())
+                .Select(d => d["EntityGuid"].ToString())
                 .Where(g => g != "Out" && !g.StartsWith("unsaved"))
                 .Select(Guid.Parse)
                 .ToList();
 
             // Update Pipeline Entity with new Wirings etc.
             var wiringString = data.Pipeline[Constants.QueryStreamWiringAttributeName]?.ToString() ?? "";
-            var wirings = JsonSerializer.Deserialize<List<Connection>>(wiringString, SerializerOptions.SxcUnsafeJsonSerializerOptions)
+            var wirings = JsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.SxcUnsafeJsonSerializerOptions)
                 ?? new List<Connection>();
 
             _appManager.Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);

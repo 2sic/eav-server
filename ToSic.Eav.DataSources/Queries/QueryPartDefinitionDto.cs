@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Data;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.DataSources.Queries
 {
@@ -49,7 +50,7 @@ namespace ToSic.Eav.DataSources.Queries
         {
             var attributes = part.Entity.AsDictionary();
 
-            attributes[QueryConstants.VisualDesignerData] = JsonNode.Parse(part.VisualDesignerData).AsObject();
+            attributes[QueryConstants.VisualDesignerData] = JsonNode.Parse(part.VisualDesignerData, JsonOptions.SxcJsonNodeOptions, JsonOptions.SxcJsonDocumentOptions).AsObject();
 
             // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
             attributes[QueryConstants.PartAssemblyAndType] = part.DataSourceType;

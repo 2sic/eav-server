@@ -31,7 +31,7 @@ namespace ToSic.Eav.ImportExport.Json
             JsonFormat jsonObj;
             try
             {
-                jsonObj = System.Text.Json.JsonSerializer.Deserialize<JsonFormat>(serialized, SerializerOptions.SxcUnsafeJsonSerializerOptions);
+                jsonObj = System.Text.Json.JsonSerializer.Deserialize<JsonFormat>(serialized, JsonOptions.SxcUnsafeJsonSerializerOptions);
             }
             catch (Exception ex)
             {

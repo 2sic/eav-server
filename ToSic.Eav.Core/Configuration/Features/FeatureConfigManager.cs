@@ -52,7 +52,7 @@ namespace ToSic.Eav.Configuration
         /// <returns>features stored</returns>
         internal FeatureListStored ConvertOldFeaturesFile(string filePath, string fileContent)
         {
-            var fileJson = JsonNode.Parse(fileContent).AsObject();
+            var fileJson = JsonNode.Parse(fileContent, JsonOptions.SxcJsonNodeOptions, JsonOptions.SxcJsonDocumentOptions).AsObject();
 
             // check json format in "features.json" to find is it old version (v12)
             if (fileJson["_"]?["V"] != null && (int)fileJson["_"]["V"] == 1) // detect old "features.json" format (v12)
@@ -83,7 +83,7 @@ namespace ToSic.Eav.Configuration
             var features = new FeatureListStored();
 
             var fs = (string)json["Entity"]["Attributes"]["Custom"]["Features"]["*"];
-            var oldFeatures = JsonNode.Parse(fs).AsObject();
+            var oldFeatures = JsonNode.Parse(fs, JsonOptions.SxcJsonNodeOptions, JsonOptions.SxcJsonDocumentOptions).AsObject();
 
             // update finger print
             //features.Fingerprint = (string)oldFeatures["fingerprint"];
@@ -119,7 +119,7 @@ namespace ToSic.Eav.Configuration
                 features.Fingerprint = _fingerprint.Value.GetFingerprint();
 
                 // save new format (v13)
-                var fileContent = JsonSerializer.Serialize(features, SerializerOptions.FeaturesJsonSerializerOptions);
+                var fileContent = JsonSerializer.Serialize(features, JsonOptions.FeaturesJsonSerializerOptions);
 
                 var configurationsPath = _globalConfiguration.Value.ConfigFolder;
 
@@ -171,21 +171,21 @@ namespace ToSic.Eav.Configuration
                 
                 // if features.json is missing, we still need empty list of stored features so we can create new one on save
                 if (fileContent == null)
-                    fileContent = JsonSerializer.Serialize(new FeatureListStored(), SerializerOptions.FeaturesJsonSerializerOptions);
+                    fileContent = JsonSerializer.Serialize(new FeatureListStored(), JsonOptions.FeaturesJsonSerializerOptions);
 
                 // handle old 'features.json' format
                 var stored = ConvertOldFeaturesFile(filePath, fileContent);
                 if (stored != null) // if old features are converted, load fileContent features in new format
                     (filePath, fileContent) = LoadFeaturesFile();
 
-                var fileJson = JsonNode.Parse(fileContent).AsObject();
+                var fileJson = JsonNode.Parse(fileContent, JsonOptions.SxcJsonNodeOptions, JsonOptions.SxcJsonDocumentOptions).AsObject();
                 foreach (var change in changes)
                 {
                     var feature = (fileJson["features"].AsArray()).FirstOrDefault(f => (Guid)f["id"] == change.FeatureGuid);
                     if (feature == null) // insert
                     {
-                        var featureConfig = JsonSerializer.Serialize(FeatureConfigBuilder(change), SerializerOptions.FeaturesJsonSerializerOptions);
-                        (fileJson["features"].AsArray()).Add(JsonNode.Parse(featureConfig).AsObject());
+                        var featureConfig = JsonSerializer.Serialize(FeatureConfigBuilder(change), JsonOptions.FeaturesJsonSerializerOptions);
+                        (fileJson["features"].AsArray()).Add(JsonNode.Parse(featureConfig, JsonOptions.SxcJsonNodeOptions, JsonOptions.SxcJsonDocumentOptions).AsObject());
                     }
                     else
                     {

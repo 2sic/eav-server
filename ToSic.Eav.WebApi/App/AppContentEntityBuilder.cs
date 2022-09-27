@@ -2,12 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
-using Newtonsoft.Json.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.WebApi.App
 {
@@ -39,13 +39,13 @@ namespace ToSic.Eav.WebApi.App
             {
                 var attrName = attrDef.Name;
                 if (!newContentItem.ContainsKey(attrName)) continue;
-                var foundValue = newContentItem[attrName];
+                var foundValue = JsonElementUtilities.UnwrapJsonElement(newContentItem[attrName]); // TODO: stv, check why need to unwrap here (it should be on better place)
                 switch (attrDef.Type.ToLowerInvariant())
                 {
                     case "string":
                     case "hyperlink":
-                        if (foundValue is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.String)
-                            cleanedNewItem.Add(attrName, jsonElement.ToString());
+                        if (foundValue is string)
+                            cleanedNewItem.Add(attrName, foundValue.ToString());
                         else
                             throw ValueMappingError(attrDef, foundValue);
                         break;
@@ -73,6 +73,9 @@ namespace ToSic.Eav.WebApi.App
                         if (foundValue is IEnumerable foundEnum) // it's a list!
                             foreach (var item in foundEnum)
                                 relationships.Add(CreateSingleRelationshipItem(item));
+                        //else if (foundValue is JsonElement ja && ja.ValueKind == JsonValueKind.Array) // TODO: stv, why we have JsonElement here (it is not expected)
+                        //    foreach (var item in ja.EnumerateArray())
+                        //        relationships.Add(CreateSingleRelationshipItem(JsonElementUtilities.UnwrapJsonElement(item))); // TODO: stv, check why need to unwrap here (it should be on better place)
                         else // not a list
                             relationships.Add(CreateSingleRelationshipItem(foundValue));
 
@@ -124,16 +127,19 @@ namespace ToSic.Eav.WebApi.App
                 // Try to see if it's already a number, else check if it's a JSON property
                 if (!int.TryParse(foundValue.ToString(), out var foundNumber))
                 {
-                    if (foundValue is JProperty jp)
-                        foundNumber = (int)jp.Value;
-                    else
+                    switch (foundValue)
                     {
-                        var jo = foundValue as JObject;
-                        // ReSharper disable once PossibleNullReferenceException
-                        if (jo.TryGetValue("Id", out var foundId))
-                            foundNumber = (int)foundId;
-                        else if (jo.TryGetValue("id", out foundId))
-                            foundNumber = (int)foundId;
+                        case JsonElement jn when jn.ValueKind == JsonValueKind.Number:
+                            foundNumber = jn.GetInt32();
+                            break;
+                        case JsonElement jo when jo.ValueKind == JsonValueKind.Object:
+                        {
+                            if (jo.TryGetProperty("Id", out var foundId))
+                                foundNumber = foundId.GetInt32();
+                            else if (jo.TryGetProperty("id", out foundId))
+                                foundNumber = foundId.GetInt32();
+                            break;
+                        }
                     }
                 }
                 Log.A($"relationship found:{foundNumber}");

@@ -17,7 +17,7 @@ namespace ToSic.Eav.ImportExport.Json
         public string Serialize(IEntity entity, int metadataDepth) => System.Text.Json.JsonSerializer.Serialize(new JsonFormat
         {
             Entity = ToJson(entity, metadataDepth)
-        }, SerializerOptions.SxcUnsafeJsonSerializerOptions);
+        }, JsonOptions.SxcUnsafeJsonSerializerOptions);
 
         public JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
         {

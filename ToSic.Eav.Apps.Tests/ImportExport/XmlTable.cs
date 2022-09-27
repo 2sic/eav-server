@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
     public class XmlTable: TestBaseDiEavFullAndDb
     {
 
-        public static ILog Log = new Log("TstXml");
+        public new static ILog Log = new Log("TstXml");
         private int AppId = 78;
 
         [TestMethod]

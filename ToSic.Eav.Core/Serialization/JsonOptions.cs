@@ -1,12 +1,15 @@
 ﻿using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
 
 namespace ToSic.Eav.Serialization
 {
-    public static class SerializerOptions
+    public static class JsonOptions
     {
+        internal const int DefaultMaxModelBindingRecursionDepth = 32;
+
         /// <summary>
         /// Compared to the default encoder, the UnsafeRelaxedJsonEscaping encoder is more permissive about allowing characters to pass through unescaped:
         /// - It doesn't escape HTML-sensitive characters such as <, >, &, and '.
@@ -20,8 +23,13 @@ namespace ToSic.Eav.Serialization
         {
             AllowTrailingCommas = true,
             Converters = { new Plumbing.DateTimeConverter(), new JsonStringEnumConverter() },
+            //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             IncludeFields = true,
+            // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
+            // from deserialization errors that might occur from deeply nested objects.
+            // This value is the same for model binding and Json.Net's serialization.
+            MaxDepth = DefaultMaxModelBindingRecursionDepth,
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
             PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = null, // leave property names unchanged (PascalCase for c#)
@@ -34,8 +42,13 @@ namespace ToSic.Eav.Serialization
         {
             AllowTrailingCommas = true,
             Converters = { new Plumbing.DateTimeConverter(), new JsonStringEnumConverter() },
+            //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.CurrencySymbols/*, UnicodeRanges.Latin1Supplement, UnicodeRanges.LatinExtendedA, UnicodeRanges.LatinExtendedB, UnicodeRanges.LatinExtendedC, UnicodeRanges.LatinExtendedD, UnicodeRanges.LatinExtendedE, UnicodeRanges.LatinExtendedAdditional*/),
             IncludeFields = true,
+            // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
+            // from deserialization errors that might occur from deeply nested objects.
+            // This value is the same for model binding and Json.Net's serialization.
+            MaxDepth = DefaultMaxModelBindingRecursionDepth,
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
             PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = null, // leave property names unchanged (PascalCase for c#)
@@ -47,12 +60,53 @@ namespace ToSic.Eav.Serialization
         {
             AllowTrailingCommas = true,
             Converters = { new Plumbing.ShortDateTimeConverter() },
+            //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             IncludeFields = true,
+            // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
+            // from deserialization errors that might occur from deeply nested objects.
+            // This value is the same for model binding and Json.Net's serialization.
+            MaxDepth = DefaultMaxModelBindingRecursionDepth,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
             PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = null, // leave property names unchanged (PascalCase for c#)
             ReadCommentHandling = JsonCommentHandling.Skip,
             WriteIndented = false,
         };
+
+        public static JsonDocumentOptions SxcJsonDocumentOptions = new JsonDocumentOptions()
+        {
+            AllowTrailingCommas = true,
+            CommentHandling = JsonCommentHandling.Skip,
+            // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
+            // from deserialization errors that might occur from deeply nested objects.
+            // This value is the same for model binding and Json.Net's serialization.
+            MaxDepth = DefaultMaxModelBindingRecursionDepth,
+        };
+
+        public static JsonNodeOptions SxcJsonNodeOptions = new JsonNodeOptions()
+        {
+            PropertyNameCaseInsensitive = true,
+        };
+
+        // used in Oqtane
+        public static void SetUnsafeJsonSerializerOptions(this JsonSerializerOptions value)
+        {
+            value.AllowTrailingCommas = true;
+            value.Converters.Add(new Plumbing.DateTimeConverter()); 
+            value.Converters.Add(new JsonStringEnumConverter());
+            //value.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
+            value.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+            value.IncludeFields = true;
+            // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
+            // from deserialization errors that might occur from deeply nested objects.
+            // This value is the same for model binding and Json.Net's serialization.
+            value.MaxDepth = DefaultMaxModelBindingRecursionDepth;
+            value.NumberHandling = JsonNumberHandling.AllowReadingFromString;
+            value.PropertyNameCaseInsensitive = true;
+            value.PropertyNamingPolicy = null; // leave property names unchanged (PascalCase for c#)
+            value.ReadCommentHandling = JsonCommentHandling.Skip;
+            value.WriteIndented = false;
+        }
     }
 }

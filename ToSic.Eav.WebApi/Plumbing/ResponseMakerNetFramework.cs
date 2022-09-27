@@ -30,7 +30,7 @@ namespace ToSic.Eav.WebApi.Plumbing
         public override HttpResponseMessage Json(object json)
         {
             var responseMessage = ApiController.Request.CreateResponse(HttpStatusCode.OK);
-            responseMessage.Content = new StringContent(JsonSerializer.Serialize(json, SerializerOptions.SxcAttributeJsonSerializerOptions), Encoding.UTF8, MimeHelper.Json);
+            responseMessage.Content = new StringContent(JsonSerializer.Serialize(json, JsonOptions.SxcAttributeJsonSerializerOptions), Encoding.UTF8, MimeHelper.Json);
             return responseMessage;
         }
 

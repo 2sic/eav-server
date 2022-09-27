@@ -65,7 +65,9 @@ namespace ToSic.Eav.DataSourceTests
 
                 if (next == null || previous == null)
                 {
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
                     var tempToAddDebuggerline = true;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
                 }
                 double comp;
                 if (next == null && previous == null) comp = 0;

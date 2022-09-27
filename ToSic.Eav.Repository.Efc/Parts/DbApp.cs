@@ -35,7 +35,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         Inherit = true,
                         AncestorAppId = inheritAppId.Value
                     };
-                    var asJson = JsonSerializer.Serialize(sysSettings, SerializerOptions.SxcAttributeJsonSerializerOptions);
+                    var asJson = JsonSerializer.Serialize(sysSettings, JsonOptions.SxcAttributeJsonSerializerOptions);
                     newApp.SysSettings = asJson;
                 }
             }

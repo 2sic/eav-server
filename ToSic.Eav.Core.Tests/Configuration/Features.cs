@@ -35,7 +35,7 @@ namespace ToSic.Eav.Core.Tests.Configuration
                 Expires = DateTime.Today.AddDays(-1)
             });
 
-            var ser = JsonSerializer.Serialize(x, SerializerOptions.SxcUnsafeJsonSerializerOptions);
+            var ser = JsonSerializer.Serialize(x, JsonOptions.SxcUnsafeJsonSerializerOptions);
             Trace.WriteLine(ser);
         }
     }

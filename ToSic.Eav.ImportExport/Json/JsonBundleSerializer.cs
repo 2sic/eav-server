@@ -18,7 +18,7 @@ namespace ToSic.Eav.ImportExport.Json
             // new in 11.07 - try to add assets
             var ent = ToJson(bundle.Entity, metadataDepth);
             if (bundle.Assets != null && bundle.Assets.Any()) ent.Assets = bundle.Assets;
-            return System.Text.Json.JsonSerializer.Serialize(new JsonFormat { Entity = ent }, SerializerOptions.SxcUnsafeJsonSerializerOptions);
+            return System.Text.Json.JsonSerializer.Serialize(new JsonFormat { Entity = ent }, JsonOptions.SxcUnsafeJsonSerializerOptions);
         }
 
 
