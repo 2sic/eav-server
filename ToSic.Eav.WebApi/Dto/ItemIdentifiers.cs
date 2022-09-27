@@ -51,13 +51,6 @@ namespace ToSic.Eav.WebApi.Formats
         public Guid? Parent { get; set; }
 
         /// <summary>
-        /// Access the Parent GUID in scenarios where it must exist, or throw error
-        /// </summary>
-        [JsonIgnore]
-        public Guid ParentOrError => Parent 
-                                    ?? throw new ArgumentNullException(nameof(Parent),"Trying to access 'Parent' to save in list, but it's null");
-
-        /// <summary>
         /// The field on the parent where this item is anchored. <see cref="Parent"/>
         /// Must be an Entity-List. 
         /// </summary>
@@ -143,5 +136,20 @@ namespace ToSic.Eav.WebApi.Formats
         public TEntity Entity { get; set; }
 
     }
-    
+
+    public static class ItemIdentifierExtension
+    {
+        /// <summary>
+        /// Access the Parent GUID in scenarios where it must exist, or throw error
+        /// </summary>
+        /// <remarks>
+        /// ParentOrError property was converted to extension method to avoid exceptions on STJ json deserialization
+        /// </remarks>
+        public static Guid ParentOrError(this ItemIdentifier itemIdentifier)
+        {
+            return itemIdentifier.Parent
+                       ?? throw new ArgumentNullException(nameof(itemIdentifier.Parent),
+                           "Trying to access 'Parent' to save in list, but it's null");
+        }
+    }
 }
