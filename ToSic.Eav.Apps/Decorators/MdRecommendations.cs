@@ -64,19 +64,21 @@ namespace ToSic.Eav.Apps.Decorators
             if (targetTypeId < 0 || !Enum.IsDefined(typeof(TargetTypes), targetTypeId))
                 return wrapLog.ReturnNull("invalid target type");
 
-            // 2.2 Find Content-Types marked with `MetadataFor` this specific target
-            // For example Types which are marked to decorate an App
-            var initialTypes =
-                (TypesWhichDeclareTheyAreForTheTarget(targetTypeId, key) ?? new List<(IContentType Type, IEntity Recommendation)>())
-                .Select(set => new MetadataRecommendation(set.Type, set.Recommendation, null, "Self-Declaring", PrioMedium));
-
-            // 2.3 Ask the target if it knows of expected types using `MetadataExpected`
+            // 2.2 Ask the target if it knows of expected types using `MetadataExpected`
             // Check if this object-type has a specific list of Content-Types which it expects
             // For example a attribute which says "I want this kind of Metadata"
             // Not fully worked out yet...
             // TODO #metadata
             var attachedRecommendations = GetTargetsExpectations(targetTypeId, key)
                 ?? new List<MetadataRecommendation>();
+
+            // 2.3 Find Content-Types marked with `MetadataFor` this specific target
+            // For example Types which are marked to decorate an App
+            var typesForTheTarget = TypesWhichDeclareTheyAreForTheTarget(targetTypeId, key);
+            var initialTypes = typesForTheTarget?
+                .Select(set =>
+                    new MetadataRecommendation(set.Type, set.Recommendation, null, "Self-Declaring", PrioMedium))
+                .ToList() ?? new List<MetadataRecommendation>();
 
             attachedRecommendations.AddRange(initialTypes);
 
@@ -96,20 +98,34 @@ namespace ToSic.Eav.Apps.Decorators
             var recommendedTypes = allTypes
                 .Select(ct =>
                 {
-                    var decor = ct.Metadata
-                        .OfType(ForDecorator.TypeGuid)
-                        .FirstOrDefault(dec => new ForDecorator(dec).TargetType == targetType);
+                    IEntity decor;
+                    // 2022-09-29 2dm - we have an issue here where the metadata must be fully loaded from app state
+                    // and it's ServiceProvider is dead at that time, trying to debug
+                    try
+                    {
+                        decor = ct.Metadata
+                            .OfType(ForDecorator.TypeGuid)
+                            .FirstOrDefault(dec => new ForDecorator(dec).TargetType == targetType);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.A($"Error on {ct.Name} ({ct.NameId}");
+                        Log.Ex(e);
+                        decor = null;
+                    }
                     return new
                     {
                         Found = decor != null,
                         Type = ct,
                         Decorator = decor
                     };
-                });
+                })
+                .ToList();
 
             // Filter out these without recommendations
             recommendedTypes = recommendedTypes
-                .Where(set => set.Found);
+                .Where(set => set.Found)
+                .ToList();
 
             recommendedTypes = recommendedTypes
                 .Where(set =>
@@ -165,22 +181,22 @@ namespace ToSic.Eav.Apps.Decorators
                     return wrapLog.ReturnNull("attributes not supported ATM");
                 case TargetTypes.App:
                     // TODO: this won't work - needs another way of finding assignments
-                    return wrapLog.Return(GetExpected(AppState.Metadata, 0, "attached to App", PrioMax), "app");
+                    return wrapLog.Return(GetMetadataExpectedDecorators(AppState.Metadata, 0, "attached to App", PrioMax), "app");
                 case TargetTypes.Entity:
                     if (!Guid.TryParse(key, out var guidKey)) return wrapLog.ReturnNull("entity not guid");
                     var entity = AppState.List.One(guidKey);
                     if (entity == null) return wrapLog.ReturnNull("entity not found");
-                    var onEntity = GetExpected(entity.Metadata, (int)TargetTypes.Entity, "attached to Entity", PrioMax)
+                    var onEntity = GetMetadataExpectedDecorators(entity.Metadata, (int)TargetTypes.Entity, "attached to Entity", PrioMax)
                         ?? new List<MetadataRecommendation>();
 
                     // Now also ask the content-type for MD related to this
-                    var onEntType = GetExpected(entity.Type.Metadata, (int)TargetTypes.Entity, "attached to entity-type", PrioHigh);
+                    var onEntType = GetMetadataExpectedDecorators(entity.Type.Metadata, (int)TargetTypes.Entity, "attached to entity-type", PrioHigh);
                     var merged = onEntity.Union(onEntType).ToList();
                     return wrapLog.Return(merged, $"entity {onEntity.Count} type {onEntType.Count} all {merged.Count}");
                 case TargetTypes.ContentType:
                     var ct = AppState.GetContentType(key);
                     if (ct == null) return wrapLog.ReturnNull("type not found");
-                    var onType = GetExpected(ct.Metadata, (int)TargetTypes.ContentType, "attached to Content-Type", PrioHigh);
+                    var onType = GetMetadataExpectedDecorators(ct.Metadata, (int)TargetTypes.ContentType, "attached to Content-Type", PrioHigh);
                     return wrapLog.Return(onType, "content type");
                 case TargetTypes.Zone:
                 case TargetTypes.CmsItem:
@@ -199,7 +215,7 @@ namespace ToSic.Eav.Apps.Decorators
         /// <param name="debug"></param>
         /// <param name="priority"></param>
         /// <returns></returns>
-        private List<MetadataRecommendation> GetExpected(IMetadataOf md, int meantFor, string debug, int priority)
+        private List<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadataOf md, int meantFor, string debug, int priority)
         {
             var wrapLog = Log.Fn<List<MetadataRecommendation>>();
 

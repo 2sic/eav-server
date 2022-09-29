@@ -47,8 +47,6 @@ namespace ToSic.Eav.Apps.Decorators
         public MetadataRecommendation(IContentType type, IEntity recommendation, int? count, string debugMessage, int priority)
         {
             Type = type;
-            //Id = type.NameId;
-            //Name = type.Name;
             Priority = priority;
             var typeDetails = type.Metadata.DetailsOrNull;
             Title = (typeDetails?.Title).UseFallbackIfNoValue(type.Name);
