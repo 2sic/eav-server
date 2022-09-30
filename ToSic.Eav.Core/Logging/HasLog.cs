@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging.Simple;
@@ -13,6 +14,7 @@ namespace ToSic.Eav.Logging
     {
         /// <inheritdoc />
         [JsonIgnore]
+        [IgnoreDataMember]
         public ILog Log { get; private set; }
 
         [PrivateApi] protected bool LogDetailed = false;

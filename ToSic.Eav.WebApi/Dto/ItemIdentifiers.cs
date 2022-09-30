@@ -11,7 +11,6 @@ namespace ToSic.Eav.WebApi.Formats
         /// <summary>
         /// simple entity identifier (to edit existing)...
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int EntityId { get; set; }
 
         /// <summary>
@@ -82,7 +81,6 @@ namespace ToSic.Eav.WebApi.Formats
 
         #region New EditInfo for v13 / Shared Apps
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public EditInfoDto EditInfo { get; set; }
 
         #endregion

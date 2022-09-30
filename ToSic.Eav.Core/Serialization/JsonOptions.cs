@@ -8,7 +8,7 @@ namespace ToSic.Eav.Serialization
 {
     public static class JsonOptions
     {
-        internal const int DefaultMaxModelBindingRecursionDepth = 32;
+        public const int DefaultMaxModelBindingRecursionDepth = 32;
 
         /// <summary>
         /// Compared to the default encoder, the UnsafeRelaxedJsonEscaping encoder is more permissive about allowing characters to pass through unescaped:

@@ -12,7 +12,7 @@ namespace ToSic.Eav.WebApi.Assets
     {
         public string Path;
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? Shared;
     }
 }

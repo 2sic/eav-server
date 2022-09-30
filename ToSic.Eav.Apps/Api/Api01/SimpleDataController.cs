@@ -267,29 +267,12 @@ namespace ToSic.Eav.Api.Api01
                 var attribute = contentType[keyValuePair.Key];
                 if (attribute != null && keyValuePair.Value != null)
                 {
-                    var unWrappedValue = UnWrapJValue(keyValuePair.Value);
-                    AttributeBuilder.Ready.AddValue(entity.Attributes, attribute.Name, unWrappedValue, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
-                    Log.A($"Attribute '{keyValuePair.Key}' will become '{unWrappedValue}' ({attribute.Type})");
+                    AttributeBuilder.Ready.AddValue(entity.Attributes, attribute.Name, keyValuePair.Value, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    Log.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({attribute.Type})");
                 }
             }
             
             wrapLog.Done("done");
-        }
-
-        private static object UnWrapJValue(object original)
-        {
-            // it is not clear why we are doing type conversion to string (so it will stay like that)
-            // but string conversion is causing issue with DateTime (2sxc#2658) so we should not convert DateTime to string
-            if (original is JsonValue jValue && jValue.GetValue<JsonElement>().TryGetDateTime(out var dateTime)) // JTokenType.Date
-                return dateTime;
-
-            // If it's not System.DateTime, ToString() it
-            // Note 2022-02-11 2dm/STV we believe this is a forced unwrap from the JValue
-            // And maybe this would also work with JValue.Value or something
-            // But if we change this, it must be tested well, so no priority
-            if (!(original is DateTime)) return original.ToString();
-            // System.DateTime
-            return original;
         }
 
         #region Permission Checks

@@ -34,11 +34,11 @@ namespace ToSic.Eav.Apps.Decorators
         /// <summary>
         /// Marks the recommendation that it should be created as empty
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? CreateEmpty { get; set; }
 
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Debug { get; set; }
 
         [JsonIgnore]

@@ -77,7 +77,7 @@ namespace ToSic.Eav.Configuration.Licenses
 
             var licensesStored = Directory.EnumerateFiles(configFolder, "*.license.json")
                 .Select(File.ReadAllText)
-                .Select(j => JsonSerializer.Deserialize<LicenseStored>(j))
+                .Select(j => JsonSerializer.Deserialize<LicenseStored>(j)) // should not use common SxcJsonSerializerOptions
                 .Where(licenses => licenses != null).ToList();
 
             Log.A($"licensesStored: {licensesStored.Count}");

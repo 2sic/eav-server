@@ -39,7 +39,7 @@ namespace ToSic.Eav.WebApi.App
             {
                 var attrName = attrDef.Name;
                 if (!newContentItem.ContainsKey(attrName)) continue;
-                var foundValue = JsonElementUtilities.UnwrapJsonElement(newContentItem[attrName]); // TODO: stv, check why need to unwrap here (it should be on better place)
+                var foundValue = JsonElementUtilities.UnwrapJsonElement(newContentItem[attrName]);
                 switch (attrDef.Type.ToLowerInvariant())
                 {
                     case "string":
@@ -73,9 +73,6 @@ namespace ToSic.Eav.WebApi.App
                         if (foundValue is IEnumerable foundEnum) // it's a list!
                             foreach (var item in foundEnum)
                                 relationships.Add(CreateSingleRelationshipItem(item));
-                        //else if (foundValue is JsonElement ja && ja.ValueKind == JsonValueKind.Array) // TODO: stv, why we have JsonElement here (it is not expected)
-                        //    foreach (var item in ja.EnumerateArray())
-                        //        relationships.Add(CreateSingleRelationshipItem(JsonElementUtilities.UnwrapJsonElement(item))); // TODO: stv, check why need to unwrap here (it should be on better place)
                         else // not a list
                             relationships.Add(CreateSingleRelationshipItem(foundValue));
 

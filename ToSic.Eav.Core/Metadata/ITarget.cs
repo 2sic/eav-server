@@ -37,7 +37,7 @@ namespace ToSic.Eav.Metadata
         /// </summary>
         /// <returns>The string key of the target. Null if the identifier is not a string.</returns>
         [JsonPropertyName("String")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         string KeyString { get; }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace ToSic.Eav.Metadata
         /// </summary>
         /// <returns>The number key of the target. Null if the identifier is not a string.</returns>
         [JsonPropertyName("Number")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         int? KeyNumber { get; }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace ToSic.Eav.Metadata
         /// </summary>
         /// <returns>The GUID key of the target. Null if the identifier is not a string.</returns>
         [JsonPropertyName("Guid")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         Guid? KeyGuid { get; }
 
         [JsonIgnore]

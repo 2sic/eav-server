@@ -18,11 +18,11 @@ namespace ToSic.Eav.ImportExport.Json.V1
         public int TargetType;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string String;
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public Guid? Guid;
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int? Number;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public Guid? Guid;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? Number;
         
         [PrivateApi("only used internally for now, name may change")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool? Singleton;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? Singleton;
 
 
         [PrivateApi("only used internally for now")]

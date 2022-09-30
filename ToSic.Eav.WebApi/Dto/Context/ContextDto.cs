@@ -18,7 +18,7 @@ namespace ToSic.Eav.WebApi.Dto
 
     public class WebResourceDto
     {
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int? Id { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? Id { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string Url { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string SharedUrl { get; set; }
     }
@@ -50,12 +50,12 @@ namespace ToSic.Eav.WebApi.Dto
         /// Determines if this App is global, meaning it shouldn't have files in the site etc. just global
         /// </summary>
         /// <remarks>New in 13.0</remarks>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool? IsShared { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? IsShared { get; set; }
 
         /// <summary>
         /// Determines if this app was inherited from another App
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]  public bool? IsInherited { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]  public bool? IsInherited { get; set; }
 
         /// <summary>
         /// Marks the App which is global for global settings
@@ -76,13 +76,13 @@ namespace ToSic.Eav.WebApi.Dto
 
     public class ContextEnableDto
     {
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool? AppPermissions { get; set; }
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool? CodeEditor { get; set; }
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool? Query { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? AppPermissions { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? CodeEditor { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? Query { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool? FormulaSave { get; set; }
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool? OverrideEditRestrictions { get; set; }
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool? DebugMode { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? FormulaSave { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? OverrideEditRestrictions { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? DebugMode { get; set; }
     }
 
     public class ContextLanguageDto

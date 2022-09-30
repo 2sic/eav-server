@@ -60,25 +60,25 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? IsObsolete { get; set; }
 
         /// <summary>
         /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string ObsoleteMessage { get; set; }
 
         /// <summary>
         /// WIP 12.10 Recommendation status
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? IsRecommended { get; }
 
         /// <summary>
         /// WIP 12.10 Default selection status
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? IsDefault { get; }
 
         #endregion

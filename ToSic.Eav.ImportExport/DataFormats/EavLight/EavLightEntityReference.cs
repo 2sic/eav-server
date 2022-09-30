@@ -12,10 +12,10 @@ namespace ToSic.Eav.DataFormats.EavLight
     [InternalApi_DoNotUse_MayChangeWithoutNotice("DTO objects are only publicly documented but can change with time. You usually will not need them in your code. ")]
     public class EavLightEntityReference
     {
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int? Id;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? Id;
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public string Title;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string Title;
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public Guid? Guid;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public Guid? Guid;
     }
 }
