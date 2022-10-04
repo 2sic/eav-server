@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-namespace ToSic.Eav.Plumbing
+namespace ToSic.Eav.Serialization
 {
-    public class DateTimeConverter : JsonConverter<DateTime>
+    public class JsonShortDateTimeConverter : JsonDateTimeConverter
     {
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return reader.GetDateTime().ToUniversalTime();
+            return reader.GetDateTime();
         }
 
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToUniversalTime());
+            writer.WriteStringValue(value.ToString("yyyy-MM-ddTHH:mm:ss"));
         }
     }
 }

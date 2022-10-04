@@ -22,7 +22,7 @@ namespace ToSic.Eav.Serialization
         public static JsonSerializerOptions SxcUnsafeJsonSerializerOptions = new JsonSerializerOptions()
         {
             AllowTrailingCommas = true,
-            Converters = { new Plumbing.DateTimeConverter(), new JsonStringEnumConverter() },
+            Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter() },
             //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             IncludeFields = true,
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Serialization
         public static JsonSerializerOptions SxcAttributeJsonSerializerOptions = new JsonSerializerOptions()
         {
             AllowTrailingCommas = true,
-            Converters = { new Plumbing.DateTimeConverter(), new JsonStringEnumConverter() },
+            Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter() },
             //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.CurrencySymbols/*, UnicodeRanges.Latin1Supplement, UnicodeRanges.LatinExtendedA, UnicodeRanges.LatinExtendedB, UnicodeRanges.LatinExtendedC, UnicodeRanges.LatinExtendedD, UnicodeRanges.LatinExtendedE, UnicodeRanges.LatinExtendedAdditional*/),
             IncludeFields = true,
@@ -59,7 +59,7 @@ namespace ToSic.Eav.Serialization
         public static JsonSerializerOptions FeaturesJsonSerializerOptions = new JsonSerializerOptions()
         {
             AllowTrailingCommas = true,
-            Converters = { new Plumbing.ShortDateTimeConverter() },
+            Converters = { new JsonShortDateTimeConverter() },
             //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             IncludeFields = true,
@@ -93,7 +93,7 @@ namespace ToSic.Eav.Serialization
         public static void SetUnsafeJsonSerializerOptions(this JsonSerializerOptions value)
         {
             value.AllowTrailingCommas = true;
-            value.Converters.Add(new Plumbing.DateTimeConverter()); 
+            value.Converters.Add(new JsonDateTimeConverter()); 
             value.Converters.Add(new JsonStringEnumConverter());
             //value.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
             value.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
