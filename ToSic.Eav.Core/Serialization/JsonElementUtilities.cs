@@ -7,7 +7,7 @@ namespace ToSic.Eav.Serialization
 {
     public static class JsonElementUtilities
     {
-        public static Dictionary<string, object> UnwrapJsonElementsInDictionary(Dictionary<string, object> dictionary)
+        public static Dictionary<string, object> UnwrapJsonElementsInDictionary<T>(T dictionary) where T : IDictionary<string, object>
         {
             var unwrappedDictionary = new Dictionary<string, object>();
             foreach (var pair in dictionary)
