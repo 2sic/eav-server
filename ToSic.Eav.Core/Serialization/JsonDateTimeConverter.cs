@@ -13,7 +13,9 @@ namespace ToSic.Eav.Serialization
 
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToUniversalTime());
+            // fix: 2 hours are subtracted from the time on each load
+            // less decimals after seconds are to preserve compatibility with older api that used Newtonsoft
+            writer.WriteStringValue(value/*.ToUniversalTime()*/.ToString("yyyy-MM-ddTHH:mm:ssZ"));
         }
     }
 }
