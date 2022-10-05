@@ -15,7 +15,7 @@ namespace ToSic.Eav.ImportExport.Json
         {
             var package = ToPackage(contentType, false);
 
-            var simple = System.Text.Json.JsonSerializer.Serialize(package, JsonOptions.SxcUnsafeJsonSerializerOptions);
+            var simple = System.Text.Json.JsonSerializer.Serialize(package, JsonOptions.UnsafeJsonWithoutEncodingHtml);
             return simple;
         }
 

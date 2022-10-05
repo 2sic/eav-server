@@ -151,7 +151,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                         throw new ArgumentException("a file is not json");
 
                     // check for error
-                    var licenseFileResultDto = JsonSerializer.Deserialize<LicenseFileResultDto>(content, JsonOptions.SxcUnsafeJsonSerializerOptions);
+                    var licenseFileResultDto = JsonSerializer.Deserialize<LicenseFileResultDto>(content, JsonOptions.UnsafeJsonWithoutEncodingHtml);
                     if (!licenseFileResultDto.Success) 
                         return wrapLog.Return(licenseFileResultDto, licenseFileResultDto.Message);
                 }

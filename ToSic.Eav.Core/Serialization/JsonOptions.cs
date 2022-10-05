@@ -6,9 +6,27 @@ using System.Text.Unicode;
 
 namespace ToSic.Eav.Serialization
 {
+    /// <summary>
+    /// TODO: @stv
+    /// - pls add triple-slash comments to each method
+    /// - make sure we know when to use which one
+    /// - remove "Sxc" as prefix since we're in the EAV project
+    /// </summary>
     public static class JsonOptions
     {
         public const int DefaultMaxModelBindingRecursionDepth = 32;
+
+        private static JsonSerializerOptions DefaultOptions = new JsonSerializerOptions
+        {
+            AllowTrailingCommas = true,
+            ReadCommentHandling = JsonCommentHandling.Skip,
+        };
+
+        //private static JsonSerializerDefaults Defaults = new JsonSerializerDefaults
+        //{
+        //    AllowTrailingCommas = true,
+        //    ReadCommentHandling = JsonCommentHandling.Skip,
+        //};
 
         /// <summary>
         /// Compared to the default encoder, the UnsafeRelaxedJsonEscaping encoder is more permissive about allowing characters to pass through unescaped:
@@ -19,7 +37,7 @@ namespace ToSic.Eav.Serialization
         /// Never allow the raw UnsafeRelaxedJsonEscaping output to be emitted into an HTML page or a <script> element.
         /// https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-character-encoding#serialize-all-characters
         /// </summary>
-        public static JsonSerializerOptions SxcUnsafeJsonSerializerOptions = new JsonSerializerOptions()
+        public static JsonSerializerOptions UnsafeJsonWithoutEncodingHtml = new JsonSerializerOptions(DefaultOptions)
         {
             AllowTrailingCommas = true,
             Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter() },

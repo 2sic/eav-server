@@ -143,7 +143,7 @@ namespace ToSic.Eav.WebApi.Formats
         /// <remarks>
         /// ParentOrError property was converted to extension method to avoid exceptions on STJ json deserialization
         /// </remarks>
-        public static Guid ParentOrError(this ItemIdentifier itemIdentifier)
+        public static Guid GetParentEntityOrError(this ItemIdentifier itemIdentifier)
         {
             return itemIdentifier.Parent
                        ?? throw new ArgumentNullException(nameof(itemIdentifier.Parent),

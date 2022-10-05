@@ -123,7 +123,7 @@ namespace ToSic.Eav.Configuration
                     return wrapLog.Return(stored, "converted to new features.json");
 
                 // return features stored
-                return wrapLog.Return(JsonSerializer.Deserialize<FeatureListStored>(fileContent, JsonOptions.SxcUnsafeJsonSerializerOptions), "ok, features loaded");
+                return wrapLog.Return(JsonSerializer.Deserialize<FeatureListStored>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml), "ok, features loaded");
             }
             catch (Exception e)
             {
