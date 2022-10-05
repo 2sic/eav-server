@@ -6,29 +6,38 @@ using System.Text.Unicode;
 
 namespace ToSic.Eav.Serialization
 {
-    /// <summary>
-    /// TODO: @stv
-    /// - pls add triple-slash comments to each method
-    /// - make sure we know when to use which one
-    /// - remove "Sxc" as prefix since we're in the EAV project
-    /// </summary>
     public static class JsonOptions
     {
         public const int DefaultMaxModelBindingRecursionDepth = 32;
 
-        private static JsonSerializerOptions DefaultOptions = new JsonSerializerOptions
-        {
-            AllowTrailingCommas = true,
-            ReadCommentHandling = JsonCommentHandling.Skip,
-        };
-
-        //private static JsonSerializerDefaults Defaults = new JsonSerializerDefaults
-        //{
-        //    AllowTrailingCommas = true,
-        //    ReadCommentHandling = JsonCommentHandling.Skip,
-        //};
 
         /// <summary>
+        /// Common, shared, default, base JsonSerializerOptions for JsonSerializer
+        /// provided to all other concrete JsonSerializerOptions implementations 
+        /// also to preserve json compatibility with older apis used by Newtonsoft.Json.
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
+        private static readonly JsonSerializerOptions DefaultOptions = new JsonSerializerOptions
+        {
+            AllowTrailingCommas = true,
+            Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter() },
+            //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+            IncludeFields = true,
+            // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
+            // from deserialization errors that might occur from deeply nested objects.
+            // This value is the same for model binding and Json.Net's serialization.
+            MaxDepth = DefaultMaxModelBindingRecursionDepth,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = null, // leave property names unchanged (PascalCase for c#)
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            WriteIndented = false,
+        };
+
+        /// <summary>
+        /// Most used set of JsonSerializerOptions for use in every JsonSerializer.
+        /// Provided as default set of options for SystemTextJsonMediaTypeFormatter used by our apis in DNN.
+        /// Provided as default set of options for SystemTextJsonOutputFormatter used by apis in Oqtane.
         /// Compared to the default encoder, the UnsafeRelaxedJsonEscaping encoder is more permissive about allowing characters to pass through unescaped:
         /// - It doesn't escape HTML-sensitive characters such as <, >, &, and '.
         /// - It doesn't offer any additional defense-in-depth protections against XSS or information disclosure attacks, such as those which might result from the client and server disagreeing on the charset.
@@ -39,60 +48,34 @@ namespace ToSic.Eav.Serialization
         /// </summary>
         public static JsonSerializerOptions UnsafeJsonWithoutEncodingHtml = new JsonSerializerOptions(DefaultOptions)
         {
-            AllowTrailingCommas = true,
-            Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter() },
-            //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            IncludeFields = true,
-            // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
-            // from deserialization errors that might occur from deeply nested objects.
-            // This value is the same for model binding and Json.Net's serialization.
-            MaxDepth = DefaultMaxModelBindingRecursionDepth,
-            NumberHandling = JsonNumberHandling.AllowReadingFromString,
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = null, // leave property names unchanged (PascalCase for c#)
-            ReadCommentHandling = JsonCommentHandling.Skip,
-            WriteIndented = false,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
-        // this one shoudl be safe for injecting in html
-        public static JsonSerializerOptions SxcAttributeJsonSerializerOptions = new JsonSerializerOptions()
+        /// <summary>
+        /// When json is used in html attributes, everything except basic charters should be encoded:
+        /// - escape HTML-sensitive characters such as <, >, &, and '.
+        /// - additional defense-in-depth protections against XSS or information disclosure attacks, such as those which might result from the client and server disagreeing on the charset.
+        /// This is alternative to UnsafeJsonWithoutEncodingHtml that is using UnsafeRelaxedJsonEscaping encoder.
+        /// </summary>
+        public static JsonSerializerOptions SafeJsonForHtmlAttributes = new JsonSerializerOptions(DefaultOptions)
         {
-            AllowTrailingCommas = true,
-            Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter() },
-            //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.CurrencySymbols/*, UnicodeRanges.Latin1Supplement, UnicodeRanges.LatinExtendedA, UnicodeRanges.LatinExtendedB, UnicodeRanges.LatinExtendedC, UnicodeRanges.LatinExtendedD, UnicodeRanges.LatinExtendedE, UnicodeRanges.LatinExtendedAdditional*/),
-            IncludeFields = true,
-            // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
-            // from deserialization errors that might occur from deeply nested objects.
-            // This value is the same for model binding and Json.Net's serialization.
-            MaxDepth = DefaultMaxModelBindingRecursionDepth,
-            NumberHandling = JsonNumberHandling.AllowReadingFromString,
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = null, // leave property names unchanged (PascalCase for c#)
-            ReadCommentHandling = JsonCommentHandling.Skip,
-            WriteIndented = false,
         };
 
-        public static JsonSerializerOptions FeaturesJsonSerializerOptions = new JsonSerializerOptions()
+        /// <summary>
+        /// For use in features.json to preserve simpler datetime format.
+        /// </summary>
+        public static JsonSerializerOptions FeaturesJson = new JsonSerializerOptions(DefaultOptions)
         {
-            AllowTrailingCommas = true,
             Converters = { new JsonShortDateTimeConverter() },
-            //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            IncludeFields = true,
-            // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
-            // from deserialization errors that might occur from deeply nested objects.
-            // This value is the same for model binding and Json.Net's serialization.
-            MaxDepth = DefaultMaxModelBindingRecursionDepth,
-            NumberHandling = JsonNumberHandling.AllowReadingFromString,
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = null, // leave property names unchanged (PascalCase for c#)
-            ReadCommentHandling = JsonCommentHandling.Skip,
-            WriteIndented = false,
         };
 
-        public static JsonDocumentOptions SxcJsonDocumentOptions = new JsonDocumentOptions()
+        /// <summary>
+        /// Default JsonDocumentOptions for direct use with JsonNode.Parse and JsonDocument.Parse
+        /// to preserve json compatibility with older apis used by Newtonsoft.Json.
+        /// </summary>
+        public static JsonDocumentOptions JsonDocumentDefaultOptions = new JsonDocumentOptions()
         {
             AllowTrailingCommas = true,
             CommentHandling = JsonCommentHandling.Skip,
@@ -102,12 +85,26 @@ namespace ToSic.Eav.Serialization
             MaxDepth = DefaultMaxModelBindingRecursionDepth,
         };
 
-        public static JsonNodeOptions SxcJsonNodeOptions = new JsonNodeOptions()
+        /// <summary>
+        /// Default JsonNodeOptions for direct use with JsonNode.Parse
+        /// to preserve json compatibility with older apis used by Newtonsoft.Json.
+        /// </summary>
+        public static JsonNodeOptions JsonNodeDefaultOptions = new JsonNodeOptions()
         {
             PropertyNameCaseInsensitive = true,
         };
 
-        // used in Oqtane
+        /// <summary>
+        /// Used to set default set of options for SystemTextJsonInputFormatter used by apis in Oqtane
+        /// also to preserve json compatibility with older apis used by Newtonsoft.Json.
+        /// Compared to the default encoder, the UnsafeRelaxedJsonEscaping encoder is more permissive about allowing characters to pass through unescaped:
+        /// - It doesn't escape HTML-sensitive characters such as <, >, &, and '.
+        /// - It doesn't offer any additional defense-in-depth protections against XSS or information disclosure attacks, such as those which might result from the client and server disagreeing on the charset.
+        /// Use the unsafe encoder only when it's known that the client will be interpreting the resulting payload as UTF-8 encoded JSON.
+        /// For example, you can use it if the server is sending the response header Content-Type: application/json; charset=utf-8.
+        /// Never allow the raw UnsafeRelaxedJsonEscaping output to be emitted into an HTML page or a <script> element.
+        /// </summary>
+        /// <param name="value"></param>
         public static void SetUnsafeJsonSerializerOptions(this JsonSerializerOptions value)
         {
             value.AllowTrailingCommas = true;

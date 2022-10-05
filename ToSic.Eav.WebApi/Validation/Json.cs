@@ -17,7 +17,7 @@ namespace ToSic.Eav.WebApi.Validation
 
             try
             {
-                JsonNode.Parse(strInput, JsonOptions.SxcJsonNodeOptions, JsonOptions.SxcJsonDocumentOptions);
+                JsonNode.Parse(strInput, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions);
             }
             catch (JsonException)
             {

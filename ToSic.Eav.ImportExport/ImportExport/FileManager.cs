@@ -136,7 +136,7 @@ namespace ToSic.Eav.ImportExport
             // validate json
             try
             {
-                var json = JsonNode.Parse(jsonString, JsonOptions.SxcJsonNodeOptions, JsonOptions.SxcJsonDocumentOptions);
+                var json = JsonNode.Parse(jsonString, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions);
                 excludeSearchPatterns = json?["export"]?["exclude"]?.AsArray()
                     .Select(e => (e.ToString()).Trim().Backslash())
                     .Where(e => !string.IsNullOrEmpty(e) && !e.StartsWith("#")) // ignore empty lines, or comment lines that start with #
