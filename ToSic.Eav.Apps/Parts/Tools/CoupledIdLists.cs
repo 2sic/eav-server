@@ -121,6 +121,12 @@ namespace ToSic.Eav.Apps.Parts.Tools
             if (index == -1)
                 throw new Exception("Sort order is never -1 any more; deprecated");
 
+            // TODO: review w 2DM - this looks like an issue that should be solved on client side
+            // HACK: compensation for edge case, max=1 and index=1
+            // when index is bigger than number of elements in list
+            var max = Lists.First().Value.Count; // max is at the end of the list
+            if (max == 1 && index == 1) index = 0;
+
             // if necessary, increase length on all
             var i = 0;
             var ok = Lists.Values.Aggregate(false, (prev, l) =>
