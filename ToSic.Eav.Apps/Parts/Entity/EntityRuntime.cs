@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.Apps.Parts
@@ -51,6 +52,16 @@ namespace ToSic.Eav.Apps.Parts
         {
             var typeFilter = Parent.DataSourceFactory.GetDataSource<EntityTypeFilter>(Parent.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
+
+            // TODO: review with 2DM
+            // HACK: in the edge case of an successor app, we also get second AppConfiguration (or AppSettings or AppResources) from the ancestor app
+            // but only one AppConfiguration is expected by UI, so we remove second AppConfiguration(that is typeof EntityWrapper)
+            if (contentTypeName.Equals(AppLoadConstants.TypeAppConfig, StringComparison.InvariantCultureIgnoreCase)
+                || contentTypeName.Equals(AppLoadConstants.TypeAppSettings, StringComparison.InvariantCultureIgnoreCase)
+                || contentTypeName.Equals(AppLoadConstants.TypeAppResources, StringComparison.InvariantCultureIgnoreCase))
+                if (typeFilter.List.Count() > 1)
+                    return typeFilter.List.Where(e => !e.HasAncestor());
+
             return typeFilter.List;
         }
 
