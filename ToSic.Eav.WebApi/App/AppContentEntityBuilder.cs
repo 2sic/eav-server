@@ -6,8 +6,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
-using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.WebApi.App
 {
@@ -39,7 +37,7 @@ namespace ToSic.Eav.WebApi.App
             {
                 var attrName = attrDef.Name;
                 if (!newContentItem.ContainsKey(attrName)) continue;
-                var foundValue = JsonElementUtilities.UnwrapJsonElement(newContentItem[attrName]);
+                var foundValue = newContentItem[attrName];
                 switch (attrDef.Type.ToLowerInvariant())
                 {
                     case "string":

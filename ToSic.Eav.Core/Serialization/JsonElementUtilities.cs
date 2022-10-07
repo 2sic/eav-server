@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -6,14 +7,6 @@ namespace ToSic.Eav.Serialization
 {
     public static class JsonElementUtilities
     {
-        public static Dictionary<string, object> UnwrapJsonElementsInDictionary<T>(T dictionary) where T : IDictionary<string, object>
-        {
-            var unwrappedDictionary = new Dictionary<string, object>();
-            foreach (var pair in dictionary)
-                unwrappedDictionary[pair.Key] = UnwrapJsonElement(pair.Value);
-            return unwrappedDictionary;
-        }
-
         /// <summary>
         /// Deserialize inferred types to .NET types
         ///
@@ -46,61 +39,62 @@ namespace ToSic.Eav.Serialization
         /// https://stackoverflow.com/questions/65972825/c-sharp-deserializing-nested-json-to-nested-dictionarystring-object/65974452#65974452
         /// https://stackoverflow.com/questions/68519985/how-do-i-get-system-text-json-to-deserialize-objects-into-their-original-type
         /// </remarks>
-        public static object UnwrapJsonElement(object original)
-        {
-            if (!(original is JsonElement jsonElement)) return original;
+        //public static object UnwrapJsonElement(object original)
+        //{
+        //    if (!(original is JsonElement jsonElement)) return original;
 
-            switch (jsonElement.ValueKind)
-            {
-                case JsonValueKind.String:
-                    if (jsonElement.TryGetGuid(out var guidValue))
-                        return guidValue;
-                    if (jsonElement.TryGetDateTime(out var dateTime))
-                    {
-                        //if (dateTime.Kind == DateTimeKind.Local)
-                        //    if (jsonElement.TryGetDateTimeOffset(out var datetimeOffset))
-                        //        return datetimeOffset;
-                        return dateTime;
-                    }
-                    return jsonElement.ToString();
-                case JsonValueKind.Number:
-                    if (jsonElement.TryGetInt32(out var intValue))
-                        return intValue;
-                    if (jsonElement.TryGetInt64(out var longValue))
-                        return longValue;
-                    return jsonElement.GetDouble();
-                case JsonValueKind.True:
-                case JsonValueKind.False:
-                    return jsonElement.GetBoolean();
-                case JsonValueKind.Null:
-                    return null;
-                case JsonValueKind.Object:
-                    return JsonObject.Create(jsonElement);
-                    //dynamic unwrappedObject = new ExpandoObject();
-                    //foreach (var property in jsonElement.EnumerateObject())
-                    //    ((IDictionary<string, object>)unwrappedObject)[property.Name] = UnwrapJsonElement(property.Value);
-                    //return unwrappedObject;
-                case JsonValueKind.Array:
-                    return JsonArray.Create(jsonElement);
-                    //var unwrappedArray = new ArrayList();
-                    //foreach (var item in jsonElement.EnumerateArray())
-                    //    unwrappedArray.Add(UnwrapJsonElement(item));
-                    //return unwrappedArray.ToArray();
-                case JsonValueKind.Undefined:
-                default:
-                    return jsonElement;
-            }
-        }
+        //    switch (jsonElement.ValueKind)
+        //    {
+        //        case JsonValueKind.True:
+        //            return true;
+        //        case JsonValueKind.False:
+        //            return false;
+        //        case JsonValueKind.Number when jsonElement.TryGetInt32(out var intValue):
+        //            return intValue;
+        //        case JsonValueKind.Number when jsonElement.TryGetInt64(out var longValue):
+        //            return longValue;
+        //        case JsonValueKind.Number:
+        //            return jsonElement.GetDouble();
+        //        case JsonValueKind.String when jsonElement.TryGetGuid(out var guidValue):
+        //                return guidValue;
+        //        case JsonValueKind.String when jsonElement.TryGetDateTime(out var dateTime):
+        //            {
+        //                //if (dateTime.Kind == DateTimeKind.Local)
+        //                //    if (jsonElement.TryGetDateTimeOffset(out var datetimeOffset))
+        //                //        return datetimeOffset;
+        //                return dateTime;
+        //            }
+        //        case JsonValueKind.String:
+        //            return jsonElement.ToString();
+        //        case JsonValueKind.Null:
+        //            return null;
+        //        case JsonValueKind.Object:
+        //            return JsonObject.Create(jsonElement);
+        //        case JsonValueKind.Array:
+        //            return JsonArray.Create(jsonElement);
+        //        case JsonValueKind.Undefined:
+        //        default:
+        //            return jsonElement;
+        //    }
+        //}
+
+        //public static Dictionary<string, object> UnwrapJsonElementsInDictionary<T>(T dictionary) where T : IDictionary<string, object>
+        //{
+        //    var unwrappedDictionary = new Dictionary<string, object>();
+        //    foreach (var pair in dictionary)
+        //        unwrappedDictionary[pair.Key] = UnwrapJsonElement(pair.Value);
+        //    return unwrappedDictionary;
+        //}
 
         //public static Type ToType(this JsonValueKind valueKind, string value)
         //{
         //    switch (valueKind)
         //    {
         //        case JsonValueKind.String:
-        //            return Guid.TryParse(value, out var guidValue) ? typeof(Guid) : 
+        //            return Guid.TryParse(value, out var guidValue) ? typeof(Guid) :
         //                DateTime.TryParse(value, out var dateTimeValue) ? typeof(DateTime) : typeof(string);
         //        case JsonValueKind.Number:
-        //            return int.TryParse(value, out var intValue) ?  typeof(int) : 
+        //            return int.TryParse(value, out var intValue) ? typeof(int) :
         //                long.TryParse(value, out var longValue) ? typeof(long) : typeof(double);
         //        case JsonValueKind.True:
         //        case JsonValueKind.False:

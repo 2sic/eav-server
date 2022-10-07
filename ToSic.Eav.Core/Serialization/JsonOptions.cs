@@ -20,7 +20,7 @@ namespace ToSic.Eav.Serialization
         private static readonly JsonSerializerOptions DefaultOptions = new JsonSerializerOptions
         {
             AllowTrailingCommas = true,
-            Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter() },
+            Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter(), new ObjectToInferredTypesConverter() },
             //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             IncludeFields = true,
             // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
@@ -110,6 +110,7 @@ namespace ToSic.Eav.Serialization
             value.AllowTrailingCommas = true;
             value.Converters.Add(new JsonDateTimeConverter()); 
             value.Converters.Add(new JsonStringEnumConverter());
+            value.Converters.Add(new ObjectToInferredTypesConverter());
             //value.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
             value.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
             value.IncludeFields = true;
