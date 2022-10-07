@@ -12,6 +12,6 @@ namespace ToSic.Eav.Data
         /// The underlying entity. 
         /// </summary>
         /// <returns>The entity, or null if not provided</returns>
-        IEntity Entity { get; }
+        new IEntity Entity { get; }
     }
 }

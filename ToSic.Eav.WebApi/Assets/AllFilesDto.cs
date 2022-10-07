@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.WebApi.Assets
 {
@@ -12,7 +12,7 @@ namespace ToSic.Eav.WebApi.Assets
     {
         public string Path;
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? Shared;
     }
 }

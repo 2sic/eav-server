@@ -1,10 +1,11 @@
 ﻿using System.Linq;
-using Newtonsoft.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Serialization;
+
 
 namespace ToSic.Eav.ImportExport.Json
 {
@@ -17,7 +18,7 @@ namespace ToSic.Eav.ImportExport.Json
             // new in 11.07 - try to add assets
             var ent = ToJson(bundle.Entity, metadataDepth);
             if (bundle.Assets != null && bundle.Assets.Any()) ent.Assets = bundle.Assets;
-            return JsonConvert.SerializeObject(new JsonFormat { Entity = ent }, JsonSettings.Defaults());
+            return System.Text.Json.JsonSerializer.Serialize(new JsonFormat { Entity = ent }, JsonOptions.UnsafeJsonWithoutEncodingHtml);
         }
 
 

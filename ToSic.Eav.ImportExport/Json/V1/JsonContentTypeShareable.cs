@@ -1,14 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.ImportExport.Json.V1
 {
     public class JsonContentTypeShareable
     {
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public bool AlwaysShare;
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public int ParentZoneId;
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)] public int ParentAppId;
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore,
-            NullValueHandling = NullValueHandling.Ignore)]
-        public int? ParentId;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool AlwaysShare;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int ParentZoneId;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int ParentAppId;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int? ParentId;
     }
 }

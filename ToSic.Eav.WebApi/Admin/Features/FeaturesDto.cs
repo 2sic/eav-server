@@ -1,23 +1,22 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.WebApi.Admin.Features
 {
     public class FeaturesDto
     {
-        [JsonProperty("key")]
+        [JsonPropertyName("key")]
         public string Key { get; set; }
 
-        [JsonProperty("msg")]
+        [JsonPropertyName("msg")]
         public Msg Msg { get; set; }
 
     }
     public class Msg
     {
-        [JsonProperty("features")]
+        [JsonPropertyName("features")]
         public string Features { get; set; }
 
-        [JsonProperty("signature")]
+        [JsonPropertyName("signature")]
         public string Signature { get; set; }
     }
 }

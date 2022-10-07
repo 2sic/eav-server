@@ -1,15 +1,15 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.DI;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Adam;
 using ToSic.Eav.WebApi.Assets;
 using ToSic.Eav.WebApi.Validation;
@@ -151,7 +151,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                         throw new ArgumentException("a file is not json");
 
                     // check for error
-                    var licenseFileResultDto = JsonConvert.DeserializeObject<LicenseFileResultDto>(content);
+                    var licenseFileResultDto = JsonSerializer.Deserialize<LicenseFileResultDto>(content, JsonOptions.UnsafeJsonWithoutEncodingHtml);
                     if (!licenseFileResultDto.Success) 
                         return wrapLog.Return(licenseFileResultDto, licenseFileResultDto.Message);
                 }

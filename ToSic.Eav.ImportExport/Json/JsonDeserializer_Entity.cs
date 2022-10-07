@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Serialization;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Json
@@ -31,7 +31,7 @@ namespace ToSic.Eav.ImportExport.Json
             JsonFormat jsonObj;
             try
             {
-                jsonObj = JsonConvert.DeserializeObject<JsonFormat>(serialized, JsonSettings.Defaults());
+                jsonObj = System.Text.Json.JsonSerializer.Deserialize<JsonFormat>(serialized, JsonOptions.UnsafeJsonWithoutEncodingHtml);
             }
             catch (Exception ex)
             {

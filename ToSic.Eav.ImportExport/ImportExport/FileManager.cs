@@ -1,11 +1,13 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Serialization;
 using static System.IO.Path;
 
 namespace ToSic.Eav.ImportExport
@@ -134,9 +136,9 @@ namespace ToSic.Eav.ImportExport
             // validate json
             try
             {
-                var jObject = JObject.Parse(jsonString);
-                excludeSearchPatterns = jObject["export"]?["exclude"]?
-                    .Select(e => ((string)e).Trim().Backslash())
+                var json = JsonNode.Parse(jsonString, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions);
+                excludeSearchPatterns = json?["export"]?["exclude"]?.AsArray()
+                    .Select(e => (e.ToString()).Trim().Backslash())
                     .Where(e => !string.IsNullOrEmpty(e) && !e.StartsWith("#")) // ignore empty lines, or comment lines that start with #
                     .Select(e => e.StartsWith(@"\") ? Combine(_sourceFolder, e.Substring(1)) : e) // handle case with starting slash
                     .Select(e => e.ToLowerInvariant())

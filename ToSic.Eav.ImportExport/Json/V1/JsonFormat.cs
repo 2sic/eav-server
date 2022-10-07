@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.ImportExport.Json.V1
 {
@@ -13,21 +14,27 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// <summary>
         /// V1 - a single Entity
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public JsonEntity Entity;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+        public JsonEntity Entity;
         
         /// <summary>
         /// V1 - a single Content-Type
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public JsonContentType ContentType;
-        
-        
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+        public JsonContentType ContentType;
+
+
         /// <summary>
         /// V1.2 - A list of entities - added in 2sxc 12 to support content-types with additional sub-entities like formulas
         /// </summary>
         /// <remarks>
         /// Will not be serialized if default value (empty array)
         /// </remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore)] 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public IEnumerable<JsonEntity> Entities;
+
+
+
+
     }
 }

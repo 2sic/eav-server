@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
@@ -7,10 +7,10 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("no good reason to publish this")]
     public class FeatureListStored
     {
-        [JsonProperty("features")]
+        [JsonPropertyName("features")]
         public List<FeatureConfig> Features = new List<FeatureConfig>();
 
-        [JsonProperty("fingerprint")]
+        [JsonPropertyName("fingerprint")]
         public string Fingerprint;
     }
 }

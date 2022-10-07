@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.ImportExport.Json.V1
 {
@@ -18,15 +18,15 @@ namespace ToSic.Eav.ImportExport.Json.V1
         public string Description;
 
         /// <remarks>V 1.0</remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonAttributeDefinition> Attributes;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public List<JsonAttributeDefinition> Attributes;
 
         /// <remarks>V 1.0</remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public JsonContentTypeShareable Sharing;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public JsonContentTypeShareable Sharing;
 
         /// <remarks>V 1.0</remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonEntity> Metadata;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public List<JsonEntity> Metadata;
 
         /// <remarks>V 1.1</remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonAsset> Assets { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public List<JsonAsset> Assets { get; set; }
     }
 }

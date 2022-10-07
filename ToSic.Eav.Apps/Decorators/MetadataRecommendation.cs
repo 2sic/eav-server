@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 
@@ -34,11 +34,11 @@ namespace ToSic.Eav.Apps.Decorators
         /// <summary>
         /// Marks the recommendation that it should be created as empty
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? CreateEmpty { get; set; }
 
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Debug { get; set; }
 
         [JsonIgnore]

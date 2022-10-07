@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.WebApi.Dto;
 
@@ -46,21 +46,14 @@ namespace ToSic.Eav.WebApi.Formats
         /// Used in ContentBlock scenarios (where an item is in the content/presentation field)
         /// or when editing / adding things to an entity-list like slides in a swiper.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Guid? Parent { get; set; }
-
-        /// <summary>
-        /// Access the Parent GUID in scenarios where it must exist, or throw error
-        /// </summary>
-        [JsonIgnore]
-        public Guid ParentOrError => Parent 
-                                    ?? throw new ArgumentNullException(nameof(Parent),"Trying to access 'Parent' to save in list, but it's null");
 
         /// <summary>
         /// The field on the parent where this item is anchored. <see cref="Parent"/>
         /// Must be an Entity-List. 
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Field { get; set; }
 
 
@@ -125,7 +118,7 @@ namespace ToSic.Eav.WebApi.Formats
         /// It is possible that is required to solve "inner-inner-content" issue.
         /// Moved from Group.ContentBlockAppId, because "Group" properties are flattened to its parent "Header".
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? ContentBlockAppId { get; set; }
 
         #endregion
@@ -141,5 +134,20 @@ namespace ToSic.Eav.WebApi.Formats
         public TEntity Entity { get; set; }
 
     }
-    
+
+    public static class ItemIdentifierExtension
+    {
+        /// <summary>
+        /// Access the Parent GUID in scenarios where it must exist, or throw error
+        /// </summary>
+        /// <remarks>
+        /// ParentOrError property was converted to extension method to avoid exceptions on STJ json deserialization
+        /// </remarks>
+        public static Guid GetParentEntityOrError(this ItemIdentifier itemIdentifier)
+        {
+            return itemIdentifier.Parent
+                       ?? throw new ArgumentNullException(nameof(itemIdentifier.Parent),
+                           "Trying to access 'Parent' to save in list, but it's null");
+        }
+    }
 }
