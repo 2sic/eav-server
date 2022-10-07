@@ -18,7 +18,14 @@ namespace ToSic.Eav.Apps.Parts
         }
 
         public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft, bool forceAddToEnd)
-            => FieldListUpdate(target, fields, asDraft, lists => lists.Add(forceAddToEnd ? null : (int?)index, values));
+            => FieldListUpdate(target, fields, asDraft, lists =>
+                {
+                    // hitting + if the list is empty first add 1 null item (because we already see one demo item)
+                    if (lists.Lists.First().Value.Count == 0)// on non, first add 1 null item
+                        lists.Add(0, new int?[] { null, null });
+
+                    return lists.Add(forceAddToEnd ? null : (int?) index, values);
+                });
         
         public void FieldListRemove(IEntity target, string[] fields, int index, bool asDraft)
             => FieldListUpdate(target, fields, asDraft, lists => lists.Remove(index));
