@@ -26,8 +26,9 @@ namespace ToSic.Eav.Apps
             if (string.IsNullOrEmpty(appName))
                 return wrapLog.Return(Constants.AppIdEmpty, "no name");
 
+            var nameLower = appName.ToLowerInvariant();
             var appId = _appStates.Apps(zoneId)
-                .Where(p => p.Value == appName)
+                .Where(p => p.Value.ToLowerInvariant() == nameLower)
                 .Select(p => p.Key).FirstOrDefault();
 
             // optionally check folder names
@@ -41,28 +42,40 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Find an app based on the folder name. Will check the App Metadata for this
         /// </summary>
-        private int AppIdFromFolderName(int zoneId, string folderName)
+        public int AppIdFromFolderName(int zoneId, string folderName)
         {
             var wrapLog = Log.Fn<int>(folderName);
             var nameLower = folderName.ToLowerInvariant();
 
-            var idOfAppWithMatchingName = -1;
             foreach (var p in _appStates.Apps(zoneId))
             {
                 var appState = _appStates.Get(new AppIdentity(zoneId, p.Key));
                 if (!string.IsNullOrEmpty(appState.Folder) && appState.Folder.ToLowerInvariant() == nameLower)
                     return wrapLog.Return(p.Key, "folder matched");
-                if (!string.IsNullOrEmpty(appState.Name) && appState.Name.ToLowerInvariant() == nameLower)
-                    idOfAppWithMatchingName = p.Key;
             }
-            
-            // Folder not found - let's check if there was an app with this name
-            if (idOfAppWithMatchingName != -1)
-                return wrapLog.Return(idOfAppWithMatchingName, "name matched");
 
             // not found
             return wrapLog.Return(AppConstants.AppIdNotFound, "not found");
         }
 
+        /// <summary>
+        /// Find an app based on the app name. Will check the App Metadata for this
+        /// </summary>
+        public int AppIdFromAppName(int zoneId, string appName)
+        {
+            var wrapLog = Log.Fn<int>(appName);
+            var nameLower = appName.ToLowerInvariant();
+
+            foreach (var p in _appStates.Apps(zoneId))
+            {
+                var appState = _appStates.Get(new AppIdentity(zoneId, p.Key));
+
+                if (!string.IsNullOrEmpty(appState.Name) && appState.Name.ToLowerInvariant() == nameLower)
+                    return wrapLog.Return(p.Key, "name matched");
+            }
+
+            // not found
+            return wrapLog.Return(AppConstants.AppIdNotFound, "not found");
+        }
     }
 }

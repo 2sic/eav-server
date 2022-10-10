@@ -41,5 +41,14 @@ namespace ToSic.Eav.WebApi.Admin
         ImportResultDto Reset(int zoneId, int appId);
 
         ImportResultDto Import(int zoneId);
+
+        /// <summary>
+        /// List all app folders in the 2sxc which:
+        /// - are not installed as apps yet
+        /// - have a App_Data/app.xml
+        /// </summary>
+        /// <param name="zoneId"></param>
+        /// <returns></returns>
+        IEnumerable<PendingAppDto> GetPendingApps(int zoneId);
     }
 }
