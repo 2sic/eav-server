@@ -42,7 +42,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             var importer = _zipImportFromUrl;
             try
             {
-                success = importer.Init(zoneId, appId, _user.IsSuperUser, Log)
+                success = importer.Init(zoneId, appId, _user.IsSystemAdmin, Log)
                     .ImportUrl(packageUrl, isApp);
             }
             catch (Exception ex)

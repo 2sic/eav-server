@@ -73,7 +73,7 @@ namespace ToSic.Eav.Apps.Security
         public bool ZoneIsOfCurrentContextOrUserIsSuper(out string error)
         {
             var wrapLog = Log.Fn<bool>();
-            var zoneSameOrSuperUser = SamePortal || Context.User.IsSuperUser;
+            var zoneSameOrSuperUser = SamePortal || Context.User.IsSystemAdmin;
             error = zoneSameOrSuperUser ? null: $"accessing app {App.AppId} in zone {App.ZoneId} is not allowed for this user";
             return wrapLog.Return(zoneSameOrSuperUser, zoneSameOrSuperUser ? $"SamePortal:{SamePortal} - ok": "not ok, generate error");
         }

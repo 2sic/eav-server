@@ -35,7 +35,17 @@ namespace ToSic.Eav.Context
         /// <summary>
         /// Information if the user has super-user rights. This kind of user can do everything, incl. create apps. 
         /// </summary>
+        [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
         bool IsSuperUser { get; }
+
+        /// <summary>
+        /// Information if the user has super-user rights. This kind of user can do everything, incl. create apps. 
+        /// </summary>
+        /// <remarks>
+        /// Renamed in v14.09 from IsSuperUser to this to be consistent with other APIs.
+        /// </remarks>
+        bool IsSystemAdmin { get; }
+
 
         /// <summary>
         /// Information if the user is admin - allowing full content-management. 

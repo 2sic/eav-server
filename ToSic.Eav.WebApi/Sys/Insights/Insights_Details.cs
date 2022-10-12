@@ -14,7 +14,7 @@ namespace ToSic.Eav.WebApi.Sys
         public string Details(string view, int? appId, string key, int? position, string type, bool? toggle, string nameId)
         {
             // This is really important
-            ThrowIfNotSuperUser();
+            ThrowIfNotSystemAdmin();
 
             view = view.ToLowerInvariant();
 

@@ -48,7 +48,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             var zipImport = _zipImport;
             try
             {
-                zipImport.Init(zoneId, null, _user.IsSuperUser, Log);
+                zipImport.Init(zoneId, null, _user.IsSystemAdmin, Log);
                 var temporaryDirectory = Path.Combine(_globalConfiguration.TemporaryFolder, Mapper.GuidCompress(Guid.NewGuid()).Substring(0, 8));
 
                 // Increase script timeout to prevent timeouts

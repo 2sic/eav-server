@@ -155,7 +155,7 @@ namespace ToSic.Eav.DataSources
             {
                 Log.A($"Didn't find path '{pathPart}'");
                 return wrapLog.Return(SetError("Path not found",
-                    _user?.IsSuperUser == true
+                    _user?.IsSystemAdmin == true
                         ? $"Path for Super User only: '{pathPart}'"
                         : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights."),
                     "error");
@@ -163,7 +163,7 @@ namespace ToSic.Eav.DataSources
 
             if (!File.Exists(csvPath))
                 return wrapLog.Return(SetError("CSV File Not Found",
-                        _user?.IsSuperUser == true
+                        _user?.IsSystemAdmin == true
                             ? $"Path for Super User only: '{csvPath}'"
                             : "For security reasons the path isn't mentioned here. You'll find it in the Insights."),
                     "error");

@@ -81,7 +81,7 @@ namespace ToSic.Eav.Context
                 var wrapLog = Log.Fn<bool>();
 
                 // Case 1: Superuser always may
-                if (User.IsSuperUser)
+                if (User.IsSystemAdmin)
                 {
                     _userMayEdit = true;
                     return wrapLog.Return(_userMayEdit.Value, "super");

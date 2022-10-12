@@ -15,6 +15,9 @@ namespace ToSic.Eav.Context
 
         public List<int> Roles => new List<int>();
 
+        public bool IsSystemAdmin => false;
+
+        [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
         public bool IsSuperUser => false;
 
         [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]

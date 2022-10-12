@@ -74,7 +74,7 @@ namespace ToSic.Eav.Apps.Languages
 
             // Check if ML-Permissions-Feature is enabled, otherwise don't check detailed permissions
             var mlFeatureEnabled = _featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage);
-            var allowAllLanguages = !mlFeatureEnabled || _ctx.User.IsSuperUser;
+            var allowAllLanguages = !mlFeatureEnabled || _ctx.User.IsSystemAdmin;
 
             if (allowAllLanguages || appStateOrNull == null)
             {
@@ -98,7 +98,7 @@ namespace ToSic.Eav.Apps.Languages
                 hasPermissions = set.Any(s => s.Permissions.Any());
             }
 
-            var defaultAllowed = _ctx.User.IsSuperUser || !hasPermissions;
+            var defaultAllowed = _ctx.User.IsSystemAdmin || !hasPermissions;
             Log.A($"HasPermissions: {hasPermissions}, Initial Allowed: {defaultAllowed}");
 
             var newSet = set.Select(s =>

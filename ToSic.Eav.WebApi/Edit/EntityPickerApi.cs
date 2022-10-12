@@ -57,7 +57,7 @@ namespace ToSic.Eav.WebApi
             }
             else
             {
-                temp = AppRuntime.Entities.OnlyContent(_user.IsSuperUser); // only super user should also get Configuration
+                temp = AppRuntime.Entities.OnlyContent(_user.IsSystemAdmin); // only super user should also get Configuration
                 Log.A("won't filter by type because it's null");
             }
 
