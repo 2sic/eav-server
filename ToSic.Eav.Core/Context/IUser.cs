@@ -40,7 +40,17 @@ namespace ToSic.Eav.Context
         /// <summary>
         /// Information if the user is admin - allowing full content-management. 
         /// </summary>
+        [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
         bool IsAdmin { get; }
+
+
+        /// <summary>
+        /// Information if the user is admin - allowing full content-management.
+        /// </summary>
+        /// <remarks>
+        /// Renamed in v14.09 from IsAdmin to this to be consistent with other APIs.
+        /// </remarks>
+        bool IsSiteAdmin { get; }
 
         /// <summary>
         /// Returns true if a user is in the SexyContent Designers group. Such a person can actually do a lot more, like access the advanced toolbars. 

@@ -55,7 +55,7 @@ namespace ToSic.Eav.Apps.Security
         /// Check if user is valid admin of current portal / zone
         /// </summary>
         /// <returns></returns>
-        protected bool UserIsSiteAdmin() => Log.Return(() => Context.User?.IsAdmin ?? false);
+        protected bool UserIsSiteAdmin() => Log.Return(() => Context.User?.IsSiteAdmin ?? false);
 
         /// <summary>
         /// Verify that we're in the same zone, allowing admin/module checks

@@ -7,7 +7,7 @@ namespace ToSic.Eav.WebApi.Security
     {
         public static void ThrowIfNotAdmin(IUser user)
         {
-            if (!user.IsAdmin)
+            if (!user.IsSiteAdmin)
                 throw new AuthenticationException("Needs admin permissions to do this");
         }
 

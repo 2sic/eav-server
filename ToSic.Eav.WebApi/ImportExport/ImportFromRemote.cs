@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         {
             var callLog = Log.Fn<Tuple<bool, List<Message>>>($"{nameof(zoneId)}:{zoneId}, {nameof(appId)}:{appId}, {nameof(isApp)}:{isApp}, url:{packageUrl}");
             Log.A("install package:" + packageUrl);
-            if(!_user.IsAdmin) throw new Exception("must be admin");
+            if(!_user.IsSiteAdmin) throw new Exception("must be admin");
             bool success;
 
             var importer = _zipImportFromUrl;

@@ -17,7 +17,10 @@ namespace ToSic.Eav.Context
 
         public bool IsSuperUser => false;
 
+        [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
         public bool IsAdmin => false;
+
+        public bool IsSiteAdmin => false;
 
         public bool IsDesigner => false;
 
