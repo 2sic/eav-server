@@ -1,13 +1,12 @@
 ﻿using System.Security.Authentication;
-using ToSic.Eav.Context;
 
 namespace ToSic.Eav.WebApi.Security
 {
     public static class SecurityHelpers
     {
-        public static void ThrowIfNotAdmin(IUser user)
+        public static void ThrowIfNotAdmin(bool isAdmin)
         {
-            if (!user.IsSiteAdmin)
+            if (!isAdmin)
                 throw new AuthenticationException("Needs admin permissions to do this");
         }
 

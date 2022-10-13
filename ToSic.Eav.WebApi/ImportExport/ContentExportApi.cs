@@ -58,10 +58,9 @@ namespace ToSic.Eav.WebApi.ImportExport
             string selectedIds)
         {
             Log.A($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
-            SecurityHelpers.ThrowIfNotAdmin(user);
+            SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
 
-            //var appManager = new AppManager(appId, Log);
-            var contextLanguages = _appStates.Languages(_appManager.ZoneId) /*_appManager.Read.Zone.Languages()*/.Select(l => l.EnvironmentKey).ToArray();
+            var contextLanguages = _appStates.Languages(_appManager.ZoneId).Select(l => l.EnvironmentKey).ToArray();
 
             // check if we have an array of ids
             int[] ids = null;
@@ -95,7 +94,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         public THttpResponseType DownloadTypeAsJson(IUser user, string name)
         {
             Log.A($"get fields type:{name}");
-            SecurityHelpers.ThrowIfNotAdmin(user);
+            SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
             var type = _appManager.Read.ContentTypes.Get(name);
             var serializer = _jsonSerializer.New.Init(_appManager.AppState, Log);
             var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
@@ -108,7 +107,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         public THttpResponseType DownloadEntityAsJson(IUser user, int id, string prefix, bool withMetadata)
         {
             Log.A($"get fields id:{id}");
-            SecurityHelpers.ThrowIfNotAdmin(user);
+            SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
             var entity = _appManager.Read.Entities.Get(id);
             var serializer = _jsonSerializer.New.Init(_appManager.AppState, Log);
 
