@@ -25,6 +25,8 @@ namespace ToSic.Eav.Context
         /// </summary>
         Guid? Guid { get; }
 
+        string Username { get; }
+
         /// <summary>
         /// List of roles the user is in. This is used in permissions check.
         /// Still WIP - probably not the ideal interface, we'll probably change it to something else where the role must not be Int-based. 
