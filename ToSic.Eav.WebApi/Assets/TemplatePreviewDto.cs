@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.WebApi.Assets
 {
@@ -6,7 +6,7 @@ namespace ToSic.Eav.WebApi.Assets
     {
         public bool IsValid { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Error { get; set; }
 
         public string Preview { get; set; }

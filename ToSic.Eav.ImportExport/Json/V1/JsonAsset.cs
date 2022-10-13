@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.ImportExport.Json.V1
 {
@@ -24,13 +24,13 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// <summary>
         /// The folder the file is in. Default is blank / null. Should always start with a folder name, not "/" or ".."
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string Folder;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string Folder;
 
         /// <summary>
         /// The file encoding - base64 or none for text/code files.
         /// Optional, defaults to none.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string Encoding; // = "none";
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string Encoding; // = "none";
 
         public const string EncodingNone = "none";
         public const string EncodingBase64 = "base64";
@@ -39,12 +39,12 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// <summary>
         /// The file contents.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public string File;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string File;
 
         /// <summary>
         /// File Metadata, if available
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public List<JsonEntity> Metadata;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public List<JsonEntity> Metadata;
     }
 
 }

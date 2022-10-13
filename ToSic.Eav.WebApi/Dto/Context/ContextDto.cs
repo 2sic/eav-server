@@ -1,33 +1,33 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Apps;
 using ToSic.Eav.WebApi.Security;
-using static Newtonsoft.Json.NullValueHandling;
 
 namespace ToSic.Eav.WebApi.Dto
 {
     public class ContextDto
     {
-        [JsonProperty(NullValueHandling = Ignore)] public ContextAppDto App { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public ContextLanguageDto Language { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public ContextUserDto User { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public ContextResourceWithApp System { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public ContextResourceWithApp Site { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public WebResourceDto Page { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public ContextEnableDto Enable { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ContextAppDto App { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ContextLanguageDto Language { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ContextUserDto User { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ContextResourceWithApp System { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ContextResourceWithApp Site { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public WebResourceDto Page { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ContextEnableDto Enable { get; set; }
     }
 
     public class WebResourceDto
     {
-        [JsonProperty(NullValueHandling = Ignore)] public int? Id { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public string Url { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public string SharedUrl { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? Id { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string Url { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string SharedUrl { get; set; }
     }
 
     public class ContextResourceWithApp: WebResourceDto
     {
-        [JsonProperty(NullValueHandling = Ignore)] public IAppIdentity DefaultApp { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public IAppIdentity PrimaryApp { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public IAppIdentity DefaultApp { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public IAppIdentity PrimaryApp { get; set; }
     }
 
     public class ContextAppDto: WebResourceDto
@@ -51,12 +51,12 @@ namespace ToSic.Eav.WebApi.Dto
         /// Determines if this App is global, meaning it shouldn't have files in the site etc. just global
         /// </summary>
         /// <remarks>New in 13.0</remarks>
-        [JsonProperty(NullValueHandling = Ignore)] public bool? IsShared { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? IsShared { get; set; }
 
         /// <summary>
         /// Determines if this app was inherited from another App
         /// </summary>
-        [JsonProperty(NullValueHandling = Ignore)]  public bool? IsInherited { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]  public bool? IsInherited { get; set; }
 
         /// <summary>
         /// Marks the App which is global for global settings
@@ -77,13 +77,13 @@ namespace ToSic.Eav.WebApi.Dto
 
     public class ContextEnableDto
     {
-        [JsonProperty(NullValueHandling = Ignore)] public bool? AppPermissions { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public bool? CodeEditor { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public bool? Query { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? AppPermissions { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? CodeEditor { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? Query { get; set; }
 
-        [JsonProperty(NullValueHandling = Ignore)] public bool? FormulaSave { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public bool? OverrideEditRestrictions { get; set; }
-        [JsonProperty(NullValueHandling = Ignore)] public bool? DebugMode { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? FormulaSave { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? OverrideEditRestrictions { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public bool? DebugMode { get; set; }
     }
 
     public class ContextLanguageDto
@@ -99,10 +99,16 @@ namespace ToSic.Eav.WebApi.Dto
     /// </summary>
     public class ContextUserDto
     {
+        public string Email { get; set; }
+        public Guid? Guid { get; set; }
         public int Id { get; set; }
         public bool IsAnonymous { get; set; }
         public bool IsSystemAdmin { get; set; }
 
         public bool IsSiteAdmin { get; set; }
+        public bool IsContentAdmin { get; set; }
+        public string Name { get; set; }
+        public string Username { get; set; }
+
     }
 }

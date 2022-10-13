@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 
@@ -11,7 +11,7 @@ namespace ToSic.Eav.WebApi.Dto
     {
         public bool ReadOnly { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string ReadOnlyMessage { get; set; }
 
         /// <summary>

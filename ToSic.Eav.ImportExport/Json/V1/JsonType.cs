@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
 
 namespace ToSic.Eav.ImportExport.Json.V1
@@ -13,7 +13,7 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// Sometimes added in admin-UI scenarios, where additional info is useful
         /// ATM only used for Metadata
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Description { get; set; }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// ATM only used for Metadata
         /// </summary>
         /// <remarks>Added in v13.02</remarks>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Title { get; set; }
 
         /// <summary>

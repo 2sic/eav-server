@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
@@ -11,8 +11,10 @@ using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Dto;
 using Connection = ToSic.Eav.DataSources.Queries.Connection;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Admin.Query
 {
@@ -113,14 +115,15 @@ namespace ToSic.Eav.WebApi.Admin.Query
 		    Log.A($"save pipe: a#{appId}, id#{id}");
 
             // assemble list of all new data-source guids, for later re-mapping when saving
-            var newDsGuids = data.DataSources.Select(d => (string)d["EntityGuid"])
+            var newDsGuids = data.DataSources.Where(d => d.ContainsKey("EntityGuid"))
+                .Select(d => d["EntityGuid"].ToString())
                 .Where(g => g != "Out" && !g.StartsWith("unsaved"))
                 .Select(Guid.Parse)
                 .ToList();
 
             // Update Pipeline Entity with new Wirings etc.
             var wiringString = data.Pipeline[Constants.QueryStreamWiringAttributeName]?.ToString() ?? "";
-            var wirings = JsonConvert.DeserializeObject<List<Connection>>(wiringString)
+            var wirings = JsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
                 ?? new List<Connection>();
 
             _appManager.Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);

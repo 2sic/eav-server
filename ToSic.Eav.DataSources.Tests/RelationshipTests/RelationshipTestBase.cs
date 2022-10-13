@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         #endregion
 
 
-        protected ILog Log { get; } = new Log("Tst.DSRelF");
+        protected new ILog Log { get; } = new Log("Tst.DSRelF");
 
 
 

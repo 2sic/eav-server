@@ -80,9 +80,7 @@ namespace ToSic.Eav.Apps.Parts
             else
                 folder = string.IsNullOrEmpty(newAppName)
                     ? eavAppName
-                    : string.IsNullOrEmpty(newAppName)
-                        ? eavAppName
-                        : RemoveIllegalCharsFromPath(newAppName);
+                    : RemoveIllegalCharsFromPath(newAppName);
 
             var addList = new List<AddItemTask>();
             if (appConfig == null)

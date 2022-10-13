@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Core.Tests.Configuration
 {
@@ -34,7 +35,7 @@ namespace ToSic.Eav.Core.Tests.Configuration
                 Expires = DateTime.Today.AddDays(-1)
             });
 
-            var ser = JsonConvert.SerializeObject(x);
+            var ser = JsonSerializer.Serialize(x, JsonOptions.UnsafeJsonWithoutEncodingHtml);
             Trace.WriteLine(ser);
         }
     }

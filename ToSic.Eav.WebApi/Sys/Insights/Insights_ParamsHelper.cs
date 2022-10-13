@@ -4,7 +4,7 @@
     {
         private bool UrlParamsIncomplete(int? appId, out string message)
         {
-            ThrowIfNotSuperUser();
+            ThrowIfNotSystemAdmin();
             return UrlParamIncomplete("appid", appId, out message);
         }
 

@@ -69,28 +69,33 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
         #region AppFolder
 
         private string _appFolder;
-        public string AppFolder => _appFolder ?? (_appFolder = GetAppFolder());
-        private string GetAppFolder()
+        public string AppFolder => _appFolder ?? (_appFolder = GetAppKeyValue("Folder"));
+
+        #endregion
+
+        public string DisplayName => GetAppKeyValue(nameof(DisplayName));
+        public string Description => GetAppKeyValue(nameof(Description));
+        public string Version => GetAppKeyValue(nameof(Version));
+
+
+        private string GetAppKeyValue(string key)
         {
             ThrowErrorIfNotAppImport();
 
-            var folder = AppConfig.Elements(XmlConstants.ValueNode)
-                .First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "Folder")
+            var keyLower = key.ToLowerInvariant();
+            var value = AppConfig.Elements(XmlConstants.ValueNode)
+                .First(v => v.Attribute(XmlConstants.KeyAttr)?.Value.ToLowerInvariant() == keyLower)
                 .Attribute(XmlConstants.ValueAttr)
                 ?.Value;
 
-            if (folder == null)
-                throw new NullReferenceException("can't determine folder from xml, cannot continue");
-            return folder;
+            if (value == null)
+                throw new NullReferenceException($"can't determine {key} from xml, cannot continue");
+            return value;
         }
-
-        #endregion
 
         private void ThrowErrorIfNotAppImport()
         {
             if (!IsAppImport) throw new Exception("not app import, this shouldn't be accessed!");
         }
-
-
     }
 }

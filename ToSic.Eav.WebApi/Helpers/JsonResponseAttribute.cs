@@ -9,7 +9,10 @@ namespace ToSic.Eav.WebApi.Helpers
     public class JsonResponseAttribute : Attribute, IControllerConfiguration
     {
         public void Initialize(HttpControllerSettings controllerSettings, HttpControllerDescriptor controllerDescriptor)
-            => controllerSettings.Formatters.Remove(controllerSettings.Formatters.XmlFormatter);
+        {
+            controllerSettings.Formatters.Remove(controllerSettings.Formatters.XmlFormatter);
+            controllerSettings.Formatters.Remove(controllerSettings.Formatters.JsonFormatter);
+        }
     }
 }
 

@@ -6,10 +6,10 @@ using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DI;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;
@@ -185,11 +185,17 @@ namespace ToSic.Eav.WebApi
             return Init(app.AppId, true, parentLog);
         }
 
-        public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType)
+        public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType, bool excludeAncestor = false)
         {
             var wrapLog = Log.Fn<IEnumerable<Dictionary<string, object>>>(startTimer: true);
             EntityToDic.ConfigureForAdminUse();
             var originals = AppRead.Entities.Get(contentType).ToList();
+
+            // in the successor app, we can get an additional AppConfiguration, AppSettings or AppResources from the ancestor app
+            // that we can optionally exclude from the results
+            if (excludeAncestor) originals = 
+                originals.Where(e => !e.HasAncestor()).ToList();
+
             var list = EntityToDic.Convert(originals).ToList();
 
             var timer = Log.Fn(null, "truncate dictionary", startTimer: true);

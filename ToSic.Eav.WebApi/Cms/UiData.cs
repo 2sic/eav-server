@@ -22,7 +22,7 @@ namespace ToSic.Eav.WebApi.Cms
         public virtual IList<FeatureState> Features(IContextOfApp appContext, IMultiPermissionCheck permCheck)
         {
             var userHasPublishRights = permCheck.UserMayOnAll(GrantSets.WritePublished);
-            return appContext.User.IsAdmin
+            return appContext.User.IsSiteAdmin
                 ? _features.All.ToList()
                 : _features.EnabledUi.Where(f => userHasPublishRights || f.Public).ToList();
         }

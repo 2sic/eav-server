@@ -15,7 +15,7 @@
         /// <summary>
         /// Protected folder - IIS Request filtering default hidden segment
         /// contains the app.xml for export/import of the app
-        /// contains the .app.json
+        /// contains the app.json
         /// </summary>
         public const string AppDataProtectedFolder = "App_Data";
 
@@ -33,7 +33,7 @@
         /// optional json file in App_Data folder with exclude configuration
         /// to define files and folders that will not be exported in app export
         /// </summary>
-        public const string DotAppJson = ".app.json";
+        public const string AppJson = "app.json";
 
         /// <summary>
         /// the .databeta (this is for testing only, will never be in the distribution)

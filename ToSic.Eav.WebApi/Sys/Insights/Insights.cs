@@ -45,9 +45,9 @@ namespace ToSic.Eav.WebApi.Sys
 
         private Exception CreateBadRequest(string msg) => HttpException.BadRequest(msg);
 
-        private void ThrowIfNotSuperUser()
+        private void ThrowIfNotSystemAdmin()
         {
-            if(!_user.IsSuperUser) throw HttpException.PermissionDenied("requires Superuser permissions");
+            if(!_user.IsSystemAdmin) throw HttpException.PermissionDenied("requires Superuser permissions");
         }
 
 

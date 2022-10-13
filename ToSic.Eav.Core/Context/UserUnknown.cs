@@ -15,13 +15,27 @@ namespace ToSic.Eav.Context
 
         public List<int> Roles => new List<int>();
 
+        public bool IsSystemAdmin => false;
+
+        [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
         public bool IsSuperUser => false;
 
+        [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
         public bool IsAdmin => false;
+
+        public bool IsSiteAdmin => false;
+
+        public bool IsContentAdmin => false;
 
         public bool IsDesigner => false;
 
         public int Id => 0;
+
+        public string Username => "unknown";
+
+        public string Name => Username;
+
+        public string Email => "unknown@unknown.org";
 
         public bool IsAnonymous => !false;
     }

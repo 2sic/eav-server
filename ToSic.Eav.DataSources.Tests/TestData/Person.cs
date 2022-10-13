@@ -17,6 +17,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
         public DateTime Birthday;
         public DateTime? BirthdayOrNull;
         public DateTime Modified;
+        // ReSharper disable once UnusedMember.Global
         public string Biography;
 
         //private static Person SemiRandom(int i)

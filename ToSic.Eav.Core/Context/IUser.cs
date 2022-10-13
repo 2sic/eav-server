@@ -25,6 +25,12 @@ namespace ToSic.Eav.Context
         /// </summary>
         Guid? Guid { get; }
 
+        string Username { get; }
+
+        string Name { get; }
+
+        string Email { get; }
+
         /// <summary>
         /// List of roles the user is in. This is used in permissions check.
         /// Still WIP - probably not the ideal interface, we'll probably change it to something else where the role must not be Int-based. 
@@ -35,12 +41,38 @@ namespace ToSic.Eav.Context
         /// <summary>
         /// Information if the user has super-user rights. This kind of user can do everything, incl. create apps. 
         /// </summary>
+        [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
         bool IsSuperUser { get; }
+
+        /// <summary>
+        /// Information if the user has super-user rights. This kind of user can do everything, incl. create apps. 
+        /// </summary>
+        /// <remarks>
+        /// Renamed in v14.09 from IsSuperUser to this to be consistent with other APIs.
+        /// </remarks>
+        bool IsSystemAdmin { get; }
+
 
         /// <summary>
         /// Information if the user is admin - allowing full content-management. 
         /// </summary>
+        [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
         bool IsAdmin { get; }
+
+
+        /// <summary>
+        /// Information if the user is admin - allowing full content-management.
+        /// </summary>
+        /// <remarks>
+        /// Renamed in v14.09 from IsAdmin to this to be consistent with other APIs.
+        /// </remarks>
+        bool IsSiteAdmin { get; }
+
+        /// <summary>
+        /// Determines if the user is a content admin. 
+        /// </summary>
+        /// <remarks>New in v14.09</remarks>
+        bool IsContentAdmin { get; }
 
         /// <summary>
         /// Returns true if a user is in the SexyContent Designers group. Such a person can actually do a lot more, like access the advanced toolbars. 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
@@ -24,7 +25,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public object Title => TitleFieldName == null ? null : this[TitleFieldName];
 
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         [PrivateApi]
         internal string TitleFieldName;
 
@@ -44,7 +45,7 @@ namespace ToSic.Eav.Data
 		public DateTime Modified { get; internal set; }
 
         /// <inheritdoc />
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public IRelationshipManager Relationships { get; internal set; }
 
         /// <inheritdoc />

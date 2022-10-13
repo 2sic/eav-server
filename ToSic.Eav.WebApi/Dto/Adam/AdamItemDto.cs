@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using ToSic.Eav.WebApi.Dto.Metadata;
 
 namespace ToSic.Eav.WebApi.Dto
@@ -37,19 +37,19 @@ namespace ToSic.Eav.WebApi.Dto
         /// <summary>
         /// Small preview thumbnail
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string ThumbnailUrl { get; set; }
 
         /// <summary>
         /// Large preview
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string PreviewUrl { get; set; }
 
         /// <summary>
         /// Normal url to access the resource
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Url { get; set; }
 
         public AdamItemDto(bool isFolder, string name, int size, DateTime created, DateTime modified)

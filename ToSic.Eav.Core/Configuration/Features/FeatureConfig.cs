@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Configuration
@@ -13,14 +13,14 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// Feature GUID
         /// </summary>
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public Guid Id { get; set; }
         
         /// <summary>
         /// Feature is enabled and hasn't expired yet
         /// </summary>
         /// <remarks>by default all features are disabled</remarks>
-        [JsonProperty("enabled")]
+        [JsonPropertyName("enabled")]
         public bool Enabled
         {
             get => _enabled && Expires > DateTime.Now;
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// Expiry of this feature
         /// </summary>
-        [JsonProperty("expires")]
+        [JsonPropertyName("expires")]
         public DateTime Expires { get; set; } = DateTime.MaxValue;
 
     }

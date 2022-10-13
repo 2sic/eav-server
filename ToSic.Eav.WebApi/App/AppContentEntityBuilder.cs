@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.WebApi.App
 {
@@ -123,16 +122,19 @@ namespace ToSic.Eav.WebApi.App
                 // Try to see if it's already a number, else check if it's a JSON property
                 if (!int.TryParse(foundValue.ToString(), out var foundNumber))
                 {
-                    if (foundValue is JProperty jp)
-                        foundNumber = (int)jp.Value;
-                    else
+                    switch (foundValue)
                     {
-                        var jo = foundValue as JObject;
-                        // ReSharper disable once PossibleNullReferenceException
-                        if (jo.TryGetValue("Id", out var foundId))
-                            foundNumber = (int)foundId;
-                        else if (jo.TryGetValue("id", out foundId))
-                            foundNumber = (int)foundId;
+                        case JsonElement jn when jn.ValueKind == JsonValueKind.Number:
+                            foundNumber = jn.GetInt32();
+                            break;
+                        case JsonElement jo when jo.ValueKind == JsonValueKind.Object:
+                        {
+                            if (jo.TryGetProperty("Id", out var foundId))
+                                foundNumber = foundId.GetInt32();
+                            else if (jo.TryGetProperty("id", out foundId))
+                                foundNumber = foundId.GetInt32();
+                            break;
+                        }
                     }
                 }
                 Log.A($"relationship found:{foundNumber}");
