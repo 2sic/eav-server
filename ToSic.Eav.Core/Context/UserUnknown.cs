@@ -31,7 +31,11 @@ namespace ToSic.Eav.Context
 
         public int Id => 0;
 
-        public string Username => "dummy";
+        public string Username => "unknown";
+
+        public string Name => Username;
+
+        public string Email => "unknown@unknown.org";
 
         public bool IsAnonymous => !false;
     }
