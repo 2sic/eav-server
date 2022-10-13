@@ -25,6 +25,8 @@ namespace ToSic.Eav.Context
 
         public bool IsSiteAdmin => false;
 
+        public bool IsContentAdmin => false;
+
         public bool IsDesigner => false;
 
         public int Id => 0;

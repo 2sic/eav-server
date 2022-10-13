@@ -86,6 +86,7 @@ namespace ToSic.Eav.Caching
         /// Load an app into cache, specifying the primary language.
         /// This is used in scenarios, where the primary language cannot be auto-detected, so it's set explicitly.
         /// </summary>
+        /// <param name="sp"></param>
         /// <param name="app">App identifier.</param>
         /// <param name="primaryLanguage">Primary language, lower case.</param>
         void Load(IServiceProvider sp, IAppIdentity app, string primaryLanguage);

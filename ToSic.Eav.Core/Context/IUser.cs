@@ -63,6 +63,12 @@ namespace ToSic.Eav.Context
         bool IsSiteAdmin { get; }
 
         /// <summary>
+        /// Determines if the user is a content admin. 
+        /// </summary>
+        /// <remarks>New in v14.09</remarks>
+        bool IsContentAdmin { get; }
+
+        /// <summary>
         /// Returns true if a user is in the SexyContent Designers group. Such a person can actually do a lot more, like access the advanced toolbars. 
         /// </summary>
         bool IsDesigner { get; }

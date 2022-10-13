@@ -103,5 +103,6 @@ namespace ToSic.Eav.WebApi.Dto
         public bool IsSystemAdmin { get; set; }
 
         public bool IsSiteAdmin { get; set; }
+        public bool IsContentAdmin { get; set; }
     }
 }

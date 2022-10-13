@@ -5,15 +5,12 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class FeatureConstants
     {
-        internal const bool AllowUnsignedFeatures = true; // testing mode!
+        //internal const bool AllowUnsignedFeatures = true; // testing mode!
         public const string TypeName = "FeaturesConfiguration";
-        internal const string FeaturesField = "Features";
-        internal const string SignatureField = "Signature";
+        //internal const string FeaturesField = "Features";
+        //internal const string SignatureField = "Signature";
         [PrivateApi]
         public const string FeaturesJson = "features.json";
-
-        //[PrivateApi]
-        //public const string FeaturesPath = Constants.FolderDataCustom + "/configurations/";
 
         [PrivateApi("no good reason to publish this")]
         internal const string FeaturesValidationSignature2Sxc930 =
