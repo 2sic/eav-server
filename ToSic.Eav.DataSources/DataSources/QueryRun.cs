@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(
         NiceName = "Query Run",
         UiHint = "Get data from another Query",
-        Icon = "launch",
+        Icon = Icons.Launch,
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",
         DynamicOut = true,

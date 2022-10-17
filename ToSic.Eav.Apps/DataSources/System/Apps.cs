@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Sys
     [VisualQuery(
         NiceName = "Apps",
         UiHint = "Apps of a Zone",
-        Icon = "apps",
+        Icon = Icons.Apps,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
         DynamicOut = false,

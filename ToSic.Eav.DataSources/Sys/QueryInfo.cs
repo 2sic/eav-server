@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.Sys
     [VisualQuery(
         NiceName = "DataSources",
         UiHint = "List the DataSources available in the system",
-        Icon = "present_to_all",
+        Icon = Icons.ArrowUpBoxed,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
         Difficulty = DifficultyBeta.Advanced,

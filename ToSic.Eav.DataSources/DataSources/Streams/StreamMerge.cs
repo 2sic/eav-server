@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(
         NiceName = "Merge Streams",
         UiHint = "Combine multiple streams into one",
-        Icon = "merge_type",
+        Icon = Icons.MergeLeft,
         Type = DataSourceType.Logic, 
         GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
         DynamicOut = false,

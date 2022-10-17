@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources.Sys
     [VisualQuery(
         NiceName = "Attributes of Type",
         UiHint = "Attributes/fields of a Content-Type",
-        Icon = "dns",
+        Icon = Icons.Dns,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
         Difficulty = DifficultyBeta.Advanced,

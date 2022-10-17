@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(
         NiceName = "Serialization Configuration",
         UiHint = "Determine how this data is Serialized",
-        Icon = "settings_ethernet",
+        Icon = Icons.HtmlDotDotDot,
         Type = DataSourceType.Modify, 
         GlobalName = "2952e680-4aaa-4a12-adf7-325cb2854358",
         DynamicOut = true,

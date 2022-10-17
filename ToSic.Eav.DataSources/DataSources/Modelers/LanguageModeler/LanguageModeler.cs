@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "f390e460-46ff-4a6e-883f-f50fdeb363ee",
         NiceName = "Language Modeler",
         UiHint = "Combine values to multi-language values",
-        Icon = "translate",
+        Icon = Icons.Translate,
         PreviousNames = new[]
         {
             "f390e460-46ff-4a6e-883f-f50fdeb363ee",

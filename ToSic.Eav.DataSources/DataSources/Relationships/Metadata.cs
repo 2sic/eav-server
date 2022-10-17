@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
     [VisualQuery(
         NiceName = "Metadata",
         UiHint = "Get the item's metadata",
-        Icon = "local_offer",
+        Icon = Icons.OfferLocal,
         Type = DataSourceType.Lookup,
         GlobalName = "3ab4b010-2daa-4a7f-b882-635d2d9fa0a0",
         In = new[] { Constants.DefaultStreamNameRequired },
