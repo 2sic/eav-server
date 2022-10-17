@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Documentation;
 
@@ -31,9 +32,18 @@ namespace ToSic.Eav.Data
         public const string CreatedNiceName = "Created";
 
         public const string IdNiceName = "Id";
+        public const string GuidNiceName = "Guid";
+
+        public static Dictionary<string, string> SystemFields = new Dictionary<string, string>
+        {
+            { IdNiceName, NumberNiceName },
+            { GuidNiceName, nameof(Guid) },
+            { CreatedNiceName, nameof(DateTime) },
+            { ModifiedNiceName, nameof(DateTime) },
+            { TitleNiceName, nameof(String) },
+        };
 
         public const string TargetNiceName = "Target";
-        public const string GuidNiceName = "Guid";
         public const string NumberNiceName = "Number";
         public const string StringNiceName = "String";
 

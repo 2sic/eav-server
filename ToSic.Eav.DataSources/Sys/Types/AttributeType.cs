@@ -5,7 +5,9 @@
         Name,
         Type,
         IsTitle,
-        SortOrder
+        SortOrder,
+        IsBuiltIn,
+        Title,
     }
 
 }

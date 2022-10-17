@@ -134,10 +134,6 @@ namespace ToSic.Eav.DataSources.Sys
             var found = qName.StartsWith(DataSourceConstants.GlobalEavQueryPrefix)
                 ? QueryManager.FindQuery(Constants.PresetIdentity, qName)
                 : QueryManager.FindQuery(this, qName);
-            //? _globalQueriesLazy.Value.FindQuery(qName))
-            //: QueryManager.AllQueryItems(this)
-            //    .FirstOrDefault(q => string.Equals(q.Value<string>("Name"), qName, InvariantCultureIgnoreCase)
-            //                         || string.Equals(q.EntityGuid.ToString(), qName, InvariantCultureIgnoreCase));
 
             if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{qName}'");
 
