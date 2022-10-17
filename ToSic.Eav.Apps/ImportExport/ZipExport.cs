@@ -37,11 +37,11 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region DI Constructor
 
-        public ZipExport(IServerPaths serverPaths, 
-            AppRuntime appRuntime, 
-            DataSourceFactory dataSourceFactory, 
-            XmlExporter xmlExporter, 
-            IGlobalConfiguration globalConfiguration, 
+        public ZipExport(IServerPaths serverPaths,
+            AppRuntime appRuntime,
+            DataSourceFactory dataSourceFactory,
+            XmlExporter xmlExporter,
+            IGlobalConfiguration globalConfiguration,
             ITargetTypes metaTargetTypes)
         {
             _serverPaths = serverPaths;
@@ -89,23 +89,48 @@ namespace ToSic.Eav.Apps.ImportExport
             var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
 
             var appDirectory = new DirectoryInfo(path);
-            var portalFilesDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
 
             if (resetPortalFiles)
             {
-                // Sometimes delete is locked by external process
+                // 1. Copy global app templates folder for version control
+                if (Directory.Exists(_physicalPathGlobal))
+                {
+                    // Sometimes delete is locked by external process
+                    try
+                    {
+                        // Version control folder for copy of Global app files
+                        var globalSexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForGlobalAppStuff);
+
+                        // Empty older version of PortalFiles in App_Data
+                        globalSexyDirectory.Delete(true);
+
+                        // Copy global app files for version control
+                        var _ = new List<Message>();
+                        FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, true, _);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Ex(e);
+                    }
+                }
+
+
+                // 2. Copy PortalFiles for version control
                 try
                 {
+                    // Version control folder for copy of PortalFiles
+                    var portalFilesDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
+
                     // Empty older version of PortalFiles in App_Data
                     portalFilesDirectory.Delete(true);
+
+                    // Copy PortalFiles for version control
+                    CopyPortalFiles(xmlExport, portalFilesDirectory);
                 }
                 catch (Exception e)
                 {
                     Log.Ex(e);
                 }
-
-                // Copy PortalFiles for version control
-                CopyPortalFiles(xmlExport, portalFilesDirectory);
             }
 
             var xml = xmlExport.GenerateNiceXml();
@@ -137,7 +162,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             var tempDirectory = new DirectoryInfo(temporaryDirectoryPath);
             var appDirectory = tempDirectory.CreateSubdirectory("Apps/" + _appFolder + "/");
-            
+
             var sexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForAppStuff);
             var globalSexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForGlobalAppStuff);
             var portalFilesDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);

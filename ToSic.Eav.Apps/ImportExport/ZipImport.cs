@@ -219,7 +219,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             var wrapLog = Log.Fn($"..., {appId}, {tempFolder}");
             var templateRoot = Env.TemplatesRoot(_zoneId, appId);
-            var appTemplateRoot = Path.Combine(tempFolder, "2sexy");
+            var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForAppStuff);
             if (Directory.Exists(appTemplateRoot))
                 new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(templateRoot, false, importMessages);
             wrapLog.Done("ok");
@@ -231,14 +231,35 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="importMessages"></param>
         /// <param name="appId"></param>
         /// <param name="tempFolder"></param>
+        /// <param name="deleteGlobalTemplates"></param>
+        /// <param name="overwriteFiles"></param>
         /// <remarks>The zip file still uses the "2sexyGlobal" folder name instead of "2sxcGlobal"</remarks>
-        private void CopyAppGlobalFiles(List<Message> importMessages, int appId, string tempFolder)
+        public void CopyAppGlobalFiles(List<Message> importMessages, int appId, string tempFolder, bool deleteGlobalTemplates = false, bool overwriteFiles = false)
         {
-            var wrapLog = Log.Fn($"..., {appId}, {tempFolder}");
+            var wrapLog = Log.Fn($"..., {appId}, {tempFolder}, {deleteGlobalTemplates}, {overwriteFiles}");
             var globalTemplatesRoot = Env.GlobalTemplatesRoot(_zoneId, appId);
-            var appTemplateRoot = Path.Combine(tempFolder, "2sexyGlobal");
+            var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForGlobalAppStuff);
             if (Directory.Exists(appTemplateRoot))
-                new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(globalTemplatesRoot, false, importMessages);
+            {
+                if (deleteGlobalTemplates)
+                {
+                    // Sometimes delete is locked by external process
+                    try
+                    {
+                        // Empty older version of PortalFiles in App_Data
+                        Log.A("delete app global template folder");
+                        Directory.Delete(globalTemplatesRoot, true);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Ex(e);
+                    }
+                }
+
+                Log.A("copy all files to app global template folder");
+                new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
+            }
+
             wrapLog.Done("ok");
         }
 
