@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Documentation;
+﻿using System.Runtime.CompilerServices;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
@@ -68,6 +69,8 @@ namespace ToSic.Eav.DataSources
         public const string Tree = "account-tree";
 
         public const string Metadata = "loyalty";
+
+        public const string UserCircled = "account-circle";
 
         public const string Warning = "warning";
     }

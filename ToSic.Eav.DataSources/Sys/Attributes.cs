@@ -110,12 +110,6 @@ namespace ToSic.Eav.DataSources.Sys
                    ?? ImmutableArray<IEntity>.Empty;
         }
 
-        //private static Dictionary<string, object> BuildDictionary(KeyValuePair<string, IAttribute> at)
-        //    => AsDic(at.Key, at.Value.Type, false, 0, false);
-
-        //private static Dictionary<string, object> BuildDictionary(IContentTypeAttribute at) 
-        //    => AsDic(at.Name, at.Type, at.IsTitle, at.SortOrder, false);
-
         private static Dictionary<string, object> AsDic(string name, string type, bool isTitle, int sortOrder,
             bool builtIn)
             => new Dictionary<string, object>
