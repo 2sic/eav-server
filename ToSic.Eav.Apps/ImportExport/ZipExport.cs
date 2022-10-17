@@ -25,9 +25,6 @@ namespace ToSic.Eav.Apps.ImportExport
         private const string SourceControlDataFolder = Constants.AppDataProtectedFolder; // Constants.FolderData;
         private const string SourceControlDataFile = Constants.AppDataFile;
         private readonly string _blankGuid = Guid.Empty.ToString();
-        private const string ZipFolderForPortalFiles = "PortalFiles";
-        private const string ZipFolderForAppStuff = "2sexy";
-        private const string ZipFolderForGlobalAppStuff = "2sexyGlobal";
 
         public FileManager FileManager;
         private string _physicalAppPath;
@@ -77,7 +74,7 @@ namespace ToSic.Eav.Apps.ImportExport
         }
         #endregion
 
-        public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false)
+        public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false, bool resetPortalFiles = false)
         {
             var path = _physicalAppPath + "\\" + SourceControlDataFolder;
 
@@ -90,6 +87,27 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // generate the XML & save
             var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
+
+            var appDirectory = new DirectoryInfo(path);
+            var portalFilesDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
+
+            if (resetPortalFiles)
+            {
+                // Sometimes delete is locked by external process
+                try
+                {
+                    // Empty older version of PortalFiles in App_Data
+                    portalFilesDirectory.Delete(true);
+                }
+                catch (Exception e)
+                {
+                    Log.Ex(e);
+                }
+
+                // Copy PortalFiles for version control
+                CopyPortalFiles(xmlExport, portalFilesDirectory);
+            }
+
             var xml = xmlExport.GenerateNiceXml();
             File.WriteAllText(Path.Combine(path, SourceControlDataFile), xml);
         }
@@ -120,9 +138,9 @@ namespace ToSic.Eav.Apps.ImportExport
             var tempDirectory = new DirectoryInfo(temporaryDirectoryPath);
             var appDirectory = tempDirectory.CreateSubdirectory("Apps/" + _appFolder + "/");
             
-            var sexyDirectory = appDirectory.CreateSubdirectory(ZipFolderForAppStuff);
-            var globalSexyDirectory = appDirectory.CreateSubdirectory(ZipFolderForGlobalAppStuff);
-            var portalFilesDirectory = appDirectory.CreateSubdirectory(ZipFolderForPortalFiles);
+            var sexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForAppStuff);
+            var globalSexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForGlobalAppStuff);
+            var portalFilesDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
 
 
 
@@ -137,6 +155,31 @@ namespace ToSic.Eav.Apps.ImportExport
                     FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
 
             // Copy PortalFiles
+            CopyPortalFiles(xmlExport, portalFilesDirectory);
+            #endregion
+
+            // Save export xml
+            var xml = xmlExport.GenerateNiceXml();
+            File.WriteAllText(Path.Combine(appDirectory.FullName, Constants.ToSxcFolder, Constants.AppDataProtectedFolder, Constants.AppDataFile), xml);
+
+            // Zip directory and return as stream
+            var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
+
+            // Sometimes delete is locked by external process
+            try
+            {
+                tempDirectory.Delete(recursive: true);
+            }
+            catch (Exception e)
+            {
+                Log.Ex(e);
+            }
+
+            return stream;
+        }
+
+        private static void CopyPortalFiles(XmlExporter xmlExport, DirectoryInfo portalFilesDirectory)
+        {
             foreach (var file in xmlExport.ReferencedFiles)
             {
                 var portalFilePath = Path.Combine(portalFilesDirectory.FullName, Path.GetDirectoryName(file.RelativePath));
@@ -148,27 +191,14 @@ namespace ToSic.Eav.Apps.ImportExport
                 var fullPath = Path.Combine(portalFilesDirectory.FullName, file.RelativePath);
                 try
                 {
-                    File.Copy(file.Path, fullPath);
+                    File.Copy(file.Path, fullPath, overwrite: true);
                 }
                 catch (Exception e)
                 {
                     throw new Exception("Error on " + fullPath + " (" + fullPath.Length + ")", e);
                 }
             }
-            #endregion
-
-            // Save export xml
-            var xml = xmlExport.GenerateNiceXml();
-            File.WriteAllText(Path.Combine(appDirectory.FullName, Constants.ToSxcFolder, Constants.AppDataProtectedFolder, Constants.AppDataFile), xml);
-
-            // Zip directory and return as stream
-            var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
-
-            tempDirectory.Delete(true);
-
-            return stream;
         }
-
 
 
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
