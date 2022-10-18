@@ -91,7 +91,8 @@ namespace ToSic.Eav.Apps.ImportExport
             }
             finally
             {
-                TryToCleanUpTemporary(temporaryDirectory);
+                // Finally delete the temporary directory
+                TryToDeleteDirectory(temporaryDirectory, Log);
             }
 
             if (finalException != null)
@@ -104,20 +105,27 @@ namespace ToSic.Eav.Apps.ImportExport
             return wrapLog.ReturnTrue("ok");
         }
 
-        private void TryToCleanUpTemporary(string temporaryDirectory)
+
+        /// <summary>
+        /// Try to delete folder
+        /// </summary>
+        /// <param name="directoryPath"></param>
+        /// <param name="log"></param>
+        public static void TryToDeleteDirectory(string directoryPath, ILog log)
         {
-            var wrapLog = Log.Fn(temporaryDirectory);
+            var wrapLog = log.Fn(directoryPath);
             try
             {
-                // Finally delete the temporary directory
-                Directory.Delete(temporaryDirectory, true);
+                if (Directory.Exists(directoryPath))
+                    Directory.Delete(directoryPath, true);
                 wrapLog.Done("ok");
             }
-            catch
+            catch(Exception e)
             {
-                Log.A("Delete ran into issues, will ignore. " +
-                        "Probably files/folders are used by another process like anti-virus. " +
-                        "Just leave temp folder as is");
+                log.Ex(e);
+                log.A("Delete ran into issues, will ignore. " +
+                      "Probably files/folders are used by another process like anti-virus. " +
+                      "Just leave folder as is");
                 wrapLog.Done("error");
             }
         }
@@ -241,20 +249,8 @@ namespace ToSic.Eav.Apps.ImportExport
             var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForGlobalAppStuff);
             if (Directory.Exists(appTemplateRoot))
             {
-                if (deleteGlobalTemplates)
-                {
-                    // Sometimes delete is locked by external process
-                    try
-                    {
-                        // Empty older version of PortalFiles in App_Data
-                        Log.A("delete app global template folder");
-                        Directory.Delete(globalTemplatesRoot, true);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Ex(e);
-                    }
-                }
+                if (deleteGlobalTemplates) 
+                    TryToDeleteDirectory(globalTemplatesRoot, Log);
 
                 Log.A("copy all files to app global template folder");
                 new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);

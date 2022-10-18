@@ -100,8 +100,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         // Empty older version of app global templates state in App_Data
                         var globalTemplatesStatePath = Path.Combine(appDataPath, Constants.ZipFolderForGlobalAppStuff);
-                        if (Directory.Exists(globalTemplatesStatePath)) Directory.Delete(globalTemplatesStatePath, true);
-
+                        ZipImport.TryToDeleteDirectory(globalTemplatesStatePath, Log);
                         // Version control folder to preserve copy of app global templates
                         var globalTemplatesStateFolder = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForGlobalAppStuff);
 
@@ -120,7 +119,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 {
                     // Empty older version of PortalFiles state in App_Data
                     var portalFilesPath = Path.Combine(appDataPath, Constants.ZipFolderForPortalFiles);
-                    if (Directory.Exists(portalFilesPath)) Directory.Delete(portalFilesPath, true);
+                    ZipImport.TryToDeleteDirectory(portalFilesPath, Log);
 
                     // Version control folder to preserve copy of PortalFiles
                     var portalFilesDirectory = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
@@ -191,15 +190,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // Zip directory and return as stream
             var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
 
-            // Sometimes delete is locked by external process
-            try
-            {
-                tempDirectory.Delete(recursive: true);
-            }
-            catch (Exception e)
-            {
-                Log.Ex(e);
-            }
+            ZipImport.TryToDeleteDirectory(temporaryDirectoryPath, Log);
 
             return stream;
         }
