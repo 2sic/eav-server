@@ -56,8 +56,10 @@ namespace ToSic.Eav.Serialization
                     return longValue;
                 case JsonTokenType.Number:
                     return reader.GetDouble();
-                case JsonTokenType.String when reader.TryGetGuid(out var guidValue):
-                    return guidValue;
+
+                // 2022-10-17 2dm/STV disabled this again, because Newtonsoft never auto-converted GUIDs and it's causing side effects.
+                //case JsonTokenType.String when reader.TryGetGuid(out var guidValue):
+                //    return guidValue;
                 case JsonTokenType.String when reader.TryGetDateTime(out var dateTime):
                     return dateTime;
                 case JsonTokenType.String:

@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources.Sys
     [VisualQuery(
         NiceName = "Content Types",
         UiHint = "Types of an App",
-        Icon = "dns",
+        Icon = Icons.Dns,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
         Difficulty = DifficultyBeta.Advanced,

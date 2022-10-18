@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
         NiceName = "Relationship/Tree Modeler",
         UiHint = "Connect items to create relationships or trees",
-        Icon = "account_tree",
+        Icon = Icons.Tree,
         PreviousNames = new[]
         {
             "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",

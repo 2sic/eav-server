@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(
         NiceName = "Owner Filter",
         UiHint = "Keep only item created by a specified user",
-        Icon = "attribution",
+        Icon = Icons.PersonCircled,
         Type = DataSourceType.Security,
         GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
         DynamicOut = false,

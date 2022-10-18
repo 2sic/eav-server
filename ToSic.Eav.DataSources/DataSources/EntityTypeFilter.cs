@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(
         NiceName = "Type-Filter",
         UiHint = "Only keep items of the specified type",
-        Icon = "alt_route",
+        Icon = Icons.RouteAlt,
         Type = DataSourceType.Filter, 
         GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
         DynamicOut = false,

@@ -54,5 +54,20 @@
         /// InstructionsFolder in the global environment
         /// </summary>
         public const string InstructionsFolder = "ImportExport\\Instructions";
+
+        /// <summary>
+        /// Name of folder that should contain portal files in export zip or App_Data
+        /// </summary>
+        public const string ZipFolderForPortalFiles = "PortalFiles";
+
+        /// <summary>
+        /// Name of folder that should contain app files in export zip
+        /// </summary>
+        public const string ZipFolderForAppStuff = "2sexy";
+
+        /// <summary>
+        /// Name of folder that should contain global app files in export zip
+        /// </summary>
+        public const string ZipFolderForGlobalAppStuff = "2sexyGlobal";
     }
 }

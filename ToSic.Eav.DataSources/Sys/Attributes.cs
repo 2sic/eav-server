@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Documentation;
@@ -18,7 +17,7 @@ namespace ToSic.Eav.DataSources.Sys
     [VisualQuery(
         NiceName = "Attributes of Type",
         UiHint = "Attributes/fields of a Content-Type",
-        Icon = "dns",
+        Icon = Icons.Dns,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
         Difficulty = DifficultyBeta.Advanced,
@@ -77,7 +76,10 @@ namespace ToSic.Eav.DataSources.Sys
                 : _appStates.Get(this).GetContentType(ContentTypeName);
 
 	        // try to load from type, if it exists
-	        var list = type?.Attributes?.OrderBy(at => at.Name).Select(BuildDictionary).ToList();
+	        var list = type?.Attributes?
+                .OrderBy(at => at.Name)
+                .Select(at => AsDic(at.Name, at.Type, at.IsTitle, at.SortOrder, false))
+                .ToList();
 
             // note that often dynamic types will have zero attributes, so the previous command
             // gives a 0-list of attributes
@@ -86,36 +88,38 @@ namespace ToSic.Eav.DataSources.Sys
 	            list = TryToUseInStream == ContentTypeName
 	                ? optionalList?.FirstOrDefault()?.Attributes
 	                    .OrderBy(at => at.Key)
-	                    .Select(BuildDictionary)
+	                    .Select(at => AsDic(at.Key, at.Value.Type, false, 0, false))
 	                    .ToList()
 	                : null;
+
+            // New 2022-10-17 2dm - also add Id, Created, Modified etc.
+            if (list != null)
+                foreach (var sysField in Data.Attributes.SystemFields.Reverse())
+                    if (!list.Any(dic =>
+                            dic.TryGetValue(AttributeType.Name.ToString(), out var name) &&
+                            name as string == sysField.Key))
+                        list.Insert(0, AsDic(sysField.Key, sysField.Value, false, 0, true));
 
             // if it didn't work yet, maybe try from stream items
             var builder = DataBuilder;
             return list?.Select(attribData =>
-                       builder.Entity(attribData,
-                           titleField: AttributeType.Name.ToString(),
-                           typeName: AttribContentTypeName)
-                   ).ToImmutableArray() // .ToList()
+                           builder.Entity(attribData, titleField: AttributeType.Title.ToString(),
+                               typeName: AttribContentTypeName)
+                       )
+                       .ToImmutableArray()
                    ?? ImmutableArray<IEntity>.Empty;
         }
 
-
-
-	    private static Dictionary<string, object> BuildDictionary(KeyValuePair<string, IAttribute> at) => new Dictionary<string, object>
-	    {
-	        {AttributeType.Name.ToString(), at.Key},
-	        {AttributeType.Type.ToString(), at.Value.Type},
-	        {AttributeType.IsTitle.ToString(), false},
-	        {AttributeType.SortOrder.ToString(), 0}
-	    };
-
-	    private static Dictionary<string, object> BuildDictionary(IContentTypeAttribute at) => new Dictionary<string, object>
-	    {
-	        {AttributeType.Name.ToString(), at.Name},
-	        {AttributeType.Type.ToString(), at.Type},
-	        {AttributeType.IsTitle.ToString(), at.IsTitle},
-	        {AttributeType.SortOrder.ToString(), at.SortOrder}
-	    };
-	}
+        private static Dictionary<string, object> AsDic(string name, string type, bool isTitle, int sortOrder,
+            bool builtIn)
+            => new Dictionary<string, object>
+            {
+                { AttributeType.Name.ToString(), name },
+                { AttributeType.Type.ToString(), type },
+                { AttributeType.IsTitle.ToString(), isTitle },
+                { AttributeType.SortOrder.ToString(), sortOrder },
+                { AttributeType.IsBuiltIn.ToString(), builtIn },
+                { AttributeType.Title.ToString(), $"{name} ({type}{(builtIn ? ", built-in" : "")})" }
+            };
+    }
 }

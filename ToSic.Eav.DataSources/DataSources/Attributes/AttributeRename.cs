@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
     [VisualQuery(
         NiceName = "Rename Attribute/Property",
         UiHint = "Rename some attributes / properties",
-        Icon = "edit_attributes",
+        Icon = Icons.EditAttributes,
         Type = DataSourceType.Modify,
         GlobalName = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
         DynamicOut = false,

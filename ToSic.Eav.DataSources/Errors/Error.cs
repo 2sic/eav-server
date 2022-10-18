@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
     [VisualQuery(
         NiceName = "Error DataSource",
         UiHint = "Generate an error - primarily for debugging",
-        Icon = "warning",
+        Icon = Icons.Warning,
         Type = DataSourceType.Debug,
         Difficulty = DifficultyBeta.Advanced,
         GlobalName = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a"   // namespace or guid

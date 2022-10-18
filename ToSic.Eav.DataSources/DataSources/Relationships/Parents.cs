@@ -15,9 +15,9 @@ namespace ToSic.Eav.DataSources
     [VisualQuery(
         NiceName = "Parents",
         UiHint = "Get the item's parents",
-        Icon = "family_restroom",
+        Icon = Icons.Parents,
         Type = DataSourceType.Lookup,
-        GlobalName = "915217e5-7957-4303-a19c-a15505f2ad1d", // "ToSic.Eav.DataSources.Parents, ToSic.Eav.DataSources",
+        GlobalName = "915217e5-7957-4303-a19c-a15505f2ad1d", 
         In = new[] { Constants.DefaultStreamNameRequired },
         DynamicOut = false,
         ExpectsDataOfType = "a72cb2f4-52bb-41e6-9281-10e69aeb0310",

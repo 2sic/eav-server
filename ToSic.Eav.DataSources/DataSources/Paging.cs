@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(
         NiceName = "Paging",
         UiHint = "Split data into pages and forward just one batch",
-        Icon = "auto_stories",
+        Icon = Icons.Stories,
         Type = DataSourceType.Logic, 
         GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
         DynamicOut = false,

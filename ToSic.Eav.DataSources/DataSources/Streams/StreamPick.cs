@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
     [VisualQuery(
         NiceName = "Pick Stream",
         UiHint = "Choose a stream",
-        Icon = "call_merge",
+        Icon = Icons.Merge,
         Type = DataSourceType.Logic,
         GlobalName = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
         ExpectsDataOfType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",

@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(
         NiceName = "Item Id Filter",
         UiHint = "Find items based on one or more IDs",
-        Icon = "fingerprint",
+        Icon = Icons.Fingerprint,
         Type = DataSourceType.Filter, 
         GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
         DynamicOut = false,

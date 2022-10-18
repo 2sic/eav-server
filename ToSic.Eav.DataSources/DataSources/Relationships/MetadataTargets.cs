@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
     [VisualQuery(
         NiceName = "Metadata Targets",
         UiHint = "Get the item's targets (if they are metadata)",
-        Icon = "loyalty",
+        Icon = Icons.Metadata,
         Type = DataSourceType.Lookup,
         GlobalName = "afaf73d9-775c-4932-aebd-23e898b1643e",
         In = new[] { Constants.DefaultStreamNameRequired },

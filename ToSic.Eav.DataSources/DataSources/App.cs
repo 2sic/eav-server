@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(
 		NiceName = "App",
 		UiHint = "All data in an app with streams for type",
-        Icon = "table_chart",
+        Icon = Icons.TableChart,
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
         DynamicOut = true,

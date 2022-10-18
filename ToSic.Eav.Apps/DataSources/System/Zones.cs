@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.Sys
     [VisualQuery(
         NiceName = "Zones",
         UiHint = "Zones of an installation",
-        Icon = "border_outer",
+        Icon = Icons.BorderOuter,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
         Difficulty = DifficultyBeta.Advanced,

@@ -91,7 +91,8 @@ namespace ToSic.Eav.Apps.ImportExport
             }
             finally
             {
-                TryToCleanUpTemporary(temporaryDirectory);
+                // Finally delete the temporary directory
+                TryToDeleteDirectory(temporaryDirectory, Log);
             }
 
             if (finalException != null)
@@ -104,20 +105,27 @@ namespace ToSic.Eav.Apps.ImportExport
             return wrapLog.ReturnTrue("ok");
         }
 
-        private void TryToCleanUpTemporary(string temporaryDirectory)
+
+        /// <summary>
+        /// Try to delete folder
+        /// </summary>
+        /// <param name="directoryPath"></param>
+        /// <param name="log"></param>
+        public static void TryToDeleteDirectory(string directoryPath, ILog log)
         {
-            var wrapLog = Log.Fn(temporaryDirectory);
+            var wrapLog = log.Fn(directoryPath);
             try
             {
-                // Finally delete the temporary directory
-                Directory.Delete(temporaryDirectory, true);
+                if (Directory.Exists(directoryPath))
+                    Directory.Delete(directoryPath, true);
                 wrapLog.Done("ok");
             }
-            catch
+            catch(Exception e)
             {
-                Log.A("Delete ran into issues, will ignore. " +
-                        "Probably files/folders are used by another process like anti-virus. " +
-                        "Just leave temp folder as is");
+                log.Ex(e);
+                log.A("Delete ran into issues, will ignore. " +
+                      "Probably files/folders are used by another process like anti-virus. " +
+                      "Just leave folder as is");
                 wrapLog.Done("error");
             }
         }
@@ -219,7 +227,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             var wrapLog = Log.Fn($"..., {appId}, {tempFolder}");
             var templateRoot = Env.TemplatesRoot(_zoneId, appId);
-            var appTemplateRoot = Path.Combine(tempFolder, "2sexy");
+            var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForAppStuff);
             if (Directory.Exists(appTemplateRoot))
                 new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(templateRoot, false, importMessages);
             wrapLog.Done("ok");
@@ -231,14 +239,23 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="importMessages"></param>
         /// <param name="appId"></param>
         /// <param name="tempFolder"></param>
+        /// <param name="deleteGlobalTemplates"></param>
+        /// <param name="overwriteFiles"></param>
         /// <remarks>The zip file still uses the "2sexyGlobal" folder name instead of "2sxcGlobal"</remarks>
-        private void CopyAppGlobalFiles(List<Message> importMessages, int appId, string tempFolder)
+        public void CopyAppGlobalFiles(List<Message> importMessages, int appId, string tempFolder, bool deleteGlobalTemplates = false, bool overwriteFiles = false)
         {
-            var wrapLog = Log.Fn($"..., {appId}, {tempFolder}");
+            var wrapLog = Log.Fn($"..., {appId}, {tempFolder}, {deleteGlobalTemplates}, {overwriteFiles}");
             var globalTemplatesRoot = Env.GlobalTemplatesRoot(_zoneId, appId);
-            var appTemplateRoot = Path.Combine(tempFolder, "2sexyGlobal");
+            var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForGlobalAppStuff);
             if (Directory.Exists(appTemplateRoot))
-                new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(globalTemplatesRoot, false, importMessages);
+            {
+                if (deleteGlobalTemplates) 
+                    TryToDeleteDirectory(globalTemplatesRoot, Log);
+
+                Log.A("copy all files to app global template folder");
+                new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
+            }
+
             wrapLog.Done("ok");
         }
 

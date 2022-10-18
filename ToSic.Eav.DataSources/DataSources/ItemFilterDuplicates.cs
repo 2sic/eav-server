@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
 	[VisualQuery(
         NiceName = "Filter duplicates",
         UiHint = "Remove items which occur multiple times",
-        Icon = "filter_1",
+        Icon = Icons.Filter1,
         Type = DataSourceType.Logic, 
         GlobalName = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
         DynamicOut = false,

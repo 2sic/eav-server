@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.WebApi.Sys
+﻿namespace ToSic.Eav.WebApi.Sys
 {
     public interface ILogController
     {

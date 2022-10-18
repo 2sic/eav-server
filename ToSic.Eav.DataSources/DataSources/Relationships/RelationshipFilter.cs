@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
     [VisualQuery(
         NiceName = "Relationship Filter",
         UiHint = "Keep items having a relationship matching a criteria",
-        Icon = "share",
+        Icon = Icons.Share,
         Type = DataSourceType.Filter,
         GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
         In = new[] { Constants.DefaultStreamNameRequired, Constants.FallbackStreamName },
