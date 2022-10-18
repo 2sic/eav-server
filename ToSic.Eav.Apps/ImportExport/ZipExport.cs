@@ -76,37 +76,38 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false, bool resetPortalFiles = false)
         {
-            var path = _physicalAppPath + "\\" + SourceControlDataFolder;
+            var appDataPath = Path.Combine(_physicalAppPath, SourceControlDataFolder);
 
             // migrate old .data to App_Data also here
             // to ensure that older export is overwritten
             ZipImport.MigrateOldAppDataFile(_physicalAppPath);
 
             // create App_Data unless exists
-            Directory.CreateDirectory(path);
+            Directory.CreateDirectory(appDataPath);
 
             // generate the XML & save
             var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
 
-            var appDirectory = new DirectoryInfo(path);
-
             if (resetPortalFiles)
             {
-                // 1. Copy global app templates folder for version control
+                var appDataDirectory = new DirectoryInfo(appDataPath);
+
+                // 1. Copy app global templates folder for version control
                 if (Directory.Exists(_physicalPathGlobal))
                 {
                     // Sometimes delete is locked by external process
                     try
                     {
-                        // Version control folder for copy of Global app files
-                        var globalSexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForGlobalAppStuff);
+                        // Empty older version of app global templates state in App_Data
+                        var globalTemplatesStatePath = Path.Combine(appDataPath, Constants.ZipFolderForGlobalAppStuff);
+                        if (Directory.Exists(globalTemplatesStatePath)) Directory.Delete(globalTemplatesStatePath, true);
 
-                        // Empty older version of PortalFiles in App_Data
-                        globalSexyDirectory.Delete(true);
+                        // Version control folder to preserve copy of app global templates
+                        var globalTemplatesStateFolder = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForGlobalAppStuff);
 
-                        // Copy global app files for version control
+                        // Copy app global templates for version control
                         var _ = new List<Message>();
-                        FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, true, _);
+                        FileManagerGlobal.CopyAllFiles(globalTemplatesStateFolder.FullName, true, _);
                     }
                     catch (Exception e)
                     {
@@ -114,15 +115,15 @@ namespace ToSic.Eav.Apps.ImportExport
                     }
                 }
 
-
                 // 2. Copy PortalFiles for version control
                 try
                 {
-                    // Version control folder for copy of PortalFiles
-                    var portalFilesDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
+                    // Empty older version of PortalFiles state in App_Data
+                    var portalFilesPath = Path.Combine(appDataPath, Constants.ZipFolderForPortalFiles);
+                    if (Directory.Exists(portalFilesPath)) Directory.Delete(portalFilesPath, true);
 
-                    // Empty older version of PortalFiles in App_Data
-                    portalFilesDirectory.Delete(true);
+                    // Version control folder to preserve copy of PortalFiles
+                    var portalFilesDirectory = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
 
                     // Copy PortalFiles for version control
                     CopyPortalFiles(xmlExport, portalFilesDirectory);
@@ -134,7 +135,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
 
             var xml = xmlExport.GenerateNiceXml();
-            File.WriteAllText(Path.Combine(path, SourceControlDataFile), xml);
+            File.WriteAllText(Path.Combine(appDataPath, SourceControlDataFile), xml);
         }
 
         public MemoryStream ExportApp(bool includeContentGroups = false, bool resetAppGuid = false)
@@ -209,7 +210,7 @@ namespace ToSic.Eav.Apps.ImportExport
             {
                 var portalFilePath = Path.Combine(portalFilesDirectory.FullName, Path.GetDirectoryName(file.RelativePath));
 
-                Directory.CreateDirectory(portalFilePath); // create temp dir unless exists
+                Directory.CreateDirectory(portalFilePath);
 
                 if (!File.Exists(file.Path)) continue;
 
