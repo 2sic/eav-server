@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Logging
+namespace ToSic.Lib.Logging
 {
     /// <summary>
     /// Reference to code - containing the path to the file, the method name and the line in the code. 

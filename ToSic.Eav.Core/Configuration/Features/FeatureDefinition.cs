@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 using static ToSic.Eav.Configuration.RequirementCheckFeature;
 
 namespace ToSic.Eav.Configuration

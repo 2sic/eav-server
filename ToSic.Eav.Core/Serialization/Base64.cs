@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Serialization
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Logging
 {

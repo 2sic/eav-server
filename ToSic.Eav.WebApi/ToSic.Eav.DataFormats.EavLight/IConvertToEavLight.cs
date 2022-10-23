@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
+
 // ReSharper disable InheritdocInvalidUsage
 #pragma warning disable CS0108, CS0114
 

@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Configuration
 {

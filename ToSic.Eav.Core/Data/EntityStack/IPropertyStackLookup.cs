@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
 {

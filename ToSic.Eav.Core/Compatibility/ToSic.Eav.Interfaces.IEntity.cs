@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
+using ToSic.Lib.Documentation;
 
 // This is old stuff / compatibility necessary for DNN
 // It should not bleed into Oqtane or newer implementations

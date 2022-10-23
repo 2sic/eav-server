@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {

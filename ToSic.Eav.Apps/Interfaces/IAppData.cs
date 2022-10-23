@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.Documentation;
 using IDataSource = ToSic.Eav.DataSources.IDataSource;
 
 namespace ToSic.Eav.Apps

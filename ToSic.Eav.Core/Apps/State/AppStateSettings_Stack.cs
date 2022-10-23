@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Lib.Documentation;
 using static ToSic.Eav.Configuration.ConfigurationStack;
 
 namespace ToSic.Eav.Apps

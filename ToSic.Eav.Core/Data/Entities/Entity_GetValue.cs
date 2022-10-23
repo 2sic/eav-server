@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
 {

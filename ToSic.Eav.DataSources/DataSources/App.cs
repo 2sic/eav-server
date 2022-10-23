@@ -1,8 +1,8 @@
 ﻿using System;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.Documentation;
 using static System.Int32;
 
 namespace ToSic.Eav.DataSources

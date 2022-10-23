@@ -14,7 +14,8 @@
  * So asking for support to finance advanced features is not asking for much. 
  *
  */
-using ToSic.Eav.Documentation;
+
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Security.Fingerprint
 {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Context;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Lib.Documentation;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run

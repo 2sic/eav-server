@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.DataSources;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Apps.Parts
 {

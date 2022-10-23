@@ -20,11 +20,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Serialization;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Configuration.Licenses
 {

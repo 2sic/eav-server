@@ -7,12 +7,12 @@ using System.Text.Json;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.DI;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Adam;
 using ToSic.Eav.WebApi.Assets;
 using ToSic.Eav.WebApi.Validation;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.WebApi.Sys.Licenses
 {

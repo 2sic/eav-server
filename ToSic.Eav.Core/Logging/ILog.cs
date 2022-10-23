@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Logging
 {

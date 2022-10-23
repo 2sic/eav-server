@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
+using ToSic.Lib.Documentation;
 using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps

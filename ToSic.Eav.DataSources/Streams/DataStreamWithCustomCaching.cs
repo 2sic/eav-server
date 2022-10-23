@@ -1,6 +1,6 @@
 ﻿using System;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {

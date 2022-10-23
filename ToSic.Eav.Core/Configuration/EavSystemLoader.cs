@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text.Json;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Logging.Simple;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Configuration
 {

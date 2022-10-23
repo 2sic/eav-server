@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Logging
+﻿using ToSic.Lib.Logging;
+
+namespace ToSic.Eav.Logging
 {
     public class LogCall: LogCallBase
     {

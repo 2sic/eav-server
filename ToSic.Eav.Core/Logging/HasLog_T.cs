@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Logging
+﻿using ToSic.Lib.Logging;
+
+namespace ToSic.Eav.Logging
 {
     public abstract class HasLog<T> : HasLog, IHasLog<T> where T: class
     {

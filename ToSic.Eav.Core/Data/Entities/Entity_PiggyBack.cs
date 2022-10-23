@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data.PiggyBack;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
 {
