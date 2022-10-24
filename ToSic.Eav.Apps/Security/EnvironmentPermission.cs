@@ -8,6 +8,15 @@ namespace ToSic.Eav.Apps.Security
 {
     public abstract class EnvironmentPermission : HasLog<IEnvironmentPermission>, IEnvironmentPermission
     {
+        // Constant keys for security, historic from Dnn
+        protected const string SalPrefix = "SecurityAccessLevel";
+        protected const string SalView = SalPrefix + ".View";
+        protected const string SalAnonymous = SalPrefix + ".Anonymous";
+        protected const string SalEdit = SalPrefix + ".Edit";
+        protected const string SalSiteAdmin = SalPrefix + ".Admin";
+        protected const string SalSystemUser = SalPrefix + ".Host";
+
+
         protected EnvironmentPermission(string logPrefix) : base($"{logPrefix}.EnvPrm") { }
 
         public IEnvironmentPermission Init<TContext>(TContext context, IAppIdentity appIdentityOrNull)
@@ -28,7 +37,22 @@ namespace ToSic.Eav.Apps.Security
         /// </summary>
         /// <param name="grants"></param>
         /// <returns></returns>
-        public abstract bool EnvironmentAllows(List<Grants> grants);
+        public virtual bool EnvironmentAllows(List<Grants> grants)
+        {
+            var logWrap = Log.Fn<bool>(() => $"[{string.Join(",", grants)}]");
+            if (UserIsAnonymous()) logWrap.Return(false, "user anonymous");
+            var ok = UserIsSystemAdmin(); // superusers are always ok
+            if (!ok && CurrentZoneMatchesSiteZone())
+                ok = UserIsContentAdmin()
+                     || UserIsModuleAdmin()
+                     || UserIsModuleEditor();
+            if (ok) GrantedBecause = Conditions.EnvironmentGlobal;
+            return logWrap.Return(ok, $"{ok} because:{GrantedBecause}");
+        }
+
+        protected virtual bool UserIsModuleAdmin() => false;
+        protected virtual bool UserIsModuleEditor() => false;
+
 
         /// <summary>
         /// Verify if a condition is a special code in the environment. 
@@ -55,7 +79,7 @@ namespace ToSic.Eav.Apps.Security
         /// Check if user is valid admin of current portal / zone
         /// </summary>
         /// <returns></returns>
-        protected bool UserIsSiteAdmin() => Log.Return(() => Context.User?.IsSiteAdmin ?? false);
+        protected bool UserIsContentAdmin() => Log.Return(() => Context.User?.IsContentAdmin ?? false);
 
         /// <summary>
         /// Verify that we're in the same zone, allowing admin/module checks
@@ -66,7 +90,7 @@ namespace ToSic.Eav.Apps.Security
             var wrapLog = Log.Fn<bool>();
             
             // Check if we are running out-of http-context
-            if (Context.Site == null || Context.Site.Id == Eav.Constants.NullId) return wrapLog.ReturnFalse("no");
+            if (Context.Site == null || Context.Site.Id == Constants.NullId) return wrapLog.ReturnFalse("no");
             
             // Check if no app is provided, like when an app hasn't been selected yet, so it's an empty module, must be on current portal
             if (AppIdentity == null) return wrapLog.ReturnTrue("no app, so context unchanged"); 
