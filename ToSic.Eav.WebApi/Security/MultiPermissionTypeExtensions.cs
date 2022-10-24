@@ -4,8 +4,8 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
 using ToSic.Eav.WebApi.Formats;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.WebApi.Security
 {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using static ToSic.Eav.Security.Grants;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Security.Permissions
 {
     public static class GrantSets

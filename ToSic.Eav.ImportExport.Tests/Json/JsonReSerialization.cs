@@ -1,11 +1,10 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
-namespace ToSic.Eav.ImportExport.Tests.json
+namespace ToSic.Eav.ImportExport.Tests.Json
 {
     [TestClass]
     public class JsonReSerialization: Eav.Persistence.Efc.Tests.Efc11TestBase
@@ -41,7 +40,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
             var ent = serializer.Deserialize(json);
             var json2 = serializer.Serialize(ent);
             //Trace.Write($"{{ \"First\": {json}, \"Second\": {json2}}}");
-            Assert.AreEqual(json, json2, "serialize, de-serialize, and serialize again should be the same!");
+            Assert.AreEqual<string>(json, json2, "serialize, de-serialize, and serialize again should be the same!");
         }
 
 

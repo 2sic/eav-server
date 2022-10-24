@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging.Simple;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Repository.Efc.Tests

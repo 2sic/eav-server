@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Documentation;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Data
 {
     [PrivateApi]

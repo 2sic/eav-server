@@ -3,8 +3,9 @@ using System.IO;
 using System.Net;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Identity;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Interfaces;
+
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -49,7 +50,6 @@ namespace ToSic.Eav.Apps.ImportExport
                 {
                     Log.A("Will upgrade TLS connection so we can connect with TLS 1.1 or 1.2");
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-
 
                     Log.A($"try to download:{packageUrl} to:{destinationPath}");
                     client.DownloadFile(packageUrl, destinationPath);

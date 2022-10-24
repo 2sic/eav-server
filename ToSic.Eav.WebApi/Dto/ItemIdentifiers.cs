@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.WebApi.Dto;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.WebApi.Formats
 {
-
     public class ItemIdentifier
     {
         /// <summary>

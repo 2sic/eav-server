@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSourceTests.RelationshipTests;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 {
     [TestClass]

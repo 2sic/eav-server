@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.WebApi.Admin.Features
 {

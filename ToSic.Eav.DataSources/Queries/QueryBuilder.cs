@@ -4,9 +4,8 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSources.Queries
 {

@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {

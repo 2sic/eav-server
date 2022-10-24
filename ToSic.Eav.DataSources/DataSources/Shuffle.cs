@@ -2,16 +2,16 @@
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.Logging;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// Shuffle / Randomize the order of items in a Stream.
-	/// </summary>
+    /// <inheritdoc />
+    /// <summary>
+    /// Shuffle / Randomize the order of items in a Stream.
+    /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(
         NiceName = "Shuffle",

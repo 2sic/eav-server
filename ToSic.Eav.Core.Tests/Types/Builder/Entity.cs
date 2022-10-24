@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
-
-namespace ToSic.Eav.Core.Tests.Types.Builder
+﻿namespace ToSic.Eav.Core.Tests.Types.Builder
 {
     //public static class Entity
     //{

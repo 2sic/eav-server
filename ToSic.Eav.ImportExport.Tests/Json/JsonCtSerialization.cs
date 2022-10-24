@@ -4,7 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Repository.Efc.Tests;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
-namespace ToSic.Eav.ImportExport.Tests.json
+namespace ToSic.Eav.ImportExport.Tests.Json
 {
     [TestClass]
     public class JsonCtSerialization: Eav.Persistence.Efc.Tests.Efc11TestBase
@@ -49,7 +49,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
 
         internal static string GetJsonOfContentTypeOfItem(int eId, JsonSerializer ser)
         {
-            var x = ser.App.List.One(eId);
+            var x = IEntityExtensions.One(ser.App.List, eId);
             var xmlEnt = ser.Serialize(x.Type);
             return xmlEnt;
         }
@@ -58,7 +58,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
             => JsonOfContentType(SerializerOfApp(appId), typeName);
 
         internal static string JsonOfContentType(JsonSerializer ser, string typeName)
-            => JsonOfContentType(ser, ser.App.GetContentType(typeName));
+            => JsonOfContentType(ser, (IContentType) ser.App.GetContentType(typeName));
 
         internal static string JsonOfContentType(JsonSerializer ser, IContentType type) 
             => ser.Serialize(type);

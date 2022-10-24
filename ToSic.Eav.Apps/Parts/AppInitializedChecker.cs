@@ -2,10 +2,10 @@
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
+using ToSic.Lib.Logging.Simple;
+
 
 namespace ToSic.Eav.Apps.Parts
 {

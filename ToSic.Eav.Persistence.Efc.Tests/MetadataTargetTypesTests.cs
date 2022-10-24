@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Persistence.Efc.Tests

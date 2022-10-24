@@ -120,6 +120,10 @@
       <Project>{2BBA13D2-F6D2-443B-B7C8-8F4C31432C03}</Project>
       <Name>ToSic.Eav.Repository.Efc</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToSic.Lib.Logging\ToSic.Lib.Logging.csproj">
+      <Project>{7d0a605e-d6af-4494-b2d2-a21ea07de057}</Project>
+      <Name>ToSic.Lib.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj">
       <Project>{41243c6d-2d10-4285-8af2-719497ae00db}</Project>
       <Name>ToSic.Testing.Shared</Name>

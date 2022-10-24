@@ -4,11 +4,12 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
 using ToSic.Eav.WebApi.Dto;
+using ToSic.Lib.Logging;
 using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.WebApi
 {
     public class EntityPickerApi : HasLog<EntityPickerApi>

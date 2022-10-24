@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Plumbing;
-
-namespace ToSic.Eav.Helpers
+﻿namespace ToSic.Eav.Helpers
 {
     public class DataFolder
     {

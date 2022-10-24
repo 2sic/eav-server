@@ -2,7 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data.Debug;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data

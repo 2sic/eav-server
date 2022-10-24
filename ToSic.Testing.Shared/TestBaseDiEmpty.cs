@@ -1,8 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Configuration;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
+﻿using ToSic.Eav.Configuration;
 using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Testing.Shared

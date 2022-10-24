@@ -1,6 +1,6 @@
 ﻿using System;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
+using ToSic.Lib.Logging;
+
 
 namespace ToSic.Eav.DI
 {

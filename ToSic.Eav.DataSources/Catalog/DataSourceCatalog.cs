@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources.Catalog

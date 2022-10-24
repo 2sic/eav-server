@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Repositories;
 
-namespace ToSic.Eav.Core.Tests
+namespace ToSic.Eav.Repository.Efc.Tests
 {
     /// <summary>
     /// Provides global information about where the folders are which should be loaded in this environment

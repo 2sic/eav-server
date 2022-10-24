@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
 {
-	/// <summary>
-	/// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 
-	/// </summary>
-	[PublicApi_Stable_ForUseInYourCode]
+    /// <summary>
+    /// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 
+    /// </summary>
+    [PublicApi_Stable_ForUseInYourCode]
 	public sealed class Query : DataSourceBase, IQuery
 	{
         #region Configuration-properties

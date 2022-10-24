@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Caching;
-using ToSic.Eav.Logging;
+﻿using ToSic.Lib.Logging;
+
 
 namespace ToSic.Eav.Apps.Parts
 {

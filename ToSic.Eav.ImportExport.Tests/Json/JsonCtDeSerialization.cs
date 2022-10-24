@@ -4,7 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Repository.Efc.Tests;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
-namespace ToSic.Eav.ImportExport.Tests.json
+namespace ToSic.Eav.ImportExport.Tests.Json
 {
     [TestClass]
     public class JsonCtDeSerialization: Eav.Persistence.Efc.Tests.Efc11TestBase

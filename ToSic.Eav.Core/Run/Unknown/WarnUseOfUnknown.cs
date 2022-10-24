@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging;
+using ToSic.Lib.Logging.Simple;
 
 namespace ToSic.Eav.Run.Unknown
 {

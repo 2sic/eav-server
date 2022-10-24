@@ -1,4 +1,5 @@
 ﻿
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Data
 {
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 

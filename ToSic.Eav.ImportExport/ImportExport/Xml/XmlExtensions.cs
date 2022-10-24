@@ -1,7 +1,4 @@
-﻿using System;
-using System.Xml;
-
-namespace ToSic.Eav.ImportExport.Xml
+﻿namespace ToSic.Eav.ImportExport.Xml
 {
     /// <summary>
     /// Extension methods to help build XML

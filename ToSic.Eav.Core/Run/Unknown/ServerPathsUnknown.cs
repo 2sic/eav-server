@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Logging;
-
-namespace ToSic.Eav.Run.Unknown
+﻿namespace ToSic.Eav.Run.Unknown
 {
     public sealed class ServerPathsUnknown: ServerPathsBase, IIsUnknown
     {

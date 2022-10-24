@@ -9,12 +9,14 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;
+using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
+
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.WebApi
 {
     public class EntityApi: HasLog
@@ -44,7 +46,7 @@ namespace ToSic.Eav.WebApi
         public EntityApi Init(int appId, bool showDrafts, ILog parentLog)
         {
             Log.LinkTo(parentLog);
-            AppRead = _appRuntime.Init(appId, showDrafts, Log);
+            AppRead = _appRuntime.Init(appId, showDrafts, (ILog) Log);
             return this;
         }
 

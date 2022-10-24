@@ -6,11 +6,12 @@ using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.RelationshipTests;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Lib.Logging.Simple;
 using ToSic.Testing.Shared;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 {
     public class RelationshipTestBase: TestBaseDiEavFullAndDb

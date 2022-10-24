@@ -3,7 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
+
 
 namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 {

@@ -4,8 +4,9 @@
 using System;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Lib.Logging;
+
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav

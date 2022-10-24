@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using ToSic.Eav.Logging;
+using ToSic.Eav.Data.PropertyLookup;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data

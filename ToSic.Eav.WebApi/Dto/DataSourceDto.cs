@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.DataSources.Queries;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Catalog
 {
     public class DataSourceDto

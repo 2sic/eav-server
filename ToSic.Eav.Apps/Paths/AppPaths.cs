@@ -3,10 +3,10 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Helpers;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
-using ToSic.Sxc.Apps.Paths;
 using static System.IO.Path;
+
 
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
 

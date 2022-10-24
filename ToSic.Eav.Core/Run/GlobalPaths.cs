@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Helpers;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using static System.IO.Path;
 
 namespace ToSic.Eav.Run

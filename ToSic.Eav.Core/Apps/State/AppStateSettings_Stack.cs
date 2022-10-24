@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
+using ToSic.Eav.Data.PropertyLookup;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Documentation;
 using static ToSic.Eav.Configuration.ConfigurationStack;
 

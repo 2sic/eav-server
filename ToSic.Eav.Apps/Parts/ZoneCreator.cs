@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Logging;
+﻿using ToSic.Lib.Logging;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps.Parts

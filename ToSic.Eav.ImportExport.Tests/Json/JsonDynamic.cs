@@ -1,9 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.ImportExport.Tests.Json;
 using ToSic.Eav.Repository.Efc.Tests;
 
-namespace ToSic.Eav.ImportExport.Tests.json
+namespace ToSic.Eav.ImportExport.Tests.Json
 {
     [TestClass]
     public class JsonDynamic : JsonTestBase
@@ -32,21 +31,21 @@ namespace ToSic.Eav.ImportExport.Tests.json
             var json = GetJsonOfEntity(specs.AppId, specs.TestItemToSerialize, serializer);
 
             var ent = serializer.Deserialize(json); // should work
-            Assert.AreEqual(specs.TestItemAttributeCount, ent.Attributes.Count, "orig has 4 attribs");
+            Assert.AreEqual<int>(specs.TestItemAttributeCount, ent.Attributes.Count, "orig has 4 attribs");
 
             var jsonDynamic = ChangeTypeOfJson(specs, json, "something-dynamic");
             ent = serializer.Deserialize(jsonDynamic, true); // should work too
-            Assert.IsTrue(ent.Type.IsDynamic, "should be dynamic");
-            Assert.AreEqual("something-dynamic", ent.Type.NameId, "name should be dynamic");
-            Assert.AreEqual(specs.TestItemAttributeCount, ent.Attributes.Count, "dynamic entity should also have 4 attribs");
+            Assert.IsTrue((bool) ent.Type.IsDynamic, "should be dynamic");
+            Assert.AreEqual<string>("something-dynamic", ent.Type.NameId, "name should be dynamic");
+            Assert.AreEqual<int>(specs.TestItemAttributeCount, ent.Attributes.Count, "dynamic entity should also have 4 attribs");
 
             jsonDynamic = Add2FieldsToJson(jsonDynamic);
             ent = serializer.Deserialize(jsonDynamic, true); // should work too
-            Assert.AreEqual(6, ent.Attributes.Count, "second dynamic entity should also have 6 attribs");
+            Assert.AreEqual<int>(6, ent.Attributes.Count, "second dynamic entity should also have 6 attribs");
 
-            Assert.AreEqual("v1", ent.Value("f1"), "added field f1 should be v1");
-            Assert.AreEqual(specs.TestItemLinkValue, ent.Value(specs.TestItemLinkField), "original fields should still work");
-            Assert.AreEqual(null, ent.GetBestTitle(), "shouldn't have a real title");
+            Assert.AreEqual((object) "v1", ent.Value("f1"), "added field f1 should be v1");
+            Assert.AreEqual((object) specs.TestItemLinkValue, ent.Value(specs.TestItemLinkField), "original fields should still work");
+            Assert.AreEqual<string>(null, ent.GetBestTitle(), "shouldn't have a real title");
         }
 
 

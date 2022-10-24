@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps
 {

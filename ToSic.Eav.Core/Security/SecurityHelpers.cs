@@ -1,5 +1,6 @@
 ﻿using System.Security.Authentication;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.WebApi.Security
 {
     public static class SecurityHelpers

@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using IEntity = ToSic.Eav.Data.IEntity;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 {
     internal class RelationshipTestCase : RelationshipTestBase

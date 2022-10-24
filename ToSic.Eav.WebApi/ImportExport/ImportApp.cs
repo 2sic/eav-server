@@ -8,7 +8,7 @@ using ToSic.Eav.Apps.ImportExport.ImportHelpers;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Identity;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.ImportExport

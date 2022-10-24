@@ -11,10 +11,10 @@ using ToSic.Eav.WebApi;
 
 namespace ToSic.Eav.StartUp
 {
-	/// <summary>
-	/// Global Eav Configuration
-	/// </summary>
-	public static class StartUpEav
+    /// <summary>
+    /// Global Eav Configuration
+    /// </summary>
+    public static class StartUpEav
 	{
 	    /// <summary>
 	    /// Use this to setup the new DI container

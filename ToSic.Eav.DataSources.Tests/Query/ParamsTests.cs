@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging.Simple;
 
 namespace ToSic.Eav.DataSourceTests.Query
 {

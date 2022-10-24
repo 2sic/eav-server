@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Logging;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps

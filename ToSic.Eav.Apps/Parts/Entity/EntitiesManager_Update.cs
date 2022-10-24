@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Persistence;
+using ToSic.Lib.Logging;
 using UpdateList = System.Collections.Generic.Dictionary<string, object>;
 
 namespace ToSic.Eav.Apps.Parts

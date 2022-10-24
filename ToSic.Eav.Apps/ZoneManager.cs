@@ -1,8 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
