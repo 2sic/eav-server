@@ -22,7 +22,7 @@ namespace ToSic.Eav.WebApi.Admin
 
         THttpResponse Export(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid);
 
-        bool SaveData(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool resetPortalFiles);
+        bool SaveData(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool withPortalFiles);
 
         /// <summary>
         /// Get a stack of values from settings or resources
@@ -38,7 +38,7 @@ namespace ToSic.Eav.WebApi.Admin
         /// Reset an App to the last xml state
         /// </summary>
         /// <returns></returns>
-        ImportResultDto Reset(int zoneId, int appId, bool resetPortalFiles);
+        ImportResultDto Reset(int zoneId, int appId, bool withPortalFiles);
 
         ImportResultDto Import(int zoneId);
 
