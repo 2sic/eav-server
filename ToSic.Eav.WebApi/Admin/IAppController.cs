@@ -50,5 +50,13 @@ namespace ToSic.Eav.WebApi.Admin
         /// <param name="zoneId"></param>
         /// <returns></returns>
         IEnumerable<PendingAppDto> GetPendingApps(int zoneId);
+
+        /// <summary>
+        /// Install pending apps
+        /// </summary>
+        /// <param name="zoneId"></param>
+        /// <param name="pendingApps"></param>
+        /// <returns></returns>
+        ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppDto> pendingApps);
     }
 }

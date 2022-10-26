@@ -71,7 +71,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     var packageDir = Path.Combine(temporaryDirectory, "Apps");
                     // Loop through each app directory
                     foreach (var appDirectory in Directory.GetDirectories(packageDir))
-                        ImportApp(rename, appDirectory, messages);
+                        ImportApp(rename, appDirectory, messages, pendingApp: false);
 
                     //ImportApps(rename, packageDir, messages);
                 }
@@ -132,7 +132,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
 
         /// <summary>
-        /// Import an app from temporary
+        /// Import an app from directory
         /// </summary>
         /// <remarks>
         /// Historical note: the xml file used to have a different rename
@@ -141,28 +141,37 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="rename"></param>
         /// <param name="appDirectory"></param>
         /// <param name="importMessages"></param>
-        private void ImportApp(string rename, string appDirectory, List<Message> importMessages)
+        /// <param name="pendingApp"></param>
+        public bool ImportApp(string rename, string appDirectory, List<Message> importMessages, bool pendingApp)
         {
-            var wrapLog = Log.Fn($"{nameof(rename)}:'{rename}', {nameof(appDirectory)}:'{appDirectory}', ...");
+            var wrapLog = Log.Fn<bool>($"{nameof(rename)}:'{rename}', {nameof(appDirectory)}:'{appDirectory}', ...");
+            try
+            {
+                // migrate old app.xml and 2sexy/.data/app.xml to 2sexy/App_Data
+                MigrateForImportAppDataFile(appDirectory);
 
-            // migrate old app.xml and 2sexy/.data/app.xml to 2sexy/App_Data
-            MigrateForImportAppDataFile(appDirectory);
-
-            // Import app.xml file(s) when is located in appDirectory/2sexy/App_Data
-            foreach (var _ in Directory.GetFiles(Path.Combine(appDirectory, Constants.ToSxcFolder, Constants.AppDataProtectedFolder), Constants.AppDataFile))
-                ImportAppXmlAndFiles(rename, appDirectory, importMessages);
-            
-            wrapLog.Done("ok");
+                // Import app.xml file(s) when is located in appDirectory/2sexy/App_Data
+                foreach (var _ in Directory.GetFiles(AppDataProtectedFolderPath(appDirectory, pendingApp), Constants.AppDataFile))
+                    ImportAppXmlAndFiles(rename, appDirectory, importMessages, pendingApp);
+            }
+            catch (Exception e)
+            {
+                Log.Ex(e);
+                Log.A("had found errors during import, will throw");
+                wrapLog.ReturnFalse("error");
+                throw; // must throw, to enable logging outside
+            }
+            return wrapLog.ReturnTrue("ok");
         }
 
-        private void ImportAppXmlAndFiles(string rename, string appDirectory, List<Message> importMessages)
+        private void ImportAppXmlAndFiles(string rename, string appDirectory, List<Message> importMessages, bool pendingApp)
         {
             var wrapLog = Log.Fn($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
             
             int appId;
             var importer = _xmlImpExpFilesLazy.Value.Init(null, false, Log); // new XmlImportWithFiles(Log);
 
-            var imp = new ImportXmlReader(Path.Combine(appDirectory, Constants.ToSxcFolder, Constants.AppDataProtectedFolder, Constants.AppDataFile), importer, Log);
+            var imp = new ImportXmlReader(Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), Constants.AppDataFile), importer, Log);
 
             if (imp.IsAppImport)
             {
@@ -179,17 +188,20 @@ namespace ToSic.Eav.Apps.ImportExport
                     Log.A($"User rename to '{rename}'");
                     var renamer = new RenameOnImport(folder, rename, Log);
                     renamer.FixAppXmlForImportAsDifferentApp(imp);
-                    renamer.FixPortalFilesAdamAppFolderName(appDirectory);
+                    if (!pendingApp) renamer.FixPortalFilesAdamAppFolderName(appDirectory);
                     folder = rename;
                 }
                 else Log.A("No rename of app requested");
 
-                // Throw error if the app directory already exists
-                var appPath = Env.TargetPath(folder);
-                if (Directory.Exists(appPath))
-                    throw new IOException($"App could not be installed, app-folder '{appPath}' already exists.");
+                if (!pendingApp)
+                {
+                    // Throw error if the app directory already exists
+                    var appPath = Env.TargetPath(folder);
+                    if (Directory.Exists(appPath))
+                        throw new IOException($"App could not be installed, app-folder '{appPath}' already exists.");
+                }
 
-                HandlePortalFilesFolder(appDirectory);
+                HandlePortalFilesFolder(appDirectory, pendingApp);
 
                 importer.ImportApp(_zoneId, imp.XmlDoc, out appId);
             }
@@ -199,15 +211,16 @@ namespace ToSic.Eav.Apps.ImportExport
                 appId = _initialAppId ?? _appStates.DefaultAppId(_zoneId);
 
                 if (importer.IsCompatible(imp.XmlDoc))
-                    HandlePortalFilesFolder(appDirectory);
+                    HandlePortalFilesFolder(appDirectory, pendingApp);
 
                 importer.ImportXml(_zoneId, appId, imp.XmlDoc);
             }
 
             importMessages.AddRange(importer.Messages);
-            CopyAppFiles(importMessages, appId, appDirectory);
-            CopyAppGlobalFiles(importMessages, appId, appDirectory);
+            if (!pendingApp) CopyAppFiles(importMessages, appId, appDirectory);
 
+            var tmpAppGlobalFilesRoot = pendingApp ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder) : appDirectory;
+            CopyAppGlobalFiles(importMessages, appId, tmpAppGlobalFilesRoot, deleteGlobalTemplates: true, overwriteFiles: true);
             // New in V11 - now that we just imported content types into the /system folder
             // the App must be refreshed to ensure these are available for working
             // Must happen after CopyAppFiles(...)
@@ -215,6 +228,11 @@ namespace ToSic.Eav.Apps.ImportExport
 
             wrapLog.Done("ok");
         }
+
+        private static string AppDataProtectedFolderPath(string appDirectory, bool pendingApp) 
+            => pendingApp
+                ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder)
+                : Path.Combine(appDirectory, Constants.ToSxcFolder, Constants.AppDataProtectedFolder);
 
         /// <summary>
         /// Copy all files in 2sexy folder to (portal file system) 2sexy folder
@@ -259,11 +277,13 @@ namespace ToSic.Eav.Apps.ImportExport
             wrapLog.Done("ok");
         }
 
-        private void HandlePortalFilesFolder(string appDirectory)
+        private void HandlePortalFilesFolder(string appDirectory, bool pendingApp)
         {
             var wrapLog = Log.Fn();
             // Handle PortalFiles folder
-            var portalTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles);
+            var portalTempRoot = pendingApp 
+                ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder, XmlConstants.PortalFiles)
+                : Path.Combine(appDirectory, XmlConstants.PortalFiles);
             if (Directory.Exists(portalTempRoot))
             {
                 var messages = Env.TransferFilesToSite(portalTempRoot, string.Empty);

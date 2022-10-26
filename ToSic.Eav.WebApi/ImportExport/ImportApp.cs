@@ -10,6 +10,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Identity;
 using ToSic.Eav.Logging;
 using ToSic.Eav.WebApi.Dto;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.WebApi.ImportExport
 {
@@ -121,6 +122,39 @@ namespace ToSic.Eav.WebApi.ImportExport
             }
 
             return wrapLog.ReturnAsOk(result);
+        }
+
+        /// <summary>
+        /// Install pending apps
+        /// </summary>
+        /// <param name="zoneId"></param>
+        /// <param name="pendingApps"></param>
+        /// <returns></returns>
+        public ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppDto> pendingApps)
+        {
+            Log.A("import app start");
+            var result = new ImportResultDto();
+
+            try
+            {
+                _zipImport.Init(zoneId, null, _user.IsSystemAdmin, Log);
+                foreach (var pendingAppDto in pendingApps)
+                {
+                    var appDirectory = Path.Combine(_site.AppsRootPhysicalFull, pendingAppDto.ServerFolder);
+                    var importMessage = new List<Message>();
+                    // Increase script timeout to prevent timeouts
+                    result.Success = _zipImport.ImportApp(rename: pendingAppDto.ServerFolder, appDirectory,
+                        importMessage, pendingApp: true);
+                    result.Messages.AddRange(importMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                _envLogger.LogException(ex);
+                result.Success = false;
+                result.Messages.AddRange(_zipImport.Messages);
+            }
+            return result;
         }
     }
 }
