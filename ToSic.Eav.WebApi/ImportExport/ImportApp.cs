@@ -9,8 +9,8 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Identity;
 using ToSic.Eav.Logging;
+using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.WebApi.Dto;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.WebApi.ImportExport
 {
@@ -142,9 +142,10 @@ namespace ToSic.Eav.WebApi.ImportExport
                 {
                     var appDirectory = Path.Combine(_site.AppsRootPhysicalFull, pendingAppDto.ServerFolder);
                     var importMessage = new List<Message>();
+                    // do we need to rename pending app
+                    var rename = pendingAppDto.ServerFolder.Equals(pendingAppDto.Folder, StringComparison.InvariantCultureIgnoreCase) ? string.Empty : pendingAppDto.ServerFolder;
                     // Increase script timeout to prevent timeouts
-                    result.Success = _zipImport.ImportApp(rename: pendingAppDto.ServerFolder, appDirectory,
-                        importMessage, pendingApp: true);
+                    result.Success = _zipImport.ImportApp(rename, appDirectory, importMessage, pendingApp: true);
                     result.Messages.AddRange(importMessage);
                 }
             }
