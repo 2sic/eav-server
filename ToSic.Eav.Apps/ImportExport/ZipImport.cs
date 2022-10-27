@@ -114,20 +114,25 @@ namespace ToSic.Eav.Apps.ImportExport
         public static void TryToDeleteDirectory(string directoryPath, ILog log)
         {
             var wrapLog = log.Fn(directoryPath);
-            try
+            var retryDelete = 0;
+            do
             {
-                if (Directory.Exists(directoryPath))
-                    Directory.Delete(directoryPath, true);
-                wrapLog.Done("ok");
-            }
-            catch(Exception e)
-            {
-                log.Ex(e);
-                log.A("Delete ran into issues, will ignore. " +
-                      "Probably files/folders are used by another process like anti-virus. " +
-                      "Just leave folder as is");
-                wrapLog.Done("error");
-            }
+                try
+                {
+                    if (Directory.Exists(directoryPath))
+                        Directory.Delete(directoryPath, true);
+                }
+                catch (Exception e)
+                {
+                    ++retryDelete;
+                    log.Ex(e);
+                    log.A("Delete ran into issues, will ignore. " +
+                          "Probably files/folders are used by another process like anti-virus. " +
+                          $"Retry: {retryDelete}.");
+                }
+            } while (Directory.Exists(directoryPath) && retryDelete <= 20);
+
+            wrapLog.Done(Directory.Exists(directoryPath) ? "error, can't delete" : "ok");
         }
 
 
