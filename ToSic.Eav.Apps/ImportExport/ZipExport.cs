@@ -146,9 +146,6 @@ namespace ToSic.Eav.Apps.ImportExport
             // to ensure that older export is overwritten
             ZipImport.MigrateOldAppDataFile(_physicalAppPath);
 
-            // create App_Data unless exists
-            Directory.CreateDirectory(Path.Combine(_physicalAppPath, Constants.AppDataProtectedFolder));
-
             #region Copy needed files to temporary directory
 
             var messages = new List<Message>();
@@ -183,9 +180,13 @@ namespace ToSic.Eav.Apps.ImportExport
             CopyPortalFiles(xmlExport, portalFilesDirectory);
             #endregion
 
+            // create tmp App_Data unless exists
+            var tmpAppDataProtectedFolder = Path.Combine(appDirectory.FullName, Constants.ToSxcFolder, Constants.AppDataProtectedFolder);
+            Directory.CreateDirectory(tmpAppDataProtectedFolder);
+
             // Save export xml
             var xml = xmlExport.GenerateNiceXml();
-            File.WriteAllText(Path.Combine(appDirectory.FullName, Constants.ToSxcFolder, Constants.AppDataProtectedFolder, Constants.AppDataFile), xml);
+            File.WriteAllText(Path.Combine(tmpAppDataProtectedFolder, Constants.AppDataFile), xml);
 
             // Zip directory and return as stream
             var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
