@@ -19,7 +19,8 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="subfolder">Folder information within that field</param>
         /// <param name="usePortalRoot">If we should add something to the portal root instead of the field</param>
         /// <returns></returns>
-        IAdamItemDto Upload(int appId, string contentType, Guid guid, string field, string subfolder = "", bool usePortalRoot = false);
+        // Wip #2902 - ATM must return object, otherwise the result isn't perfectly JSON serialized
+        /*AdamItemDto*/ object Upload(int appId, string contentType, Guid guid, string field, string subfolder = "", bool usePortalRoot = false);
 
         /// <summary>
         /// GET all the ADAM items for an entity, within that folder etc.

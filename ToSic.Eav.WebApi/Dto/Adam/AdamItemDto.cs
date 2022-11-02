@@ -5,87 +5,42 @@ using ToSic.Eav.WebApi.Dto.Metadata;
 
 namespace ToSic.Eav.WebApi.Dto
 {
-    public interface IAdamItemDto
+    public class AdamItemDto
     {
         /// <summary>
         /// Optional error message, should normally be null if no error
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        string Error { get; set; }
+        public string Error { get; set; }
 
         /// <summary>
         /// The file name
         /// </summary>
-        string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// This contains the code like "file:2742"
         /// </summary>
-        string ReferenceId { get; set; }
+        public string ReferenceId { get; set; }
 
         /// <summary>
         /// Normal url to access the resource
         /// </summary>
-        string Url { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Url { get; set; }
 
         /// <summary>
         /// The Adam type, such as "folder", "image" etc.
         /// </summary>
-        string Type { get; set; }
-
-        bool IsFolder { get; }
-        bool AllowEdit { get; set; }
-        int Size { get; set; }
-
-        /// <summary>
-        /// The Metadata for this ADAM item
-        /// </summary>
-        IEnumerable<MetadataOfDto> Metadata { get; set; }
-
-        string Path { get; set; }
-        DateTime Created { get; }
-        DateTime Modified { get; }
-
-        /// <summary>
-        /// Small preview thumbnail
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        string ThumbnailUrl { get; set; }
-
-        /// <summary>
-        /// Large preview
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        string PreviewUrl { get; set; }
-    }
-
-    public class AdamItemDto : IAdamItemDto
-    {
-        /// <inheritdoc />
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Error { get; set; }
-
-        /// <inheritdoc />
-        public string Name { get; set; }
-
-        /// <inheritdoc />
-        public string ReferenceId { get; set; }
-
-        /// <inheritdoc />
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Url { get; set; }
-
-        /// <inheritdoc />
         public string Type { get; set; }
 
         public bool IsFolder { get; }
         public bool AllowEdit { get; set; }
         public int Size { get; set; }
 
-        ///// <inheritdoc />
-        //public int MetadataId { get; set; }
-
-        /// <inheritdoc />
+        /// <summary>
+        /// The Metadata for this ADAM item
+        /// </summary>
         public IEnumerable<MetadataOfDto> Metadata { get; set; }
 
         public string Path { get; set; }
@@ -93,11 +48,15 @@ namespace ToSic.Eav.WebApi.Dto
         public DateTime Created { get; }
         public DateTime Modified { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Small preview thumbnail
+        /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string ThumbnailUrl { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Large preview
+        /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string PreviewUrl { get; set; }
 
