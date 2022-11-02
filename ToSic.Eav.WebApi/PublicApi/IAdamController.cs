@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.WebApi.Adam;
 using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.PublicApi
@@ -20,8 +19,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="subfolder">Folder information within that field</param>
         /// <param name="usePortalRoot">If we should add something to the portal root instead of the field</param>
         /// <returns></returns>
-        /*UploadResultDto*/
-        AdamItemDto Upload(int appId, string contentType, Guid guid, string field, string subfolder = "", bool usePortalRoot = false);
+        IAdamItemDto Upload(int appId, string contentType, Guid guid, string field, string subfolder = "", bool usePortalRoot = false);
 
         /// <summary>
         /// GET all the ADAM items for an entity, within that folder etc.

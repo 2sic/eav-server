@@ -5,54 +5,87 @@ using ToSic.Eav.WebApi.Dto.Metadata;
 
 namespace ToSic.Eav.WebApi.Dto
 {
-    /// <summary>
-    /// WIP base class until the UploadResultDto and AdamItemDto are merged - there should not be so many classes
-    /// </summary>
-    public class AdamItemDtoBase
+    public interface IAdamItemDto
     {
         /// <summary>
         /// Optional error message, should normally be null if no error
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Error { get; set; }
+        string Error { get; set; }
 
         /// <summary>
         /// The file name
         /// </summary>
-        public string Name { get; set; }
+        string Name { get; set; }
 
         /// <summary>
-        /// WIP: this should contain the code like "file:2742"
+        /// This contains the code like "file:2742"
         /// </summary>
-        public string ReferenceId { get; set; }
+        string ReferenceId { get; set; }
 
         /// <summary>
         /// Normal url to access the resource
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Url { get; set; }
+        string Url { get; set; }
 
         /// <summary>
         /// The Adam type, such as "folder", "image" etc.
         /// </summary>
-        public string Type { get; set; }
+        string Type { get; set; }
+
+        bool IsFolder { get; }
+        bool AllowEdit { get; set; }
+        int Size { get; set; }
+
+        /// <summary>
+        /// The Metadata for this ADAM item
+        /// </summary>
+        IEnumerable<MetadataOfDto> Metadata { get; set; }
+
+        string Path { get; set; }
+        DateTime Created { get; }
+        DateTime Modified { get; }
+
+        /// <summary>
+        /// Small preview thumbnail
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        string ThumbnailUrl { get; set; }
+
+        /// <summary>
+        /// Large preview
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        string PreviewUrl { get; set; }
     }
 
-    public class AdamItemDto: AdamItemDtoBase
+    public class AdamItemDto : IAdamItemDto
     {
+        /// <inheritdoc />
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Error { get; set; }
+
+        /// <inheritdoc />
+        public string Name { get; set; }
+
+        /// <inheritdoc />
+        public string ReferenceId { get; set; }
+
+        /// <inheritdoc />
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Url { get; set; }
+
+        /// <inheritdoc />
+        public string Type { get; set; }
+
         public bool IsFolder { get; }
         public bool AllowEdit { get; set; }
         public int Size { get; set; }
 
-        /// <summary>
-        /// TEMP / WIP - should contain the ID of the entity which provides metadata
-        /// of course it would only work with one entity, so it's not a final design choice
-        /// </summary>
-        public int MetadataId { get; set; }
-        
-        /// <summary>
-        /// WIP 13.05
-        /// </summary>
+        ///// <inheritdoc />
+        //public int MetadataId { get; set; }
+
+        /// <inheritdoc />
         public IEnumerable<MetadataOfDto> Metadata { get; set; }
 
         public string Path { get; set; }
@@ -60,22 +93,15 @@ namespace ToSic.Eav.WebApi.Dto
         public DateTime Created { get; }
         public DateTime Modified { get; }
 
-        /// <summary>
-        /// Small preview thumbnail
-        /// </summary>
+        /// <inheritdoc />
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string ThumbnailUrl { get; set; }
 
-        /// <summary>
-        /// Large preview
-        /// </summary>
+        /// <inheritdoc />
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string PreviewUrl { get; set; }
 
-        public AdamItemDto(string error)
-        {
-            Error = error;
-        }
+        public AdamItemDto(string error) => Error = error;
 
         public AdamItemDto(bool isFolder, string name, int size, DateTime created, DateTime modified)
         {
