@@ -5,13 +5,41 @@ using ToSic.Eav.WebApi.Dto.Metadata;
 
 namespace ToSic.Eav.WebApi.Dto
 {
-    public class AdamItemDto
+    /// <summary>
+    /// WIP base class until the UploadResultDto and AdamItemDto are merged - there should not be so many classes
+    /// </summary>
+    public class AdamItemDtoBase
     {
+        /// <summary>
+        /// Optional error message, should normally be null if no error
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Error { get; set; }
+
+        /// <summary>
+        /// The file name
+        /// </summary>
+        public string Name { get; set; }
+
         /// <summary>
         /// WIP: this should contain the code like "file:2742"
         /// </summary>
         public string ReferenceId { get; set; }
 
+        /// <summary>
+        /// Normal url to access the resource
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Url { get; set; }
+
+        /// <summary>
+        /// The Adam type, such as "folder", "image" etc.
+        /// </summary>
+        public string Type { get; set; }
+    }
+
+    public class AdamItemDto: AdamItemDtoBase
+    {
         public bool IsFolder { get; }
         public bool AllowEdit { get; set; }
         public int Size { get; set; }
@@ -28,8 +56,6 @@ namespace ToSic.Eav.WebApi.Dto
         public IEnumerable<MetadataOfDto> Metadata { get; set; }
 
         public string Path { get; set; }
-        public string Name { get; set; }
-        public string Type { get; set; }
 
         public DateTime Created { get; }
         public DateTime Modified { get; }
@@ -46,11 +72,10 @@ namespace ToSic.Eav.WebApi.Dto
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string PreviewUrl { get; set; }
 
-        /// <summary>
-        /// Normal url to access the resource
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Url { get; set; }
+        public AdamItemDto(string error)
+        {
+            Error = error;
+        }
 
         public AdamItemDto(bool isFolder, string name, int size, DateTime created, DateTime modified)
         {
