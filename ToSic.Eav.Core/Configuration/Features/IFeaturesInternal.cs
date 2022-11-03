@@ -19,7 +19,7 @@ namespace ToSic.Eav.Configuration
         bool Enabled(IEnumerable<Guid> features, string message, out FeaturesDisabledException exception);
 
         [PrivateApi]
-        string MsgMissingSome(IEnumerable<Guid> ids);
+        string MsgMissingSome(params Guid[] ids);
 
         /// <summary>
         /// Checks if a list of features are enabled, in case you need many features to be activated.

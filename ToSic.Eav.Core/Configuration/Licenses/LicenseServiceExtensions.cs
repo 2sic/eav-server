@@ -5,7 +5,7 @@
         public static void ThrowIfNotLicensed(this ILicenseService licSer, LicenseDefinition lic)
         {
             if (licSer.IsEnabled(lic)) return;
-            throw new LicenseException(lic);
+            throw new LicenseDisabledException(lic);
         }
     }
 }

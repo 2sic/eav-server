@@ -20,13 +20,5 @@ namespace ToSic.Eav.Configuration
         public static Guid UseAdamInWebApi => BuiltInFeatures.SaveInAdamApi.Guid;
         public static Guid PermissionCheckUserId => BuiltInFeatures.PermissionCheckUsers.Guid;
         public static Guid PermissionCheckGroups => BuiltInFeatures.PermissionCheckGroups.Guid;
-
-        // Beta - never public, commented out 2022-01-03
-        //public static Guid PasteImageClipboard => Features.PasteImageFromClipboard.Id; // new Guid("f6b8d6da-4744-453b-9543-0de499aa2352");
-        //public static Guid WysiwygPasteFormatted => Features.WysiwygPasteFormatted.Id; // new Guid("1b13e0e6-a346-4454-a1e6-2fb18c047d20");
-
-        // new for 2sxc 10.02 - never public, commented out 2022-01-03
-        //public static Guid BlockFileIdLookupIfNotInSameApp => FeaturesDb.BlockFileResolveOutsideOfEntityAdam.Id; // new Guid("702f694c-53bd-4d03-b75c-4dad9c4fb852");
-        //public static Guid WebFarm => FeaturesDb.WebFarmCache.Id; // new Guid("11c0fedf-16a7-4596-900c-59e860b47965");
     }
 }
