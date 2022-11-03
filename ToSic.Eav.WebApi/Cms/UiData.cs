@@ -38,10 +38,12 @@ namespace ToSic.Eav.WebApi.Cms
                     : userHasPublishRights
                         ? _features.EnabledUi
                         : _features.EnabledUi.Where(f => f.Public))
+                .OrderBy(f => f.NameId)
                 .ToList();
 
         public IList<FeatureDto> FeaturesDto(bool userHasPublishRights)
-            => Features(userHasPublishRights).Select(f => new FeatureDto()
+            => Features(userHasPublishRights)
+                .Select(f => new FeatureDto()
                 {
                     NameId = f.NameId,
                     Enabled = f.Enabled,
