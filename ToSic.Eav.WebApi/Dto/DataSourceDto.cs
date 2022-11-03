@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSources.Catalog
             if (dsInfo == null) return;
             UiHint = dsInfo.UiHint;
             PrimaryType = dsInfo.Type.ToString();
-            Icon = dsInfo.Icon?.Replace("_", "-"); // wip: rename "xxx_yyy" icons to "xxx-yyy" - must switch to base64 soon
+            Icon = dsInfo.Icon; // ?.Replace("_", "-"); // wip: rename "xxx_yyy" icons to "xxx-yyy" - must switch to base64 soon
             HelpLink = dsInfo.HelpLink;
             In = dsInfo.In;
             DynamicOut = dsInfo.DynamicOut;
