@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Configuration;
-using ToSic.Eav.Context;
 using ToSic.Eav.Security;
+using ToSic.Eav.WebApi.Context;
 
 namespace ToSic.Eav.WebApi.Cms
 {
@@ -14,6 +14,8 @@ namespace ToSic.Eav.WebApi.Cms
         /// if the user has full edit permissions, he may also get the un-public features
         /// otherwise just the public Ui features
         /// </summary>
-        IList<FeatureState> Features(IContextOfApp appContext, IMultiPermissionCheck permCheck);
+        IList<FeatureState> Features(IMultiPermissionCheck permCheck);
+
+        IList<FeatureDto> FeaturesDto(bool userHasPublishRights);
     }
 }

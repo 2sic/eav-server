@@ -4,13 +4,20 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
+using ToSic.Eav.WebApi.Context;
 
 namespace ToSic.Eav.WebApi.Cms
 {
     public class UiData : IUiData
     {
-        public UiData(IFeaturesInternal features) => _features = features;
+        public UiData(IFeaturesInternal features, IUser user)
+        {
+            _features = features;
+            _user = user;
+        }
+
         private readonly IFeaturesInternal _features;
+        private readonly IUser _user;
 
         /// <summary>
         /// if the user has full edit permissions, he may also get the un-public features
@@ -19,12 +26,26 @@ namespace ToSic.Eav.WebApi.Cms
         /// <remarks>
         /// It's virtual, so other code can inherit from this. 
         /// </remarks>
-        public virtual IList<FeatureState> Features(IContextOfApp appContext, IMultiPermissionCheck permCheck)
+        public IList<FeatureState> Features(IMultiPermissionCheck permCheck)
         {
             var userHasPublishRights = permCheck.UserMayOnAll(GrantSets.WritePublished);
-            return appContext.User.IsSiteAdmin
-                ? _features.All.ToList()
-                : _features.EnabledUi.Where(f => userHasPublishRights || f.Public).ToList();
+            return Features(userHasPublishRights);
         }
+
+        private IList<FeatureState> Features(bool userHasPublishRights)
+            => (_user.IsSiteAdmin
+                    ? _features.All
+                    : userHasPublishRights
+                        ? _features.EnabledUi
+                        : _features.EnabledUi.Where(f => f.Public))
+                .ToList();
+
+        public IList<FeatureDto> FeaturesDto(bool userHasPublishRights)
+            => Features(userHasPublishRights).Select(f => new FeatureDto()
+                {
+                    NameId = f.NameId,
+                    Enabled = f.Enabled,
+                })
+                .ToList();
     }
 }

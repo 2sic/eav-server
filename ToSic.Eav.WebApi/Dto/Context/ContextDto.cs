@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using ToSic.Eav.Apps;
+using ToSic.Eav.WebApi.Context;
 using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi.Dto
@@ -15,6 +16,8 @@ namespace ToSic.Eav.WebApi.Dto
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ContextResourceWithApp Site { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public WebResourceDto Page { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ContextEnableDto Enable { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public IList<FeatureDto> Features { get; set; }
     }
 
     public class WebResourceDto
