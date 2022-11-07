@@ -11,6 +11,7 @@ using ToSic.Eav.Identity;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.WebApi.Dto;
+using ISite = ToSic.Eav.Context.ISite;
 
 namespace ToSic.Eav.WebApi.ImportExport
 {
@@ -18,7 +19,7 @@ namespace ToSic.Eav.WebApi.ImportExport
     {
         #region DI Constructor
 
-        public ImportApp(IEnvironmentLogger envLogger, ZipImport zipImport, IGlobalConfiguration globalConfiguration, IUser user, AppFinder appFinder, ISite site, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy) : base("Bck.Export")
+        public ImportApp(IEnvironmentLogger envLogger, ZipImport zipImport, IGlobalConfiguration globalConfiguration, IUser user, AppFinder appFinder, ISite site, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, IFeaturesInternal features) : base("Bck.Export")
         {
             _envLogger = envLogger;
             _zipImport = zipImport;
@@ -27,6 +28,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             _appFinder = appFinder;
             _site = site;
             _xmlImpExpFilesLazy = xmlImpExpFilesLazy;
+            _features = features;
         }
 
         private readonly IEnvironmentLogger _envLogger;
@@ -36,6 +38,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         private readonly AppFinder _appFinder;
         private readonly ISite _site;
         private readonly Lazy<XmlImportWithFiles> _xmlImpExpFilesLazy;
+        private readonly IFeaturesInternal _features;
 
         #endregion
 
@@ -132,8 +135,19 @@ namespace ToSic.Eav.WebApi.ImportExport
         /// <returns></returns>
         public ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppDto> pendingApps)
         {
-            Log.A("import app start");
+            Log.A($"Install pending apps start");
             var result = new ImportResultDto();
+
+            // before installation, ensure that feature is enabled
+            if (!_features.IsEnabled(BuiltInFeatures.AppSyncWithSiteFiles))
+            {
+                var message = $"Skip all. Can't install pending apps because feature {BuiltInFeatures.AppSyncWithSiteFiles.NameId} is not enabled.";
+                var messages = new List<Message>() { new Message(message, Message.MessageTypes.Warning)};
+                Log.A(message);
+                result.Success = false;
+                result.Messages.AddRange(messages);
+                return result;
+            }
 
             try
             {
