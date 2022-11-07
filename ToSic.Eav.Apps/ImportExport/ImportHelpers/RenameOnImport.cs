@@ -109,8 +109,8 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 
         internal void FixPortalFilesAdamAppFolderName(string appDirectory)
         {
-            var originalAdamTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles, AdamConstants.AdamRootFolder, From);
-            var newAdamTempRoot = Path.Combine(appDirectory, XmlConstants.PortalFiles, AdamConstants.AdamRootFolder, To);
+            var originalAdamTempRoot = Path.Combine(appDirectory, Constants.ZipFolderForPortalFiles, AdamConstants.AdamRootFolder, From);
+            var newAdamTempRoot = Path.Combine(appDirectory, Constants.ZipFolderForPortalFiles, AdamConstants.AdamRootFolder, To);
             if (Directory.Exists(originalAdamTempRoot))
             {
                 Log.A($"rename app folder name in temp PortalFiles/adam from:{originalAdamTempRoot} to:{newAdamTempRoot}");
