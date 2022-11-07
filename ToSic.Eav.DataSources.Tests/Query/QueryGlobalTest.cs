@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Testing.Shared;
@@ -22,7 +20,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         private readonly QueryManager _queryManager;
 
 
-        private const int testQueryCount = 7;
+        private const int testQueryCount = 9;
 
         [ClassInitialize]
         public static void Config(TestContext context)
