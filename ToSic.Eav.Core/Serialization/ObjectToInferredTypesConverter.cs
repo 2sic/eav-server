@@ -69,43 +69,9 @@ namespace ToSic.Eav.Serialization
                 case JsonTokenType.Null:
                     return null;
                 case JsonTokenType.StartObject:
-                    {
-                        return JsonObject.Create(JsonDocument.ParseValue(ref reader).RootElement.Clone());
-                        //var dict = CreateDictionary();
-                        //while (reader.Read())
-                        //{
-                        //    switch (reader.TokenType)
-                        //    {
-                        //        case JsonTokenType.EndObject:
-                        //            return dict;
-                        //        case JsonTokenType.PropertyName:
-                        //            var key = reader.GetString();
-                        //            reader.Read();
-                        //            dict.Add(key, Read(ref reader, typeof(object), options));
-                        //            break;
-                        //        default:
-                        //            throw new JsonException();
-                        //    }
-                        //}
-                        //throw new JsonException();
-                    }
+                    return JsonObject.Create(JsonDocument.ParseValue(ref reader).RootElement.Clone());
                 case JsonTokenType.StartArray:
-                    {
-                        return JsonArray.Create(JsonDocument.ParseValue(ref reader).RootElement.Clone());
-                        //var list = new List<object>();
-                        //while (reader.Read())
-                        //{
-                        //    switch (reader.TokenType)
-                        //    {
-                        //        default:
-                        //            list.Add(Read(ref reader, typeof(object), options));
-                        //            break;
-                        //        case JsonTokenType.EndArray:
-                        //            return list;
-                        //    }
-                        //}
-                        //throw new JsonException();
-                    }
+                    return JsonArray.Create(JsonDocument.ParseValue(ref reader).RootElement.Clone());
                 default:
                     var x = JsonDocument.ParseValue(ref reader).RootElement.Clone();
                     return x;
