@@ -29,8 +29,8 @@ namespace ToSic.Eav.WebApi.Dto
 
     public class ContextResourceWithApp: WebResourceDto
     {
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public IAppIdentity DefaultApp { get; set; }
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public IAppIdentity PrimaryApp { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public AppIdentity DefaultApp { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public AppIdentity PrimaryApp { get; set; }
     }
 
     public class ContextAppDto: WebResourceDto
