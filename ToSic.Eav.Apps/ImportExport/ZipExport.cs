@@ -118,11 +118,11 @@ namespace ToSic.Eav.Apps.ImportExport
                 try
                 {
                     // Empty older version of PortalFiles state in App_Data
-                    var portalFilesPath = Path.Combine(appDataPath, Constants.ZipFolderForPortalFiles);
+                    var portalFilesPath = Path.Combine(appDataPath, Constants.ZipFolderForSiteFiles);
                     ZipImport.TryToDeleteDirectory(portalFilesPath, Log);
 
                     // Version control folder to preserve copy of PortalFiles
-                    var portalFilesDirectory = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
+                    var portalFilesDirectory = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForSiteFiles);
 
                     // Copy PortalFiles for version control
                     CopyPortalFiles(xmlExport, portalFilesDirectory);

@@ -285,10 +285,10 @@ namespace ToSic.Eav.Apps.ImportExport
         private void HandlePortalFilesFolder(string appDirectory, bool pendingApp)
         {
             var wrapLog = Log.Fn();
-            // Handle PortalFiles folder
+            // Handle PortalFiles/SiteFiles folder
             var portalTempRoot = pendingApp 
-                ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder, XmlConstants.PortalFiles)
-                : Path.Combine(appDirectory, XmlConstants.PortalFiles);
+                ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder, Constants.ZipFolderForSiteFiles)
+                : Path.Combine(appDirectory, Constants.ZipFolderForPortalFiles); // TODO: probably replace with Constants.ZipFolderForSiteFiles
             if (Directory.Exists(portalTempRoot))
             {
                 var messages = Env.TransferFilesToSite(portalTempRoot, string.Empty);
