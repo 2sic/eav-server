@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -67,14 +69,50 @@ namespace ToSic.Eav.Serialization
                 case JsonTokenType.Null:
                     return null;
                 case JsonTokenType.StartObject:
-                    return JsonObject.Create(JsonDocument.ParseValue(ref reader).RootElement.Clone());
+                    {
+                        return JsonObject.Create(JsonDocument.ParseValue(ref reader).RootElement.Clone());
+                        //var dict = CreateDictionary();
+                        //while (reader.Read())
+                        //{
+                        //    switch (reader.TokenType)
+                        //    {
+                        //        case JsonTokenType.EndObject:
+                        //            return dict;
+                        //        case JsonTokenType.PropertyName:
+                        //            var key = reader.GetString();
+                        //            reader.Read();
+                        //            dict.Add(key, Read(ref reader, typeof(object), options));
+                        //            break;
+                        //        default:
+                        //            throw new JsonException();
+                        //    }
+                        //}
+                        //throw new JsonException();
+                    }
                 case JsonTokenType.StartArray:
-                    return JsonArray.Create(JsonDocument.ParseValue(ref reader).RootElement.Clone());
+                    {
+                        return JsonArray.Create(JsonDocument.ParseValue(ref reader).RootElement.Clone());
+                        //var list = new List<object>();
+                        //while (reader.Read())
+                        //{
+                        //    switch (reader.TokenType)
+                        //    {
+                        //        default:
+                        //            list.Add(Read(ref reader, typeof(object), options));
+                        //            break;
+                        //        case JsonTokenType.EndArray:
+                        //            return list;
+                        //    }
+                        //}
+                        //throw new JsonException();
+                    }
                 default:
                     var x = JsonDocument.ParseValue(ref reader).RootElement.Clone();
                     return x;
             }
         }
+
+        protected virtual IDictionary<string, object> CreateDictionary() => new ExpandoObject();
 
         public override void Write(
             Utf8JsonWriter writer,
