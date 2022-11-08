@@ -7,6 +7,7 @@ using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.ImportExport.ImportHelpers;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
+using ToSic.Eav.DI;
 using ToSic.Eav.Identity;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Logging;
@@ -19,7 +20,7 @@ namespace ToSic.Eav.WebApi.ImportExport
     {
         #region DI Constructor
 
-        public ImportApp(IEnvironmentLogger envLogger, ZipImport zipImport, IGlobalConfiguration globalConfiguration, IUser user, AppFinder appFinder, ISite site, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, IFeaturesInternal features) : base("Bck.Export")
+        public ImportApp(IEnvironmentLogger envLogger, ZipImport zipImport, IGlobalConfiguration globalConfiguration, IUser user, AppFinder appFinder, ISite site, Generator<XmlImportWithFiles> xmlImpExpFiles, IFeaturesInternal features) : base("Bck.Export")
         {
             _envLogger = envLogger;
             _zipImport = zipImport;
@@ -27,7 +28,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             _user = user;
             _appFinder = appFinder;
             _site = site;
-            _xmlImpExpFilesLazy = xmlImpExpFilesLazy;
+            _xmlImpExpFiles = xmlImpExpFiles;
             _features = features;
         }
 
@@ -37,7 +38,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         private readonly IUser _user;
         private readonly AppFinder _appFinder;
         private readonly ISite _site;
-        private readonly Lazy<XmlImportWithFiles> _xmlImpExpFilesLazy;
+        private readonly Generator<XmlImportWithFiles> _xmlImpExpFiles;
         private readonly IFeaturesInternal _features;
 
         #endregion
@@ -105,7 +106,7 @@ namespace ToSic.Eav.WebApi.ImportExport
 
                 try
                 {
-                    var importer = _xmlImpExpFilesLazy.Value.Init(null, false, Log);
+                    var importer = _xmlImpExpFiles.New.Init(null, false, Log);
                     var importXmlReader = new ImportXmlReader(appXml, importer, Log);
                     var pendingAppDto = new PendingAppDto
                     {

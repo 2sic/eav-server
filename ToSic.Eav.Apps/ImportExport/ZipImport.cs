@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using ToSic.Eav.Apps.ImportExport.ImportHelpers;
+using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Logging;
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipImport: HasLog
     {
-        private readonly Lazy<XmlImportWithFiles> _xmlImpExpFilesLazy;
+        private readonly Generator<XmlImportWithFiles> _xmlImpExpFiles;
         private readonly IAppStates _appStates;
         private readonly SystemManager _systemManager;
         private int? _initialAppId;
@@ -23,9 +24,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public bool AllowCodeImport;
 
-        public ZipImport(IImportExportEnvironment environment, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, SystemManager systemManager, IAppStates appStates) :base("Zip.Imp")
+        public ZipImport(IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) :base("Zip.Imp")
         {
-            _xmlImpExpFilesLazy = xmlImpExpFilesLazy;
+            _xmlImpExpFiles = xmlImpExpFiles;
             _appStates = appStates;
             _systemManager = systemManager.Init(Log);
             Env = environment.Init(Log);
@@ -174,7 +175,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var wrapLog = Log.Fn($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
             
             int appId;
-            var importer = _xmlImpExpFilesLazy.Value.Init(null, false, Log); // new XmlImportWithFiles(Log);
+            var importer = _xmlImpExpFiles.New.Init(null, false, Log); // new XmlImportWithFiles(Log);
 
             var imp = new ImportXmlReader(Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), Constants.AppDataFile), importer, Log);
 
@@ -193,7 +194,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     Log.A($"User rename to '{rename}'");
                     var renamer = new RenameOnImport(folder, rename, Log);
                     renamer.FixAppXmlForImportAsDifferentApp(imp);
-                    if (!pendingApp) renamer.FixPortalFilesAdamAppFolderName(appDirectory);
+                    renamer.FixPortalFilesAdamAppFolderName(appDirectory, pendingApp);
                     folder = rename;
                 }
                 else Log.A("No rename of app requested");

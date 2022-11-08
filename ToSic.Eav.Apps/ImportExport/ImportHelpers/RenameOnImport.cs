@@ -107,15 +107,17 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
             xmlDoc.Save(xmlPath); // this is not necessary, but good to have it saved in file for debugging
         }
 
-        internal void FixPortalFilesAdamAppFolderName(string appDirectory)
+        internal void FixPortalFilesAdamAppFolderName(string appDirectory, bool pendingApp)
         {
-            var originalAdamTempRoot = Path.Combine(appDirectory, Constants.ZipFolderForPortalFiles, AdamConstants.AdamRootFolder, From);
-            var newAdamTempRoot = Path.Combine(appDirectory, Constants.ZipFolderForPortalFiles, AdamConstants.AdamRootFolder, To);
+            var originalAdamTempRoot = Path.Combine(appDirectory, GetFolderForSiteFiles(pendingApp), AdamConstants.AdamRootFolder, From);
+            var newAdamTempRoot = Path.Combine(appDirectory, GetFolderForSiteFiles(pendingApp), AdamConstants.AdamRootFolder, To);
             if (Directory.Exists(originalAdamTempRoot))
             {
                 Log.A($"rename app folder name in temp PortalFiles/adam from:{originalAdamTempRoot} to:{newAdamTempRoot}");
                 Directory.Move(originalAdamTempRoot, newAdamTempRoot);
             }
         }
+
+        internal string GetFolderForSiteFiles(bool pendingApp) => pendingApp ? Path.Combine(Constants.AppDataProtectedFolder, Constants.ZipFolderForSiteFiles) : Constants.ZipFolderForPortalFiles;
     }
 }
