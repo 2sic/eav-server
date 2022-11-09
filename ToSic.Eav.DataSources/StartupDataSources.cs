@@ -16,6 +16,9 @@ namespace ToSic.Eav.DataSources
             services.TryAddTransient<IAppRoot, AppRoot>();
 
             services.TryAddTransient<Sql>();
+            services.TryAddTransient<Sql.Dependencies>();
+            services.TryAddTransient<SqlPlatformInfo, SqlPlatformInfo>();
+
             services.TryAddTransient<DataTable>();
 
             services.TryAddTransient<QueryBuilder>();
