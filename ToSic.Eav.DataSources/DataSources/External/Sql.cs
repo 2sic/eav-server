@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+#if NETFRAMEWORK
 using System.Data.SqlClient;
+#else
+using Microsoft.Data.SqlClient;
+#endif
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
@@ -43,8 +46,8 @@ namespace ToSic.Eav.DataSources
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
         [PrivateApi]
-        public static Regex ForbiddenTermsInSelect = new Regex(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		#region Configuration-properties
+        public static Regex ForbiddenTermsInSelect = new Regex(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore|sp_executesql)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+#region Configuration-properties
         [PrivateApi] protected const string TitleFieldKey = "TitleField";
         [PrivateApi] protected const string EntityIdFieldKey = "EntityIdField";
         [PrivateApi] protected const string ContentTypeKey = "ContentType";
@@ -107,20 +110,20 @@ namespace ToSic.Eav.DataSources
 		    set => Configuration[EntityIdFieldKey] = value;
 		}
 
-		#endregion
+#endregion
 
-        #region Special SQL specific properties to prevent SQL Injection
+#region Special SQL specific properties to prevent SQL Injection
         [PrivateApi]
 	    public const string ExtractedParamPrefix = "AutoExtractedParam";
 
-		#endregion
+#endregion
 
-        #region Error Constants
+#region Error Constants
 
         public const string ErrorTitleForbiddenSql = "Forbidden SQL words";
 
 
-		#endregion
+#endregion
 
 		// Important: This constructor must come BEFORE the other constructors
 		// because it is the one which the .net Core DI should use!
@@ -284,7 +287,7 @@ namespace ToSic.Eav.DataSources
 			        var casedEntityId = EntityIdField;
 			        try
 			        {
-			            #region Get the SQL Column List and validate it
+#region Get the SQL Column List and validate it
 
 			            var columNames = new string[reader.FieldCount];
 			            for (var i = 0; i < reader.FieldCount; i++)
@@ -303,9 +306,9 @@ namespace ToSic.Eav.DataSources
 			                             ?? columNames.FirstOrDefault();
 			            Log.A($"will use '{casedTitle}' as title field");
 
-                        #endregion
+#endregion
 
-                        #region Read all Rows from SQL Server
+#region Read all Rows from SQL Server
 
                         // apparently SQL could return the same column name - which would cause problems - so distinct them first
                         var columnsToUse = columNames.Where(c => c != casedEntityId).Distinct().ToList();
@@ -322,7 +325,7 @@ namespace ToSic.Eav.DataSources
 			                list.Add(entity);
 			            }
 
-			            #endregion
+#endregion
 			        }
 			        finally
 			        {
