@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Source DataTable
 		/// </summary>
-        public global::System.Data.DataTable Source { get; set; }
+        public System.Data.DataTable Source { get; set; }
 
 		/// <summary>
 		/// Name of the ContentType
@@ -94,7 +94,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(TitleFieldKey, EntityTitleDefaultColumnName);
 		    ConfigMask(EntityIdFieldKey, EntityIdDefaultColumnName);
 		    ConfigMask(ModifiedFieldKey, "");
-		    ConfigMask(ContentTypeKey, "[Settings:ContentType]");
+		    ConfigMask(ContentTypeKey);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace ToSic.Eav.DataSources
         /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
         /// </remarks>
         [PrivateApi]
-        public DataTable Setup(global::System.Data.DataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
+        public DataTable Setup(System.Data.DataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
         {
 			Source = source;
 			ContentType = contentType;
