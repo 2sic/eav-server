@@ -14,7 +14,7 @@ using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class Runtime : HasLog/*<IRuntime>*/, IRuntime
+    public partial class Runtime : HasLog, IRuntime
     {
         #region Constructor and DI
 
