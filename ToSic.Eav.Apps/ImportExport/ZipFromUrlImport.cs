@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.DI;
 using ToSic.Eav.Identity;
 using ToSic.Eav.Logging;
 using ToSic.Eav.Persistence.Interfaces;
@@ -12,9 +13,9 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         #region DI Constructor
 
-        public ZipFromUrlImport(IImportExportEnvironment environment, Lazy<XmlImportWithFiles> xmlImpExpFilesLazy, 
+        public ZipFromUrlImport(IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, 
             IGlobalConfiguration globalConfiguration, SystemManager systemManager, IAppStates appStates)
-            : base(environment, xmlImpExpFilesLazy, systemManager, appStates)
+            : base(environment, xmlImpExpFiles, systemManager, appStates)
         {
             _globalConfiguration = globalConfiguration;
         }

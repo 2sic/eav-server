@@ -48,13 +48,13 @@ namespace ToSic.Eav.Configuration
         {
             // ReSharper disable PossibleMultipleEnumeration
             var enabled = Enabled(features);
-            exception = enabled ? null : new FeaturesDisabledException(message + " - " + MsgMissingSome(features));
+            exception = enabled ? null : new FeaturesDisabledException(message + " - " + MsgMissingSome(features.ToArray()));
             // ReSharper restore PossibleMultipleEnumeration
             return enabled;
         }
 
         [PrivateApi]
-        public string MsgMissingSome(IEnumerable<Guid> ids)
+        public string MsgMissingSome(params Guid[] ids)
         {
             var missing = ids
                 .Where(i => !Enabled(i))

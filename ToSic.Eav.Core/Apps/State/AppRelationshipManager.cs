@@ -45,7 +45,7 @@ namespace ToSic.Eav.Apps
                 .Where(a => a is IAttribute<IEnumerable<IEntity>>)
                 .Cast<IAttribute<IEnumerable<IEntity>>>()
             )
-                (attrib.TypedContents as LazyEntities).AttachLookupList(_upstreamApp);
+                (attrib?.TypedContents as LazyEntities)?.AttachLookupList(_upstreamApp);
         }
 
         private static void Add(IReadOnlyDictionary<int, IEntity> lookup, List<EntityRelationship> list, int parent, int? child)

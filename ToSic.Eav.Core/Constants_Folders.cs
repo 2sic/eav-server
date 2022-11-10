@@ -58,7 +58,8 @@
         /// <summary>
         /// Name of folder that should contain portal files in export zip or App_Data
         /// </summary>
-        public const string ZipFolderForPortalFiles = "PortalFiles";
+        public const string ZipFolderForPortalFiles = "PortalFiles"; // used in v14
+        public const string ZipFolderForSiteFiles = "SiteFiles"; // replace "PortalFiles" in v15
 
         /// <summary>
         /// Name of folder that should contain app files in export zip

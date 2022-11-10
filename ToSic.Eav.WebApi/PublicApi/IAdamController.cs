@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.WebApi.Adam;
 using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.PublicApi
@@ -20,7 +19,8 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="subfolder">Folder information within that field</param>
         /// <param name="usePortalRoot">If we should add something to the portal root instead of the field</param>
         /// <returns></returns>
-        UploadResultDto Upload(int appId, string contentType, Guid guid, string field, string subfolder = "", bool usePortalRoot = false);
+        // Wip #2902 - ATM must return object, otherwise the result isn't perfectly JSON serialized
+        /*AdamItemDto*/ object Upload(int appId, string contentType, Guid guid, string field, string subfolder = "", bool usePortalRoot = false);
 
         /// <summary>
         /// GET all the ADAM items for an entity, within that folder etc.
@@ -32,7 +32,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="subfolder">Folder information within that field</param>
         /// <param name="usePortalRoot">If we should add something to the portal root instead of the field</param>
         /// <returns></returns>
-        IEnumerable<AdamItemDto> Items(int appId, string contentType, Guid guid, string field, string subfolder, bool usePortalRoot = false);
+        IEnumerable</*AdamItemDto*/object> Items(int appId, string contentType, Guid guid, string field, string subfolder, bool usePortalRoot = false);
 
         /// <summary>
         /// POST create a folder.
@@ -45,7 +45,7 @@ namespace ToSic.Eav.WebApi.PublicApi
         /// <param name="newFolder">name of the new folder</param>
         /// <param name="usePortalRoot">If we should add something to the portal root instead of the field</param>
         /// <returns></returns>
-        IEnumerable<AdamItemDto> Folder(int appId, string contentType, Guid guid, string field, string subfolder,
+        IEnumerable</*AdamItemDto*/object> Folder(int appId, string contentType, Guid guid, string field, string subfolder,
             string newFolder, bool usePortalRoot);
 
         /// <summary>

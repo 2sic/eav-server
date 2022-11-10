@@ -20,12 +20,16 @@ namespace ToSic.Eav.Configuration
                 // Free Edit UI features for all
                 EditUiShowNotes,
                 EditUiShowMetadataFor,
+                WysiwygPasteFormatted,
                 EditUiAllowDebugModeForEditors,
 
-                // Features for Patreons
+                // Features for Patrons Basic
                 PasteImageFromClipboard,
-                WysiwygPasteFormatted,
                 NoSponsoredByToSic,
+
+                // Features for Patrons Advanced
+                AppSyncWithSiteFiles,
+                EditUiTranslateWithGoogle, // WIP/Beta
 
                 // 2sxc 10.24+
                 WebFarmCache,

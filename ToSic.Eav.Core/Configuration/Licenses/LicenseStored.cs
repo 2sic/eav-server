@@ -128,5 +128,10 @@ namespace ToSic.Eav.Configuration.Licenses
         /// Optional comments, like what system it's for
         /// </summary>
         public string Comments { get; set; }
+
+        /// <summary>
+        /// If parts of a license can expire, then it would be specified here.
+        /// </summary>
+        public DateTime Expires { get; set; }
     }
 }

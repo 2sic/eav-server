@@ -7,6 +7,8 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
+using SqlDataTable = System.Data.DataTable;
+
 
 namespace ToSic.Eav.DataSources
 {
@@ -43,7 +45,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Source DataTable
 		/// </summary>
-        public global::System.Data.DataTable Source { get; set; }
+        public SqlDataTable Source { get; set; }
 
 		/// <summary>
 		/// Name of the ContentType
@@ -94,7 +96,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(TitleFieldKey, EntityTitleDefaultColumnName);
 		    ConfigMask(EntityIdFieldKey, EntityIdDefaultColumnName);
 		    ConfigMask(ModifiedFieldKey, "");
-		    ConfigMask(ContentTypeKey, "[Settings:ContentType]");
+		    ConfigMask(ContentTypeKey);
         }
 
         /// <summary>
@@ -110,7 +112,7 @@ namespace ToSic.Eav.DataSources
         /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
         /// </remarks>
         [PrivateApi]
-        public DataTable Setup(global::System.Data.DataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
+        public DataTable Setup(SqlDataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
         {
 			Source = source;
 			ContentType = contentType;
@@ -134,7 +136,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Convert a DataTable to a Dictionary of EntityModels
 		/// </summary>
-		private ImmutableArray<IEntity> ConvertToEntityDictionary(global::System.Data.DataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
+		private ImmutableArray<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
 		{
 			var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
 

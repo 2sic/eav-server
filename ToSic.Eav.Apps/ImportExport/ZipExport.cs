@@ -118,11 +118,11 @@ namespace ToSic.Eav.Apps.ImportExport
                 try
                 {
                     // Empty older version of PortalFiles state in App_Data
-                    var portalFilesPath = Path.Combine(appDataPath, Constants.ZipFolderForPortalFiles);
+                    var portalFilesPath = Path.Combine(appDataPath, Constants.ZipFolderForSiteFiles);
                     ZipImport.TryToDeleteDirectory(portalFilesPath, Log);
 
                     // Version control folder to preserve copy of PortalFiles
-                    var portalFilesDirectory = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
+                    var portalFilesDirectory = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForSiteFiles);
 
                     // Copy PortalFiles for version control
                     CopyPortalFiles(xmlExport, portalFilesDirectory);
@@ -145,9 +145,6 @@ namespace ToSic.Eav.Apps.ImportExport
             // migrate old .data to App_Data also here
             // to ensure that older export is overwritten
             ZipImport.MigrateOldAppDataFile(_physicalAppPath);
-
-            // create App_Data unless exists
-            Directory.CreateDirectory(Path.Combine(_physicalAppPath, Constants.AppDataProtectedFolder));
 
             #region Copy needed files to temporary directory
 
@@ -183,9 +180,13 @@ namespace ToSic.Eav.Apps.ImportExport
             CopyPortalFiles(xmlExport, portalFilesDirectory);
             #endregion
 
+            // create tmp App_Data unless exists
+            var tmpAppDataProtectedFolder = Path.Combine(appDirectory.FullName, Constants.ToSxcFolder, Constants.AppDataProtectedFolder);
+            Directory.CreateDirectory(tmpAppDataProtectedFolder);
+
             // Save export xml
             var xml = xmlExport.GenerateNiceXml();
-            File.WriteAllText(Path.Combine(appDirectory.FullName, Constants.ToSxcFolder, Constants.AppDataProtectedFolder, Constants.AppDataFile), xml);
+            File.WriteAllText(Path.Combine(tmpAppDataProtectedFolder, Constants.AppDataFile), xml);
 
             // Zip directory and return as stream
             var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");

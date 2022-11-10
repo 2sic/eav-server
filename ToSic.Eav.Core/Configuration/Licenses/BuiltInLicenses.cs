@@ -42,13 +42,13 @@ namespace ToSic.Eav.Configuration.Licenses
             "These core features are free for anyone who registers their system. It has various features which may be security relevant, so by registering we can inform you if security issues appear. "
         );
 
-        public static readonly LicenseDefinition PatronPerfectionist = new LicenseDefinition(102, 
+        public static readonly LicenseDefinition PatronPerfectionist = new LicenseDefinition(121, 
             "Patron Perfectionist",
             new Guid("015077bb-9829-4291-bf99-244d8ba3b100"),
             "Patrons / supporters of 2sxc who really care about perfect pictures and ultra-fast caching. They get some very enhanced goodies."
         );
 
-        public static readonly LicenseDefinition PatronSentinel = new LicenseDefinition(110, 
+        public static readonly LicenseDefinition PatronSentinel = new LicenseDefinition(122, 
             "Patron Sentinel",
             new Guid("f1e00b9c-1363-4cf6-a8bc-60a215a4130a"),
             "Patrons / supporters of 2sxc who really care extra high security such as CSP (Content Security Policies) and other features."
@@ -64,6 +64,12 @@ namespace ToSic.Eav.Configuration.Licenses
             // Beta, functionality not implemented
             AlsoInheritEnabledFrom = new [] { PatronPerfectionist }
         };
+
+        public static readonly LicenseDefinition PatronAdvanced = new LicenseDefinition(102,
+            "Patron Advanced",
+            new Guid("e23ef849-f50c-47a5-81dd-33fb17727305"),
+            "Patrons with advanced needs in regards to automation, administration etc."
+        );
 
 
         public static readonly LicenseDefinition WebFarmCache = new LicenseDefinition(301, 

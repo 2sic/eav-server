@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+#if NETFRAMEWORK
 using System.Data.SqlClient;
+#else
+using Microsoft.Data.SqlClient;
+#endif
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -37,14 +41,15 @@ namespace ToSic.Eav.DataSources
 	public class Sql : ExternalData
 	{
         /// <inheritdoc/>
-        [PrivateApi]
-	    public override string LogId => "DS.ExtSql";
+        [PrivateApi] public override string LogId => "DS.ExtSql";
 
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
         [PrivateApi]
-        public static Regex ForbiddenTermsInSelect = new Regex(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		#region Configuration-properties
+        public static Regex ForbiddenTermsInSelect = new Regex(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore|sp_executesql)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        #region Configuration-properties
+
         [PrivateApi] protected const string TitleFieldKey = "TitleField";
         [PrivateApi] protected const string EntityIdFieldKey = "EntityIdField";
         [PrivateApi] protected const string ContentTypeKey = "ContentType";
@@ -107,20 +112,27 @@ namespace ToSic.Eav.DataSources
 		    set => Configuration[EntityIdFieldKey] = value;
 		}
 
-		#endregion
+        #endregion
 
         #region Special SQL specific properties to prevent SQL Injection
-        [PrivateApi]
-	    public const string ExtractedParamPrefix = "AutoExtractedParam";
+        
+        [PrivateApi] public const string ExtractedParamPrefix = "AutoExtractedParam";
 
-		#endregion
+        #endregion
 
         #region Error Constants
 
-        public const string ErrorTitleForbiddenSql = "Forbidden SQL words";
+        [PrivateApi] public const string ErrorTitleForbiddenSql = "Forbidden SQL words";
 
+        #endregion
 
-		#endregion
+        #region Constructor
+
+		public class Dependencies
+        {
+            public SqlPlatformInfo SqlPlatformInfo { get; }
+            public Dependencies(SqlPlatformInfo sqlPlatformInfo) => SqlPlatformInfo = sqlPlatformInfo;
+        }
 
 		// Important: This constructor must come BEFORE the other constructors
 		// because it is the one which the .net Core DI should use!
@@ -128,28 +140,32 @@ namespace ToSic.Eav.DataSources
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
 		[PrivateApi]
-		public Sql()
+		public Sql(Dependencies dependencies)
 		{
-			Provide(GetList);
-		    ConfigMask(TitleFieldKey, "[Settings:EntityTitleField||" + Attributes.EntityFieldTitle + "]");
-		    ConfigMask(EntityIdFieldKey, "[Settings:EntityIdField||" + Attributes.EntityFieldId + "]");
+            Deps = dependencies;
+            Provide(GetList);
+		    ConfigMask(TitleFieldKey, $"[Settings:EntityTitleField||{Attributes.EntityFieldTitle}]");
+		    ConfigMask(EntityIdFieldKey, $"[Settings:EntityIdField||{Attributes.EntityFieldId}]");
 
 		    ConfigMask(ContentTypeKey, "[Settings:ContentType||SqlData]");
-		    ConfigMask(SelectCommandKey, "[Settings:SelectCommand]");
-		    ConfigMask(ConnectionStringKey, ConnectionStringDefault);
-		    ConfigMask(ConnectionStringNameKey, "[Settings:ConnectionStringName]");
+		    ConfigMask(SelectCommandKey);
+		    ConfigMask(ConnectionStringKey);
+		    ConfigMask(ConnectionStringNameKey);
         }
+        protected readonly Dependencies Deps;
 
-		/// <summary>
-		/// Initializes a new instance of the SqlDataSource class
-		/// </summary>
-		/// <param name="connectionString">Connection String to the DB</param>
-		/// <param name="selectCommand">SQL Query</param>
-		/// <param name="contentType">Name of virtual content-type we'll return</param>
-		/// <param name="entityIdField">ID-field in the DB to use</param>
-		/// <param name="titleField">Title-field in the DB to use</param>
-		/// <remarks>
-		/// Before 12.09 this was a constructor, but couldn't actually work because it wasn't DI compatible any more.
+        #endregion
+
+        /// <summary>
+        /// Initializes a new instance of the SqlDataSource class
+        /// </summary>
+        /// <param name="connectionString">Connection String to the DB</param>
+        /// <param name="selectCommand">SQL Query</param>
+        /// <param name="contentType">Name of virtual content-type we'll return</param>
+        /// <param name="entityIdField">ID-field in the DB to use</param>
+        /// <param name="titleField">Title-field in the DB to use</param>
+        /// <remarks>
+        /// Before 12.09 this was a constructor, but couldn't actually work because it wasn't DI compatible any more.
         /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
         /// </remarks>
         [PrivateApi]
@@ -236,10 +252,14 @@ namespace ToSic.Eav.DataSources
             // Load ConnectionString by Name (if specified)
 			if (!string.IsNullOrEmpty(ConnectionStringName) && (string.IsNullOrEmpty(ConnectionString) || ConnectionString == ConnectionStringDefault))
 			    try
-			    {
-			        ConnectionString = global::System.Configuration.ConfigurationManager
-                        .ConnectionStrings[ConnectionStringName].ConnectionString;
-			    }
+                {
+                    var conStringName = string.IsNullOrWhiteSpace(ConnectionStringName) ||
+                                        ConnectionStringName.EqualsInsensitive(SqlPlatformInfo.DefaultConnectionPlaceholder)
+                        ? Deps.SqlPlatformInfo.DefaultConnectionStringName
+                        : ConnectionStringName;
+
+                    ConnectionString = Deps.SqlPlatformInfo.FindConnectionString(conStringName);
+                }
 			    catch(Exception ex)
                 {
                     return ErrorHandler.CreateErrorList(source: this, exception: ex,
@@ -284,7 +304,7 @@ namespace ToSic.Eav.DataSources
 			        var casedEntityId = EntityIdField;
 			        try
 			        {
-			            #region Get the SQL Column List and validate it
+#region Get the SQL Column List and validate it
 
 			            var columNames = new string[reader.FieldCount];
 			            for (var i = 0; i < reader.FieldCount; i++)
@@ -303,9 +323,9 @@ namespace ToSic.Eav.DataSources
 			                             ?? columNames.FirstOrDefault();
 			            Log.A($"will use '{casedTitle}' as title field");
 
-                        #endregion
+#endregion
 
-                        #region Read all Rows from SQL Server
+#region Read all Rows from SQL Server
 
                         // apparently SQL could return the same column name - which would cause problems - so distinct them first
                         var columnsToUse = columNames.Where(c => c != casedEntityId).Distinct().ToList();
@@ -322,7 +342,7 @@ namespace ToSic.Eav.DataSources
 			                list.Add(entity);
 			            }
 
-			            #endregion
+#endregion
 			        }
 			        finally
 			        {

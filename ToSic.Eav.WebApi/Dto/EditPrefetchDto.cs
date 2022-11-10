@@ -9,7 +9,7 @@ namespace ToSic.Eav.WebApi.Dto
         /// Dictionary where each field contains a list of ADAM items
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Dictionary<string, Dictionary<string, IEnumerable<AdamItemDto>>> Adam { get; set; }
+        public Dictionary<string, Dictionary<string, IEnumerable</*AdamItemDto*/object>>> Adam { get; set; }
 
         /// <summary>
         /// Prefetched entities for entity picker

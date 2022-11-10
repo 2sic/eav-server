@@ -69,28 +69,32 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
         #region AppFolder
 
         private string _appFolder;
-        public string AppFolder => _appFolder ?? (_appFolder = GetAppKeyValue("Folder"));
+        public string AppFolder => _appFolder ?? (_appFolder = GetKeyValueOrThrowOnNull("Folder"));
 
         #endregion
 
-        public string DisplayName => GetAppKeyValue(nameof(DisplayName));
-        public string Description => GetAppKeyValue(nameof(Description));
-        public string Version => GetAppKeyValue(nameof(Version));
+        public string DisplayName => GetKeyValueOrThrowOnNull(nameof(DisplayName));
+        public string Description => GetKeyValue(nameof(Description)) ?? string.Empty;
+        public string Version => GetKeyValueOrThrowOnNull(nameof(Version));
 
 
-        private string GetAppKeyValue(string key)
+        private string GetKeyValueOrThrowOnNull(string key)
         {
-            ThrowErrorIfNotAppImport();
-
-            var keyLower = key.ToLowerInvariant();
-            var value = AppConfig.Elements(XmlConstants.ValueNode)
-                .First(v => v.Attribute(XmlConstants.KeyAttr)?.Value.ToLowerInvariant() == keyLower)
-                .Attribute(XmlConstants.ValueAttr)
-                ?.Value;
+            var value = GetKeyValue(key);
 
             if (value == null)
                 throw new NullReferenceException($"can't determine {key} from xml, cannot continue");
             return value;
+        }
+
+        private string GetKeyValue(string key)
+        {
+            ThrowErrorIfNotAppImport();
+ 
+            return AppConfig.Elements(XmlConstants.ValueNode)
+                .FirstOrDefault(v => string.Equals(v.Attribute(XmlConstants.KeyAttr)?.Value, key, StringComparison.InvariantCultureIgnoreCase))
+                ?.Attribute(XmlConstants.ValueAttr)
+                ?.Value;
         }
 
         private void ThrowErrorIfNotAppImport()

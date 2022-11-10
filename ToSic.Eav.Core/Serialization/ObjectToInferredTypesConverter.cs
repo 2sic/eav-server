@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -75,6 +77,8 @@ namespace ToSic.Eav.Serialization
                     return x;
             }
         }
+
+        protected virtual IDictionary<string, object> CreateDictionary() => new ExpandoObject();
 
         public override void Write(
             Utf8JsonWriter writer,

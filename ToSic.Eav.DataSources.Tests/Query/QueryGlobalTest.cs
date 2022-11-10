@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Testing.Shared;
@@ -22,7 +20,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         private readonly QueryManager _queryManager;
 
 
-        private const int testQueryCount = 7;
+        private const int GlobalQueryCount = 9;
 
         [ClassInitialize]
         public static void Config(TestContext context)
@@ -35,7 +33,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         {
             var queries = _queryManager.AllQueryItems(Constants.PresetIdentity);
 
-            Assert.AreEqual(testQueryCount, queries.Count(), $"should find {testQueryCount} query definitions");
+            Assert.AreEqual(GlobalQueryCount, queries.Count(), $"should find {GlobalQueryCount} query definitions");
         }
 
 
