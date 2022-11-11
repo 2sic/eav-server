@@ -128,6 +128,7 @@ namespace ToSic.Eav.DataSources
 
         #region Constructor
 
+        [PrivateApi]
 		public class Dependencies
         {
             public SqlPlatformInfo SqlPlatformInfo { get; }
@@ -152,7 +153,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(ConnectionStringKey);
 		    ConfigMask(ConnectionStringNameKey);
         }
-        protected readonly Dependencies Deps;
+        [PrivateApi] protected readonly Dependencies Deps;
 
         #endregion
 
