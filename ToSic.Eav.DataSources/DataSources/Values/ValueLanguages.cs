@@ -1,10 +1,10 @@
 ﻿using System;
 using ToSic.Eav.Context;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSources
 {
-    public class ValueLanguages : HasLog<ValueLanguages>
+    public class ValueLanguages : HasLog
     {
         #region Constructor / DI
 

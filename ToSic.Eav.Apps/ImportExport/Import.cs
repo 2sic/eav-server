@@ -6,7 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DI;
 using ToSic.Eav.Generics;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;

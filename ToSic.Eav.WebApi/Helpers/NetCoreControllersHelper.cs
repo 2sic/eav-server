@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.WebApi.Helpers
@@ -63,7 +63,7 @@ namespace ToSic.Eav.WebApi.Helpers
 
         public TService GetService<TService>() => ServiceProvider.Build<TService>();
 
-        public TRealController Real<TRealController>() where TRealController : class, IHasLog<TRealController>
+        public TRealController Real<TRealController>() where TRealController : class, IHasLog
             => ServiceProvider?.Build<TRealController>().Init(LogOrNull) ??
                throw new Exception($"Can't use {nameof(Real)} before {nameof(OnActionExecuting)}");
     }

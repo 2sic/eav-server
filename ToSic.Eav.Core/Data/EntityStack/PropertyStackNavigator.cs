@@ -2,7 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data

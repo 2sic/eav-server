@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data
 {
@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data
     /// Get it using Dependency Injection
     /// </summary>
     [PrivateApi("Hide implementation")]
-    public partial class DataBuilder: HasLog<DataBuilder>, IDataBuilder
+    public partial class DataBuilder: HasLog, IDataBuilder
     {
 
         #region Constructor / DI

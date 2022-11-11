@@ -1,9 +1,9 @@
-﻿using ToSic.Eav.Logging;
+﻿using ToSic.Lib.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
 {
-    public interface IContextOfSite: IHasLog<IContextOfSite>
+    public interface IContextOfSite: IHasLog
     {
         /// <summary>
         /// ContextOfSiteDependencies handed around, so it's part of the context being passed around

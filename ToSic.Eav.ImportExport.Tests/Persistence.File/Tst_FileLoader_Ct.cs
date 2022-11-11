@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Repositories;
+using ToSic.Lib.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File.Tests

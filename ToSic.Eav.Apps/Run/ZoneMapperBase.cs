@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Context;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Run
@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps.Run
     /// Base class for other zone mappers.
     /// Has prepared code which should be the same across implementations. 
     /// </summary>
-    public abstract class ZoneMapperBase: HasLog<IZoneMapper>, IZoneMapper
+    public abstract class ZoneMapperBase: HasLog, IZoneMapper
     {
 
         /// <summary>

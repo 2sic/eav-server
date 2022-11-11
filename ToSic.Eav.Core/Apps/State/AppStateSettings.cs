@@ -1,10 +1,10 @@
 ﻿using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps
 {
     [PrivateApi]
-    public partial class AppSettingsStack: HasLog<AppSettingsStack>
+    public partial class AppSettingsStack: HasLog
     {
 
         public AppSettingsStack(IAppStates appStates): base("App.Stack")

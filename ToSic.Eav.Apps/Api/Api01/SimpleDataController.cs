@@ -10,7 +10,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
@@ -30,7 +30,7 @@ namespace ToSic.Eav.Api.Api01
     /// <summary>
     /// This is a simple controller with some Create, Update and Delete commands. 
     /// </summary>
-    public partial class SimpleDataController: HasLog<SimpleDataController>
+    public partial class SimpleDataController: HasLog
     {
         #region Constructor / DI
 

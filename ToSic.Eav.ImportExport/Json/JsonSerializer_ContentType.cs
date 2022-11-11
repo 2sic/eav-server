@@ -4,7 +4,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.ImportExport.Json

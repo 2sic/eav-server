@@ -6,7 +6,7 @@ using System.Xml.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 

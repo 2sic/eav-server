@@ -6,14 +6,14 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Admin.Metadata;
 using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public class AppInternalsControllerReal : HasLog<AppInternalsControllerReal>, IAppInternalsController
+    public class AppInternalsControllerReal : HasLog, IAppInternalsController
     {
         public const string LogSuffix = "AppInternals";
         public AppInternalsControllerReal(

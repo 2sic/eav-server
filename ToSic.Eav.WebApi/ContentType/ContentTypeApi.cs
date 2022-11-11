@@ -6,7 +6,7 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serialization;
@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for ContentTypes
 	/// </summary>
-	public partial class ContentTypeApi : HasLog<ContentTypeApi>
+	public partial class ContentTypeApi : HasLog
     {
         #region Constructor / DI
 

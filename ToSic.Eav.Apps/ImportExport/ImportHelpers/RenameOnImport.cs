@@ -6,7 +6,7 @@ using System.Xml.XPath;
 using ToSic.Eav.Apps.Adam;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 {

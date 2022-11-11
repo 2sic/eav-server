@@ -9,14 +9,14 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.DI;
 using ToSic.Eav.Identity;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.WebApi.Dto;
 using ISite = ToSic.Eav.Context.ISite;
 
 namespace ToSic.Eav.WebApi.ImportExport
 {
-    public class ImportApp: HasLog<ImportApp>
+    public class ImportApp: HasLog
     {
         #region DI Constructor
 

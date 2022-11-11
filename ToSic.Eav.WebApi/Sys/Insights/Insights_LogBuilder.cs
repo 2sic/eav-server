@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging;
+
 using ToSic.Eav.Plumbing;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;

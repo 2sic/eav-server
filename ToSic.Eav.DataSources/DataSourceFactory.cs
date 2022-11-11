@@ -6,13 +6,13 @@ using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DI;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSources
 {
-    public class DataSourceFactory: HasLog<DataSourceFactory>
+    public class DataSourceFactory: HasLog
     {
         #region Constructor / DI
 

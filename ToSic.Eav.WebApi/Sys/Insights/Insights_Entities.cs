@@ -5,7 +5,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 

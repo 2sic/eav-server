@@ -2,8 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.ImportExport;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging;
+
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Repositories;
 using ToSic.Testing.Shared;

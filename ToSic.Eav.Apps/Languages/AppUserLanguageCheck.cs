@@ -6,7 +6,7 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
@@ -16,7 +16,7 @@ using static System.StringComparison;
 
 namespace ToSic.Eav.Apps.Languages
 {
-    public class AppUserLanguageCheck: HasLog<AppUserLanguageCheck>
+    public class AppUserLanguageCheck: HasLog
     {
         public AppUserLanguageCheck(LazyInitLog<IZoneMapper> zoneMapperLazy, IContextOfSite ctx, Generator<AppPermissionCheck> checkGenerator, Lazy<IAppStates> appStatesLazy,
             Lazy<IFeaturesInternal> featuresLazy)

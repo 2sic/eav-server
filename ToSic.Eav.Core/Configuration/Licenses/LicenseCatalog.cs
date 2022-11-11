@@ -15,7 +15,7 @@
  *
  */
 
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using static ToSic.Eav.Configuration.Licenses.BuiltInLicenses;
 
 namespace ToSic.Eav.Configuration.Licenses

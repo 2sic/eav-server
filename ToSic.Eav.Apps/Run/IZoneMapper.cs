@@ -2,7 +2,7 @@
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run
@@ -11,7 +11,7 @@ namespace ToSic.Eav.Run
     /// This helps find Zone information of a Site and the other way around. 
     /// </summary>
     [PrivateApi]
-    public interface IZoneMapper: IHasLog<IZoneMapper>
+    public interface IZoneMapper: IHasLog
     {
         /// <summary>
         /// Get the primary zoneId which belongs to the site.

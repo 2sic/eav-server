@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -11,7 +11,7 @@ namespace ToSic.Eav.Context
     /// All these objects should normally be injectable
     /// In rare cases you may want to replace them, which is why Site/User have Set Accessors
     /// </summary>
-    public class ContextOfSite: HasLog<IContextOfSite>, IContextOfSite
+    public class ContextOfSite: HasLog, IContextOfSite
     {
         #region Constructor / DI
 

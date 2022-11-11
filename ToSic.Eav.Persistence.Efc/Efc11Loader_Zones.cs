@@ -3,7 +3,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging;
+
 
 namespace ToSic.Eav.Persistence.Efc
 {

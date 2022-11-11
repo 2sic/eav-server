@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence
 {
-    public class EntitySaver : HasLog<EntitySaver>
+    public class EntitySaver : HasLog
     {
         public EntitySaver(
             MultiBuilder multiBuilder

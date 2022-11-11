@@ -2,7 +2,7 @@
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps

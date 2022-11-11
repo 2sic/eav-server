@@ -9,8 +9,8 @@ using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging;
+
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Run;

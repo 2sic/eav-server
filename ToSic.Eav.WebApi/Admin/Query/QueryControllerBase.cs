@@ -7,7 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization;
@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
     /// <summary>
     /// Web API Controller for the Pipeline Designer UI
     /// </summary>
-    public abstract class QueryControllerBase<TImplementation> : HasLog<TImplementation> where TImplementation : QueryControllerBase<TImplementation>
+    public abstract class QueryControllerBase<TImplementation> : HasLog where TImplementation : QueryControllerBase<TImplementation>
     {
         protected QueryControllerBase(QueryControllerDependencies dependencies, string logName) : base(logName)
         {

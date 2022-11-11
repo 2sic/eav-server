@@ -111,6 +111,10 @@
       <Project>{b45f98a5-bba9-4418-a5a1-7ca747e1698b}</Project>
       <Name>ToSic.Eav.Persistence.Efc</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToSic.Lib.Logging\ToSic.Lib.Logging.csproj">
+      <Project>{bc93efb1-d740-4617-9c90-d9167f9e4545}</Project>
+      <Name>ToSic.Lib.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj">
       <Project>{41243c6d-2d10-4285-8af2-719497ae00db}</Project>
       <Name>ToSic.Testing.Shared</Name>

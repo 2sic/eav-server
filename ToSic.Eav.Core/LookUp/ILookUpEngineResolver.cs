@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.LookUp
 {
@@ -11,7 +11,7 @@ namespace ToSic.Eav.LookUp
     /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface ILookUpEngineResolver: IHasLog<ILookUpEngineResolver>
+    public interface ILookUpEngineResolver: IHasLog
     {
         /// <summary>
         /// Get the engine for the current execution instance.

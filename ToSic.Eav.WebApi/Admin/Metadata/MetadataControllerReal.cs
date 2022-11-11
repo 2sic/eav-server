@@ -7,7 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -17,7 +17,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
 	/// Web API Controller for MetaData
 	/// Metadata-entities (content-items) are additional information about some other object
 	/// </summary>
-	public class MetadataControllerReal: HasLog<MetadataControllerReal>, IMetadataController
+	public class MetadataControllerReal: HasLog, IMetadataController
     {
         public const string LogSuffix = "MetaDt";
 

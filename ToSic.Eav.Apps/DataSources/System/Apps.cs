@@ -7,7 +7,7 @@ using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.DI;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 

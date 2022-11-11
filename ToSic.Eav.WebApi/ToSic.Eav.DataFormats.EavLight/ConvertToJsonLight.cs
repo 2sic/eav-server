@@ -5,7 +5,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 
@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataFormats.EavLight
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PrivateApi("Hide Implementation")]
-    public partial class ConvertToEavLight : HasLog<ConvertToEavLight>, IConvertToEavLight
+    public partial class ConvertToEavLight : HasLog, IConvertToEavLight
     {
         #region Constructor / DI
 

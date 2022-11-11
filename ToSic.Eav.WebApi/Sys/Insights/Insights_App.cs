@@ -2,7 +2,7 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Debug;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 

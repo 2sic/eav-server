@@ -4,7 +4,7 @@ using System.Net;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.DI;
 using ToSic.Eav.Identity;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Interfaces;
 
 namespace ToSic.Eav.Apps.ImportExport

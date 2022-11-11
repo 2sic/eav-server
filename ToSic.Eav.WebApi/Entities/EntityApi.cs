@@ -9,7 +9,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;

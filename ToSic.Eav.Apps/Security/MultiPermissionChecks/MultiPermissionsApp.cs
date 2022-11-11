@@ -3,10 +3,9 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security;
+using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Security
@@ -43,7 +42,7 @@ namespace ToSic.Eav.Apps.Security
 
         public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app, ILog parentLog, string logName = null)
         {
-            Init(parentLog, logName ?? "Api.PermApp");
+            Log.LinkTo(parentLog, logName ?? "Api.PermApp");
             var wrapLog = Log.Fn<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
             Context = context;
             App = app;

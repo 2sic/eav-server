@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using ToSic.Eav.Context;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public abstract class ImportExportEnvironmentBase: HasLog<IImportExportEnvironment>, IImportExportEnvironment
+    public abstract class ImportExportEnvironmentBase: HasLog, IImportExportEnvironment
     {
         #region constructor / DI
 

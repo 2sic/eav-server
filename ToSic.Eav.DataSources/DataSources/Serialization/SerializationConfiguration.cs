@@ -3,7 +3,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
 using IEntity = ToSic.Eav.Data.IEntity;
 

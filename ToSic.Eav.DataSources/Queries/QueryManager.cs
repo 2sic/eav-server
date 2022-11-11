@@ -5,7 +5,7 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using static System.StringComparison;
@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources.Queries
 	/// Helpers to work with Data Queries
 	/// </summary>
 	[PrivateApi]
-	public class QueryManager: HasLog<QueryManager>
+	public class QueryManager: HasLog
 	{
         public DataSourceFactory DataSourceFactory { get; }
 

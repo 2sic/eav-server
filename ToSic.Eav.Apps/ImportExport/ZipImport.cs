@@ -5,7 +5,7 @@ using ToSic.Eav.Apps.ImportExport.ImportHelpers;
 using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 

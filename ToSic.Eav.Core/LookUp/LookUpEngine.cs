@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using DicString = System.Collections.Generic.IDictionary<string, string>;
 
 namespace ToSic.Eav.LookUp

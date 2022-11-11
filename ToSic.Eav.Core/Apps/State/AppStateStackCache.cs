@@ -3,8 +3,8 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging;
+
 using static ToSic.Eav.Configuration.ConfigurationStack;
 
 namespace ToSic.Eav.Apps

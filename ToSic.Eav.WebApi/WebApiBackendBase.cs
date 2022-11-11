@@ -1,10 +1,10 @@
 ﻿using System;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.WebApi
 {
-    public abstract class WebApiBackendBase<T>: HasLog<T> where T : class
+    public abstract class WebApiBackendBase<T>: HasLog where T : class
     {
         protected WebApiBackendBase(IServiceProvider serviceProvider, string logName) : base(logName)
         {

@@ -7,7 +7,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Persistence.Efc

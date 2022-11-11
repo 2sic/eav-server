@@ -4,12 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging.Simple;
+
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Testing.Shared;
 using IEntity = ToSic.Eav.Data.IEntity;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {

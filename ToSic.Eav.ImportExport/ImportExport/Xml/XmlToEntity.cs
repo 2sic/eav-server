@@ -5,7 +5,7 @@ using System.Xml.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.ImportExport.Xml
@@ -13,7 +13,7 @@ namespace ToSic.Eav.ImportExport.Xml
 	/// <summary>
 	/// Import EAV Data from XML Format
 	/// </summary>
-	public class XmlToEntity: HasLog<XmlToEntity>
+	public class XmlToEntity: HasLog
 	{
         private class TargetLanguageToSourceLanguage: DimensionDefinition
         {

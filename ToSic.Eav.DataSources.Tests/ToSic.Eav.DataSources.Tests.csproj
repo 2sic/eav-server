@@ -199,6 +199,10 @@
       <Project>{cf3b9349-8c66-4901-8edb-a4ec1d75326b}</Project>
       <Name>ToSic.Eav</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ToSic.Lib.Logging\ToSic.Lib.Logging.csproj">
+      <Project>{bc93efb1-d740-4617-9c90-d9167f9e4545}</Project>
+      <Name>ToSic.Lib.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj">
       <Project>{41243c6d-2d10-4285-8af2-719497ae00db}</Project>
       <Name>ToSic.Testing.Shared</Name>

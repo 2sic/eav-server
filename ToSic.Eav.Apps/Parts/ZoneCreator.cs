@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Logging;
+﻿using ToSic.Lib.Logging;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps.Parts
@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Parts
     /// Special tool just to create an app.
     /// It's not part of the normal AppManager / ZoneManager, because when it's initialized it doesn't yet have a real app identity
     /// </summary>
-    public class ZoneCreator: HasLog<ZoneCreator>
+    public class ZoneCreator: HasLog
     {
         #region Constructor / DI
 

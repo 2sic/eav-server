@@ -7,7 +7,7 @@ using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;

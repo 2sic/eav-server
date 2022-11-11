@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Repositories
 {
-    public interface IRepositoryLoader: IHasLog<IRepositoryLoader>, IContentTypeLoader
+    public interface IRepositoryLoader: IHasLog, IContentTypeLoader
     {
         /// <summary>
         /// Load the full AppState from the backend - maybe initialized, maybe not.

@@ -6,7 +6,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources

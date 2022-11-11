@@ -4,7 +4,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport.Options;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.ImportExport;
@@ -12,7 +12,7 @@ using ToSic.Eav.WebApi.Plumbing;
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public class EntityControllerReal<THttpResponseType> : HasLog<EntityControllerReal<THttpResponseType>>, IEntityController<THttpResponseType> 
+    public class EntityControllerReal<THttpResponseType> : HasLog, IEntityController<THttpResponseType> 
     {
         public const string LogSuffix = "Entity";
         public EntityControllerReal(

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Persistence.Interfaces
 {
-    public interface IImportExportEnvironment: IHasLog<IImportExportEnvironment>
+    public interface IImportExportEnvironment: IHasLog
     {
 
         //List<Message> Messages { get; }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using ToSic.Eav.DI;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc;

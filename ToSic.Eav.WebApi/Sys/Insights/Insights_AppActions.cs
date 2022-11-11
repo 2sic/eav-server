@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.WebApi.Sys
+﻿using ToSic.Lib.Logging;
+
+namespace ToSic.Eav.WebApi.Sys
 {
     public partial class InsightsControllerReal
     {

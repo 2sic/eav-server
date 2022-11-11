@@ -2,7 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using static ToSic.Razor.Blade.Tag;
 

@@ -21,7 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging;
+using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Serialization;

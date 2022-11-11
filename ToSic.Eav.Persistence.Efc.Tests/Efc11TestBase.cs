@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Testing.Shared;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
 {
