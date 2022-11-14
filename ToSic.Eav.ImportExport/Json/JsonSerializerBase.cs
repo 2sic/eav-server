@@ -10,7 +10,7 @@ namespace ToSic.Eav.ImportExport.Json
         /// <summary>
         /// Initialize with the correct logger name
         /// </summary>
-        protected JsonSerializerBase(ITargetTypes metadataTargets, IAppStates appStates, string logName) : base(metadataTargets, appStates, logName) { }
+        protected JsonSerializerBase(Dependencies dependencies, string logName) : base(dependencies, logName) { }
 
         public T Init(AppState package, ILog parentLog)
         {

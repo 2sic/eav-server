@@ -26,10 +26,6 @@
     <ProjectReference Include="..\ToSic.Lib.Logging\ToSic.Lib.Logging.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ToSic.Eav.Convert\" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.IO.Compression" />
   </ItemGroup>

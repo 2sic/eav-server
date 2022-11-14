@@ -134,7 +134,7 @@ namespace ToSic.Eav.ImportExport.Json
             var wrapLog = Log.Fn();
             foreach (var definition in contentType.Attributes)
             {
-                var newAtt = MultiBuilder.Attribute.CreateTyped(definition.Name, definition.Type); // ((ContentTypeAttribute) definition).CreateAttribute();
+                var newAtt = MultiBuilder.Attribute.CreateTyped(definition.Name, definition.Type);
                 switch (definition.ControlledType)
                 {
                     case ValueTypes.Boolean:
@@ -202,7 +202,30 @@ namespace ToSic.Eav.ImportExport.Json
                 .ToList();
 
 
-        private static Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs, ILog log)
+        private Dictionary<string, Dictionary<string, string>> ConvertReferences(Dictionary<string, Dictionary<string, string>> links, Guid entityGuid)
+        {
+            var log = Log.Fn<Dictionary<string, Dictionary<string, string>>>();
+            try
+            {
+
+                var converter = Deps.ValueConverter.Value;
+                var converted = links.ToDictionary(
+                    pair => pair.Key,
+                    pair => pair.Value.ToDictionary(
+                        val => val.Key,
+                        val => converter.ToValue(val.Value, entityGuid)
+                    )
+                );
+                return log.Return(converted);
+            }
+            catch (Exception ex)
+            {
+                log.A("Ran into an error. Will log bug ignore and return original");
+                Log.Ex(ex);
+                return links;
+            }
+        }
+        private Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs)
         {
             var result = new Dictionary<string, Dictionary<string, T>>();
             attribs.Cast<IAttribute<T>>().ToList().ForEach(a =>
@@ -220,23 +243,19 @@ namespace ToSic.Eav.ImportExport.Json
                         langList = string.Join(",", a.Typed.Select(LanguageKey));
                     }
                     catch { /* ignore */ }
-                    log.W($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
+                    Log.W($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
                     throw;
                 }
+
                 try
                 {
                     result.Add(a.Name, dimensions);
                 }
                 catch
                 {
-                    log.W($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
+                    Log.W($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
                     throw;
                 }
-
-                //.ToDictionary(
-                //    a => a.Name,
-                //    a => a.Typed.ToDictionary(LanguageKey, v => v.TypedContents)
-                //)               
             });
             return result;
         }

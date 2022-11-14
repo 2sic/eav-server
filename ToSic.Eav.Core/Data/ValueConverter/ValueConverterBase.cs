@@ -1,20 +1,31 @@
 ﻿using System;
+using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data
 {
     /// <summary>
     /// Trivial value converter - doesn't convert anything.
     /// </summary>
-    public partial class ValueConverterBase : IValueConverter
+    [PrivateApi]
+    public abstract class ValueConverterBase : IValueConverter
     {
         public const string PrefixPage = "page";
         public const string PrefixFile = "file";
         public const string Separator = ":";
 
 
-        public string ToReference(string value) => value;
+        public virtual string ToReference(string value) => value;
 
-        public string ToValue(string reference, Guid itemGuid) => reference;
+        public virtual string ToValue(string reference, Guid itemGuid = default) => reference;
+
+        protected abstract string ResolveFileLink(int linkId, Guid itemGuid);
+
+        protected abstract string ResolvePageLink(int id);
+
+        /// <summary>
+        /// Optionally log exceptions - if not implemented, won't log
+        /// </summary>
+        protected virtual void LogConversionExceptions(string originalValue, Exception e) { }
 
         public static bool CouldBeReference(string reference)
         {
@@ -28,32 +39,28 @@ namespace ToSic.Eav.Data
             return true;
         }
 
-        public static string TryToResolveCodeToLink(Guid itemGuid, string originalValue, Func<int, string> resolvePageLink, Func<int, Guid, string> resolveFileLink)
+        protected string TryToResolveCodeToLink(Guid itemGuid, string originalValue)
         {
-            if (string.IsNullOrEmpty(originalValue)) return originalValue;
+            try
+            {
+                if (string.IsNullOrEmpty(originalValue)) return originalValue;
 
-            // new
-            var resultString = originalValue;
+                var parts = new LinkParts(originalValue);
 
-            var parts = new LinkParts(resultString);
+                if (!parts.IsMatch) return originalValue;
 
-            // var regularExpression = Regex.Match(resultString, ValueConverterBase.RegExToDetectConvertable, RegexOptions.IgnoreCase);
+                var result = (parts.IsPage
+                                 ? ResolvePageLink(parts.Id)
+                                 : ResolveFileLink(parts.Id, itemGuid))
+                             ?? originalValue;
 
-            if (!parts.IsMatch) // regularExpression.Success)
+                return result + (result == originalValue ? "" : parts.Params);
+            }
+            catch (Exception e)
+            {
+                LogConversionExceptions(originalValue, e);
                 return originalValue;
-
-            //var linkType = regularExpression.Groups[ValueConverterBase.RegExType].Value.ToLowerInvariant();
-            //var linkId = int.Parse(regularExpression.Groups[ValueConverterBase.RegExId].Value);
-            //var urlParams = regularExpression.Groups[ValueConverterBase.RegExParams].Value ?? "";
-
-            //var isPageLookup = linkType == ValueConverterBase.PrefixPage;
-
-            var result = (parts.IsPage // isPageLookup
-                             ? resolvePageLink(parts.Id)
-                             : resolveFileLink(parts.Id, itemGuid))
-                         ?? originalValue;
-
-            return result + (result == originalValue ? "" : parts.Params);
+            }
         }
     }
 }
