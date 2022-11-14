@@ -14,13 +14,25 @@ namespace ToSic.Eav.Serialization
     {
         #region Constructor / DI
 
+        public class Dependencies
+        {
+
+            public Dependencies(ITargetTypes metadataTargets, IAppStates appStates)
+            {
+                MetadataTargets = metadataTargets;
+                AppStates = appStates;
+            }
+            public ITargetTypes MetadataTargets { get; }
+            public IAppStates AppStates { get; }
+        }
+
         /// <summary>
         /// Constructor for inheriting classes
         /// </summary>
-        protected SerializerBase(ITargetTypes metadataTargets, IAppStates appStates, string logName): base(logName)
+        protected SerializerBase(Dependencies dependencies, string logName): base(logName)
         {
-            MetadataTargets = metadataTargets;
-            GlobalApp = appStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
+            MetadataTargets = dependencies.MetadataTargets;
+            GlobalApp = dependencies.AppStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
         }
 
         private readonly AppState GlobalApp;
