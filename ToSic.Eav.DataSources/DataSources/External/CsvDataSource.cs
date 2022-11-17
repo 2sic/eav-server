@@ -1,9 +1,11 @@
-﻿using System;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using CsvHelper;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
@@ -170,15 +172,16 @@ namespace ToSic.Eav.DataSources
             const string commonErrorsIdTitle =
                 "A common mistake is to use the wrong delimiter (comma / semi-colon) in which case this may also fail. ";
 
-            var firstRun = true;
-            using (var stream = new StreamReader(csvPath))
-            using (var parser = new CsvReader(stream))
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                parser.Configuration.Delimiter = Delimiter;
-                parser.Configuration.HasHeaderRecord = true;
-                parser.Configuration.TrimHeaders = true;
-                parser.Configuration.TrimFields = true;
+                Delimiter = Delimiter,
+                HasHeaderRecord = true,
+                TrimOptions = TrimOptions.Trim
+            };
 
+            using (var stream = new StreamReader(csvPath))
+            using (var parser = new CsvParser(stream, config))
+            {
                 const int idColumnNotDetermined = -999;
                 var idColumnIndex = idColumnNotDetermined;
                 string titleColName = null;
@@ -186,44 +189,43 @@ namespace ToSic.Eav.DataSources
                 // Content-Type name
                 var csvType = DataBuilder.Type(ContentType);
 
+                // Parse header - must happen after the first read
+                parser.Read();
+                var headers = parser.Record;
+
+                // If we should find the Column...
+                if (!string.IsNullOrEmpty(IdColumnName))
+                {
+                    // on first round, check the headers fields
+                    // Try to find - first case-sensitive, then insensitive
+                    idColumnIndex = Array.FindIndex(headers, name => name == IdColumnName);
+                    if (idColumnIndex == -1)
+                        idColumnIndex = Array.FindIndex(headers, name => name.Equals(IdColumnName, StringComparison.InvariantCultureIgnoreCase));
+                    if (idColumnIndex == -1)
+                        return SetError("ID Column not found",
+                            $"ID column '{IdColumnName}' specified cannot be found in the file. " +
+                            $"The Headers: '{string.Join(",", headers)}'. " +
+                            $"{commonErrorsIdTitle}");
+                }
+
+                if (string.IsNullOrEmpty(TitleColumnName))
+                    titleColName = headers[0];
+                else
+                {
+                    // The following is a little bit complicated, but it checks that the title specified exists
+                    titleColName = headers.FirstOrDefault(colName => colName == TitleColumnName)
+                                   ?? headers.FirstOrDefault(colName => colName.Equals(TitleColumnName, StringComparison.InvariantCultureIgnoreCase));
+                    if (titleColName == null)
+                        return SetError("Title column not found",
+                            $"Title column '{TitleColumnName}' cannot be found in the file. " +
+                            $"The Headers: '{string.Join(",", headers)}'. " +
+                            $"{commonErrorsIdTitle}");
+                }
+
                 // Parse data
                 while (parser.Read())
                 {
-                    var fields = parser.CurrentRecord;
-
-                    // Check header - must happen after the first read, but we don't want to repeat this
-                    if (firstRun)
-                    {
-                        // If we should find the Column...
-                        if (!string.IsNullOrEmpty(IdColumnName))
-                        {
-                            // on first round, check the headers fields
-                            // Try to find - first case-sensitive, then insensitive
-                            idColumnIndex = Array.FindIndex(parser.FieldHeaders, name => name == IdColumnName);
-                            if (idColumnIndex == -1)
-                                idColumnIndex = Array.FindIndex(parser.FieldHeaders, name => name.Equals(IdColumnName, StringComparison.InvariantCultureIgnoreCase));
-                            if (idColumnIndex == -1)
-                                return SetError("ID Column not found",
-                                    $"ID column '{IdColumnName}' specified cannot be found in the file. " +
-                                    $"The Headers: '{string.Join(",", parser.FieldHeaders)}'. " +
-                                    $"{commonErrorsIdTitle}");
-                        }
-
-                        if (string.IsNullOrEmpty(TitleColumnName))
-                            titleColName = parser.FieldHeaders[0];
-                        else
-                        {
-                            // The following is a little bit complicated, but it checks that the title specified exists
-                            titleColName = parser.FieldHeaders.FirstOrDefault(colName => colName == TitleColumnName)
-                                           ?? parser.FieldHeaders.FirstOrDefault(colName => colName.Equals(TitleColumnName, StringComparison.InvariantCultureIgnoreCase));
-                            if (titleColName == null)
-                                return SetError("Title column not found",
-                                    $"Title column '{TitleColumnName}' cannot be found in the file. " +
-                                    $"The Headers: '{string.Join(",", parser.FieldHeaders)}'. " +
-                                    $"{commonErrorsIdTitle}");
-                        }
-                        firstRun = false;
-                    }
+                    var fields = parser.Record;
 
                     int entityId;
                     // No ID column specified, so use the row number
@@ -233,13 +235,12 @@ namespace ToSic.Eav.DataSources
                     else if (!int.TryParse(fields[idColumnIndex], out entityId))
                     {
                         return SetError(ErrorIdNaN,
-                            $"Row {parser.Row}: ID field '{fields[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'.");
+                            $"Row {parser.Row}: ID field '{headers[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'.");
                     }
 
-
                     var entityValues = new Dictionary<string, object>();
-                    for (var i = 0; i < parser.FieldHeaders.Length; i++)
-                        entityValues.Add(parser.FieldHeaders[i], fields[i]);
+                    for (var i = 0; i < headers.Length; i++)
+                        entityValues.Add(headers[i], (i < fields.Length) ? fields[i] : null);
 
                     entityList.Add(new Entity(Constants.TransientAppId, entityId, csvType, entityValues, titleColName));
                 }
