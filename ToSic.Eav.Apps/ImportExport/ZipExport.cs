@@ -74,7 +74,7 @@ namespace ToSic.Eav.Apps.ImportExport
         }
         #endregion
 
-        public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false, bool resetPortalFiles = false)
+        public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false, bool withSiteFiles = false)
         {
             var appDataPath = Path.Combine(_physicalAppPath, SourceControlDataFolder);
 
@@ -88,7 +88,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // generate the XML & save
             var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
 
-            if (resetPortalFiles)
+            if (withSiteFiles)
             {
                 var appDataDirectory = new DirectoryInfo(appDataPath);
 
@@ -114,17 +114,17 @@ namespace ToSic.Eav.Apps.ImportExport
                     }
                 }
 
-                // 2. Copy PortalFiles for version control
+                // 2. Copy SiteFiles for version control
                 try
                 {
-                    // Empty older version of PortalFiles state in App_Data
+                    // Empty older version of SiteFiles state in App_Data
                     var portalFilesPath = Path.Combine(appDataPath, Constants.ZipFolderForSiteFiles);
                     ZipImport.TryToDeleteDirectory(portalFilesPath, Log);
 
-                    // Version control folder to preserve copy of PortalFiles
+                    // Version control folder to preserve copy of SiteFiles
                     var portalFilesDirectory = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForSiteFiles);
 
-                    // Copy PortalFiles for version control
+                    // Copy SiteFiles for version control
                     CopyPortalFiles(xmlExport, portalFilesDirectory);
                 }
                 catch (Exception e)
@@ -162,7 +162,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             var sexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForAppStuff);
             var globalSexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForGlobalAppStuff);
-            var portalFilesDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
+            var siteFilesDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
 
 
 
@@ -176,8 +176,8 @@ namespace ToSic.Eav.Apps.ImportExport
                 if (Directory.Exists(_physicalPathGlobal))
                     FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
 
-            // Copy PortalFiles
-            CopyPortalFiles(xmlExport, portalFilesDirectory);
+            // Copy SiteFiles
+            CopyPortalFiles(xmlExport, siteFilesDirectory);
             #endregion
 
             // create tmp App_Data unless exists
@@ -196,17 +196,17 @@ namespace ToSic.Eav.Apps.ImportExport
             return stream;
         }
 
-        private static void CopyPortalFiles(XmlExporter xmlExport, DirectoryInfo portalFilesDirectory)
+        private static void CopyPortalFiles(XmlExporter xmlExport, DirectoryInfo siteFilesDirectory)
         {
             foreach (var file in xmlExport.ReferencedFiles)
             {
-                var portalFilePath = Path.Combine(portalFilesDirectory.FullName, Path.GetDirectoryName(file.RelativePath));
+                var portalFilePath = Path.Combine(siteFilesDirectory.FullName, Path.GetDirectoryName(file.RelativePath));
 
                 Directory.CreateDirectory(portalFilePath);
 
                 if (!File.Exists(file.Path)) continue;
 
-                var fullPath = Path.Combine(portalFilesDirectory.FullName, file.RelativePath);
+                var fullPath = Path.Combine(siteFilesDirectory.FullName, file.RelativePath);
                 try
                 {
                     File.Copy(file.Path, fullPath, overwrite: true);
