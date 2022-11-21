@@ -27,7 +27,7 @@
         /// <summary>
         /// The assets virtual url to main module global folder where assets are stored.
         /// Eg: "~/DesktopModules/ToSic_SexyContent/assets/" in DNN,
-        /// "~/Modules/ToSic.Sxc/assets/" in Oqtane.
+        /// "~/Modules/ToSic.Sxc.Oqtane/assets/" in Oqtane.
         /// </summary>
         /// <returns>The folder, can be null if it was never set</returns>
         string AssetsVirtualUrl { get; set; }
