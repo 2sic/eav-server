@@ -13,7 +13,7 @@ namespace ToSic.Eav.Logging
     /// Basically this is the backbone of Insights.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public partial interface ILog
+    public partial interface ILog : Lib.Logging.ILog
     {
         /// <summary>
         /// When the log object was created - for rare output scenarios
@@ -166,6 +166,7 @@ namespace ToSic.Eav.Logging
         /// limits the length to 6 chars to make the output readable
         /// </remarks>
         /// <param name="name"></param>
+        [PrivateApi] 
         void Rename(string name);
 
         /// <summary>
@@ -174,11 +175,13 @@ namespace ToSic.Eav.Logging
         /// </summary>
         /// <param name="parent">parent log to attach to</param>
         /// <param name="name">optional new name</param>
+        [PrivateApi]
         void LinkTo(ILog parent, string name = null);
 
         /// <summary>
         /// Unlink a logger from the parent.
         /// </summary>
+        [PrivateApi] 
         void Unlink();
 
         [PrivateApi("not public, created in v13")]
