@@ -60,7 +60,7 @@ namespace ToSic.Eav.Logging
         {
             if (Log == null)
                 // standard & most common case: just create log
-                Log = new Log(name, parentLog, code, initialMessage);
+                Log = new LogAdapter(new Lib.Logging.Log(name, parentLog, code, initialMessage));
             else
             {
                 // late-init case, where the log was already created - just reconfigure keeping what was in it
