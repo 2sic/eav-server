@@ -9,7 +9,7 @@ namespace ToSic.Eav.DI
 
         public LazyInitLog<T> SetLog(ILog parentLog)
         {
-            SetInit(x => x.Log.LinkTo(parentLog));
+            SetInit(x => (x.Log as Log)?.LinkTo(parentLog));
             return this;
         }
     }

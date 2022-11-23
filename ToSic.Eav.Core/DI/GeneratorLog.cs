@@ -17,7 +17,7 @@ namespace ToSic.Eav.DI
             get
             {
                 var created = _sp.Build<T>();
-                created.Log.LinkTo(_parentLog);
+                (created.Log as Log)?.LinkTo(_parentLog);
                 return created;
             }
         }

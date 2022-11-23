@@ -52,7 +52,7 @@ namespace ToSic.Eav.Apps.Paths
         {
             this._site = site;
             this._appState = appState;
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             InitDone = true;
             return this;
         }

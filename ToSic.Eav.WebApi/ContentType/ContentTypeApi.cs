@@ -49,7 +49,7 @@ namespace ToSic.Eav.WebApi
 
         public ContentTypeApi Init(int appId, ILog parentLog)
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             Log.A($"Will use app {appId}");
             _appId = appId;
             AppManager = _appManagerLazy.Value.Init(appId, Log);

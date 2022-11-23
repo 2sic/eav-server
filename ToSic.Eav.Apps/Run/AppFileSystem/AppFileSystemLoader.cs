@@ -69,7 +69,7 @@ namespace ToSic.Eav.Apps.Run
 
         public IAppFileSystemLoader Init(AppState app, ILog log)
         {
-            Log.LinkTo(log);
+            (Log as Log)?.LinkTo(log);
 
             var wrapLog = Log.Fn<IAppFileSystemLoader>($"{app.AppId}, {app.Folder}, ...");
             _appState = app;

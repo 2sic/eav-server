@@ -34,7 +34,7 @@ namespace ToSic.Eav.WebApi.ImportExport
 
         public ContentImportApi Init(int appId, ILog parentLog)
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             _appManager = _appManagerLazy.Value.Init(appId, Log);
             Log.A($"For app: {appId}");
             return this;

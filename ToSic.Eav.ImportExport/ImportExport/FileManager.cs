@@ -27,7 +27,7 @@ namespace ToSic.Eav.ImportExport
 
         public FileManager Init(ILog parentLog)
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             return this;
         }
 

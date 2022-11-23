@@ -44,6 +44,6 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         #endregion
 
 
-        public IEnumerable<string> LogItems => Log.Entries.Select(e => e.Source + ">" + e.Message);
+        public IEnumerable<string> LogItems => (Log as Log)?.Entries.Select(e => e.Source + ">" + e.Message);
     }
 }

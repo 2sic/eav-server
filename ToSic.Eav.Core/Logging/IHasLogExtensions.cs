@@ -7,12 +7,12 @@
     {
         public static T Init<T>(this T thingWithLog, ILog parentLog) where T: IHasLog
         {
-            thingWithLog.Log.LinkTo(parentLog);
+            (thingWithLog.Log as Simple.Log)?.LinkTo(parentLog);
             return thingWithLog;
         }
         public static T Init<T>(this T thingWithLog, ILog parentLog, string name) where T: IHasLog
         {
-            thingWithLog.Log.LinkTo(parentLog, name);
+            (thingWithLog.Log as Simple.Log)?.LinkTo(parentLog, name);
             return thingWithLog;
         }
     }

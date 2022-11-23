@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public AppCreator Init(int zoneId, ILog parentLog)
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             _zoneId = zoneId;
             return this;
         }

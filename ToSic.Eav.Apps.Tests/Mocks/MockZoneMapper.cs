@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps.Tests.Mocks
 
         public IZoneMapper Init(ILog parent)
         {
-            Log.LinkTo(parent);
+            (Log as Log)?.LinkTo(parent);
             return this;
         }
     }

@@ -86,7 +86,7 @@ namespace ToSic.Eav.Security
             IEnumerable<Permission> permissions2 = null
             ) 
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
 
             var wrapLog = Log.Fn($"type:{targetType?.NameId}, " +

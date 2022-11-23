@@ -33,9 +33,10 @@ namespace ToSic.Eav.Logging
         /// <param name="entry"></param>
         internal static void AddToEntriesAndParent(this ILog log, Entry entry)
         {
+            if (!(log is Log simpleLog)) return;
             // prevent parallel threads from updating entries at the same time
-            lock (log.Entries) { log.Entries.Add(entry); }
-            (log.Parent as Log)?.AddToEntriesAndParent(entry);
+            lock (simpleLog.Entries) { simpleLog.Entries.Add(entry); }
+            (simpleLog.Parent as Log)?.AddToEntriesAndParent(entry);
         }
 
 

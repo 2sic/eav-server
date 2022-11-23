@@ -42,7 +42,7 @@ namespace ToSic.Eav.Serialization
 
         public void Initialize(AppState appState, ILog parentLog)
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             App = appState;
             AppId = appState.AppId;
         }
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Serialization
             AppId = appId;
             _types = types;
             _relList = allEntities;
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
         }
 
         #endregion

@@ -12,7 +12,7 @@ namespace ToSic.Eav.Logging
         /// </summary>
         /// <param name="hasLog">thing which has a log</param>
         /// <param name="parentLog">The parent log</param>
-        public static void LinkLog(this IHasLog hasLog, ILog parentLog) => hasLog.Log.LinkTo(parentLog);
+        public static void LinkLog(this IHasLog hasLog, ILog parentLog) => (hasLog.Log as Log)?.LinkTo(parentLog);
 
         public static void A(this ILog log,
             string message,

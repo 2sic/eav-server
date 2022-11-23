@@ -43,7 +43,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public Import Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes, ILog parentLog)
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             AppManager = zoneId.HasValue
                 ? _appManagerLazy.Value.Init(new AppIdentity(zoneId.Value, appId), Log)
                 : _appManagerLazy.Value.Init(appId, Log);

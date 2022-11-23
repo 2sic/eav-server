@@ -14,15 +14,14 @@
 
         public T Init(ILog parent)
         {
-            Log.LinkTo(parent);
+            (Log as Simple.Log)?.LinkTo(parent);
             return this as T;
         }
 
         public T Init(ILog parent, string logName)
         {
-            Log.LinkTo(parent, logName);
+            (Log as Simple.Log)?.LinkTo(parent, logName);
             return this as T;
         }
-
     }
 }

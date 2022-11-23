@@ -54,7 +54,7 @@ namespace ToSic.Eav.Apps.ImportExport
         protected void Constructor(int zoneId, AppRuntime app, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, ILog parentLog)
         {
             ZoneId = zoneId;
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             Log.A("start XML exporter using app-package");
             AppState = app.AppState;
             Serializer.Init(AppStates.Languages(zoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId),

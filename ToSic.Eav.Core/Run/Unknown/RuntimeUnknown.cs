@@ -10,7 +10,7 @@ namespace ToSic.Eav.Run.Unknown
 
         public IRuntime Init(ILog parent)
         {
-            Log.LinkTo(parent);
+            (Log as Log)?.LinkTo(parent);
             return this;
         }
 

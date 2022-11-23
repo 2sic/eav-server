@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public T Init(int zoneId, ILog parentLog)
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             ZoneId = zoneId;
             Log.A($"zone base for z#{zoneId}");
             return this as T;

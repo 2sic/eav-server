@@ -75,7 +75,7 @@ namespace ToSic.Eav.DataSources.Queries
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
-            Log.LinkTo(parentLog, LogId);
+            (Log as Log)?.LinkTo(parentLog, LogId);
             Definition = new QueryDefinition(queryDef, appId, Log);
             this.Init(config);
             _showDrafts = showDrafts;

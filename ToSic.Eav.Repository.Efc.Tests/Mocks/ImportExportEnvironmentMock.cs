@@ -20,7 +20,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 
         public IImportExportEnvironment Init(ILog parent)
         {
-            Log.LinkTo(parent);
+            (Log as Log)?.LinkTo(parent);
             return this;
         }
 

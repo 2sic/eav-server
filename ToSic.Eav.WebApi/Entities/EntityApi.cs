@@ -43,7 +43,7 @@ namespace ToSic.Eav.WebApi
 
         public EntityApi Init(int appId, bool showDrafts, ILog parentLog)
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             AppRead = _appRuntime.Init(appId, showDrafts, Log);
             return this;
         }

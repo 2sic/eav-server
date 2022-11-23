@@ -63,7 +63,7 @@ namespace ToSic.Eav.Logging
             else
             {
                 // late-init case, where the log was already created - just reconfigure keeping what was in it
-                Log.Rename(name);
+                (Log as Log)?.Rename(name);
                 this.LinkLog(parentLog);
                 if (initialMessage == null) return;
                 Log.A(initialMessage, code?.Path, code?.Name, code?.Line ?? 0);

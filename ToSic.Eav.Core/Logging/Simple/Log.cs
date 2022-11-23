@@ -24,7 +24,7 @@ namespace ToSic.Eav.Logging.Simple
 
         public string Identifier => $"{Scope}{Name}[{Id}]";
 
-        public string FullIdentifier => Parent?.FullIdentifier + Identifier;
+        public string FullIdentifier => (Parent as Log)?.FullIdentifier + Identifier;
 
         public bool Preserve
         {
@@ -115,10 +115,10 @@ namespace ToSic.Eav.Logging.Simple
                         throw new Exception($"LOGGER ERROR - Adding parent to logger but exceeded max depth of {MaxParentDepth}");
                 }
                 // show an error, if it the new parent is different from the old one
-                else if (Parent.FullIdentifier != parent.FullIdentifier)
+                else if ((Parent as Log)?.FullIdentifier != (parent as Log)?.FullIdentifier)
                     this.A("LOGGER WARNING - this logger already has a parent, but trying to attach to new parent. " +
-                        $"Existing parent: {Parent.FullIdentifier}. " +
-                        $"New Parent (ignored): {parent.FullIdentifier}");
+                        $"Existing parent: {(Parent as Log)?.FullIdentifier}. " +
+                        $"New Parent (ignored): {(parent as Log)?.FullIdentifier}");
             }
             if (name != null)
                 Rename(name);

@@ -13,7 +13,7 @@ namespace ToSic.Eav.Repositories
 
         public IAppRepositoryLoader Init(AppState app, ILog log)
         {
-            log.LinkTo(log);
+            (log as Log)?.LinkTo(log);
             Log.A("Unknown App Repo loader - won't load anything");
             return this;
         }

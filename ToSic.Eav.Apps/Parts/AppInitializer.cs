@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public AppInitializer Init(AppState appState, ILog parentLog)
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             AppState = appState;
             return this;
         }

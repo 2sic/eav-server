@@ -35,7 +35,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public ZipImport Init(int zoneId, int? appId, bool allowCode, ILog parentLog)
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             _initialAppId = appId;
             _zoneId = zoneId;
             AllowCodeImport = allowCode;

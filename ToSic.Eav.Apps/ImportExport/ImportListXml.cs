@@ -67,7 +67,7 @@ namespace ToSic.Eav.Apps.ImportExport
             ImportResolveReferenceMode resolveLinkMode, 
             ILog parentLog)
         {
-            Log.LinkTo(parentLog);
+            (Log as Log)?.LinkTo(parentLog);
             ImportEntities = new List<Entity>();
             ErrorLog = new ImportErrorLog(Log);
 

@@ -75,13 +75,13 @@ namespace ToSic.Eav.WebApi.Sys
                 Tbody(set
                     .Select(log =>
                     {
-                        var firstIfExists = log.Entries.FirstOrDefault();
+                        var firstIfExists = (log as Log)?.Entries.FirstOrDefault();
                         return RowFields(
                             $"{++count}",
-                            log.Created.ToString("O"),
+                            (log as Log)?.Created.ToString("O"),
                             $"{key}",
-                            LinkTo(log.FullIdentifier, nameof(Logs), key: key, more: $"position={count}"),
-                            $"{log.Entries.Count}",
+                            LinkTo((log as Log)?.FullIdentifier, nameof(Logs), key: key, more: $"position={count}"),
+                            $"{(log as Log)?.Entries.Count}",
                             HtmlEncode((firstIfExists?.Message).NeverNull().Ellipsis(75, "…")),
                             HtmlEncode(firstIfExists?.Result),
                             new InsightsTime().ShowTime(firstIfExists, default)
@@ -101,17 +101,17 @@ namespace ToSic.Eav.WebApi.Sys
         internal static string DumpTree(string title, ILog log)
         {
             var lg = new StringBuilder(H1($"{title}") + "\n\n");
-            if (log.Entries.Count == 0) return "";
+            if ((log as Log)?.Entries.Count == 0) return "";
             lg.AppendLine("<ol>");
 
             var breadcrumb = new Stack<string>();
             var times = new Stack<TimeSpan>();
 
-            var fullTime = log.Entries.FirstOrDefault()?.Elapsed ?? default;
+            var fullTime = (log as Log)?.Entries.FirstOrDefault()?.Elapsed ?? default;
 
-            var time = new InsightsTime(log.Entries.FirstOrDefault()?.Elapsed ?? default);
+            var time = new InsightsTime((log as Log)?.Entries.FirstOrDefault()?.Elapsed ?? default);
             
-            foreach (var e in log.Entries)
+            foreach (var e in (log as Log)?.Entries)
             {
                 // a wrap-close should happen before adding a line, since it must go up a level
                 if (e.WrapClose)
