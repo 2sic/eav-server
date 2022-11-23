@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
 
 // ReSharper disable once CheckNamespace
@@ -8,6 +9,12 @@ namespace ToSic.Eav.Logging
     public class LogAdapter : ILog, Lib.Logging.ILog // inherits both interfaces because of extension methods
     {
         private readonly Lib.Logging.ILog _log;
+
+        /// <summary>
+        /// For internal use only. Provide "Log" compatibility for LogAdapter
+        /// </summary>
+        [PrivateApi]
+        public Log L => _log as Log;
 
         public LogAdapter(Lib.Logging.ILog log) => _log = log;
 
@@ -79,6 +86,17 @@ namespace ToSic.Eav.Logging
             => _log.A(messageMaker, cPath, cName, cLine);
 
         public void Exception(Exception ex) => _log.Ex(ex);
+
+        #region Log properties
+
+        [PrivateApi]
+        public int WrapDepth
+        {
+            get => L.WrapDepth;
+            set => L.WrapDepth = value;
+        }
+
+        #endregion
     }
 }
 

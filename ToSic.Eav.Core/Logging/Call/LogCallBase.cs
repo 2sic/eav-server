@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.Logging.Simple;
+using ToSic.Lib.Logging;
+using Log = ToSic.Eav.Logging.Simple.Log;
 
 namespace ToSic.Eav.Logging
 {
@@ -19,17 +20,19 @@ namespace ToSic.Eav.Logging
             Stopwatch = startTimer ? Stopwatch.StartNew() : new Stopwatch();
 
             // Keep the log, but quit if it's not valid
-            LogOrNull = log as Log;
-            if (LogOrNull == null) return;
 
-            var openingMessage = (isProp ? ".": "") + $"{code.Name}({parameters}) {message}";
+            if (!(log is Log) && !(log is LogAdapter)) return;
+
+            LogOrNull = log;
+            var openingMessage = (isProp ? "." : "") + $"{code.Name}({parameters}) {message}";
             var entry = Entry = LogOrNull.AddInternalReuse(openingMessage, code);
-            entry.WrapOpen = true;
-            LogOrNull.WrapDepth++;
+            entry.WrapOpen = true; 
+            if (log is Log simpleLog) simpleLog.WrapDepth++;
+            if (log is LogAdapter logAdapter) logAdapter.WrapDepth++;
             IsOpen = true;
         }
 
-        public readonly Log LogOrNull;
+        public readonly ILog LogOrNull;
 
         public Entry Entry { get; }
 

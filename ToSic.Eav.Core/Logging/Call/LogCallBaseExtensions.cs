@@ -57,7 +57,10 @@ namespace ToSic.Eav.Logging
                 log.AddInternal("Log Warning: Wrapper already closed from previous call", null);
             logCall.IsOpen = false;
 
-            log.WrapDepth--;
+            //log.WrapDepth--;
+            if (log is Simple.Log simpleLog) simpleLog.WrapDepth--;
+            if (log is LogAdapter logAdapter) logAdapter.WrapDepth--;
+
             logCall.Entry.AppendResult(message);
             var final = log.AddInternalReuse(null, null);
             final.WrapClose = true;
