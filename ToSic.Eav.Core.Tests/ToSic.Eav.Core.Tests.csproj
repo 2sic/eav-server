@@ -99,6 +99,7 @@
     <Compile Include="LogTests\LogAdapterTests.cs" />
     <Compile Include="LogTests\LogFnOldTests.cs" />
     <Compile Include="LogTests\LogFnTests.cs" />
+    <Compile Include="LogTests\LogTestBase.cs" />
     <Compile Include="LookUp\LookUpTestData.cs" />
     <Compile Include="LookUp\Tokens\TokenReplaceTst.cs" />
     <Compile Include="LookUp\LookUpEngineTests.cs" />

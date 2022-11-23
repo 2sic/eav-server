@@ -1,17 +1,16 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using ToSic.Eav.Logging;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Core.Tests.LogTests
 {
     [TestClass]
-    public class LogFnOldTests
+    public class LogFnOldTests : LogTestBase
     {
         [TestMethod]
         public void NoReturnBasic()
         {
-            var log = new Log("Test");
+            var log = SL("Test");
             var call = log.Fn();
             Assert.AreEqual(1, log.Entries.Count);
             call.Done("ok");
@@ -24,7 +23,7 @@ namespace ToSic.Eav.Core.Tests.LogTests
         [TestMethod]
         public void NoReturnAll()
         {
-            var log = new Log("Test");
+            var log = SL("Test");
             var call = log.Fn($"something: {7}", "start msg", true);
             Assert.IsTrue(call.Stopwatch.ElapsedMilliseconds < 1);
             Assert.AreEqual(1, log.Entries.Count);
@@ -41,7 +40,7 @@ namespace ToSic.Eav.Core.Tests.LogTests
         [TestMethod]
         public void GenericBasic()
         {
-            var log = new Log("Test");
+            var log = SL("Test");
             var call = log.Fn<string>();
             
             Assert.AreEqual(1, log.Entries.Count);  // Should have one when starting
