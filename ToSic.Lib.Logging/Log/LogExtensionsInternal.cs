@@ -33,9 +33,11 @@ namespace ToSic.Lib.Logging
         /// <param name="entry"></param>
         internal static void AddToEntriesAndParent(this ILog log, Entry entry)
         {
+            if (!(log is Log realLog)) return;
+
             // prevent parallel threads from updating entries at the same time
-            lock (log.Entries) { log.Entries.Add(entry); }
-            (log.Parent as Log)?.AddToEntriesAndParent(entry);
+            lock (realLog.Entries) { realLog.Entries.Add(entry); }
+            (realLog.Parent as Log)?.AddToEntriesAndParent(entry);
         }
 
 

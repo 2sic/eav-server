@@ -16,7 +16,7 @@ namespace ToSic.Lib.Logging
 
         private readonly ILog _log;
 
-        public string Source => _log.FullIdentifier;
+        public string Source => (_log as Log)?.FullIdentifier;
 
         public string ShortSource => _log.Identifier;
 

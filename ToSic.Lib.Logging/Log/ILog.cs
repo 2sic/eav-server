@@ -37,13 +37,11 @@ namespace ToSic.Lib.Logging
 
         int Depth { get; set; }
 
-
+        //[PrivateApi]
+        //List<Entry> Entries { get; }
 
         //[PrivateApi]
-        List<Entry> Entries { get; }
-
-        //[PrivateApi]
-        string FullIdentifier { get; }
+        //string FullIdentifier { get; }
 
         /// <summary>
         /// Link this logger to a parent
@@ -51,14 +49,16 @@ namespace ToSic.Lib.Logging
         /// </summary>
         /// <param name="parent">parent log to attach to</param>
         /// <param name="name">optional new name</param>
-        void LinkTo(ILog parent, string name = null);
+        //[PrivateApi]
+        //void LinkTo(ILog parent, string name = null);
 
         /// <summary>
         /// Unlink a logger from the parent.
         /// </summary>
-        void Unlink();
+        //[PrivateApi]
+        //void Unlink();
 
         //[PrivateApi("not public, created in v13")]
-        ILog Parent { get; }
+        //ILog Parent { get; }
     }
 }

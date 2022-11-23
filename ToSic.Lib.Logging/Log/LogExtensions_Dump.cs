@@ -21,7 +21,7 @@ namespace ToSic.Lib.Logging
         )
         {
             var lg = new StringBuilder(start);
-            log.Entries.ForEach(e => lg.AppendLine(e.Source
+            (log as Log)?.Entries.ForEach(e => lg.AppendLine(e.Source
                                                + separator
                                                + new string('~', e.Depth * 2)
                                                + e.Message
