@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ToSic.Eav.Documentation;
-using ToSic.Eav.Logging.Simple;
 
 namespace ToSic.Eav.Logging
 {
@@ -18,8 +16,8 @@ namespace ToSic.Eav.Logging
         /// <summary>
         /// When the log object was created - for rare output scenarios
         /// </summary>
-        [PrivateApi]
-        DateTime Created { get; }
+        //[PrivateApi]
+        //DateTime Created { get; }
 
         /// <summary>
         /// A short random ID to differentiate this logger from others.
@@ -44,17 +42,17 @@ namespace ToSic.Eav.Logging
         /// <summary>
         /// Dump result to an internal format - not very important in public use cases
         /// </summary>
-        [PrivateApi]
-        string Dump(
-            string separator = " - ",
-            string start = "",
-            string end = "",
-            string resultStart = "=>",
-            string resultEnd = "",
-            bool withCaller = false,
-            string callStart = "",
-            string callEnd = ""
-        );
+        //[PrivateApi]
+        //string Dump(
+        //    string separator = " - ",
+        //    string start = "",
+        //    string end = "",
+        //    string resultStart = "=>",
+        //    string resultEnd = "",
+        //    bool withCaller = false,
+        //    string callStart = "",
+        //    string callEnd = ""
+        //);
 
 
         /// <summary>
@@ -152,11 +150,11 @@ namespace ToSic.Eav.Logging
             [CallerLineNumber] int cLine = 0);
 
 
-        [PrivateApi]
-        List<Entry> Entries { get; }
+        //[PrivateApi]
+        //List<Entry> Entries { get; }
 
-        [PrivateApi]
-        string FullIdentifier { get; }
+        //[PrivateApi]
+        //string FullIdentifier { get; }
 
         /// <summary>
         /// Rename this logger - usually used when a base-class has a logger, 
@@ -166,8 +164,8 @@ namespace ToSic.Eav.Logging
         /// limits the length to 6 chars to make the output readable
         /// </remarks>
         /// <param name="name"></param>
-        [PrivateApi] 
-        void Rename(string name);
+        //[PrivateApi] 
+        //void Rename(string name);
 
         /// <summary>
         /// Link this logger to a parent
@@ -175,16 +173,16 @@ namespace ToSic.Eav.Logging
         /// </summary>
         /// <param name="parent">parent log to attach to</param>
         /// <param name="name">optional new name</param>
-        [PrivateApi]
-        void LinkTo(ILog parent, string name = null);
+        //[PrivateApi]
+        //void LinkTo(ILog parent, string name = null);
 
         /// <summary>
         /// Unlink a logger from the parent.
         /// </summary>
-        [PrivateApi] 
-        void Unlink();
+        //[PrivateApi] 
+        //void Unlink();
 
-        [PrivateApi("not public, created in v13")]
-        ILog Parent { get; }
+        //[PrivateApi("not public, created in v13")]
+        //ILog Parent { get; }
     }
 }

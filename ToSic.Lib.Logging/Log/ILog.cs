@@ -16,7 +16,7 @@ namespace ToSic.Lib.Logging
         /// When the log object was created - for rare output scenarios
         /// </summary>
         //[PrivateApi]
-        DateTime Created { get; }
+        //DateTime Created { get; }
 
         /// <summary>
         /// A short random ID to differentiate this logger from others.
