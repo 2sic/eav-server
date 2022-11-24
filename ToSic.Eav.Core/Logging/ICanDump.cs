@@ -1,7 +1,7 @@
-﻿namespace ToSic.Eav.Logging
-{
-    public interface ICanDump
-    {
-        string Dump();
-    }
-}
+﻿//namespace ToSic.Eav.Logging
+//{
+//    public interface ICanDump
+//    {
+//        string Dump();
+//    }
+//}
