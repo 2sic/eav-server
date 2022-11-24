@@ -1,41 +1,35 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using ToSic.Eav.Documentation;
+using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Logging
 {
-    public class LogAdapter : ILog, Lib.Logging.ILog // inherits both interfaces because of extension methods
+    // inherit from wrapper class
+    public class LogAdapter : Wrapper<Lib.Logging.ILog>, ILog
     {
-        private readonly Lib.Logging.ILog _log;
-
-        /// <summary>
-        /// For internal use only. Provide "Log" compatibility for LogAdapter
-        /// </summary>
-        [PrivateApi]
-        public Log L => _log as Log;
-
-        public LogAdapter(Lib.Logging.ILog log) => _log = log;
+        public LogAdapter(Lib.Logging.ILog log) : base(log ?? new Log(LogConstants.NameUnknown))
+        { }
 
         /// <inheritdoc />
-        public string Id => _log.Id;
+        public string Id => _contents.Id;
 
         /// <inheritdoc />
-        public string Identifier => _log.Identifier;
+        public string Identifier => _contents.Identifier;
 
         /// <inheritdoc />
         public bool Preserve
         {
-            get => _log.Preserve;
-            set => _log.Preserve = value;
+            get => _contents.Preserve;
+            set => _contents.Preserve = value;
         }
 
         /// <inheritdoc />
         public int Depth
         {
-            get => _log.Depth;
-            set => _log.Depth = value;
+            get => _contents.Depth;
+            set => _contents.Depth = value;
         }
 
         /// <inheritdoc />
@@ -46,7 +40,7 @@ namespace ToSic.Eav.Logging
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
-            => (x) => _log.Fn<string>(parameters, message, useTimer, null, cPath, cName, cLine);
+            => (x) => _contents.Fn<string>(parameters, message, useTimer, null, cPath, cName, cLine);
 
         /// <inheritdoc />
         public Action<string> Call(
@@ -56,7 +50,7 @@ namespace ToSic.Eav.Logging
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
-            => (x) => _log.Fn<string>(parameters, message, useTimer, cPath, cName, cLine);
+            => (x) => _contents.Fn<string>(parameters, message, useTimer, cPath, cName, cLine);
 
         /// <inheritdoc />
         public Func<string, T, T> Call<T>(
@@ -66,37 +60,26 @@ namespace ToSic.Eav.Logging
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
-            => (x, t1) => _log.Fn<T>(parameters, message, useTimer, null, cPath, cName, cLine).Return(t1);
+            => (x, t1) => _contents.Fn<T>(parameters, message, useTimer, null, cPath, cName, cLine).Return(t1);
 
         /// <inheritdoc />
         public string Add(string message,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
-            => _log.AddAndReuse(message, cPath, cName, cLine);
+            => _contents.AddAndReuse(message, cPath, cName, cLine);
 
         /// <inheritdoc />
-        public void Warn(string message) => _log.W(message);
+        public void Warn(string message) => _contents.W(message);
 
         /// <inheritdoc />
         public void Add(Func<string> messageMaker,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
-            => _log.A(messageMaker, cPath, cName, cLine);
+            => _contents.A(messageMaker, cPath, cName, cLine);
 
-        public void Exception(Exception ex) => _log.Ex(ex);
-
-        #region Log properties
-
-        [PrivateApi]
-        public int WrapDepth
-        {
-            get => L.WrapDepth;
-            set => L.WrapDepth = value;
-        }
-
-        #endregion
+        public void Exception(Exception ex) => _contents.Ex(ex);
     }
 }
 
