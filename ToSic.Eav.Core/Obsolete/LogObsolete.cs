@@ -12,7 +12,7 @@ namespace ToSic.Eav.Obsolete
     /// </summary>
     public class LogObsolete: HasLog
     {
-        public const string ObsoleteNameInHistory = LogHistory.WarningsPrefix + "obsolete";
+        public const string ObsoleteNameInHistory = History.WarningsPrefix + "obsolete";
         public const int MaxGeneralToLog = 25;
         public const int MaxSpecificToLog = 1;
         private const string MainError = "error";
@@ -89,7 +89,7 @@ namespace ToSic.Eav.Obsolete
                     Log.A($"This is the only log we'll add for the id '{longId}', further messages won't be logged for this.");
 
 
-                var history = new LogHistory();
+                var history = new History();
                 history.ForceAdd(ObsoleteNameInHistory, Log);
             }
             catch

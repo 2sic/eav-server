@@ -7,7 +7,7 @@ namespace ToSic.Eav.Run.Unknown
 {
     public class WarnUseOfUnknown<T>
     {
-        public WarnUseOfUnknown(LogHistory logHistory)
+        public WarnUseOfUnknown(History logHistory)
         {
             var usingType = typeof(T);
 

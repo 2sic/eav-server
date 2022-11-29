@@ -7,7 +7,7 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class FeaturesCatalog: GlobalCatalogBase<FeatureDefinition>
     {
-        public FeaturesCatalog(LogHistory logHistory): base(logHistory, LogNames.Eav + ".FeatCt", new CodeRef())
+        public FeaturesCatalog(History logHistory): base(logHistory, LogNames.Eav + ".FeatCt", new CodeRef())
         {
             Register(
                 // Released features since the dawn of features

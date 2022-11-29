@@ -9,7 +9,7 @@ namespace ToSic.Lib.Logging
     /// </summary>
     // Todo
     // let run for a while, and ca. 2sxc 13 rename back to "History" once we drop that global/static object
-    public class LogHistory
+    public class History
     {
         public const string WarningsPrefix = "warnings-";
 

@@ -19,7 +19,7 @@ namespace ToSic.Eav.Persistence.Efc
             IServiceProvider serviceProvider,
             IAppInitializedChecker initializedChecker,
             IAppStates appStates,
-            LogHistory logHistory,
+            History logHistory,
             Lazy<IFeaturesInternal> featuresService,
             MultiBuilder multiBuilder
             ) : base("Db.Efc11")
@@ -45,7 +45,7 @@ namespace ToSic.Eav.Persistence.Efc
         private readonly Lazy<IZoneCultureResolver> _environmentLazy;
         private readonly IAppInitializedChecker _initializedChecker;
         private readonly IAppStates _appStates;
-        private readonly LogHistory _logHistory;
+        private readonly History _logHistory;
         private readonly Lazy<IFeaturesInternal> _featuresService;
         private readonly MultiBuilder _multiBuilder;
 

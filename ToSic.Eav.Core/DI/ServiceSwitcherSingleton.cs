@@ -13,14 +13,14 @@ namespace ToSic.Eav.DI
     {
 
         public ServiceSwitcherSingleton(
-            LogHistory logHistory,
+            History logHistory,
             LazyInitLog<ServiceSwitcher<T>> serviceSwitcher
         ) : base($"{LogNames.Eav}.SrvSwS")
         {
             _logHistory = logHistory;
             _serviceSwitcher = serviceSwitcher.SetLog(Log);
         }
-        private readonly LogHistory _logHistory;
+        private readonly History _logHistory;
         private readonly LazyInitLog<ServiceSwitcher<T>> _serviceSwitcher;
 
         public T Value => GetSingletonSwitchableService();

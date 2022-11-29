@@ -18,7 +18,7 @@ namespace ToSic.Eav.WebApi.Sys
             IServiceProvider serviceProvider, 
             IAppStates appStates, 
             SystemManager systemManager,
-            LogHistory logHistory, 
+            History logHistory, 
             Lazy<ILicenseService> licenseServiceLazy, 
             IUser user, 
             LightSpeedStats lightSpeedStats)
@@ -34,7 +34,7 @@ namespace ToSic.Eav.WebApi.Sys
         }
         private readonly IServiceProvider _serviceProvider;
         private readonly IAppStates _appStates;
-        private readonly LogHistory _logHistory;
+        private readonly History _logHistory;
         private readonly Lazy<ILicenseService> _licenseServiceLazy;
         private readonly IUser _user;
         private readonly LightSpeedStats _lightSpeedStats;

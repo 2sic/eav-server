@@ -27,7 +27,7 @@ namespace ToSic.Eav.Configuration
             IFeaturesInternal features, 
             FeatureConfigManager featureConfigManager, 
             LicenseCatalog licenseCatalog, 
-            LogHistory logHistory
+            History logHistory
         ) : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
             Fingerprint = fingerprint;
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Configuration
         public readonly IFeaturesInternal Features;
         private readonly FeatureConfigManager _featureConfigManager;
         private readonly LicenseCatalog _licenseCatalog;
-        private readonly LogHistory _logHistory;
+        private readonly History _logHistory;
 
         #endregion
 

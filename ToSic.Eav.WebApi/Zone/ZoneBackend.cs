@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi.Zone
             IPlatformInfo platform,
             ISite site,
             Lazy<ILicenseService> licenseService,
-            LogHistory logHistory
+            History logHistory
             ) : base("Bck.Zones")
         {
             _appStates = appStates;
@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi.Zone
         private readonly IPlatformInfo _platform;
         private readonly ISite _site;
         private readonly Lazy<ILicenseService> _licenseService;
-        private readonly LogHistory _logHistory;
+        private readonly History _logHistory;
 
         public SystemInfoSetDto GetSystemInfo()
         {
@@ -74,7 +74,7 @@ namespace ToSic.Eav.WebApi.Zone
             };
 
             var warningsObsolete = CountInsightsMessages(Obsolete.LogObsolete.ObsoleteNameInHistory);
-            var warningsOther = CountInsightsMessages(LogHistory.WarningsPrefix) - warningsObsolete;
+            var warningsOther = CountInsightsMessages(History.WarningsPrefix) - warningsObsolete;
 
             var warningsDto = new MessagesDto
             {

@@ -109,7 +109,7 @@ namespace ToSic.Eav.Repository.Efc
             Lazy<IUser> userLazy,
             AppsCacheSwitch appsCache,
             Generator<JsonSerializer> jsonSerializerGenerator,
-            LogHistory logHistory
+            History logHistory
             ) : base("Db.Data")
         {
             _efcLoaderLazy = efcLoaderLazy;
@@ -124,7 +124,7 @@ namespace ToSic.Eav.Repository.Efc
         private readonly Lazy<Efc11Loader> _efcLoaderLazy;
         private readonly Lazy<IUser> _userLazy;
         private readonly AppsCacheSwitch _appsCache;
-        private readonly LogHistory _logHistory;
+        private readonly History _logHistory;
 
         public EavDbContext SqlDb { get; }
         internal Generator<JsonSerializer> JsonSerializerGenerator { get; }

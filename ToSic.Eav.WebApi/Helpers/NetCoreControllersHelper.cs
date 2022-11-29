@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi.Helpers
             _serviceProvider = context.HttpContext.RequestServices;
 
             // Add to Log History
-            _serviceProvider.Build<LogHistory>().Add(historyLogGroup, LogOrNull);
+            _serviceProvider.Build<History>().Add(historyLogGroup, LogOrNull);
         }
 
         public void OnActionExecuted(ActionExecutedContext context)

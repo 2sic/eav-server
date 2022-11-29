@@ -9,7 +9,7 @@ namespace ToSic.Eav.Logging
         [Obsolete("Will be removed in 2sxc 16 - just kept temporarily in case external DLLs are using this. Please get a LogHistory object using DI and call Add() on that")]
         public static void Add(string key, ILog log)
         {
-            new Lib.Logging.LogHistory().Add(key, log.GetContents());
+            new Lib.Logging.History().Add(key, log.GetContents());
             // TODO: ADD Obsolete WARNING IF THIS IS CALLED
             //new LogHistory().Add(key, log);
         }

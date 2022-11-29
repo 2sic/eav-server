@@ -101,7 +101,7 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient(typeof(ServiceSwitcherSingleton<>)); // note: it's for singletons, but the service is transient on purpose!
 
             // History (very core service)
-            services.TryAddTransient<LogHistory>();
+            services.TryAddTransient<History>();
 
             // Warnings for mock implementations
             services.TryAddTransient(typeof(WarnUseOfUnknown<>));

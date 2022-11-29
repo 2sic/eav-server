@@ -22,7 +22,7 @@ namespace ToSic.Eav.Configuration.Licenses
 {
     public class LicenseCatalog: GlobalCatalogBase<LicenseDefinition>
     {
-        public LicenseCatalog(LogHistory logHistory): base(logHistory, LogNames.Eav + ".LicCat", new CodeRef())
+        public LicenseCatalog(History logHistory): base(logHistory, LogNames.Eav + ".LicCat", new CodeRef())
         {
             Register(
                 CoreFree,

@@ -15,7 +15,7 @@ namespace ToSic.Eav.Configuration
     /// <typeparam name="T"></typeparam>
     public abstract class GlobalCatalogBase<T>: HasLog where T : IHasIdentityNameId
     {
-        protected GlobalCatalogBase(LogHistory history, string logName, CodeRef code) : base(logName, code: code, initialMessage: $"Catalog Created for {typeof(T).Name}")
+        protected GlobalCatalogBase(History history, string logName, CodeRef code) : base(logName, code: code, initialMessage: $"Catalog Created for {typeof(T).Name}")
         {
             history.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
         }

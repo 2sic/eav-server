@@ -30,7 +30,7 @@ namespace ToSic.Eav.WebApi.Sys
             return msg.ToString();
         }
 
-        internal string LogHistoryOverview(LogHistory logHistory)
+        internal string LogHistoryOverview(History logHistory)
         {
             var msg = "";
             try
@@ -62,7 +62,7 @@ namespace ToSic.Eav.WebApi.Sys
             return msg;
         }
 
-        internal string LogHistory(LogHistory logHistory, string key)
+        internal string LogHistory(History logHistory, string key)
         {
             var msg = "";
             if (!logHistory.Logs.TryGetValue(key, out var set))

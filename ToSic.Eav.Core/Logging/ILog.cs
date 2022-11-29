@@ -12,7 +12,7 @@ namespace ToSic.Eav.Logging
     /// Basically this is the backbone of Insights.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public partial interface ILog : IWrapper<Lib.Logging.ILog> //, Lib.Logging.ILog
+    public interface ILog : IWrapper<Lib.Logging.ILog> //, Lib.Logging.ILog
     {
         /// <summary>
         /// When the log object was created - for rare output scenarios
