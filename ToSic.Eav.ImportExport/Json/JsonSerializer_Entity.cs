@@ -54,7 +54,8 @@ namespace ToSic.Eav.ImportExport.Json
                         attribs.String = ToTypedDictionary<string>(gList);
                         break;
                     case ValueTypes.Hyperlink:
-                        attribs.Hyperlink = ConvertReferences(ToTypedDictionary<string>(gList), entity.EntityGuid);
+                        var links = ToTypedDictionary<string>(gList);
+                        attribs.Hyperlink = ValueConvertHyperlinks ? ConvertReferences(links, entity.EntityGuid) : links;
                         break;
                     case ValueTypes.Custom:
                         attribs.Custom = ToTypedDictionary<string>(gList);

@@ -49,7 +49,10 @@ namespace ToSic.Eav.ImportExport.Json
         protected MultiBuilder MultiBuilder { get; }
 
         /// <summary>
-        /// WIP test API to ensure content-types serialized for UI resolve any hyperlinks
+        /// WIP test API to ensure content-types serialized for UI resolve any hyperlinks.
+        /// This is ATM only relevant to ensure that file-references in the WYSIWYG CSS work
+        /// See https://github.com/2sic/2sxc/issues/2930
+        /// Otherwise it's not used, so don't publish this API anywhere
         /// </summary>
         [PrivateApi]
         public bool ValueConvertHyperlinks = false;
