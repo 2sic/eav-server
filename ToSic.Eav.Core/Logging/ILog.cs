@@ -185,5 +185,10 @@ namespace ToSic.Eav.Logging
 
         //[PrivateApi("not public, created in v13")]
         //ILog Parent { get; }
+
+        //void Ex(Exception ex);
+
+        [Obsolete("Will remove soon")]
+        void Exception(Exception ex);
     }
 }
