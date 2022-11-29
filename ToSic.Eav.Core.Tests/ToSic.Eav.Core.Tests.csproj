@@ -96,10 +96,6 @@
     <Compile Include="Data\Entity_Test.cs" />
     <Compile Include="Data\DynamicValue_Test.cs" />
     <Compile Include="IdentityTests\MapperTest.cs" />
-    <Compile Include="LogTests\LogAdapterTests.cs" />
-    <Compile Include="LogTests\LogFnOldTests.cs" />
-    <Compile Include="LogTests\LogFnTests.cs" />
-    <Compile Include="LogTests\LogTestBase.cs" />
     <Compile Include="LookUp\LookUpTestData.cs" />
     <Compile Include="LookUp\Tokens\TokenReplaceTst.cs" />
     <Compile Include="LookUp\LookUpEngineTests.cs" />
