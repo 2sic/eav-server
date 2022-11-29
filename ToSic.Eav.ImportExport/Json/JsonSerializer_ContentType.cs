@@ -54,7 +54,7 @@ namespace ToSic.Eav.ImportExport.Json
         public JsonContentType ToJson(IContentType contentType)
             => ToJson(contentType, false);
 
-        public JsonContentType ToJson(IContentType contentType, bool includeSharedTypes)
+        private JsonContentType ToJson(IContentType contentType, bool includeSharedTypes)
         {
             JsonContentTypeShareable jctShare = null;
 

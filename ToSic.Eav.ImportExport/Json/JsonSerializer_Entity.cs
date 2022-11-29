@@ -51,28 +51,29 @@ namespace ToSic.Eav.ImportExport.Json
                 switch (g.Key)
                 {
                     case ValueTypes.String:
-                        attribs.String = ToTypedDictionary<string>(gList, Log);
+                        attribs.String = ToTypedDictionary<string>(gList);
                         break;
                     case ValueTypes.Hyperlink:
-                        attribs.Hyperlink = ToTypedDictionary<string>(gList, Log);
+                        var links = ToTypedDictionary<string>(gList);
+                        attribs.Hyperlink = ValueConvertHyperlinks ? ConvertReferences(links, entity.EntityGuid) : links;
                         break;
                     case ValueTypes.Custom:
-                        attribs.Custom = ToTypedDictionary<string>(gList, Log);
+                        attribs.Custom = ToTypedDictionary<string>(gList);
                         break;
                     case ValueTypes.Json:
-                        attribs.Json = ToTypedDictionary<string>(gList, Log);
+                        attribs.Json = ToTypedDictionary<string>(gList);
                         break;
                     case ValueTypes.Number:
-                        attribs.Number = ToTypedDictionary<decimal?>(gList, Log);
+                        attribs.Number = ToTypedDictionary<decimal?>(gList);
                         break;
                     case ValueTypes.DateTime:
-                        attribs.DateTime = ToTypedDictionary<DateTime?>(gList, Log);
+                        attribs.DateTime = ToTypedDictionary<DateTime?>(gList);
                         break;
                     case ValueTypes.Boolean:
-                        attribs.Boolean = ToTypedDictionary<bool?>(gList, Log);
+                        attribs.Boolean = ToTypedDictionary<bool?>(gList);
                         break;
                     case ValueTypes.Entity:
-                        attribs.Entity = ToTypedDictionaryEntity(gList, false, Log);
+                        attribs.Entity = ToTypedDictionaryEntity(gList, false);
                         break;
                     case ValueTypes.Empty:
                     case ValueTypes.Undefined:
@@ -106,8 +107,8 @@ namespace ToSic.Eav.ImportExport.Json
         /// this is a special helper to create typed entities-dictionaries
         /// </summary>
         /// <returns></returns>
-        private static Dictionary<string, Dictionary<string, List<Guid?>>> 
-            ToTypedDictionaryEntity(List<IAttribute> gList, bool fullObjects,  ILog log)
+        private Dictionary<string, Dictionary<string, List<Guid?>>> 
+            ToTypedDictionaryEntity(List<IAttribute> gList, bool fullObjects)
         {
             // the following is a bit complex for the following reason
             // 1. either the relationship is guid based, and in that case, 
@@ -116,7 +117,7 @@ namespace ToSic.Eav.ImportExport.Json
             //    but the relationship manager doesn't have a direct reference to the guid,
             //    but only to the items directly
             // so it tries to get the guids first, and otherwise uses the items
-            var entities = ToTypedDictionary<IEnumerable<IEntity>>(gList, log)
+            var entities = ToTypedDictionary<IEnumerable<IEntity>>(gList)
                 .ToDictionary(a => a.Key, a => a.Value
                     .ToDictionary(b => b.Key, b => ((LazyEntities)b.Value).ResolveGuids()));
             return entities;

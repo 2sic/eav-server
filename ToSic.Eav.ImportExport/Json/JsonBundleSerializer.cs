@@ -11,7 +11,7 @@ namespace ToSic.Eav.ImportExport.Json
 {
     public class JsonBundleSerializer: JsonSerializer
     {
-        public JsonBundleSerializer(ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder) : base(metadataTargets, appStates, multiBuilder, "Ser.Bundle") { }
+        public JsonBundleSerializer(Dependencies dependencies, ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder) : base(dependencies, "Ser.Bundle") { }
 
         public string Serialize(BundleEntityWithAssets bundle, int metadataDepth)
         {
