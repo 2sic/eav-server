@@ -12,8 +12,16 @@ namespace ToSic.Eav.Logging
     /// Basically this is the backbone of Insights.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public interface ILog : IWrapper<Lib.Logging.ILog> //, Lib.Logging.ILog
+    public interface ILog : IWrapper<Lib.Logging.ILog>
     {
+        /*
+         * IMPORTANT
+         * ---------
+         * This interface must be copied 1:1 to ICodeLog
+         * Otherwise Razor won't be able to find these commands!
+         */
+
+
         /// <summary>
         /// Add a message log entry
         /// </summary>
