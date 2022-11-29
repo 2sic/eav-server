@@ -17,11 +17,12 @@ namespace ToSic.Eav.Apps.Parts
             Parent.Entities.UpdatePartsFromValues(target, values, SimpleDataController.DraftAndBranch(asDraft));
         }
 
-        public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft, bool forceAddToEnd)
+        public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft, bool forceAddToEnd, bool padWithNulls = false)
             => FieldListUpdate(target, fields, asDraft, lists =>
                 {
                     // hitting + if the list is empty first add 1 null item (because we already see one demo item)
-                    if (lists.Lists.First().Value.Count == 0)// on non, first add 1 null item
+                    // fix https://github.com/2sic/2sxc/issues/2943 
+                    if (lists.Lists.First().Value.Count < index && padWithNulls) // on non, first add 1 null item
                         lists.Add(0, new int?[] { null, null });
 
                     return lists.Add(forceAddToEnd ? null : (int?) index, values);
