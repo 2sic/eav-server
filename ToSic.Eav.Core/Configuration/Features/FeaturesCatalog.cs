@@ -30,6 +30,7 @@ namespace ToSic.Eav.Configuration
                 // Features for Patrons Advanced
                 AppSyncWithSiteFiles,
                 EditUiTranslateWithGoogle, // WIP/Beta
+                SqlCompressDataTimeline, // WIP / Beta v15
 
                 // 2sxc 10.24+
                 WebFarmCache,
