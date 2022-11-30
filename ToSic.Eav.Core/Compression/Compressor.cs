@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Text;
+using ToSic.Eav.Configuration;
 
 namespace ToSic.Eav.Compression
 {
     public class Compressor
     {
-        public Compressor()
+        private readonly bool _featureEnabled;
+        private ICompressor _compressor;
+
+        public Compressor(IFeaturesInternal features = null)
         {
-            Enabled = true; // TODO: implement feature
+            // TODO: review with 2DM, because fallback is to "true" (used by unit testing)
+            _featureEnabled = features?.IsEnabled(BuiltInFeatures.SqlCompressDataTimeline.NameId) ?? true;
+            _compressor = CompressorFactory();
         }
 
         public Compressor InitCompressor(CompressorType compressorType)
@@ -37,14 +43,10 @@ namespace ToSic.Eav.Compression
             }
         }
 
-        private ICompressor GetCompressor => _compressor ?? (_compressor = CompressorFactory());
-        private ICompressor _compressor;
+        public bool IsEnabled => _featureEnabled && _compressor != null;
 
-        public bool IsEnabled => _compressor != null && Enabled;
-        private bool Enabled { get; } = false;
+        public byte[] Compress(string text) => IsEnabled ? _compressor.CompressBytes(Encoding.UTF8.GetBytes(text)) : null;
 
-        public byte[] Compress(string text) => IsEnabled ? GetCompressor.CompressBytes(Encoding.UTF8.GetBytes(text)) : null;
-
-        public string Decompress(byte[] bytes) => IsEnabled ? Encoding.UTF8.GetString(GetCompressor.DecompressBytes(bytes)) : null;
+        public string Decompress(byte[] bytes) => IsEnabled ? Encoding.UTF8.GetString(_compressor.DecompressBytes(bytes)) : null;
     }
 }
