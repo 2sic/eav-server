@@ -14,5 +14,6 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public int? SysLogId { get; set; }
         public string NewData { get; set; }
         public string Json { get; set; }
+        public byte?[] CJson { get; set; }
     }
 }
