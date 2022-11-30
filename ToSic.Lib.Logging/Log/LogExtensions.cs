@@ -44,8 +44,13 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = 0
         ) { if (enabled) log?.AddInternal(message, new CodeRef(cPath, cName, cLine)); }
 
-        public static void W(this ILog log, string message) 
-            => log.A("WARNING: " + message);
+        public static void W(this ILog log, 
+            string message,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+        )
+            => log.A("WARNING: " + message, cPath, cName, cLine);
 
 
         public static ILog SubLogOrNull(this ILog log, string name, bool enabled = true)
@@ -80,11 +85,11 @@ namespace ToSic.Lib.Logging
             string parameters = null,
             string message = null,
             bool startTimer = false,
+            CodeRef code = null,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0
-        ) => new LogCall(log, new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
-
+        ) => new LogCall(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
 
         public static LogCall Fn(this ILog log, 
             Func<string> parameters, 

@@ -6,12 +6,15 @@ namespace ToSic.Lib.Logging
     {
         private const int MaxExceptionRecursion = 100;
 
-        internal static void ExceptionInternal(this ILog log, Exception ex)
+        internal static void ExceptionInternal(this ILog log,
+            Exception ex, 
+            CodeRef codeRef
+            )
         {
             // Null-check
             if (!(log is Log realLog)) return;
-            
-            var wrapLog = realLog.Fn(message: "Will log Exception Details next");
+
+            var wrapLog = realLog.Fn(message: "Will log Exception Details next", code: codeRef);
             var recursion = 1;
             while (true)
             {
