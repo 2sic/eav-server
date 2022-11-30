@@ -1,18 +1,23 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using ToSic.Lib.Logging;
+using ToSic.Eav.Compression;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
     public  partial class DbVersioning: BllCommandBase
     {
+        private readonly Lazy<Compressor> _compressor;
         private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
-        internal DbVersioning(DbDataController db) : base(db, "Db.Vers") { }
+        internal DbVersioning(DbDataController db, Lazy<Compressor> compressor) : base(db, "Db.Vers")
+        {
+            _compressor = compressor;
+        }
 
         #region Change-Log ID
         private int _mainChangeLogId;
@@ -68,7 +73,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 SourceTable = EntitiesTableName,
                 Operation = Constants.DataTimelineEntityJson,
                 NewData = "",
-                Json = serialized,
+                Json = _compressor.Value.IsEnabled ? null : serialized,
+                CJson = _compressor.Value.Compress(serialized),
                 SourceGuid = entityGuid,
                 SourceId = entityId,
                 SysLogId = GetChangeLogId(),
