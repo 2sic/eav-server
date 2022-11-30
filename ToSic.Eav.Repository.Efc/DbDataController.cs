@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
+using ToSic.Eav.Compression;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DI;
@@ -22,10 +23,9 @@ namespace ToSic.Eav.Repository.Efc
 
     public class DbDataController : HasLog, IStorage, IAppIdentity
     {
-
         #region Extracted, now externalized objects with actions and private fields
 
-        public DbVersioning Versioning => _versioning ?? (_versioning = new DbVersioning(this));
+        public DbVersioning Versioning => _versioning ?? (_versioning = new DbVersioning(this, _compressor));
         private DbVersioning _versioning;
         public DbEntity Entities => _entities ?? (_entities = new DbEntity(this));
         private DbEntity _entities;
@@ -109,7 +109,8 @@ namespace ToSic.Eav.Repository.Efc
             Lazy<IUser> userLazy,
             AppsCacheSwitch appsCache,
             Generator<JsonSerializer> jsonSerializerGenerator,
-            History logHistory
+            History logHistory,
+            Lazy<Compressor> compressor
             ) : base("Db.Data")
         {
             _efcLoaderLazy = efcLoaderLazy;
@@ -119,12 +120,14 @@ namespace ToSic.Eav.Repository.Efc
             SqlDb = dbContext;
             JsonSerializerGenerator = jsonSerializerGenerator;
             SqlDb.AlternateSaveHandler += SaveChanges;
+            _compressor = compressor;
         }
 
         private readonly Lazy<Efc11Loader> _efcLoaderLazy;
         private readonly Lazy<IUser> _userLazy;
         private readonly AppsCacheSwitch _appsCache;
         private readonly History _logHistory;
+        private readonly Lazy<Compressor> _compressor;
 
         public EavDbContext SqlDb { get; }
         internal Generator<JsonSerializer> JsonSerializerGenerator { get; }

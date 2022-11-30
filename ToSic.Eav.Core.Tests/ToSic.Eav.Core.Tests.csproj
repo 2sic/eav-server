@@ -89,6 +89,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compression\CompressorTests.cs" />
     <Compile Include="Configuration\Features.cs" />
     <Compile Include="Configuration\FingerprintTest.cs" />
     <Compile Include="Data\ContentType_Test.cs" />

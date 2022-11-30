@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
+using ToSic.Eav.Compression;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
@@ -76,6 +77,8 @@ namespace ToSic.Eav.StartUp
             // V14 Requirements Checks - don't use try-add, as we'll add many
             services.TryAddTransient<RequirementsService>();
             services.AddTransient<IRequirementCheck, RequirementCheckFeature>();
+
+            services.TryAddTransient<Compressor>();
 
             return services;
         }

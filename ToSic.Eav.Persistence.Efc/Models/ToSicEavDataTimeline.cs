@@ -13,5 +13,6 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public DateTime SysCreatedDate { get; set; }
         public int? SysLogId { get; set; }
         public string Json { get; set; }
+        public byte[] CJson { get; set; }
     }
 }
