@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
@@ -139,6 +140,7 @@ namespace ToSic.Eav.DataSources
 
             var minOrExpected = decimal.MinValue;
             var max = decimal.MaxValue;
+            List<decimal> decimals = null;
 
             #region check for special case "between" with two values to compare
             if (operation == OpBetween || operation == OpNotBetween)
@@ -155,11 +157,22 @@ namespace ToSic.Eav.DataSources
             }
             #endregion
 
+            #region check for special case "contains" with many values to compare
+            if (operation == OpContains || operation == OpNotContains)
+            {
+                Log.A($"Operator is {OpContains} or {OpNotContains}");
+                decimals = new List<decimal>();
+                foreach(var num in expected.Split(','))
+                    if (decimal.TryParse(num, out var dec))
+                        decimals.Add(dec);
+            }
+            #endregion
+
             // get the value (but only if it hasn't been initialized already)
             if (minOrExpected == decimal.MinValue)
                 decimal.TryParse(expected, out minOrExpected);
 
-            var numberCompare = NumberInnerCompare(operation, minOrExpected, max) ;
+            var numberCompare = NumberInnerCompare(operation, minOrExpected, max, decimals) ;
             if (numberCompare == null)
             {
                 _errCallback(ErrorInvalidOperator, $"Bad operator for number compare, can't find comparison '{operation}'");
@@ -183,7 +196,7 @@ namespace ToSic.Eav.DataSources
 
         }
 
-        private Func<decimal, bool> NumberInnerCompare(string operation, decimal expected, decimal expectedMax)
+        private Func<decimal, bool> NumberInnerCompare(string operation, decimal expected, decimal expectedMax, List<decimal> decimals = null)
         {
             switch (operation)
             {
@@ -196,6 +209,8 @@ namespace ToSic.Eav.DataSources
                 case OpLtEquals: return value => value <= expected;
                 case OpBetween: return value => value >= expected && value <= expectedMax;
                 case OpNotBetween: return value => !(value >= expected && value <= expectedMax);
+                case OpContains: return value => decimals?.Contains(value) ?? false;
+                case OpNotContains: return value => !decimals?.Contains(value) ?? false;
                 default: return null;
             }
         }
