@@ -159,6 +159,8 @@ namespace ToSic.Eav.Data
                     return Type.Name;
                 case Attributes.EntityFieldCreated:
                     return Created;
+                case Attributes.EntityFieldOwner:   // added in v15, was missing before
+                    return Owner;
                 case Attributes.EntityFieldModified:
                     return Modified;
                 default:
