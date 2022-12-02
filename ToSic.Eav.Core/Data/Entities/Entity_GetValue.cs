@@ -3,6 +3,7 @@ using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
+using static ToSic.Eav.Data.Attributes;
 
 namespace ToSic.Eav.Data
 {
@@ -31,37 +32,37 @@ namespace ToSic.Eav.Data
             if (Attributes.ContainsKey(field))
             {
                 var attribute = Attributes[field];
-                var valT = attribute.GetTypedValue(languages);
-                return new PropertyRequest { Value = valT.Item1, Result = valT.Item2, FieldType = attribute.Type, Source = this, Path = path};
+                var (valueField, result) = attribute.GetTypedValue(languages);
+                return new PropertyRequest(result, path) { Value = valueField, FieldType = attribute.Type, Source = this };
             }
             
-            if (field == Data.Attributes.EntityFieldTitle)
+            if (field == EntityFieldTitle)
             {
                 var attribute = Title;
                 var valT = attribute?.GetTypedValue(languages);
-                return new PropertyRequest { Value = valT?.Item1, Result = valT?.Item2, FieldType = attribute?.Type, Source = this, Path = path };
+                return new PropertyRequest(valT?.Result, path) { Value = valT?.ValueField, FieldType = attribute?.Type, Source = this };
             }
 
             // directly return internal properties, mark as virtual to not cause further Link resolution
-            var likelyResult = new PropertyRequest
-            { Result = GetInternalPropertyByName(field), FieldType = Data.Attributes.FieldIsVirtual, Source = this, Path = path };
+            var valueFromInternalProperty = GetInternalPropertyByName(field);
+            var likelyResult = new PropertyRequest(valueFromInternalProperty, path) { FieldType = FieldIsVirtual, Source = this };
+            if (valueFromInternalProperty != null) return likelyResult;
 
-            // New Feature in 12.03 - Experimental
+            // New Feature in 12.03 - Sub-Item Navigation if the data contains information what the sub-entity identifiers are
             try
             {
-                var logOrNull = parentLogOrNull?.SubLogOrNull($"{LogNames.Eav}.Entity");
-                logOrNull.A("Nothing found in properties, will try Sub-Item navigation");
-                var subItem = this.TryToNavigateToEntityInList(field, this, logOrNull, path.Add("SubEntity", field));
+                parentLogOrNull.A("Nothing found in properties, will try Sub-Item navigation");
+                var subItem = this.TryToNavigateToEntityInList(field, this, parentLogOrNull, path.Add("SubEntity", field));
                 if (subItem != null) return subItem;
             } catch { /* ignore */ }
-            
+
             return likelyResult;
         }
 
         protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)
         {
             // first check a field which doesn't exist on EntityLight
-            if (attributeNameLowerInvariant == Data.Attributes.EntityFieldIsPublished) return IsPublished;
+            if (attributeNameLowerInvariant == EntityFieldIsPublished) return IsPublished;
 
             // Now handle the ones that EntityLight has
             return base.GetInternalPropertyByName(attributeNameLowerInvariant);

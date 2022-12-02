@@ -13,18 +13,25 @@ namespace ToSic.Eav.Data
     [PrivateApi("Hide implementation")]
     public partial class PropertyStack: IPropertyStack
     {
-        public void Init(string name, params KeyValuePair<string, IPropertyLookup>[] entities)
+        public PropertyStack Init(string name, IEnumerable<IPropertyLookup> sources)
+            => Init(name,
+                sources?.Select(s => new KeyValuePair<string, IPropertyLookup>((s as IHasIdentityNameId)?.NameId, s)).ToArray()
+                ?? Array.Empty<KeyValuePair<string, IPropertyLookup>>());
+
+        public PropertyStack Init(string name, params KeyValuePair<string, IPropertyLookup>[] sources)
         {
             Name = name;
             var pairCount = 0;
 
-            _sources = entities
+            _sources = sources
                 .Select(selector: ep =>
                 {
                     var key = !string.IsNullOrWhiteSpace(ep.Key) ? ep.Key : $"auto-named-{++pairCount}";
                     return new KeyValuePair<string, IPropertyLookup>(key, ep.Value);
                 })
                 .ToImmutableArray();
+
+            return this;
         }
 
         public string Name { get; private set; }
@@ -81,7 +88,7 @@ namespace ToSic.Eav.Data
             var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".PStack");
             var wrapLog = logOrNull.Fn<PropertyRequest>($"{nameof(field)}: {field}, {nameof(startAtSource)}: {startAtSource}");
             // Start with empty result, may be filled in later on
-            var result = new PropertyRequest();
+            var result = new PropertyRequest(null, path);
             for (var sourceIndex = startAtSource; sourceIndex < SourcesReal.Count; sourceIndex++)
             {
                 var source = SourcesReal[sourceIndex];
@@ -93,15 +100,36 @@ namespace ToSic.Eav.Data
 
                 result = propInfo.MarkAsFinalOrNot(source.Key, sourceIndex, logOrNull, treatEmptyAsDefault);
                 if (!result.IsFinal) continue;
-                
-                if (!(result.Result is IEnumerable<IEntity> entityChildren))
-                    return wrapLog.Return(result, "simple value, final");
 
-                var navigationWrapped = entityChildren.Select(e =>
-                    new EntityWithStackNavigation(e, this, field, result.SourceIndex, 0)).ToList();
-                result.Result = navigationWrapped;
+                // Note 2022-12-01 2dm - not sure if this is actually hit, or if it's handled at another level...?
+                if (result.Result is IEnumerable<IEntity> entityChildren)
+                {
+                    var navigationWrapped = entityChildren.Select(e =>
+                        new EntityWithStackNavigation(e, this, field, result.SourceIndex, 0)).ToList();
+                    result.Result = navigationWrapped;
 
-                return wrapLog.Return(result, "wrapped as Entity-Stack, final");
+                    return wrapLog.Return(result, "wrapped as Entity-Stack, final");
+                }
+
+                // 2022-12-01 2dm - new type of result, mainly for testing ATM, shouldn't happen in production
+                // It seems to be necessary as soon as the result is a field-property list
+                // But the parent seems off...
+                // I'm not using IEnumerable<IPropertyLookup> because that could have untested side-effects
+                if (result.Result is IEnumerable<PropertyLookupDictionary> dicChildren)
+                {
+                    // First construct the parent navigator, which the children need first
+                    if (!(result.Source is PropertyLookupDictionary currentSource))
+                        throw new Exception("Test 2dm- this should always be a dictionary");
+
+                    //var parentNavigator = new PropertyLookupWithStackNavigation(currentSource, this, field, result.SourceIndex, 0);
+
+                    var navWrapped = dicChildren.Select(e =>
+                        new PropertyLookupWithStackNavigation(e, this, field, result.SourceIndex, 0)).ToList();
+                    result.Result = navWrapped;
+                    return wrapLog.Return(result, "wrapped as dictionary prop stack, final");
+                }
+
+                return wrapLog.Return(result, "simple value, final");
             }
 
             // All loops completed, maybe one got a temporary result, return that

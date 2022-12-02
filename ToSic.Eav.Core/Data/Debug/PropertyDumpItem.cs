@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
 
 namespace ToSic.Eav.Data.Debug
@@ -10,16 +11,20 @@ namespace ToSic.Eav.Data.Debug
 
         public static bool ShouldStop(string path) => path?.Length > 200;
 
-        public static PropertyDumpItem DummyErrorShouldStop(string path) => new PropertyDumpItem
+        public static PropertyDumpItem DummyErrorShouldStop(string path)
         {
-            Path = path + Separator + "ErrorTooDeep",
-            Property = new PropertyRequest
+            var errPath = path + Separator + "ErrorTooDeep";
+            return new PropertyDumpItem
             {
-                FieldType = "Todo",
-                Name = "error",
-                Result = "error"
-            }
-        };
+                Path = errPath,
+                Property = new PropertyRequest("error", new PropertyLookupPath().Add(errPath))
+                {
+                    FieldType = "Todo",
+                    Name = "error",
+                    Result = "error"
+                }
+            };
+        }
 
         /// <summary>
         /// The source of this item

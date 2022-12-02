@@ -46,7 +46,7 @@ namespace ToSic.Eav.Data
 
 
         [PrivateApi("experimental in 12.05")]
-        Tuple<IValue, object> GetTypedValue(string[] languageKeys);
+        (IValue ValueField, object Result) GetTypedValue(string[] languageKeys);
 
     }
 }

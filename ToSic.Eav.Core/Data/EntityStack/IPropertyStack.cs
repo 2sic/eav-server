@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
 
@@ -17,5 +18,7 @@ namespace ToSic.Eav.Data
         
         IPropertyStack GetStack(params string[] names);
         IPropertyStack GetStack(ILog log, params string[] names);
+
+        PropertyRequest InternalGetPath(string fieldPath, string[] dimensions, ILog parentLogOrNull, PropertyLookupPath path);
     }
 }

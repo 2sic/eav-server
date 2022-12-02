@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data
@@ -17,44 +17,42 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <returns></returns>
         [PrivateApi]
-        public static PropertyRequest TryToNavigateToEntityInList(this IEntity entity, string field, object parentDynEntity, ILog parentLogOrNull, PropertyLookupPath path)
+        public static PropertyRequest TryToNavigateToEntityInList(this IEntity entity, string field, object parentDynEntity, ILog logOrNull, PropertyLookupPath path)
         {
-            var logOrNull = parentLogOrNull.SubLogOrNull("Sxc.SubLst");
-            var safeWrap = logOrNull.Fn<PropertyRequest>();
+            var l = logOrNull.Fn<PropertyRequest>(field);
 
+            // Check if we have a configuration for dynamic children
             var dynChildField = entity.Type?.DynamicChildrenField;
-            if (string.IsNullOrEmpty(dynChildField)) return safeWrap.ReturnNull("no dyn-child");
+            if (string.IsNullOrEmpty(dynChildField)) return l.ReturnNull("no dyn-child");
 
-
+            // Check if the children are in any way relevant
             var children = entity.Children(dynChildField);
-            if (children == null) return safeWrap.ReturnNull("no child");
-            if (!children.Any()) return safeWrap.ReturnNull("no children");
-            if (children.First() == null) return safeWrap.ReturnNull("child is null");
-            if (children.First().EntityId == 0) return safeWrap.ReturnNull("Child is placeholder, no real entries");
+            if (children == null) return l.ReturnNull("no child");
+            if (!children.Any()) return l.ReturnNull("no children");
+            if (children.First() == null) return l.ReturnNull("child is null");
+            if (children.First().EntityId == 0) return l.ReturnNull("Child is placeholder, no real entries");
 
 
             try
             {
-                var dynEntityWithTitle = children
-                    .FirstOrDefault(de => field.Equals(de.GetBestTitle(), StringComparison.InvariantCultureIgnoreCase));
+                // Find possible child with the correct title
+                var dynEntityWithTitle = children.FirstOrDefault(e => field.EqualsInsensitive(e.GetBestTitle()));
 
-                if (dynEntityWithTitle == null) return safeWrap.ReturnNull("no matching child");
+                if (dynEntityWithTitle == null) return l.ReturnNull("no matching child");
 
-                var result = new PropertyRequest
+                var result = new PropertyRequest(new List<IEntity> { dynEntityWithTitle }, path)
                 {
                     FieldType = DataTypes.Entity,
                     Name = field,
-                    Result = new List<IEntity> { dynEntityWithTitle },
                     Source = parentDynEntity,
                     SourceIndex = 0,
-                    Path = path
                 };
 
-                return safeWrap.Return(result, "named-entity");
+                return l.Return(result, "named-entity");
             }
             catch
             {
-                return safeWrap.ReturnNull("error");
+                return l.ReturnNull("error");
             }
         }
     }

@@ -3,7 +3,6 @@ using System.Linq;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data
 {
@@ -73,7 +72,7 @@ namespace ToSic.Eav.Data
             if (path.Parts.Count > 1000)
             {
                 safeWrap.A("Maximum lookup depth achieved");
-                var err = new PropertyRequest { Result = MaxLookupError, Name = "error", Path = path, Source = "error", SourceIndex = OwnIndexInParent };
+                var err = new PropertyRequest(MaxLookupError, path) { /*Result = MaxLookupError,*/ Name = "error", /*Path = path,*/ Source = "error", SourceIndex = OwnIndexInParent };
                 return safeWrap.Return(err, "error");
             }
 
@@ -98,15 +97,27 @@ namespace ToSic.Eav.Data
             path = path.Add("StackSibling", nextIndexOnParent.ToString(), ParentField);
             var sibling = Parent.PropertyInStack(ParentField, dimensions, nextIndexOnParent, true, logOrNull, path);
             
-            if (sibling == null || !sibling.IsFinal) return safeWrap.Return(new PropertyRequest(), "no useful sibling found");
+            if (sibling == null || !sibling.IsFinal) return safeWrap.Return(new PropertyRequest(null, path), "no useful sibling found");
             
             path = sibling.Path;    // Keep path as it was generated to find this sibling
 
             safeWrap.A($"Another sibling found. Name:{sibling.Name} #{sibling.SourceIndex}. Will try to check it's properties. ");
+            // Check if it's an IEntity or a Wrapper
             if (sibling.Result is IEnumerable<IEntity> siblingEntities && siblingEntities.Any())
             {
                 var wrapInner = logOrNull.Fn(null, "It's a list of entities as expected.");
                 var entityNav = new EntityWithStackNavigation(siblingEntities.First(), Parent, ParentField, sibling.SourceIndex, Depth + 1);
+                path = path.Add("StackIEntity", field);
+                var result = entityNav.FindPropertyInternal(field, dimensions, logOrNull, path);
+                wrapInner.Done();
+                return safeWrap.Return(result);
+            }
+
+            // New: Check if it's a Dictionary
+            if (sibling.Result is IEnumerable<PropertyLookupDictionary> siblingDics && siblingDics.Any())
+            {
+                var wrapInner = logOrNull.Fn(null, "It's a list of entities as expected.");
+                var entityNav = new PropertyLookupWithStackNavigation(siblingDics.First(), Parent, ParentField, sibling.SourceIndex, Depth + 1);
                 path = path.Add("StackIEntity", field);
                 var result = entityNav.FindPropertyInternal(field, dimensions, logOrNull, path);
                 wrapInner.Done();
@@ -127,7 +138,7 @@ namespace ToSic.Eav.Data
             // We got here, so we found nothing
             // This means result is not final or after checking the parent again, no better source was found
             // In this case, return the initial child result, which already said it's not final
-            return safeWrap.Return(new PropertyRequest(), "no sibling can return data, return empty result");
+            return safeWrap.Return(new PropertyRequest(null, path), "no sibling can return data, return empty result");
         }
 
         
@@ -155,15 +166,35 @@ namespace ToSic.Eav.Data
             if (!childResult.IsFinal) return safeWrap.Return(childResult, "not final");
             
             // test if the returned stuff is one or more entities, in which case they should implement stack-fallback
-            if (!(childResult.Result is IEnumerable<IEntity> entList)) return safeWrap.Return(childResult, "not null/entities, final");
+            if (childResult.Result is IEnumerable<IEntity> entList)
+            {
+                safeWrap.A("Result is IEnumerable<IEntity> - will wrap in navigation");
+                var entArray = entList.ToArray();
+                if (entArray.Any() && !(entArray.First() is EntityWithStackNavigation))
+                    childResult.Result =
+                        entArray.Select(e => new EntityWithStackNavigation(e, this, field, IndexOfNextItem, Depth + 1));
 
-            safeWrap.A("Result is IEnumerable<IEntity> - will wrap in navigation");
-            var entArray = entList.ToArray();
-            if (entArray.Any() && !(entArray.First() is EntityWithStackNavigation))
-                childResult.Result =
-                    entArray.Select(e => new EntityWithStackNavigation(e, this, field, IndexOfNextItem, Depth + 1));
+                return safeWrap.Return(childResult, "entities, final");
+            }
 
-            return safeWrap.Return(childResult, "entities, final");
+            // 2022-12-01 2dm - new type of result, mainly for testing ATM, shouldn't happen in production
+            // I'm not using IEnumerable<IPropertyLookup> because that could have untested side-effects
+            if (childResult.Result is IEnumerable<PropertyLookupWithStackNavigation>)
+                return safeWrap.Return(childResult, "aready a lookup-navigation, final");
+
+            if (childResult.Result is IEnumerable<PropertyLookupDictionary> dicChildren)
+            {
+                safeWrap.A("Result is IEnumerable<IEntity> - will wrap in navigation");
+                var entArray = dicChildren.ToArray();
+                if (entArray.Any())
+                    childResult.Result =
+                        entArray.Select(e => new PropertyLookupWithStackNavigation(e, this, field, IndexOfNextItem, Depth + 1));
+
+                return safeWrap.Return(childResult, "entities, final");
+
+            }
+
+            return safeWrap.Return(childResult, "not null/entities, final");
         }
     }
     

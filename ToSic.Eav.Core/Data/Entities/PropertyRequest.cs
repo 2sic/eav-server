@@ -10,6 +10,12 @@ namespace ToSic.Eav.Data
     [PrivateApi]
     public class PropertyRequest
     {
+        public PropertyRequest(object result, PropertyLookupPath path)
+        {
+            Result = result;
+            Path = path;
+        }
+
         /// <summary>
         /// The result of the request - null if not found
         /// </summary>
@@ -36,7 +42,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public string Name;
 
-        public PropertyLookupPath Path;
+        public readonly PropertyLookupPath Path;
 
         public int SourceIndex = -1;
 

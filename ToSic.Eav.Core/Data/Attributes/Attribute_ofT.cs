@@ -73,10 +73,10 @@ namespace ToSic.Eav.Data
         object IAttribute.this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
 
         [PrivateApi]
-        public Tuple<IValue, object> GetTypedValue(string[] languageKeys)
+        public (IValue ValueField, object Result) GetTypedValue(string[] languageKeys)
         {
             var iVal = GetInternalValue(languageKeys, FindHavingDimensions);
-            return new Tuple<IValue, object>(iVal, iVal == null ? default : iVal.TypedContents);
+            return (iVal, iVal == null ? default : iVal.TypedContents);
         }
 
         [PrivateApi]
