@@ -11,6 +11,7 @@ namespace ToSic.Lib.Logging
         /// </summary>
         /// <param name="hasLog">thing which has a log</param>
         /// <param name="parentLog">The parent log</param>
+        /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
         public static void LinkLog(this IHasLog hasLog, ILog parentLog) => (hasLog.Log as Log)?.LinkTo(parentLog);
 
         public static void A(this ILog log,
@@ -21,6 +22,7 @@ namespace ToSic.Lib.Logging
         ) => log?.AddInternal(message, new CodeRef(cPath, cName, cLine));
 
 
+        /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
         public static void A(this ILog log,
             Func<string> messageMaker,
             [CallerFilePath] string cPath = null,
@@ -28,6 +30,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = 0
         ) => log?.AddInternal(LogExtensionsInternal.Try(messageMaker), new CodeRef(cPath, cName, cLine));
 
+        /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
         public static string AddAndReuse(this ILog log,
             string message,
             [CallerFilePath] string cPath = null,
@@ -35,8 +38,9 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = 0
         ) => log?.AddInternalReuse(message, new CodeRef(cPath, cName, cLine)).Message;
 
-        
-        public static void A(this ILog log, 
+
+        /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+        public static void A(this ILog log,
             bool enabled, 
             string message,
             [CallerFilePath] string cPath = null,
@@ -44,7 +48,8 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = 0
         ) { if (enabled) log?.AddInternal(message, new CodeRef(cPath, cName, cLine)); }
 
-        public static void W(this ILog log, 
+        /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+        public static void W(this ILog log,
             string message,
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
@@ -59,6 +64,7 @@ namespace ToSic.Lib.Logging
             return new Log(name, log);
         }
 
+        /// <remarks>Is null-safe, so if there is no log, things still work and it still returns a valid <see cref="LogCall"/> </remarks>
         public static LogCall<T> Fn<T>(this ILog log,
             string parameters = null,
             string message = null,
@@ -69,6 +75,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = 0
         ) => new LogCall<T>(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
 
+        /// <remarks>Is null-safe, so if there is no log, things still work and it still returns a valid <see cref="LogCall"/> </remarks>
         public static LogCall<T> Fn<T>(this ILog log,
             bool enabled,
             string parameters = null,
@@ -81,6 +88,7 @@ namespace ToSic.Lib.Logging
         ) => new LogCall<T>(enabled ? log : null, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
 
 
+        /// <remarks>Is null-safe, so if there is no log, things still work and it still returns a valid <see cref="LogCall"/> </remarks>
         public static LogCall Fn(this ILog log,
             string parameters = null,
             string message = null,
@@ -91,6 +99,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = 0
         ) => new LogCall(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
 
+        /// <remarks>Is null-safe, so if there is no log, things still work and it still returns a valid <see cref="LogCall"/> </remarks>
         public static LogCall Fn(this ILog log, 
             Func<string> parameters, 
             Func<string> message = null,
@@ -106,6 +115,7 @@ namespace ToSic.Lib.Logging
                 cLine: cLine
             );
 
+        /// <remarks>Is null-safe, so if there is no log, things still work and it still returns a valid <see cref="LogCall"/> </remarks>
         public static LogCall<T> Fn<T>(this ILog log, 
             Func<string> parameters, 
             Func<string> message = null,
@@ -128,6 +138,7 @@ namespace ToSic.Lib.Logging
         /// </summary>
         /// <returns></returns>
 // TODO: This should be renamed to DoAndReturn() for clarity
+// TODO: Not Null Safe! must fix
         public static T Return<T>(this ILog log,
             Func<T> generate,
             [CallerFilePath] string cPath = null,
@@ -140,6 +151,7 @@ namespace ToSic.Lib.Logging
         /// Intercept the result of an inner method, log it, then pass result on
         /// </summary>
         /// <returns></returns>
+        /// <remarks>Is null-safe, so if there is no log, things still work and it still returns a valid <see cref="LogCall"/> </remarks>
 // TODO: This should be renamed to DoAndReturn() for clarity
         public static T Return<T>(this ILog log,
             string message, 
