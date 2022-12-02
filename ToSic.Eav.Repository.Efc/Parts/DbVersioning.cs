@@ -67,7 +67,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 SourceTable = EntitiesTableName,
                 Operation = Constants.DataTimelineEntityJson,
-                NewData = "",
                 Json = serialized,
                 SourceGuid = entityGuid,
                 SourceId = entityId,
