@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data
 {
@@ -10,7 +9,7 @@ namespace ToSic.Eav.Data
     [PrivateApi("internal only - don't publish in docs, can change at any time")]
     public interface IPropertyStackLookup
     {
-        PropertyRequest PropertyInStack(string field, string[] dimensions, int startAtSource, bool treatEmptyAsDefault, ILog parentLogOrNull, PropertyLookupPath path);
+        PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path);
 
     }
 }

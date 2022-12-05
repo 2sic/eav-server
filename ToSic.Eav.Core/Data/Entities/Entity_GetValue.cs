@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data
         public object GetBestValue(string attributeName, string[] languages)
             => _useLightModel
                 ? base.GetBestValue(attributeName)
-                : FindPropertyInternal(attributeName, languages, null, null).Result;
+                : FindPropertyInternal(new PropReqSpecs(attributeName, languages), null).Result;
 
 
         // ReSharper disable once InheritdocInvalidUsage
@@ -24,35 +24,35 @@ namespace ToSic.Eav.Data
 
 
         [PrivateApi("Internal")]
-        public PropertyRequest FindPropertyInternal(string field, string[] languages, ILog parentLogOrNull, PropertyLookupPath path)
+        public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
         {
-            path = path?.Add("Entity", EntityId.ToString(), field);
-            languages = ExtendDimsWithDefault(languages);
-            field = field.ToLowerInvariant();
+            path = path?.Add("Entity", EntityId.ToString(), specs.Field);
+            var languages = ExtendDimsWithDefault(specs.Dimensions);
+            var field = specs.Field.ToLowerInvariant();
             if (Attributes.ContainsKey(field))
             {
                 var attribute = Attributes[field];
                 var (valueField, result) = attribute.GetTypedValue(languages);
-                return new PropertyRequest(result, path) { Value = valueField, FieldType = attribute.Type, Source = this };
+                return new PropReqResult(result, path) { Value = valueField, FieldType = attribute.Type, Source = this };
             }
             
             if (field == EntityFieldTitle)
             {
                 var attribute = Title;
                 var valT = attribute?.GetTypedValue(languages);
-                return new PropertyRequest(valT?.Result, path) { Value = valT?.ValueField, FieldType = attribute?.Type, Source = this };
+                return new PropReqResult(valT?.Result, path) { Value = valT?.ValueField, FieldType = attribute?.Type, Source = this };
             }
 
             // directly return internal properties, mark as virtual to not cause further Link resolution
             var valueFromInternalProperty = GetInternalPropertyByName(field);
-            var likelyResult = new PropertyRequest(valueFromInternalProperty, path) { FieldType = FieldIsVirtual, Source = this };
+            var likelyResult = new PropReqResult(valueFromInternalProperty, path) { FieldType = FieldIsVirtual, Source = this };
             if (valueFromInternalProperty != null) return likelyResult;
 
             // New Feature in 12.03 - Sub-Item Navigation if the data contains information what the sub-entity identifiers are
             try
             {
-                parentLogOrNull.A("Nothing found in properties, will try Sub-Item navigation");
-                var subItem = this.TryToNavigateToEntityInList(field, this, parentLogOrNull, path.Add("SubEntity", field));
+                specs.LogOrNull.A("Nothing found in properties, will try Sub-Item navigation");
+                var subItem = this.TryToNavigateToEntityInList(specs, this, path.Add("SubEntity", field));
                 if (subItem != null) return subItem;
             } catch { /* ignore */ }
 

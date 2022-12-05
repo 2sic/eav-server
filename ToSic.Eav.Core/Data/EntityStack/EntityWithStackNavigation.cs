@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data
 {
@@ -8,24 +7,17 @@ namespace ToSic.Eav.Data
     /// This is a special IEntity-wrapper which will return Stack-Navigation
     /// </summary>
     [PrivateApi]
-    public class EntityWithStackNavigation: EntityWrapper
+    public class EntityWithStackNavigation: EntityWrapper, IPropertyStackLookup
     {
-        public EntityWithStackNavigation(IEntity entity, IPropertyStackLookup parent, string field, int index, int depth) : base(entity)
-        {
-            PropertyStackNavigator = new PropertyStackNavigator(entity, parent, field, index, depth);
-        }
+        public EntityWithStackNavigation(IEntity entity, StackAddress stackAddress) : base(entity) 
+            => Navigator = new PropertyStackNavigator(entity, stackAddress);
+        internal readonly PropertyStackNavigator Navigator;
 
-        
-        internal readonly PropertyStackNavigator PropertyStackNavigator;
+        public override PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path) =>
+            PropertyLookupWithStackNavigation.FindPropertyInternalOfStackWrapper(this, specs, path,
+                LogNames.Eav + ".EntNav", $"EntityId: {Entity?.EntityId}, Title: {Entity?.GetBestTitle()}");
 
-        public override PropertyRequest FindPropertyInternal(string field, string[] languages, ILog parentLogOrNull, PropertyLookupPath path)
-        {
-            var logOrNull = parentLogOrNull.SubLogOrNull(LogNames.Eav + ".EntNav");
-            var wrapLog = logOrNull.Fn<PropertyRequest>(
-                $"EntityId: {Entity?.EntityId}, Title: {Entity?.GetBestTitle()}, {nameof(field)}: {field}");
-            var result = PropertyStackNavigator.PropertyInStack(field, languages, 0, true, logOrNull, path);
-
-            return wrapLog.Return(result, result?.Result != null ? "found" : null);
-        }
+        public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path) 
+            => Navigator.GetNextInStack(specs, startAtSource, path);
     }
 }

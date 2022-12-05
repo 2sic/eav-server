@@ -4,7 +4,6 @@ using System.Linq;
 using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data
 {
@@ -12,7 +11,7 @@ namespace ToSic.Eav.Data
     {
         
         [PrivateApi]
-        public List<PropertyDumpItem> _Dump(string[] languages, string path, ILog parentLogOrNull)
+        public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path)
         {
             if (!Attributes.Any()) return new List<PropertyDumpItem>();
             if (PropertyDumpItem.ShouldStop(path)) return new List<PropertyDumpItem>{PropertyDumpItem.DummyErrorShouldStop(path)};
@@ -26,7 +25,7 @@ namespace ToSic.Eav.Data
                 resultDynChildren = Children(dynChildField)
                     .Where(child => child != null)
                     .SelectMany(inner =>
-                        inner._Dump(languages, pathRoot + inner.GetBestTitle(languages), parentLogOrNull));
+                        inner._Dump(specs, pathRoot + inner.GetBestTitle(specs.Dimensions)));
 
             // Get all properties which are not dynamic children
             var childAttributes = Attributes
@@ -38,7 +37,7 @@ namespace ToSic.Eav.Data
                     => Children(att.Key)
                         .Where(child => child != null) // unclear why this is necessary, but sometimes the entities inside seem to be non-existant on Resources
                         .SelectMany(inner
-                            => inner._Dump(languages, pathRoot + att.Key, parentLogOrNull)))
+                            => inner._Dump(specs, pathRoot + att.Key)))
                 .ToList();
 
             // Get all normal properties
@@ -47,7 +46,7 @@ namespace ToSic.Eav.Data
                     .Where(att => att.Value.Type != DataTypes.Entity && att.Value.Type != DataTypes.VoidEmpty)
                     .Select(att =>
                     {
-                        var property = FindPropertyInternal(att.Key, languages, parentLogOrNull, new PropertyLookupPath().Add("EntityDump"));
+                        var property = FindPropertyInternal(specs.ForOtherField(att.Key), new PropertyLookupPath().Add("EntityDump"));
                         var item = new PropertyDumpItem
                         {
                             Path = pathRoot + att.Key,

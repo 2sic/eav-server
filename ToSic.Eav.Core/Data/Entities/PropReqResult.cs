@@ -8,9 +8,9 @@ namespace ToSic.Eav.Data
     /// Will contain additional information for upstream processing
     /// </summary>
     [PrivateApi]
-    public class PropertyRequest
+    public class PropReqResult
     {
-        public PropertyRequest(object result, PropertyLookupPath path)
+        public PropReqResult(object result, PropertyLookupPath path)
         {
             Result = result;
             Path = path;
@@ -21,6 +21,10 @@ namespace ToSic.Eav.Data
         /// </summary>
         public object Result;
 
+        /// <summary>
+        /// Debug property to see if a result was wrapped to create something else
+        /// </summary>
+        internal object ResultOriginal;
 
         /// <summary>
         /// The IValue object, in case we need to use it's cache
@@ -48,7 +52,15 @@ namespace ToSic.Eav.Data
 
         public bool IsFinal => SourceIndex != -1;
 
-        public PropertyRequest AsFinal(int sourceIndex)
+        /// <summary>
+        /// Special Helper to return nothing, easier to spot in code when this is used
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static PropReqResult Null(PropertyLookupPath path) => new PropReqResult(null, path);
+        public static PropReqResult NullFinal(PropertyLookupPath path) => Null(path).AsFinal(0);
+
+        public PropReqResult AsFinal(int sourceIndex)
         {
             SourceIndex = sourceIndex;
             return this;

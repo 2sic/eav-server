@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Plumbing;
 using static ToSic.Eav.Apps.Tests.PropertyLookupAndStack.TestData;
@@ -34,6 +33,7 @@ namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack
             };
             if (Dog != null) values.Add(FieldDog, Dog);
             if (Children != null) values.Add(FieldChildren, Children);
+            if (Cat != null) values.Add(FieldCat, Cat);
             return values;
         }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.PropertyLookup;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using static ToSic.Eav.Apps.Tests.PropertyLookupAndStack.TestData;
 

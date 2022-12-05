@@ -17,10 +17,10 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <returns></returns>
         [PrivateApi]
-        public static PropertyRequest TryToNavigateToEntityInList(this IEntity entity, string field, object parentDynEntity, ILog logOrNull, PropertyLookupPath path)
+        public static PropReqResult TryToNavigateToEntityInList(this IEntity entity, PropReqSpecs specs, object parentDynEntity, PropertyLookupPath path)
         {
-            var l = logOrNull.Fn<PropertyRequest>(field);
-
+            var field = specs.Field;
+            var l = specs.LogOrNull.Fn<PropReqResult>(field);
             // Check if we have a configuration for dynamic children
             var dynChildField = entity.Type?.DynamicChildrenField;
             if (string.IsNullOrEmpty(dynChildField)) return l.ReturnNull("no dyn-child");
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Data
 
                 if (dynEntityWithTitle == null) return l.ReturnNull("no matching child");
 
-                var result = new PropertyRequest(new List<IEntity> { dynEntityWithTitle }, path)
+                var result = new PropReqResult(new List<IEntity> { dynEntityWithTitle }, path)
                 {
                     FieldType = DataTypes.Entity,
                     Name = field,

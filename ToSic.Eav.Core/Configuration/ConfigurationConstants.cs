@@ -27,12 +27,6 @@ namespace ToSic.Eav.Configuration
             Target = AppThingsToStack.Settings
         };
 
-        //public static AppThingsIdentifiers[] AppThingsArray =
-        //{
-        //    Resources,
-        //    Settings
-        //};
-
         public static string WebResourcesNode = "WebResources";
         public static string WebResourceEnabledField = "Enabled";
         public static string WebResourceHtmlField = "Html";

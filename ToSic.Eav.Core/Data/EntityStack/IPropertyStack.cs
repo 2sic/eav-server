@@ -19,6 +19,6 @@ namespace ToSic.Eav.Data
         IPropertyStack GetStack(params string[] names);
         IPropertyStack GetStack(ILog log, params string[] names);
 
-        PropertyRequest InternalGetPath(string fieldPath, string[] dimensions, ILog parentLogOrNull, PropertyLookupPath path);
+        PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path);
     }
 }

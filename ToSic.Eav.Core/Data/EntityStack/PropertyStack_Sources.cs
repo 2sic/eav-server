@@ -1,0 +1,37 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using ToSic.Eav.Data.PropertyLookup;
+using ToSic.Eav.Plumbing;
+using ToSic.Eav.Plumbing.Linq;
+
+namespace ToSic.Eav.Data
+{
+    public partial class PropertyStack
+    {
+        public IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources
+            => _sources ?? throw new Exception($"Can't access {nameof(IPropertyStack)}.{nameof(Sources)} as it hasn't been initialized yet.");
+        private IImmutableList<KeyValuePair<string, IPropertyLookup>> _sources;
+
+        public IImmutableList<KeyValuePair<string, IPropertyLookup>> SourcesReal => _sourcesReal.Get(GeneratorSourcesReal);
+        private readonly GetOnce<IImmutableList<KeyValuePair<string, IPropertyLookup>>> _sourcesReal = new GetOnce<IImmutableList<KeyValuePair<string, IPropertyLookup>>>();
+
+        private IImmutableList<KeyValuePair<string, IPropertyLookup>> GeneratorSourcesReal()
+        {
+            var real = _sources.Where(ep => ep.Value != null)
+                // Must de-duplicate sources. EG AppSystem and AppAncestorSystem could be the same entity
+                // And in that case future lookups could result in endless loops
+                .DistinctBy(src => src.Value)
+                .ToImmutableArray();
+            return real;
+        }
+
+
+        public IPropertyLookup GetSource(string name)
+        {
+            var found = Sources.Where(s => s.Key.EqualsInsensitive(name)).ToArray();
+            return found.Any() ? found[0].Value : null;
+        }
+    }
+}

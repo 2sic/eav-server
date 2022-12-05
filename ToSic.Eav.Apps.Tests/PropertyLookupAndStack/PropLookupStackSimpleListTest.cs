@@ -40,10 +40,16 @@ namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack
         [TestMethod] public void JungleboyFirst_GrandChildName() => AreEqual(GrandchildJb.Name, FindInJungleFirstPath($"{FieldChildren}.{FieldChildren}.{FieldName}"));
 
         [TestMethod]
-        public void JungleboyChildNameAndDog()
+        public void JungleboyChildName()
         {
             var result = GetJungleboyChildrenStack(FieldChildren);
             AreEqual(ChildJb1.Name, GetResult(result.Substack, FieldName, result.path));
+        }
+
+        [TestMethod]
+        public void JungleboyChildDogOfSecondChild()
+        {
+            var result = GetJungleboyChildrenStack(FieldChildren);
             AreEqual(ChildJb2.Dog, GetResult(result.Substack, FieldDog, result.path));
         }
 
@@ -51,8 +57,7 @@ namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack
         public void JungleboyChildCatOfJanesKids()
         {
             var initialResult = GetJungleboyChildrenStack(FieldChildren);
-            var path = new PropertyLookupPath().Add("Test", "Starting");
-            var result = GetRequest(initialResult.Substack, FieldCat, path);
+            var result = GetRequest(initialResult.Substack, FieldCat, initialResult.path);
             AreEqual(ChildOfJaneDoe.Cat, result.Result);
         }
 
@@ -65,6 +70,8 @@ namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack
             IsNotNull(result);
 
             IsTrue(result.Any());
+            requestResult.Result = result.First();
+            return (result.First(), requestResult.Path);
             var stack = new PropertyStack().Init(fieldName, result);
             return (stack, requestResult.Path);
         }

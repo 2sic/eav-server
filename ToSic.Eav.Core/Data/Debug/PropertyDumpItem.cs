@@ -17,7 +17,7 @@ namespace ToSic.Eav.Data.Debug
             return new PropertyDumpItem
             {
                 Path = errPath,
-                Property = new PropertyRequest("error", new PropertyLookupPath().Add(errPath))
+                Property = new PropReqResult("error", new PropertyLookupPath().Add(errPath))
                 {
                     FieldType = "Todo",
                     Name = "error",
@@ -44,7 +44,7 @@ namespace ToSic.Eav.Data.Debug
         /// <summary>
         /// Result data of the property
         /// </summary>
-        public PropertyRequest Property { get; set; }
+        public PropReqResult Property { get; set; }
 
         public List<PropertyDumpItem> AllOptions { get; set; }
     }

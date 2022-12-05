@@ -2,6 +2,7 @@
 
 #if NETFRAMEWORK
 using System;
+using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Plumbing;
 
@@ -17,7 +18,7 @@ namespace ToSic.Eav.Data
             if (_useLightModel)
                 return base.GetBestValue(attributeName);
 
-            var set = FindPropertyInternal(attributeName, languages, null, null);
+            var set = FindPropertyInternal(new PropReqSpecs(attributeName, languages), null);
             var result = set.Result;
             var attributeType = set.FieldType;
 
@@ -38,7 +39,7 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
         public new object GetBestValue(string attributeName, bool resolveHyperlinks)
-            => GetBestValue(attributeName, new string[0]);
+            => GetBestValue(attributeName, Array.Empty<string>());
 
 
         [PrivateApi]

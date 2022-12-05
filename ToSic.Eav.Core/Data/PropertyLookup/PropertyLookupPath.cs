@@ -4,14 +4,13 @@ namespace ToSic.Eav.Data.PropertyLookup
 {
     public class PropertyLookupPath
     {
-        public PropertyLookupPath(List<string> original = null)
-        {
-            Parts = original == null ? new List<string>() :new List<string>(original);
-        }
+        public PropertyLookupPath(List<string> original = null) 
+            => Parts = original == null ? new List<string>() : new List<string>(original);
 
         public List<string> Parts;
 
     }
+
 
     public static class PropertyLookupPathExtensions
     {

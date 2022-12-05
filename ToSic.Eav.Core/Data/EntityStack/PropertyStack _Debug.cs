@@ -2,8 +2,8 @@
 using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data.Debug;
+using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data
 {
@@ -12,13 +12,13 @@ namespace ToSic.Eav.Data
     {
 
         [PrivateApi("Internal")]
-        public List<PropertyDumpItem> _Dump(string[] languages, string path, ILog parentLogOrNull)
+        public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path)
         {
             // No sources - return empty
             if (Sources == null || !Sources.Any()) return new List<PropertyDumpItem>();
 
             // If path is empty, use Name as base path
-            if (string.IsNullOrEmpty(path)) path = Name ?? "";
+            if (string.IsNullOrEmpty(path)) path = NameId ?? "";
 
             // Get all sources, incl. null-sources
             var sources = SourcesReal
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Data
             var result = sources
                 .SelectMany(s =>
                 {
-                    var sourceDump = s.Source._Dump(languages, path, parentLogOrNull);
+                    var sourceDump = s.Source._Dump(specs, path);
                     sourceDump.ForEach(sd =>
                     {
                         sd.SourceName = s.Key;

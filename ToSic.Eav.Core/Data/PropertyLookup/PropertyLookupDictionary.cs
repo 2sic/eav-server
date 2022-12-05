@@ -2,7 +2,6 @@
 using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Documentation;
 using ToSic.Eav.Generics;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data.PropertyLookup
 {
@@ -23,27 +22,24 @@ namespace ToSic.Eav.Data.PropertyLookup
         }
 
         public IDictionary<string, object> Values { get; }
-        public PropertyRequest FindPropertyInternal(string field, string[] languages, ILog parentLogOrNull, PropertyLookupPath path)
+
+        public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
         {
-            path = path?.Add(SourceTypeId, NameId, field);
-            if (Values.TryGetValue(field, out var result))
+            path = path?.Add(SourceTypeId, NameId, specs.Field);
+            if (Values.TryGetValue(specs.Field, out var result))
             {
-                return new PropertyRequest(result, path)
+                return new PropReqResult(result, path)
                 {
                     Value = null,
-                    //Result = result,
-                    //Path = path,
                     Source = this,
                     FieldType = Attributes.FieldIsVirtual,  // I believe this would only be used for certain follow up work
                 };
             }
 
-            return new PropertyRequest(null, path); // {Path = path};
+            return PropReqResult.Null(path);
         }
 
-        public List<PropertyDumpItem> _Dump(string[] languages, string path, ILog parentLogOrNull)
-        {
-            throw new System.NotImplementedException();
-        }
+        public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
+            => new List<PropertyDumpItem> { new PropertyDumpItem { Path = $"Not supported on {nameof(PropertyLookupDictionary)}" } };
     }
 }

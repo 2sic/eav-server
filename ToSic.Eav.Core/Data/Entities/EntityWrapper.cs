@@ -138,12 +138,14 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public T Value<T>(string field) => Entity.Value<T>(field);
 
-        [PrivateApi("Internal")]
-        public virtual PropertyRequest FindPropertyInternal(string field, string[] languages, ILog parentLogOrNull, PropertyLookupPath path) 
-            => Entity.FindPropertyInternal(field, languages, parentLogOrNull, path.Add("Wrap", field));
 
         [PrivateApi("Internal")]
-        public List<PropertyDumpItem> _Dump(string[] languages, string path, ILog parentLogOrNull) => Entity._Dump(languages, path, parentLogOrNull);
+        public virtual PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
+            => Entity.FindPropertyInternal(specs, path.Add("Wrap", specs.Field));
+
+        [PrivateApi("Internal")]
+        public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
+            => Entity._Dump(specs, path);
 
         public List<IDecorator<IEntity>> Decorators { get; } = new List<IDecorator<IEntity>>();
     }

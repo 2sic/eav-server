@@ -1,22 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data
 {
     public partial class PropertyStack
     {
-        public PropertyRequest InternalGetPath(string fieldPath, string[] dimensions, ILog parentLogOrNull, PropertyLookupPath path)
+        public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path)
         {
             path = path.KeepOrNew();
-            var fields = fieldPath.Split('.');
+            var fields = specs.Field.Split('.');
             var startAt = this as IPropertyLookup;
-            PropertyRequest result = null;
+            PropReqResult result = null;
             for (var index = 0; index < fields.Length; index++)
             {
                 var field = fields[index];
-                result = startAt.FindPropertyInternal(field, dimensions, parentLogOrNull, path);
+                result = startAt.FindPropertyInternal(specs.ForOtherField(field), path);
 
                 // If nothing found, stop here and return
                 if (result.Result == null)
@@ -24,20 +23,19 @@ namespace ToSic.Eav.Data
 
                 // If we got a sub-list and still have keys in the path to check, update the source
                 if (result.Result is IEnumerable<IPropertyLookup> resultToStartFrom)
-                    startAt = new PropertyStack().Init(field, resultToStartFrom.ToArray());
-                
+                {
+                    startAt = resultToStartFrom.First();
+                    continue;
+                }
+
                 // If we got any other value, but would still have fields to check, we must stop now
                 // and report there was nothing to find
-                else if (index < fields.Length - 1)
-                    return NotFound(result.Path);
+                if (index < fields.Length - 1)
+                    return PropReqResult.NullFinal(result.Path);
             }
 
-            return result ?? NotFound(null);
+            return result ?? PropReqResult.NullFinal(null);
         }
-
-        private PropertyRequest NotFound(PropertyLookupPath path) => new PropertyRequest(null, path)
-        {
-            FieldType = "NotFound", //wip
-        }.AsFinal(0);
+        
     }
 }
