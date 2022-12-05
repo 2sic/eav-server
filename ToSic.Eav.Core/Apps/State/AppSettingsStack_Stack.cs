@@ -11,6 +11,9 @@ namespace ToSic.Eav.Apps
     [PrivateApi]
     public partial class AppSettingsStack
     {
+        public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target)
+            => GetStack(target, null);
+
         public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity viewPart)
         {
             var wrapLog = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(target.Target.ToString());

@@ -16,6 +16,9 @@ namespace ToSic.Eav.Data
                 sources?.Select(s => new KeyValuePair<string, IPropertyLookup>((s as IHasIdentityNameId)?.NameId, s)).ToArray()
                 ?? Array.Empty<KeyValuePair<string, IPropertyLookup>>());
 
+        public PropertyStack Init(string name, IReadOnlyCollection<KeyValuePair<string, IPropertyLookup>> sources)
+            => Init(name, sources.ToArray());
+
         public PropertyStack Init(string name, params KeyValuePair<string, IPropertyLookup>[] sources)
         {
             NameId = name;
