@@ -12,7 +12,6 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public string Operation { get; set; }
         public DateTime SysCreatedDate { get; set; }
         public int? SysLogId { get; set; }
-        public string NewData { get; set; }
         public string Json { get; set; }
     }
 }

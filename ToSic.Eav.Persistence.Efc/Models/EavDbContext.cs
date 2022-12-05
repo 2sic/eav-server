@@ -260,10 +260,6 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.NewData)
-                    .IsRequired()
-                    .HasColumnType("xml");
-
                 entity.Property(e => e.Operation)
                     .IsRequired()
                     .HasColumnType("nchar(1)")
