@@ -14,6 +14,7 @@ namespace ToSic.Eav.WebApi.Sys
 
     public class AppInstallRuleDto
     {
+        public string name { get; set; }
         public string appGuid { get; set; }
         public string mode { get; set; }
         public string target { get; set; }

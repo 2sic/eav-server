@@ -23,12 +23,12 @@ namespace ToSic.Eav.WebApi.Sys
 
     public partial class InsightsControllerReal
     {
-        protected static ITag HeadFields(params object[] fields)
+        protected static IHtmlTag HeadFields(params object[] fields)
             => Tag.Thead(Tag.Tr(
                 fields.Select(fresh => Tag.Th(HtmlEncode((fresh ?? "").ToString()))).ToArray<object>()
             ));
 
-        protected static ITag RowFields(params object[] fields)
+        protected static IHtmlTag RowFields(params object[] fields)
             => Tag.Tr(
                 fields
                     .Select(fresh =>
