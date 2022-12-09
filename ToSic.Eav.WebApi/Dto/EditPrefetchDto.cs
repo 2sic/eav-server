@@ -5,6 +5,8 @@ namespace ToSic.Eav.WebApi.Dto
 {
     public class EditPrefetchDto
     {
+        // Note: #AdamItemDto - as of now, we must use object because System.Io.Text.Json will otherwise not convert the object correctly :(
+
         /// <summary>
         /// Dictionary where each field contains a list of ADAM items
         /// </summary>

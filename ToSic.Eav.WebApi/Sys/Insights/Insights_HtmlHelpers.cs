@@ -50,10 +50,10 @@ namespace ToSic.Eav.WebApi.Sys
 
         protected const string JsTableSortCdn = "https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/";
 
-        protected static TagBase JsTableSort(string id = "table")
+        protected static IHtmlTag JsTableSort(string id = "table")
             => Tag.Script().Src(JsTableSortCdn + "tablesort.min.js")
                + Tag.Script().Src(JsTableSortCdn + "sorts/tablesort.number.min.js")
-               + Tag.Script($"new Tablesort(document.getElementById('{id}'));");
+               + Tag.Script($"new Tablesort(document.getElementById('{id}'));") as IHtmlTag;
 
 
 
