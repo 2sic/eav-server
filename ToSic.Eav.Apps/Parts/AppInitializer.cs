@@ -92,7 +92,9 @@ namespace ToSic.Eav.Apps.Parts
                         {"Folder", folder},
                         {"AllowTokenTemplates", "True"},
                         {"AllowRazorTemplates", "True"},
-                        {"Version", "00.00.13"}, // note: update this to the latest 2sxc version just so it's easy to spot when it was auto-created
+                        // always trailing with the version it was created with
+                        // Note that v13 and 14 both report v13, only 15+ uses the real version
+                        {"Version", $"00.00.{EavSystemInfo.Version.Major:00}"},
                         {"OriginalId", ""}
                     },
                     false));

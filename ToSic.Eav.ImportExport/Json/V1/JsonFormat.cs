@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
+using ToSic.Eav.Json.V1;
 
 namespace ToSic.Eav.ImportExport.Json.V1
 {
-    public class JsonFormat
+    public class JsonFormat: JsonContentTypeSet
     {
         /// <summary>
         /// V1 - header information
@@ -16,25 +16,23 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
         public JsonEntity Entity;
-        
-        /// <summary>
-        /// V1 - a single Content-Type
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
-        public JsonContentType ContentType;
+
+        ///// <summary>
+        ///// V1 - a single Content-Type
+        ///// </summary>
+        //[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+        //public JsonContentType ContentType;
 
 
-        /// <summary>
-        /// V1.2 - A list of entities - added in 2sxc 12 to support content-types with additional sub-entities like formulas
-        /// </summary>
-        /// <remarks>
-        /// Will not be serialized if default value (empty array)
-        /// </remarks>
+        ///// <summary>
+        ///// V1.2 - A list of entities - added in 2sxc 12 to support content-types with additional sub-entities like formulas
+        ///// </summary>
+        //[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        //public IEnumerable<JsonEntity> Entities;
+
+
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public IEnumerable<JsonEntity> Entities;
-
-
-
+        public List<JsonBundle> Bundles { get; set; }
 
     }
 }
