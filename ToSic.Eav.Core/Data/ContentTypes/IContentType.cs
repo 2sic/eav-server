@@ -64,7 +64,7 @@ namespace ToSic.Eav.Data
         /// A simple indexer to get an attribute
         /// </summary>
         /// <param name="fieldName"></param>
-        /// <returns>The <see cref="IContentTypeAttribute"/> of the field name</returns>
+        /// <returns>The <see cref="IContentTypeAttribute"/> of the field name or `null` if not found</returns>
         IContentTypeAttribute this[string fieldName] { get; }
 
         /// <summary>

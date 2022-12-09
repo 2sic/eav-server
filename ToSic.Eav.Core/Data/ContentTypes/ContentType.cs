@@ -75,8 +75,8 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         [PrivateApi("WIP 12.03")]
         // Don't cache the result, as it could change during runtime
-        public string DynamicChildrenField => Metadata.DetailsOrNull?.DynamicChildrenField; // Metadata.GetBestValue<string>(ContentTypeDetails.DynamicChildrenField);
-        
+        public string DynamicChildrenField => Metadata.DetailsOrNull?.DynamicChildrenField;
+
         #endregion
 
 

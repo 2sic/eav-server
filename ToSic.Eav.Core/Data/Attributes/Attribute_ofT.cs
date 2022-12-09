@@ -30,13 +30,9 @@ namespace ToSic.Eav.Data
         {
             get
             {
-				// Prevent Exception if Values is null
-	            // if (Values == null) return default;
-
                 try
                 {
                     var value = GetTypedValue();
-                    // var value = (IValue<T>)Values.FirstOrDefault();
                     return value != null ? value.TypedContents : default;
                 }
                 catch

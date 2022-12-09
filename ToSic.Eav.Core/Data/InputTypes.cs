@@ -21,5 +21,7 @@ namespace ToSic.Eav.Data
         public const string InputTypeDisableI18N = "DisableI18n";
         public const string InputTypeAngularAssets = "AngularAssets";
         public const string InputTypeUseAdam = "UseAdam";
+
+        public static string InputTypeWysiwyg = "string-wysiwyg";
     }
 }
