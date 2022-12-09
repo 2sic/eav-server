@@ -4,6 +4,11 @@ namespace ToSic.Eav.Configuration
 {
     public class ConfigurationConstants
     {
+        // Settings / Resources
+        public static string RootNameSettings = "Settings";
+        public static string RootNameResources = "Resources";
+
+
         public const string SysSettingsFieldScope = "SettingsEntityScope";
 
         public static string FieldSettingsIdentifier = "SettingsIdentifier";
@@ -30,7 +35,6 @@ namespace ToSic.Eav.Configuration
         public static string WebResourcesNode = "WebResources";
         public static string WebResourceEnabledField = "Enabled";
         public static string WebResourceHtmlField = "Html";
-
     }
 
     public enum AppThingsToStack

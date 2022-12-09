@@ -4,6 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.Configuration.ConfigurationConstants;
 using static ToSic.Eav.Configuration.ConfigurationStack;
 
 namespace ToSic.Eav.Apps
@@ -11,6 +12,13 @@ namespace ToSic.Eav.Apps
     [PrivateApi]
     public partial class AppSettingsStack
     {
+        public PropertyStack GetStack(string part, IEntity viewPart = null)
+        {
+            var partId = part == RootNameSettings ? Settings : Resources;
+            var sources = GetStack(partId);
+            return new PropertyStack().Init(part, sources);
+        }
+
         public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target)
             => GetStack(target, null);
 

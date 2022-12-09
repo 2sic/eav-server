@@ -72,8 +72,8 @@ namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack
             IsTrue(result.Any());
             requestResult.Result = result.First();
             return (result.First(), requestResult.Path);
-            var stack = new PropertyStack().Init(fieldName, result);
-            return (stack, requestResult.Path);
+            //var stack = new PropertyStack().Init(fieldName, result);
+            //return (stack, requestResult.Path);
         }
 
         [TestMethod] public void TestJohnFirstName() => AreEqual(JohnDoe.Name, FindInJohnDoe(FieldName));

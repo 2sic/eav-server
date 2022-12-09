@@ -34,10 +34,6 @@
         // this used to be a Settings.DataIsMissingInDb
         public const int AppIdNotFound = -100;
 
-        // Settings / Resources
-        public static string RootNameSettings = "Settings";
-        public static string RootNameResources = "Resources";
-
         // Placeholders / Tokens - probably should move somewhere else someday
         // TODO: CHANGE TO [App:Folder] - must check UI code if this is used anywhere
         public const string AppFolderPlaceholder = "[AppFolder]";
