@@ -55,6 +55,18 @@ namespace ToSic.Eav
         [PrivateApi] public static readonly string PresetName = "Preset";
         [PrivateApi] public static readonly IAppIdentity PresetIdentity = new AppIdentity(PresetZoneId, PresetAppId);
 
+        #region Experimental, not in use yet / WIP, unsure if we'll use this
+
+        // This is just some internal work, as we're considering also loading some presets
+        // from the file system, which are installation specific
+        // But ATM we're not doing this yet. 
+        [PrivateApi] public static readonly int GlobalPresetAppId = -41;
+        [PrivateApi] public static readonly string GlobalPresetName = "Preset-Installation";
+        [PrivateApi] public static readonly IAppIdentity GlobalPresetIdentity = new AppIdentity(PresetZoneId, GlobalPresetAppId);
+        
+
+        #endregion
+
         /// <summary>
         /// Default ZoneId. Used if none is specified on the Context.
         /// </summary>

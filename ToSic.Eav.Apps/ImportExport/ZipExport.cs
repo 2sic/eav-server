@@ -172,7 +172,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Copy global app folder only for ParentApp
             var parentAppGuid = xmlExport.AppState.ParentApp.AppState?.NameId;
-            if (parentAppGuid == null || parentAppGuid == Constants.PresetName)
+            if (parentAppGuid == null || AppStateExtensions.AppGuidIsAPreset(parentAppGuid))
                 if (Directory.Exists(_physicalPathGlobal))
                     FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
 

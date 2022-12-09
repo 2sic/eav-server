@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using ToSic.Eav.Json.V1;
 
 namespace ToSic.Eav.ImportExport.Json.V1
 {

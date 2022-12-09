@@ -7,7 +7,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.DI;
 using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Caching
@@ -20,8 +19,6 @@ namespace ToSic.Eav.Caching
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public abstract class AppsCacheBase : IAppsCacheSwitchable
     {
-        // TODO: WILL PROBABLY need an update on the farm cache which doesn't have these dependencies yet
-
         #region Switchable
 
         public virtual string NameId => "Base";
@@ -45,28 +42,24 @@ namespace ToSic.Eav.Caching
             // Load from DB (this will also ensure that Primary Apps are created)
             var realZones = GetNewRepoLoader(sp).Zones();
 
-            // Add the Preset-Zone to the list - still WIP v13
-            try
-            {
-                var presetZone = new Zone(Constants.PresetZoneId,
-                    Constants.PresetAppId,
-                    Constants.PresetAppId,
-                    new Dictionary<int, string> { { Constants.PresetAppId, Constants.PresetName } },
-                    new List<Data.DimensionDefinition>()
+            // Add the Preset-Zone to the list - important, otherwise everything fails
+            var presetZone = new Zone(Constants.PresetZoneId,
+                Constants.PresetAppId,
+                Constants.PresetAppId,
+                new Dictionary<int, string> { { Constants.PresetAppId, Constants.PresetName } },
+                new List<Data.DimensionDefinition>
+                {
+                    new Data.DimensionDefinition
                     {
-                        new Data.DimensionDefinition()
-                        {
-                            Active = true,
-                            DimensionId = 0,
-                            EnvironmentKey = "en-us",
-                            Key = "en-us",
-                            Name = "English",
-                            Parent = null
-                        }
-                    });
-                realZones.Add(Constants.PresetZoneId, presetZone);
-            }
-            catch { /* ignore */ }
+                        Active = true,
+                        DimensionId = 0,
+                        EnvironmentKey = "en-us",
+                        Key = "en-us",
+                        Name = "English",
+                        Parent = null
+                    }
+                });
+            realZones.Add(Constants.PresetZoneId, presetZone);
 
             return new ReadOnlyDictionary<int, Zone>(realZones);
         }
@@ -154,7 +147,7 @@ namespace ToSic.Eav.Caching
                 Set(cacheKey, appState);
             }
 
-            return appState; // Get(cacheKey);
+            return appState;
         }
 
         /// <summary>
@@ -200,7 +193,6 @@ namespace ToSic.Eav.Caching
             try
             {
                 var zones = Zones(sp);
-                // var zone = zones.FirstOrDefault(z => z.Value.Apps.Any(a => a.Key == appId));
                 return zones.Single(z => z.Value.Apps.Any(a => a.Key == appId)).Key;
             }
             catch (Exception ex)
