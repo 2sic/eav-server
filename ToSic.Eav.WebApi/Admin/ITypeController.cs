@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.Admin
@@ -62,5 +63,16 @@ namespace ToSic.Eav.WebApi.Admin
         /// </remarks>
         /// <returns></returns>
         ImportResultDto Import(int zoneId, int appId);
+
+        /// <summary>
+        /// Json Bundle Export
+        /// </summary>
+        /// <remarks>
+        /// New in 2sxc v15
+        /// </remarks>
+        /// <param name="appId"></param>
+        /// <param name="exportConfiguration"></param>
+        /// <returns></returns>
+        THttpResponseType JsonBundleExport(int appId, Guid exportConfiguration);
     }
 }

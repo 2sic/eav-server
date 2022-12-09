@@ -7,11 +7,14 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
+using ToSic.Eav.Metadata;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Plumbing;
 using ToSic.Eav.WebApi.Security;
+using System.Collections.Generic;
+using ToSic.Eav.ImportExport.Json.V1;
 #if NETFRAMEWORK
 using System.Web.Http;
 #else
@@ -117,6 +120,77 @@ namespace ToSic.Eav.WebApi.ImportExport
                  + entity.GetBestTitle() + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                 .RemoveNonFilenameCharacters());
         }
+        
+        [HttpGet]
+        public THttpResponseType JsonBundleExport(IUser user, Guid exportConfiguration)
+        {
+            Log.A($"create Json Bundle Export for ExportConfiguration:{exportConfiguration}");
+            //SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
 
+            var systemExportConfiguration = _appManager.Read.Entities.Get(exportConfiguration);
+            if (systemExportConfiguration == null)
+            {
+                var exception = new KeyNotFoundException($"ExportConfiguration:{exportConfiguration} is missing");
+                Log.Ex(exception);
+                throw exception;
+            }
+
+            // TODO: implement PreserveMarkers functionality
+            var preserveMarkers = systemExportConfiguration.GetBestValue<bool>("PreserveMarkers", null);
+            Log.A($"preserveMarkers:{preserveMarkers}");
+
+            // 1. Find all decorator metadata of type SystemExportDecorator
+            // use the guid for finding them: 32698880-1c2e-41ab-bcfc-420091d3263f
+            // filter by the Configuration field
+            var metadataExportMarkers = _appManager.Read.Entities.Get(Decorators.SystemExportDecorator)
+                .Where(e => exportConfiguration.ToString().Equals(e.GetBestValue("Configuration", null).ToString()))
+                .ToList();
+            Log.A($"metadataExportMarkers:{metadataExportMarkers.Count()}");
+
+
+            // 2. From the metadata, find all owners
+            var owners = metadataExportMarkers.Select(et => et.MetadataFor.KeyString).ToList();
+            Log.A($"count owners:{owners.Count()}");
+
+            var serializer = _jsonSerializer.New.Init(_appManager.AppState, Log);
+
+            // TODO: wrong JSON v1 format is generated
+            var bundleList = new JsonBundle();
+
+            // 3. Loop through content types and add them to the bundlelist
+            var contentTypes = _appManager.Read.AppState.ContentTypes.Where(ct => owners.Contains(ct.NameId)).ToList();
+            Log.A($"count export contentTypes:{contentTypes.Count()}");
+            foreach (var contentType in contentTypes)
+            {
+                var jsonType = serializer.ToPackage(contentType, true);
+                if (bundleList.ContentTypes == null) bundleList.ContentTypes = new List<JsonContentTypeSet>();
+                bundleList.ContentTypes.Add(new JsonContentTypeSet
+                {
+                    ContentType = jsonType.ContentType,
+                    Entities = jsonType.Entities
+                });
+            }
+
+            // 4. loop through entities and add them to the bundle list
+            var entities = _appManager.Read.AppState.List.Where(e => owners.Contains(e.EntityGuid.ToString()));
+            Log.A($"count export entities:{entities.Count()}");
+            foreach (var entity in entities)
+            {
+                if (bundleList.Entities == null) bundleList.Entities = new List<JsonEntity>();
+                bundleList.Entities.Add(serializer.ToJson(entity));
+            }
+
+            // 5. Create a file which contains this new bundle
+            var fileContent = System.Text.Json.JsonSerializer.Serialize(new JsonFormat
+            {
+                Bundles = new List<JsonBundle>() { bundleList }
+            }, Serialization.JsonOptions.UnsafeJsonWithoutEncodingHtml);
+
+            // 6. give it to the browser with the name specified in the Export Configuration
+            var fileName = systemExportConfiguration.GetBestValue<string>("FileName", null);
+
+            Log.A($"OK, export fileName:{fileName}, size:{fileContent.Count()}");
+            return _responseMaker.File(fileContent, fileName, MimeHelper.Json);
+        }
     }
 }
