@@ -57,7 +57,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
                 throw new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel");
             }
 
-            _mdRead.Ready.Init(appState);
+            _mdRead.Value.Init(appState);
 
             // When retrieving all items, make sure that permissions are _not_ included
             if (string.IsNullOrEmpty(contentType))
@@ -66,7 +66,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
             IEnumerable<MetadataRecommendation> recommendations = null;
             try
             {
-                recommendations = _mdRead.Ready.GetAllowedRecommendations(targetType, key, contentType);
+                recommendations = _mdRead.Value.GetAllowedRecommendations(targetType, key, contentType);
             }
             catch (Exception e)
             {

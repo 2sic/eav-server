@@ -45,7 +45,7 @@ namespace ToSic.Eav.WebApi.Admin
 
         /// <inheritdoc/>
         public IEnumerable<Dictionary<string, object>> List(int appId, string contentType)
-            => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Ready, _appStates.Value.Get(appId), contentType, GrantSets.ReadSomething, Log)
+            => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.ReadSomething, Log)
                 .GetEntitiesForAdmin(contentType);
 
 
@@ -53,9 +53,9 @@ namespace ToSic.Eav.WebApi.Admin
         public void Delete(string contentType, int appId, int? id, Guid? guid, bool force = false, int? parentId = null,
             string parentField = null)
         {
-            if (id.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Ready, _appStates.Value.Get(appId), contentType, GrantSets.DeleteSomething, Log)
+            if (id.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.DeleteSomething, Log)
                 .Delete(contentType, id.Value, force, parentId, parentField);
-            else if (guid.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Ready, _appStates.Value.Get(appId), contentType, GrantSets.DeleteSomething, Log)
+            else if (guid.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.DeleteSomething, Log)
                 .Delete(contentType, guid.Value, force, parentId, parentField);
             else
                 throw new Exception($"When using '{nameof(Delete)}' you must use 'id' or 'guid' parameters.");

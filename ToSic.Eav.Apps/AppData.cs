@@ -43,7 +43,7 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Fn<IEntity>(contentTypeName);
             if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
-            var ids = DataController.Ready.Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
+            var ids = DataController.Value.Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
             var id = ids.FirstOrDefault();
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps
                 foreach (var values in multiValues)
                     ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
 
-            var ids = DataController.Ready.Create(contentTypeName, multiValues);
+            var ids = DataController.Value.Create(contentTypeName, multiValues);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             var created = List.Where(e => ids.Contains(e.EntityId)).ToList();
@@ -82,7 +82,7 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Fn($"app update i:{entityId}");
             // userName is not used (to change owner of updated entity).
-            DataController.Ready.Update(entityId, values);
+            DataController.Value.Update(entityId, values);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             wrapLog.Done();
@@ -94,7 +94,7 @@ namespace ToSic.Eav.Apps
         {
             var wrapLog = Log.Fn($"app delete i:{entityId}");
             // userName is not used (to change owner of deleted entity).
-            DataController.Ready.Delete(entityId);
+            DataController.Value.Delete(entityId);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             wrapLog.Done();

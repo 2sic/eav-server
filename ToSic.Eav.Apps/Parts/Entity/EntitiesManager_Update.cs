@@ -65,7 +65,7 @@ namespace ToSic.Eav.Apps.Parts
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 
-            var saveEnt = _entitySaverLazy.Ready.CreateMergedForSaving(orig, partialEntity, saveOptions);
+            var saveEnt = _entitySaverLazy.Value.CreateMergedForSaving(orig, partialEntity, saveOptions);
 
             // if changes should be draft, ensure it works
             if (draftAndBranch.HasValue)

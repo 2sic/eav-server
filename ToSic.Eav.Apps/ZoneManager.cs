@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps
         #region App management
 
         public void DeleteApp(int appId, bool fullDelete)
-            => _systemManagerLazy.Ready.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId, fullDelete), true);
+            => _systemManagerLazy.Value.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId, fullDelete), true);
 
 
         #endregion
@@ -39,7 +39,7 @@ namespace ToSic.Eav.Apps
         {
             Log.A($"save languages code:{cultureCode}, txt:{cultureText}, act:{active}");
             DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
-            _systemManagerLazy.Ready.PurgeZoneList();
+            _systemManagerLazy.Value.PurgeZoneList();
         }
 
         #endregion

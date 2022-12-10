@@ -23,14 +23,14 @@ namespace ToSic.Eav.WebApi.Admin
         private readonly LazyInitLog<ZoneBackend> _zoneBackend;
 
         /// <inheritdoc />
-        public IList<SiteLanguageDto> GetLanguages() => _languagesBackend.Ready.GetLanguages();
+        public IList<SiteLanguageDto> GetLanguages() => _languagesBackend.Value.GetLanguages();
 
         /// <inheritdoc />
         public void SwitchLanguage(string cultureCode, bool enable) 
-            => _languagesBackend.Ready.Toggle(cultureCode, enable, CultureInfo.GetCultureInfo(cultureCode).EnglishName);
+            => _languagesBackend.Value.Toggle(cultureCode, enable, CultureInfo.GetCultureInfo(cultureCode).EnglishName);
 
         /// <inheritdoc />
-        public SystemInfoSetDto GetSystemInfo() => _zoneBackend.Ready.GetSystemInfo();
+        public SystemInfoSetDto GetSystemInfo() => _zoneBackend.Value.GetSystemInfo();
 
     }
 }

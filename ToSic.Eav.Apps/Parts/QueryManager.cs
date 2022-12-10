@@ -89,7 +89,7 @@ namespace ToSic.Eav.Apps.Parts
 
         private Entity CopyAndResetIds(IEntity origQuery, Guid? newMetadataTarget = null)
         {
-            var serializer = Serializer.Ready;
+            var serializer = Serializer.Value;
             var newSer = serializer.Serialize(origQuery);
             var newEnt = serializer.Deserialize(newSer) as Entity;
             newEnt.SetGuid(Guid.NewGuid());
@@ -110,7 +110,7 @@ namespace ToSic.Eav.Apps.Parts
 
 
             // Get the Entity describing the Query and Query Parts (DataSources)
-            var queryEntity = _queryManager.Ready.GetQueryEntity(id, Parent.AppState);
+            var queryEntity = _queryManager.Value.GetQueryEntity(id, Parent.AppState);
             var qDef = new QueryDefinition(queryEntity, Parent.AppId, Log);
 
             var parts = qDef.Parts;

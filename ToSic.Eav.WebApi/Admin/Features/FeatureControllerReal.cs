@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi.Admin.Features
             if (changes == null || changes.Count == 0) 
                 return wrapLog.ReturnFalse("no features changes");
             
-            return wrapLog.ReturnAsOk(_systemLoaderLazy.Ready.UpdateFeatures(changes));
+            return wrapLog.ReturnAsOk(_systemLoaderLazy.Value.UpdateFeatures(changes));
         }
     }
 }

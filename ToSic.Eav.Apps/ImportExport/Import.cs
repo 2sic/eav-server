@@ -249,7 +249,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 metadataToUse.SetGuid(Guid.NewGuid());
             }
             else
-                metadataToUse = _entitySaver.Ready.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
+                metadataToUse = _entitySaver.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
             return metadataToUse;
         }
 
@@ -295,7 +295,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // now update (main) entity id from existing - since it already exists
             var original = existingEntities.First();
             update.ResetEntityId(original.EntityId);
-            var result = _entitySaver.Ready.CreateMergedForSaving(original, update, saveOptions, logDetails);
+            var result = _entitySaver.Value.CreateMergedForSaving(original, update, saveOptions, logDetails);
             return callLog.ReturnAsOk(result);
         }
 

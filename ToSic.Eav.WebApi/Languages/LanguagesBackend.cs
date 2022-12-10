@@ -35,7 +35,7 @@ namespace ToSic.Eav.WebApi.Languages
         {
             var callLog = Log.Fn<IList<SiteLanguageDto>>();
             // ReSharper disable once PossibleInvalidOperationException
-            var cultures = _zoneMapper.Ready.CulturesWithState(_site)
+            var cultures = _zoneMapper.Value.CulturesWithState(_site)
                 .Select(c => new SiteLanguageDto { Code = c.Code, Culture = c.Culture, IsEnabled = c.IsEnabled })
                 .ToList();
 
@@ -46,7 +46,7 @@ namespace ToSic.Eav.WebApi.Languages
         {
             try
             {
-                var langs = _appUserLanguageCheckLazy.Ready.LanguagesWithPermissions(appState);
+                var langs = _appUserLanguageCheckLazy.Value.LanguagesWithPermissions(appState);
                 var converted = langs.Select(l =>
                     {
                         var dto = new SiteLanguageDto { Code = l.Code, Culture = l.Culture, IsAllowed = l.IsAllowed, IsEnabled = l.IsEnabled };

@@ -72,14 +72,14 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Read / Runtime system of the AppManager, to read data
         /// </summary>
-        public AppRuntime Read => _appRuntime.Ready;
+        public AppRuntime Read => _appRuntime.Value;
 
         #endregion
 
         /// <summary>
         /// Database controller / DB-Context
         /// </summary>
-        internal DbDataController DataController =>  _dbDataController.Ready;
+        internal DbDataController DataController =>  _dbDataController.Value;
 
 
         /// <summary>
@@ -90,12 +90,12 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The entity-management subsystem
         /// </summary>
-        public EntitiesManager Entities => _entitiesManager.Ready;
+        public EntitiesManager Entities => _entitiesManager.Value;
 
         /// <summary>
         /// Queries Management Subsystem
         /// </summary>
-        public QueryManager Queries => _queryManager.Ready;
+        public QueryManager Queries => _queryManager.Value;
 
         /// <summary>
         /// Content-Types Manager Subsystem

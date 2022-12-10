@@ -117,7 +117,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             foreach (var file in files) SaveLicenseFile(file);
 
             // reload license and features
-            _systemLoaderLazy.Ready.StartUpFeatures();
+            _systemLoaderLazy.Value.StartUpFeatures();
 
             return wrapLog.ReturnAsOk(new LicenseFileResultDto { Success = true, Message = "ok" });
         }
@@ -129,7 +129,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         {
             var wrapLog = Log.Fn<LicenseFileResultDto>();
 
-            var fingerprint = _systemLoaderLazy.Ready.Fingerprint.GetFingerprint();
+            var fingerprint = _systemLoaderLazy.Value.Fingerprint.GetFingerprint();
             var url = $"https://patrons.2sxc.org/api/license/get?fingerprint={fingerprint}";
             Log.A($"retrieve license from url:{url}");
 
@@ -169,7 +169,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             var success = SaveLicenseFile(DefaultLicenseFileName, content);
 
             // reload license and features
-            _systemLoaderLazy.Ready.StartUpFeatures();
+            _systemLoaderLazy.Value.StartUpFeatures();
 
             return wrapLog.ReturnAsOk(new LicenseFileResultDto { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."});
         }

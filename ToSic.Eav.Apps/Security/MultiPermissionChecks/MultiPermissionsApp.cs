@@ -52,7 +52,7 @@ namespace ToSic.Eav.Apps.Security
                 ? context.Site 
                 // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
                 // todo: probably enhance with a Site.IsMultiZone check
-                : _dp.ZoneMapper.Ready.SiteOfZone(App.ZoneId) ?? context.Site;
+                : _dp.ZoneMapper.Value.SiteOfZone(App.ZoneId) ?? context.Site;
             return wrapLog.Return(this, $"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
         }
         /// <summary>

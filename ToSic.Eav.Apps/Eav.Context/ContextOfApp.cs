@@ -109,7 +109,7 @@ namespace ToSic.Eav.Context
 
                 // Check if language permissions may alter edit
                 if (_userMayEdit == true && Deps.FeatsLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
-                    _userMayEdit = Deps.LangCheckLazy.Ready.UserRestrictedByLanguagePermissions(AppState) ?? _userMayEdit;
+                    _userMayEdit = Deps.LangCheckLazy.Value.UserRestrictedByLanguagePermissions(AppState) ?? _userMayEdit;
 
                 return wrapLog.Return(_userMayEdit.Value, $"{_userMayEdit.Value}");
             }

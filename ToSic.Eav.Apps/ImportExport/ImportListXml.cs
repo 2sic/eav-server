@@ -155,7 +155,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     // Case 2: Xml empty string
                     if (value == XmlConstants.Empty)
                     {
-                        AttributeBuilder.Ready.AddValue(entity.Attributes, valName, "", attribute.Type, nodeLang, false, ResolveLinks);
+                        AttributeBuilder.Value.AddValue(entity.Attributes, valName, "", attribute.Type, nodeLang, false, ResolveLinks);
                         continue;
                     }
 
@@ -167,7 +167,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         try
                         {
-                            AttributeBuilder.Ready.AddValue(entity.Attributes, valName, value, valType, nodeLang, false, ResolveLinks);
+                            AttributeBuilder.Value.AddValue(entity.Attributes, valName, value, valType, nodeLang, false, ResolveLinks);
                         }
                         catch (FormatException)
                         {
@@ -210,7 +210,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         continue;
                     }
 
-                    var val = AttributeBuilder.Ready.AddValue(entity.Attributes, valName,
+                    var val = AttributeBuilder.Value.AddValue(entity.Attributes, valName,
                             valExisting,
                             valType,
                             valueReferenceLanguage,

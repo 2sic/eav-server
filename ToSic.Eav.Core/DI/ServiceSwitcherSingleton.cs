@@ -1,5 +1,4 @@
 ﻿using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DI
 {
@@ -32,7 +31,7 @@ namespace ToSic.Eav.DI
 
             _logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
             var call = Log.Fn<T>(message: "re-check singleton service");
-            _preferredService = _serviceSwitcher.Ready.Value;
+            _preferredService = _serviceSwitcher.Value.Value;
             return call.Return(_preferredService, $"found {_preferredService.NameId}");
         }
 
@@ -43,7 +42,7 @@ namespace ToSic.Eav.DI
 
         public bool IsValueCreated => _preferredService != null;
 
-        public T ByNameId(string nameId) => _serviceSwitcher.Ready.ByNameId(nameId);
+        public T ByNameId(string nameId) => _serviceSwitcher.Value.ByNameId(nameId);
 
         protected void Reset() => _preferredService = default;
     }

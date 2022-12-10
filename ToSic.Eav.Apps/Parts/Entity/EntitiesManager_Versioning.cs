@@ -44,7 +44,7 @@ namespace ToSic.Eav.Apps.Parts
             //var deserializer = Parent.ServiceProvider.Build<JsonSerializer>().Init(Parent.AppState, Log);
 
             var str = GetFromTimelime(entityId, changeId);
-            return Serializer.Ready.Deserialize(str);
+            return Serializer.Value.Deserialize(str);
 
         }
 

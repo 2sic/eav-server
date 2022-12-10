@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps.Decorators
             var recommendations = GetRecommendations(targetTypeId, key, recommendedTypeName);
 
             var remaining = recommendations
-                .Where(r => _requirements.Ready.RequirementMet(r.Type.Metadata))
+                .Where(r => _requirements.Value.RequirementMet(r.Type.Metadata))
                 .ToList();
             return remaining;
         }

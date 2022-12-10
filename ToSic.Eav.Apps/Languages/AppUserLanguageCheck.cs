@@ -65,7 +65,7 @@ namespace ToSic.Eav.Apps.Languages
             // app languages are different from languages in global app and because global
             // settings are in primary appid=1, zoneId=1 without portal site we just return empty list for it
             // in other cases we get the languages from the app state or from context (http headers)
-            var zoneMapper = _zoneMapperLazy.Ready;
+            var zoneMapper = _zoneMapperLazy.Value;
             var site = appStateOrNull != null ? zoneMapper.SiteOfZone(appStateOrNull.ZoneId) : _ctx.Site;
             if (site == null) return wrapLog.Return(new List<AppUserLanguageState>(), "null site");
             

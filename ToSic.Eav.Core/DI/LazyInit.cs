@@ -30,7 +30,7 @@ namespace ToSic.Eav.DI
 
         public bool HasInitCall => _initCall != null;
 
-        public T Ready
+        public T Value
         {
             get
             {

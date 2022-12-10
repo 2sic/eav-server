@@ -62,22 +62,22 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Entities Runtime to get entities in this app
         /// </summary>
-        public EntityRuntime Entities => _entityRuntime.Ready;
+        public EntityRuntime Entities => _entityRuntime.Value;
 
         /// <summary>
         /// Metadata runtime to get metadata from this app
         /// </summary>
-        public MetadataRuntime Metadata => _metadataRuntime.Ready;
+        public MetadataRuntime Metadata => _metadataRuntime.Value;
 
         /// <summary>
         /// ContentTypes runtime to get content types from this app
         /// </summary>
-        public ContentTypeRuntime ContentTypes => _contentTypeRuntime.Ready;
+        public ContentTypeRuntime ContentTypes => _contentTypeRuntime.Value;
 
         /// <summary>
         /// Queries runtime to get queries of this app
         /// </summary>
-        public QueryRuntime Queries => _queryRuntime.Ready;
+        public QueryRuntime Queries => _queryRuntime.Value;
 
 
         ///// <summary>
