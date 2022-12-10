@@ -37,7 +37,7 @@ namespace ToSic.Eav.DI
         /// <summary>
         /// Auto-initialize the log on all dependencies
         /// </summary>
-        internal TDependencies SetLog(ILog log)
+        public TDependencies SetLog(ILog log)
         {
             LazyInitLogs.ForEach(s => s.SetLog(log));
             HasLogs.ForEach(hl => hl.Init(log));
