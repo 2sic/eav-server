@@ -64,6 +64,7 @@ namespace ToSic.Eav.Data
         public const string EntityFieldCreated = "created";
         public const string EntityFieldModified = "modified";
         public const string EntityFieldOwner = "owner";
+        public const string EntityFieldCreatorWIP = "creator";  // this is not in use yet, but probably will be soon
 
         #endregion
 
@@ -93,6 +94,8 @@ namespace ToSic.Eav.Data
             { EntityFieldIsPublished, "This is a property which tells the system if the entity is published (and not draft)."},
             { EntityFieldCreated, "This is an internal field which tells us when the entity was created."},
             { EntityFieldModified, "This is an internal field which tells us when the entity was last modified."},
+            { EntityFieldOwner, "This is used for the property of the owner of the Entity "},
+            { EntityFieldCreatorWIP, "This is used for the property of the creator of the Entity "},
             { "for", "This is an internal information which tells us if the entity is metadata for something."},
             { "metadata", "This is usually a property on the entity which tells us about additional metadata of this entity."},
             { "toolbar", "This is used as a property in DNN only to also generate a toolbar" },
@@ -102,7 +105,9 @@ namespace ToSic.Eav.Data
             { "id", "This could easily be confused with the ID of an entity, so you shouldn't use it. Prefer ProductId or something." },
             { "guid", "This is a very common term in 2sxc and will usually return the Entity Guid, so you shouldn't create a field with the same name" },
             { "type", "This can easily be confused with the EntityType." },
-            { "presentation", "This is a common property term in 2sxc." }
+            { "presentation", "This is a common property term in 2sxc." },
+
+            { "field", "This can easily be mistaken for the Field() method on dynamic entities"},
         };
 
         /// <summary>
