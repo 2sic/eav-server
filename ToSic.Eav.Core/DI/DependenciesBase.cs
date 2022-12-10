@@ -22,7 +22,7 @@ namespace ToSic.Eav.DI
         /// Auto-initialize the log on all dependencies.
         /// Special format to allow command chaining, so it returns itself.
         /// </summary>
-        public TDependencies SetLog(ILog log)
+        public virtual TDependencies SetLog(ILog log)
         {
             DependencyLogs.SetLog(log);
             return this as TDependencies;
