@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Lib.Logging;
+﻿using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DI
 {
@@ -12,35 +10,21 @@ namespace ToSic.Eav.DI
     /// <typeparam name="TDependencies"></typeparam>
     public class DependenciesBase<TDependencies> where TDependencies : DependenciesBase<TDependencies>
     {
-        /// <summary>
-        /// Collects all objects which support `SetLog(Log)` for LazyInitLogs
-        /// </summary>
-        internal List<ILazyInitLog> LazyInitLogs { get; } = new List<ILazyInitLog>();
-
-        /// <summary>
-        /// Collects all objects which support `Init(Log)`
-        /// </summary>
-        internal List<IHasLog> HasLogs { get; } = new List<IHasLog>();
+        private DependencyLogs DependencyLogs { get; } = new DependencyLogs();
 
         /// <summary>
         /// Add objects to various queues to be auto-initialized when <see cref="SetLog"/> is called later on
         /// </summary>
         /// <param name="services"></param>
-        protected void AddToLogQueue(params object[] services)
-        {
-            var lazyInitLogs = services.Where(s => s is ILazyInitLog).Cast<ILazyInitLog>();
-            LazyInitLogs.AddRange(lazyInitLogs);
-            var hasLog = services.Where(s => !(s is ILazyInitLog) && s is IHasLog).Cast<IHasLog>();
-            HasLogs.AddRange(hasLog);
-        }
+        protected void AddToLogQueue(params object[] services) => DependencyLogs.Add(services);
 
         /// <summary>
-        /// Auto-initialize the log on all dependencies
+        /// Auto-initialize the log on all dependencies.
+        /// Special format to allow command chaining, so it returns itself.
         /// </summary>
         public TDependencies SetLog(ILog log)
         {
-            LazyInitLogs.ForEach(s => s.SetLog(log));
-            HasLogs.ForEach(hl => hl.Init(log));
+            DependencyLogs.SetLog(log);
             return this as TDependencies;
         }
     }

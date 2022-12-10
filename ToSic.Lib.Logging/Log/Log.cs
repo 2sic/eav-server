@@ -89,7 +89,7 @@ namespace ToSic.Lib.Logging
                 }
                 // show an error, if it the new parent is different from the old one
                 else if ((Parent as Log)?.FullIdentifier != (parent as Log)?.FullIdentifier)
-                    this.A("LOGGER WARNING - this logger already has a parent, but trying to attach to new parent. " +
+                    this.A("LOGGER INFO - this logger already has a parent, but trying to attach to new parent. " +
                         $"Existing parent: {(Parent as Log)?.FullIdentifier}. " +
                         $"New Parent (ignored): {(parent as Log)?.FullIdentifier}");
             }
