@@ -10,12 +10,15 @@ namespace ToSic.Eav.DI
     /// <typeparam name="TDependencies"></typeparam>
     public class DependenciesBase<TDependencies> where TDependencies : DependenciesBase<TDependencies>
     {
+        /// <summary>
+        /// Special helper to keep track of all dependencies which need a log, to init once SetLog is called
+        /// </summary>
         private DependencyLogs DependencyLogs { get; } = new DependencyLogs();
 
         /// <summary>
         /// Add objects to various queues to be auto-initialized when <see cref="SetLog"/> is called later on
         /// </summary>
-        /// <param name="services"></param>
+        /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
         protected void AddToLogQueue(params object[] services) => DependencyLogs.Add(services);
 
         /// <summary>
