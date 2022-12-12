@@ -45,8 +45,8 @@ namespace ToSic.Eav.Compression
 
         public bool IsEnabled => _featureEnabled && _compressor != null;
 
-        public byte[] Compress(string text) => IsEnabled ? _compressor.CompressBytes(Encoding.UTF8.GetBytes(text)) : null;
+        public byte[] Compress(string text) => IsEnabled ? _compressor.CompressBytes(Encoding.Unicode.GetBytes(text)) : null;
 
-        public string Decompress(byte[] bytes) => IsEnabled ? Encoding.UTF8.GetString(_compressor.DecompressBytes(bytes)) : null;
+        public string Decompress(byte[] bytes) => IsEnabled ? Encoding.Unicode.GetString(_compressor.DecompressBytes(bytes)) : null;
     }
 }
