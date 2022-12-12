@@ -26,7 +26,7 @@ namespace ToSic.Eav.Configuration
             );
         private HashSet<string> _enabledFeatures;
 
-        public IEnumerable<FeatureState> EnabledUi => All.Where(f => f.Enabled && f.Ui);
+        public IEnumerable<FeatureState> UiFeaturesForEditors => All.Where(f => f.Enabled && f.ForEditUi);
 
         public bool Enabled(Guid guid) => All.Any(f => f.Guid == guid && f.Enabled);
         

@@ -29,9 +29,11 @@ namespace ToSic.Eav.Configuration.Licenses
                 CorePlus,
                 CoreBeta,
                 PatronBasic,
-                PatronAdvanced,
+                PatronAdvancedCms,
                 PatronPerfectionist,
                 PatronSentinel,
+                PatronSuperAdmin,
+                PatronInfrastructure,
                 WebFarmCache,
                 EnterpriseCms
             );

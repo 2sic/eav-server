@@ -65,12 +65,23 @@ namespace ToSic.Eav.Configuration.Licenses
             AlsoInheritEnabledFrom = new [] { PatronPerfectionist }
         };
 
-        public static readonly LicenseDefinition PatronAdvanced = new LicenseDefinition(102,
+        public static readonly LicenseDefinition PatronAdvancedCms = new LicenseDefinition(102,
             "Patron Advanced",
             new Guid("e23ef849-f50c-47a5-81dd-33fb17727305"),
+            "Patrons with advanced needs in advanced CMS features."
+        );
+
+        public static readonly LicenseDefinition PatronSuperAdmin = new LicenseDefinition(501,
+            "Patron SuperAdmin",
+            new Guid("4f1aa6d9-6360-4c60-97e9-643e3fd92061"),
             "Patrons with advanced needs in regards to automation, administration etc."
         );
 
+        public static readonly LicenseDefinition PatronInfrastructure = new LicenseDefinition(501,
+            "Patron Infrastructure",
+            new Guid("68b2c253-25b9-4b4f-b9d5-f95fd2ef9d75"),
+            "Patrons who wish to save cost by optimizing their infrastructure."
+        );
 
         public static readonly LicenseDefinition WebFarmCache = new LicenseDefinition(301, 
             "WebFarmCache",
@@ -78,7 +89,7 @@ namespace ToSic.Eav.Configuration.Licenses
             "DNN installations which run as a Farm can enable WebFarm caching to ensure the servers are in sync when something is edited."
         );
 
-        public static readonly LicenseDefinition EnterpriseCms = new LicenseDefinition(202, 
+        public static readonly LicenseDefinition EnterpriseCms = new LicenseDefinition(702, 
             "EnterpriseCms",
             new Guid("da7274c1-b893-4edb-8acb-ae2995a07321"),
             "Extreme CMS features for complex sites with extra needs, like global, shared Apps across many portals. "

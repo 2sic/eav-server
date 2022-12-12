@@ -36,8 +36,8 @@ namespace ToSic.Eav.WebApi.Cms
             => (_user.IsSiteAdmin
                     ? _features.All
                     : userHasPublishRights
-                        ? _features.EnabledUi
-                        : _features.EnabledUi.Where(f => f.Public))
+                        ? _features.UiFeaturesForEditors
+                        : _features.UiFeaturesForEditors.Where(f => f.Public))
                 .OrderBy(f => f.NameId)
                 .ToList();
 

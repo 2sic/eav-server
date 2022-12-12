@@ -44,8 +44,16 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         public DateTime Expires { get; }
 
+        /// <summary>
+        /// Determines if this feature should be available in the normal EditUI.
+        /// This only applies to normal users.
+        /// Admins and Super-Users will always get all the features in the Edit-UI, to allow for better UI hints. 
+        /// </summary>
+        public bool ForEditUi => _featureDefinition.Ui;
 
-        public bool Ui => _featureDefinition.Ui;
+        /// <summary>
+        /// Determines if non-admins should still know about this feature in the UI
+        /// </summary>
         public bool Public => _featureDefinition.Public;
         public FeatureSecurity Security => _featureDefinition.Security;
 

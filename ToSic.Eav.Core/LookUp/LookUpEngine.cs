@@ -11,13 +11,13 @@ namespace ToSic.Eav.LookUp
     /// Takes a list of configuration masks (list of tokens) and resolves them with a bunch of LookUps. <br/>
     /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, use Interface in your code ILookupEngine")]
+    [PrivateApi("hide implementation")]
     public class LookUpEngine : HasLog, ILookUpEngine
 	{
         #region Constants
 
         [PrivateApi] public const int DefaultLookUpDepth = 4;
-        [PrivateApi] protected new bool LogDetailed = true;
+        [PrivateApi] protected bool LogDetailed = true;
         #endregion
 
         // todo: probably change and not let the outside modify directly
