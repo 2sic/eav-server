@@ -117,7 +117,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             foreach (var file in files) SaveLicenseFile(file);
 
             // reload license and features
-            _systemLoaderLazy.Value.StartUpFeatures();
+            _systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
             return wrapLog.ReturnAsOk(new LicenseFileResultDto { Success = true, Message = "ok" });
         }
@@ -169,7 +169,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             var success = SaveLicenseFile(DefaultLicenseFileName, content);
 
             // reload license and features
-            _systemLoaderLazy.Value.StartUpFeatures();
+            _systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
             return wrapLog.ReturnAsOk(new LicenseFileResultDto { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."});
         }

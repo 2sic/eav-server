@@ -69,13 +69,13 @@ namespace ToSic.Eav.Configuration
             var presetApp = _appStateLoader.LoadFullAppState();
             _appsCache.Value.Add(presetApp);
 
-            StartUpFeatures();
+            LoadLicenseAndFeatures();
         }
 
         /// <summary>
         /// Standalone Features loading - to make the features API available in tests
         /// </summary>
-        public void StartUpFeatures()
+        public void LoadLicenseAndFeatures()
         {
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
