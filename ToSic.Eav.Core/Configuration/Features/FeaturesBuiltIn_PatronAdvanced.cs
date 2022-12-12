@@ -29,10 +29,11 @@ namespace ToSic.Eav.Configuration
             ForPatronAdvancedAutoEnabled
         );
 
+        // TODO: @2dm
         public static readonly FeatureDefinition SqlCompressDataTimeline = new FeatureDefinition(
             nameof(SqlCompressDataTimeline),
             new Guid("87325de8-d671-4731-bd58-186ff6de6329"),
-            "todo",
+            "TODO: @2dm",
             false,
             true,
             "todo",
