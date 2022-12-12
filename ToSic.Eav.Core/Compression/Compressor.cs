@@ -45,8 +45,10 @@ namespace ToSic.Eav.Compression
 
         public bool IsEnabled => _featureEnabled && _compressor != null;
 
+        // use Unicode because on SQL server we expect to use NVARCHAR(MAX) in uncompressed Json column
         public byte[] Compress(string text) => IsEnabled ? _compressor.CompressBytes(Encoding.Unicode.GetBytes(text)) : null;
 
+        // use Unicode because on SQL server we expect to use NVARCHAR(MAX) in uncompressed Json column
         public string Decompress(byte[] bytes) => IsEnabled ? Encoding.Unicode.GetString(_compressor.DecompressBytes(bytes)) : null;
     }
 }
