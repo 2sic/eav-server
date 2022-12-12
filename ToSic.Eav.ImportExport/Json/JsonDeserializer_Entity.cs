@@ -81,7 +81,9 @@ namespace ToSic.Eav.ImportExport.Json
                 var mdItems = jEnt.Metadata
                     .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
                     .ToList();
-                ((IMetadataInternals)newEntity.Metadata).Use(mdItems);
+
+                // Attach the metadata, ensure that it won't reload data from the App otherwise the metadata would get reset again
+                ((IMetadataInternals)newEntity.Metadata).Use(mdItems, false);
             }
 
             // build attributes - based on type definition

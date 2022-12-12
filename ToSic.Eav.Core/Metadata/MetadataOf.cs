@@ -135,8 +135,15 @@ namespace ToSic.Eav.Metadata
         public long CacheTimestamp { get; private set; }
 
         [PrivateApi]
-        protected bool RequiresReload() => GetMetadataSource()?.CacheChanged(CacheTimestamp) == true;
-        
+        protected bool RequiresReload() => _reloadWhenAppChanges && GetMetadataSource()?.CacheChanged(CacheTimestamp) == true;
+
+        /// <summary>
+        /// Mark the metadata to load (or not) when the source app for metadata changes.
+        /// ATM there is just a very rare case where this must be false.
+        /// When importing a Visual Query, the resulting entity must NOT reload the data. 
+        /// </summary>
+        private bool _reloadWhenAppChanges = true;
+
         /// <summary>
         /// Load the metadata from the provider
         /// Must be virtual, because the inheriting <see cref="ContentTypeMetadata"/> needs to overwrite this. 
@@ -177,6 +184,12 @@ namespace ToSic.Eav.Metadata
             _allEntities = items;
             _metadataWithoutPermissions = null;
             _permissions = null;
+        }
+
+        public void Use(List<IEntity> items, bool reloadWhenAppChanges)
+        {
+            Use(items);
+            _reloadWhenAppChanges = reloadWhenAppChanges;
         }
 
         #region GetBestValue
