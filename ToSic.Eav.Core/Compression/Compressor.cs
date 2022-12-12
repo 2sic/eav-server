@@ -22,7 +22,7 @@ namespace ToSic.Eav.Compression
             return this;
         }
 
-        private static ICompressor CompressorFactory(CompressorType compressorType = CompressorType.Deflate)
+        private static ICompressor CompressorFactory(CompressorType compressorType = CompressorType.GZip)
         {
             switch (compressorType)
             {
