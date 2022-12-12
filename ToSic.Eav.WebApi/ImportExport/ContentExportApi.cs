@@ -15,6 +15,8 @@ using ToSic.Eav.WebApi.Plumbing;
 using ToSic.Eav.WebApi.Security;
 using System.Collections.Generic;
 using ToSic.Eav.ImportExport.Json.V1;
+using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
 #if NETFRAMEWORK
 using System.Web.Http;
 #else
@@ -125,12 +127,20 @@ namespace ToSic.Eav.WebApi.ImportExport
         public THttpResponseType JsonBundleExport(IUser user, Guid exportConfiguration)
         {
             Log.A($"create Json Bundle Export for ExportConfiguration:{exportConfiguration}");
-            //SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
+            //SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin); // TODO: uncomment this
 
-            var systemExportConfiguration = _appManager.Read.Entities.Get(exportConfiguration);
+            var systemExportConfiguration = _appManager.AppState.List.One(exportConfiguration);
             if (systemExportConfiguration == null)
             {
                 var exception = new KeyNotFoundException($"ExportConfiguration:{exportConfiguration} is missing");
+                Log.Ex(exception);
+                throw exception;
+            }
+
+            // check that have correct contentType
+            if (systemExportConfiguration.Type.Is("ExportConfiguration"))
+            {
+                var exception = new KeyNotFoundException($"ExportConfiguration:{exportConfiguration} is not of type ExportConfiguration");
                 Log.Ex(exception);
                 throw exception;
             }
@@ -142,14 +152,18 @@ namespace ToSic.Eav.WebApi.ImportExport
             // 1. Find all decorator metadata of type SystemExportDecorator
             // use the guid for finding them: 32698880-1c2e-41ab-bcfc-420091d3263f
             // filter by the Configuration field
-            var metadataExportMarkers = _appManager.Read.Entities.Get(Decorators.SystemExportDecorator)
-                .Where(e => exportConfiguration.ToString().Equals(e.GetBestValue("Configuration", null).ToString()))
-                .ToList();
+
+            // TODO create type that is EntityBasedType
+
+
+            var metadataExportMarkers = systemExportConfiguration.Parents(Decorators.SystemExportDecorator);
             Log.A($"metadataExportMarkers:{metadataExportMarkers.Count()}");
 
 
             // 2. From the metadata, find all owners
-            var owners = metadataExportMarkers.Select(et => et.MetadataFor.KeyString).ToList();
+            // TODO: should be other way to get this selection (also this is not working for entities)
+            var owners = metadataExportMarkers.Where(e => e.MetadataFor.TargetType == (int)TargetTypes.ContentType)
+                .Select(et => et.MetadataFor.KeyString).ToList();
             Log.A($"count owners:{owners.Count()}");
 
             var serializer = _jsonSerializer.New.Init(_appManager.AppState, Log);

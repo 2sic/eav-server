@@ -5,10 +5,10 @@ namespace ToSic.Eav.ImportExport.Json.V1
 {
     public class JsonContentTypeSet
     {
-        /// <summary>
-        /// V1 - header information
-        /// </summary>
-        public JsonHeader _ = new JsonHeader();
+        ///// <summary>
+        ///// V1 - header information
+        ///// </summary>
+        //public JsonHeader _ = new JsonHeader();
 
         /// <summary>
         /// V1 - a single Content-Type
