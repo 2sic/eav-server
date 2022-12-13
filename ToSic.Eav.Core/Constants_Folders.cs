@@ -13,6 +13,16 @@
         public const string FolderData = "system"; // ".data";
 
         /// <summary>
+        /// the .databeta (this is for testing only, will never be in the distribution)
+        /// </summary>
+        public const string FolderDataBeta = "system-beta"; // ".databeta";
+
+        /// <summary>
+        /// This is for data-customizations on global 2sxc/environment, which won't get replaced on updates
+        /// </summary>
+        public const string FolderDataCustom = "system-custom"; // ".data-custom";
+
+        /// <summary>
         /// Protected folder - IIS Request filtering default hidden segment
         /// contains the app.xml for export/import of the app
         /// contains the app.json
@@ -34,16 +44,6 @@
         /// to define files and folders that will not be exported in app export
         /// </summary>
         public const string AppJson = "app.json";
-
-        /// <summary>
-        /// the .databeta (this is for testing only, will never be in the distribution)
-        /// </summary>
-        public const string FolderDataBeta = "system-beta"; // ".databeta";
-
-        /// <summary>
-        /// This is for data-customizations on global 2sxc/environment, which won't get replaced on updates
-        /// </summary>
-        public const string FolderDataCustom = "system-custom"; // ".data-custom";
 
         /// <summary>
         /// TemporaryFolder in the global environment

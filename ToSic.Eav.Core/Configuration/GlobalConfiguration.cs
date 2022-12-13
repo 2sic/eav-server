@@ -14,6 +14,20 @@ namespace ToSic.Eav.Configuration
         }
 
         /// <inheritdoc />
+        public string DataBetaFolder
+        {
+            get => _dataFolderBetaAbsolute ?? Path.Combine(GlobalFolder, Constants.AppDataProtectedFolder, Constants.FolderDataBeta);
+            set => _dataFolderBetaAbsolute = CorrectFolderOrErrorIfInvalid(value, nameof(DataBetaFolder));
+        }
+
+        /// <inheritdoc />
+        public string DataCustomFolder
+        {
+            get => _dataFolderCustomAbsolute ?? Path.Combine(GlobalFolder, Constants.AppDataProtectedFolder, Constants.FolderDataCustom);
+            set => _dataFolderCustomAbsolute = CorrectFolderOrErrorIfInvalid(value, nameof(DataCustomFolder));
+        }
+
+        /// <inheritdoc />
         public string GlobalFolder
         {
             get => _globalFolder ?? throw new Exception(ErrorMessage(nameof(GlobalFolder)));
@@ -44,21 +58,21 @@ namespace ToSic.Eav.Configuration
         /// <inheritdoc />
         public string ConfigFolder
         {
-            get => _configFolder ?? Path.Combine(Helpers.DataFolder.GetDataRoot(DataFolder), Constants.FolderDataCustom, FsDataConstants.ConfigFolder);
+            get => _configFolder ?? Path.Combine(DataCustomFolder, FsDataConstants.ConfigFolder);
             set => _configFolder = CorrectFolderOrErrorIfInvalid(value, nameof(ConfigFolder));
         }
 
         /// <inheritdoc />
         public string InstructionsFolder
         {
-            get => _instructionsFolder ?? Path.Combine(Helpers.DataFolder.GetDataRoot(DataFolder), Constants.InstructionsFolder);
+            get => _instructionsFolder ?? Path.Combine(GlobalFolder, Constants.InstructionsFolder);
             set => _instructionsFolder = CorrectFolderOrErrorIfInvalid(value, nameof(InstructionsFolder));
         }
 
         /// <inheritdoc />
         public string AppDataTemplateFolder
         {
-            get => _appDataTemplateFolder ?? Path.Combine(Helpers.DataFolder.GetDataRoot(DataFolder), Constants.AppDataProtectedFolder, Constants.NewAppFolder);
+            get => _appDataTemplateFolder ?? Path.Combine(GlobalFolder, Constants.AppDataProtectedFolder, Constants.NewAppFolder);
             set => _appDataTemplateFolder = CorrectFolderOrErrorIfInvalid(value, nameof(AppDataTemplateFolder));
         }
 
@@ -69,6 +83,8 @@ namespace ToSic.Eav.Configuration
             => $"ISystemFoldersConfiguration.{fieldName} cannot be null. Make sure it's set upon initial creation of the dependencies etc.";
 
         private static string _dataFolderAbsolute;
+        private static string _dataFolderBetaAbsolute;
+        private static string _dataFolderCustomAbsolute;
         private static string _temporaryFolder;
         private static string _globalFolder;
         private static string _globalSiteFolder;

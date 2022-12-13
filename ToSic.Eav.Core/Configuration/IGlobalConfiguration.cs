@@ -9,6 +9,18 @@
         string DataFolder { get; set; }
 
         /// <summary>
+        /// The absolute folder where the beta data is stored, usually ends in "App_Data\system-beta" (or ".databeta")
+        /// </summary>
+        /// <returns>The folder, can be null if it was never set</returns>
+        string DataBetaFolder { get; set; }
+
+        /// <summary>
+        /// The absolute folder where the custom data is stored, usually ends in "App_Data\system-custom" (or ".data-custom")
+        /// </summary>
+        /// <returns>The folder, can be null if it was never set</returns>
+        string DataCustomFolder { get; set; }
+
+        /// <summary>
         /// The main folder (absolute) where anything incl. data is stored
         /// </summary>
         /// <returns>The folder, can be null if it was never set</returns>

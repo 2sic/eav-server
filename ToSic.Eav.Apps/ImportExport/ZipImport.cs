@@ -11,7 +11,7 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public class ZipImport: HasLog
+    public class ZipImport : HasLog
     {
         private readonly Generator<XmlImportWithFiles> _xmlImpExpFiles;
         private readonly IAppStates _appStates;
@@ -24,7 +24,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public bool AllowCodeImport;
 
-        public ZipImport(IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) :base("Zip.Imp")
+        public ZipImport(IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) : base("Zip.Imp")
         {
             _xmlImpExpFiles = xmlImpExpFiles;
             _appStates = appStates;
@@ -51,7 +51,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns></returns>
         public bool ImportZip(Stream zipStream, string temporaryDirectory, string rename = null)
         {
-            var wrapLog = Log.Fn<bool>( parameters: $"{temporaryDirectory}, {nameof(rename)}:{rename}");
+            var wrapLog = Log.Fn<bool>(parameters: $"{temporaryDirectory}, {nameof(rename)}:{rename}");
             var messages = Messages;
             Exception finalException = null;
 
@@ -86,7 +86,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
             catch (Exception e)
             {
-                finalException = e; 
+                finalException = e;
                 // Add error message and return false
                 messages.Add(new Message("Could not import the app / package: " + e.Message, Message.MessageTypes.Error));
             }
@@ -173,7 +173,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private void ImportAppXmlAndFiles(string rename, string appDirectory, List<Message> importMessages, bool pendingApp)
         {
             var wrapLog = Log.Fn($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
-            
+
             int appId;
             var importer = _xmlImpExpFiles.New.Init(null, false, Log); // new XmlImportWithFiles(Log);
 
@@ -187,7 +187,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 new VersionCheck(Env, Log).EnsureVersions(imp.AppConfig);
 
                 var folder = imp.AppFolder;
-                
+
                 // user decided to install app in different folder, because same App is already installed
                 if (!string.IsNullOrEmpty(rename))
                 {
@@ -235,7 +235,7 @@ namespace ToSic.Eav.Apps.ImportExport
             wrapLog.Done("ok");
         }
 
-        private static string AppDataProtectedFolderPath(string appDirectory, bool pendingApp) 
+        private static string AppDataProtectedFolderPath(string appDirectory, bool pendingApp)
             => pendingApp
                 ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder)
                 : Path.Combine(appDirectory, Constants.ToSxcFolder, Constants.AppDataProtectedFolder);
@@ -273,7 +273,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForGlobalAppStuff);
             if (Directory.Exists(appTemplateRoot))
             {
-                if (deleteGlobalTemplates) 
+                if (deleteGlobalTemplates)
                     TryToDeleteDirectory(globalTemplatesRoot, Log);
 
                 Log.A("copy all files to app global template folder");
@@ -287,7 +287,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             var wrapLog = Log.Fn();
             // Handle PortalFiles/SiteFiles folder
-            var portalTempRoot = pendingApp 
+            var portalTempRoot = pendingApp
                 ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder, Constants.ZipFolderForSiteFiles)
                 : Path.Combine(appDirectory, Constants.ZipFolderForPortalFiles); // TODO: probably replace with Constants.ZipFolderForSiteFiles
             if (Directory.Exists(portalTempRoot))
@@ -333,24 +333,13 @@ namespace ToSic.Eav.Apps.ImportExport
         public static void MigrateOldAppDataFile(string appRootPath)
         {
             var oldDataAppFilePath = Path.Combine(appRootPath, Constants.FolderData, Constants.AppDataFile);
-            var old2DataAppFilePath = Path.Combine(appRootPath, Constants.AppDataProtectedFolder, Constants.AppDataFile);
-            if (!File.Exists(oldDataAppFilePath) && !File.Exists(old2DataAppFilePath)) return;
+            if (!File.Exists(oldDataAppFilePath)) return;
 
-            Directory.CreateDirectory(Path.Combine(appRootPath, Constants.AppDataProtectedFolder, Constants.NewAppFolder));
-            
-            var newFilePath = Path.Combine(appRootPath, Constants.AppDataProtectedFolder, Constants.NewAppFolder, Constants.AppDataFile);
+            Directory.CreateDirectory(Path.Combine(appRootPath, Constants.AppDataProtectedFolder));
+            var newFilePath = Path.Combine(appRootPath, Constants.AppDataProtectedFolder, Constants.AppDataFile);
 
-            if (File.Exists(oldDataAppFilePath))
-            {
-                if (File.Exists(newFilePath)) File.Delete(newFilePath);
-                File.Move(oldDataAppFilePath, newFilePath);
-            };
-
-            if (File.Exists(old2DataAppFilePath))
-            {
-                if (File.Exists(newFilePath)) File.Delete(newFilePath);
-                File.Move(old2DataAppFilePath, newFilePath);
-            };
+            if (File.Exists(newFilePath)) File.Delete(newFilePath);
+            File.Move(oldDataAppFilePath, newFilePath);
 
             //// commented cody will move/copy .data to App_Data with all content
             //var oldFolderPath = Path.Combine(appRootPath, Eav.Constants.FolderData);
@@ -368,39 +357,39 @@ namespace ToSic.Eav.Apps.ImportExport
             //}
         }
 
-        /// <summary>
-        /// copy directory with its content
-        /// based on https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
-        /// </summary>
-        /// <param name="sourceDir"></param>
-        /// <param name="destinationDir"></param>
-        /// <param name="recursive"></param>
-        /// <exception cref="DirectoryNotFoundException"></exception>
-        public static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
-        {
-            // Get information about the source directory
-            var dir = new DirectoryInfo(sourceDir);
+        ///// <summary>
+        ///// copy directory with its content
+        ///// based on https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
+        ///// </summary>
+        ///// <param name="sourceDir"></param>
+        ///// <param name="destinationDir"></param>
+        ///// <param name="recursive"></param>
+        ///// <exception cref="DirectoryNotFoundException"></exception>
+        //private static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
+        //{
+        //    // Get information about the source directory
+        //    var dir = new DirectoryInfo(sourceDir);
 
-            // Check if the source directory exists
-            if (!dir.Exists)
-                return; //throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+        //    // Check if the source directory exists
+        //    if (!dir.Exists)
+        //        return; //throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
 
-            // Cache directories before we start copying
-            var dirs = dir.GetDirectories();
+        //    // Cache directories before we start copying
+        //    var dirs = dir.GetDirectories();
 
-            // Create the destination directory
-            Directory.CreateDirectory(destinationDir);
+        //    // Create the destination directory
+        //    Directory.CreateDirectory(destinationDir);
 
-            // Get the files in the source directory and copy to the destination directory
-            foreach (var file in dir.GetFiles())
-                file.CopyTo(Path.Combine(destinationDir, file.Name));
+        //    // Get the files in the source directory and copy to the destination directory
+        //    foreach (var file in dir.GetFiles())
+        //        file.CopyTo(Path.Combine(destinationDir, file.Name));
 
-            if (!recursive) return;
+        //    if (!recursive) return;
 
-            // If recursive and copying subdirectories, recursively call this method
-            foreach (var subDir in dirs)
-                CopyDirectory(subDir.FullName, Path.Combine(destinationDir, subDir.Name), true);
-        }
+        //    // If recursive and copying subdirectories, recursively call this method
+        //    foreach (var subDir in dirs)
+        //        CopyDirectory(subDir.FullName, Path.Combine(destinationDir, subDir.Name), true);
+        //}
 
     }
 }
