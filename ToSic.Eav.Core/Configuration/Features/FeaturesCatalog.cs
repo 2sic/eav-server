@@ -27,9 +27,13 @@ namespace ToSic.Eav.Configuration
                 PasteImageFromClipboard,
                 NoSponsoredByToSic,
 
-                // Features for Patrons Advanced
-                AppSyncWithSiteFiles,
+                // Features for Patrons Advanced CMS
                 EditUiTranslateWithGoogle, // WIP/Beta
+
+                // Patron SuperAdmin
+                AppSyncWithSiteFiles,  // WIP/Beta
+
+                // Patron Infrastructure
                 SqlCompressDataTimeline, // WIP / Beta v15
 
                 // 2sxc 10.24+

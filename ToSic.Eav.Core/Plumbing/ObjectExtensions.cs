@@ -45,11 +45,11 @@ namespace ToSic.Eav.Plumbing
         /// </remarks>
         [PrivateApi]
         public static T ConvertOrDefault<T>(this object value, bool numeric = false, bool truthy = false) 
-            => value.TryConvert<T>(numeric: numeric, truthy: truthy).Item2;
+            => value.TryConvert<T>(numeric: numeric, truthy: truthy).Value;
 
-        public static Tuple<bool, T> TryConvert<T>(this object value, bool numeric = false, bool truthy = false)
+        public static (bool Success, T Value) TryConvert<T>(this object value, bool numeric = false, bool truthy = false)
         {
-            if (value is null) return new Tuple<bool, T>(false, default);
+            if (value is null) return (false, default);
             var t = typeof(T);
             var unboxedT = t.UnboxIfNullable();
 
@@ -67,18 +67,18 @@ namespace ToSic.Eav.Plumbing
                 // Strings cannot convert to guids with Convert.ChangeType, so we do extra treatment if possible
                 // Note that if this fails, it will run the normal code resulting in a Guid.Empty
                 else if (unboxedT == typeof(Guid) && Guid.TryParse(s, out var guid)) 
-                    return new Tuple<bool, T>(true, (T)(object)guid);
+                    return (true, (T)(object)guid);
             }
 
 
             try
             {
                 var result = (T)Convert.ChangeType(value, unboxedT, CultureInfo.InvariantCulture);
-                return new Tuple<bool, T>(true, result);
+                return (true, result);
             }
             catch
             {
-                return new Tuple<bool, T>(false, default);
+                return (false, default);
             }
         }
 
@@ -91,9 +91,9 @@ namespace ToSic.Eav.Plumbing
             {
                 var result = value.TryConvert<T>(numeric: numeric, truthy: truthy);
                 // Null should always fallback, default not always
-                if (!result.Item1 || result.Item2 == null) return fallback;
+                if (!result.Success || result.Value == null) return fallback;
                 if (fallbackOnDefault && IsNullOrDefault(result)) return fallback;
-                return result.Item2;
+                return result.Value;
             }
             catch
             {

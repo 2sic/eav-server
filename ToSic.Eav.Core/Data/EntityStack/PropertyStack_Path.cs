@@ -1,29 +1,33 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.PropertyLookup;
+using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data
 {
     public partial class PropertyStack
     {
-        public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path)
+        public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path) 
+            => TraversePath(specs, path.KeepOrNew(), this);
+
+        [PrivateApi]
+        public static PropReqResult TraversePath(PropReqSpecs specs, PropertyLookupPath path, IPropertyLookup initialSource)
         {
             var l = specs.LogOrNull.Fn<PropReqResult>(specs.Field);
-            path = path.KeepOrNew();
             var fields = specs.Field.Split('.');
-            var currentSource = this as IPropertyLookup;
             PropReqResult result = null;
-            for (var index = 0; index < fields.Length; index++)
+            var currentSource = initialSource;
+            for (var i = 0; i < fields.Length; i++)
             {
-                var field = fields[index];
+                var field = fields[i];
                 result = currentSource.FindPropertyInternal(specs.ForOtherField(field), path);
 
                 // If nothing found, stop here and return
                 if (result.Result == null)
                     return l.Return(result.AsFinal(0), $"nothing found on {field}");
 
-                var isLastKey = index == fields.Length - 1;
+                var isLastKey = i == fields.Length - 1;
 
                 if (isLastKey) return l.Return(result, "last hit, found something");
 
@@ -42,12 +46,11 @@ namespace ToSic.Eav.Data
 
                 // If we got any other value, but would still have fields to check, we must stop now
                 // and report there was nothing to find
-                if (index < fields.Length - 1)
+                if (i < fields.Length - 1)
                     return PropReqResult.NullFinal(result.Path);
             }
 
             return result ?? PropReqResult.NullFinal(null);
         }
-        
     }
 }

@@ -33,7 +33,7 @@ namespace ToSic.Eav.Data.PropertyLookup
         public PropReqSpecs SubLog(string title, bool enabled)
             => new PropReqSpecs(Field, Dimensions, LogOrNull.SubLogOrNull(title, enabled), TreatEmptyAsDefault);
 
-        public string Dump() => _dump ?? (_dump = $"{nameof(Field)}:{Field}, {nameof(Dimensions)}:{string.Join(",", Dimensions)}");
+        public string Dump() => _dump ?? (_dump = $"{nameof(PropReqSpecs)} {{ {nameof(Field)}:{Field}, {nameof(Dimensions)}:{string.Join(",", Dimensions)} }}");
         private string _dump;
     }
 }
