@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Plumbing;
+﻿using System.IO;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Helpers
 {
@@ -16,9 +17,12 @@ namespace ToSic.Eav.Helpers
         
         public static string GetDataRoot(string dataFolder)
         {
-            return dataFolder?.EndsWith(Constants.FolderData) ?? false
-                ? dataFolder.Substring(0, dataFolder.Length - Constants.FolderData.Length).TrimLastSlash()
-                : dataFolder ?? string.Empty;
+            var systemData = Path.Combine(Constants.AppDataProtectedFolder, Constants.FolderData);
+            if (dataFolder?.EndsWith(systemData) == true)
+                return dataFolder.Substring(0, dataFolder.Length - systemData.Length).TrimLastSlash();
+            if (dataFolder?.EndsWith(".data") == true)
+                return dataFolder.Substring(0, dataFolder.Length - ".data".Length).TrimLastSlash();
+            return dataFolder ?? string.Empty;
         }
     }
 }

@@ -333,13 +333,24 @@ namespace ToSic.Eav.Apps.ImportExport
         public static void MigrateOldAppDataFile(string appRootPath)
         {
             var oldDataAppFilePath = Path.Combine(appRootPath, Constants.FolderData, Constants.AppDataFile);
-            if (!File.Exists(oldDataAppFilePath)) return;
+            var old2DataAppFilePath = Path.Combine(appRootPath, Constants.AppDataProtectedFolder, Constants.AppDataFile);
+            if (!File.Exists(oldDataAppFilePath) && !File.Exists(old2DataAppFilePath)) return;
 
-            Directory.CreateDirectory(Path.Combine(appRootPath, Constants.AppDataProtectedFolder));
-            var newFilePath = Path.Combine(appRootPath, Constants.AppDataProtectedFolder, Constants.AppDataFile);
+            Directory.CreateDirectory(Path.Combine(appRootPath, Constants.AppDataProtectedFolder, Constants.NewAppFolder));
+            
+            var newFilePath = Path.Combine(appRootPath, Constants.AppDataProtectedFolder, Constants.NewAppFolder, Constants.AppDataFile);
 
-            if (File.Exists(newFilePath)) File.Delete(newFilePath);
-            File.Move(oldDataAppFilePath, newFilePath);
+            if (File.Exists(oldDataAppFilePath))
+            {
+                if (File.Exists(newFilePath)) File.Delete(newFilePath);
+                File.Move(oldDataAppFilePath, newFilePath);
+            };
+
+            if (File.Exists(old2DataAppFilePath))
+            {
+                if (File.Exists(newFilePath)) File.Delete(newFilePath);
+                File.Move(old2DataAppFilePath, newFilePath);
+            };
 
             //// commented cody will move/copy .data to App_Data with all content
             //var oldFolderPath = Path.Combine(appRootPath, Eav.Constants.FolderData);
@@ -357,39 +368,39 @@ namespace ToSic.Eav.Apps.ImportExport
             //}
         }
 
-        ///// <summary>
-        ///// copy directory with its content
-        ///// based on https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
-        ///// </summary>
-        ///// <param name="sourceDir"></param>
-        ///// <param name="destinationDir"></param>
-        ///// <param name="recursive"></param>
-        ///// <exception cref="DirectoryNotFoundException"></exception>
-        //private static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
-        //{
-        //    // Get information about the source directory
-        //    var dir = new DirectoryInfo(sourceDir);
+        /// <summary>
+        /// copy directory with its content
+        /// based on https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
+        /// </summary>
+        /// <param name="sourceDir"></param>
+        /// <param name="destinationDir"></param>
+        /// <param name="recursive"></param>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        public static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
+        {
+            // Get information about the source directory
+            var dir = new DirectoryInfo(sourceDir);
 
-        //    // Check if the source directory exists
-        //    if (!dir.Exists)
-        //        return; //throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+            // Check if the source directory exists
+            if (!dir.Exists)
+                return; //throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
 
-        //    // Cache directories before we start copying
-        //    var dirs = dir.GetDirectories();
+            // Cache directories before we start copying
+            var dirs = dir.GetDirectories();
 
-        //    // Create the destination directory
-        //    Directory.CreateDirectory(destinationDir);
+            // Create the destination directory
+            Directory.CreateDirectory(destinationDir);
 
-        //    // Get the files in the source directory and copy to the destination directory
-        //    foreach (var file in dir.GetFiles())
-        //        file.CopyTo(Path.Combine(destinationDir, file.Name));
+            // Get the files in the source directory and copy to the destination directory
+            foreach (var file in dir.GetFiles())
+                file.CopyTo(Path.Combine(destinationDir, file.Name));
 
-        //    if (!recursive) return;
+            if (!recursive) return;
 
-        //    // If recursive and copying subdirectories, recursively call this method
-        //    foreach (var subDir in dirs)
-        //        CopyDirectory(subDir.FullName, Path.Combine(destinationDir, subDir.Name), true);
-        //}
+            // If recursive and copying subdirectories, recursively call this method
+            foreach (var subDir in dirs)
+                CopyDirectory(subDir.FullName, Path.Combine(destinationDir, subDir.Name), true);
+        }
 
     }
 }

@@ -3,7 +3,7 @@
     public interface IGlobalConfiguration
     {
         /// <summary>
-        /// The absolute folder where the data is stored, usually ends in "...\.data"
+        /// The absolute folder where the data is stored, usually ends in "App_Data\system" (or ".data")
         /// </summary>
         /// <returns>The folder, can be null if it was never set</returns>
         string DataFolder { get; set; }

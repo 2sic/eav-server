@@ -9,7 +9,7 @@ namespace ToSic.Eav.Configuration
         /// <inheritdoc />
         public string DataFolder
         {
-            get => _dataFolderAbsolute ?? Path.Combine(GlobalFolder, Constants.FolderData);
+            get => _dataFolderAbsolute ?? Path.Combine(GlobalFolder, Constants.AppDataProtectedFolder, Constants.FolderData);
             set => _dataFolderAbsolute = CorrectFolderOrErrorIfInvalid(value, nameof(DataFolder));
         }
 
@@ -58,7 +58,7 @@ namespace ToSic.Eav.Configuration
         /// <inheritdoc />
         public string AppDataTemplateFolder
         {
-            get => _appDataTemplateFolder ?? Path.Combine(Helpers.DataFolder.GetDataRoot(DataFolder), Constants.AppDataProtectedFolder);
+            get => _appDataTemplateFolder ?? Path.Combine(Helpers.DataFolder.GetDataRoot(DataFolder), Constants.AppDataProtectedFolder, Constants.NewAppFolder);
             set => _appDataTemplateFolder = CorrectFolderOrErrorIfInvalid(value, nameof(AppDataTemplateFolder));
         }
 

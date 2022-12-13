@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSourceTests
 
         public static IAppIdentity BigDataTestsApp = new AppIdentity(2, 9);
 
-        public const string GlobalQueriesData = "..\\..\\..\\2sxc\\Src\\Data\\.data\\queries\\";
+        public const string GlobalQueriesData = "..\\..\\..\\2sxc\\Src\\Data\\App_Data\\system\\queries\\";
         public const string TestingPath = "testdata";
 
     }

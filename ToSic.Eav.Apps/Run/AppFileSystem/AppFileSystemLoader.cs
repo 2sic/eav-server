@@ -191,7 +191,10 @@ namespace ToSic.Eav.Apps.Run
             var dir = new DirectoryInfo(Path);
             if (!dir.Exists) return new List<string>();
             var sub = dir.GetDirectories();
-            var subDirs = sub.SelectMany(s => s.GetDirectories(Eav.Constants.FolderData));
+            var subDirs = sub.SelectMany(
+                s => s.GetDirectories(System.IO.Path.Combine(Constants.AppDataProtectedFolder, Constants.FolderData))
+                    .Union(s.GetDirectories(".data"))
+                );
             var paths = subDirs.Select(s => s.FullName).ToList();
             return paths;
         }

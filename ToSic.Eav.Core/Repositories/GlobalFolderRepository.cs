@@ -32,9 +32,12 @@ namespace ToSic.Eav.Repositories
                 var dataRoot = DataFolder.GetDataRoot(_config.DataFolder);
                 var result = new List<string>
                     {
-                        System.IO.Path.Combine(dataRoot, Constants.FolderData),
-                        System.IO.Path.Combine(dataRoot, Constants.FolderDataBeta),
-                        System.IO.Path.Combine(dataRoot, Constants.FolderDataCustom)
+                        System.IO.Path.Combine(dataRoot, Constants.AppDataProtectedFolder, Constants.FolderData),
+                        System.IO.Path.Combine(dataRoot, Constants.AppDataProtectedFolder, Constants.FolderDataBeta),
+                        System.IO.Path.Combine(dataRoot, Constants.AppDataProtectedFolder, Constants.FolderDataCustom),
+                        System.IO.Path.Combine(dataRoot, ".data"),
+                        System.IO.Path.Combine(dataRoot, ".databeta"),
+                        System.IO.Path.Combine(dataRoot, ".data-custom")
                     };
                 return result;
             }

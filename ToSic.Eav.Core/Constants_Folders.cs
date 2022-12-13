@@ -10,7 +10,7 @@
         /// <summary>
         /// Data folder - either in the global environment, in plugins or in app-extensions
         /// </summary>
-        public const string FolderData = ".data";
+        public const string FolderData = "system"; // ".data";
 
         /// <summary>
         /// Protected folder - IIS Request filtering default hidden segment
@@ -38,12 +38,12 @@
         /// <summary>
         /// the .databeta (this is for testing only, will never be in the distribution)
         /// </summary>
-        public const string FolderDataBeta = ".databeta";
+        public const string FolderDataBeta = "system-beta"; // ".databeta";
 
         /// <summary>
         /// This is for data-customizations on global 2sxc/environment, which won't get replaced on updates
         /// </summary>
-        public const string FolderDataCustom = ".data-custom";
+        public const string FolderDataCustom = "system-custom"; // ".data-custom";
 
         /// <summary>
         /// TemporaryFolder in the global environment
@@ -70,5 +70,10 @@
         /// Name of folder that should contain global app files in export zip
         /// </summary>
         public const string ZipFolderForGlobalAppStuff = "2sexyGlobal";
+
+        /// <summary>
+        /// Name of folder for template for new app
+        /// </summary>
+        public const string NewAppFolder = "new-app";
     }
 }
