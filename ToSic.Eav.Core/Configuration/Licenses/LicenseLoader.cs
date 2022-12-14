@@ -21,10 +21,9 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using ToSic.Eav.Documentation;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
-using ToSic.Eav.Serialization;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
@@ -36,12 +35,14 @@ namespace ToSic.Eav.Configuration.Licenses
         /// <summary>
         /// Constructor - not meant for DI
         /// </summary>
-        internal LicenseLoader(History logHistory, LicenseCatalog licenseCatalog, ILog parentLog)
+        internal LicenseLoader(History logHistory, LicenseCatalog licenseCatalog, List<LicenseData> licenseData, ILog parentLog)
             : base(logHistory, parentLog, LogNames.Eav + "LicLdr", "Load Licenses")
         {
             _licenseCatalog = licenseCatalog;
+            _licenseData = licenseData;
         }
         private readonly LicenseCatalog _licenseCatalog;
+        private readonly List<LicenseData> _licenseData;
 
         /// <summary>
         /// Pre-Load enabled / disabled global features
@@ -108,7 +109,7 @@ namespace ToSic.Eav.Configuration.Licenses
 
             // Check fingerprints
             var fps = licenseStored.FingerprintsArray;
-            var validFp = fps.Any(fingerprint.Equals);
+            var validFp = fps.Any(fingerprint.Equals) || _licenseData.Any(l => fps.Any(l.Fingerprint.Equals));
             Log.A($"Fingerprint: {validFp}");
 
             var validVersion = licenseStored.Versions?

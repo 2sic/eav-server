@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
-
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Configuration
 {
@@ -27,13 +28,15 @@ namespace ToSic.Eav.Configuration
             IFeaturesInternal features, 
             FeatureConfigManager featureConfigManager, 
             LicenseCatalog licenseCatalog, 
-            History logHistory
+            History logHistory,
+            IAppStates appStates
         ) : base(logHistory, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
             Fingerprint = fingerprint;
             _globalConfiguration = globalConfiguration;
             _appsCache = appsCache;
             _logHistory = logHistory;
+            _appStates = appStates;
             _appStateLoader = runtime.Init(Log);
             Features = features;
             _featureConfigManager = featureConfigManager;
@@ -47,6 +50,7 @@ namespace ToSic.Eav.Configuration
         private readonly FeatureConfigManager _featureConfigManager;
         private readonly LicenseCatalog _licenseCatalog;
         private readonly History _logHistory;
+        private readonly IAppStates _appStates;
 
         #endregion
 
@@ -77,9 +81,12 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         public void LoadLicenseAndFeatures()
         {
+            var globalApp = _appStates.GetPresetOrNull();
+            var lic = globalApp.List.OfType(LicenseData.TypeNameId).Select(e => new LicenseData(e)).ToList();
+
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_logHistory, _licenseCatalog, Log)
+            new LicenseLoader(_logHistory, _licenseCatalog, lic, Log)
                 .LoadLicenses(Fingerprint.GetFingerprint(), _globalConfiguration.Value.ConfigFolder);
 
             // Now do a normal reload of configuration and features

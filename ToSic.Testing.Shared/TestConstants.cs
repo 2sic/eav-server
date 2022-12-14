@@ -14,5 +14,6 @@
         // @"Data Source=(local);Initial Catalog=2sxc-dnn742;Integrated Security=True;";
 
         public const string GlobalDataFolder = "c:\\Projects\\2sxc\\2sxc\\Src\\Data\\";
+        public const string GlobalDataCustomFolder = "C:\\Projects\\2sxc\\2sxc-dev-materials\\App_Data\\system-custom\\";
     }
 }
