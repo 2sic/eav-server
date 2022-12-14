@@ -17,12 +17,18 @@ namespace ToSic.Eav.Plumbing
     {
         public GetOnce() {}
 
+        /// <summary>
+        /// WIP experimental, not sure if this second way to use is a good idea
+        /// </summary>
         public GetOnce(Func<T> generator) => _generator = generator;
         private readonly Func<T> _generator;
 
-        public T Get() => Get(_generator 
+        /// <summary>
+        /// WIP experimental, not sure if this second way to use is a good idea or causes confusion
+        /// </summary>
+        public T Value => Get(_generator 
                               ??
-                              throw new Exception("Can't use Get() without a function if the function wasn't set in the constructor"));
+                              throw new Exception($"Can't use {nameof(Value)} if the generator wasn't set in the constructor"));
 
         /// <summary>
         /// Get the value once only. If not yet retrieved, use the generator function. 
