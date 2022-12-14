@@ -15,12 +15,21 @@ namespace ToSic.Eav.Plumbing
     [PrivateApi("internal use only")]
     public class GetOnce<T>
     {
+        public GetOnce() {}
+
+        public GetOnce(Func<T> generator) => _generator = generator;
+        private readonly Func<T> _generator;
+
+        public T Get() => Get(_generator 
+                              ??
+                              throw new Exception("Can't use Get() without a function if the function wasn't set in the constructor"));
+
         /// <summary>
         /// Get the value once only. If not yet retrieved, use the generator function. 
         /// </summary>
         /// <param name="generator">Function which will generate the value on first use.</param>
         /// <returns></returns>
-        public virtual T Get(Func<T> generator)
+        public T Get(Func<T> generator)
         {
             if (IsValueCreated) return _value;
             IsValueCreated = true;
