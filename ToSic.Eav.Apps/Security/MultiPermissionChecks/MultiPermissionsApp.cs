@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.Security
         public IContextOfSite Context { get; private set; }
         protected ISite SiteForSecurityCheck { get; private set; }
         protected bool SamePortal { get; private set; }
-        public IFeaturesInternal FeaturesInternal => _dp.FeatIntGen.New;
+        public IFeaturesInternal FeaturesInternal => _dp.FeatIntGen.New();
 
         #endregion
 
@@ -92,7 +92,7 @@ namespace ToSic.Eav.Apps.Security
             // user has edit permissions on this app, and it's the same app as the user is coming from
             var modifiedContext = Context.Clone(Log);
             modifiedContext.Site = SiteForSecurityCheck;
-            return _dp.AppPermCheckGenerator.New.ForParts(modifiedContext, App, type, item, Log);
+            return _dp.AppPermCheckGenerator.New().ForParts(modifiedContext, App, type, item, Log);
         }
 
     }

@@ -56,7 +56,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     Log.A($"Must convert back to entity, to then modify the EntityId. The json: {json}");
                     // update the content-id
                     draftToPublishForJson.ResetEntityId(publishedId);
-                    var serializer = DbContext.JsonSerializerGenerator.New;
+                    var serializer = DbContext.JsonSerializerGenerator.New();
                     json = serializer.Serialize(draftToPublishForJson);
 
                     Log.A($"changed - final json: {json}");

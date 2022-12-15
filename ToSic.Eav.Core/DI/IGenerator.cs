@@ -3,6 +3,6 @@
 
     public interface IGenerator<out T>
     {
-        T New { get; }
+        T New();
     }
 }

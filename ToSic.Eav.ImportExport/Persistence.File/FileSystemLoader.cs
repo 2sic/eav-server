@@ -53,7 +53,7 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_ser != null) return _ser;
-                _ser = _jsonSerGenerator.New;
+                _ser = _jsonSerGenerator.New();
                 _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
@@ -63,13 +63,13 @@ namespace ToSic.Eav.Persistence.File
 
         internal void ResetSerializer(AppState appState)
         {
-            var serializer = _jsonSerGenerator.New;
+            var serializer = _jsonSerGenerator.New();
             serializer.Init(appState, Log);
             _ser = serializer;
         }
         internal void ResetSerializer(List<IContentType> types)
         {
-            var serializer = _jsonSerGenerator.New;
+            var serializer = _jsonSerGenerator.New();
             serializer.Initialize(AppId, types, null, Log);
             _ser = serializer;
         }

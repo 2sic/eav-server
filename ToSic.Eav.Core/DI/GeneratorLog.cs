@@ -11,14 +11,11 @@ namespace ToSic.Eav.DI
         public GeneratorLog(IServiceProvider sp) => _sp = sp;
         private readonly IServiceProvider _sp;
 
-        public T New
+        public T New()
         {
-            get
-            {
-                var created = _sp.Build<T>();
-                (created.Log as Log)?.LinkTo(_parentLog);
-                return created;
-            }
+            var created = _sp.Build<T>();
+            (created.Log as Log)?.LinkTo(_parentLog);
+            return created;
         }
 
         public GeneratorLog<T> SetLog(ILog parentLog)

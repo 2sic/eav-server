@@ -106,7 +106,7 @@ namespace ToSic.Eav.Apps.Languages
                 var ok = defaultAllowed;
                 if (!ok)
                 {
-                    var pChecker = _checkGenerator.New;// _checkGeneratorOld.Build<AppPermissionCheck>();
+                    var pChecker = _checkGenerator.New();// _checkGeneratorOld.Build<AppPermissionCheck>();
                     var permissions = permissionEntities.Select(p => new Permission(p));
                     pChecker.ForCustom(_ctx, appStateOrNull, permissions, Log);
                     ok = pChecker.PermissionsAllow(GrantSets.WriteSomething);

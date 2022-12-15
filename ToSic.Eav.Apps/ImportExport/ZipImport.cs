@@ -175,7 +175,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var wrapLog = Log.Fn($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
 
             int appId;
-            var importer = _xmlImpExpFiles.New.Init(null, false, Log); // new XmlImportWithFiles(Log);
+            var importer = _xmlImpExpFiles.New().Init(null, false, Log); // new XmlImportWithFiles(Log);
 
             var imp = new ImportXmlReader(Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), Constants.AppDataFile), importer, Log);
 

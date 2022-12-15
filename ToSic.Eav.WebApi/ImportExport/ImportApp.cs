@@ -106,7 +106,7 @@ namespace ToSic.Eav.WebApi.ImportExport
 
                 try
                 {
-                    var importer = _xmlImpExpFiles.New.Init(null, false, Log);
+                    var importer = _xmlImpExpFiles.New().Init(null, false, Log);
                     var importXmlReader = new ImportXmlReader(appXml, importer, Log);
                     var pendingAppDto = new PendingAppDto
                     {

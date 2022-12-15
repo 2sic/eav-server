@@ -287,22 +287,22 @@ namespace ToSic.Eav.Api.Api01
             // 1. Find if user may write PUBLISHED:
 
             // 1.1. app permissions 
-            if (_appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
+            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, _appManager.AppState, Log)
                 .UserMay(GrantSets.WritePublished)) return true;
 
             // 1.2. type permissions
-            if (_appPermissionCheckGenerator.New.ForType(_ctx, _appManager.AppState, targetType, Log)
+            if (_appPermissionCheckGenerator.New().ForType(_ctx, _appManager.AppState, targetType, Log)
                 .UserMay(GrantSets.WritePublished)) return true;
 
 
             // 2. Find if user may write DRAFT:
 
             // 2.1. app permissions 
-            if (_appPermissionCheckGenerator.New.ForAppInInstance(_ctx, _appManager.AppState, Log)
+            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, _appManager.AppState, Log)
                 .UserMay(GrantSets.WriteDraft)) return false;
 
             // 2.2. type permissions
-            if (_appPermissionCheckGenerator.New.ForType(_ctx, _appManager.AppState, targetType, Log)
+            if (_appPermissionCheckGenerator.New().ForType(_ctx, _appManager.AppState, targetType, Log)
                 .UserMay(GrantSets.WriteDraft)) return false;
 
 

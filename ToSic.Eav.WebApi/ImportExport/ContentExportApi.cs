@@ -101,7 +101,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             Log.A($"get fields type:{name}");
             SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
             var type = _appManager.Read.ContentTypes.Get(name);
-            var serializer = _jsonSerializer.New.Init(_appManager.AppState, Log);
+            var serializer = _jsonSerializer.New().Init(_appManager.AppState, Log);
             var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                 .RemoveNonFilenameCharacters();
  
@@ -114,7 +114,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             Log.A($"get fields id:{id}");
             SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
             var entity = _appManager.Read.Entities.Get(id);
-            var serializer = _jsonSerializer.New.Init(_appManager.AppState, Log);
+            var serializer = _jsonSerializer.New().Init(_appManager.AppState, Log);
 
             return _responseMaker.File(
                 serializer.Serialize(entity, withMetadata ? FileSystemLoader.QueryMetadataDepth : 0),
@@ -166,7 +166,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 .Select(et => et.MetadataFor.KeyString).ToList();
             Log.A($"count owners:{owners.Count()}");
 
-            var serializer = _jsonSerializer.New.Init(_appManager.AppState, Log);
+            var serializer = _jsonSerializer.New().Init(_appManager.AppState, Log);
 
             // TODO: wrong JSON v1 format is generated
             var bundleList = new JsonBundle();

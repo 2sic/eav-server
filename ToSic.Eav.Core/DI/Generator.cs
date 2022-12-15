@@ -10,6 +10,6 @@ namespace ToSic.Eav.DI
         public Generator(IServiceProvider sp) => _sp = sp;
         private readonly IServiceProvider _sp;
 
-        public T New => _sp.Build<T>();
+        public T New() => _sp.Build<T>();
     }
 }

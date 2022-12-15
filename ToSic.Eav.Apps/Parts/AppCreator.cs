@@ -55,7 +55,7 @@ namespace ToSic.Eav.Apps.Parts
             // must get app from DB directly, not from cache, so no State.Get(...)
             var appState = RepositoryLoader.AppState(appId, false);
 
-            _appInitGenerator.New // _appManager.ServiceProvider.Build<AppInitializer>()
+            _appInitGenerator.New() // _appManager.ServiceProvider.Build<AppInitializer>()
                 .Init(appState, Log)
                 .InitializeApp(appName);
         }

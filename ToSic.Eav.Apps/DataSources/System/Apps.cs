@@ -92,7 +92,7 @@ namespace ToSic.Eav.DataSources.Sys
                 string error = null;
                 try
                 {
-                    appObj = _appGenerator.New.Init(new AppIdentity(zone.ZoneId, app.Key), null, Log);
+                    appObj = _appGenerator.New().Init(new AppIdentity(zone.ZoneId, app.Key), null, Log);
                     // this will get the guid, if the identity is not "default"
                     if (Guid.TryParse(appObj.NameId, out var g)) guid = g;
                 }

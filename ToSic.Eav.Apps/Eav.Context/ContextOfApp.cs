@@ -96,14 +96,14 @@ namespace ToSic.Eav.Context
                         return wrapLog.Return(_userMayEdit.Value, "no app, use fallback");
 
                     // If user isn't allowed yet, it may be that the environment allows it
-                    _userMayEdit = Deps.EnvironmentPermissionGenerator.New
+                    _userMayEdit = Deps.EnvironmentPermissionGenerator.New()
                         .Init(this as IContextOfSite, null)
                         .EnvironmentAllows(GrantSets.WriteSomething);
 
                     return wrapLog.Return(_userMayEdit.Value, "no app, use fallback");
                 }
 
-                _userMayEdit = Dependencies.AppPermissionCheckGenerator.New
+                _userMayEdit = Dependencies.AppPermissionCheckGenerator.New()
                     .ForAppInInstance(this, AppState, Log)
                     .UserMay(GrantSets.WriteSomething);
 

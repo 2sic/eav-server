@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
 
         #region Provide from constructor
 
-        public IAppStates AppStates => _appStatesGen.New;
+        public IAppStates AppStates => _appStatesGen.New();
         public IZoneCultureResolver ZoneCultureResolver => _zoneCultureResolverLazy.Value;
         public QueryBuilder QueryBuilder => _queryBuilderLazy.Value;
 

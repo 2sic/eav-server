@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Parts
     public partial class EntitiesManager
     {
         public ExportListXml Exporter(string contentType)
-            => _exportListXmGenerator.New /*Parent.ServiceProvider.Build<ExportListXml>()*/.Init(Parent.AppState, Parent.Read.ContentTypes.Get(contentType), Log);
+            => _exportListXmGenerator.New().Init(Parent.AppState, Parent.Read.ContentTypes.Get(contentType), Log);
 
         public ImportListXml Importer(
             string contentTypeName,

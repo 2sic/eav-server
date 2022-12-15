@@ -179,7 +179,7 @@ namespace ToSic.Eav.WebApi
         // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
         public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
         {
-            var permCheck = _multiPermissionsTypes.New.Init(context, app, contentType, parentLog);
+            var permCheck = _multiPermissionsTypes.New().Init(context, app, contentType, parentLog);
             if (!permCheck.EnsureAll(requiredGrants, out var error))
                 throw HttpException.PermissionDenied(error);
             return Init(app.AppId, true, parentLog);

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
     {
         public DbEntity(DbDataController db) : base(db, "Db.Enty")
         {
-            Serializer = db.JsonSerializerGenerator.New;
+            Serializer = db.JsonSerializerGenerator.New();
         }
         private JsonSerializer Serializer { get; }
     }
