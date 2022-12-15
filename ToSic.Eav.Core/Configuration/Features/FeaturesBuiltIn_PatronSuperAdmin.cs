@@ -5,7 +5,7 @@ namespace ToSic.Eav.Configuration
 {
     public partial class BuiltInFeatures
     {
-        internal static List<FeatureLicenseRule> ForPatronSuperAdminAutoEnabled = BuildRule(Licenses.BuiltInLicenses.PatronAdvancedCms, true);
+        internal static List<FeatureLicenseRule> ForPatronSuperAdminAutoEnabled = BuildRule(Licenses.BuiltInLicenses.PatronSuperAdmin, true);
 
         public static readonly FeatureDefinition AppSyncWithSiteFiles = new FeatureDefinition(
             nameof(AppSyncWithSiteFiles),

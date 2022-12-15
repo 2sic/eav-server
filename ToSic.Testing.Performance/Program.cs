@@ -7,16 +7,12 @@ namespace ToSic.Testing.Performance
 {
     class Program // : Efc11TestBase
     {
-        //public Program(IServiceProvider serviceProvider) : base(serviceProvider)
-        //{
-        //}
-
         static void Main(string[] args)
         {
             // initialize everything
             //Shared.StartupTestingShared.ConfigureEfcDi();
 
-            var tester = new GenerateJsonForApps(); // EavTestBase.Resolve<GenerateJsonForApps>();
+            var tester = new GenerateJsonForApps();
             tester.Init();
 
             // time initial sql

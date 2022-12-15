@@ -4,12 +4,8 @@ using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Testing.Shared
 {
-    public abstract class TestBaseDiEmpty : TestBaseDiRaw // HasLog, IServiceBuilder
+    public abstract class TestBaseDiEmpty : TestBaseDiRaw
     {
-        //private IServiceProvider ServiceProvider { get; }
-
-        //public T Build<T>() => ServiceProvider.Build<T>();
-
         protected TestBaseDiEmpty() : this(null) {}
 
         protected TestBaseDiEmpty(string logName) : base("Tst." + (logName ?? "BaseDI"))
@@ -19,14 +15,6 @@ namespace ToSic.Testing.Shared
             // ReSharper disable once VirtualMemberCallInConstructor
             Configure();
         }
-
-        //protected virtual IServiceCollection SetupServices(IServiceCollection services)
-        //{
-        //    AddServices(services);
-        //    return services;
-        //}
-
-        //protected virtual void AddServices(IServiceCollection services) { }
 
         protected void StartupGlobalFoldersAndFingerprint()
         {

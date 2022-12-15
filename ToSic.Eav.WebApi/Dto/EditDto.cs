@@ -55,6 +55,12 @@ namespace ToSic.Eav.WebApi.Dto
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public EditPrefetchDto Prefetch { get; set; }
+
+        /// <summary>
+        /// WIP v15 - should contain additional settings such as default GPS coordinates
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public IDictionary<string, object> Settings { get; set; }
     }
 
 }
