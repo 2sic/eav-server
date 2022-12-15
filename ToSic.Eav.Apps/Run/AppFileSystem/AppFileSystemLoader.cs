@@ -9,7 +9,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Apps.Run
@@ -134,7 +133,7 @@ namespace ToSic.Eav.Apps.Run
         private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
         {
             var wrapLog = Log.Fn<IList<IContentType>>(extensionPath);
-            var fsLoader = Deps.FslGenerator.New // Deps.ServiceProvider.Build<FileSystemLoader>()
+            var fsLoader = Deps.FslGenerator.New
                 .Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource, Log);
             var types = fsLoader.ContentTypes();
             return wrapLog.ReturnAsOk(types);

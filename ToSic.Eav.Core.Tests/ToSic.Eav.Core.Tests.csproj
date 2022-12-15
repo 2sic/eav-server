@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="Compression\CompressorTests.cs" />
     <Compile Include="Configuration\Features.cs" />
+    <Compile Include="Configuration\DataOverrideTest.cs" />
     <Compile Include="Configuration\LicenseCheckTest.cs" />
     <Compile Include="Configuration\FingerprintTest.cs" />
     <Compile Include="Data\ContentType_Test.cs" />

@@ -87,16 +87,26 @@ namespace ToSic.Eav.Persistence.File
                 var wrapLog = Log.Fn(message: msg, startTimer: true);
 
                 // Prepare metadata lists & relationships etc.
-                appState.InitMetadata(new Dictionary<int, string>().ToImmutableDictionary(a => a.Key, a => a.Value));
+                appState.InitMetadata(new Dictionary<int, string>().ToImmutableDictionary());
                 appState.Name = Constants.PresetName;
                 appState.Folder = Constants.PresetName;
 
                 // prepare content-types
-                var wrapLoadTypes = Log.Fn(startTimer: true);
-                // Just attach all global content-types to this app, as they belong here
-                var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
-                appState.InitContentTypes(types);
-                wrapLoadTypes.Done($"types loaded");
+                // Experimental new log wrapping...
+
+                //var wrapLoadTypes = Log.Fn(startTimer: true);
+                //// Just attach all global content-types to this app, as they belong here
+                //var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
+                //appState.InitContentTypes(types);
+                //wrapLoadTypes.Done($"types loaded");
+
+                Log.Wrp(startTimer: true, action: () =>
+                {
+                    var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
+                    // Just attach all global content-types to this app, as they belong here
+                    appState.InitContentTypes(types);
+                    return "types loaded";
+                });
 
                 // load data
                 try
@@ -112,11 +122,13 @@ namespace ToSic.Eav.Persistence.File
                     Loaders.ForEach(l => l.ResetSerializer(appTypes));
 
                     Log.A("Load items");
-                    foreach (var entityItemFolder in FsDataConstants.EntityItemFolders)
+
+                    var entitySets = LoadAndDeduplicateEntitySets();
+
+                    foreach (var eSet in entitySets)
                     {
-                        Log.A($"Load {entityItemFolder} items");
-                        var configs = LoadGlobalItems(entityItemFolder)?.ToList() ?? new List<IEntity>();
-                        foreach (var c in configs) appState.Add(c as Entity, null, true);
+                        Log.A($"Load {eSet.Folder} - {eSet.Entities.Count} items");
+                        foreach (var c in eSet.Entities) appState.Add(c as Entity, null, true);
                     }
                 }
                 catch (Exception ex)
@@ -130,6 +142,6 @@ namespace ToSic.Eav.Persistence.File
 
             return outerWrapLog.ReturnAsOk(appState);
         }
-        
+
     }
 }

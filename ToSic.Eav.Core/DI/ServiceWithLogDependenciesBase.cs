@@ -3,6 +3,12 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DI
 {
+    /// <summary>
+    /// Special base class for most services which have a bunch of child-services that should be log-connected.
+    ///
+    /// Provides a special Dependency-list and will auto-set the log for all if they support logs.
+    /// </summary>
+    [PrivateApi]
     public abstract class ServiceWithLogDependenciesBase: HasLog
     {
         [PrivateApi]
@@ -19,13 +25,12 @@ namespace ToSic.Eav.DI
         /// <summary>
         /// Add Log to all dependencies listed in <see cref="services"/>
         /// </summary>
-        /// <param name="log">The current log object</param>
         /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
         [PrivateApi]
-        protected void InitServicesLogs(ILog log, params object[] services)
+        protected void ConnectServices(params object[] services)
         {
             DependencyLogs.Add(services);
-            DependencyLogs.SetLog(log);
+            DependencyLogs.SetLog(Log);
         }
     }
 }

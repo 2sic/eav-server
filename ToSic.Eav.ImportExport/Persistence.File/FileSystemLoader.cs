@@ -3,32 +3,29 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DI;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
+using static ToSic.Eav.ImportExport.ImpExpConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class FileSystemLoader: HasLog, IContentTypeLoader
+    public partial class FileSystemLoader: ServiceWithLogDependenciesBase, IContentTypeLoader
     {
         public int AppId = -999;
 
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
-        public FileSystemLoader(IServiceProvider serviceProvider) : base(LogNames.Eav + ".FsLoad")
-        {
-            _serviceProvider = serviceProvider;
-        }
-        private readonly IServiceProvider _serviceProvider;
+        public FileSystemLoader(GeneratorLog<JsonSerializer> jsonSerGenerator) : base($"{LogNames.Eav}.FsLoad")
+            => ConnectServices(_jsonSerGenerator = jsonSerGenerator);
+
+        private readonly GeneratorLog<JsonSerializer> _jsonSerGenerator;
 
         public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
         {
@@ -56,7 +53,7 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_ser != null) return _ser;
-                _ser = _serviceProvider.Build<JsonSerializer>();
+                _ser = _jsonSerGenerator.New;
                 _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource, Log);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
@@ -66,13 +63,13 @@ namespace ToSic.Eav.Persistence.File
 
         internal void ResetSerializer(AppState appState)
         {
-            var serializer = _serviceProvider.Build<JsonSerializer>();
+            var serializer = _jsonSerGenerator.New;
             serializer.Init(appState, Log);
             _ser = serializer;
         }
         internal void ResetSerializer(List<IContentType> types)
         {
-            var serializer = _serviceProvider.Build<JsonSerializer>();
+            var serializer = _jsonSerGenerator.New;
             serializer.Initialize(AppId, types, null, Log);
             _ser = serializer;
         }
@@ -81,7 +78,7 @@ namespace ToSic.Eav.Persistence.File
 
         #region Queries & Configuration
 
-        public IList<IEntity> Entities(string folder, int idSeed)
+        public IList<IEntity> Entities(string folder, int idSeed, List<IEntity> relationshipsList = null)
         {
             // #1. check that folder exists
             var subPath = System.IO.Path.Combine(Path, folder);
@@ -89,13 +86,16 @@ namespace ToSic.Eav.Persistence.File
                 return new List<IEntity>();
 
             // #2 find all content-type files in folder
-            var jsons = Directory.GetFiles(subPath, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json))
+            var jsons = Directory
+                .GetFiles(subPath, $"*{Extension(Files.json)}")
                 .OrderBy(f => f)
                 .ToArray();
 
             // #3.1 WIP - Allow relationships between loaded items
-            var entitiesForRelationships = new List<IEntity>();
-            var relationshipsSource = new DirectEntitiesSource(entitiesForRelationships);
+            // If we are loading from a larger context, then we have a reference to a list
+            // which will be repopulated later, so only create a new one if there is none
+            relationshipsList = relationshipsList ?? new List<IEntity>();
+            var relationshipsSource = new DirectEntitiesSource(relationshipsList);
 
             // #3.2 load entity-items from folder
             var jsonSerializer = Serializer;
@@ -105,7 +105,7 @@ namespace ToSic.Eav.Persistence.File
                 .ToList();
 
             // #3.3 Put all found entities into the source
-            entitiesForRelationships.AddRange(entities);
+            relationshipsList.AddRange(entities);
             
             return entities;
         }
@@ -137,7 +137,7 @@ namespace ToSic.Eav.Persistence.File
                 return new List<IContentType>();
 
             // #2 find all content-type files in folder
-            var jsons = Directory.GetFiles(pathCt, "*" + ImpExpConstants.Extension(ImpExpConstants.Files.json)).OrderBy(f => f);
+            var jsons = Directory.GetFiles(pathCt, "*" + Extension(Files.json)).OrderBy(f => f);
 
             // #3 load content-types from folder
             var cts = jsons
@@ -183,9 +183,6 @@ namespace ToSic.Eav.Persistence.File
 
 
         #region todo someday items
-        // 2020-07-31 2dm not used
-        //private string ItemPath => Path + ItemFolder;
-
 
         /// <summary>
         /// Try to load an entity (for example a query-definition)
