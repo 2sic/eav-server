@@ -3,7 +3,7 @@
     /// <summary>
     /// Experimental extension, should replace many of the Init-implementations
     /// </summary>
-    public static class HasLogExtensions
+    public static class HasLogInit
     {
         /// <summary>
         /// Null-Safe method to link logs together. Both the parent and the Log could be null. 

@@ -100,7 +100,7 @@ namespace ToSic.Eav.Persistence.File
                 //appState.InitContentTypes(types);
                 //wrapLoadTypes.Done($"types loaded");
 
-                Log.Wrp(startTimer: true, action: () =>
+                Log.DoAndLog(startTimer: true, action: () =>
                 {
                     var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
                     // Just attach all global content-types to this app, as they belong here

@@ -18,7 +18,7 @@ namespace ToSic.Lib.Logging
 
         public string Source => (_log as Log)?.FullIdentifier;
 
-        public string ShortSource => _log.Identifier;
+        public string ShortSource => _log.NameId;
 
         public Entry(ILog log, string message, int depth, CodeRef code)
         {

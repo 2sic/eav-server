@@ -12,9 +12,9 @@ namespace ToSic.Lib.Logging
 
         public static void Ex(this ILog log,
             Exception ex,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
         ) => log?.ExceptionInternal(ex, new CodeRef(cPath, cName, cLine));
 
     }
