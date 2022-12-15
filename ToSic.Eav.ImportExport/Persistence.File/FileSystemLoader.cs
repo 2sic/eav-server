@@ -15,7 +15,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class FileSystemLoader: ServiceWithLogDependenciesBase, IContentTypeLoader
+    public partial class FileSystemLoader: ServiceWithLog, IContentTypeLoader
     {
         public int AppId = -999;
 

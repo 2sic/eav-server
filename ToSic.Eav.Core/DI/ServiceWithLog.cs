@@ -9,10 +9,10 @@ namespace ToSic.Eav.DI
     /// Provides a special Dependency-list and will auto-set the log for all if they support logs.
     /// </summary>
     [PrivateApi]
-    public abstract class ServiceWithLogDependenciesBase: HasLog
+    public abstract class ServiceWithLog: HasLog
     {
         [PrivateApi]
-        protected ServiceWithLogDependenciesBase(string logName) : base(logName)
+        protected ServiceWithLog(string logName) : base(logName)
         {
 
         }
