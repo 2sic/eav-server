@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps.Parts
                 }
                 catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { /* ignore */ }
             // Tell the cache to do a partial update
-            _appsCache.Value.Update(_serviceProvider, Parent, entityIds, Log);
+            _appsCache.Value.Update(Parent, entityIds, Log, _appLoaderTools.Value);
             Log.A("/Publish(...)");
         }
 

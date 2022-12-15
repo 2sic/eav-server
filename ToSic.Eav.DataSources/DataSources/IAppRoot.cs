@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSources
 {
     /// <summary>
     /// Interface for the App Root - usually the very first node in any data-delivery or query. <br/>
-    /// It's just like a normal <see cref="IDataSource"/> but will internally access the <see cref="AppState"/> from the <see cref="IAppsCache"/>.
+    /// It's just like a normal <see cref="IDataSource"/> but will internally access the <see cref="AppState"/> from the Cache/>.
     /// </summary>
     [VisualQuery(
         NiceName = "App Root Cache",

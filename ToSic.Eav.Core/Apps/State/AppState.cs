@@ -11,14 +11,15 @@ namespace ToSic.Eav.Apps
     /// It also manages and caches relationships between entities of the same app.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public partial class AppState: AppBase
+    public partial class AppState: AppBase, ILogShouldNeverConnect
     {
 
         [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
         public AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base($"App.St-{id.AppId}", new CodeRef())
         {
             Log.A($"AppState for App {id.AppId}");
-            Init(id, new CodeRef(), parentLog);
+            Init(id, parentLog);
+            this.Init(parentLog, null, forceConnect: true);
 
             ParentApp = parentApp;
             Log.A($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");

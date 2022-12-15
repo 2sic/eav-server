@@ -10,7 +10,6 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
-using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts
@@ -30,7 +29,7 @@ namespace ToSic.Eav.Apps.Parts
             Lazy<Import> importLazy, 
             Lazy<IImportExportEnvironment> environmentLazy, 
             SystemManager systemManager,
-            IServiceProvider serviceProvider,
+            Lazy<IAppLoaderTools> appLoaderTools,
             LazyInitLog<EntitySaver> entitySaverLazy,
             AppsCacheSwitch appsCache, // Note: Singleton
             LazyInit<JsonSerializer> jsonSerializer,
@@ -40,7 +39,7 @@ namespace ToSic.Eav.Apps.Parts
             _lazyImportListXml = lazyImportListXml;
             _importLazy = importLazy;
             _environmentLazy = environmentLazy;
-            _serviceProvider = serviceProvider;
+            _appLoaderTools = appLoaderTools;
             _entitySaverLazy = entitySaverLazy.SetLog(Log);
             _appsCache = appsCache;
             _exportListXmGenerator = exportListXmlGenerator;
@@ -52,7 +51,7 @@ namespace ToSic.Eav.Apps.Parts
         private readonly Lazy<IImportExportEnvironment> _environmentLazy;
         private IImportExportEnvironment Environment => _environment ?? (_environment = _environmentLazy.Value.Init(Log));
         private IImportExportEnvironment _environment;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly Lazy<IAppLoaderTools> _appLoaderTools;
         private readonly LazyInitLog<EntitySaver> _entitySaverLazy;
         private readonly AppsCacheSwitch _appsCache;
         private readonly Generator<ExportListXml> _exportListXmGenerator;
@@ -112,7 +111,7 @@ namespace ToSic.Eav.Apps.Parts
                 dc.DoButSkipAppCachePurge(() => intIds = dc.Save(entities, saveOptions));
 
                 // Tell the cache to do a partial update
-                _appsCache.Value.Update(_serviceProvider, Parent, intIds, Log);
+                _appsCache.Value.Update(Parent, intIds, Log, _appLoaderTools.Value);
                 return intIds;
             }
 

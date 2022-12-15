@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.DI;
 using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Caching
 {
@@ -29,18 +27,13 @@ namespace ToSic.Eav.Caching
 
         #endregion
 
-        /// <summary>
-        /// The repository loader. Must generate a new one on every access, to be sure that it doesn't stay in memory for long. 
-        /// </summary>
-        private IRepositoryLoader GetNewRepoLoader(IServiceProvider sp) => sp.Build<IRepositoryLoader>();
-
-        public abstract IReadOnlyDictionary<int, Zone> Zones(IServiceProvider sp);
+        public abstract IReadOnlyDictionary<int, Zone> Zones(IAppLoaderTools tools);
 
         [PrivateApi]
-        protected IReadOnlyDictionary<int, Zone> LoadZones(IServiceProvider sp)
+        protected IReadOnlyDictionary<int, Zone> LoadZones(IAppLoaderTools sp)
         {
             // Load from DB (this will also ensure that Primary Apps are created)
-            var realZones = GetNewRepoLoader(sp).Zones();
+            var realZones = sp.RepositoryLoader.Zones();
 
             // Add the Preset-Zone to the list - important, otherwise everything fails
             var presetZone = new Zone(Constants.PresetZoneId,
@@ -114,14 +107,14 @@ namespace ToSic.Eav.Caching
         #endregion
 
         /// <inheritdoc />
-        public AppState Get(IServiceProvider sp, IAppIdentity app) => GetOrBuild(sp, app);
+        public AppState Get(IAppIdentity app, IAppLoaderTools tools) => GetOrBuild(tools, app);
 
 
         /// <inheritdoc />
-        public void Load(IServiceProvider sp, IAppIdentity app, string primaryLanguage) => GetOrBuild(sp, app, primaryLanguage);
+        public void Load(IAppIdentity app, string primaryLanguage, IAppLoaderTools tools) => GetOrBuild(tools, app, primaryLanguage);
 
 
-        private AppState GetOrBuild(IServiceProvider sp, IAppIdentity appIdentity, string primaryLanguage = null)
+        private AppState GetOrBuild(IAppLoaderTools tools, IAppIdentity appIdentity, string primaryLanguage = null)
         {
             if (appIdentity.ZoneId == 0 || appIdentity.AppId == Constants.AppIdEmpty)
                 return null;
@@ -141,7 +134,7 @@ namespace ToSic.Eav.Caching
                 if (appState != null) return appState;
 
                 // Init EavSqlStore once
-                var loader = GetNewRepoLoader(sp);
+                var loader = tools.RepositoryLoader;
                 if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
                 appState = loader.AppState(appIdentity.AppId, true);
                 Set(cacheKey, appState);
@@ -174,13 +167,13 @@ namespace ToSic.Eav.Caching
         #region Update
 
         /// <inheritdoc />
-        public virtual AppState Update(IServiceProvider sp, IAppIdentity app, IEnumerable<int> entities, ILog log)
+        public virtual AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
         {
             var wrapLog = log.Fn<AppState>();
             // if it's not cached yet, ignore the request as partial update won't be necessary
             if (!Has(app)) return wrapLog.ReturnNull("not cached, won't update");
-            var appState = Get(sp, app);
-            GetNewRepoLoader(sp).Init(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
+            var appState = Get(app, tools);
+            tools.RepositoryLoader.Init(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
             return wrapLog.ReturnAsOk(appState);
         }
 
@@ -188,11 +181,11 @@ namespace ToSic.Eav.Caching
 
 
         [PrivateApi]
-        public int ZoneIdOfApp(IServiceProvider sp, int appId)
+        public int ZoneIdOfApp(int appId, IAppLoaderTools tools)
         {
             try
             {
-                var zones = Zones(sp);
+                var zones = Zones(tools);
                 return zones.Single(z => z.Value.Apps.Any(a => a.Key == appId)).Key;
             }
             catch (Exception ex)

@@ -24,7 +24,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public T Init(IAppIdentity app, bool showDrafts, ILog parentLog)
         {
-            Init(app, new CodeRef(), parentLog);
+            Init(app, parentLog);
             // 2020-02-10 DataSourceFactory.Init(Log);
             // re-use data of parent if it's constructed from an app-manager
             if (app is AppManager parentIsAppManager) _data = parentIsAppManager.Data;

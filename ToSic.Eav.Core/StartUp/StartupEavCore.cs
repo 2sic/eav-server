@@ -53,6 +53,7 @@ namespace ToSic.Eav.StartUp
 
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
+            services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
             services.TryAddTransient<IAppStates, AppStates>();
             services.TryAddTransient<AppSettingsStack>();
 

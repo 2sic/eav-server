@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
@@ -16,12 +15,12 @@ namespace ToSic.Eav.Caching
         #region Get an App
 
         /// <summary>
-        /// Retrieve an app from the cache
+        /// Retrieve an app from the cache or build it if not yet available.
         /// </summary>
-        /// <param name="sp">Current service provider, in case the app must be retrieved / generated</param>
         /// <param name="app">App identifier.</param>
+        /// <param name="tools">Current service provider, in case the app must be retrieved / generated</param>
         /// <returns>The <see cref="AppState"/> of the app.</returns>
-        AppState Get(IServiceProvider sp, IAppIdentity app);
+        AppState Get(IAppIdentity app, IAppLoaderTools tools);
 
         #endregion
 
@@ -31,10 +30,10 @@ namespace ToSic.Eav.Caching
         ///// The list of zones, which internally contains the list of apps. 
         ///// </summary>
         [PrivateApi]
-        IReadOnlyDictionary<int, Zone> Zones(IServiceProvider sp);
+        IReadOnlyDictionary<int, Zone> Zones(IAppLoaderTools tools);
 
         [PrivateApi]
-        int ZoneIdOfApp(IServiceProvider sp, int appId);
+        int ZoneIdOfApp(int appId, IAppLoaderTools tools);
 
         #endregion
 
@@ -72,8 +71,9 @@ namespace ToSic.Eav.Caching
         /// <param name="app">App identifier.</param>
         /// <param name="entities">List of entities which need to be updates.</param>
         /// <param name="log">Log object to log what's happening.</param>
+        /// <param name="tools"></param>
         /// <returns>The updated <see cref="AppState"/> or null, if it wasn't in the cache so didn't need updating.</returns>
-        AppState Update(IServiceProvider sp, IAppIdentity app, IEnumerable<int> entities, ILog log);
+        AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools);
 
         [PrivateApi("wip 12.10+")]
         void Add(AppState appState);
@@ -86,10 +86,10 @@ namespace ToSic.Eav.Caching
         /// Load an app into cache, specifying the primary language.
         /// This is used in scenarios, where the primary language cannot be auto-detected, so it's set explicitly.
         /// </summary>
-        /// <param name="sp"></param>
         /// <param name="app">App identifier.</param>
         /// <param name="primaryLanguage">Primary language, lower case.</param>
-        void Load(IServiceProvider sp, IAppIdentity app, string primaryLanguage);
+        /// <param name="tools"></param>
+        void Load(IAppIdentity app, string primaryLanguage, IAppLoaderTools tools);
 
         #endregion
 
