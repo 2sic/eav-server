@@ -25,7 +25,7 @@ namespace ToSic.Eav.WebApi.ImportExport
 
         public ImportFromRemote Init(IUser user, ILog parentLog)
         {
-            (Log as Log)?.LinkTo(parentLog);
+            this.Init(parentLog);
             _user = user;
             return this;
         }

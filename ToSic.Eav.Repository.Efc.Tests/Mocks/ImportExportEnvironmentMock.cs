@@ -18,13 +18,6 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
         }
         private readonly IAppStates _appStates;
 
-        public IImportExportEnvironment Init(ILog parent)
-        {
-            (Log as Log)?.LinkTo(parent);
-            return this;
-        }
-
-
         #endregion
 
         public string BasePath { get; set; }= @"C:\Projects\2sxc\eav-server\ToSic.Eav.Repository.Efc.Tests\";

@@ -29,7 +29,7 @@ namespace ToSic.Eav.Persistence.File
 
         public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
         {
-            (Log as Log)?.LinkTo(parentLog);
+            this.Init(parentLog);
             Log.A($"init with appId:{appId}, path:{path}, ignore:{ignoreMissing}");
             AppId = appId;
             Path = path + (path.EndsWith("\\") ? "" : "\\");

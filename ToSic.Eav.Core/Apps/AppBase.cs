@@ -28,10 +28,12 @@ namespace ToSic.Eav.Apps
         /// <param name="parentLog">the current log - could be null if necessary</param>
         protected AppBase Init(IAppIdentity app, CodeRef code, ILog parentLog)
         {
-            InitLog(null, parentLog, null, code);
+            this.Init(parentLog);
+            var l = Log.Fn<AppBase>();
+            //InitLog(null, parentLog, null, code);
             ZoneId = app.ZoneId;
             AppId = app.AppId;
-            return this;
+            return l.Return(this);
         }
     }
 }

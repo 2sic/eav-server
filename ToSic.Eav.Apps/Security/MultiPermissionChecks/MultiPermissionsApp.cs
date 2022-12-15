@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.Security
 
         public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app, ILog parentLog, string logName = null)
         {
-            (Log as Log)?.LinkTo(parentLog, logName ?? "Api.PermApp");
+            this.Init(parentLog, logName ?? "Api.PermApp");
             var wrapLog = Log.Fn<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
             Context = context;
             App = app;

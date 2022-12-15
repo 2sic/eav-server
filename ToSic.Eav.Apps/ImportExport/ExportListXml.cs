@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public ExportListXml Init(AppState app, IContentType contentType, ILog parentLog)
         {
-            (Log as Log)?.LinkTo(parentLog);
+            this.Init(parentLog);
             App = app;
             ContentType = contentType;
             return this;

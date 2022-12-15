@@ -149,7 +149,7 @@ namespace ToSic.Eav.Repository.Efc
         /// </summary>
         public DbDataController Init(int? zoneId, int? appId, ILog parentLog)
         {
-            (Log as Log)?.LinkTo(parentLog);
+            this.Init(parentLog);
             // If nothing is supplied, use defaults
             if (!zoneId.HasValue && !appId.HasValue)
             {

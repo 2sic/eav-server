@@ -11,7 +11,7 @@ namespace ToSic.Eav.Caching
     /// This is a very powerful system ensuring performance and more. 
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public interface IAppsCache
+    public interface IAppsCache: ILogShouldNeverConnect
     {
         #region Get an App
 

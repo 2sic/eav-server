@@ -6,13 +6,13 @@ namespace ToSic.Lib.Logging
 
     public static partial class LogExtensions
     {
-        /// <summary>
-        /// Attach this log to another parent log, which should also know about events logged here.
-        /// </summary>
-        /// <param name="hasLog">thing which has a log</param>
-        /// <param name="parentLog">The parent log</param>
-        /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
-        public static void LinkLog(this IHasLog hasLog, ILog parentLog) => (hasLog.Log as Log)?.LinkTo(parentLog);
+        ///// <summary>
+        ///// Attach this log to another parent log, which should also know about events logged here.
+        ///// </summary>
+        ///// <param name="hasLog">thing which has a log</param>
+        ///// <param name="parentLog">The parent log</param>
+        ///// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+        //public static void LinkLog(this IHasLog hasLog, ILog parentLog) => (hasLog.Log as Log)?.LinkTo(parentLog);
 
         public static void A(this ILog log,
             string message,

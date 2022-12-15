@@ -13,6 +13,6 @@ namespace ToSic.Eav.DI
             return this;
         }
 
-        void ILazyInitLog.SetLog(ILog parentLog) => SetInit(x => (x.Log as Log)?.LinkTo(parentLog));
+        void ILazyInitLog.SetLog(ILog parentLog) => SetInit(x => x.Init(parentLog));
     }
 }

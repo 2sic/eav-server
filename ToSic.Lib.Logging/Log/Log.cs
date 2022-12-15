@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace ToSic.Lib.Logging
 {
-    public partial class Log: ILog
+    public class Log: ILog
     {
         // unique ID of this logger, to not confuse it with other loggers
         public string Id { get; } = Guid.NewGuid().ToString().Substring(0, 2);
@@ -16,7 +16,7 @@ namespace ToSic.Lib.Logging
         public int WrapDepth;
         public  List<Entry> Entries { get; } = new List<Entry>();
         public ILog Parent { get; private set; }
-        public int Depth { get; set; } = 0;
+        public int Depth { get; set; }
         private const int MaxParentDepth = 100;
 
         public string Identifier => $"{Scope}{Name}[{Id}]";
@@ -71,27 +71,27 @@ namespace ToSic.Lib.Logging
         /// Link this logger to a parent
         /// and optionally rename
         /// </summary>
-        /// <param name="parent">parent log to attach to</param>
+        /// <param name="newParent">parent log to attach to</param>
         /// <param name="name">optional new name</param>
-        public void LinkTo(ILog parent, string name = null)
+        public void LinkTo(ILog newParent, string name = null)
         {
-            if(parent == this) throw new Exception("LOGGER ERROR - attaching same item as parent can't work");
+            if(newParent == this) throw new Exception("LOGGER ERROR - attaching same item as parent can't work");
             // only attach new parent if it didn't already have an old one
             // this is critical because we cannot guarantee that sometimes a LinkTo is called more than once on something
-            if (parent != null) 
+            if (newParent != null) 
             {
                 if(Parent == null)
                 {
-                    Parent = parent;
-                    Depth = parent.Depth + 1;
+                    Parent = newParent;
+                    Depth = newParent.Depth + 1;
                     if(Depth > MaxParentDepth)
                         throw new Exception($"LOGGER ERROR - Adding parent to logger but exceeded max depth of {MaxParentDepth}");
                 }
                 // show an error, if it the new parent is different from the old one
-                else if ((Parent as Log)?.FullIdentifier != (parent as Log)?.FullIdentifier)
+                else if ((Parent as Log)?.FullIdentifier != (newParent as Log)?.FullIdentifier)
                     this.A("LOGGER INFO - this logger already has a parent, but trying to attach to new parent. " +
                         $"Existing parent: {(Parent as Log)?.FullIdentifier}. " +
-                        $"New Parent (ignored): {(parent as Log)?.FullIdentifier}");
+                        $"New Parent (ignored): {(newParent as Log)?.FullIdentifier}");
             }
             if (name != null)
                 this.Rename(name);

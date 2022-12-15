@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Caching;
-using ToSic.Lib.Logging;
+﻿using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -12,7 +11,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public T Init(int zoneId, ILog parentLog)
         {
-            (Log as Log)?.LinkTo(parentLog);
+            this.Init(parentLog);
             ZoneId = zoneId;
             Log.A($"zone base for z#{zoneId}");
             return this as T;

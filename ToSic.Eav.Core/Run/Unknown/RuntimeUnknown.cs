@@ -8,12 +8,6 @@ namespace ToSic.Eav.Run.Unknown
     {
         public RuntimeUnknown(WarnUseOfUnknown<RuntimeUnknown> warn) : base("Eav.BscRnt") { }
 
-        public IRuntime Init(ILog parent)
-        {
-            (Log as Log)?.LinkTo(parent);
-            return this;
-        }
-
         public AppState LoadFullAppState() => new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogNames.NotImplemented));
 
         public void ReloadConfigEntities() { /* do nothing */ }

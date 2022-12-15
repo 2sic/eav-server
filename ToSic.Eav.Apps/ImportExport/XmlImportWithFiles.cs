@@ -74,7 +74,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             Deps = dependencies;
             dependencies.SystemManager.Init(Log);
-            dependencies._environment.LinkLog(Log);
+            dependencies._environment.Init(Log);
         }
 
         protected Dependencies Deps;
@@ -88,7 +88,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	    /// <param name="allowUpdateOnSharedTypes">Specify if the import should be able to change system-wide things like shared attributesets</param>
         public XmlImportWithFiles Init(string defaultLanguage, bool allowUpdateOnSharedTypes, ILog parentLog)
         {
-            (Log as Log)?.LinkTo(parentLog);
+            this.Init(parentLog);
             // Prepare
             Messages = new List<Message>();
             DefaultLanguage = (defaultLanguage ?? Deps._environment.DefaultLanguage).ToLowerInvariant();

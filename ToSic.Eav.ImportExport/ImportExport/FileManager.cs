@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Helpers;
 using ToSic.Lib.Logging;
@@ -24,12 +23,6 @@ namespace ToSic.Eav.ImportExport
         /// </summary>
 
         private readonly string _sourceFolder;
-
-        public FileManager Init(ILog parentLog)
-        {
-            (Log as Log)?.LinkTo(parentLog);
-            return this;
-        }
 
         /// <summary>
         /// Copy all files from SourceFolder to DestinationFolder (directly on the file system)

@@ -14,8 +14,7 @@ namespace ToSic.Eav.DI
         public T New()
         {
             var created = _sp.Build<T>();
-            (created.Log as Log)?.LinkTo(_parentLog);
-            return created;
+            return created.Init(_parentLog);
         }
 
         public GeneratorLog<T> SetLog(ILog parentLog)

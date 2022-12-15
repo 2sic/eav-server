@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public TInit Init(TParent appRt, ILog parentLog, string logName = null)
         {
-            (Log as Log)?.LinkTo(parentLog, logName);
+            this.Init(parentLog, logName);
             Parent = appRt;
             return this as TInit;
         }

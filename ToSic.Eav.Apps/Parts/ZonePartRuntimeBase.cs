@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public T Init(TRuntime zoneRuntime, ILog parentLog)
         {
-            (Log as Log)?.LinkTo(parentLog);
+            this.Init(parentLog);
             ZoneRuntime = zoneRuntime;
             return this as T;
         }

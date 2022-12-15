@@ -17,10 +17,5 @@ namespace ToSic.Eav.Apps.Tests.Mocks
 
         public MockZoneMapper() : base("Tst.MckZM") { }
 
-        public IZoneMapper Init(ILog parent)
-        {
-            (Log as Log)?.LinkTo(parent);
-            return this;
-        }
     }
 }

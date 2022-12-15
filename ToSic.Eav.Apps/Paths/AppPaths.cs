@@ -50,9 +50,9 @@ namespace ToSic.Eav.Apps.Paths
         /// <returns></returns>
         public AppPaths Init(ISite site, AppState appState, ILog parentLog)
         {
-            this._site = site;
-            this._appState = appState;
-            (Log as Log)?.LinkTo(parentLog);
+            _site = site;
+            _appState = appState;
+            this.Init(parentLog);
             InitDone = true;
             return this;
         }

@@ -8,6 +8,7 @@ using ToSic.Eav.DI;
 using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSources
@@ -204,7 +205,8 @@ namespace ToSic.Eav.DataSources
             newDs._dataBuilderLazy = _dataBuilderLazy;
             newDs._dataSourceErrorHandlingLazy = _dataSourceErrorsLazy;
 
-            newDs.InitLog(newDs.LogId, Log);
+            newDs.Init(Log, newDs.LogId);
+            // newDs.InitLog(newDs.LogId, Log);
             wrapLog.Done("ok");
         }
 

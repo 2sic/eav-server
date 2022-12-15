@@ -13,7 +13,7 @@ namespace ToSic.Lib.Logging
         /// <inheritdoc />
         [JsonIgnore]
         [IgnoreDataMember]
-        public ILog Log { get; private set; }
+        public ILog Log { get; }
 
         /// <summary>
         /// Constructor which ensures Log-chaining and optionally adds initial messages
@@ -29,43 +29,47 @@ namespace ToSic.Lib.Logging
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
 
-            => InitLog(logName, parentLog, initialMessage,
-                new CodeRef(cPath, cName, cLine));
+            : this(logName, new CodeRef(cPath, cName, cLine), parentLog, initialMessage) {}
 
         protected HasLog(string logName, CodeRef code, ILog parentLog = null, string initialMessage = null)
-            => InitLog(logName, parentLog, initialMessage, code);
-
-        /// <summary>
-        /// This is the real initializer - implemented as a virtual method, because some
-        /// long-living objects must actively prevent logs from being attached. 
-        /// </summary>
-        /// <remarks>this one can be overridden by outside sources, like the cache which should never allow attaching logs at runtime</remarks>
-        /// <param name="name"></param>
-        /// <param name="parentLog"></param>
-        /// <param name="initialMessage"></param>
-        // TODO: @2dm - probably review again, used to be virtual, not sure if this should be done this way or another
-        // Seems to only be used on data-sources to init their log...
-        public void InitLog(string name, ILog parentLog = null, string initialMessage = null) 
-            => InitLog(name, parentLog, initialMessage, null);
-
-        protected void InitLog(string name,
-            ILog parentLog, 
-            string initialMessage, 
-            CodeRef code
-            )
         {
-            if (Log == null)
-                // standard & most common case: just create log
-                Log = new Log(name, parentLog, code, initialMessage);
-            else
-            {
-                // late-init case, where the log was already created - just reconfigure keeping what was in it
-                Log.Rename(name);
-                this.LinkLog(parentLog);
-                if (initialMessage == null) return;
-                Log.A(initialMessage, code?.Path, code?.Name, code?.Line ?? 0);
-            }
+            Log = new Log(logName, parentLog, code, initialMessage);
+            //InitLog(logName, parentLog, initialMessage, code);
         }
+
+        ///// <summary>
+        ///// This is the real initializer - implemented as a virtual method, because some
+        ///// long-living objects must actively prevent logs from being attached. 
+        ///// </summary>
+        ///// <remarks>this one can be overridden by outside sources, like the cache which should never allow attaching logs at runtime</remarks>
+        ///// <param name="name"></param>
+        ///// <param name="parentLog"></param>
+        ///// <param name="initialMessage"></param>
+        //// TODO: @2dm - probably review again, used to be virtual, not sure if this should be done this way or another
+        //// Seems to only be used on data-sources to init their log...
+        //public void InitLog(string name, ILog parentLog = null, string initialMessage = null) 
+        //    => InitLog(name, parentLog, initialMessage, null);
+
+
+
+        //private void InitLog(string name,
+        //    ILog parentLog, 
+        //    string initialMessage, 
+        //    CodeRef code
+        //    )
+        //{
+        //    //if (Log == null)
+        //        // standard & most common case: just create log
+        //        Log = new Log(name, parentLog, code, initialMessage);
+        //    //else
+        //    //{
+        //    //    // late-init case, where the log was already created - just reconfigure keeping what was in it
+        //    //    Log.Rename(name);
+        //    //    this.Init(parentLog);
+        //    //    if (initialMessage == null) return;
+        //    //    Log.A(initialMessage, code?.Path, code?.Name, code?.Line ?? 0);
+        //    //}
+        //}
 
     }
 }
