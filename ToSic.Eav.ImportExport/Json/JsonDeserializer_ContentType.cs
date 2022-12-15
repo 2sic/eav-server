@@ -30,7 +30,7 @@ namespace ToSic.Eav.ImportExport.Json
                 allEntities.AddRange(directEntities); 
                
 
-                var jsonType = jsonPackage.ContentType;
+                var jsonType = jsonPackage.ContentType ?? throw new Exception("Tried to import JSON ContentType but JSON file didn't have any ContentType. Are you trying to import an Entity?");
 
                 var type = new ContentType(AppId, jsonType.Name, jsonType.Id, 0,
                     jsonType.Scope,
