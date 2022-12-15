@@ -64,8 +64,7 @@ namespace ToSic.Lib.Logging
                 [CallerFilePath] string cPath = null,
                 [CallerMemberName] string cName = null,
                 [CallerLineNumber] int cLine = 0)
-        : this(name, parent, new CodeRef(cPath, cName, cLine), initialMessage)
-        {}
+        : this(name, parent, new CodeRef(cPath, cName, cLine), initialMessage) { }
 
         /// <summary>
         /// Link this logger to a parent
@@ -73,7 +72,7 @@ namespace ToSic.Lib.Logging
         /// </summary>
         /// <param name="newParent">parent log to attach to</param>
         /// <param name="name">optional new name</param>
-        public void LinkTo(ILog newParent, string name = null)
+        internal void LinkTo(ILog newParent, string name = null)
         {
             if(newParent == this) throw new Exception("LOGGER ERROR - attaching same item as parent can't work");
             // only attach new parent if it didn't already have an old one

@@ -30,7 +30,6 @@ namespace ToSic.Eav.Apps
         {
             this.Init(parentLog);
             var l = Log.Fn<AppBase>();
-            //InitLog(null, parentLog, null, code);
             ZoneId = app.ZoneId;
             AppId = app.AppId;
             return l.Return(this);

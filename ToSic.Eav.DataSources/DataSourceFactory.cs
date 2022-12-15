@@ -8,8 +8,6 @@ using ToSic.Eav.DI;
 using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Persistence.Logging;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSources
 {
