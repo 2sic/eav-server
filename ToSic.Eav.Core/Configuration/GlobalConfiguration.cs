@@ -13,6 +13,8 @@ namespace ToSic.Eav.Configuration
             set => _dataFolderAbsolute = CorrectFolderOrErrorIfInvalid(value, nameof(DataFolder));
         }
 
+        // TODO: @STV - IF NOT SET (default) should auto-calc based on the data folder etc.
+        // Should therefor also not be set in the Oqtane/Dnn Startups
         /// <inheritdoc />
         public string DataBetaFolder
         {
@@ -20,6 +22,8 @@ namespace ToSic.Eav.Configuration
             set => _dataFolderBetaAbsolute = CorrectFolderOrErrorIfInvalid(value, nameof(DataBetaFolder));
         }
 
+        // TODO: @STV - IF NOT SET (default) should auto-calc based on the data folder etc.
+        // Should therefor also not be set in the Oqtane/Dnn Startups
         /// <inheritdoc />
         public string DataCustomFolder
         {
