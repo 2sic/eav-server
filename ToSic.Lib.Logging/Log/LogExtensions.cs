@@ -98,6 +98,57 @@ namespace ToSic.Lib.Logging
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0
         ) => new LogCall(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+        
+        // 2dm - experimental, don't use yet...
+        public static void Wrp(this ILog log,
+            Func<LogCall, string> action,
+            string parameters = null,
+            string message = null,
+            bool startTimer = false,
+            CodeRef code = null,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+        )
+        {
+            var l = new LogCall(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+            var finalMsg = action(l);
+            l.Done(finalMsg);
+        }
+
+        // 2dm - experimental, don't use yet...
+        public static void Wrp(this ILog log,
+            Func<string> action,
+            string parameters = null,
+            string message = null,
+            bool startTimer = false,
+            CodeRef code = null,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+        )
+        {
+            var l = new LogCall(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+            var finalMsg = action();
+            l.Done(finalMsg);
+        }
+
+        // 2dm - experimental, don't use yet...
+        public static TResult WrpFn<TResult>(this ILog log,
+            Func<LogCall<TResult>, (TResult Result, string Message)> action,
+            string parameters = null,
+            string message = null,
+            bool startTimer = false,
+            CodeRef code = null,
+            [CallerFilePath] string cPath = null,
+            [CallerMemberName] string cName = null,
+            [CallerLineNumber] int cLine = 0
+        )
+        {
+            var l = new LogCall<TResult>(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+            var result = action(l);
+            return l.Return(result.Result, result.Message);
+        }
 
         /// <remarks>Is null-safe, so if there is no log, things still work and it still returns a valid <see cref="LogCall"/> </remarks>
         public static LogCall Fn(this ILog log, 
