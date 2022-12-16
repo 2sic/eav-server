@@ -2,12 +2,13 @@
 
 namespace ToSic.Lib.Logging
 {
-    public class LogCallBase
+    public class LogCallBase : ILog
+
     {
         /// <summary>
         /// Keep constructor internal
         /// </summary>
-        internal LogCallBase(ILog log, 
+        internal LogCallBase(ILog log,
             CodeRef code,
             bool isProp,
             string parameters = null,
@@ -18,22 +19,36 @@ namespace ToSic.Lib.Logging
             Stopwatch = startTimer ? Stopwatch.StartNew() : new Stopwatch();
 
             // Keep the log, but quit if it's not valid
-            LogOrNull = log as Log;
-            if (LogOrNull == null) return;
-
-            var openingMessage = (isProp ? ".": "") + $"{code.Name}({parameters}) {message}";
-            var entry = Entry = LogOrNull.AddInternalReuse(openingMessage, code);
+            if (!(log?._RealLog is Log typedLog)) return;
+            _RealLog = typedLog;
+            
+            var openingMessage = (isProp ? "." : "") + $"{code.Name}({parameters}) {message}";
+            var entry = Entry = _RealLog.AddInternalReuse(openingMessage, code);
             entry.WrapOpen = true;
-            LogOrNull.WrapDepth++;
+            typedLog.WrapDepth++;
             IsOpen = true;
         }
 
-        public readonly Log LogOrNull;
+        public ILog _RealLog { get; }
 
         public Entry Entry { get; }
 
         public Stopwatch Stopwatch { get; }
 
         internal bool IsOpen;
+
+
+        public string NameId => _RealLog?.NameId;
+
+        public bool Preserve
+        {
+            get => _RealLog?.Preserve ?? true;
+            set
+            {
+                if (_RealLog != null) _RealLog.Preserve = value;
+            }
+        }
+
+
     }
 }

@@ -11,7 +11,7 @@ namespace ToSic.Lib.Logging
         internal static void AddInternal(this ILog log, string message, CodeRef code)
         {
             // Null-check
-            if (!(log is Log realLog)) return;
+            if (!(log?._RealLog is Log realLog)) return;
             var e = new Entry(log, message, realLog.WrapDepth, code);
             log.AddToEntriesAndParent(e);
         }
@@ -20,7 +20,7 @@ namespace ToSic.Lib.Logging
         internal static Entry AddInternalReuse(this ILog log, string message, CodeRef code)
         {
             // Null-check
-            if (!(log is Log realLog)) return new Entry(null, null, 0, code);
+            if (!(log?._RealLog is Log realLog)) return new Entry(null, null, 0, code);
             var e = new Entry(log, message, realLog.WrapDepth, code);
             log.AddToEntriesAndParent(e);
             return e;
@@ -33,7 +33,7 @@ namespace ToSic.Lib.Logging
         /// <param name="entry"></param>
         internal static void AddToEntriesAndParent(this ILog log, Entry entry)
         {
-            if (!(log is Log realLog)) return;
+            if (!(log?._RealLog is Log realLog)) return;
 
             // prevent parallel threads from updating entries at the same time
             lock (realLog.Entries) { realLog.Entries.Add(entry); }

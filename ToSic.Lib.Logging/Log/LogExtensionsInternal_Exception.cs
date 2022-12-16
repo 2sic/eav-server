@@ -12,7 +12,7 @@ namespace ToSic.Lib.Logging
             )
         {
             // Null-check
-            if (!(log is Log realLog)) return;
+            if (!(log?._RealLog is Log realLog)) return;
 
             var wrapLog = realLog.Fn(message: "Will log Exception Details next", code: codeRef);
             var recursion = 1;

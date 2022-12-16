@@ -9,8 +9,8 @@ namespace ToSic.Lib.Logging
 
         public static ILog SubLogOrNull(this ILog log, string name, bool enabled = true)
         {
-            if (log == default || !enabled) return null;
-            return new Log(name, log);
+            if (log?._RealLog == default || !enabled) return null;
+            return new Log(name, log._RealLog);
         }
         
 
@@ -26,7 +26,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+            var l = new LogCall(log?._RealLog, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
             var finalMsg = action(l);
             l.Done(finalMsg);
         }
@@ -43,7 +43,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+            var l = new LogCall(log?._RealLog, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
             var finalMsg = action();
             l.Done(finalMsg);
         }
@@ -60,7 +60,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall<TResult>(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+            var l = new LogCall<TResult>(log?._RealLog, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
             var result = action(l);
             return l.Return(result.Result, result.Message);
         }

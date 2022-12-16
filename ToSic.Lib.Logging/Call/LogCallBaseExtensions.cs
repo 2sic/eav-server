@@ -12,7 +12,7 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0
-        ) => logCall?.LogOrNull?.A(message, cPath, cName, cLine);
+        ) => logCall?._RealLog?.A(message, cPath, cName, cLine);
 
 
         public static void A(this LogCallBase logCall,
@@ -21,7 +21,7 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0
-        ) => logCall?.LogOrNull?.A(enabled, message, cPath, cName, cLine);
+        ) => logCall?._RealLog?.A(enabled, message, cPath, cName, cLine);
 
         #endregion
 
@@ -50,8 +50,7 @@ namespace ToSic.Lib.Logging
 
         internal static void DoneInternal(this LogCallBase logCall, string message)
         {
-            if (logCall?.LogOrNull == null) return;
-            var log = logCall.LogOrNull;
+            if (!(logCall?._RealLog is Log log)) return;
 
             if (!logCall.IsOpen)
                 log.AddInternal("Log Warning: Wrapper already closed from previous call", null);

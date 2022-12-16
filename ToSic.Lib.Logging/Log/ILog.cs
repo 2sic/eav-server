@@ -20,5 +20,13 @@
         /// Default is true, but in certain cases it will default to false.
         /// </summary>
         bool Preserve { get; set; }
+
+        /// <summary>
+        /// Special internal property which is only used to ensure Logs and LogCalls both work.
+        /// 
+        /// Because of the way the logging works, it can be null!
+        /// This is because it's possible to pass a null-logger around, to ensure that logging is disabled.
+        /// </summary>
+        ILog _RealLog { get; }
     }
 }

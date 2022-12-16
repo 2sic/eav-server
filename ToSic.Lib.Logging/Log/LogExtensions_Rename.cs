@@ -14,7 +14,7 @@ namespace ToSic.Lib.Logging
         public static void Rename(this ILog log, string name)
         {
             if (name == null) return;
-            if (!(log is Log realLog)) return;
+            if (!(log?._RealLog is Log realLog)) return;
             try
             {
                 var dot = name.IndexOf(".", StringComparison.Ordinal);

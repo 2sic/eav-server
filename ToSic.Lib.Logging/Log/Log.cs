@@ -75,6 +75,13 @@ namespace ToSic.Lib.Logging
 
         #endregion
 
+        #region Self Reference (WIP)
+
+        /// <inheritdoc />
+        public ILog _RealLog => this;
+
+        #endregion
+
         #region Properties
 
         public DateTime Created { get; } = DateTime.Now;

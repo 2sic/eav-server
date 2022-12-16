@@ -20,8 +20,8 @@ namespace ToSic.Lib.Logging
             string callEnd = ""
         )
         {
-            var lg = new StringBuilder(start);
-            (log as Log)?.Entries.ForEach(e => lg.AppendLine(e.Source
+            var dump = new StringBuilder(start);
+            (log?._RealLog as Log)?.Entries.ForEach(e => dump.AppendLine(e.Source
                                                + separator
                                                + new string('~', e.Depth * 2)
                                                + e.Message
@@ -29,8 +29,8 @@ namespace ToSic.Lib.Logging
                                                + EntryTime(e)
                                                + (withCaller && e.Code != null ? $"{callStart}{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}{callEnd}" : "")
             ));
-            lg.Append(end);
-            return lg.ToString();
+            dump.Append(end);
+            return dump.ToString();
         }
 
         private static string EntryTime(Entry e) => e.Elapsed != TimeSpan.Zero ? $" ⌚ {e.Elapsed.TotalSeconds}s " : "";
