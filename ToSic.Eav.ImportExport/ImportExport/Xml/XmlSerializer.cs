@@ -4,7 +4,6 @@ using System.Xml.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Repositories;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -18,9 +17,9 @@ namespace ToSic.Eav.Persistence.Xml
 
         public XmlSerializer(Dependencies dependencies): base(dependencies, "IEx.XmlSer") { }
 
-        public XmlSerializer Init(Dictionary<string, int> dimensionMapping, AppState appState, ILog parentLog)
+        public XmlSerializer Init(Dictionary<string, int> dimensionMapping, AppState appState)
         {
-            base.Initialize(appState, parentLog);
+            Initialize(appState);
             _dimensions = dimensionMapping;
             return this;
         }

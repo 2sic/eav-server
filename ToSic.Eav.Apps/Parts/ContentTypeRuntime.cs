@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Data;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Parts
@@ -13,14 +14,14 @@ namespace ToSic.Eav.Apps.Parts
     public class ContentTypeRuntime : PartOf<AppRuntime>
     {
 
-        public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy, IAppStates appStates) : base("RT.ConTyp")
-        {
-            _lazyMetadataAppRuntime = lazyMetadataAppRuntime;
-            _appFileSystemLoaderLazy = appFileSystemLoaderLazy;
-            _appStates = appStates;
-        }
-        private readonly Lazy<AppRuntime> _lazyMetadataAppRuntime;
-        private readonly Lazy<IAppFileSystemLoader> _appFileSystemLoaderLazy;
+        public ContentTypeRuntime(LazyInitLog<AppRuntime> lazyMetadataAppRuntime, LazyInitLog<IAppFileSystemLoader> appFileSystemLoaderLazy, IAppStates appStates) : base("RT.ConTyp") =>
+            ConnectServices(
+                _lazyMetadataAppRuntime = lazyMetadataAppRuntime,
+                _appFileSystemLoaderLazy = appFileSystemLoaderLazy,
+                _appStates = appStates
+            );
+        private readonly LazyInitLog<AppRuntime> _lazyMetadataAppRuntime;
+        private readonly LazyInitLog<IAppFileSystemLoader> _appFileSystemLoaderLazy;
         private readonly IAppStates _appStates;
 
         public IEnumerable<IContentType> All => Parent.AppState.ContentTypes;
@@ -74,7 +75,7 @@ namespace ToSic.Eav.Apps.Parts
             LogListOfInputTypes("Combined", inputTypes);
 
             // Merge input types registered in global metadata-app
-            var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Log).Init(Constants.MetaDataAppId, true);
+            var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Constants.MetaDataAppId, true);
             var systemAppInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
             systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
             LogListOfInputTypes("System", systemAppInputTypes);

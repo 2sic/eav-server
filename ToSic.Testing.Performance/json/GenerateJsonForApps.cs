@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Lib.Logging;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Persistence.Efc.Tests;
 using AppState = ToSic.Eav.Apps.AppState;
 
@@ -42,7 +43,7 @@ namespace ToSic.Testing.Performance.json
         public int SerializeAll(int repeat)
         {
             var count = 0;
-            var ser = Build<JsonSerializer>().Init(Package, Log);
+            var ser = Build<JsonSerializer>().Init(Log).SetApp(Package);
             for (var i = 0; i < repeat; i++)
             {
                 var ents = ser.Deserialize(EntitiesAsJson);
@@ -60,7 +61,7 @@ namespace ToSic.Testing.Performance.json
         private void GenerateJsonForAllEntitiesOfApp(int appid)
         {
             var package = Loader.AppState(appid, false);
-            var ser = Build<JsonSerializer>().Init(package, Log);
+            var ser = Build<JsonSerializer>().Init(Log).SetApp(package);
             var upd = package.List.ToDictionary(e => e.EntityId, e => ser.Serialize(e));
 
             var dbEnts = Db.ToSicEavEntities.Where(e => e.AttributeSet.AppId == appid).ToList();

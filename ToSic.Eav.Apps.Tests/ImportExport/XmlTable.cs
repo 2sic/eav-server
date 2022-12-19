@@ -1,10 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.ImportExport;
 using ToSic.Lib.Logging;
-
-using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Repositories;
 using ToSic.Testing.Shared;
 
@@ -34,7 +31,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             var loader = Build<IRepositoryLoader>();
             var appPackage = loader.AppState(appId, false);
             var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
-            return Build<ExportListXml>().Init(appPackage, type, Log);
+            return Build<ExportListXml>().Init(Log).Init(appPackage, type);
         }
     }
 }

@@ -60,7 +60,7 @@ namespace ToSic.Eav.Apps.Parts
             if (partialEntity == null)
                 return wrapLog.ReturnFalse("nothing to import");
 
-            var saveOptions = Environment.SaveOptions(Parent.ZoneId);
+            var saveOptions = _environmentLazy.Value.SaveOptions(Parent.ZoneId);
             saveOptions.PreserveUntouchedAttributes = true;
             saveOptions.PreserveUnknownLanguages = true;
 

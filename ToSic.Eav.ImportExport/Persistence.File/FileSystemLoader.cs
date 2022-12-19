@@ -6,6 +6,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
@@ -64,8 +65,7 @@ namespace ToSic.Eav.Persistence.File
 
         internal void ResetSerializer(AppState appState)
         {
-            var serializer = _jsonSerGenerator.New();
-            serializer.Init(appState, Log);
+            var serializer = _jsonSerGenerator.New().Init(Log).SetApp(appState);
             _ser = serializer;
         }
         internal void ResetSerializer(List<IContentType> types)

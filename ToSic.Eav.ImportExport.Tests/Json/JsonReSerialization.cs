@@ -1,8 +1,10 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Persistence.Efc;
+using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;
+using ToSic.Lib.Logging;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests.json
@@ -67,7 +69,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
         {
             var loader = _loader; 
             var app = loader.AppState(appId, false);
-            var exBuilder = _jsonSerializer.Init(app, Log);
+            var exBuilder = _jsonSerializer.Init(Log).SetApp(app);
 
             var maxCount = 1000;
             var skip = 0;

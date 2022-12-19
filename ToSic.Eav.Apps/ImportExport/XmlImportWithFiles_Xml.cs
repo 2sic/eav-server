@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		    var importEntities = BuildEntities(entNodes, (int)TargetTypes.None);
 
 
-			var import = Deps._importerLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true, Log);
+			var import = Deps._importerLazy.Value.Init(Log).Init(ZoneId, AppId, leaveExistingValuesUntouched, true);
 
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
 

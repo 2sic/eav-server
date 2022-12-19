@@ -16,8 +16,7 @@ namespace ToSic.Eav.Serialization
         /// Initializer - necessary for most serializations
         /// </summary>
         /// <param name="appState">the app which contains the data to be serialized</param>
-        /// <param name="parentLog">logger</param>
-        void Initialize(AppState appState, ILog parentLog);
+        void Initialize(AppState appState);
 
         /// <summary>
         /// Serialize an entity to a string

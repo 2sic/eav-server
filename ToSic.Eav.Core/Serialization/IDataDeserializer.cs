@@ -16,8 +16,7 @@ namespace ToSic.Eav.Serialization
         /// Initialize with the app. One of two possible initializers.
         /// </summary>
         /// <param name="appState">the app which contains the data to be serialized</param>
-        /// <param name="parentLog">logger</param>
-        void Initialize(AppState appState, ILog parentLog);
+        void Initialize(AppState appState);
 
         /// <summary>
         /// Initialize with the app. One of two possible initializers. <br/>

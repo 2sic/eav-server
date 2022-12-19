@@ -7,6 +7,8 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
@@ -217,7 +219,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             {
                 Log.A("import content" + args.DebugInfo);
 
-                var deser = _dependencies.JsonSerializer.New().Init(_appManager.AppState, Log);
+                var deser = _dependencies.JsonSerializer.New().Init(Log).SetApp(_appManager.AppState);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents, args.AppId, Log);
                 _appManager.Queries.SaveCopy(qdef);

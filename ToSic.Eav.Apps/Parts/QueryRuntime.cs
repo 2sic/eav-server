@@ -3,7 +3,7 @@ using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class QueryRuntime: PartOf<AppRuntime/*, QueryRuntime*/>
+    public class QueryRuntime: PartOf<AppRuntime>
     {
         private readonly GeneratorLog<Eav.DataSources.Queries.QueryManager> _queryManager;
         public QueryRuntime(GeneratorLog<Eav.DataSources.Queries.QueryManager> queryManager) : base("RT.Query") 

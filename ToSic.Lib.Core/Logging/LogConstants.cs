@@ -26,6 +26,8 @@ namespace ToSic.Lib.Logging
         /// </summary>
         public const string ScopeUnknown = "tdo";
 
+        public const string FullNameUnknown = ScopeUnknown + "." + NameUnknown;
+
         /// <summary>
         /// Special prefix in the log history to ensure warnings can be extracted easily to show in a consolidated way.
         /// </summary>

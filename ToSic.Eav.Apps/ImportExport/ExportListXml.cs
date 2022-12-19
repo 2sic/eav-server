@@ -23,9 +23,8 @@ namespace ToSic.Eav.Apps.ImportExport
 
         protected ExportImportValueConversion ValueConverter { get; }
 
-        public ExportListXml Init(AppState app, IContentType contentType, ILog parentLog)
+        public ExportListXml Init(AppState app, IContentType contentType)
         {
-            this.Init(parentLog);
             App = app;
             ContentType = contentType;
             return this;

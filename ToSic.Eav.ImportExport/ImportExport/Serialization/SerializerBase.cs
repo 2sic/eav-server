@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Apps;
+using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -14,14 +15,12 @@ namespace ToSic.Eav.Serialization
     {
         #region Constructor / DI
 
-        public class Dependencies
+        public class Dependencies: ServiceDependencies
         {
-
-            public Dependencies(ITargetTypes metadataTargets, IAppStates appStates)
-            {
-                MetadataTargets = metadataTargets;
-                AppStates = appStates;
-            }
+            public Dependencies(ITargetTypes metadataTargets, IAppStates appStates) => AddToLogQueue(
+                MetadataTargets = metadataTargets,
+                AppStates = appStates
+            );
             public ITargetTypes MetadataTargets { get; }
             public IAppStates AppStates { get; }
         }
@@ -31,6 +30,7 @@ namespace ToSic.Eav.Serialization
         /// </summary>
         protected SerializerBase(Dependencies dependencies, string logName): base(logName)
         {
+            dependencies.SetLog(Log);
             MetadataTargets = dependencies.MetadataTargets;
             GlobalApp = dependencies.AppStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
         }
@@ -40,9 +40,8 @@ namespace ToSic.Eav.Serialization
         public ITargetTypes MetadataTargets { get; }
 
 
-        public void Initialize(AppState appState, ILog parentLog)
+        public void Initialize(AppState appState)
         {
-            this.Init(parentLog);
             App = appState;
             AppId = appState.AppId;
         }

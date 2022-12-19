@@ -4,7 +4,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public interface IAppFileSystemLoader
+    public interface IAppFileSystemLoader: IHasLog
     {
         /// <summary>
         /// Real constructor, after DI

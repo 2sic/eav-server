@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
@@ -109,7 +110,7 @@ namespace ToSic.Eav.WebApi.Sys
             else
                 throw CreateBadRequest("can't use entityid - must be number or guid");
 
-            var ser = _serviceProvider.Build<JsonSerializer>().Init(appRead.AppState, Log);
+            var ser = _serviceProvider.Build<JsonSerializer>().Init(Log).SetApp(appRead.AppState);
             var json = ser.Serialize(ent);
 
             var msg = H1($"Entity Debug for {nameId} in {appId}\n")

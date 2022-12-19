@@ -6,6 +6,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -19,18 +20,20 @@ namespace ToSic.Eav.Apps.Parts
     public class QueryManager: PartOf<AppManager>
     {
         public QueryManager(
-            Lazy<SystemManager> systemManagerLazy,
+            LazyInitLog<SystemManager> systemManagerLazy,
             Lazy<ValueBuilder> valueBuilder,
             LazyInit<JsonSerializer> jsonSerializer,
             LazyInitLog<Eav.DataSources.Queries.QueryManager> queryManager
             ) : base("App.QryMng")
         {
-            _systemManagerLazy = systemManagerLazy;
-            _valueBuilder = valueBuilder;
-            Serializer = jsonSerializer.SetInit(j => j.Init(Parent.AppState, Log));
-            _queryManager = queryManager.SetLog(Log);
+            ConnectServices(
+                _systemManagerLazy = systemManagerLazy,
+                _valueBuilder = valueBuilder,
+                _queryManager = queryManager
+            );
+            Serializer = jsonSerializer.SetInit(j => j.Init(Log).SetApp(Parent.AppState));
         }
-        private readonly Lazy<SystemManager> _systemManagerLazy;
+        private readonly LazyInitLog<SystemManager> _systemManagerLazy;
         private readonly Lazy<ValueBuilder> _valueBuilder;
         private LazyInit<JsonSerializer> Serializer { get; }
         private readonly LazyInitLog<Eav.DataSources.Queries.QueryManager> _queryManager;
@@ -123,7 +126,7 @@ namespace ToSic.Eav.Apps.Parts
             Parent.Entities.Delete(id);
 
             // flush cache
-            _systemManagerLazy.Value.Init(Log).PurgeApp(Parent.AppId);
+            _systemManagerLazy.Value.PurgeApp(Parent.AppId);
 
             return true;
         }

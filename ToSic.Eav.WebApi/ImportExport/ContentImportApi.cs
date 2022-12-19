@@ -6,6 +6,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Dto;
 #if NETFRAMEWORK
@@ -96,7 +97,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             try
             {
                 var callLog = Log.Fn<bool>(null, "import json item" + args.DebugInfo);
-                var deserializer = _jsonSerializerLazy.Value.Init(_appManager.AppState, Log);
+                var deserializer = _jsonSerializerLazy.Value.Init(Log).SetApp(_appManager.AppState);
                 // Since we're importing directly into this app, we prefer local content-types
                 deserializer.PreferLocalAppTypes = true;
 

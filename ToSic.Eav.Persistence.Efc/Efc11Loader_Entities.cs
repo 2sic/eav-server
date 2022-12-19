@@ -92,7 +92,7 @@ namespace ToSic.Eav.Persistence.Efc
             #region Build EntityModels
 
             var serializer = ServiceProvider.Build<IDataDeserializer>();
-            serializer.Initialize(app, Log);
+            serializer.Init(Log).Initialize(app);
 
             var entityTimer = Stopwatch.StartNew();
             foreach (var rawEntity in rawEntities)

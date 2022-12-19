@@ -6,6 +6,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
@@ -22,39 +23,40 @@ namespace ToSic.Eav.Apps.Parts
     {
         #region Constructor / DI
 
-        private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false, Log));
+        private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false));
         private Import _import;
         public EntitiesManager(
-            Lazy<ImportListXml> lazyImportListXml, 
-            Lazy<Import> importLazy, 
-            Lazy<IImportExportEnvironment> environmentLazy, 
+            LazyInitLog<ImportListXml> lazyImportListXml,
+            LazyInitLog<Import> importLazy,
+            LazyInitLog<IImportExportEnvironment> environmentLazy, 
             SystemManager systemManager,
             Lazy<IAppLoaderTools> appLoaderTools,
             LazyInitLog<EntitySaver> entitySaverLazy,
             AppsCacheSwitch appsCache, // Note: Singleton
             LazyInit<JsonSerializer> jsonSerializer,
-            Generator<ExportListXml> exportListXmlGenerator
+            GeneratorLog<ExportListXml> exportListXmlGenerator
             ) : base("App.EntMan")
         {
-            _lazyImportListXml = lazyImportListXml;
-            _importLazy = importLazy;
-            _environmentLazy = environmentLazy;
-            _appLoaderTools = appLoaderTools;
-            _entitySaverLazy = entitySaverLazy.SetLog(Log);
-            _appsCache = appsCache;
-            _exportListXmGenerator = exportListXmlGenerator;
-            SystemManager = systemManager.Init(Log);
-            Serializer = jsonSerializer.SetInit(j => j.Init(Parent.AppState, Log));
+            ConnectServices(
+                _lazyImportListXml = lazyImportListXml,
+                _importLazy = importLazy,
+                _environmentLazy = environmentLazy,
+                SystemManager = systemManager,
+                _appLoaderTools = appLoaderTools,
+                _entitySaverLazy = entitySaverLazy,
+                _appsCache = appsCache,
+                _exportListXmGenerator = exportListXmlGenerator
+            );
+            
+            Serializer = jsonSerializer.SetInit(j => j.Init(Log).SetApp(Parent.AppState));
         }
-        private readonly Lazy<ImportListXml> _lazyImportListXml;
-        private readonly Lazy<Import> _importLazy;
-        private readonly Lazy<IImportExportEnvironment> _environmentLazy;
-        private IImportExportEnvironment Environment => _environment ?? (_environment = _environmentLazy.Value.Init(Log));
-        private IImportExportEnvironment _environment;
+        private readonly LazyInitLog<ImportListXml> _lazyImportListXml;
+        private readonly LazyInitLog<Import> _importLazy;
+        private readonly LazyInitLog<IImportExportEnvironment> _environmentLazy;
         private readonly Lazy<IAppLoaderTools> _appLoaderTools;
         private readonly LazyInitLog<EntitySaver> _entitySaverLazy;
         private readonly AppsCacheSwitch _appsCache;
-        private readonly Generator<ExportListXml> _exportListXmGenerator;
+        private readonly GeneratorLog<ExportListXml> _exportListXmGenerator;
         protected readonly SystemManager SystemManager;
         private LazyInit<JsonSerializer> Serializer { get; }
 
@@ -85,7 +87,7 @@ namespace ToSic.Eav.Apps.Parts
             // in which case it would add it twice
             var appState = Parent.AppState;
 
-            saveOptions = saveOptions ?? Environment.SaveOptions(Parent.ZoneId); // SaveOptions.Build(Parent.ZoneId);
+            saveOptions = saveOptions ?? _environmentLazy.Value.SaveOptions(Parent.ZoneId);
 
             // Inner call which will be executed with the Lock of the AppState
             List<int> InnerSaveInLock()

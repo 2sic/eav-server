@@ -6,9 +6,10 @@ using ToSic.Eav.Run.Unknown;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public sealed class FileSystemLoaderUnknown: IAppFileSystemLoader, IIsUnknown
+    public sealed class FileSystemLoaderUnknown: HasLog, IAppFileSystemLoader, IIsUnknown
     {
-        public FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> warn) { }
+        public FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> warn): base(LogConstants.FullNameUnknown)
+        { }
 
         public IAppFileSystemLoader Init(AppState app, ILog log)
         {

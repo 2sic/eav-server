@@ -8,7 +8,7 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.ImportExport.Json
 {
-    public partial class JsonSerializer: JsonSerializerBase<JsonSerializer>, IDataDeserializer
+    public partial class JsonSerializer: SerializerBase, IDataDeserializer
     {
         public const string ReadOnlyMarker = "~";
         public const string NoLanguage = "*";

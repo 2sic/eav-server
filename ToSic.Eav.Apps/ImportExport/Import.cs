@@ -12,6 +12,7 @@ using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Services;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -20,38 +21,38 @@ namespace ToSic.Eav.Apps.ImportExport
     /// <summary>
     /// Import Schema and Entities to the EAV SqlStore
     /// </summary>
-    public class Import: HasLog
+    public class Import: ServiceBase
     {
         private const int ChunkLimitToStartChunking = 2500;
         private const int ChunkSizeAboveLimit = 500;
 
         #region Constructor / DI
 
-        public Import(Lazy<AppManager> appManagerLazy, 
+        public Import(LazyInitLog<AppManager> appManagerLazy, 
             IImportExportEnvironment importExportEnvironment,
             LazyInitLog<EntitySaver> entitySaverLazy
             ) : base("Eav.Import")
         {
-            _appManagerLazy = appManagerLazy;
-            _importExportEnvironment = importExportEnvironment;
-            _entitySaver = entitySaverLazy.SetLog(Log);
+            ConnectServices(
+                _appManagerLazy = appManagerLazy,
+                _importExportEnvironment = importExportEnvironment,
+                _entitySaver = entitySaverLazy
+            );
         }
-        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly LazyInitLog<AppManager> _appManagerLazy;
         private readonly IImportExportEnvironment _importExportEnvironment;
         private readonly LazyInitLog<EntitySaver> _entitySaver;
 
 
-        public Import Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes, ILog parentLog)
+        public Import Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes)
         {
-            this.Init(parentLog);
             AppManager = zoneId.HasValue
-                ? _appManagerLazy.Value.Init(Log).Init(new AppIdentity(zoneId.Value, appId))
-                : _appManagerLazy.Value.Init(Log).Init(appId);
+                ? _appManagerLazy.Value.Init(new AppIdentity(zoneId.Value, appId))
+                : _appManagerLazy.Value.Init(appId);
             Storage = AppManager.Storage;
             AppId = appId;
             ZoneId = AppManager.ZoneId;
 
-            _importExportEnvironment.Init(Log);
             SaveOptions = _importExportEnvironment.SaveOptions(ZoneId);
 
             SaveOptions.SkipExistingAttributes = skipExistingAttributes;
@@ -177,7 +178,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var callLog = Log.Fn(startTimer: true);
             // Here's the problem! #badmergeofmetadata
             contentTypes.ForEach(type => MergeContentTypeUpdateWithExisting(appState, type));
-            var so = _importExportEnvironment.SaveOptions(ZoneId);// SaveOptions.Build(ZoneId);
+            var so = _importExportEnvironment.SaveOptions(ZoneId);
             so.DiscardAttributesNotInType = true;
             Storage.Save(contentTypes.Cast<IContentType>().ToList(), so);
             callLog.Done("done");
