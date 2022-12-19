@@ -14,12 +14,7 @@ namespace ToSic.Eav.Data
     public abstract class EntityBasedType : IEntityBasedType
     {
         /// <inheritdoc />
-        public IEntity Entity
-        {
-            get => _entity ?? throw new Exception($"Inner {nameof(Entity)} not set. Can't use this {nameof(EntityBasedType)}");
-            protected set => _entity = value;
-        }
-        private IEntity _entity;
+        public IEntity Entity { get; protected set; }
 
         [PrivateApi] public IEntity RootContentsForEqualityCheck => (Entity as IEntityWrapper)?.RootContentsForEqualityCheck ?? Entity;
         public List<IDecorator<IEntity>> Decorators => _decorators ?? (_decorators = (Entity as IEntityWrapper)?.Decorators ?? new List<IDecorator<IEntity>>());
