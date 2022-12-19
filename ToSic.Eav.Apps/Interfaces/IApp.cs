@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Apps
 {

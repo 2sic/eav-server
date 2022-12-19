@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.Constants;
 

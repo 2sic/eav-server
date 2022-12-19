@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data.PiggyBack
 {

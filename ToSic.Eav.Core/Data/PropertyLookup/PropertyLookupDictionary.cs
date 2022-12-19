@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data.Debug;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Generics;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data.PropertyLookup
 {

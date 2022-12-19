@@ -1,4 +1,4 @@
-﻿# EAV Public API
+﻿# LIB Public API
 
 This folder contains special attributes for the API Code Generator.
 

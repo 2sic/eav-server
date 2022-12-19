@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.PiggyBack;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Apps
 {

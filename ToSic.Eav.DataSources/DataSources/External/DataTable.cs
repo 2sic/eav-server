@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 using SqlDataTable = System.Data.DataTable;

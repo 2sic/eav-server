@@ -5,9 +5,9 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Metadata
 {

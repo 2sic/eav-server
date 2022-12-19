@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Runtime.Caching;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 

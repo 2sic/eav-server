@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Documentation;
-using ToSic.Eav.Serialization;
+﻿using ToSic.Eav.Serialization;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
 {

@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace ToSic.Eav.Documentation
+namespace ToSic.Lib.Documentation
 {
     /// <summary>
     /// This attribute serves as metadata for other things to mark them as public APIs
     /// </summary>
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
     // ReSharper disable once InconsistentNaming
-    public class PublicApi_Stable_ForUseInYourCode : Attribute
+    public class InternalApi_DoNotUse_MayChangeWithoutNotice: Attribute
     {
-        public PublicApi_Stable_ForUseInYourCode() { }
+        public InternalApi_DoNotUse_MayChangeWithoutNotice() { }
 
-        public PublicApi_Stable_ForUseInYourCode(string comment = null) { }
+        public InternalApi_DoNotUse_MayChangeWithoutNotice(string comment = null) { }
 
     }
 }

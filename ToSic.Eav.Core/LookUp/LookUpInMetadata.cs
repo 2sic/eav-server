@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.LookUp

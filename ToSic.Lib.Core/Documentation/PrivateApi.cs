@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.Documentation
+namespace ToSic.Lib.Documentation
 {
     /// <summary>
     /// This attribute marks classes, methods, etc. as private APIs

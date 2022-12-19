@@ -1,6 +1,6 @@
 ﻿using System;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
 {

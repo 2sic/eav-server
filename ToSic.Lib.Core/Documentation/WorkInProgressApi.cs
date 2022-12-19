@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.Documentation
+namespace ToSic.Lib.Documentation
 {
     /// <summary>
     /// This attribute marks APIs to be publicly documented with a clear warning that it's work in progress.

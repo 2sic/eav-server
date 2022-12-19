@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps

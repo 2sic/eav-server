@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 

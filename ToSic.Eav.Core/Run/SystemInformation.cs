@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Run
 {

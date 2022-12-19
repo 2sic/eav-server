@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Configuration
 {

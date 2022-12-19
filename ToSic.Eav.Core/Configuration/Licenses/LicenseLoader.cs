@@ -20,9 +20,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Configuration.Licenses

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 

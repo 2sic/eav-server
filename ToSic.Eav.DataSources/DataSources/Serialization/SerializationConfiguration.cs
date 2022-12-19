@@ -2,9 +2,9 @@
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
+using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources

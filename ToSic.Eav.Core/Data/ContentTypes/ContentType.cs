@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Shared;
-using ToSic.Eav.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
+using ToSic.Lib.Documentation;
 using static System.StringComparison;
 
 namespace ToSic.Eav.Data

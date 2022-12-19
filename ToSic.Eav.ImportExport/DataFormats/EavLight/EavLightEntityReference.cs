@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using ToSic.Eav.Documentation;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataFormats.EavLight
 {
