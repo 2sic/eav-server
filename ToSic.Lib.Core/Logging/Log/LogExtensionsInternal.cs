@@ -1,7 +1,9 @@
 ﻿using System;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging
 {
+    [PrivateApi]
     internal static partial class LogExtensionsInternal
     {
 

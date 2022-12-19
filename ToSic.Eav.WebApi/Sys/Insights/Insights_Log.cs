@@ -23,7 +23,7 @@ namespace ToSic.Eav.WebApi.Sys
             Log.A($"debug log load for {key}/{position}");
             var msg = PageStyles() + LogHeader($"{key}[{position}]", false);
 
-            if (!_logHistory.Logs.TryGetValue(key, out var set))
+            if (!_logHistory.Segments.TryGetValue(key, out var set))
                 return msg + $"position {position} not found in log set {key}";
 
             if (set.Count < position - 1)
@@ -45,7 +45,7 @@ namespace ToSic.Eav.WebApi.Sys
         private string LogsFlush(string key)
         {
             Log.A($"flush log for {key}");
-            _logHistory.Flush(key);
+            _logHistory.FlushSegment(key);
             return $"flushed log history for {key}";
         }
     }

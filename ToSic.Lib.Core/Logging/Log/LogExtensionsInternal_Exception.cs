@@ -6,10 +6,7 @@ namespace ToSic.Lib.Logging
     {
         private const int MaxExceptionRecursion = 100;
 
-        internal static void ExceptionInternal(this ILog log,
-            Exception ex, 
-            CodeRef codeRef
-            )
+        internal static void ExceptionInternal(this ILog log, Exception ex, CodeRef codeRef)
         {
             // Null-check
             if (!(log?._RealLog is Log realLog)) return;

@@ -1,54 +1,58 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging.Internals;
 
 namespace ToSic.Lib.Logging
 {
-    /// <summary>
-    /// DI Version of the history object to ensure that things are added to the global log-history
-    /// </summary>
-    // Todo
-    // let run for a while, and ca. 2sxc 13 rename back to "History" once we drop that global/static object
-    public class History
+    /// <inheritdoc />
+    [PrivateApi]
+    public class History : IHistory
     {
-        public const string WarningsPrefix = "warnings-";
+        [PrivateApi]
+        public readonly int MaxItems = LogConstants.HistoryMaxItems;
 
-        // Note: this is treated like a constant for now...
-        public readonly int MaxCollect = 500;
-
-        public int Size
+        /// <inheritdoc />
+        public int SegmentSize
         {
-            get => _size; 
-            set => _size = value;
+            get => _segmentSize; 
+            set => _segmentSize = value;
         } 
-        private static int _size = 100;
+        private static int _segmentSize = LogConstants.HistorySegmentSize;
 
-        public ConcurrentDictionary<string, FixedSizedQueue<ILog>> Logs  => _logs;
-        private static readonly ConcurrentDictionary<string, FixedSizedQueue<ILog>> _logs = new ConcurrentDictionary<string, FixedSizedQueue<ILog>>();
+        /// <inheritdoc />
+        public ConcurrentDictionary<string, FixedSizedQueue<ILog>> Segments => StaticSegments;
+        private static readonly ConcurrentDictionary<string, FixedSizedQueue<ILog>> StaticSegments 
+            = new ConcurrentDictionary<string, FixedSizedQueue<ILog>>();
 
         #region Pause
 
+        [PrivateApi]
         public bool Pause
         {
             get => _pause;
             set
             {
                 _pause = value;
-                Count = 0;
+                AddCount = 0;
             }
         }
         private static bool _pause;
 
         #endregion
 
-        public int Count { get; private set; }
+        /// <inheritdoc />
+        public int AddCount { get; private set; }
 
         #region Add
 
-        public void Add(string key, ILog log) => AddInternal(key, log, false);
+        /// <inheritdoc />
+        public void Add(string segment, ILog log) => AddInternal(segment, log, false);
 
+        [PrivateApi("shouldn't be visible outside")]
         public void ForceAdd(string key, ILog log) => AddInternal(key, log, true);
 
+        [PrivateApi]
         private void AddInternal(string key, ILog log, bool force)
         {
             // Check exit clauses if not forced
@@ -62,24 +66,25 @@ namespace ToSic.Lib.Logging
             }
 
             // auto-pause after 1000 logs were run through this, till someone decides to unpause again
-            if (Count++ > MaxCollect) Pause = true;
+            if (AddCount++ > MaxItems) Pause = true;
 
             // make sure we have a queue
-            if (!Logs.ContainsKey(key))
-                Logs.TryAdd(key, new FixedSizedQueue<ILog>(Size));
+            if (!Segments.ContainsKey(key))
+                Segments.TryAdd(key, new FixedSizedQueue<ILog>(SegmentSize));
 
             // add the current item if it's not already in the queue
-            if (Logs.TryGetValue(key, out var queue) && !queue.ToArray().Contains(log)) 
+            if (Segments.TryGetValue(key, out var queue) && !queue.ToArray().Contains(log)) 
                 queue.Enqueue(log);
         }
 
 
         #endregion
 
-        public void Flush(string key)
+        [PrivateApi]
+        public void FlushSegment(string segment)
         {
-            if (Logs.ContainsKey(key))
-                Logs.TryRemove(key, out var _);
+            if (Segments.ContainsKey(segment))
+                Segments.TryRemove(segment, out var _);
         }
     }
 }

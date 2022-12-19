@@ -74,7 +74,7 @@ namespace ToSic.Eav.WebApi.Zone
             };
 
             var warningsObsolete = CountInsightsMessages(Obsolete.LogObsolete.ObsoleteNameInHistory);
-            var warningsOther = CountInsightsMessages(History.WarningsPrefix) - warningsObsolete;
+            var warningsOther = CountInsightsMessages(LogConstants.HistoryWarningsPrefix) - warningsObsolete;
 
             var warningsDto = new MessagesDto
             {
@@ -95,7 +95,7 @@ namespace ToSic.Eav.WebApi.Zone
 
         private int CountInsightsMessages(string prefix)
         {
-            var warnings = _logHistory.Logs
+            var warnings = _logHistory.Segments
                 .Where(l => l.Key.StartsWith(prefix))
                 .Select(l => l.Value.Count)
                 .Sum();

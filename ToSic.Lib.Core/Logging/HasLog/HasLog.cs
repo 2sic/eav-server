@@ -29,7 +29,7 @@ namespace ToSic.Lib.Logging
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
 
-            : this(logName, new CodeRef(cPath, cName, cLine), parentLog, initialMessage) {}
+            : this(logName, CodeRef.Create(cPath, cName, cLine), parentLog, initialMessage) {}
 
         protected HasLog(string logName, CodeRef code, ILog parentLog = null, string initialMessage = null)
         {

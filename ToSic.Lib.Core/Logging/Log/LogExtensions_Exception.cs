@@ -15,7 +15,7 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => log?.ExceptionInternal(ex, new CodeRef(cPath, cName, cLine));
+        ) => log?.ExceptionInternal(ex, CodeRef.Create(cPath, cName, cLine));
 
     }
 }

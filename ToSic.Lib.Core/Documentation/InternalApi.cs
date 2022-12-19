@@ -5,6 +5,7 @@ namespace ToSic.Lib.Documentation
     /// <summary>
     /// This attribute serves as metadata for other things to mark them as public APIs
     /// </summary>
+    [PublicApi]
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
     // ReSharper disable once InconsistentNaming
     public class InternalApi_DoNotUse_MayChangeWithoutNotice: Attribute

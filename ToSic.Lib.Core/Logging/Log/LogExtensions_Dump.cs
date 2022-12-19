@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Text;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging
 {
     public static partial class LogExtensions
     {
+        [PrivateApi]
         /// <summary>
         /// Dump result to an internal format - not very important in public use cases
         /// </summary>
@@ -33,6 +35,7 @@ namespace ToSic.Lib.Logging
             return dump.ToString();
         }
 
+        [PrivateApi]
         private static string EntryTime(Entry e) => e.Elapsed != TimeSpan.Zero ? $" ⌚ {e.Elapsed.TotalSeconds}s " : "";
     }
 }

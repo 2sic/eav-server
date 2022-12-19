@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi.Sys
                           LinkTo(HtmlEncode("▶"), nameof(PauseLogs), more: "toggle=false"),
                           " | ",
                           LinkTo(HtmlEncode("⏸"), nameof(PauseLogs), more: "toggle=true"),
-                          $" collecting #{_logHistory.Count} of max {_logHistory.MaxCollect} (keep max {_logHistory.Size} per set, then FIFO)"
+                          $" collecting #{_logHistory.AddCount} of max {_logHistory.MaxItems} (keep max {_logHistory.SegmentSize} per set, then FIFO)"
                           + (showFlush ? " " + LinkTo("flush " + key, nameof(LogsFlush), key: key).ToString() : "")
                       );
             return msg.ToString();
@@ -35,7 +35,7 @@ namespace ToSic.Eav.WebApi.Sys
             var msg = "";
             try
             {
-                var logs = logHistory.Logs;
+                var logs = logHistory.Segments;
                 msg += P($"Logs Overview: {logs.Count}\n");
 
                 var count = 0;
@@ -65,7 +65,7 @@ namespace ToSic.Eav.WebApi.Sys
         internal string LogHistory(History logHistory, string key)
         {
             var msg = "";
-            if (!logHistory.Logs.TryGetValue(key, out var set))
+            if (!logHistory.Segments.TryGetValue(key, out var set))
                 return msg + "item not found";
 
             var count = 0;

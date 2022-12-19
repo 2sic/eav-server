@@ -5,8 +5,10 @@ namespace ToSic.Lib.Documentation
     /// <summary>
     /// This attribute marks classes, methods, etc. as private APIs
     /// So they should _not_ be publicly documented.
-    /// By default, all APIs are private, so you only need this attribute on children of classes marked with `[PublicApi]`.
+    /// By default, all APIs are private, so you only need this attribute on children of classes marked with `[PublicApi]`
+    /// see <see cref="PublicApi"/>.
     /// </summary>
+    [PublicApi]
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
     public class PrivateApi : Attribute
     {

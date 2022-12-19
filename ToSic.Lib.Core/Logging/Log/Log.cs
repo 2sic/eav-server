@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging
 {
+    [PrivateApi]
     public partial class Log: ILog, ILogInternal
     {
         /// <summary>
@@ -26,7 +28,7 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = null,
             [CallerMemberName] string cName = null,
             [CallerLineNumber] int cLine = 0)
-            : this(name, parent, new CodeRef(cPath, cName, cLine), initialMessage) { }
+            : this(name, parent, CodeRef.Create(cPath, cName, cLine), initialMessage) { }
 
         /// <summary>
         /// Create a logger and optionally attach it to a parent logger

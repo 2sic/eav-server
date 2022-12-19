@@ -15,7 +15,7 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => new LogCall<T>(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+        ) => new LogCall<T>(log, CodeRef.UseOrCreate(code, cPath, cName, cLine), false, parameters, message, startTimer);
 
         /// <remarks>Is null-safe, so if there is no log, things still work and it still returns a valid <see cref="LogCall"/> </remarks>
         public static LogCall<T> Fn<T>(this ILog log,
@@ -27,7 +27,7 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => new LogCall<T>(enabled ? log : null, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+        ) => new LogCall<T>(enabled ? log : null, CodeRef.UseOrCreate(code, cPath, cName, cLine), false, parameters, message, startTimer);
 
 
         /// <remarks>Is null-safe, so if there is no log, things still work and it still returns a valid <see cref="LogCall"/> </remarks>
@@ -39,7 +39,7 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => new LogCall(log, code ?? new CodeRef(cPath, cName, cLine), false, parameters, message, startTimer);
+        ) => new LogCall(log, CodeRef.UseOrCreate(code, cPath, cName, cLine), false, parameters, message, startTimer);
 
 
 
