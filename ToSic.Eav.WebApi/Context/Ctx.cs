@@ -17,6 +17,7 @@ namespace ToSic.Eav.WebApi.Context
         Features = 1 << 8,
         ApiKeys = 1 << 9,
         All = AppBasic | AppEdit | AppAdvanced | Language | Page | Site | System | User | Features | ApiKeys,
+        General = AppBasic | AppEdit | AppAdvanced | Language | Page | Site | System | User | Features,
     }
 
 }
