@@ -2,7 +2,7 @@
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Plumbing
+namespace ToSic.Lib.Helper
 {
     /// <summary>
     /// Simple helper class to use on object properties which should be generated once.

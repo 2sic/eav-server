@@ -8,6 +8,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helper;
 
 namespace ToSic.Eav.Metadata
 {
