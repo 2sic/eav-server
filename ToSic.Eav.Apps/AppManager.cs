@@ -2,7 +2,6 @@
 using ToSic.Eav.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Interfaces;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
@@ -51,7 +50,7 @@ namespace ToSic.Eav.Apps
             ) : this(dependencies, appRuntime, dbDataController, entitiesManager, queryManager, "Eav.AppMan")
         { }
 
-        public AppManager Init(IAppIdentity app, ILog parentLog) => Init(app, true, parentLog);
+        public new AppManager Init(IAppIdentity app, ILog parentLog) => Init(app, true, parentLog);
 
         public AppManager Init(int appId, ILog parentLog) => Init(Dependencies.AppStates.IdentityOfApp(appId), true, parentLog);
 
