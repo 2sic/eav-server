@@ -23,6 +23,7 @@ namespace ToSic.Lib.Logging
         ) => log?.AddInternal(LogExtensionsInternal.Try(messageMaker), new CodeRef(cPath, cName, cLine));
 
         /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+        // TODO: @2dm - I think this is a very niche use case, we should probably remove this API
         public static string AddAndReuse(this ILog log,
             string message,
             [CallerFilePath] string cPath = null,

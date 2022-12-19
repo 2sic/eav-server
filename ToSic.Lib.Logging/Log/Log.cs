@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace ToSic.Lib.Logging
 {
-    public partial class Log: ILog
+    public partial class Log: ILog, ILogInternal
     {
         /// <summary>
         /// Max logging depth, we should never attach loggers if we are past this level

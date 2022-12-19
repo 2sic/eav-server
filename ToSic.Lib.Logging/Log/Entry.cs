@@ -20,7 +20,7 @@ namespace ToSic.Lib.Logging
 
         public string ShortSource => _log.NameId;
 
-        public Entry(ILog log, string message, int depth, CodeRef code)
+        internal Entry(ILog log, string message, int depth, CodeRef code)
         {
             _log = log;
             Message = message;
