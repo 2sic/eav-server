@@ -11,13 +11,9 @@ namespace ToSic.Eav.Apps
     /// It's not final, so please keep very internal
     /// The names of the Get etc. will probably change a few more times
     /// </summary>
-    /// <remarks>
-    /// Important: this can be a long-living object, so never use loggers or anything here. 
-    /// </remarks>
     [PrivateApi("internal")]
     public class AppStates: IAppStates
     {
-
         public AppStates(IAppLoaderTools loaderTools, AppsCacheSwitch appsCacheSwitch)
         {
             _loaderTools = loaderTools;

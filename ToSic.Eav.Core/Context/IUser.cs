@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Context
 {
     [PrivateApi]
-    public interface IUser
+    public interface IUser: ILogShouldNeverConnect
     {
 
         /// <summary>

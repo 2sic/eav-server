@@ -4,7 +4,6 @@ using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.DI;
@@ -24,53 +23,43 @@ namespace ToSic.Eav.Context
         /// These dependencies are a bit special, because they can be re-used for child context-of...
         /// This is why we gave them a much clearer name, not just the normal "Dependencies"
         /// </summary>
-        public class ContextOfAppDependencies: DependenciesBase<ContextOfAppDependencies>
+        public new class Dependencies: DependenciesBase<Dependencies>
         {
-            public ContextOfAppDependencies(
+            public Dependencies(
                 IAppStates appStates,
-                Lazy<IFeaturesInternal> featsLazy,
-                LazyInitLog<AppUserLanguageCheck> langCheckLazy,
-                GeneratorLog<IEnvironmentPermission> environmentPermissionGenerator,
+                Lazy<IFeaturesInternal> features,
+                LazyInitLog<AppUserLanguageCheck> langChecks,
+                GeneratorLog<IEnvironmentPermission> environmentPermissions,
                 LazyInitLog<AppSettingsStack> settingsStack
             ) => AddToLogQueue(
-                EnvironmentPermissionGenerator = environmentPermissionGenerator,
+                EnvironmentPermissions = environmentPermissions,
                 AppStates = appStates,
-                FeatsLazy = featsLazy,
-                LangCheckLazy = langCheckLazy,
+                Features = features,
+                LangChecks = langChecks,
                 SettingsStack = settingsStack
             );
 
             public IAppStates AppStates { get; }
-            public Lazy<IFeaturesInternal> FeatsLazy { get; }
-            public LazyInitLog<AppUserLanguageCheck> LangCheckLazy { get; }
+            public Lazy<IFeaturesInternal> Features { get; }
+            public LazyInitLog<AppUserLanguageCheck> LangChecks { get; }
             public LazyInitLog<AppSettingsStack> SettingsStack { get; }
-            internal readonly GeneratorLog<IEnvironmentPermission> EnvironmentPermissionGenerator;
-            //internal bool InitDone;
+            internal readonly GeneratorLog<IEnvironmentPermission> EnvironmentPermissions;
         }
 
-        public ContextOfApp(ContextOfSiteDependencies contextOfSiteDependencies, ContextOfAppDependencies dependencies)
-            : base(contextOfSiteDependencies)
+        public ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies) : base(siteCtxDeps)
         {
-            Deps = dependencies;
-            Deps.SetLog(Log);
-            //if (!dependencies.InitDone)
-            //{
-            //    dependencies.LangCheckLazy.SetLog(Log);
-            //    dependencies.EnvironmentPermissionGenerator.SetLog(Log);
-            //    dependencies.InitDone = true;
-            //}
-            
+            Deps = dependencies.SetLog(Log);
             Log.Rename("Sxc.CtxApp");
         }
-        protected readonly ContextOfAppDependencies Deps;
+        protected readonly Dependencies Deps;
 
         #endregion
 
-        public void ResetApp(IAppIdentity appIdentity)
+        public void ResetApp(IAppIdentity appIdentity) => Log.Do(() =>
         {
-            if (AppIdentity == null || AppIdentity.AppId != appIdentity.AppId) 
+            if (AppIdentity == null || AppIdentity.AppId != appIdentity.AppId)
                 AppIdentity = appIdentity;
-        }
+        });
 
         public void ResetApp(int appId) => ResetApp(Deps.AppStates.IdentityOfApp(appId));
 
@@ -84,53 +73,42 @@ namespace ToSic.Eav.Context
                 _appSettingsStack.Reset();
                 _settings.Reset();
                 _resources.Reset();
-                _userMayEdit = null;
+                //_userMayEdit = null;
+                _userMayEditGet.Reset();
             }
         }
         private IAppIdentity _appIdentity;
 
-        public override bool UserMayEdit
+        public override bool UserMayEdit => _userMayEditGet.Get(() => Log.GetAndLog<bool>(_ =>
         {
-            get
+            // Case 1: Superuser always may
+            if (User.IsSystemAdmin) return (true, "super");
+
+            // Case 2: No App-State
+            if (AppState == null)
             {
-                if (_userMayEdit.HasValue) return _userMayEdit.Value;
-                var wrapLog = Log.Fn<bool>();
+                if (base.UserMayEdit) return (true, "no app, use default checks");
 
-                // Case 1: Superuser always may
-                if (User.IsSystemAdmin)
-                {
-                    _userMayEdit = true;
-                    return wrapLog.Return(_userMayEdit.Value, "super");
-                }
+                // If user isn't allowed yet, it may be that the environment allows it
+                var fromEnv = Deps.EnvironmentPermissions.New()
+                    .Init(this as IContextOfSite, null)
+                    .EnvironmentAllows(GrantSets.WriteSomething);
 
-                // Case 2: No App-State
-                if (AppState == null)
-                {
-                    _userMayEdit = base.UserMayEdit;
-
-                    if (_userMayEdit.Value)
-                        return wrapLog.Return(_userMayEdit.Value, "no app, use fallback");
-
-                    // If user isn't allowed yet, it may be that the environment allows it
-                    _userMayEdit = Deps.EnvironmentPermissionGenerator.New()
-                        .Init(this as IContextOfSite, null)
-                        .EnvironmentAllows(GrantSets.WriteSomething);
-
-                    return wrapLog.Return(_userMayEdit.Value, "no app, use fallback");
-                }
-
-                _userMayEdit = Dependencies.AppPermissionCheckGenerator.New()
-                    .ForAppInInstance(this, AppState, Log)
-                    .UserMay(GrantSets.WriteSomething);
-
-                // Check if language permissions may alter edit
-                if (_userMayEdit == true && Deps.FeatsLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
-                    _userMayEdit = Deps.LangCheckLazy.Value.UserRestrictedByLanguagePermissions(AppState) ?? _userMayEdit;
-
-                return wrapLog.Return(_userMayEdit.Value, $"{_userMayEdit.Value}");
+                return (fromEnv, "no app, result from Env");
             }
-        }
-        private bool? _userMayEdit;
+
+            // Case 3: From App
+            var fromApp = SiteDeps.AppPermissionCheck.New()
+                .ForAppInInstance(this, AppState, Log)
+                .UserMay(GrantSets.WriteSomething);
+
+            // Check if language permissions may alter / remove edit permissions
+            if (fromApp && Deps.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
+                fromApp = Deps.LangChecks.Value.UserRestrictedByLanguagePermissions(AppState) ?? true;
+
+            return (fromApp, $"{fromApp}");
+        }));
+        private readonly GetOnce<bool> _userMayEditGet = new GetOnce<bool>();
 
         public AppState AppState => _appState.Get(() => AppIdentity == null ? null : Deps.AppStates.Get(AppIdentity));
         private readonly GetOnce<AppState> _appState = new GetOnce<AppState>();

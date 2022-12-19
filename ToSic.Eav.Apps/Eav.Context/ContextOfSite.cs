@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Security;
 using ToSic.Lib.DI;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
 // ReSharper disable once CheckNamespace
@@ -14,26 +15,26 @@ namespace ToSic.Eav.Context
     {
         #region Constructor / DI
 
-        public class ContextOfSiteDependencies
+        public class Dependencies: DependenciesBase<Dependencies>
         {
             public ISite Site { get; }
             public IUser User { get; }
-            public Generator<AppPermissionCheck> AppPermissionCheckGenerator { get; }
+            public GeneratorLog<AppPermissionCheck> AppPermissionCheck { get; }
 
-            public ContextOfSiteDependencies(
-                ISite site, 
+            public Dependencies(
+                ISite site,
                 IUser user,
-                Generator<AppPermissionCheck> appPermissionCheckGenerator)
-            {
-                Site = site;
-                User = user;
-                AppPermissionCheckGenerator = appPermissionCheckGenerator;
-            }
+                GeneratorLog<AppPermissionCheck> appPermissionCheck
+            ) => AddToLogQueue(
+                Site = site,
+                User = user,
+                AppPermissionCheck = appPermissionCheck
+            );
         }
 
-        public ContextOfSite(ContextOfSiteDependencies dependencies) : base("Eav.CtxSte")
+        public ContextOfSite(Dependencies dependencies) : base("Eav.CtxSte")
         {
-            Dependencies = dependencies;
+            SiteDeps = dependencies.SetLog(Log);
             Site = dependencies.Site;
             User = dependencies.User;
         }
@@ -48,20 +49,18 @@ namespace ToSic.Eav.Context
         public IUser User { get; }
 
         /// <inheritdoc />
-        public virtual bool UserMayEdit
+        public virtual bool UserMayEdit => Log.GetAndLog<bool>(_ =>
         {
-            get
-            {
-                var u = User;
-                if (u == null) return false;
-                return u.IsSystemAdmin || u.IsSiteAdmin || u.IsDesigner;
-            }
-        }
+            var u = User;
+            if (u == null) return false;
+            return u.IsSystemAdmin || u.IsSiteAdmin || u.IsDesigner;
+        });
 
         /// <inheritdoc />
-        public ContextOfSiteDependencies Dependencies { get; }
+        [PrivateApi]
+        public Dependencies SiteDeps { get; }
 
         /// <inheritdoc />
-        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(Dependencies).Init(parentLog);
+        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(SiteDeps).Init(parentLog);
     }
 }

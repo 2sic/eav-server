@@ -10,7 +10,7 @@ namespace ToSic.Lib.Logging
         /// </summary>
         internal LogCallBase(ILog log,
             CodeRef code,
-            bool isProp,
+            bool isProperty,
             string parameters = null,
             string message = null,
             bool startTimer = false)
@@ -22,7 +22,7 @@ namespace ToSic.Lib.Logging
             if (!(log?._RealLog is Log typedLog)) return;
             _RealLog = typedLog;
             
-            var openingMessage = (isProp ? "." : "") + $"{code.Name}({parameters}) {message}";
+            var openingMessage = $".{code.Name}" + (isProperty ? "" : $"({parameters})") + $" {message}";
             var entry = Entry = _RealLog.AddInternalReuse(openingMessage, code);
             entry.WrapOpen = true;
             typedLog.WrapDepth++;

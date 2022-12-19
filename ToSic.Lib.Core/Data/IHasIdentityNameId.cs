@@ -1,5 +1,8 @@
-﻿namespace ToSic.Lib.Data
+﻿using ToSic.Lib.Documentation;
+
+namespace ToSic.Lib.Data
 {
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public interface IHasIdentityNameId
     {
         /// <summary>
