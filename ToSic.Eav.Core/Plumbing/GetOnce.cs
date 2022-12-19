@@ -60,9 +60,14 @@ namespace ToSic.Eav.Plumbing
         }
 
         /// <summary>
+        /// Reset the value so it will be re-generated next time it's needed
+        /// </summary>
+        public void Reset() => IsValueCreated = false;
+
+        /// <summary>
         /// Determines if value has been created. Name 'IsValueCreated' is the same as in the Lazy() object
         /// </summary>
-        public bool IsValueCreated;
+        public bool IsValueCreated { get; private set; }
         private T _value;
     }
 }

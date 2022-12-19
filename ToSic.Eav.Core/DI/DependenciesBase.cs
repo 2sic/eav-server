@@ -27,8 +27,12 @@ namespace ToSic.Eav.DI
         /// </summary>
         public virtual TDependencies SetLog(ILog log)
         {
+            if (InitDone) return this as TDependencies;
             DependencyLogs.SetLog(log);
+            InitDone = true;
             return this as TDependencies;
         }
+        internal bool InitDone;
+
     }
 }

@@ -2,11 +2,13 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.Data;
 using ToSic.Eav.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
+using static ToSic.Eav.Configuration.ConfigurationConstants;
 
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
 
@@ -17,35 +19,45 @@ namespace ToSic.Eav.Context
     {
         #region Constructor / DI
 
-        public class ContextOfAppDependencies
+        /// <summary>
+        /// These dependencies are a bit special, because they can be re-used for child context-of...
+        /// This is why we gave them a much clearer name, not just the normal "Dependencies"
+        /// </summary>
+        public class ContextOfAppDependencies: DependenciesBase<ContextOfAppDependencies>
         {
-            public ContextOfAppDependencies(IAppStates appStates, 
-                Lazy<IFeaturesInternal> featsLazy, 
-                LazyInitLog<AppUserLanguageCheck> langCheckLazy, 
-                GeneratorLog<IEnvironmentPermission> environmentPermissionGenerator)
-            {
-                EnvironmentPermissionGenerator = environmentPermissionGenerator;
-                AppStates = appStates;
-                FeatsLazy = featsLazy;
-                LangCheckLazy = langCheckLazy;
-            }
+            public ContextOfAppDependencies(
+                IAppStates appStates,
+                Lazy<IFeaturesInternal> featsLazy,
+                LazyInitLog<AppUserLanguageCheck> langCheckLazy,
+                GeneratorLog<IEnvironmentPermission> environmentPermissionGenerator,
+                LazyInitLog<AppSettingsStack> settingsStack
+            ) => AddToLogQueue(
+                EnvironmentPermissionGenerator = environmentPermissionGenerator,
+                AppStates = appStates,
+                FeatsLazy = featsLazy,
+                LangCheckLazy = langCheckLazy,
+                SettingsStack = settingsStack
+            );
+
             public IAppStates AppStates { get; }
             public Lazy<IFeaturesInternal> FeatsLazy { get; }
             public LazyInitLog<AppUserLanguageCheck> LangCheckLazy { get; }
+            public LazyInitLog<AppSettingsStack> SettingsStack { get; }
             internal readonly GeneratorLog<IEnvironmentPermission> EnvironmentPermissionGenerator;
-            internal bool InitDone;
+            //internal bool InitDone;
         }
 
         public ContextOfApp(ContextOfSiteDependencies contextOfSiteDependencies, ContextOfAppDependencies dependencies)
             : base(contextOfSiteDependencies)
         {
             Deps = dependencies;
-            if (!dependencies.InitDone)
-            {
-                dependencies.LangCheckLazy.SetLog(Log);
-                dependencies.EnvironmentPermissionGenerator.SetLog(Log);
-                dependencies.InitDone = true;
-            }
+            Deps.SetLog(Log);
+            //if (!dependencies.InitDone)
+            //{
+            //    dependencies.LangCheckLazy.SetLog(Log);
+            //    dependencies.EnvironmentPermissionGenerator.SetLog(Log);
+            //    dependencies.InitDone = true;
+            //}
             
             Log.Rename("Sxc.CtxApp");
         }
@@ -67,7 +79,10 @@ namespace ToSic.Eav.Context
             set
             {
                 _appIdentity = value;
-                _appState = null;
+                _appState.Reset();
+                _appSettingsStack.Reset();
+                _settings.Reset();
+                _resources.Reset();
                 _userMayEdit = null;
             }
         }
@@ -116,8 +131,19 @@ namespace ToSic.Eav.Context
         }
         private bool? _userMayEdit;
 
-        public AppState AppState => _appState ?? (_appState = AppIdentity == null ? null : Deps.AppStates.Get(AppIdentity));
-        private AppState _appState;
+        public AppState AppState => _appState.Get(() => AppIdentity == null ? null : Deps.AppStates.Get(AppIdentity));
+        private readonly GetOnce<AppState> _appState = new GetOnce<AppState>();
 
+        #region Settings and Resources
+
+        private AppSettingsStack AppSettingsStack => _appSettingsStack.Get(() => Deps.SettingsStack.Value.Init(AppState));
+        private readonly GetOnce<AppSettingsStack> _appSettingsStack = new GetOnce<AppSettingsStack>();
+
+        public PropertyStack AppSettings => _settings.Get(() => AppSettingsStack.GetStack(RootNameSettings));
+        private readonly GetOnce<PropertyStack> _settings = new GetOnce<PropertyStack>();
+        public PropertyStack AppResources => _resources.Get(() => AppSettingsStack.GetStack(RootNameResources));
+        private readonly GetOnce<PropertyStack> _resources = new GetOnce<PropertyStack>();
+
+        #endregion
     }
 }

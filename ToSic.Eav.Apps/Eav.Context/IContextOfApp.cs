@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -21,5 +22,14 @@ namespace ToSic.Eav.Context
         /// Internal API to get the context ready
         /// </summary>
         void ResetApp(int appId);
+
+        /// <summary>
+        /// WIP v15
+        /// </summary>
+        PropertyStack AppSettings { get; }
+        /// <summary>
+        /// WIP v15
+        /// </summary>
+        PropertyStack AppResources { get; }
     }
 }

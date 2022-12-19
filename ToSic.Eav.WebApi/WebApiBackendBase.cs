@@ -4,7 +4,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.WebApi
 {
-    public abstract class WebApiBackendBase<T>: HasLog where T : class
+    public abstract class WebApiBackendBase<T>: ServiceWithLog where T : class
     {
         protected WebApiBackendBase(IServiceProvider serviceProvider, string logName) : base(logName)
         {

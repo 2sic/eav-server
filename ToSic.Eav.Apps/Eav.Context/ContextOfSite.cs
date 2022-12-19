@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.Security;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.DI;
 using ToSic.Lib.Logging;
 
@@ -20,22 +19,15 @@ namespace ToSic.Eav.Context
             public ISite Site { get; }
             public IUser User { get; }
             public Generator<AppPermissionCheck> AppPermissionCheckGenerator { get; }
-            // 2022-07-04 2dm disabled, as it should now be handled at the requirements-level
-            //public Generator<IFeaturesInternal> FeaturesInternalGenerator { get; }
 
             public ContextOfSiteDependencies(
                 ISite site, 
                 IUser user,
-                Generator<AppPermissionCheck> appPermissionCheckGenerator
-                // 2022-07-04 2dm disabled, as it should now be handled at the requirements-level
-                //Generator<IFeaturesInternal> featuresInternalGenerator
-                )
+                Generator<AppPermissionCheck> appPermissionCheckGenerator)
             {
                 Site = site;
                 User = user;
                 AppPermissionCheckGenerator = appPermissionCheckGenerator;
-                // 2022-07-04 2dm disabled, as it should now be handled at the requirements-level
-                //FeaturesInternalGenerator = featuresInternalGenerator;
             }
         }
 

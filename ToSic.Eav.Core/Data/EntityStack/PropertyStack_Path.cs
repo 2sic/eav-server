@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Documentation;
@@ -8,6 +9,10 @@ namespace ToSic.Eav.Data
 {
     public partial class PropertyStack
     {
+        public PropReqResult InternalGetPath(string path, ILog logOrNull = null)
+            => InternalGetPath(new PropReqSpecs(path, Array.Empty<string>(), logOrNull),
+                new PropertyLookupPath());
+
         public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path) 
             => TraversePath(specs, path.KeepOrNew(), this);
 
