@@ -32,12 +32,12 @@ namespace ToSic.Eav.Configuration
         public static readonly FeatureDefinition EditUiGpsCustomDefaults = new FeatureDefinition(
             "EditUiGpsCustomDefaults",
             new Guid("19736d09-7424-43fc-9a65-04b53bf7f95c"),
-            "Feature to set custom defaults for the GPS Picker.",
+            "Set custom defaults for the GPS Picker.",
             false,
             false,
             "By default the GPS-Picker will start in Switzerland. If you enable this, you can reconfigure it in the settings.",
             FeaturesCatalogRules.Security0Neutral,
-            Eav.Configuration.BuiltInFeatures.ForPatronBasicEnabled
+            ForPatronBasicEnabled
         );
 
     }
