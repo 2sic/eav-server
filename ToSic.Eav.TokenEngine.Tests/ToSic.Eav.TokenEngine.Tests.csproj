@@ -96,7 +96,7 @@
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj">
       <Project>{bc93efb1-d740-4617-9c90-d9167f9e4545}</Project>
-      <Name>ToSic.Lib.Logging</Name>
+      <Name>ToSic.Lib.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
