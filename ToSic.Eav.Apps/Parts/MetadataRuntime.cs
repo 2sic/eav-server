@@ -3,7 +3,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class MetadataRuntime: PartOf<AppRuntime, MetadataRuntime>
+    public class MetadataRuntime: PartOf<AppRuntime>
     {
         public MetadataRuntime() : base("RT.Metadt") { }
 

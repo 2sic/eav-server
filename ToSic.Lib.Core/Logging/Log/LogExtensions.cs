@@ -90,6 +90,25 @@ namespace ToSic.Lib.Logging
             //var result = action(l);
             //return l.Return(result.Result, result.Message);
         }
+        [PrivateApi]
+        // 2dm - experimental, don't use yet...
+        public static TResult WrpFn<TResult>(this ILog log,
+            Func<LogCall<TResult>, TResult> action,
+            string parameters = default,
+            string message = default,
+            bool startTimer = false,
+            CodeRef code = default,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        )
+        {
+            return log.WrapValueOnly(action, false, false, parameters, message, startTimer,
+                UseOrCreate(code, cPath, cName, cLine));
+            //var l = new LogCall<TResult>(log?._RealLog, UseOrCreate(code, cPath, cName, cLine), false, parameters, message, startTimer);
+            //var result = action(l);
+            //return l.Return(result.Result, result.Message);
+        }
 
         /// <summary>
         /// Short wrapper for Get-property calls which only return the value.

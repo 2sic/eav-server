@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Manager for entities in an app
     /// </summary>
-    public partial class EntitiesManager: PartOf<AppManager, EntitiesManager>
+    public partial class EntitiesManager: PartOf<AppManager>
     {
         #region Constructor / DI
 

@@ -45,8 +45,8 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             this.Init(parentLog);
             AppManager = zoneId.HasValue
-                ? _appManagerLazy.Value.Init(new AppIdentity(zoneId.Value, appId), Log)
-                : _appManagerLazy.Value.Init(appId, Log);
+                ? _appManagerLazy.Value.Init(Log).Init(new AppIdentity(zoneId.Value, appId))
+                : _appManagerLazy.Value.Init(Log).Init(appId);
             Storage = AppManager.Storage;
             AppId = appId;
             ZoneId = AppManager.ZoneId;

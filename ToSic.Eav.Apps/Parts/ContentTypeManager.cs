@@ -5,7 +5,7 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class ContentTypeManager : PartOf<AppManager, ContentTypeManager>
+    public class ContentTypeManager : PartOf<AppManager>
     {
         public ContentTypeManager() : base("App.TypMng") { }
 

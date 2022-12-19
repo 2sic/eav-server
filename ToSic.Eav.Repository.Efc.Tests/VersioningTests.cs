@@ -7,6 +7,7 @@ using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Versions;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 using ToSic.Testing.Shared;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {
@@ -41,7 +42,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = ItemToRestoreToV2;
             var version = 2;
-            var appManager = Build<AppManager>().Init(Specs, Log);
+            var appManager = Build<AppManager>().Init(Log).Init(Specs);
             var dc = Build<DbDataController>().Init(Specs.ZoneId, Specs.AppId, Log);
             var all = appManager.Entities.VersionHistory(id);  dc.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;

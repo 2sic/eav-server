@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Manager for entities in an app
     /// </summary>
-    public class ContentTypeRuntime : PartOf<AppRuntime, ContentTypeRuntime>
+    public class ContentTypeRuntime : PartOf<AppRuntime>
     {
 
         public ContentTypeRuntime(Lazy<AppRuntime> lazyMetadataAppRuntime, Lazy<IAppFileSystemLoader> appFileSystemLoaderLazy, IAppStates appStates) : base("RT.ConTyp")
@@ -74,7 +74,7 @@ namespace ToSic.Eav.Apps.Parts
             LogListOfInputTypes("Combined", inputTypes);
 
             // Merge input types registered in global metadata-app
-            var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Constants.MetaDataAppId, true, Log);
+            var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Log).Init(Constants.MetaDataAppId, true);
             var systemAppInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
             systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
             LogListOfInputTypes("System", systemAppInputTypes);

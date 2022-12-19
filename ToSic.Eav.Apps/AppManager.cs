@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps
     /// The app management system - it's meant for modifying the app, not for reading the configuration. 
     /// Use other mechanisms if you only want to read content-types etc.
     /// </summary>
-    public class AppManager: AppRuntimeBase<AppManager>
+    public class AppManager: AppRuntimeBase
     {
         private readonly LazyInit<AppRuntime> _appRuntime;
         private readonly LazyInit<DbDataController> _dbDataController;
@@ -27,8 +27,7 @@ namespace ToSic.Eav.Apps
             string logName
             ) : base(dependencies, logName)
         {
-            _appRuntime = appRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts, Log));
-            //_dbDataController = dbDataController.SetInit(c => c.Init(Dependencies.AppStates.Get(new AppIdentity(ZoneId, AppId)), Log));
+            _appRuntime = appRuntime.SetInit(r => r.Init(Log).InitWithState(AppState, ShowDrafts));
             _dbDataController = dbDataController.SetInit(c =>
             {
                 // TODO: STV this is a bit of a hack, but it's the only way to get the app-state into the DbDataController
@@ -38,8 +37,8 @@ namespace ToSic.Eav.Apps
                 else
                     c.Init(ZoneId, AppId, Log);
             });
-            _entitiesManager = entitiesManager.SetInit(m => m.Init(this, Log));
-            _queryManager = queryManager.SetInit(m => m.Init(this, Log));
+            _entitiesManager = entitiesManager.SetInit(m => m.Init(Log).ConnectTo(this));
+            _queryManager = queryManager.SetInit(m => m.Init(Log).ConnectTo(this));
         }
 
         public AppManager(AppRuntimeDependencies dependencies,
@@ -50,19 +49,19 @@ namespace ToSic.Eav.Apps
             ) : this(dependencies, appRuntime, dbDataController, entitiesManager, queryManager, "Eav.AppMan")
         { }
 
-        public new AppManager Init(IAppIdentity app, ILog parentLog) => Init(app, true, parentLog);
+        public new AppManager Init(IAppIdentity app) => this.InitQ(app, true);
 
-        public AppManager Init(int appId, ILog parentLog) => Init(Dependencies.AppStates.IdentityOfApp(appId), true, parentLog);
+        public AppManager Init(int appId) => this.InitQ(Dependencies.AppStates.IdentityOfApp(appId), true);
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.
         /// It's important because the app-manager must be able to help initialize an app, when it's not yet in the cache
         /// </summary>
         /// <returns></returns>
-        public AppManager InitWithState(AppState appState, bool showDrafts, ILog parentLog)
+        public AppManager InitWithState(AppState appState, bool showDrafts)
         {
             AppState = appState;
-            return Init(appState, showDrafts, parentLog);
+            return this.InitQ(appState, showDrafts);
         }
 
         #endregion
@@ -99,7 +98,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Content-Types Manager Subsystem
         /// </summary>
-        public ContentTypeManager ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeManager().Init(this, Log));
+        public ContentTypeManager ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeManager().Init(Log).ConnectTo(this));
         private ContentTypeManager  _contentTypes;
 
     }

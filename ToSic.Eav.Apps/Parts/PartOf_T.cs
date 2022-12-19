@@ -1,24 +1,32 @@
-﻿using ToSic.Lib.Logging;
+﻿using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Parts
 {
+    //public abstract class PartOfTemp<TParent> : ServiceWithLog
+    //{
+    //    public abstract TParent Parent { get; set; }
+    //    protected PartOfTemp(string logName) : base(logName)
+    //    {
+    //    }
+    //}
+
     /// <summary>
     /// Base class for any kind of read/runtime operations
     /// </summary>
-    public abstract class PartOf<TParent, TInit> : HasLog where TInit: PartOf<TParent, TInit>
+    public abstract class PartOf<TParent> : ServiceWithLog
     {
         // ReSharper disable once InconsistentNaming
-        protected TParent Parent;
+        protected internal TParent Parent { get; internal set; }
 
         protected PartOf(string logName): base(logName) { }
+    }
 
-        public TInit Init(TParent appRt, ILog parentLog, string logName = null)
+    public static class PartOfExtensions
+    {
+        public static TInit ConnectTo<TParent, TInit>(this TInit target, TParent parent) where TInit : PartOf<TParent>
         {
-            this.Init(parentLog, logName);
-            Parent = appRt;
-            return this as TInit;
+            target.Parent = parent;
+            return target;
         }
-        
-
     }
 }

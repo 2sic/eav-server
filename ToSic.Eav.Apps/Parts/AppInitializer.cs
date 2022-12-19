@@ -6,7 +6,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
 
@@ -51,7 +50,7 @@ namespace ToSic.Eav.Apps.Parts
         /// So we don't inject into into this class, but instead create it on demand
         /// </summary>
         private AppManager AppManager =>
-            _appManager ?? (_appManager = _serviceProvider.Build<AppManager>().InitWithState(AppState, true, Log));
+            _appManager ?? (_appManager = _serviceProvider.Build<AppManager>().Init(Log).InitWithState(AppState, true));
         private AppManager _appManager;
 
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.XPath;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
@@ -13,7 +14,6 @@ using ToSic.Lib.Logging;
 
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
-using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private int _appId;
         private int _zoneId;
         private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
-        private const string SourceControlDataFolder = Constants.AppDataProtectedFolder; // Constants.FolderData;
+        private const string SourceControlDataFolder = Constants.AppDataProtectedFolder;
         private const string SourceControlDataFile = Constants.AppDataFile;
         private readonly string _blankGuid = Guid.Empty.ToString();
 
@@ -37,25 +37,19 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region DI Constructor
 
-        public ZipExport(IServerPaths serverPaths,
-            AppRuntime appRuntime,
+        public ZipExport(AppRuntime appRuntime,
             DataSourceFactory dataSourceFactory,
             XmlExporter xmlExporter,
-            IGlobalConfiguration globalConfiguration,
-            ITargetTypes metaTargetTypes)
+            IGlobalConfiguration globalConfiguration)
         {
-            _serverPaths = serverPaths;
             _xmlExporter = xmlExporter;
             _globalConfiguration = globalConfiguration;
-            _metaTargetTypes = metaTargetTypes;
             AppRuntime = appRuntime;
             DataSourceFactory = dataSourceFactory.Init(Log);
         }
 
-        private readonly IServerPaths _serverPaths;
         private readonly XmlExporter _xmlExporter;
         private readonly IGlobalConfiguration _globalConfiguration;
-        private readonly ITargetTypes _metaTargetTypes;
         private AppRuntime AppRuntime { get; }
         public DataSourceFactory DataSourceFactory { get; }
 
@@ -69,7 +63,7 @@ namespace ToSic.Eav.Apps.ImportExport
             Log = new Log("Zip.Exp", parentLog);
             FileManager = new FileManager(_physicalAppPath).Init(Log);
             FileManagerGlobal = new FileManager(physicalPathGlobal).Init(Log);
-            AppRuntime.Init(new AppIdentity(_zoneId, _appId), true, Log);
+            AppRuntime.Init(Log).InitQ(new AppIdentity(_zoneId, _appId), true);
             return this;
         }
         #endregion
@@ -222,7 +216,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            var runtime = AppRuntime.Init(new AppIdentity(_zoneId, _appId), true, Log);
+            var runtime = AppRuntime.Init(Log).InitQ(new AppIdentity(_zoneId, _appId), true);
             var attributeSets = runtime.ContentTypes.All.OfScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 

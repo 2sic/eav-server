@@ -24,10 +24,8 @@ namespace ToSic.Eav.Apps
         /// App identity containing zone/app combination
         /// </summary>
         /// <param name="app">the identity</param>
-        /// <param name="parentLog">the current log - could be null if necessary</param>
-        protected AppBase Init(IAppIdentity app, ILog parentLog)
+        protected AppBase Init(IAppIdentity app)
         {
-            this.Init(parentLog);
             var l = Log.Fn<AppBase>();
             ZoneId = app.ZoneId;
             AppId = app.AppId;

@@ -97,7 +97,8 @@ namespace ToSic.Eav.Apps
             if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
                 appIdentity = new AppIdentity(Site.ZoneId, appIdentity.AppId);
 
-            Init(appIdentity, parentLog);
+            (this as IHasLog).Init(parentLog);
+            Init(appIdentity);
             Log.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
             // Look up name in cache

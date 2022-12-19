@@ -2,6 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 
 // ReSharper disable InheritdocInvalidUsage
 #pragma warning disable CS0108, CS0114
@@ -26,7 +27,7 @@ namespace ToSic.Eav.DataFormats.EavLight
     /// In most cases you'll just do `var prepared = converter.Convert(someEntityObjectOrList);`
     /// </remarks>
     [PublicApi]
-    public interface IConvertToEavLight: IConvertEntity<EavLightEntity>, IConvertDataSource<EavLightEntity>
+    public interface IConvertToEavLight: IConvertEntity<EavLightEntity>, IConvertDataSource<EavLightEntity>, IHasLog
     {
         /// <inheritdoc />
         IEnumerable<EavLightEntity> Convert(IEnumerable<IEntity> entities);

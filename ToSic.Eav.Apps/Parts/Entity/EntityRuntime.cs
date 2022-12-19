@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -11,9 +12,13 @@ namespace ToSic.Eav.Apps.Parts
     /// Manager for entities in an app
     /// </summary>
     // ReSharper disable once InheritdocConsiderUsage
-    public class EntityRuntime: PartOf<AppRuntime, EntityRuntime>
+    public class EntityRuntime: PartOf<AppRuntime>
     {
-        public EntityRuntime(): base ("RT.EntRun") { }
+        private readonly LazyInitLog<DataSourceFactory> _dataSourceFactory;
+        public EntityRuntime(LazyInitLog<DataSourceFactory> dataSourceFactory): base ("RT.EntRun") =>
+            ConnectServices(
+                _dataSourceFactory = dataSourceFactory
+            );
 
         #region Get
 
@@ -49,7 +54,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public IEnumerable<IEntity> Get(string contentTypeName)
         {
-            var typeFilter = Parent.DataSourceFactory.GetDataSource<EntityTypeFilter>(Parent.Data); // need to go to cache, to include published & unpublished
+            var typeFilter = _dataSourceFactory.Value.GetDataSource<EntityTypeFilter>(Parent.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
             return typeFilter.List;
         }

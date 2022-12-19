@@ -16,6 +16,10 @@ namespace ToSic.Lib.DI
         {
 
         }
+        protected ServiceWithLog(string logName, CodeRef codeRef) : base(logName, codeRef)
+        {
+
+        }
 
         /// <summary>
         /// Special helper to keep track of all dependencies which need a log, to init once SetLog is called

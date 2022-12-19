@@ -2,19 +2,20 @@
 using ToSic.Eav.Apps.Parts;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
 {
-    public class ZoneManager : ZoneBase<ZoneManager>
+    public class ZoneManager : ZoneBase //<ZoneManager>
     {
         #region Constructor and simple properties
 
         public ZoneManager(Lazy<DbDataController> dbLazy, LazyInitLog<SystemManager> systemManagerLazy) : base("App.Zone")
         {
-            _dbLazy = dbLazy;
-            _systemManagerLazy = systemManagerLazy.SetLog(Log);
+            ConnectServices(
+                _dbLazy = dbLazy,
+                _systemManagerLazy = systemManagerLazy
+            );
         }
         private readonly Lazy<DbDataController> _dbLazy;
         private readonly LazyInitLog<SystemManager> _systemManagerLazy;

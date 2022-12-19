@@ -50,7 +50,7 @@ namespace ToSic.Eav.WebApi.Sys
         }
 
 
-        private AppRuntime AppRt(int? appId) => _serviceProvider.Build<AppRuntime>().Init(appId.Value, true, Log);
+        private AppRuntime AppRt(int? appId) => _serviceProvider.Build<AppRuntime>().Init(Log).Init(appId.Value, true);
 
         private AppState AppState(int? appId) => _appStates.Get(appId.Value);
 

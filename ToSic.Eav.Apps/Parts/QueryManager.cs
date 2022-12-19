@@ -8,7 +8,6 @@ using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts
@@ -17,7 +16,7 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// query manager to work with queries
     /// </summary>
-    public class QueryManager: PartOf<AppManager, QueryManager>
+    public class QueryManager: PartOf<AppManager>
     {
         public QueryManager(
             Lazy<SystemManager> systemManagerLazy,
@@ -35,8 +34,6 @@ namespace ToSic.Eav.Apps.Parts
         private readonly Lazy<ValueBuilder> _valueBuilder;
         private LazyInit<JsonSerializer> Serializer { get; }
         private readonly LazyInitLog<Eav.DataSources.Queries.QueryManager> _queryManager;
-        //private JsonSerializer Serializer => _serializer ?? (_serializer = _jsonLazy.Value.Init(Parent.AppState, Log));
-        //private JsonSerializer _serializer;
 
         public void SaveCopy(int id) => SaveCopy(Parent.Read.Queries.Get(id));
 

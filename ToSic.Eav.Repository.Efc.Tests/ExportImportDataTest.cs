@@ -25,7 +25,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var Log = new Log("TstExp");
             var zoneId = 2;
             var appId = 2;
-            var appRuntime = _appRuntime.Init(appId, true, Log);
+            var appRuntime = _appRuntime.Init(Log).Init(appId, true);
 
             var fileXml = _xmlExporter.Init(zoneId, appId, appRuntime, false,
                 /*contentTypeIdsString?.Split(';') ?? */new string[0],

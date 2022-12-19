@@ -48,7 +48,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         public ContentExportApi<THttpResponseType> Init(int appId, ILog parentLog)
         {
             this.Init(parentLog);
-            _appManager = _appManagerLazy.Value.Init(appId, Log);
+            _appManager = _appManagerLazy.Value.Init(Log).Init(appId);
             Log.A($"For app: {appId}");
             return this;
         }

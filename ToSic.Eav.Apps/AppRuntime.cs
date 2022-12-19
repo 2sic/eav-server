@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Apps.Parts;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps
 {
@@ -9,7 +8,7 @@ namespace ToSic.Eav.Apps
     /// <summary>
     /// Basic App-Reading System to access app data and read it
     /// </summary>
-    public class AppRuntime : AppRuntimeBase<AppRuntime>
+    public class AppRuntime : AppRuntimeBase
     {
 
         #region constructors
@@ -27,33 +26,28 @@ namespace ToSic.Eav.Apps
             string logName = null) : base(dependencies,
             logName ?? "Eav.AppRt")
         {
-            _entityRuntime = entityRuntime.SetInit(r => r.Init(this, Log));
-            _metadataRuntime = metadataRuntime.SetInit(r => r.Init(this, Log));
-            _contentTypeRuntime = contentTypeRuntime.SetInit(r => r.Init(this, Log));
-            _queryRuntime = queryRuntime.SetInit(r => r.Init(this, Log));
+            _entityRuntime = entityRuntime.SetInit(r => r.Init(Log).ConnectTo(this));
+            _metadataRuntime = metadataRuntime.SetInit(r => r.Init(Log).ConnectTo(this));
+            _contentTypeRuntime = contentTypeRuntime.SetInit(r => r.Init(Log).ConnectTo(this));
+            _queryRuntime = queryRuntime.SetInit(r => r.Init(Log).ConnectTo(this));
         }
 
-        /// <summary>
-        /// Simple Init
-        /// </summary>
-        public new AppRuntime Init(IAppIdentity app, bool showDrafts, ILog parentLog) 
-            => base.Init(app, showDrafts, parentLog);
-        
+
         /// <summary>
         /// Simple Override - to track if the init is being called everywhere
         /// </summary>
-        public AppRuntime Init(int appId, bool showDrafts, ILog parentLog) 
-            => base.Init(Dependencies.AppStates.IdentityOfApp(appId), showDrafts, parentLog);
+        public AppRuntime Init(int appId, bool showDrafts) 
+            => this.InitQ(Dependencies.AppStates.IdentityOfApp(appId), showDrafts);
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.
         /// It's important because the app-manager must be able to help initialize an app, when it's not yet in the cache
         /// </summary>
         /// <returns></returns>
-        protected internal AppRuntime InitWithState(AppState appState, bool showDrafts, ILog parentLog)
+        protected internal AppRuntime InitWithState(AppState appState, bool showDrafts)
         {
             AppState = appState;
-            return base.Init(appState, showDrafts, parentLog);
+            return this.InitQ(appState, showDrafts);
         }
 
 

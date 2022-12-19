@@ -52,7 +52,7 @@ namespace ToSic.Eav.WebApi
             this.Init(parentLog);
             Log.A($"Will use app {appId}");
             _appId = appId;
-            AppManager = _appManagerLazy.Value.Init(appId, Log);
+            AppManager = _appManagerLazy.Value.Init(Log).Init(appId);
             return this;
         }
 
@@ -189,7 +189,7 @@ namespace ToSic.Eav.WebApi
             var hasAncestor = type.HasAncestor();
             var ancestorDecorator = type.GetDecorator<IAncestor>();
 
-            var appInputTypes = _appRuntimeLazy.Value.Init(_appId, true, Log).ContentTypes.GetInputTypes();
+            var appInputTypes = _appRuntimeLazy.Value.Init(Log).Init(_appId, true).ContentTypes.GetInputTypes();
 
             var ser = _convertToEavLight.Value;
             return fields.Select(a =>

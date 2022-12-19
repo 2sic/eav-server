@@ -7,6 +7,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
+using ToSic.Lib.Logging;
 using ToSic.Sxc.Apps.ImportExport;
 using ToSic.Testing.Shared;
 
@@ -92,7 +93,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var applist = _dbData.Init(ZoneId, null, Log).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
             var appId = applist.FirstOrDefault(a => a.Name == appGuid)?.AppId ?? 0;
-            if (appId > 0) _zoneManager.Init(ZoneId, Log).DeleteApp(appId, true);
+            if (appId > 0) _zoneManager.Init(Log).SetId(ZoneId).DeleteApp(appId, true);
 
         }
     }

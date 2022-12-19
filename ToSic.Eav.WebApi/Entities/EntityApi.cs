@@ -44,7 +44,7 @@ namespace ToSic.Eav.WebApi
         public EntityApi Init(int appId, bool showDrafts, ILog parentLog)
         {
             this.Init(parentLog);
-            AppRead = _appRuntime.Init(appId, showDrafts, Log);
+            AppRead = _appRuntime.Init(Log).Init(appId, showDrafts);
             return this;
         }
 
@@ -141,7 +141,7 @@ namespace ToSic.Eav.WebApi
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
         public void Delete(string contentType, int id, bool force = false, int? parentId = null, string parentField = null) 
-            => _appManagerLazy.Value.Init(AppRead, AppRead.Log).Entities.Delete(id, contentType, force, false, parentId, parentField);
+            => _appManagerLazy.Value.Init(AppRead.Log).Init(AppRead).Entities.Delete(id, contentType, force, false, parentId, parentField);
 
         /// <summary>
         /// Delete the entity specified by GUID.

@@ -1,29 +1,25 @@
-﻿using ToSic.Lib.Logging;
+﻿using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class ZoneBase<T>: HasLog, IZoneIdentity where T: ZoneBase<T>
+    public abstract class ZoneBase : ServiceWithLog, IZoneIdentity
     {
         #region Constructor and simple properties
-        public int ZoneId { get; private set; }
 
-        public ZoneBase(string logName): base(logName) { }
+        public int ZoneId { get; internal set; }
 
-        public T Init(int zoneId, ILog parentLog)
-        {
-            this.Init(parentLog);
-            ZoneId = zoneId;
-            Log.A($"zone base for z#{zoneId}");
-            return this as T;
-        }
-
-
-
-        //internal IAppsCache Cache => _cache ?? (_cache = State.Cache);
-        //private IAppsCache _cache;
+        protected ZoneBase(string logName): base(logName) { }
 
         #endregion
+    }
 
-        
+    public static class ZoneBaseExtensions
+    {
+        public static T SetId<T>(this T parent, int zoneId) where T : ZoneBase => parent.Log.WrpFn<T>(_ =>
+        {
+            parent.ZoneId = zoneId;
+            return parent;
+        });
     }
 }

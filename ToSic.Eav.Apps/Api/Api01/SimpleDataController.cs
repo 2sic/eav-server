@@ -73,7 +73,7 @@ namespace ToSic.Eav.Api.Api01
             
             _defaultLanguageCode = GetDefaultLanguage(zoneId);
             _context = _dbDataLazy.Value.Init(zoneId, appId, Log);
-            _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId), Log);
+            _appManager = _appManagerLazy.Value.Init(Log).Init(new AppIdentity(zoneId, appId));
             _checkWritePermissions = checkWritePermissions;
             Log.A($"Default language:{_defaultLanguageCode}");
             return wrapLog.Return(this);

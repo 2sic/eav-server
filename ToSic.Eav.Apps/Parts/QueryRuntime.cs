@@ -1,11 +1,13 @@
 ﻿using ToSic.Eav.DataSources.Queries;
-using ToSic.Lib.Logging;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public class QueryRuntime: PartOf<AppRuntime, QueryRuntime>
+    public class QueryRuntime: PartOf<AppRuntime/*, QueryRuntime*/>
     {
-        public QueryRuntime() : base("RT.Query") { }
+        private readonly GeneratorLog<Eav.DataSources.Queries.QueryManager> _queryManager;
+        public QueryRuntime(GeneratorLog<Eav.DataSources.Queries.QueryManager> queryManager) : base("RT.Query") 
+            => ConnectServices(_queryManager = queryManager);
 
 
         /// <summary>
@@ -15,7 +17,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public QueryDefinition Get(int queryId)
         {
-            var queryMan = new Eav.DataSources.Queries.QueryManager(Parent.DataSourceFactory).Init(Log);
+            var queryMan = _queryManager.New();
             return new QueryDefinition(queryMan.GetQueryEntity(queryId, Parent.AppState),
                 Parent.AppId, Log);
         }

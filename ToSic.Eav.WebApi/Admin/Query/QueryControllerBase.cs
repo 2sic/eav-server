@@ -37,7 +37,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         public TImplementation Init(int appId)
         {
             if (appId != 0) // if 0, then no context is available or used
-                _appManager = _dependencies.AppManagerLazy.Value.Init(appId, Log);
+                _appManager = _dependencies.AppManagerLazy.Value.Init(Log).Init(appId);
             return this as TImplementation;
         }
 
@@ -53,7 +53,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             if (!id.HasValue) return query;
 
-            var reader = _dependencies.AppReaderLazy.Value.Init(appId, false, Log);
+            var reader = _dependencies.AppReaderLazy.Value.Init(Log).Init(appId, false);
             var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
