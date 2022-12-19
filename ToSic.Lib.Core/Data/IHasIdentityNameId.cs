@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data
+﻿namespace ToSic.Lib.Data
 {
     public interface IHasIdentityNameId
     {
