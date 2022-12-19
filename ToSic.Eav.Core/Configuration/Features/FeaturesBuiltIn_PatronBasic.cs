@@ -5,7 +5,7 @@ namespace ToSic.Eav.Configuration
 {
     public partial class BuiltInFeatures
     {
-        internal static List<FeatureLicenseRule> ForPatronBasic = BuildRule(Licenses.BuiltInLicenses.PatronBasic, true);
+        public static List<FeatureLicenseRule> ForPatronBasicEnabled = BuildRule(Licenses.BuiltInLicenses.PatronBasic, true);
 
         public static readonly FeatureDefinition PasteImageFromClipboard = new FeatureDefinition(
             "PasteImageFromClipboard",
@@ -14,8 +14,8 @@ namespace ToSic.Eav.Configuration
             true,
             true,
             "Enable paste image from clipboard into a wysiwyg or file field.",
-            FeaturesCatalogRules.Security0Improved,
-            ForPatronBasic
+            FeaturesCatalogRules.Security0Neutral,
+            ForPatronBasicEnabled
         );
 
         public static readonly FeatureDefinition NoSponsoredByToSic = new FeatureDefinition(
@@ -25,8 +25,19 @@ namespace ToSic.Eav.Configuration
             true,
             true,
             "Hide 'Sponsored by 2sic' messages - for example on the ADAM field.",
-            FeaturesCatalogRules.Security0Improved,
-            ForPatronBasic
+            FeaturesCatalogRules.Security0Neutral,
+            ForPatronBasicEnabled
+        );
+
+        public static readonly FeatureDefinition EditUiGpsCustomDefaults = new FeatureDefinition(
+            "EditUiGpsCustomDefaults",
+            new Guid("19736d09-7424-43fc-9a65-04b53bf7f95c"),
+            "Feature to set custom defaults for the GPS Picker.",
+            false,
+            false,
+            "By default the GPS-Picker will start in Switzerland. If you enable this, you can reconfigure it in the settings.",
+            FeaturesCatalogRules.Security0Neutral,
+            Eav.Configuration.BuiltInFeatures.ForPatronBasicEnabled
         );
 
     }

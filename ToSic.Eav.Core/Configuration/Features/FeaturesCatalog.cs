@@ -26,9 +26,10 @@ namespace ToSic.Eav.Configuration
                 // Features for Patrons Basic
                 PasteImageFromClipboard,
                 NoSponsoredByToSic,
+                EditUiGpsCustomDefaults,    // new v15
 
                 // Features for Patrons Advanced CMS
-                EditUiTranslateWithGoogle, // WIP/Beta
+                EditUiTranslateWithGoogle, // WIP/Beta, v15
 
                 // Patron SuperAdmin
                 AppSyncWithSiteFiles,  // WIP/Beta
