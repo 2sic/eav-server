@@ -6,7 +6,6 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Compression;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence;
@@ -16,6 +15,7 @@ using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Parts;
+using ToSic.Lib.DI;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.DI
+namespace ToSic.Lib.DI
 {
     /// <summary>
     /// Enables lazy requesting of objects - won't be available until needed

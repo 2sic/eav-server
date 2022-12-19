@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DI
+﻿namespace ToSic.Lib.DI
 {
     /// <summary>
     /// This should ensure that naming of objects which do special DI kind of stuff should have the same naming as Lazy...

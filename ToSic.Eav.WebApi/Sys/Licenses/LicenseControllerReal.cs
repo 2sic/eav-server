@@ -6,7 +6,7 @@ using System.Net;
 using System.Text.Json;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
-using ToSic.Eav.DI;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Adam;

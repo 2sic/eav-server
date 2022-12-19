@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ToSic.Eav.DI
+namespace ToSic.Lib.DI
 {
     // ReSharper disable once InconsistentNaming
     public static class IServiceProviderExtensions

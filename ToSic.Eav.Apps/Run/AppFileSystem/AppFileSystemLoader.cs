@@ -6,10 +6,10 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repositories;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Run
 {

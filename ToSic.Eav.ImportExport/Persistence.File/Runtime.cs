@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
-using ToSic.Eav.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Persistence.File
 {

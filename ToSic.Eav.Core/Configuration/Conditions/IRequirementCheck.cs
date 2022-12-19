@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DI;
+﻿using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Configuration
 {

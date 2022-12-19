@@ -4,11 +4,11 @@ using System.IO;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Parts
 {

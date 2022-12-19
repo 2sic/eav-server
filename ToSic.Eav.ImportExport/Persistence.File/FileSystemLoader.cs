@@ -5,11 +5,11 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
+using ToSic.Lib.DI;
 using static ToSic.Eav.ImportExport.ImpExpConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 

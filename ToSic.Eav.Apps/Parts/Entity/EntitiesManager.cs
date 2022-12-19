@@ -5,11 +5,11 @@ using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Lib.DI;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts

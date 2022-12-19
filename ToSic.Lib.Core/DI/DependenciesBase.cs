@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DI
+namespace ToSic.Lib.DI
 {
     /// <summary>
     /// Experimental: Base class for all dependencies helpers.

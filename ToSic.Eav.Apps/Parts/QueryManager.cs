@@ -4,7 +4,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.DI;
+using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;

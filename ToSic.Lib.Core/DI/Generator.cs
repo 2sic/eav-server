@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.DI
+namespace ToSic.Lib.DI
 {
     /// <summary>
     /// Enables generating additional objects of a specific type

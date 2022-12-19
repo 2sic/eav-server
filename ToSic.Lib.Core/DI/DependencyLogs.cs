@@ -2,7 +2,7 @@
 using System.Linq;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DI
+namespace ToSic.Lib.DI
 {
     public class DependencyLogs
     {

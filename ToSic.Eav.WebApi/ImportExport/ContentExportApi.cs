@@ -2,7 +2,6 @@
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
-using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Options;
@@ -17,6 +16,7 @@ using System.Collections.Generic;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Lib.DI;
 #if NETFRAMEWORK
 using System.Web.Http;
 #else

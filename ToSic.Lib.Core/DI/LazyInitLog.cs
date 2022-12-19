@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DI
+namespace ToSic.Lib.DI
 {
     public class LazyInitLog<T>: LazyInit<T>, ILazyInitLog where T: class, IHasLog
     {

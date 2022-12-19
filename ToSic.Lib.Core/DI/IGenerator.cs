@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DI
+﻿namespace ToSic.Lib.DI
 {
 
     public interface IGenerator<out T>

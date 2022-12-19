@@ -4,8 +4,8 @@ using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.DI;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.WebApi.Admin.Query
 {

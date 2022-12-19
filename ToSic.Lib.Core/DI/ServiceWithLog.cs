@@ -1,7 +1,7 @@
 ﻿using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DI
+namespace ToSic.Lib.DI
 {
     /// <summary>
     /// Special base class for most services which have a bunch of child-services that should be log-connected.

@@ -2,9 +2,9 @@
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.DI;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 

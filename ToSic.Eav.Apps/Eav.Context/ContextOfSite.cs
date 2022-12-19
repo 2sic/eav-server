@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Security;
-using ToSic.Eav.DI;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 
 // ReSharper disable once CheckNamespace

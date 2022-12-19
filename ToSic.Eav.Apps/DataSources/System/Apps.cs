@@ -5,9 +5,9 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
-using ToSic.Eav.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 

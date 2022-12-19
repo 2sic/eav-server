@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.DI;
-using ToSic.Eav.Repositories;
+﻿using ToSic.Eav.Repositories;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Caching
 {

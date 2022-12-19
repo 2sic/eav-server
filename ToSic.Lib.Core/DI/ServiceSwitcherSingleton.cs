@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DI
+namespace ToSic.Lib.DI
 {
     /// <summary>
     /// Similar to the <see cref="ServiceSwitcher{T}"/> but special.
@@ -10,7 +10,6 @@ namespace ToSic.Eav.DI
     /// <typeparam name="T"></typeparam>
     public class ServiceSwitcherSingleton<T>: HasLog, ILazyLike<T> where T : ISwitchableService
     {
-
         public ServiceSwitcherSingleton(
             History logHistory,
             LazyInitLog<ServiceSwitcher<T>> serviceSwitcher

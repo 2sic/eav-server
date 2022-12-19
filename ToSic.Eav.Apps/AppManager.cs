@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.DI;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;

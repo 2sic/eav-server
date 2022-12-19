@@ -3,11 +3,11 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
-using ToSic.Eav.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
+using ToSic.Lib.DI;
 using static ToSic.Eav.Configuration.ConfigurationConstants;
 
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment

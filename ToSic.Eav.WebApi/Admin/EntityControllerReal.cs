@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
-using ToSic.Eav.DI;
+using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Security.Permissions;

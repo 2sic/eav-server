@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.DI
+namespace ToSic.Lib.DI
 {
     public class ServiceSwitcher<T>: HasLog, ILazyLike<T> where T : ISwitchableService
     {
@@ -19,8 +18,18 @@ namespace ToSic.Eav.DI
         public readonly List<T> AllServices;
 
 
-        public T Value => _preferredService.Get(FindServiceInSwitcher);
-        private readonly GetOnce<T> _preferredService = new GetOnce<T>();
+        public T Value
+        {
+            get
+            {
+                if (IsValueCreated) return _preferredService;
+                _preferredService = FindServiceInSwitcher();
+                IsValueCreated = true;
+                return _preferredService;
+            }
+        }
+
+        private T _preferredService;
 
         private T FindServiceInSwitcher()
         {
@@ -37,9 +46,9 @@ namespace ToSic.Eav.DI
 
             throw new ArgumentException($"No viable services found for type '{typeof(T).FullName}'");
         }
+        
 
-
-        public bool IsValueCreated => _preferredService.IsValueCreated;
+        public bool IsValueCreated { get; private set; } = false;
 
         public T ByNameId(string nameId) => AllServices.Find(s => s.NameId.Equals(nameId));
     }

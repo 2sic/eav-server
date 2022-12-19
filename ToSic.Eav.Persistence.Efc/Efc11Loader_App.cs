@@ -6,9 +6,9 @@ using System.Text.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
-using ToSic.Eav.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Persistence.Efc
 {

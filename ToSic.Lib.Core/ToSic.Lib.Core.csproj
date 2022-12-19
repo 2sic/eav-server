@@ -17,6 +17,13 @@
     <RootNamespace>ToSic.Lib</RootNamespace>
     <!-- end: Don't generate... -->
   </PropertyGroup>
+  <!-- Different DI for .net 4.5 (using .net core 1.1) and .net Standard 2 -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="6.0.0" />
