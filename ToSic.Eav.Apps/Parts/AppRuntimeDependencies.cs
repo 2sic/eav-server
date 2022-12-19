@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.DataSources;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
     [PrivateApi]
-    public class AppRuntimeDependencies: DependenciesBase<AppRuntimeDependencies>
+    public class AppRuntimeDependencies: ServiceDependencies
     {
         public DataSourceFactory DataSourceFactory { get; }
         public IAppStates AppStates { get; }

@@ -1,4 +1,5 @@
 ﻿using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Base class for any kind of read/runtime operations
     /// </summary>
-    public abstract class PartOf<TParent> : ServiceWithLog
+    public abstract class PartOf<TParent> : ServiceBase
     {
         // ReSharper disable once InconsistentNaming
         protected internal TParent Parent { get; internal set; }

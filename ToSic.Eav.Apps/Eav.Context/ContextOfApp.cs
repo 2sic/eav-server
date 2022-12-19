@@ -8,6 +8,7 @@ using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.DI;
 using ToSic.Lib.Helper;
+using ToSic.Lib.Services;
 using static ToSic.Eav.Configuration.ConfigurationConstants;
 
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
@@ -23,7 +24,7 @@ namespace ToSic.Eav.Context
         /// These dependencies are a bit special, because they can be re-used for child context-of...
         /// This is why we gave them a much clearer name, not just the normal "Dependencies"
         /// </summary>
-        public new class Dependencies: DependenciesBase<Dependencies>
+        public new class Dependencies: ServiceDependencies
         {
             public Dependencies(
                 IAppStates appStates,

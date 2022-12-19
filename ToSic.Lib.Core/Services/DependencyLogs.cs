@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Lib.DI
+namespace ToSic.Lib.Services
 {
-    public class DependencyLogs
+    internal class DependencyLogs
     {
         /// <summary>
         /// Collects all objects which support `SetLog(Log)` for LazyInitLogs

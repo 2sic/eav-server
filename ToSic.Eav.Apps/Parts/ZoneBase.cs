@@ -1,9 +1,10 @@
 ﻿using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public abstract class ZoneBase : ServiceWithLog, IZoneIdentity
+    public abstract class ZoneBase : ServiceBase, IZoneIdentity
     {
         #region Constructor and simple properties
 

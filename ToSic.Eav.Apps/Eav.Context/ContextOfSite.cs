@@ -2,6 +2,7 @@
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -15,7 +16,7 @@ namespace ToSic.Eav.Context
     {
         #region Constructor / DI
 
-        public class Dependencies: DependenciesBase<Dependencies>
+        public class Dependencies: ServiceDependencies
         {
             public ISite Site { get; }
             public IUser User { get; }

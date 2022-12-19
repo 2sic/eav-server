@@ -1,7 +1,8 @@
-﻿using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.DI;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Lib.DI
+namespace ToSic.Lib.Services
 {
     /// <summary>
     /// Special base class for most services which have a bunch of child-services that should be log-connected.
@@ -9,22 +10,22 @@ namespace ToSic.Lib.DI
     /// Provides a special Dependency-list and will auto-set the log for all if they support logs.
     /// </summary>
     [PrivateApi]
-    public abstract class ServiceWithLog: HasLog
+    public abstract class ServiceBase: HasLog
     {
         [PrivateApi]
-        protected ServiceWithLog(string logName) : base(logName)
+        protected ServiceBase(string logName) : base(logName)
         {
 
         }
-        protected ServiceWithLog(string logName, CodeRef codeRef) : base(logName, codeRef)
+        protected ServiceBase(string logName, CodeRef codeRef) : base(logName, codeRef)
         {
 
         }
 
-        /// <summary>
-        /// Special helper to keep track of all dependencies which need a log, to init once SetLog is called
-        /// </summary>
-        private DependencyLogs DependencyLogs { get; } = new DependencyLogs();
+        ///// <summary>
+        ///// Special helper to keep track of all dependencies which need a log, to init once SetLog is called
+        ///// </summary>
+        //private DependencyLogs DependencyLogs { get; } = new DependencyLogs();
 
         /// <summary>
         /// Add Log to all dependencies listed in <see cref="services"/>
@@ -33,8 +34,9 @@ namespace ToSic.Lib.DI
         [PrivateApi]
         protected void ConnectServices(params object[] services)
         {
-            DependencyLogs.Add(services);
-            DependencyLogs.SetLog(Log);
+            var depLogs = new DependencyLogs();
+            depLogs.Add(services);
+            depLogs.SetLog(Log);
         }
     }
 }

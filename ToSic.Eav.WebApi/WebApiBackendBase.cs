@@ -1,9 +1,10 @@
 ﻿using System;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi
 {
-    public abstract class WebApiBackendBase<T>: ServiceWithLog where T : class
+    public abstract class WebApiBackendBase<T>: ServiceBase where T : class
     {
         protected WebApiBackendBase(IServiceProvider serviceProvider, string logName) : base(logName)
         {

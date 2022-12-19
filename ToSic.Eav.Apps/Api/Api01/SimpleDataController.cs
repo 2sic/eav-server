@@ -13,6 +13,7 @@ using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -28,7 +29,7 @@ namespace ToSic.Eav.Api.Api01
     /// <summary>
     /// This is a simple controller with some Create, Update and Delete commands. 
     /// </summary>
-    public partial class SimpleDataController: ServiceWithLog
+    public partial class SimpleDataController: ServiceBase
     {
         #region Constructor / DI
 

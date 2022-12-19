@@ -17,12 +17,6 @@ namespace ToSic.Lib.DI
             return created.Init(Log);
         }
 
-        public GeneratorLog<T> SetLog(ILog parentLog)
-        {
-            Log = parentLog;
-            return this;
-        }
-
         void ILazyInitLog.SetLog(ILog parentLog) => Log = parentLog;
 
         /// <summary>

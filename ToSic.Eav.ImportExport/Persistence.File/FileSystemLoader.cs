@@ -10,12 +10,13 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 using static ToSic.Eav.ImportExport.ImpExpConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class FileSystemLoader: ServiceWithLog, IContentTypeLoader
+    public partial class FileSystemLoader: ServiceBase, IContentTypeLoader
     {
         public int AppId = -999;
 
