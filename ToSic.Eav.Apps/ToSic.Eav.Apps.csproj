@@ -31,7 +31,7 @@
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj" />
-    <ProjectReference Include="..\ToSic.Lib.Logging\ToSic.Lib.Logging.csproj" />
+    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">

@@ -53,6 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
-    <ProjectReference Include="..\ToSic.Lib.Logging\ToSic.Lib.Logging.csproj" />
+    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
   </ItemGroup>
 </Project>

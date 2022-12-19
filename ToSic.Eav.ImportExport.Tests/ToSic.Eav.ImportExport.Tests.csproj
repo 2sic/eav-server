@@ -154,7 +154,7 @@
       <Project>{2bba13d2-f6d2-443b-b7c8-8f4c31432c03}</Project>
       <Name>ToSic.Eav.Repository.Efc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToSic.Lib.Logging\ToSic.Lib.Logging.csproj">
+    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj">
       <Project>{bc93efb1-d740-4617-9c90-d9167f9e4545}</Project>
       <Name>ToSic.Lib.Logging</Name>
     </ProjectReference>
