@@ -6,7 +6,7 @@ namespace ToSic.Lib.DI
     /// <summary>
     /// Enables generating additional objects of a specific type
     /// </summary>
-    public class GeneratorLog<T>: IGenerator<T>, ILazyInitLog where T : class, IHasLog
+    public class GeneratorLog<T>: IGenerator<T>, IHasLog, ILazyInitLog where T : class, IHasLog
     {
         public GeneratorLog(IServiceProvider sp) => _sp = sp;
         private readonly IServiceProvider _sp;
@@ -14,18 +14,21 @@ namespace ToSic.Lib.DI
         public T New()
         {
             var created = _sp.Build<T>();
-            return created.Init(_parentLog);
+            return created.Init(Log);
         }
 
         public GeneratorLog<T> SetLog(ILog parentLog)
         {
-            _parentLog = parentLog;
+            Log = parentLog;
             return this;
         }
 
-        void ILazyInitLog.SetLog(ILog parentLog) => _parentLog = parentLog;
+        void ILazyInitLog.SetLog(ILog parentLog) => Log = parentLog;
 
-        private ILog _parentLog;
+        /// <summary>
+        /// The parent log.
+        /// </summary>
+        public ILog Log { get; private set; }
 
     }
 }

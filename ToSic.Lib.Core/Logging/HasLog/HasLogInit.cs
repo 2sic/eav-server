@@ -1,4 +1,6 @@
-﻿namespace ToSic.Lib.Logging
+﻿using ToSic.Lib.DI;
+
+namespace ToSic.Lib.Logging
 {
     /// <summary>
     /// Experimental extension, should replace many of the Init-implementations
@@ -39,11 +41,17 @@
             if (thingWithLog is ILogShouldNeverConnect && !forceConnect)
                 return thingWithLog;
 
-            // Connect if possible
-            (thingWithLog.Log as Log)?.LinkTo(parentLog, name);
+            if (thingWithLog is ILazyInitLog logConnector)
+                logConnector.SetLog(parentLog);
+            else
+            {
+                // Connect if possible
+                (thingWithLog.Log as Log)?.LinkTo(parentLog, name);
 
-            // If the object needs a call back, give it...
-            (thingWithLog as ILogWasConnected)?.LogWasConnected();
+                // If the object needs a call back, give it...
+                (thingWithLog as ILogWasConnected)?.LogWasConnected();
+            }
+
             return thingWithLog;
         }
 

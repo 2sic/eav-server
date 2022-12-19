@@ -1,6 +1,5 @@
 ﻿using System;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.WebApi
 {

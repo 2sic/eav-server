@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Apps.Security;
@@ -30,7 +28,7 @@ namespace ToSic.Eav.Api.Api01
     /// <summary>
     /// This is a simple controller with some Create, Update and Delete commands. 
     /// </summary>
-    public partial class SimpleDataController: HasLog
+    public partial class SimpleDataController: ServiceWithLog
     {
         #region Constructor / DI
 
@@ -39,12 +37,14 @@ namespace ToSic.Eav.Api.Api01
         /// </summary>
         public SimpleDataController(LazyInitLog<AttributeBuilderForImport> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbDataLazy, IZoneMapper zoneMapper, IContextOfSite ctx, GeneratorLog<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
-            _appManagerLazy = appManagerLazy;
-            _dbDataLazy = dbDataLazy;
-            _zoneMapper = zoneMapper.Init(Log);
-            _ctx = ctx;
-            _appPermissionCheckGenerator = appPermissionCheckGenerator.SetLog(Log);
-            AttributeBuilder = lazyAttributeBuilder.SetLog(Log);
+            ConnectServices(
+                _appManagerLazy = appManagerLazy,
+                _dbDataLazy = dbDataLazy,
+                _zoneMapper = zoneMapper,
+                _ctx = ctx,
+                _appPermissionCheckGenerator = appPermissionCheckGenerator,
+                AttributeBuilder = lazyAttributeBuilder
+            );
         }
         private readonly Lazy<AppManager> _appManagerLazy;
         private readonly Lazy<DbDataController> _dbDataLazy;
