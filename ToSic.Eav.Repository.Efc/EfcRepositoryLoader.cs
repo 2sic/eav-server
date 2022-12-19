@@ -13,10 +13,8 @@ namespace ToSic.Eav.Repository.Efc
     public class EfcRepositoryLoader: IRepositoryLoader
     {
         public EfcRepositoryLoader(DbDataController dataController) 
-            => _dataController = dataController.Init(null, null, null);
+            => _dataController = dataController.Init(null, null);
         private readonly DbDataController _dataController;
-
-        public IRepositoryLoader Init(ILog parent) => _dataController.Loader.Init(parent);
 
         public ILog Log => _dataController.Loader.Log;
 

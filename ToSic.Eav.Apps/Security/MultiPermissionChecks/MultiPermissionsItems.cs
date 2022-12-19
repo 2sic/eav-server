@@ -11,11 +11,11 @@ namespace ToSic.Eav.Apps.Security
     {
         #region Constructors and DI / Init
 
-        public MultiPermissionsItems(Dependencies dependencies): base(dependencies) { }
+        public MultiPermissionsItems(Dependencies dependencies): base(dependencies, "Sec.MpItms") { }
 
-        public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item, ILog parentLog) 
+        public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item)
         {
-            Init(context, app, parentLog, "Sec.MpItms");
+            Init(context, app);
             _items = new List<IEntity> {item};
             return this;
         }

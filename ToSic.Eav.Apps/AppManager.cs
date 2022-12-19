@@ -33,9 +33,9 @@ namespace ToSic.Eav.Apps
                 // TODO: STV this is a bit of a hack, but it's the only way to get the app-state into the DbDataController
                 // find what is wrong with AppState
                 if ((Dependencies.AppStates as AppStates)?.IsCached(this) ?? false)
-                    c.Init(AppState, Log);
+                    c.Init(Log).Init(AppState);
                 else
-                    c.Init(ZoneId, AppId, Log);
+                    c.Init(Log).Init(ZoneId, AppId);
             });
             _entitiesManager = entitiesManager.SetInit(m => m.Init(Log).ConnectTo(this));
             _queryManager = queryManager.SetInit(m => m.Init(Log).ConnectTo(this));

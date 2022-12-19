@@ -36,7 +36,7 @@ namespace ToSic.Eav.Api.Api01
         /// <summary>
         /// Used for DI - must always call Init to use
         /// </summary>
-        public SimpleDataController(LazyInitLog<AttributeBuilderForImport> lazyAttributeBuilder, Lazy<AppManager> appManagerLazy, Lazy<DbDataController> dbDataLazy, IZoneMapper zoneMapper, IContextOfSite ctx, GeneratorLog<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
+        public SimpleDataController(LazyInitLog<AttributeBuilderForImport> lazyAttributeBuilder, LazyInitLog<AppManager> appManagerLazy, LazyInitLog<DbDataController> dbDataLazy, IZoneMapper zoneMapper, IContextOfSite ctx, GeneratorLog<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             ConnectServices(
                 _appManagerLazy = appManagerLazy,
@@ -47,8 +47,8 @@ namespace ToSic.Eav.Api.Api01
                 AttributeBuilder = lazyAttributeBuilder
             );
         }
-        private readonly Lazy<AppManager> _appManagerLazy;
-        private readonly Lazy<DbDataController> _dbDataLazy;
+        private readonly LazyInitLog<AppManager> _appManagerLazy;
+        private readonly LazyInitLog<DbDataController> _dbDataLazy;
         private readonly IZoneMapper _zoneMapper;
         private readonly IContextOfSite _ctx;
         private readonly GeneratorLog<AppPermissionCheck> _appPermissionCheckGenerator;
@@ -73,8 +73,8 @@ namespace ToSic.Eav.Api.Api01
             if (_ctx.Site.ZoneId != zoneId) _ctx.Site = _zoneMapper.SiteOfZone(zoneId);
             
             _defaultLanguageCode = GetDefaultLanguage(zoneId);
-            _context = _dbDataLazy.Value.Init(zoneId, appId, Log);
-            _appManager = _appManagerLazy.Value.Init(Log).Init(new AppIdentity(zoneId, appId));
+            _context = _dbDataLazy.Value.Init(zoneId, appId);
+            _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId));
             _checkWritePermissions = checkWritePermissions;
             Log.A($"Default language:{_defaultLanguageCode}");
             return wrapLog.Return(this);

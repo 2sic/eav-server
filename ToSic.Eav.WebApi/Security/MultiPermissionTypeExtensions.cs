@@ -4,7 +4,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi.Security
@@ -14,9 +13,9 @@ namespace ToSic.Eav.WebApi.Security
     /// </summary>
     internal static class MultiPermissionTypeExtensions
     {
-        public static MultiPermissionsTypes Init(this MultiPermissionsTypes parent, IContextOfSite context, IAppIdentity app, List<ItemIdentifier> items, ILog parentLog)
+        public static MultiPermissionsTypes Init(this MultiPermissionsTypes parent, IContextOfSite context, IAppIdentity app, List<ItemIdentifier> items)
         {
-            parent.Init(context, app, parentLog);
+            parent.Init(context, app);
             var contentTypes = ExtractTypeNamesFromItems(parent, items);
             return parent.InitTypesAfterInit(contentTypes);
         }

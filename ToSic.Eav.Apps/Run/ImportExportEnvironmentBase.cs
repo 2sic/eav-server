@@ -25,11 +25,6 @@ namespace ToSic.Eav.Apps.Run
         protected readonly ISite Site;
         private readonly IAppStates _appStates;
 
-        //public IImportExportEnvironment Init(ILog parent)
-        //{
-        //    Log.LinkTo(parent);
-        //    return this;
-        //}
         #endregion
 
         public abstract List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder);

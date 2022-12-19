@@ -6,6 +6,7 @@ using ToSic.Eav.Run;
 using ToSic.Eav.Security;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Security
@@ -17,30 +18,32 @@ namespace ToSic.Eav.Apps.Security
     {
         #region Constructors and DI
 
-        public class Dependencies
+        public class Dependencies: ServiceDependencies
         {
-            public Dependencies(LazyInitLog<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator, Generator<IFeaturesInternal> featIntGen)
+            public Dependencies(LazyInitLog<IZoneMapper> zoneMapper, GeneratorLog<AppPermissionCheck> appPermCheckGenerator, Generator<IFeaturesInternal> featIntGen)
             {
-                ZoneMapper = zoneMapper;
-                AppPermCheckGenerator = appPermCheckGenerator;
-                FeatIntGen = featIntGen;
+                AddToLogQueue(
+                    ZoneMapper = zoneMapper,
+                    AppPermCheckGenerator = appPermCheckGenerator,
+                    FeatIntGen = featIntGen
+                );
             }
             internal LazyInitLog<IZoneMapper> ZoneMapper { get; }
-            internal Generator<AppPermissionCheck> AppPermCheckGenerator { get; }
+            internal GeneratorLog<AppPermissionCheck> AppPermCheckGenerator { get; }
             internal Generator<IFeaturesInternal> FeatIntGen { get; }
 
-            internal Dependencies SetLog(ILog log)
-            {
-                ZoneMapper.SetLog(log);
-                return this;
-            }
         }
 
+        /// <summary>
+        /// Constructor for DI
+        /// </summary>
+        public MultiPermissionsApp(Dependencies dependencies) : this(dependencies, "Api.Perms") { }
 
-        public MultiPermissionsApp(Dependencies dependencies) : base("Api.Perms") => _dp = dependencies.SetLog(Log);
-        private readonly Dependencies _dp;
+        protected MultiPermissionsApp(Dependencies dependencies, string logName) : base("Api.Perms") 
+            => _deps = dependencies.SetLog(Log);
+        private readonly Dependencies _deps;
 
-        public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app, ILog parentLog, string logName = null)
+        public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app, ILog parentLog = null, string logName = null)
         {
             this.Init(parentLog, logName ?? "Api.PermApp");
             var wrapLog = Log.Fn<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
@@ -52,7 +55,7 @@ namespace ToSic.Eav.Apps.Security
                 ? context.Site 
                 // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
                 // todo: probably enhance with a Site.IsMultiZone check
-                : _dp.ZoneMapper.Value.SiteOfZone(App.ZoneId) ?? context.Site;
+                : _deps.ZoneMapper.Value.SiteOfZone(App.ZoneId) ?? context.Site;
             return wrapLog.Return(this, $"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
         }
         /// <summary>
@@ -62,7 +65,7 @@ namespace ToSic.Eav.Apps.Security
         public IContextOfSite Context { get; private set; }
         protected ISite SiteForSecurityCheck { get; private set; }
         protected bool SamePortal { get; private set; }
-        public IFeaturesInternal FeaturesInternal => _dp.FeatIntGen.New();
+        public IFeaturesInternal FeaturesInternal => _deps.FeatIntGen.New();
 
         #endregion
 
@@ -92,7 +95,7 @@ namespace ToSic.Eav.Apps.Security
             // user has edit permissions on this app, and it's the same app as the user is coming from
             var modifiedContext = Context.Clone(Log);
             modifiedContext.Site = SiteForSecurityCheck;
-            return _dp.AppPermCheckGenerator.New().ForParts(modifiedContext, App, type, item, Log);
+            return _deps.AppPermCheckGenerator.New().ForParts(modifiedContext, App, type, item, Log);
         }
 
     }

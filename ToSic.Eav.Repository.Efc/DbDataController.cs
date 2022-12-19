@@ -138,18 +138,17 @@ namespace ToSic.Eav.Repository.Efc
         /// <param name="appState"></param>
         /// <param name="parentLog"></param>
         /// <returns></returns>
-        public DbDataController Init(AppState appState, ILog parentLog)
+        public DbDataController Init(AppState appState)
         {
             _parentAppId = appState.ParentApp?.AppState?.AppId;
-            return Init(appState.ZoneId, appState.AppId, parentLog);
+            return Init(appState.ZoneId, appState.AppId);
         }
 
         /// <summary>
         /// Set ZoneId and AppId on current context.
         /// </summary>
-        public DbDataController Init(int? zoneId, int? appId, ILog parentLog)
+        public DbDataController Init(int? zoneId, int? appId)
         {
-            this.Init(parentLog);
             // If nothing is supplied, use defaults
             if (!zoneId.HasValue && !appId.HasValue)
             {

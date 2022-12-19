@@ -11,7 +11,7 @@ using ToSic.Eav.Run;
 
 namespace ToSic.Eav.Apps.Decorators
 {
-    public class MdRequirements: ReadBase<MdRequirements>
+    public class MdRequirements: ReadBase
     {
 
         public MdRequirements(Lazy<ILicenseService> licenseService, Lazy<IFeaturesInternal> featsService, Lazy<IPlatformInfo> platInfo, LicenseCatalog licenseCatalog)

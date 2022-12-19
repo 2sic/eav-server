@@ -43,7 +43,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var test = new SpecsDataEditing();
             var so = _environment.SaveOptions(test.ZoneId);
-            var dbi = _dbData.Init(test.ZoneId, test.AppId, Log);
+            var dbi = _dbData.Init(Log).Init(test.ZoneId, test.AppId);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load an entity
@@ -74,7 +74,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
 
-            var dbi = _dbData.Init(test.ZoneId, test.AppId, Log);
+            var dbi = _dbData.Init(Log).Init(test.ZoneId, test.AppId);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // todo: load a simple, 1 language entity
@@ -115,7 +115,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
 
-            var dbi = _dbData.Init(test.ZoneId, test.AppId, Log);
+            var dbi = _dbData.Init(Log).Init(test.ZoneId, test.AppId);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load content type to start creating an item...

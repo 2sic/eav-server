@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps
         private readonly LazyInitLog<SystemManager> _systemManagerLazy;
 
 
-        internal DbDataController DataController => _eavContext ?? (_eavContext = _dbLazy.Value.Init(ZoneId, null, Log));
+        internal DbDataController DataController => _eavContext ?? (_eavContext = _dbLazy.Value.Init(ZoneId, null));
         private DbDataController _eavContext;
 
         #endregion

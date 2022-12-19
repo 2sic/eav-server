@@ -1,27 +1,23 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
-
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
     /// <summary>
     /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.
     /// </summary>
-    public class AppInitializedChecker : HasLog, IAppInitializedChecker
+    public class AppInitializedChecker : ServiceBase, IAppInitializedChecker
     {
+        private readonly Generator<AppInitializer> _appInitGenerator;
+
         #region Constructor / DI
 
-        private IServiceProvider ServiceProvider { get; }
-
-        public AppInitializedChecker(IServiceProvider serviceProvider) : base("Eav.AppBld")
-        {
-            ServiceProvider = serviceProvider;
-        }
+        public AppInitializedChecker(Generator<AppInitializer> appInitGenerator) : base("Eav.AppBld") 
+            => ConnectServices(_appInitGenerator = appInitGenerator);
 
         #endregion
 
@@ -35,8 +31,8 @@ namespace ToSic.Eav.Apps.Parts
                 return callLog.ReturnFalse("ok");
 
             // something is missing, so we must build them
-            ServiceProvider.Build<AppInitializer>()
-                .Init(appIdentity, log)
+            _appInitGenerator.New()
+                .Init(appIdentity)
                 .InitializeApp(appName);
             return callLog.ReturnTrue();
         }

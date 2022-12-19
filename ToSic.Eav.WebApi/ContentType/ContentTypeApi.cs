@@ -325,7 +325,7 @@ namespace ToSic.Eav.WebApi
 
         #endregion
 
-        private DbDataController GetDb() => _db ?? (_db = _dbLazy.Value.Init(null, _appId, Log));
+        private DbDataController GetDb() => _db ?? (_db = _dbLazy.Value.Init(Log).Init(null, _appId));
         private DbDataController _db;
     }
 

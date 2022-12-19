@@ -8,6 +8,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -18,24 +19,32 @@ namespace ToSic.Eav.Apps.Parts
     /// - App Settings
     /// It must be called from an AppManager, which has been created for this app
     /// </summary>
-    public class AppInitializer : HasLog
+    public class AppInitializer : ServiceBase
     {
         #region Constructor / DI
 
-        public AppInitializer(IServiceProvider serviceProvider, SystemManager systemManager, IAppStates appStates) : base("Eav.AppBld")
+        public AppInitializer(
+            GeneratorLog<IRepositoryLoader> repositoryLoaderGenerator,
+            GeneratorLog<AppManager> appManagerGenerator,
+            SystemManager systemManager,
+            IAppStates appStates) : base("Eav.AppBld")
         {
-            _serviceProvider = serviceProvider;
-            SystemManager = systemManager.Init(Log);
-            _appStates = appStates;
+            ConnectServices(
+                SystemManager = systemManager,
+                _repositoryLoaderGenerator = repositoryLoaderGenerator,
+                _appManagerGenerator = appManagerGenerator,
+                _appStates = appStates
+            );
         }
-        private readonly IServiceProvider _serviceProvider;
+
+        private readonly GeneratorLog<AppManager> _appManagerGenerator;
+        private readonly GeneratorLog<IRepositoryLoader> _repositoryLoaderGenerator;
         private readonly IAppStates _appStates;
         protected readonly SystemManager SystemManager;
 
 
-        public AppInitializer Init(AppState appState, ILog parentLog)
+        public AppInitializer Init(AppState appState)
         {
-            this.Init(parentLog);
             AppState = appState;
             return this;
         }
@@ -50,7 +59,7 @@ namespace ToSic.Eav.Apps.Parts
         /// So we don't inject into into this class, but instead create it on demand
         /// </summary>
         private AppManager AppManager =>
-            _appManager ?? (_appManager = _serviceProvider.Build<AppManager>().Init(Log).InitWithState(AppState, true));
+            _appManager ?? (_appManager = _appManagerGenerator.New().InitWithState(AppState, true));
         private AppManager _appManager;
 
 
@@ -113,7 +122,7 @@ namespace ToSic.Eav.Apps.Parts
             {
                 SystemManager.Purge(AppState);
                 // get the latest app-state, but not-initialized so we can make changes
-                var repoLoader = _serviceProvider.Build<IRepositoryLoader>().Init(Log);
+                var repoLoader = _repositoryLoaderGenerator.New();// _serviceProvider.Build<IRepositoryLoader>().Init(Log);
                 AppState = repoLoader.AppState(AppState.AppId, false);
                 _appManager = null; // reset, because afterwards we need a clean AppManager
             }

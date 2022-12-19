@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps.Security
         private const string LogName = "Sec.MPTyps";
         protected IEnumerable<string> ContentTypes;
 
-        public MultiPermissionsTypes(Dependencies dependencies, Lazy<IAppStates> appStates): base(dependencies)
+        public MultiPermissionsTypes(Dependencies dependencies, Lazy<IAppStates> appStates): base(dependencies, LogName)
         {
             _appStates = appStates;
         }
@@ -22,17 +22,11 @@ namespace ToSic.Eav.Apps.Security
         public AppState AppState => _appState ?? (_appState = App as AppState ?? _appStates.Value.Get(App));
         private AppState _appState;
 
-        public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType, ILog parentLog)
+        public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
         {
-            Init(context, app, parentLog, LogName);
+            Init(context, app);
             return InitTypesAfterInit(new[] {contentType});
         }
-
-        //public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, IEnumerable<string> contentTypes, ILog parentLog)
-        //{ 
-        //   Init(context, app, parentLog, LogName);
-        //   return InitTypes(contentTypes);
-        //}
 
         /// <summary>
         /// This step is separate, because extension methods need it _after_ Init

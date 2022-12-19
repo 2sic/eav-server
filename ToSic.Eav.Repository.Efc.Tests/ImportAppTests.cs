@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 using ToSic.Lib.Logging;
@@ -91,7 +92,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public void DeleteAnApp(string appGuid)
         {
-            var applist = _dbData.Init(ZoneId, null, Log).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
+            var applist = _dbData.Init(Log).Init(ZoneId, null).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
             var appId = applist.FirstOrDefault(a => a.Name == appGuid)?.AppId ?? 0;
             if (appId > 0) _zoneManager.Init(Log).SetId(ZoneId).DeleteApp(appId, true);
 

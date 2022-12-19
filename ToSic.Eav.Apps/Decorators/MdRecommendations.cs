@@ -21,13 +21,11 @@ namespace ToSic.Eav.Apps.Decorators
     /// If this model works well, we'll probably reconsider how our xxxRead objects work
     /// </summary>
     /// <remarks>new in v13.02</remarks>
-    public class MdRecommendations: ReadBase<MdRecommendations>
+    public class MdRecommendations: ReadBase
     {
 
-        public MdRecommendations(LazyInitLog<MdRequirements> requirements): base($"{AppConstants.LogName}.MdRead")
-        {
-            _requirements = requirements.SetLog(Log);
-        }
+        public MdRecommendations(LazyInitLog<MdRequirements> requirements): base($"{AppConstants.LogName}.MdRead") 
+            => ConnectServices(_requirements = requirements);
         private readonly LazyInitLog<MdRequirements> _requirements;
 
 

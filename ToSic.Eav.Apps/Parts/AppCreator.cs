@@ -5,6 +5,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
     /// Special tool just to create an app.
     /// It's not part of the normal AppManager / ZoneManager, because when it's initialized it doesn't yet have a real app identity
     /// </summary>
-    public class AppCreator: HasLog
+    public class AppCreator: ServiceBase
     {
         #region Constructor / DI
 
@@ -20,19 +21,20 @@ namespace ToSic.Eav.Apps.Parts
 
         public AppCreator(DbDataController db, IRepositoryLoader repositoryLoader, SystemManager systemManager, Generator<AppInitializer> appInitGenerator) : base("Eav.AppBld")
         {
-            _db = db;
-            _appInitGenerator = appInitGenerator;
-            SystemManager = systemManager.Init(Log);
-            RepositoryLoader = repositoryLoader.Init(Log);
+            ConnectServices(
+                _db = db,
+                _appInitGenerator = appInitGenerator,
+                SystemManager = systemManager,
+                RepositoryLoader = repositoryLoader
+            );
         }
         private readonly DbDataController _db;
         private readonly Generator<AppInitializer> _appInitGenerator;
         protected readonly SystemManager SystemManager;
         protected readonly IRepositoryLoader RepositoryLoader;
 
-        public AppCreator Init(int zoneId, ILog parentLog)
+        public AppCreator Init(int zoneId)
         {
-            this.Init(parentLog);
             _zoneId = zoneId;
             return this;
         }
@@ -55,15 +57,15 @@ namespace ToSic.Eav.Apps.Parts
             // must get app from DB directly, not from cache, so no State.Get(...)
             var appState = RepositoryLoader.AppState(appId, false);
 
-            _appInitGenerator.New() // _appManager.ServiceProvider.Build<AppInitializer>()
-                .Init(appState, Log)
+            _appInitGenerator.New()
+                .Init(appState)
                 .InitializeApp(appName);
         }
 
         private int CreateInDb(string appGuid, int? inheritAppId)
         {
             Log.A("create new app");
-            var app = _db.Init(_zoneId, null, Log).App.AddApp(null, appGuid, inheritAppId);
+            var app = _db.Init(Log).Init(_zoneId, null).App.AddApp(null, appGuid, inheritAppId);
 
             SystemManager.PurgeZoneList();
             Log.A($"app created a:{app.AppId}, guid:{appGuid}");

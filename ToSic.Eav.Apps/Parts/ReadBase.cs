@@ -1,19 +1,15 @@
 ﻿using System;
-using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public abstract class ReadBase<T>: HasLog where T: class
+    public abstract class ReadBase : ServiceBase
     {
         protected ReadBase(string logName) : base(logName)
         {
         }
 
-        public T Init(AppState appState)
-        {
-            AppState = appState;
-            return this as T;
-        }
+        public void Init(AppState appState) => AppState = appState;
 
         public AppState AppState
         {

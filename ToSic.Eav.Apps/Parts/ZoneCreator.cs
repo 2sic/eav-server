@@ -1,5 +1,6 @@
 ﻿using ToSic.Lib.Logging;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -7,15 +8,15 @@ namespace ToSic.Eav.Apps.Parts
     /// Special tool just to create an app.
     /// It's not part of the normal AppManager / ZoneManager, because when it's initialized it doesn't yet have a real app identity
     /// </summary>
-    public class ZoneCreator: HasLog
+    public class ZoneCreator: ServiceBase
     {
         #region Constructor / DI
 
-        public ZoneCreator(DbDataController db, SystemManager systemManager) : base("Eav.AppBld")
-        {
-            _db = db;
-            SystemManager = systemManager.Init(Log);
-        }
+        public ZoneCreator(DbDataController db, SystemManager systemManager) : base("Eav.AppBld") =>
+            ConnectServices(
+                _db = db,
+                SystemManager = systemManager
+            );
         private readonly DbDataController _db;
         protected readonly SystemManager SystemManager;
 
@@ -25,7 +26,7 @@ namespace ToSic.Eav.Apps.Parts
         public int Create(string name)
         {
             var wrapCall = Log.Fn<int>($"create zone:{name}");
-            var zoneId = _db.Init(null, null, Log).Zone.AddZone(name);
+            var zoneId = _db.Init(null, null).Zone.AddZone(name);
             SystemManager.PurgeZoneList();
             return wrapCall.Return(zoneId, $"created zone {zoneId}");
         }
