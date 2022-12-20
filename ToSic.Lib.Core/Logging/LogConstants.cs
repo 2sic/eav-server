@@ -39,5 +39,9 @@ namespace ToSic.Lib.Logging
         public const int LiveHistorySegmentSize = 100;
 
         public const int LiveHistoryMaxItems = 500;
+
+        public const string WarningPrefix = "WARNING: ";
+
+        public const string ErrorPrefix = "ERROR: ";
     }
 }

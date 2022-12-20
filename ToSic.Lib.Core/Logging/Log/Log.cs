@@ -20,15 +20,15 @@ namespace ToSic.Lib.Logging
         /// </summary>
         /// <param name="name">name this logger should use</param>
         /// <param name="parent">optional parent logger to attach to</param>
-        /// <param name="initialMessage">optional initial message to log</param>
+        /// <param name="message">optional initial message to log</param>
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
-        public Log(string name, ILog parent = null, string initialMessage = null,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
+        public Log(string name, ILog parent = default, string message = default,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = 0)
-            : this(name, parent, CodeRef.Create(cPath, cName, cLine), initialMessage) { }
+            : this(name, parent, CodeRef.Create(cPath, cName, cLine), message) { }
 
         /// <summary>
         /// Create a logger and optionally attach it to a parent logger
@@ -37,11 +37,11 @@ namespace ToSic.Lib.Logging
         /// <param name="parent">optional parent logger to attach to</param>
         /// <param name="code">The code reference - must be generated before</param>
         /// <param name="initialMessage">optional initial message to log</param>
-        public Log(string name, ILog parent, CodeRef code, string initialMessage = null)
+        public Log(string name, ILog parent, CodeRef code, string initialMessage = default)
         {
             this.Rename(name);
             LinkTo(parent);
-            if (initialMessage == null) return;
+            if (initialMessage == default) return;
             this.AddInternal(initialMessage, code);
         }
 
@@ -70,7 +70,7 @@ namespace ToSic.Lib.Logging
         /// <summary>
         /// A standardized identifier of this log for showing in protocols
         /// </summary>
-        public string NameId => $"{Scope}{Name}[{Id}]";
+        public string NameId => $"{Scope}{(string.IsNullOrEmpty(Scope) ? "" : ".")}{Name}[{Id}]";
 
 
         public string FullIdentifier => (Parent as Log)?.FullIdentifier + NameId;

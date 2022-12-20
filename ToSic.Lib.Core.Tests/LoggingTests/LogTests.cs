@@ -1,11 +1,11 @@
 ﻿using ToSic.Lib.Logging;
 
-namespace ToSic.Lib.Core.Tests.Logging.Log
+namespace ToSic.Lib.Core.Tests.LoggingTests
 {
-    [TestClass()]
+    [TestClass]
     public class LogTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void LogTest()
         {
             var log = new Lib.Logging.Log("test");

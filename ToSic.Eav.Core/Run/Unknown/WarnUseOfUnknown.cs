@@ -14,7 +14,7 @@ namespace ToSic.Eav.Run.Unknown
             if (AlreadyWarnedTypes.Contains(usingType)) return;
             AlreadyWarnedTypes.Add(usingType);
 
-            var log = new Log($"{LogNames.NotImplemented}.Warn", initialMessage: $"Warning Mock Implementation of {usingType.FullName}");
+            var log = new Log($"{LogNames.NotImplemented}.Warn", message: $"Warning Mock Implementation of {usingType.FullName}");
             log.A(
                 "The system uses extensive Dependency Injection, and defaults to 'Unknown' implementations if something is missing. ");
             log.A("You are seeing this warning, because apparently such an implementation was initialized, which shouldn't happen in a good productive environment.");

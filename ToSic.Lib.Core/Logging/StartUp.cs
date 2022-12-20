@@ -8,9 +8,8 @@ namespace ToSic.Lib.Logging
         public static IServiceCollection AddLibLogging(this IServiceCollection services)
         {
             // History (very core service)
-            services.TryAddTransient<ILogStoreLive, LogStoreLive>();
             services.TryAddTransient<ILogStore, LogStoreLive>();
-            services.TryAddTransient<LogStoreLive>();
+            services.TryAddTransient<ILogStoreLive, LogStoreLive>();
 
             return services;
         }
