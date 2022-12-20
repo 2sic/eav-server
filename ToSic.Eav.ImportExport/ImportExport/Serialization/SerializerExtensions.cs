@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Serialization;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.ImportExport.Serialization
 {
@@ -7,8 +8,9 @@ namespace ToSic.Eav.ImportExport.Serialization
     {
         public static T SetApp<T>(this T serializer, AppState package) where T : SerializerBase
         {
+            var l = serializer.Log.Fn<T>();
             serializer.Initialize(package);
-            return serializer;
+            return l.Return(serializer);
         }
     }
 }

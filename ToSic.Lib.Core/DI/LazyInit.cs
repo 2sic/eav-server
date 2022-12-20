@@ -37,11 +37,15 @@ namespace ToSic.Lib.DI
                 if (_value != null) return _value;
                 _value = _valueLazy.Value;
                 _initCall?.Invoke(_value);
+                InitLogOrNull?.Invoke(_value);
                 return _value;
             }
         }
         private T _value;
 
         private Action<T> _initCall;
+
+
+        protected Action<T> InitLogOrNull;
     }
 }
