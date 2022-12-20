@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using ToSic.Eav.Configuration;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Admin.Features
 {
-    public class FeatureControllerReal : WebApiBackendBase<FeatureControllerReal>, IFeatureController
+    public class FeatureControllerReal : ServiceBase, IFeatureController
     {
         public const string LogSuffix = "Feats";
 
         #region Constructor / DI
 
         public FeatureControllerReal(
-            IServiceProvider serviceProvider,
             LazyInitLog<EavSystemLoader> systemLoaderLazy
-            ) : base(serviceProvider, "Bck.Feats")
+            ) : base("Bck.Feats")
         {
             _systemLoaderLazy = systemLoaderLazy.SetLog(Log);
         }

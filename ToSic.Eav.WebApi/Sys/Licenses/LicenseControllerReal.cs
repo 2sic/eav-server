@@ -13,21 +13,22 @@ using ToSic.Eav.WebApi.Adam;
 using ToSic.Eav.WebApi.Assets;
 using ToSic.Eav.WebApi.Validation;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Sys.Licenses
 {
-    public class LicenseControllerReal : WebApiBackendBase<LicenseControllerReal>, ILicenseController
+    public class LicenseControllerReal : ServiceBase, ILicenseController
     {
         // auto-download license file
         private const string DefaultLicenseFileName = "default.license.json";
 
-        public LicenseControllerReal(IServiceProvider serviceProvider, 
+        public LicenseControllerReal(
             Lazy<ILicenseService> licenseServiceLazy, 
             Lazy<IFeaturesInternal> featuresLazy,
             Lazy<IGlobalConfiguration> globalConfiguration,
             LazyInitLog<EavSystemLoader> systemLoaderLazy,
             Lazy<LicenseCatalog> licenseCatalog
-            ) : base(serviceProvider, "Bck.Lics")
+            ) : base("Bck.Lics")
         {
             _licenseServiceLazy = licenseServiceLazy;
             _featuresLazy = featuresLazy;

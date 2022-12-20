@@ -5,17 +5,18 @@ using System.Reflection;
 using ToSic.Eav.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Plumbing;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.ApiExplorer
 {
-    public class ApiExplorerControllerReal<THttpResponseType> : WebApiBackendBase<ApiExplorerControllerReal<THttpResponseType>>
+    public class ApiExplorerControllerReal<THttpResponseType> : ServiceBase
     {
         public const string LogSuffix = "ApiExp";
 
         public IApiInspector Inspector { get; }
         public ResponseMaker<THttpResponseType> ResponseMaker { get; }
 
-        public ApiExplorerControllerReal(IServiceProvider sp, IApiInspector inspector, ResponseMaker<THttpResponseType> responseMaker): base(sp, $"{LogNames.WebApi}.{LogSuffix}Rl")
+        public ApiExplorerControllerReal(IApiInspector inspector, ResponseMaker<THttpResponseType> responseMaker): base($"{LogNames.WebApi}.{LogSuffix}Rl")
         {
             Inspector = inspector;
             ResponseMaker = responseMaker;
