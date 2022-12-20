@@ -11,10 +11,10 @@ namespace ToSic.Lib.Logging
         [PrivateApi]
         public static ILog SubLogOrNull(this ILog log, string name, bool enabled = true)
         {
-            if (log?._RealLog == default || !enabled) return null;
-            return new Log(name, log._RealLog);
+            if (!enabled) return null;
+            log = log.GetRealLog();
+            return log == default ? null : new Log(name, log);
         }
-
 
         [PrivateApi]
         // 2dm - experimental, don't use yet...
@@ -29,7 +29,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall(log?._RealLog, UseOrCreate(code, cPath, cName, cLine), false, parameters, message, startTimer);
+            var l = new LogCall(log.GetRealLog(), UseOrCreate(code, cPath, cName, cLine), false, parameters, message, startTimer);
             var finalMsg = action(l);
             l.Done(finalMsg);
         }
@@ -47,7 +47,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall(log?._RealLog, UseOrCreate(code, cPath, cName, cLine), false, parameters, message, startTimer);
+            var l = new LogCall(log.GetRealLog(), UseOrCreate(code, cPath, cName, cLine), false, parameters, message, startTimer);
             action();
             l.Done();
         }
@@ -66,7 +66,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall(log?._RealLog, UseOrCreate(code, cPath, cName, cLine), false, parameters, message, startTimer);
+            var l = new LogCall(log.GetRealLog(), UseOrCreate(code, cPath, cName, cLine), false, parameters, message, startTimer);
             var finalMsg = action();
             l.Done(finalMsg);
         }
@@ -179,7 +179,7 @@ namespace ToSic.Lib.Logging
             CodeRef code
         )
         {
-            var l = new LogCall<TResult>(log?._RealLog, code, isProperty, parameters, message, startTimer);
+            var l = new LogCall<TResult>(log.GetRealLog(), code, isProperty, parameters, message, startTimer);
             var result = action(l);
             return logResult ? l.ReturnAndLog(result) : l.Return(result);
         }
@@ -196,7 +196,7 @@ namespace ToSic.Lib.Logging
             CodeRef code
         )
         {
-            var l = new LogCall<TResult>(log?._RealLog, code, isProperty, parameters, message, startTimer);
+            var l = new LogCall<TResult>(log.GetRealLog(), code, isProperty, parameters, message, startTimer);
             var result = action(l);
             return logResult ? l.ReturnAndLog(result.Result, result.Message) : l.Return(result.Result, result.Message);
         }

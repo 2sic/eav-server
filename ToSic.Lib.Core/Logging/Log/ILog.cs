@@ -26,13 +26,13 @@ namespace ToSic.Lib.Logging
         [PrivateApi]
         bool Preserve { get; set; }
 
-        /// <summary>
-        /// Special internal property which is only used to ensure Logs and LogCalls both work.
-        /// 
-        /// Because of the way the logging works, it can be null!
-        /// This is because it's possible to pass a null-logger around, to ensure that logging is disabled.
-        /// </summary>
-        [PrivateApi]
-        ILog _RealLog { get; }
+        ///// <summary>
+        ///// Special internal property which is only used to ensure Logs and LogCalls both work.
+        ///// 
+        ///// Because of the way the logging works, it can be null!
+        ///// This is because it's possible to pass a null-logger around, to ensure that logging is disabled.
+        ///// </summary>
+        //[PrivateApi]
+        //ILog _RealLog { get; }
     }
 }

@@ -1,30 +1,9 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace ToSic.Lib.Logging
 {
     public static class LogCallBaseExtensions
     {
-        #region A = Add
-
-        public static void A(this LogCallBase logCall,
-            string message,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
-        ) => logCall?._RealLog?.A(message, cPath, cName, cLine);
-
-
-        public static void A(this LogCallBase logCall,
-            bool enabled,
-            string message,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
-        ) => logCall?._RealLog?.A(enabled, message, cPath, cName, cLine);
-
-        #endregion
-
         #region DoInTimer
 
         public static void DoInTimer(this LogCallBase logCall, Action action)
@@ -50,7 +29,7 @@ namespace ToSic.Lib.Logging
 
         internal static void DoneInternal(this LogCallBase logCall, string message)
         {
-            if (!(logCall?._RealLog is Log log)) return;
+            if (!(logCall?.Log is Log log)) return;
 
             if (!logCall.IsOpen)
                 log.AddInternal("Log Warning: Wrapper already closed from previous call", null);

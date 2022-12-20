@@ -10,20 +10,20 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
 
         protected static void AssertLogIsEmpty(Log log, string testName)
         {
-            AreEqual(0, log.Entries.Count, testName);
+            AreEqual(0, log.Entries.Count, $"Log is empty - {testName}");
         }
 
-        protected static void AssertEntry(string testName, Entry firstMsg, string message, string result, int depth)
+        protected static void AssertEntry(string testName, Entry firstMsg, string? message, string? result, int depth)
         {
-            AreEqual(message, firstMsg.Message, testName);
-            AreEqual(result, firstMsg.Result, testName);
-            AreEqual(depth, firstMsg.Depth, testName);
+            AreEqual(message, firstMsg.Message, $"message - {testName}");
+            AreEqual(result, firstMsg.Result, $"result - {testName}");
+            AreEqual(depth, firstMsg.Depth, $"depth - {testName}");
         }
 
         internal void AssertDepthAndEntryCount(string testName, Log log, int logDepth, int entryCount)
         {
-            AreEqual(logDepth, log.Depth, testName);
-            AreEqual(entryCount, log.Entries.Count, testName);
+            AreEqual(logDepth, log.Depth, $"{nameof(logDepth)} - {testName}");
+            AreEqual(entryCount, log.Entries.Count, $"{nameof(entryCount)} - {testName}");
         }
 
     }

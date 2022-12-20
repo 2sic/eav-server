@@ -24,10 +24,12 @@ namespace ToSic.Lib.Logging
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
-        public Log(string name, ILog parent = default, string message = default,
+        public Log(string name,
+            ILog parent = default,
+            string message = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
-            [CallerLineNumber] int cLine = 0)
+            [CallerLineNumber] int cLine = default)
             : this(name, parent, CodeRef.Create(cPath, cName, cLine), message) { }
 
         /// <summary>
@@ -79,8 +81,19 @@ namespace ToSic.Lib.Logging
 
         #region Self Reference (WIP)
 
-        /// <inheritdoc />
-        public ILog _RealLog => this;
+        private void AddEntry(Entry entry)
+        {
+            // prevent parallel threads from updating entries at the same time
+            lock (Entries) { Entries.Add(entry); }
+            (Parent as Log)?.AddEntry(entry);
+        }
+
+        public Entry CreateAndAdd(string message, CodeRef code)
+        {
+            var e = new Entry(this, message, WrapDepth, code);
+            AddEntry(e);
+            return e;
+        }
 
         #endregion
 

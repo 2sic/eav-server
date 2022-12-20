@@ -9,7 +9,14 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
     [TestClass]
     public class LogAddOnLogWithParent : LogAdd
     {
-        protected override Log LogFactory(string name = "") => new("", new Log(""));
+        /// <summary>
+        /// Create a log for the test. Can be overriden in inheriting classes. 
+        /// </summary>
+        protected override (ILog LogForAdd, Log RealLog) LogFactory(string name = "")
+        {
+            var log = new Log("", new Log(""));
+            return (log, log);
+        }
 
         protected override int LogDepth => 1;
     }

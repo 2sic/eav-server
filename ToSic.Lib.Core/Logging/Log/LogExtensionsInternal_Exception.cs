@@ -9,9 +9,9 @@ namespace ToSic.Lib.Logging
         internal static void ExceptionInternal(this ILog log, Exception ex, CodeRef codeRef)
         {
             // Null-check
-            if (!(log?._RealLog is Log realLog)) return;
+            if (!(log.GetRealLog() is Log realLog)) return;
 
-            var wrapLog = realLog.Fn(message: "Will log Exception Details next", code: codeRef);
+            var wrapLog = realLog.Fn(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
             var recursion = 1;
             while (true)
             {

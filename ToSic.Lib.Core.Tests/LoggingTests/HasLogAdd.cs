@@ -14,6 +14,17 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
             public ThingWithLog() : base("") { }
         }
 
-        protected override Log LogFactory(string name = "") => (Log)new ThingWithLog().Log;
+        //protected override Log LogFactory(string name = "") => (Log)new ThingWithLog().Log;
+
+        /// <summary>
+        /// Create a log for the test. Can be overriden in inheriting classes. 
+        /// </summary>
+        protected override (ILog LogForAdd, Log RealLog) LogFactory(string name = "")
+        {
+            var log = (Log)new ThingWithLog().Log;
+            return (log, log);
+        }
+
+
     }
 }

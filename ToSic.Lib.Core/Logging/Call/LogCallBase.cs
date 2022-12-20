@@ -2,7 +2,7 @@
 
 namespace ToSic.Lib.Logging
 {
-    public class LogCallBase : ILog
+    public class LogCallBase : ILog, ILogLike
 
     {
         /// <summary>
@@ -19,17 +19,17 @@ namespace ToSic.Lib.Logging
             Stopwatch = startTimer ? Stopwatch.StartNew() : new Stopwatch();
 
             // Keep the log, but quit if it's not valid
-            if (!(log?._RealLog is Log typedLog)) return;
-            _RealLog = typedLog;
+            if (!(log is Log typedLog)) return;
+            Log = typedLog;
             
-            var openingMessage = $".{code.Name}" + (isProperty ? "" : $"({parameters})") + $" {message}";
-            var entry = Entry = _RealLog.AddInternalReuse(openingMessage, code);
+            var openingMessage = $"{code.Name}" + (isProperty ? "" : $"({parameters})") + $" {message}";
+            var entry = Entry = Log.AddInternalReuse(openingMessage, code);
             entry.WrapOpen = true;
             typedLog.WrapDepth++;
             IsOpen = true;
         }
 
-        public ILog _RealLog { get; }
+        public ILog Log { get; }
 
         public Entry Entry { get; }
 
@@ -38,17 +38,12 @@ namespace ToSic.Lib.Logging
         internal bool IsOpen;
 
 
-        public string NameId => _RealLog?.NameId;
+        public string NameId => Log?.NameId;
 
         public bool Preserve
         {
-            get => _RealLog?.Preserve ?? true;
-            set
-            {
-                if (_RealLog != null) _RealLog.Preserve = value;
-            }
+            get => Log?.Preserve ?? true;
+            set { if (Log != null) Log.Preserve = value; }
         }
-
-
     }
 }

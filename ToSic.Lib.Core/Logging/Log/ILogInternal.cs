@@ -6,7 +6,9 @@ namespace ToSic.Lib.Logging
     {
         List<Entry> Entries { get; }
 
-        ILog Parent { get; }
+        //ILog Parent { get; }
+
+        Entry CreateAndAdd(string message, CodeRef code);
 
     }
 }

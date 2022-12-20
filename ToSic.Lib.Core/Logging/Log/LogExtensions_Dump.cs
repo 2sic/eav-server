@@ -23,7 +23,7 @@ namespace ToSic.Lib.Logging
         )
         {
             var dump = new StringBuilder(start);
-            (log?._RealLog as Log)?.Entries.ForEach(e => dump.AppendLine(e.Source
+            (log.GetRealLog() as Log)?.Entries.ForEach(e => dump.AppendLine(e.Source
                                                + separator
                                                + new string('~', e.Depth * 2)
                                                + e.Message

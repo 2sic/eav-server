@@ -40,7 +40,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = 0
         )
         {
-            var callLog = (log?._RealLog).Fn<T>(message: message, code: CodeRef.Create(cPath, cName, cLine));
+            var callLog = log.GetRealLog().Fn<T>(message: message, code: CodeRef.Create(cPath, cName, cLine));
             var result = generate();
             return callLog.ReturnAndLog(result);
         }

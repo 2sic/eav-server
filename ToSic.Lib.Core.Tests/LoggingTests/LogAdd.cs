@@ -8,7 +8,11 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         /// <summary>
         /// Create a log for the test. Can be overriden in inheriting classes. 
         /// </summary>
-        protected virtual Log LogFactory(string name = "") => new(name);
+        protected virtual (ILog LogForAdd, Log RealLog) LogFactory(string name = "")
+        {
+            var log = new Log(name);
+            return (log, log);
+        }
 
         /// <summary>
         /// How deep the log is - if it has parents etc.
@@ -27,9 +31,9 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         public void A_String(string testName, string expected, string message, string result, int depth)
         {
             var log = LogFactory();
-            log.A(message);
-            AssertDepthAndEntryCount(testName, log, LogDepth, EntryCount);
-            AssertEntry(testName, log.Entries[0], expected, result, depth);
+            log.LogForAdd.A(message);
+            AssertDepthAndEntryCount(testName, log.RealLog, LogDepth, EntryCount);
+            AssertEntry(testName, log.RealLog.Entries[0], expected, result, depth);
         }
 
 
@@ -38,8 +42,8 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         public void A_NotEnabled(string testName, string expected, string message, string result, int depth)
         {
             var log = LogFactory();
-            log.A(false, message);
-            AssertDepthAndEntryCount(testName, log, LogDepth, 0);
+            log.LogForAdd.A(false, message);
+            AssertDepthAndEntryCount(testName, log.RealLog, LogDepth, 0);
         }
 
         [TestMethod]
@@ -47,9 +51,9 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         public void A_StringFunction(string testName, string expected, string message, string result, int depth)
         {
             var log = LogFactory();
-            log.A(() => message);
-            AssertDepthAndEntryCount(testName, log, LogDepth, EntryCount);
-            AssertEntry(testName, log.Entries[0], expected, result, depth);
+            log.LogForAdd.A(() => message);
+            AssertDepthAndEntryCount(testName, log.RealLog, LogDepth, EntryCount);
+            AssertEntry(testName, log.RealLog.Entries[0], expected, result, depth);
         }
 
         [TestMethod]
@@ -57,9 +61,9 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         public void W_String(string testName, string expected, string message, string result, int depth)
         {
             var log = LogFactory();
-            log.W(message);
-            AssertDepthAndEntryCount(testName, log, LogDepth, EntryCount);
-            AssertEntry(testName, log.Entries[0], LogConstants.WarningPrefix + expected, result, depth);
+            log.LogForAdd.W(message);
+            AssertDepthAndEntryCount(testName, log.RealLog, LogDepth, EntryCount);
+            AssertEntry(testName, log.RealLog.Entries[0], LogConstants.WarningPrefix + expected, result, depth);
         }
 
         [TestMethod]
@@ -67,9 +71,9 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         public void E_String(string testName, string expected, string message, string result, int depth)
         {
             var log = LogFactory();
-            log.E(message);
-            AssertDepthAndEntryCount(testName, log, LogDepth, EntryCount);
-            AssertEntry(testName, log.Entries[0], LogConstants.ErrorPrefix + expected, result, depth);
+            log.LogForAdd.E(message);
+            AssertDepthAndEntryCount(testName, log.RealLog, LogDepth, EntryCount);
+            AssertEntry(testName, log.RealLog.Entries[0], LogConstants.ErrorPrefix + expected, result, depth);
         }
 
     }
