@@ -8,7 +8,7 @@ namespace ToSic.Lib.Logging
     /// Log History for real-time Insights.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface IHistory
+    public interface ILogLiveHistory
     {
         /// <summary>
         /// Maximum size of a segment.
@@ -39,6 +39,7 @@ namespace ToSic.Lib.Logging
 
         [PrivateApi]
         void ForceAdd(string key, ILog log);
+
         [PrivateApi]
         void FlushSegment(string segment);
     }

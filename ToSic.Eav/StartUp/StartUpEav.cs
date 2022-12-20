@@ -8,6 +8,7 @@ using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using ToSic.Eav.WebApi;
+using ToSic.Lib;
 
 namespace ToSic.Eav.StartUp
 {
@@ -38,8 +39,8 @@ namespace ToSic.Eav.StartUp
                 .AddDataSources()
                 .AddEavWebApi()
                 .AddEavCore()
-                .AddEavCorePlumbing()
-                .AddEavCoreFallbackServices();
+                .AddEavCoreFallbackServices()
+                .AddLibCore();
 
             return services;
         }

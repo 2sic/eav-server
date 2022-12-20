@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.StartUp;
+using ToSic.Lib;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests
@@ -12,7 +12,8 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests
             services.AddTransient<ITestSwitchableService, TestSwitchableFallback>();
             services.AddTransient<ITestSwitchableService, TestSwitchableKeep>();
             services.AddTransient<ITestSwitchableService, TestSwitchableSkip>();
-            services.AddEavCorePlumbing();
+            services
+                .AddLibCore();
             return services;
         }
         

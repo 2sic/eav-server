@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav;
 using ToSic.Eav.StartUp;
+using ToSic.Lib;
 
 namespace ToSic.Testing.Shared
 {
@@ -13,8 +13,8 @@ namespace ToSic.Testing.Shared
         {
             return base.SetupServices(services)
                 .AddEavCore()
-                .AddEavCorePlumbing()
-                .AddEavCoreFallbackServices();
+                .AddEavCoreFallbackServices()
+                .AddLibCore();
         }
     }
 }

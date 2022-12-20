@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
@@ -9,7 +8,6 @@ using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Repositories;
@@ -17,7 +15,6 @@ using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Fingerprint;
-using ToSic.Lib.DI;
 
 namespace ToSic.Eav.StartUp
 {
@@ -60,8 +57,7 @@ namespace ToSic.Eav.StartUp
             // v13 #SwitchableAppsCache
             services.AddSingleton<IAppsCacheSwitchable, AppsCache>();
             services.AddTransient<AppsCacheSwitch>();   // Transient should work... wip
-
-
+            
             // Permissions helper
             services.TryAddTransient<PermissionCheckBase.Dependencies>();
 
@@ -85,34 +81,6 @@ namespace ToSic.Eav.StartUp
         }
 
         /// <summary>
-        /// Very basic internal services which are necessary for even the most basic DI to work
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddEavCorePlumbing(this IServiceCollection services)
-        {
-            // Lazy loading dependency injection
-            services.AddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
-            services.AddTransient(typeof(LazyInit<>));
-            services.AddTransient(typeof(LazyInitLog<>));
-            services.AddTransient(typeof(Generator<>));
-            services.AddTransient(typeof(IGenerator<>), typeof(Generator<>));
-            services.AddTransient(typeof(GeneratorLog<>));
-
-            // Service Switchers
-            services.TryAddTransient(typeof(ServiceSwitcher<>));
-            services.TryAddScoped(typeof(ServiceSwitcherScoped<>)); // note: it's for scoped, and we must use another object name here
-            services.TryAddTransient(typeof(ServiceSwitcherSingleton<>)); // note: it's for singletons, but the service is transient on purpose!
-
-            // History (very core service)
-            services.TryAddTransient<History>();
-
-            // Warnings for mock implementations
-            services.TryAddTransient(typeof(WarnUseOfUnknown<>));
-            return services;
-        }
-
-        /// <summary>
         /// This will add Do-Nothing services which will take over if they are not provided by the main system
         /// In general this will result in some features missing, which many platforms don't need or care about
         /// </summary>
@@ -123,6 +91,9 @@ namespace ToSic.Eav.StartUp
         /// </remarks>
         public static IServiceCollection AddEavCoreFallbackServices(this IServiceCollection services)
         {
+            // Warnings for mock implementations
+            services.TryAddTransient(typeof(WarnUseOfUnknown<>));
+
             // very basic stuff - normally overriden by the platform
             services.TryAddTransient<IValueConverter, ValueConverterUnknown>();
 

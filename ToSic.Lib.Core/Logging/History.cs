@@ -7,7 +7,7 @@ namespace ToSic.Lib.Logging
 {
     /// <inheritdoc />
     [PrivateApi]
-    public class History : IHistory
+    public class History : ILogLiveHistory
     {
         [PrivateApi]
         public readonly int MaxItems = LogConstants.HistoryMaxItems;
