@@ -7,9 +7,11 @@ namespace ToSic.Lib.Logging
     /// <summary>
     /// Log History for real-time Insights.
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface ILogLiveHistory
+    [PrivateApi]
+    public interface ILogStoreLive: ILogStore, ILogShouldNeverConnect
     {
+        [PrivateApi]
+        int MaxItems { get; }
         /// <summary>
         /// Maximum size of a segment.
         /// Once limit has been reached, it will drop previous logs in that segment.
@@ -30,15 +32,6 @@ namespace ToSic.Lib.Logging
         /// </summary>
         int AddCount { get; }
 
-        /// <summary>
-        /// Add a log to the current history.
-        /// </summary>
-        /// <param name="segment">Segment name, like `webapi` or `module`</param>
-        /// <param name="log"></param>
-        void Add(string segment, ILog log);
-
-        [PrivateApi]
-        void ForceAdd(string key, ILog log);
 
         [PrivateApi]
         void FlushSegment(string segment);

@@ -19,23 +19,23 @@ namespace ToSic.Eav.WebApi.Sys
                       + Div("back to " + LinkTo("2sxc insights home", nameof(Help)))
                       + H1($"2sxc Insights: Log {key}")
                       + P("Status: ",
-                          Strong(_logHistory.Pause ? "paused" : "collecting"),
+                          Strong(_logStore.Pause ? "paused" : "collecting"),
                           ", toggle: ",
                           LinkTo(HtmlEncode("▶"), nameof(PauseLogs), more: "toggle=false"),
                           " | ",
                           LinkTo(HtmlEncode("⏸"), nameof(PauseLogs), more: "toggle=true"),
-                          $" collecting #{_logHistory.AddCount} of max {_logHistory.MaxItems} (keep max {_logHistory.SegmentSize} per set, then FIFO)"
+                          $" collecting #{_logStore.AddCount} of max {_logStore.MaxItems} (keep max {_logStore.SegmentSize} per set, then FIFO)"
                           + (showFlush ? " " + LinkTo("flush " + key, nameof(LogsFlush), key: key).ToString() : "")
                       );
             return msg.ToString();
         }
 
-        internal string LogHistoryOverview(History logHistory)
+        internal string LogHistoryOverview(ILogStoreLive logStore)
         {
             var msg = "";
             try
             {
-                var logs = logHistory.Segments;
+                var logs = logStore.Segments;
                 msg += P($"Logs Overview: {logs.Count}\n");
 
                 var count = 0;
@@ -62,10 +62,10 @@ namespace ToSic.Eav.WebApi.Sys
             return msg;
         }
 
-        internal string LogHistory(History logHistory, string key)
+        internal string LogHistory(ILogStoreLive logStore, string key)
         {
             var msg = "";
-            if (!logHistory.Segments.TryGetValue(key, out var set))
+            if (!logStore.Segments.TryGetValue(key, out var set))
                 return msg + "item not found";
 
             var count = 0;

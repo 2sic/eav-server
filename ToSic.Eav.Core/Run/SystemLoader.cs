@@ -11,12 +11,12 @@ namespace ToSic.Eav.Run
     public class SystemLoader: HasLog
     {
         public SystemLoader(
-            History logHistory,
+            ILogStore logStore,
             IEnumerable<IStartUpRegistrations> registrations,
             Lazy<EavSystemLoader> systemLoaderLazy // This must be lazy, as some dependencies of it could change till it's needed
         ) : base($"{LogNames.Eav}SysLdr", initialMessage: "EAV System Loader")
         {
-            logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
+            logStore.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
             _registrations = registrations;
             _systemLoaderLazy = systemLoaderLazy;
         }

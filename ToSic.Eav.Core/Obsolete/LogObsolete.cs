@@ -89,8 +89,7 @@ namespace ToSic.Eav.Obsolete
                     Log.A($"This is the only log we'll add for the id '{longId}', further messages won't be logged for this.");
 
 
-                var history = new History();
-                history.ForceAdd(ObsoleteNameInHistory, Log);
+                new LogStoreLive().ForceAdd(ObsoleteNameInHistory, Log);
             }
             catch
             {

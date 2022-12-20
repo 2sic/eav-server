@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Lib.Data;
 using ToSic.Lib.Logging;
 
@@ -16,10 +15,10 @@ namespace ToSic.Eav.Configuration
     /// <typeparam name="T"></typeparam>
     public abstract class GlobalCatalogBase<T>: HasLog, ILogShouldNeverConnect where T : IHasIdentityNameId
     {
-        protected GlobalCatalogBase(History history, string logName, CodeRef code)
+        protected GlobalCatalogBase(ILogStore logStore, string logName, CodeRef code)
             : base(logName, code: code, initialMessage: $"Catalog Created for {typeof(T).Name}")
         {
-            history.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
+            logStore.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
         }
 
         /// <summary>

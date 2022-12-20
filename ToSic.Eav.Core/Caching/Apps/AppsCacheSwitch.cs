@@ -14,10 +14,10 @@ namespace ToSic.Eav.Caching
     public class AppsCacheSwitch : ServiceSwitcherSingleton<IAppsCacheSwitchable>, ICacheDependent
     {
         public AppsCacheSwitch(
-            History logHistory,
+            ILogStore logStore,
             IFeaturesInternal featuresService,
             LazyInitLog<ServiceSwitcher<IAppsCacheSwitchable>> serviceSwitcher
-        ) : base(logHistory, serviceSwitcher)
+        ) : base(logStore, serviceSwitcher)
         {
             _featuresService = featuresService;
         }

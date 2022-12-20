@@ -7,10 +7,11 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Zone
 {
-    public class ZoneBackend: HasLog
+    public class ZoneBackend: ServiceBase
     {
         public ZoneBackend(
             IAppStates appStates, 
@@ -19,24 +20,25 @@ namespace ToSic.Eav.WebApi.Zone
             IPlatformInfo platform,
             ISite site,
             Lazy<ILicenseService> licenseService,
-            History logHistory
-            ) : base("Bck.Zones")
-        {
-            _appStates = appStates;
-            _fingerprint = fingerprint;
-            _zoneMapper = zoneMapper;
-            _platform = platform;
-            _site = site;
-            _licenseService = licenseService;
-            _logHistory = logHistory;
-        }
+            ILogStoreLive logStore
+            ) : base("Bck.Zones") =>
+            ConnectServices(
+                _appStates = appStates,
+                _fingerprint = fingerprint,
+                _zoneMapper = zoneMapper,
+                _platform = platform,
+                _site = site,
+                _licenseService = licenseService,
+                _logStore = logStore
+            );
+
         private readonly IAppStates _appStates;
         private readonly SystemFingerprint _fingerprint;
         private readonly IZoneMapper _zoneMapper;
         private readonly IPlatformInfo _platform;
         private readonly ISite _site;
         private readonly Lazy<ILicenseService> _licenseService;
-        private readonly History _logHistory;
+        private readonly ILogStoreLive _logStore;
 
         public SystemInfoSetDto GetSystemInfo()
         {
@@ -95,7 +97,7 @@ namespace ToSic.Eav.WebApi.Zone
 
         private int CountInsightsMessages(string prefix)
         {
-            var warnings = _logHistory.Segments
+            var warnings = _logStore.Segments
                 .Where(l => l.Key.StartsWith(prefix))
                 .Select(l => l.Value.Count)
                 .Sum();

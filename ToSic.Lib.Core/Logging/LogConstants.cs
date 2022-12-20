@@ -36,8 +36,8 @@ namespace ToSic.Lib.Logging
         /// <summary>
         /// Size of a segment in the log history.
         /// </summary>
-        public const int HistorySegmentSize = 100;
+        public const int LiveHistorySegmentSize = 100;
 
-        public const int HistoryMaxItems = 500;
+        public const int LiveHistoryMaxItems = 500;
     }
 }

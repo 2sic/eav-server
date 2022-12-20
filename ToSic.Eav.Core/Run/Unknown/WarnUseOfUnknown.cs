@@ -7,7 +7,7 @@ namespace ToSic.Eav.Run.Unknown
 {
     public class WarnUseOfUnknown<T>
     {
-        public WarnUseOfUnknown(History logHistory)
+        public WarnUseOfUnknown(ILogStore logStore)
         {
             var usingType = typeof(T);
 
@@ -20,7 +20,7 @@ namespace ToSic.Eav.Run.Unknown
             log.A("You are seeing this warning, because apparently such an implementation was initialized, which shouldn't happen in a good productive environment.");
             log.A("This warning will only appear once per used type");
             log.A("See https://r.2sxc.org/unknown-implementations");
-            logHistory.Add("warnings-not-implemented", log);
+            logStore.Add("warnings-not-implemented", log);
         }
 
         private static readonly List<Type> AlreadyWarnedTypes = new List<Type>();

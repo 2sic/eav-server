@@ -109,14 +109,14 @@ namespace ToSic.Eav.Repository.Efc
             Lazy<IUser> userLazy,
             AppsCacheSwitch appsCache,
             Generator<JsonSerializer> jsonSerializerGenerator,
-            History logHistory,
+            ILogStore logStore,
             Lazy<Compressor> compressor
             ) : base("Db.Data")
         {
             _efcLoaderLazy = efcLoaderLazy;
             _userLazy = userLazy;
             _appsCache = appsCache;
-            _logHistory = logHistory;
+            _logStore = logStore;
             SqlDb = dbContext;
             JsonSerializerGenerator = jsonSerializerGenerator;
             SqlDb.AlternateSaveHandler += SaveChanges;
@@ -126,7 +126,7 @@ namespace ToSic.Eav.Repository.Efc
         private readonly Lazy<Efc11Loader> _efcLoaderLazy;
         private readonly Lazy<IUser> _userLazy;
         private readonly AppsCacheSwitch _appsCache;
-        private readonly History _logHistory;
+        private readonly ILogStore _logStore;
         private readonly Lazy<Compressor> _compressor;
 
         public EavDbContext SqlDb { get; }
@@ -317,7 +317,7 @@ namespace ToSic.Eav.Repository.Efc
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
         {
             var callLog = Log.Fn<List<int>>(startTimer: true);
-            _logHistory.Add("save-data", Log);
+            _logStore.Add("save-data", Log);
             return callLog.ReturnAsOk(Entities.SaveEntity(entities, saveOptions));
         }
 

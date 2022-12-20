@@ -11,14 +11,14 @@ namespace ToSic.Lib.DI
     public class ServiceSwitcherSingleton<T>: HasLog, ILazyLike<T> where T : ISwitchableService
     {
         public ServiceSwitcherSingleton(
-            History logHistory,
+            ILogStore logStore,
             LazyInitLog<ServiceSwitcher<T>> serviceSwitcher
         ) : base($"{LogNames.Eav}.SrvSwS")
         {
-            _logHistory = logHistory;
+            _logStore = logStore;
             _serviceSwitcher = serviceSwitcher.SetLog(Log);
         }
-        private readonly History _logHistory;
+        private readonly ILogStore _logStore;
         private readonly LazyInitLog<ServiceSwitcher<T>> _serviceSwitcher;
 
         public T Value => GetSingletonSwitchableService();
@@ -28,7 +28,7 @@ namespace ToSic.Lib.DI
             // Already loaded
             if (_preferredService != null) return _preferredService;
 
-            _logHistory.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
+            _logStore.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
             var call = Log.Fn<T>(message: "re-check singleton service");
             _preferredService = _serviceSwitcher.Value.Value;
             return call.Return(_preferredService, $"found {_preferredService.NameId}");
