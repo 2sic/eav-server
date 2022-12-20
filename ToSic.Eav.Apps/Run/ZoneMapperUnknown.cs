@@ -11,16 +11,17 @@ namespace ToSic.Eav.Apps.Run
 {
     public class ZoneMapperUnknown: ZoneMapperBase, IIsUnknown
     {
-        public ZoneMapperUnknown(IAppStates appStates, WarnUseOfUnknown<ZoneMapperUnknown> warn, IServiceProvider sp) 
+        private readonly Generator<ISite> _site;
+
+        public ZoneMapperUnknown(IAppStates appStates, WarnUseOfUnknown<ZoneMapperUnknown> warn, Generator<ISite> site) 
             : base(appStates, $"{LogNames.NotImplemented}.ZonMap")
         {
-            _sp = sp;
+            _site = site;
         }
-        private readonly IServiceProvider _sp;
 
         public override int GetZoneId(int siteId) => siteId;
-
-        public override ISite SiteOfZone(int zoneId) => _sp.Build<ISite>().Init(zoneId, null);
+        
+        public override ISite SiteOfZone(int zoneId) => _site.New().Init(zoneId, null);
 
         public override List<ISiteLanguageState> CulturesWithState(ISite site) => new List<ISiteLanguageState>();
     }

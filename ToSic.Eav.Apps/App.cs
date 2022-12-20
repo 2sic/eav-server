@@ -26,20 +26,20 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public class AppDependencies
         {
-            internal readonly IServiceProvider ServiceProvider;
+            //internal readonly IServiceProvider ServiceProvider;
             internal readonly IZoneMapper ZoneMapper;
             internal readonly ISite Site;
             internal readonly IAppStates AppStates;
             internal readonly DataSourceFactory DataSourceFactory;
 
             public AppDependencies(
-                IServiceProvider serviceProvider,
+                //IServiceProvider serviceProvider,
                 IZoneMapper zoneMapper,
                 ISite site,
                 IAppStates appStates,
                 DataSourceFactory dataSourceFactory)
             {
-                ServiceProvider = serviceProvider;
+                //ServiceProvider = serviceProvider;
                 ZoneMapper = zoneMapper;
                 Site = site;
                 AppStates = appStates;
