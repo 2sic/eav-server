@@ -100,7 +100,7 @@ namespace ToSic.Eav.Context
 
             // Case 3: From App
             var fromApp = SiteDeps.AppPermissionCheck.New()
-                .ForAppInInstance(this, AppState, Log)
+                .ForAppInInstance(this, AppState)
                 .UserMay(GrantSets.WriteSomething);
 
             // Check if language permissions may alter / remove edit permissions

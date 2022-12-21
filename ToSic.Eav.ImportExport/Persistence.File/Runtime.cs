@@ -11,21 +11,26 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class Runtime : HasLog, IRuntime
+    public partial class Runtime : ServiceBase, IRuntime
     {
         #region Constructor and DI
 
-        public Runtime(IServiceProvider sp) : base("Eav.RunTme")
+        public Runtime(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator) : base("Eav.RunTme")
         {
             _serviceProvider = sp;
+            ConnectServices(
+                _fslGenerator = fslGenerator
+            );
             // Only add the first time it's really used
             if (LoadLog == null) LoadLog = Log;
         }
 
         private readonly IServiceProvider _serviceProvider;
+        private readonly Generator<FileSystemLoader> _fslGenerator;
         public static ILog LoadLog = null;
 
 
@@ -71,7 +76,7 @@ namespace ToSic.Eav.Persistence.File
 
 
         internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths
-            .Select(path => _serviceProvider.Build<FileSystemLoader>().Init(Constants.PresetAppId, path, Source, true, null, Log)).ToList());
+            .Select(path => _fslGenerator.New().Init(Constants.PresetAppId, path, Source, true, null)).ToList());
         private List<FileSystemLoader> _loader;
 
 

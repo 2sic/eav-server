@@ -137,7 +137,7 @@ namespace ToSic.Eav.Apps.Run
         {
             var wrapLog = Log.Fn<IList<IContentType>>(extensionPath);
             var fsLoader = Deps.FslGenerator.New()
-                .Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource, Log);
+                .Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
             var types = fsLoader.ContentTypes();
             return wrapLog.ReturnAsOk(types);
         }

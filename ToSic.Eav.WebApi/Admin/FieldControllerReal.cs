@@ -26,10 +26,10 @@ namespace ToSic.Eav.WebApi.Admin
 
         #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
 
-        public IEnumerable<ContentTypeFieldDto> All(int appId, string staticName) => _ctApiLazy.Value.Init(appId, Log).GetFields(staticName);
+        public IEnumerable<ContentTypeFieldDto> All(int appId, string staticName) => _ctApiLazy.Value.Init(appId).GetFields(staticName);
 
 
-        public string[] DataTypes(int appId) => _ctApiLazy.Value.Init(appId, Log).DataTypes();
+        public string[] DataTypes(int appId) => _ctApiLazy.Value.Init(appId).DataTypes();
 
 
         public List<InputTypeInfo> InputTypes(int appId) => _appRuntime.Value.Init(appId, true).ContentTypes.GetInputTypes();
@@ -39,20 +39,20 @@ namespace ToSic.Eav.WebApi.Admin
 
 
         public int Add(int appId, int contentTypeId, string staticName, string type, string inputType, int index)
-            => _ctApiLazy.Value.Init(appId, Log).AddField(contentTypeId, staticName, type, inputType, index);
+            => _ctApiLazy.Value.Init(appId).AddField(contentTypeId, staticName, type, inputType, index);
 
 
         public bool Delete(int appId, int contentTypeId, int attributeId)
-            => _ctApiLazy.Value.Init(appId, Log).DeleteField(contentTypeId, attributeId);
+            => _ctApiLazy.Value.Init(appId).DeleteField(contentTypeId, attributeId);
 
 
-        public bool Sort(int appId, int contentTypeId, string order) => _ctApiLazy.Value.Init(appId, Log).Reorder(contentTypeId, order);
+        public bool Sort(int appId, int contentTypeId, string order) => _ctApiLazy.Value.Init(appId).Reorder(contentTypeId, order);
 
 
-        public bool InputType(int appId, int attributeId, string inputType) => _ctApiLazy.Value.Init(appId, Log).SetInputType(attributeId, inputType);
+        public bool InputType(int appId, int attributeId, string inputType) => _ctApiLazy.Value.Init(appId).SetInputType(attributeId, inputType);
 
         #endregion
 
-        public void Rename(int appId, int contentTypeId, int attributeId, string newName) => _ctApiLazy.Value.Init(appId, Log).Rename(contentTypeId, attributeId, newName);
+        public void Rename(int appId, int contentTypeId, int attributeId, string newName) => _ctApiLazy.Value.Init(appId).Rename(contentTypeId, attributeId, newName);
     }
 }

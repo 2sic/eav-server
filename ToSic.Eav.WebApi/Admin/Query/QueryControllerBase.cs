@@ -179,7 +179,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             serializeWrap.Done("ok");
 
             // Now get some more debug info
-            var debugInfo = _dependencies.QueryInfoLazy.Value.BuildQueryInfo(qDef, outSource, Log);
+            var debugInfo = _dependencies.QueryInfoLazy.Value.BuildQueryInfo(qDef, outSource);
 
             // ...and return the results
 			return wrapLog.Return(new QueryRunDto

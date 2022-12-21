@@ -50,13 +50,12 @@ namespace ToSic.Eav.WebApi
         private readonly IAppStates _appStates;
         private AppManager AppManager { get; set; }
 
-        public ContentTypeApi Init(int appId, ILog parentLog)
+        public ContentTypeApi Init(int appId)
         {
-            this.Init(parentLog);
-            Log.A($"Will use app {appId}");
+            var l = Log.Fn<ContentTypeApi>($"{appId}");
             _appId = appId;
             AppManager = _appManagerLazy.Value.Init(appId);
-            return this;
+            return l.Return(this);
         }
 
         private int _appId;

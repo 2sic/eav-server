@@ -13,9 +13,8 @@ namespace ToSic.Eav.DataSources.Debug
         /// </summary>
         public QueryInfo() : base("Qry.Info") { }
         
-        public QueryInfo BuildQueryInfo(QueryDefinition queryDef, IDataSource queryResult, ILog parentLog)
+        public QueryInfo BuildQueryInfo(QueryDefinition queryDef, IDataSource queryResult)
         {
-            this.Init(parentLog);
             QueryDefinition = queryDef;
             GetStreamInfosRecursive(queryResult as IDataTarget, ref Streams, ref Sources);
             return this;

@@ -52,12 +52,11 @@ namespace ToSic.Eav.Serialization
 
         protected int AppId;
         private IEnumerable<IContentType> _types;
-        public void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource allEntities, ILog parentLog)
+        public void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource allEntities)
         {
             AppId = appId;
             _types = types;
             _relList = allEntities;
-            this.Init(parentLog);
         }
 
         #endregion

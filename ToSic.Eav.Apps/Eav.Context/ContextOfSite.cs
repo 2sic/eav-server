@@ -26,11 +26,14 @@ namespace ToSic.Eav.Context
                 ISite site,
                 IUser user,
                 Generator<AppPermissionCheck> appPermissionCheck
-            ) => AddToLogQueue(
-                Site = site,
-                User = user,
-                AppPermissionCheck = appPermissionCheck
-            );
+            )
+            {
+                AddToLogQueue(
+                    Site = site,
+                    User = user,
+                    AppPermissionCheck = appPermissionCheck
+                );
+            }
         }
 
         public ContextOfSite(Dependencies dependencies) : base("Eav.CtxSte")

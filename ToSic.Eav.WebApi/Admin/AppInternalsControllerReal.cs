@@ -117,14 +117,14 @@ namespace ToSic.Eav.WebApi.Admin
         }
 
         private IEnumerable<ContentTypeDto> TypeListInternal(int appId, string scope = null, bool withStatistics = false)
-            => _ctApiLazy.Value.Init(appId, Log).Get(scope, withStatistics);
+            => _ctApiLazy.Value.Init(appId).Get(scope, withStatistics);
 
         private IEnumerable<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
             => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.ReadSomething)
                 .GetEntitiesForAdmin(contentType, excludeAncestor);
 
         private IEnumerable<ContentTypeFieldDto> FieldAllInternal(int appId, string staticName)
-            => _ctApiLazy.Value.Init(appId, Log).GetFields(staticName);
+            => _ctApiLazy.Value.Init(appId).GetFields(staticName);
 
         private MetadataListDto MetadataListInternal(int appId, int targetType, string keyType, string key, string contentType = null)
             => _metadataControllerReal.Value.Get(appId, targetType, keyType, key, contentType);

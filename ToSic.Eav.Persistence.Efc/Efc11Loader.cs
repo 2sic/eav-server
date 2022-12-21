@@ -6,6 +6,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
+using ToSic.Eav.Serialization;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
@@ -13,6 +14,8 @@ namespace ToSic.Eav.Persistence.Efc
 {
     public partial class Efc11Loader: ServiceBase, IRepositoryLoader
     {
+        private readonly Generator<IDataDeserializer> _dataDeserializer;
+
         #region constructor and private vars
 
         public Efc11Loader(
@@ -23,9 +26,11 @@ namespace ToSic.Eav.Persistence.Efc
             IAppStates appStates,
             ILogStore logStore,
             LazySvc<IFeaturesInternal> featuresService,
-            MultiBuilder multiBuilder
+            MultiBuilder multiBuilder,
+            Generator<IDataDeserializer> dataDeserializer
             ) : base("Db.Efc11")
         {
+            
             ConnectServices(
                 ServiceProvider = serviceProvider,
                 _dbContext = dbContext,
@@ -34,7 +39,8 @@ namespace ToSic.Eav.Persistence.Efc
                 _appStates = appStates,
                 _logStore = logStore,
                 _featuresService = featuresService,
-                _multiBuilder = multiBuilder
+                _multiBuilder = multiBuilder,
+                _dataDeserializer = dataDeserializer
             );
         }
 

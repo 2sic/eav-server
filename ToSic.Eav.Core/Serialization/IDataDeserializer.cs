@@ -25,8 +25,7 @@ namespace ToSic.Eav.Serialization
         /// <param name="appId">the app-ID which contains the data to be serialized</param>
         /// <param name="types">list of all content-types which the deserializer knows</param>
         /// <param name="allEntities">list of all entities to use in deserialization</param>
-        /// <param name="parentLog">logger</param>
-        void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource allEntities, ILog parentLog);
+        void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource allEntities);
 
         /// <summary>
         /// De-serialize an entity.

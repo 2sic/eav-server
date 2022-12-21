@@ -110,7 +110,7 @@ namespace ToSic.Eav.Apps.Languages
                 {
                     var pChecker = _checkGenerator.New();
                     var permissions = permissionEntities.Select(p => new Permission(p));
-                    pChecker.ForCustom(_ctx, appStateOrNull, permissions, Log);
+                    pChecker.ForCustom(_ctx, appStateOrNull, permissions);
                     ok = pChecker.PermissionsAllow(GrantSets.WriteSomething);
                 }
 

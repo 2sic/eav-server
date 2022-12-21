@@ -28,28 +28,14 @@ namespace ToSic.Eav.Repositories
             get
             {
                 if (_config.DataFolder == null) return new List<string>();
-                //var dataRoot = DataFolder.GetDataRoot(_config.DataFolder);
                 var result = new List<string>
                     {
                         _config.DataFolder,
                         _config.DataBetaFolder,
                         _config.DataCustomFolder
-                        //System.IO.Path.Combine(dataRoot, ".data"),
-                        //System.IO.Path.Combine(dataRoot, ".databeta"),
-                        //System.IO.Path.Combine(dataRoot, ".data-custom")
                     };
                 return result;
             }
         }
-
-        //private static string GetDataRoot(string dataFolder)
-        //{
-        //    var systemData = Path.Combine(Constants.AppDataProtectedFolder, Constants.FolderData);
-        //    if (dataFolder?.EndsWith(systemData) == true)
-        //        return dataFolder.Substring(0, dataFolder.Length - systemData.Length).TrimLastSlash();
-        //    if (dataFolder?.EndsWith(".data") == true)
-        //        return dataFolder.Substring(0, dataFolder.Length - ".data".Length).TrimLastSlash();
-        //    return dataFolder ?? string.Empty;
-        //}
     }
 }

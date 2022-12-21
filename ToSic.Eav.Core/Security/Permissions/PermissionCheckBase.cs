@@ -80,14 +80,12 @@ namespace ToSic.Eav.Security
         /// Uses a GUID as identifier because that survives export/import. 
         /// </summary>
         protected void Init(
-            ILog parentLog,
-            IContentType targetType = null, // optional type to check
-            IEntity targetItem = null,      // optional entity to check
-            IEnumerable<Permission> permissions1 = null,
-            IEnumerable<Permission> permissions2 = null
+            IContentType targetType = default, // optional type to check
+            IEntity targetItem = default,      // optional entity to check
+            IEnumerable<Permission> permissions1 = default,
+            IEnumerable<Permission> permissions2 = default
             ) 
         {
-            (this as IHasLog).Init(parentLog); // Must cast to IHasLog to avoid recursive calls
             var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
 
             var wrapLog = Log.Fn($"type:{targetType?.NameId}, " +

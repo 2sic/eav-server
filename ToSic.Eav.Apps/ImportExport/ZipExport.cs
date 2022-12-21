@@ -34,8 +34,6 @@ namespace ToSic.Eav.Apps.ImportExport
         public FileManager FileManagerGlobal;
         private string _physicalPathGlobal;
 
-        protected ILog Log;
-
         #region DI Constructor
 
         public ZipExport(AppRuntime appRuntime,
@@ -56,16 +54,17 @@ namespace ToSic.Eav.Apps.ImportExport
         private AppRuntime AppRuntime { get; }
         public DataSourceFactory DataSourceFactory { get; }
 
-        public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, string physicalPathGlobal, ILog parentLog)
+        public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, string physicalPathGlobal)
         {
             _appId = appId;
             _zoneId = zoneId;
             _appFolder = appFolder;
             _physicalAppPath = physicalAppPath;
             _physicalPathGlobal = physicalPathGlobal;
-            Log = new Log("Zip.Exp", parentLog);
-            FileManager = new FileManager(_physicalAppPath).Init(Log);
-            FileManagerGlobal = new FileManager(physicalPathGlobal).Init(Log);
+            ConnectServices(
+                FileManager = new FileManager(_physicalAppPath),
+                FileManagerGlobal = new FileManager(physicalPathGlobal)
+            );
             AppRuntime.InitQ(new AppIdentity(_zoneId, _appId), true);
             return this;
         }

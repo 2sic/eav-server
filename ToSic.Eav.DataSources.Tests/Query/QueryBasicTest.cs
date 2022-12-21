@@ -89,7 +89,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         private JsonSerializer Serializer()
         {
             var ser = _jsonSerializer;
-            ser.Initialize(TestConfig.AppForQueryTests, new List<IContentType>(), null, null);
+            ser.Initialize(TestConfig.AppForQueryTests, new List<IContentType>(), null);
             return ser;
         }
 

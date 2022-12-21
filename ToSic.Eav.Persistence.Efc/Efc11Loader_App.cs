@@ -179,8 +179,8 @@ namespace ToSic.Eav.Persistence.Efc
                 if (string.IsNullOrEmpty(json)) return wrapLog.Return(nullTuple, "no json");
 
                 Log.A("app Entity found - this json: " + json);
-                var serializer = ServiceProvider.Build<IDataDeserializer>();
-                serializer.Initialize(appId, new List<IContentType>(), null, Log);
+                var serializer = _dataDeserializer.New();// ServiceProvider.Build<IDataDeserializer>();
+                serializer.Initialize(appId, new List<IContentType>(), null);
                 if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
                     return wrapLog.Return(nullTuple, "can't deserialize");
                 var path = appEntity.Value<string>(AppLoadConstants.FieldFolder);

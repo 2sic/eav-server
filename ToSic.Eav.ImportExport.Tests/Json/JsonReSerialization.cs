@@ -69,7 +69,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
         {
             var loader = _loader; 
             var app = loader.AppState(appId, false);
-            var exBuilder = _jsonSerializer.Init(Log).SetApp(app);
+            var exBuilder = _jsonSerializer.SetApp(app);
 
             var maxCount = 1000;
             var skip = 0;

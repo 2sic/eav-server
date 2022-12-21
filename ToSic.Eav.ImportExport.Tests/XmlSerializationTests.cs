@@ -31,7 +31,7 @@ namespace ToSic.Eav.ImportExport.Tests
             //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = Build<IAppStates>().Languages(test.ZoneId)
                 .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
-            var exBuilder = _xmlSerializer.Init(Log).Init(languageMap, app);
+            var exBuilder = _xmlSerializer.Init(languageMap, app);
             var xmlEnt = exBuilder.Serialize(test.TestItemToSerialize);
             Assert.IsTrue(xmlEnt.Length > 200, "should get a long xml string");
             Trace.Write(xmlEnt);
@@ -46,7 +46,7 @@ namespace ToSic.Eav.ImportExport.Tests
             var appId = test.AppId;
             var app = Build<IRepositoryLoader>().AppState(appId, false);
             var languageMap = Build<IAppStates>().Languages(test.ZoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
-            var exBuilder = _xmlSerializer.Init(Log).Init(languageMap, app);
+            var exBuilder = _xmlSerializer.Init(languageMap, app);
 
             var maxCount = 500;
             var skip = 0;

@@ -110,7 +110,7 @@ namespace ToSic.Eav.WebApi.Sys
             else
                 throw CreateBadRequest("can't use entityid - must be number or guid");
 
-            var ser = _serviceProvider.Build<JsonSerializer>().Init(Log).SetApp(appRead.AppState);
+            var ser = _jsonSerializer.New().SetApp(appRead.AppState);
             var json = ser.Serialize(ent);
 
             var msg = H1($"Entity Debug for {nameId} in {appId}\n")

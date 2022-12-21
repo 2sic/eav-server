@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
@@ -7,11 +8,14 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Sys
 {
     public partial class InsightsControllerReal: ServiceBase
     {
+        private readonly Generator<JsonSerializer> _jsonSerializer;
+        private readonly Generator<AppRuntime> _appRuntimeGenerator;
         public const string LogSuffix = "Insight";
         #region Constructor / DI
 
@@ -22,7 +26,9 @@ namespace ToSic.Eav.WebApi.Sys
             ILogStoreLive logStore, 
             LazySvc<ILicenseService> licenseServiceLazy, 
             IUser user, 
-            LightSpeedStats lightSpeedStats)
+            LightSpeedStats lightSpeedStats,
+            Generator<AppRuntime> appRuntimeGenerator,
+            Generator<Eav.ImportExport.Json.JsonSerializer> jsonSerializer)
             : base("Api.SysIns")
         {
             ConnectServices(
@@ -32,6 +38,8 @@ namespace ToSic.Eav.WebApi.Sys
                 _licenseServiceLazy = licenseServiceLazy,
                 _user = user,
                 _lightSpeedStats = lightSpeedStats,
+                _appRuntimeGenerator = appRuntimeGenerator,
+                _jsonSerializer = jsonSerializer,
                 SystemManager = systemManager
             );
         }
@@ -53,7 +61,7 @@ namespace ToSic.Eav.WebApi.Sys
         }
 
 
-        private AppRuntime AppRt(int? appId) => _serviceProvider.Build<AppRuntime>().Init(Log).Init(appId.Value, true);
+        private AppRuntime AppRt(int? appId) => _appRuntimeGenerator.New().Init(appId.Value, true);
 
         private AppState AppState(int? appId) => _appStates.Get(appId.Value);
 

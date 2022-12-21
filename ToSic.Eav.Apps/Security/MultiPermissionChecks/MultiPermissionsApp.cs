@@ -95,7 +95,7 @@ namespace ToSic.Eav.Apps.Security
             // user has edit permissions on this app, and it's the same app as the user is coming from
             var modifiedContext = Context.Clone(Log);
             modifiedContext.Site = SiteForSecurityCheck;
-            return _deps.AppPermCheckGenerator.New().ForParts(modifiedContext, App, type, item, Log);
+            return _deps.AppPermCheckGenerator.New().ForParts(modifiedContext, App, type, item);
         }
 
     }

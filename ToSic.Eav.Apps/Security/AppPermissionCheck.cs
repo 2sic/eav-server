@@ -24,30 +24,27 @@ namespace ToSic.Eav.Apps.Security
         private readonly IAppStates _appStates;
         private readonly EnvironmentPermission _environmentPermission;
 
-        public AppPermissionCheck ForItem(IContextOfSite ctx, IAppIdentity appIdentity, IEntity targetItem, ILog parentLog)
+        public AppPermissionCheck ForItem(IContextOfSite ctx, IAppIdentity appIdentity, IEntity targetItem)
         {
-            Init(ctx, appIdentity, parentLog, targetItem?.Type, targetItem);
-            // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
+            Init(ctx, appIdentity, targetItem?.Type, targetItem);
             return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
         }
 
-        public AppPermissionCheck ForType(IContextOfSite ctx, IAppIdentity appIdentity, IContentType targetType, ILog parentLog)
+        public AppPermissionCheck ForType(IContextOfSite ctx, IAppIdentity appIdentity, IContentType targetType)
         {
-            Init(ctx, appIdentity, parentLog, targetType);
-            // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
+            Init(ctx, appIdentity, targetType);
             return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
         }
 
-        public AppPermissionCheck ForAttribute(IContextOfSite ctx, IAppIdentity appIdentity, IContentTypeAttribute attribute, ILog parentLog)
+        public AppPermissionCheck ForAttribute(IContextOfSite ctx, IAppIdentity appIdentity, IContentTypeAttribute attribute)
         {
-            Init(ctx, appIdentity, parentLog, permissions: attribute.Permissions);
-            // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
+            Init(ctx, appIdentity, permissions: attribute.Permissions);
             return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
         }
 
-        public AppPermissionCheck ForCustom(IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<Permission> permissions, ILog parentLog)
+        public AppPermissionCheck ForCustom(IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<Permission> permissions)
         {
-            Init(ctx, appIdentity, parentLog, permissions: permissions);
+            Init(ctx, appIdentity, permissions: permissions);
             return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
         }
 
@@ -56,13 +53,11 @@ namespace ToSic.Eav.Apps.Security
         /// </summary>
         /// <param name="ctx"></param>
         /// <param name="appIdentity">The App - in some cases (if no app exists yet) it's null</param>
-        /// <param name="parentLog"></param>
         /// <returns></returns>
-        public AppPermissionCheck ForAppInInstance(IContextOfSite ctx, IAppIdentity appIdentity, ILog parentLog)
+        public AppPermissionCheck ForAppInInstance(IContextOfSite ctx, IAppIdentity appIdentity)
         {
             var permissions = FindPermissionsOfApp(appIdentity);
-            Init(ctx, appIdentity, parentLog, permissions: permissions);
-            // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
+            Init(ctx, appIdentity, permissions: permissions);
             var wrapLog = Log.Fn<AppPermissionCheck>($"ctx, app: {appIdentity}, log");
             Log.A($"Permissions: {permissions?.Count}");
             return wrapLog.ReturnAsOk(this);
@@ -78,11 +73,9 @@ namespace ToSic.Eav.Apps.Security
             return permissions;
         }
 
-        public AppPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType targetType, IEntity targetItem, ILog parentLog)
+        public AppPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType targetType, IEntity targetItem)
         {
-            Init(ctx, app, parentLog, targetType, targetItem, FindPermissionsOfApp(app));
-
-            // note: WrapLog shouldn't be created before the init, because otherwise we don't see the results
+            Init(ctx, app, targetType, targetItem, FindPermissionsOfApp(app));
             return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
         }
 
@@ -94,12 +87,11 @@ namespace ToSic.Eav.Apps.Security
         private void Init(
             IContextOfSite ctx,
             IAppIdentity appIdentity,
-            ILog parentLog,
             IContentType targetType = null, // optional type to check
             IEntity targetItem = null, // optional entity to check
             IEnumerable<Permission> permissions = null)
         {
-            Init(parentLog, targetType ?? targetItem?.Type, targetItem, permissions);
+            Init(targetType ?? targetItem?.Type, targetItem, permissions);
             _environmentPermission.Init(ctx, appIdentity);
             var logWrap = Log.Fn($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
             Context = ctx ?? throw new ArgumentNullException(nameof(ctx));

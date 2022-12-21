@@ -33,9 +33,8 @@ namespace ToSic.Eav.Persistence.File
 
         private readonly Generator<JsonSerializer> _jsonSerGenerator;
 
-        public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, ILog parentLog)
+        public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource)
         {
-            this.Init(parentLog);
             Log.A($"init with appId:{appId}, path:{path}, ignore:{ignoreMissing}");
             AppId = appId;
             Path = path + (path.EndsWith("\\") ? "" : "\\");
@@ -60,7 +59,7 @@ namespace ToSic.Eav.Persistence.File
             {
                 if (_ser != null) return _ser;
                 _ser = _jsonSerGenerator.New();
-                _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource, Log);
+                _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
             }
@@ -69,13 +68,13 @@ namespace ToSic.Eav.Persistence.File
 
         internal void ResetSerializer(AppState appState)
         {
-            var serializer = _jsonSerGenerator.New().Init(Log).SetApp(appState);
+            var serializer = _jsonSerGenerator.New().SetApp(appState);
             _ser = serializer;
         }
         internal void ResetSerializer(List<IContentType> types)
         {
             var serializer = _jsonSerGenerator.New();
-            serializer.Initialize(AppId, types, null, Log);
+            serializer.Initialize(AppId, types, null);
             _ser = serializer;
         }
 
