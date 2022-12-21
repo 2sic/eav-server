@@ -94,9 +94,9 @@ namespace ToSic.Eav.ImportExport.Xml
             var unExactMatchSourceDimensions = srcLangs.Where(
                     sd =>
                         !targetLang.Matches(sd.EnvironmentKey) &&
-                        sd.EnvironmentKey.StartsWith(targetLang.EnvironmentKey.ToLowerInvariant().Substring(0, 3)))
+                        sd.EnvironmentKey.StartsWith(targetLang.EnvironmentKey.ToLowerInvariant().Substring(0, 2)))
                 .OrderByDescending(p => p.EnvironmentKey == envDefLang)
-                .ThenByDescending(p => p.EnvironmentKey.Substring(0, 2) == p.EnvironmentKey.Substring(3, 2))
+                .ThenByDescending(p => p.EnvironmentKey.Length == 2 || p.EnvironmentKey.Length == 5 && p.EnvironmentKey.Substring(0, 2) == p.EnvironmentKey.Substring(3, 2))
                 .ThenBy(p => p.EnvironmentKey);
             languageMap.AddRange(unExactMatchSourceDimensions);
 
