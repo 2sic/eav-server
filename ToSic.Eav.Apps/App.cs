@@ -79,7 +79,7 @@ namespace ToSic.Eav.Apps
         /// <inheritdoc />
         public bool ShowDrafts { get; private set; }
 
-        protected internal App Init(IAppIdentity appIdentity, Func<App, IAppDataConfiguration> buildConfiguration, ILog parentLog)
+        protected internal App Init(IAppIdentity appIdentity, Func<App, IAppDataConfiguration> buildConfiguration)
         {
             // Env / Tenant must be re-checked here
             if (Site == null) throw new Exception("no site/portal received");
@@ -93,7 +93,6 @@ namespace ToSic.Eav.Apps
             if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
                 appIdentity = new AppIdentity(Site.ZoneId, appIdentity.AppId);
 
-            (this as IHasLog).Init(parentLog);
             Init(appIdentity);
             Log.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
