@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -17,9 +18,10 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public QueryDefinition Get(int queryId)
         {
+            var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
             var queryMan = _queryManager.New();
-            return new QueryDefinition(queryMan.GetQueryEntity(queryId, Parent.AppState),
-                Parent.AppId, Log);
+            return l.Return(new QueryDefinition(queryMan.GetQueryEntity(queryId, Parent.AppState),
+                Parent.AppId, Log));
         }
 
     }

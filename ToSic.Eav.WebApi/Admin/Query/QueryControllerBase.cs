@@ -7,13 +7,13 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.DataSources.Queries;
-using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Dto;
+using ToSic.Lib.Services;
 using Connection = ToSic.Eav.DataSources.Queries.Connection;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -23,13 +23,12 @@ namespace ToSic.Eav.WebApi.Admin.Query
     /// <summary>
     /// Web API Controller for the Pipeline Designer UI
     /// </summary>
-    public abstract class QueryControllerBase<TImplementation> : HasLog where TImplementation : QueryControllerBase<TImplementation>
+    public abstract class QueryControllerBase<TImplementation> : ServiceBase where TImplementation : QueryControllerBase<TImplementation>
     {
         protected QueryControllerBase(QueryControllerDependencies dependencies, string logName) : base(logName)
         {
-            _dependencies = dependencies;
+            _dependencies = dependencies.SetLog(Log);
             QueryBuilder = dependencies.QueryBuilder;
-            QueryBuilder.Init(Log);
         }
         private readonly QueryControllerDependencies _dependencies;
         private AppManager _appManager;
@@ -50,12 +49,12 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// </summary>
 		public QueryDefinitionDto Get(int appId, int? id = null)
         {
-            Log.A($"get pipe a#{appId}, id:{id}");
+            var l = Log.Fn<QueryDefinitionDto>($"a#{appId}, id:{id}");
             var query = new QueryDefinitionDto();
 
-            if (!id.HasValue) return query;
+            if (!id.HasValue) return l.Return(query, "no id, empty");
 
-            var reader = _dependencies.AppReaderLazy.Value.Init(Log).Init(appId, false);
+            var reader = _dependencies.AppReaderLazy.Value.Init(appId, false);
             var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
@@ -78,7 +77,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             #endregion
 
-            return query;
+            return l.Return(query, "ok");
         }
 
         /// <summary>
@@ -86,7 +85,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// </summary>
         public IEnumerable<DataSourceDto> DataSources()
         {
-            var dsCatalog = _dependencies.DataSourceCatalogLazy.Value.Init(Log);
+            var dsCatalog = _dependencies.DataSourceCatalogLazy.Value/*.Init(Log)*/;
 
             var callLog = Log.Fn<IEnumerable<DataSourceDto>>();
             var installedDataSources = DataSourceCatalog.GetAll(true);
@@ -219,7 +218,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             {
                 Log.A("import content" + args.DebugInfo);
 
-                var deser = _dependencies.JsonSerializer.New().Init(Log).SetApp(_appManager.AppState);
+                var deser = _dependencies.JsonSerializer.New()/*.Init(Log)*/.SetApp(_appManager.AppState);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents, args.AppId, Log);
                 _appManager.Queries.SaveCopy(qdef);

@@ -14,6 +14,8 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// <remarks>V 1.0</remarks>
         public string Scope;
 
+        // TODO: Don't just remove, it's possible that we're using it in the admin-UI...
+        // Review w/2dm before removing this code
         // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
         /// <remarks>V 1.0</remarks>
         public string Description;
