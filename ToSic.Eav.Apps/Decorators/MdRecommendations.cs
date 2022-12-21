@@ -24,9 +24,9 @@ namespace ToSic.Eav.Apps.Decorators
     public class MdRecommendations: ReadBase
     {
 
-        public MdRecommendations(LazyInit<MdRequirements> requirements): base($"{AppConstants.LogName}.MdRead") 
+        public MdRecommendations(LazySvc<MdRequirements> requirements): base($"{AppConstants.LogName}.MdRead") 
             => ConnectServices(_requirements = requirements);
-        private readonly LazyInit<MdRequirements> _requirements;
+        private readonly LazySvc<MdRequirements> _requirements;
 
 
         public IList<MetadataRecommendation> GetAllowedRecommendations(int targetTypeId, string key, string recommendedTypeName = null)

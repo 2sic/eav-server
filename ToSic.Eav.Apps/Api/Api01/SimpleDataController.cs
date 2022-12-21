@@ -36,7 +36,7 @@ namespace ToSic.Eav.Api.Api01
         /// <summary>
         /// Used for DI - must always call Init to use
         /// </summary>
-        public SimpleDataController(LazyInit<AttributeBuilderForImport> lazyAttributeBuilder, LazyInit<AppManager> appManagerLazy, LazyInit<DbDataController> dbDataLazy, IZoneMapper zoneMapper, IContextOfSite ctx, Generator<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
+        public SimpleDataController(LazySvc<AttributeBuilderForImport> lazyAttributeBuilder, LazySvc<AppManager> appManagerLazy, LazySvc<DbDataController> dbDataLazy, IZoneMapper zoneMapper, IContextOfSite ctx, Generator<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             ConnectServices(
                 _appManagerLazy = appManagerLazy,
@@ -47,13 +47,13 @@ namespace ToSic.Eav.Api.Api01
                 AttributeBuilder = lazyAttributeBuilder
             );
         }
-        private readonly LazyInit<AppManager> _appManagerLazy;
-        private readonly LazyInit<DbDataController> _dbDataLazy;
+        private readonly LazySvc<AppManager> _appManagerLazy;
+        private readonly LazySvc<DbDataController> _dbDataLazy;
         private readonly IZoneMapper _zoneMapper;
         private readonly IContextOfSite _ctx;
         private readonly Generator<AppPermissionCheck> _appPermissionCheckGenerator;
 
-        private readonly LazyInit<AttributeBuilderForImport> AttributeBuilder;
+        private readonly LazySvc<AttributeBuilderForImport> AttributeBuilder;
         private DbDataController _context;
         private AppManager _appManager;
         private string _defaultLanguageCode;

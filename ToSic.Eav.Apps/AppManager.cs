@@ -12,18 +12,18 @@ namespace ToSic.Eav.Apps
     /// </summary>
     public class AppManager: AppRuntimeBase
     {
-        private readonly LazyInit<AppRuntime> _appRuntime;
-        private readonly LazyInit<DbDataController> _dbDataController;
-        private readonly LazyInit<EntitiesManager> _entitiesManager;
-        private readonly LazyInit<QueryManager> _queryManager;
+        private readonly LazySvc<AppRuntime> _appRuntime;
+        private readonly LazySvc<DbDataController> _dbDataController;
+        private readonly LazySvc<EntitiesManager> _entitiesManager;
+        private readonly LazySvc<QueryManager> _queryManager;
 
         #region Constructors
 
         protected AppManager(AppRuntimeDependencies dependencies,
-            LazyInit<AppRuntime> appRuntime,
-            LazyInit<DbDataController> dbDataController,
-            LazyInit<EntitiesManager> entitiesManager,
-            LazyInit<QueryManager> queryManager,
+            LazySvc<AppRuntime> appRuntime,
+            LazySvc<DbDataController> dbDataController,
+            LazySvc<EntitiesManager> entitiesManager,
+            LazySvc<QueryManager> queryManager,
             string logName
             ) : base(dependencies, logName)
         {
@@ -44,10 +44,10 @@ namespace ToSic.Eav.Apps
         }
 
         public AppManager(AppRuntimeDependencies dependencies,
-            LazyInit<AppRuntime> appRuntime,
-            LazyInit<DbDataController> dbDataController,
-            LazyInit<EntitiesManager> entitiesManager,
-            LazyInit<QueryManager> queryManager
+            LazySvc<AppRuntime> appRuntime,
+            LazySvc<DbDataController> dbDataController,
+            LazySvc<EntitiesManager> entitiesManager,
+            LazySvc<QueryManager> queryManager
             ) : this(dependencies, appRuntime, dbDataController, entitiesManager, queryManager, "Eav.AppMan")
         { }
 

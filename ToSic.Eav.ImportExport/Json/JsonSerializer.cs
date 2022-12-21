@@ -17,7 +17,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         public new class Dependencies: SerializerBase.Dependencies
         {
-            public Dependencies(ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder, LazyInit<IValueConverter> valueConverter)
+            public Dependencies(ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder, LazySvc<IValueConverter> valueConverter)
                 : base(metadataTargets, appStates)
             {
                 AddToLogQueue(
@@ -27,7 +27,7 @@ namespace ToSic.Eav.ImportExport.Json
             }
 
             public MultiBuilder MultiBuilder { get; }
-            public LazyInit<IValueConverter> ValueConverter { get; }
+            public LazySvc<IValueConverter> ValueConverter { get; }
         }
 
         #endregion

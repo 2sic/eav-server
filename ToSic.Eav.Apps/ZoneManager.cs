@@ -10,15 +10,15 @@ namespace ToSic.Eav.Apps
     {
         #region Constructor and simple properties
 
-        public ZoneManager(LazyInit<DbDataController> dbLazy, LazyInit<SystemManager> systemManagerLazy) : base("App.Zone")
+        public ZoneManager(LazySvc<DbDataController> dbLazy, LazySvc<SystemManager> systemManagerLazy) : base("App.Zone")
         {
             ConnectServices(
                 _dbLazy = dbLazy,
                 _systemManagerLazy = systemManagerLazy
             );
         }
-        private readonly LazyInit<DbDataController> _dbLazy;
-        private readonly LazyInit<SystemManager> _systemManagerLazy;
+        private readonly LazySvc<DbDataController> _dbLazy;
+        private readonly LazySvc<SystemManager> _systemManagerLazy;
 
 
         internal DbDataController DataController => _eavContext ?? (_eavContext = _dbLazy.Value.Init(ZoneId, null));

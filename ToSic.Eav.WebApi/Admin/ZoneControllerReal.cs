@@ -15,13 +15,13 @@ namespace ToSic.Eav.WebApi.Admin
     public class ZoneControllerReal : ServiceBase, IZoneController
     {
         public const string LogSuffix = "Zone";
-        public ZoneControllerReal(LazyInit<LanguagesBackend> languagesBackend, LazyInit<ZoneBackend> zoneBackend): base("Api.ZoneRl") =>
+        public ZoneControllerReal(LazySvc<LanguagesBackend> languagesBackend, LazySvc<ZoneBackend> zoneBackend): base("Api.ZoneRl") =>
             ConnectServices(
                 _languagesBackend = languagesBackend,
                 _zoneBackend = zoneBackend
             );
-        private readonly LazyInit<LanguagesBackend> _languagesBackend;
-        private readonly LazyInit<ZoneBackend> _zoneBackend;
+        private readonly LazySvc<LanguagesBackend> _languagesBackend;
+        private readonly LazySvc<ZoneBackend> _zoneBackend;
 
         /// <inheritdoc />
         public IList<SiteLanguageDto> GetLanguages() => _languagesBackend.Value.GetLanguages();

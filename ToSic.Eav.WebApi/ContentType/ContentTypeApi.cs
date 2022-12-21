@@ -25,11 +25,11 @@ namespace ToSic.Eav.WebApi
         #region Constructor / DI
 
         public ContentTypeApi(
-            LazyInit<AppRuntime> appRuntimeLazy, 
-            LazyInit<AppManager> appManagerLazy, 
-            LazyInit<DbDataController> dbLazy, 
+            LazySvc<AppRuntime> appRuntimeLazy, 
+            LazySvc<AppManager> appManagerLazy, 
+            LazySvc<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
-            LazyInit<IConvertToEavLight> convertToEavLight, 
+            LazySvc<IConvertToEavLight> convertToEavLight, 
             IAppStates appStates) : base("Api.EavCTC")
         {
             ConnectServices(
@@ -42,11 +42,11 @@ namespace ToSic.Eav.WebApi
             );
         }
 
-        private readonly LazyInit<AppRuntime> _appRuntimeLazy;
-        private readonly LazyInit<AppManager> _appManagerLazy;
-        private readonly LazyInit<DbDataController> _dbLazy;
+        private readonly LazySvc<AppRuntime> _appRuntimeLazy;
+        private readonly LazySvc<AppManager> _appManagerLazy;
+        private readonly LazySvc<DbDataController> _dbLazy;
         private readonly AppInitializedChecker _appInitializedChecker;
-        private readonly LazyInit<IConvertToEavLight> _convertToEavLight;
+        private readonly LazySvc<IConvertToEavLight> _convertToEavLight;
         private readonly IAppStates _appStates;
         private AppManager AppManager { get; set; }
 

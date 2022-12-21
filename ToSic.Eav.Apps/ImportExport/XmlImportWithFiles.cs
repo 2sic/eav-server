@@ -17,26 +17,26 @@ namespace ToSic.Eav.Apps.ImportExport
 	{
         public class Dependencies: ServiceDependencies
         {
-            public LazyInit<ContentTypeAttributeBuilder> CtAttribBuilder { get; }
-            internal readonly LazyInit<Import> _importerLazy;
-            internal readonly LazyInit<DbDataController> _dbDataForNewApp;
-            internal readonly LazyInit<DbDataController> _dbDataForAppImport;
+            public LazySvc<ContentTypeAttributeBuilder> CtAttribBuilder { get; }
+            internal readonly LazySvc<Import> _importerLazy;
+            internal readonly LazySvc<DbDataController> _dbDataForNewApp;
+            internal readonly LazySvc<DbDataController> _dbDataForAppImport;
             internal readonly IImportExportEnvironment _environment;
             internal readonly ITargetTypes _metaTargetTypes;
             internal readonly IAppStates AppStates;
-            internal readonly LazyInit<XmlToEntity> _xmlToEntity;
+            internal readonly LazySvc<XmlToEntity> _xmlToEntity;
             internal readonly SystemManager SystemManager;
 
             public Dependencies(
-                LazyInit<Import> importerLazy,
-                LazyInit<DbDataController> dbDataForNewApp,
-                LazyInit<DbDataController> dbDataForAppImport,
+                LazySvc<Import> importerLazy,
+                LazySvc<DbDataController> dbDataForNewApp,
+                LazySvc<DbDataController> dbDataForAppImport,
                 IImportExportEnvironment importExportEnvironment,
                 ITargetTypes metaTargetTypes,
                 SystemManager systemManager,
                 IAppStates appStates,
-                LazyInit<XmlToEntity> xmlToEntity,
-                LazyInit<ContentTypeAttributeBuilder> ctAttribBuilder
+                LazySvc<XmlToEntity> xmlToEntity,
+                LazySvc<ContentTypeAttributeBuilder> ctAttribBuilder
                     )
             {
                 AddToLogQueue(

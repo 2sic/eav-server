@@ -18,7 +18,7 @@ namespace ToSic.Eav.WebApi.Languages
     {
         #region Constructor & DI
         
-        public LanguagesBackend(LazyInit<IZoneMapper> zoneMapper, LazyInit<ZoneManager> zoneManager, ISite site, LazyInit<AppUserLanguageCheck> appUserLanguageCheckLazy) 
+        public LanguagesBackend(LazySvc<IZoneMapper> zoneMapper, LazySvc<ZoneManager> zoneManager, ISite site, LazySvc<AppUserLanguageCheck> appUserLanguageCheckLazy) 
             : base("Bck.Admin") =>
             ConnectServices(
                 _zoneManager = zoneManager,
@@ -27,10 +27,10 @@ namespace ToSic.Eav.WebApi.Languages
                 _zoneMapper = zoneMapper
             );
 
-        private readonly LazyInit<IZoneMapper> _zoneMapper;
-        private readonly LazyInit<ZoneManager> _zoneManager;
+        private readonly LazySvc<IZoneMapper> _zoneMapper;
+        private readonly LazySvc<ZoneManager> _zoneManager;
         private readonly ISite _site;
-        private readonly LazyInit<AppUserLanguageCheck> _appUserLanguageCheckLazy;
+        private readonly LazySvc<AppUserLanguageCheck> _appUserLanguageCheckLazy;
 
         #endregion
 

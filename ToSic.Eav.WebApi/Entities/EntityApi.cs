@@ -23,8 +23,8 @@ namespace ToSic.Eav.WebApi
         #region DI Constructor & Init
 
         public EntityApi(AppRuntime appRuntime, 
-            LazyInit<AppManager> appManagerLazy, 
-            LazyInit<IConvertToEavLight> entitiesToDicLazy, 
+            LazySvc<AppManager> appManagerLazy, 
+            LazySvc<IConvertToEavLight> entitiesToDicLazy, 
             EntityBuilder entityBuilder, 
             Generator<MultiPermissionsTypes> multiPermissionsTypes) : base("Api.Entity")
         {
@@ -37,8 +37,8 @@ namespace ToSic.Eav.WebApi
             );
         }
         private readonly AppRuntime _appRuntime;
-        private readonly LazyInit<AppManager> _appManagerLazy;
-        private readonly LazyInit<IConvertToEavLight> _entitiesToDicLazy;
+        private readonly LazySvc<AppManager> _appManagerLazy;
+        private readonly LazySvc<IConvertToEavLight> _entitiesToDicLazy;
         private readonly EntityBuilder _entityBuilder;
         private readonly Generator<MultiPermissionsTypes> _multiPermissionsTypes;
         public AppRuntime AppRead;

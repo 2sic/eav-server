@@ -17,12 +17,12 @@ namespace ToSic.Eav.Persistence.Efc
 
         public Efc11Loader(
             EavDbContext dbContext,
-            LazyInit<IZoneCultureResolver> environmentLazy,
+            LazySvc<IZoneCultureResolver> environmentLazy,
             IServiceProvider serviceProvider,
             IAppInitializedChecker initializedChecker,
             IAppStates appStates,
             ILogStore logStore,
-            LazyInit<IFeaturesInternal> featuresService,
+            LazySvc<IFeaturesInternal> featuresService,
             MultiBuilder multiBuilder
             ) : base("Db.Efc11")
         {
@@ -46,11 +46,11 @@ namespace ToSic.Eav.Persistence.Efc
 
         private IServiceProvider ServiceProvider { get; }
         private EavDbContext _dbContext;
-        private readonly LazyInit<IZoneCultureResolver> _environmentLazy;
+        private readonly LazySvc<IZoneCultureResolver> _environmentLazy;
         private readonly IAppInitializedChecker _initializedChecker;
         private readonly IAppStates _appStates;
         private readonly ILogStore _logStore;
-        private readonly LazyInit<IFeaturesInternal> _featuresService;
+        private readonly LazySvc<IFeaturesInternal> _featuresService;
         private readonly MultiBuilder _multiBuilder;
 
         #endregion

@@ -15,7 +15,7 @@ namespace ToSic.Eav.Run
         public SystemLoader(
             ILogStore logStore,
             IEnumerable<IStartUpRegistrations> registrations,
-            LazyInit<EavSystemLoader> systemLoaderLazy // This must be lazy, as some dependencies of it could change till it's needed
+            LazySvc<EavSystemLoader> systemLoaderLazy // This must be lazy, as some dependencies of it could change till it's needed
         ) : base($"{LogNames.Eav}SysLdr")
         {
             logStore.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
@@ -26,7 +26,7 @@ namespace ToSic.Eav.Run
             );
         }
         private readonly IEnumerable<IStartUpRegistrations> _registrations;
-        private readonly LazyInit<EavSystemLoader> _systemLoaderLazy;
+        private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
 
         /// <summary>
         /// This is just for public access, don't use in this file

@@ -12,10 +12,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public  partial class DbVersioning: BllCommandBase
     {
-        private readonly LazyInit<Compressor> _compressor;
+        private readonly LazySvc<Compressor> _compressor;
         private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
-        internal DbVersioning(DbDataController db, LazyInit<Compressor> compressor) : base(db, "Db.Vers")
+        internal DbVersioning(DbDataController db, LazySvc<Compressor> compressor) : base(db, "Db.Vers")
         {
             _compressor = compressor;
         }

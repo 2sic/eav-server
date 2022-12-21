@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSources.Sys
     public sealed class QueryInfo : DataSourceBase
     {
         public QueryBuilder QueryBuilder { get; }
-        private readonly LazyInit<QueryManager> _queryManagerLazy;
+        private readonly LazySvc<QueryManager> _queryManagerLazy;
         private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value.Init(Log));
         private QueryManager _queryManager;
 
@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-        public QueryInfo(LazyInit<QueryManager> queryManagerLazy, QueryBuilder queryBuilder)
+        public QueryInfo(LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder)
         {
             ConnectServices(
                 QueryBuilder = queryBuilder,

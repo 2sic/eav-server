@@ -14,7 +14,7 @@ namespace ToSic.Eav.WebApi.Admin.Features
         #region Constructor / DI
 
         public FeatureControllerReal(
-            LazyInit<EavSystemLoader> systemLoaderLazy
+            LazySvc<EavSystemLoader> systemLoaderLazy
             ) : base("Bck.Feats") =>
             ConnectServices(_systemLoaderLazy = systemLoaderLazy);
 
@@ -22,7 +22,7 @@ namespace ToSic.Eav.WebApi.Admin.Features
         /// <summary>
         /// Must be lazy, to avoid log being filled with sys-loading infos when this service is being used
         /// </summary>
-        private readonly LazyInit<EavSystemLoader> _systemLoaderLazy;
+        private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
 
         #endregion
 

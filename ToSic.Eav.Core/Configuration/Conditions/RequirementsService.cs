@@ -11,14 +11,14 @@ namespace ToSic.Eav.Configuration
     /// </summary>
     public class RequirementsService: ServiceBase
     {
-        public RequirementsService(LazyInit<ServiceSwitcher<IRequirementCheck>> checkers) : base(LogNames.Eav + "ReqSvc")
+        public RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> checkers) : base(LogNames.Eav + "ReqSvc")
         {
             ConnectServices(
                 Checkers = checkers
             );
         }
 
-        protected LazyInit<ServiceSwitcher<IRequirementCheck>> Checkers { get; }
+        protected LazySvc<ServiceSwitcher<IRequirementCheck>> Checkers { get; }
 
         public List<ConditionError> Check(IEnumerable<IHasRequirements> withRequirements)
         {

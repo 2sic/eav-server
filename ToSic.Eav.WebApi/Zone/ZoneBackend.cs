@@ -20,7 +20,7 @@ namespace ToSic.Eav.WebApi.Zone
             IZoneMapper zoneMapper,
             IPlatformInfo platform,
             ISite site,
-            LazyInit<ILicenseService> licenseService,
+            LazySvc<ILicenseService> licenseService,
             ILogStoreLive logStore
             ) : base("Bck.Zones") =>
             ConnectServices(
@@ -38,7 +38,7 @@ namespace ToSic.Eav.WebApi.Zone
         private readonly IZoneMapper _zoneMapper;
         private readonly IPlatformInfo _platform;
         private readonly ISite _site;
-        private readonly LazyInit<ILicenseService> _licenseService;
+        private readonly LazySvc<ILicenseService> _licenseService;
         private readonly ILogStoreLive _logStore;
 
         public SystemInfoSetDto GetSystemInfo()

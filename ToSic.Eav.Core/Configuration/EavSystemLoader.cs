@@ -24,7 +24,7 @@ namespace ToSic.Eav.Configuration
         public EavSystemLoader(
             SystemFingerprint fingerprint, 
             IRuntime runtime, 
-            LazyInit<IGlobalConfiguration> globalConfiguration, 
+            LazySvc<IGlobalConfiguration> globalConfiguration, 
             AppsCacheSwitch appsCache, 
             IFeaturesInternal features, 
             FeatureConfigManager featureConfigManager, 
@@ -47,7 +47,7 @@ namespace ToSic.Eav.Configuration
         }
         public SystemFingerprint Fingerprint { get; }
         private readonly IRuntime _appStateLoader;
-        private readonly LazyInit<IGlobalConfiguration> _globalConfiguration;
+        private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
         private readonly AppsCacheSwitch _appsCache;
         public readonly IFeaturesInternal Features;
         private readonly FeatureConfigManager _featureConfigManager;

@@ -18,11 +18,11 @@ namespace ToSic.Eav.DataSources
 
         public DataSourceFactory(IServiceProvider serviceProvider,
             Generator<IAppStates> appStatesGen,
-            LazyInit<ILookUpEngineResolver> lookupResolveLazy, 
+            LazySvc<ILookUpEngineResolver> lookupResolveLazy, 
             Generator<IDataBuilder> dataBuilderLazy,
-            LazyInit<IZoneCultureResolver> zoneCultureResolverLazy,
-            LazyInit<DataSourceErrorHandling> dataSourceErrorsLazy,
-            LazyInit<QueryBuilder> queryBuilderLazy
+            LazySvc<IZoneCultureResolver> zoneCultureResolverLazy,
+            LazySvc<DataSourceErrorHandling> dataSourceErrorsLazy,
+            LazySvc<QueryBuilder> queryBuilderLazy
             ) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
             ConnectServices(
@@ -38,11 +38,11 @@ namespace ToSic.Eav.DataSources
 
         private readonly IServiceProvider _serviceProvider;
         private readonly Generator<IAppStates> _appStatesGen;
-        private readonly LazyInit<ILookUpEngineResolver> _lookupResolveLazy;
+        private readonly LazySvc<ILookUpEngineResolver> _lookupResolveLazy;
         private readonly Generator<IDataBuilder> _dataBuilderLazy;
-        private readonly LazyInit<IZoneCultureResolver> _zoneCultureResolverLazy;
-        private readonly LazyInit<DataSourceErrorHandling> _dataSourceErrorsLazy;
-        private readonly LazyInit<QueryBuilder> _queryBuilderLazy;
+        private readonly LazySvc<IZoneCultureResolver> _zoneCultureResolverLazy;
+        private readonly LazySvc<DataSourceErrorHandling> _dataSourceErrorsLazy;
+        private readonly LazySvc<QueryBuilder> _queryBuilderLazy;
 
         #endregion
 

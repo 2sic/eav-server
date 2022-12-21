@@ -16,12 +16,12 @@ namespace ToSic.Eav.WebApi.Admin
     {
         public const string LogSuffix = "Entity";
         public EntityControllerReal(
-            LazyInit<IContextOfSite> context, 
-            LazyInit<IAppStates> appStates, 
-            LazyInit<EntityApi> entityApi, 
-            LazyInit<ContentExportApi<THttpResponseType>> contentExport, 
-            LazyInit<ContentImportApi> contentImport, 
-            LazyInit<IUser> user,
+            LazySvc<IContextOfSite> context, 
+            LazySvc<IAppStates> appStates, 
+            LazySvc<EntityApi> entityApi, 
+            LazySvc<ContentExportApi<THttpResponseType>> contentExport, 
+            LazySvc<ContentImportApi> contentImport, 
+            LazySvc<IUser> user,
             ResponseMaker<THttpResponseType> responseMaker)
             : base("Api.EntityRl") =>
             ConnectServices(
@@ -34,12 +34,12 @@ namespace ToSic.Eav.WebApi.Admin
                 _responseMaker = responseMaker
             );
 
-        private readonly LazyInit<IContextOfSite> _context;
-        private readonly LazyInit<IAppStates> _appStates;
-        private readonly LazyInit<EntityApi> _entityApi;
-        private readonly LazyInit<ContentExportApi<THttpResponseType>> _contentExport;
-        private readonly LazyInit<ContentImportApi> _contentImport;
-        private readonly LazyInit<IUser> _user;
+        private readonly LazySvc<IContextOfSite> _context;
+        private readonly LazySvc<IAppStates> _appStates;
+        private readonly LazySvc<EntityApi> _entityApi;
+        private readonly LazySvc<ContentExportApi<THttpResponseType>> _contentExport;
+        private readonly LazySvc<ContentImportApi> _contentImport;
+        private readonly LazySvc<IUser> _user;
         private readonly ResponseMaker<THttpResponseType> _responseMaker;
 
 

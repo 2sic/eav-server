@@ -18,11 +18,11 @@ namespace ToSic.Eav.WebApi.Admin
     {
         public const string LogSuffix = "AppInternals";
         public AppInternalsControllerReal(
-            LazyInit<IContextOfSite> context,
-            LazyInit<ContentTypeApi> ctApiLazy,
-            LazyInit<IAppStates> appStates,
-            LazyInit<EntityApi> entityApi,
-            LazyInit<MetadataControllerReal> metadataControllerReal)
+            LazySvc<IContextOfSite> context,
+            LazySvc<ContentTypeApi> ctApiLazy,
+            LazySvc<IAppStates> appStates,
+            LazySvc<EntityApi> entityApi,
+            LazySvc<MetadataControllerReal> metadataControllerReal)
             : base("Api.AppInternalsRl") =>
             ConnectServices(
                 _context = context,
@@ -32,11 +32,11 @@ namespace ToSic.Eav.WebApi.Admin
                 _metadataControllerReal = metadataControllerReal
             );
 
-        private readonly LazyInit<IContextOfSite> _context;
-        private readonly LazyInit<ContentTypeApi> _ctApiLazy;
-        private readonly LazyInit<IAppStates> _appStates;
-        private readonly LazyInit<EntityApi> _entityApi;
-        private readonly LazyInit<MetadataControllerReal> _metadataControllerReal;
+        private readonly LazySvc<IContextOfSite> _context;
+        private readonly LazySvc<ContentTypeApi> _ctApiLazy;
+        private readonly LazySvc<IAppStates> _appStates;
+        private readonly LazySvc<EntityApi> _entityApi;
+        private readonly LazySvc<MetadataControllerReal> _metadataControllerReal;
 
         /// <inheritdoc/>
         public AppInternalsDto Get(int appId, int targetType, string keyType, string key)

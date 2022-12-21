@@ -9,16 +9,16 @@ namespace ToSic.Lib.DI
     /// This should reduce the amount of plumbing in many code files
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LazyInit<T>: ILazySvc<T> where T : class
+    public class LazySvc<T>: ILazySvc<T> where T : class
     {
-        public LazyInit(Lazy<T> valueLazy) => _valueLazy = valueLazy;
+        public LazySvc(Lazy<T> valueLazy) => _valueLazy = valueLazy;
         private readonly Lazy<T> _valueLazy;
 
         /// <summary>
         /// Set the init-command as needed
         /// </summary>
         /// <param name="newInitCall"></param>
-        public LazyInit<T> SetInit(Action<T> newInitCall)
+        public LazySvc<T> SetInit(Action<T> newInitCall)
         {
 #if DEBUG
             // Warn if we're accidentally replacing init-call, but only do this on debug

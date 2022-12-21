@@ -20,7 +20,7 @@ namespace ToSic.Eav.WebApi.Sys
             IAppStates appStates, 
             SystemManager systemManager,
             ILogStoreLive logStore, 
-            LazyInit<ILicenseService> licenseServiceLazy, 
+            LazySvc<ILicenseService> licenseServiceLazy, 
             IUser user, 
             LightSpeedStats lightSpeedStats)
             : base("Api.SysIns")
@@ -38,7 +38,7 @@ namespace ToSic.Eav.WebApi.Sys
         private readonly IServiceProvider _serviceProvider;
         private readonly IAppStates _appStates;
         private readonly ILogStoreLive _logStore;
-        private readonly LazyInit<ILicenseService> _licenseServiceLazy;
+        private readonly LazySvc<ILicenseService> _licenseServiceLazy;
         private readonly IUser _user;
         private readonly LightSpeedStats _lightSpeedStats;
         protected readonly SystemManager SystemManager;

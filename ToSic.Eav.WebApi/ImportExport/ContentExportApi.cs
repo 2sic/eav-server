@@ -31,7 +31,7 @@ namespace ToSic.Eav.WebApi.ImportExport
     {
         private AppManager _appManager;
         public ContentExportApi(
-            LazyInit<AppManager> appManagerLazy, 
+            LazySvc<AppManager> appManagerLazy, 
             IAppStates appStates,
             Generator<JsonSerializer> jsonSerializer,
             ResponseMaker<THttpResponseType> responseMaker
@@ -44,7 +44,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 _responseMaker = responseMaker
             );
         }
-        private readonly LazyInit<AppManager> _appManagerLazy;
+        private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly IAppStates _appStates;
         private readonly Generator<JsonSerializer> _jsonSerializer;
         private readonly ResponseMaker<THttpResponseType> _responseMaker;

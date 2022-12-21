@@ -7,13 +7,13 @@ namespace ToSic.Eav.Data.Builder
 {
     public class AttributeBuilderForImport: AttributeBuilder
     {
-        public AttributeBuilderForImport(LazyInit<IValueConverter> valueConverter, ValueBuilder valueBuilder) : base(valueBuilder)
+        public AttributeBuilderForImport(LazySvc<IValueConverter> valueConverter, ValueBuilder valueBuilder) : base(valueBuilder)
         {
             ConnectServices(
                 _valueConverter = valueConverter
             );
         }
-        private readonly LazyInit<IValueConverter> _valueConverter;
+        private readonly LazySvc<IValueConverter> _valueConverter;
 
 
         #region Helper to add a value with languages to an existing list of Attributes

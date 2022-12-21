@@ -13,16 +13,16 @@ namespace ToSic.Eav.Apps
 
         #region constructors
         
-        private readonly LazyInit<EntityRuntime> _entityRuntime;
-        private readonly LazyInit<MetadataRuntime> _metadataRuntime;
-        private readonly LazyInit<ContentTypeRuntime> _contentTypeRuntime;
-        private readonly LazyInit<QueryRuntime> _queryRuntime;
+        private readonly LazySvc<EntityRuntime> _entityRuntime;
+        private readonly LazySvc<MetadataRuntime> _metadataRuntime;
+        private readonly LazySvc<ContentTypeRuntime> _contentTypeRuntime;
+        private readonly LazySvc<QueryRuntime> _queryRuntime;
 
         public AppRuntime(AppRuntimeDependencies dependencies,
-            LazyInit<EntityRuntime> entityRuntime,
-            LazyInit<MetadataRuntime> metadataRuntime,
-            LazyInit<ContentTypeRuntime> contentTypeRuntime,
-            LazyInit<QueryRuntime> queryRuntime,
+            LazySvc<EntityRuntime> entityRuntime,
+            LazySvc<MetadataRuntime> metadataRuntime,
+            LazySvc<ContentTypeRuntime> contentTypeRuntime,
+            LazySvc<QueryRuntime> queryRuntime,
             string logName = null) : base(dependencies,
             logName ?? "Eav.AppRt")
         {

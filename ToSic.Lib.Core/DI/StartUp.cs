@@ -12,8 +12,8 @@ namespace ToSic.Lib.DI
             services.TryAddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
 
             // Lazy Init
-            services.TryAddTransient(typeof(LazyInit<>));
-            services.TryAddTransient(typeof(ILazySvc<>), typeof(LazyInit<>));
+            services.TryAddTransient(typeof(LazySvc<>));
+            services.TryAddTransient(typeof(ILazySvc<>), typeof(LazySvc<>));
             //services.TryAddTransient(typeof(LazyInitLog<>));
 
             // Generators

@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources
         internal Generator<IDataBuilder> _dataBuilderLazy;
 
         [PrivateApi] public DataSourceErrorHandling ErrorHandler => _dataSourceErrorHandlingLazy.Value;
-        [PrivateApi] internal LazyInit<DataSourceErrorHandling> _dataSourceErrorHandlingLazy;
+        [PrivateApi] internal LazySvc<DataSourceErrorHandling> _dataSourceErrorHandlingLazy;
 
         #endregion
 

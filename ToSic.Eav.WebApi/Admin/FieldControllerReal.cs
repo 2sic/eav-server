@@ -14,15 +14,15 @@ namespace ToSic.Eav.WebApi.Admin
     {
         public const string LogSuffix = "Field";
 
-        public FieldControllerReal(LazyInit<AppRuntime> appRuntime, LazyInit<ContentTypeApi> ctApiLazy): base("Api.FieldRl")
+        public FieldControllerReal(LazySvc<AppRuntime> appRuntime, LazySvc<ContentTypeApi> ctApiLazy): base("Api.FieldRl")
         {
             ConnectServices(
                 _appRuntime = appRuntime,
                 _ctApiLazy = ctApiLazy
             );
         }
-        private readonly LazyInit<AppRuntime> _appRuntime;
-        private readonly LazyInit<ContentTypeApi> _ctApiLazy;
+        private readonly LazySvc<AppRuntime> _appRuntime;
+        private readonly LazySvc<ContentTypeApi> _ctApiLazy;
 
         #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
 

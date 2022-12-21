@@ -23,11 +23,11 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         private const string DefaultLicenseFileName = "default.license.json";
 
         public LicenseControllerReal(
-            LazyInit<ILicenseService> licenseServiceLazy, 
-            LazyInit<IFeaturesInternal> featuresLazy,
-            LazyInit<IGlobalConfiguration> globalConfiguration,
-            LazyInit<EavSystemLoader> systemLoaderLazy,
-            LazyInit<LicenseCatalog> licenseCatalog
+            LazySvc<ILicenseService> licenseServiceLazy, 
+            LazySvc<IFeaturesInternal> featuresLazy,
+            LazySvc<IGlobalConfiguration> globalConfiguration,
+            LazySvc<EavSystemLoader> systemLoaderLazy,
+            LazySvc<LicenseCatalog> licenseCatalog
             ) : base("Bck.Lics")
         {
             ConnectServices(
@@ -38,11 +38,11 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                 _systemLoaderLazy = systemLoaderLazy
             );
         }
-        private readonly LazyInit<ILicenseService> _licenseServiceLazy;
-        private readonly LazyInit<IFeaturesInternal> _featuresLazy;
-        private readonly LazyInit<IGlobalConfiguration> _globalConfiguration;
-        private readonly LazyInit<LicenseCatalog> _licenseCatalog;
-        private readonly LazyInit<EavSystemLoader> _systemLoaderLazy;
+        private readonly LazySvc<ILicenseService> _licenseServiceLazy;
+        private readonly LazySvc<IFeaturesInternal> _featuresLazy;
+        private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
+        private readonly LazySvc<LicenseCatalog> _licenseCatalog;
+        private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
 
         private string ConfigurationsPath
         {

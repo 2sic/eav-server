@@ -24,7 +24,7 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public override string LogId => "DS.AppCUD";
 
-        public AppData(LazyInit<SimpleDataController> dataController, IAppStates appStates): base(appStates) 
+        public AppData(LazySvc<SimpleDataController> dataController, IAppStates appStates): base(appStates) 
             => DataController = dataController.SetInit(dc => dc.Init(Log).Init(ZoneId, AppId, false));
 
         #endregion
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps
         /// Get a correctly instantiated instance of the simple data controller once needed.
         /// </summary>
         /// <returns>An data controller to create, update and delete entities</returns>
-        private LazyInit<SimpleDataController> DataController { get; }
+        private LazySvc<SimpleDataController> DataController { get; }
 
         /// <inheritdoc />
         public IEntity Create(string contentTypeName,

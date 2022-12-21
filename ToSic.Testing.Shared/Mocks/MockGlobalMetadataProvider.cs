@@ -26,7 +26,7 @@ namespace ToSic.Testing.Shared.Mocks
             }).ToImmutableDictionary();
         }
 
-        public MockGlobalMetadataProvider(LazyInit<EavDbContext> dbLazy) : base(dbLazy)
+        public MockGlobalMetadataProvider(LazySvc<EavDbContext> dbLazy) : base(dbLazy)
         {
         }
     }

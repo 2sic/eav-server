@@ -106,12 +106,12 @@ namespace ToSic.Eav.Repository.Efc
 
         public DbDataController(
             EavDbContext dbContext,
-            LazyInit<Efc11Loader> efcLoaderLazy,
-            LazyInit<IUser> userLazy,
+            LazySvc<Efc11Loader> efcLoaderLazy,
+            LazySvc<IUser> userLazy,
             AppsCacheSwitch appsCache,
             Generator<JsonSerializer> jsonSerializerGenerator,
             ILogStore logStore,
-            LazyInit<Compressor> compressor
+            LazySvc<Compressor> compressor
             ) : base("Db.Data")
         {
             ConnectServices(
@@ -126,11 +126,11 @@ namespace ToSic.Eav.Repository.Efc
             SqlDb.AlternateSaveHandler += SaveChanges;
         }
 
-        private readonly LazyInit<Efc11Loader> _efcLoaderLazy;
-        private readonly LazyInit<IUser> _userLazy;
+        private readonly LazySvc<Efc11Loader> _efcLoaderLazy;
+        private readonly LazySvc<IUser> _userLazy;
         private readonly AppsCacheSwitch _appsCache;
         private readonly ILogStore _logStore;
-        private readonly LazyInit<Compressor> _compressor;
+        private readonly LazySvc<Compressor> _compressor;
 
         public EavDbContext SqlDb { get; }
         internal Generator<JsonSerializer> JsonSerializerGenerator { get; }

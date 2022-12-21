@@ -14,10 +14,10 @@ namespace ToSic.Eav.Configuration
 {
     public class FeatureConfigManager : ServiceBase
     {
-        private readonly LazyInit<IGlobalConfiguration> _globalConfiguration;
-        private readonly LazyInit<SystemFingerprint> _fingerprint;
+        private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
+        private readonly LazySvc<SystemFingerprint> _fingerprint;
 
-        public FeatureConfigManager(LazyInit<IGlobalConfiguration> globalConfiguration, LazyInit<SystemFingerprint> fingerprint) : base("FeatCfgMng")
+        public FeatureConfigManager(LazySvc<IGlobalConfiguration> globalConfiguration, LazySvc<SystemFingerprint> fingerprint) : base("FeatCfgMng")
         {
             ConnectServices(
                 _globalConfiguration = globalConfiguration,

@@ -16,7 +16,7 @@ namespace ToSic.Eav.Caching
         public AppsCacheSwitch(
             ILogStore logStore,
             IFeaturesInternal featuresService,
-            LazyInit<ServiceSwitcher<IAppsCacheSwitchable>> serviceSwitcher
+            LazySvc<ServiceSwitcher<IAppsCacheSwitchable>> serviceSwitcher
         ) : base(logStore, serviceSwitcher) =>
             ConnectServices(_featuresService = featuresService);
 

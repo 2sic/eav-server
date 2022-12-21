@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.Security
 
         public class Dependencies: ServiceDependencies
         {
-            public Dependencies(LazyInit<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator, Generator<IFeaturesInternal> featIntGen)
+            public Dependencies(LazySvc<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator, Generator<IFeaturesInternal> featIntGen)
             {
                 AddToLogQueue(
                     ZoneMapper = zoneMapper,
@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps.Security
                     FeatIntGen = featIntGen
                 );
             }
-            internal LazyInit<IZoneMapper> ZoneMapper { get; }
+            internal LazySvc<IZoneMapper> ZoneMapper { get; }
             internal Generator<AppPermissionCheck> AppPermCheckGenerator { get; }
             internal Generator<IFeaturesInternal> FeatIntGen { get; }
 

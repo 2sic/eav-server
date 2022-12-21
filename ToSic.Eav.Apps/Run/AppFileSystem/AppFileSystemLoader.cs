@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps.Run
 
         public class Dependencies: ServiceDependencies
         {
-            public Dependencies(ISite site, Generator<FileSystemLoader> fslGenerator, LazyInit<AppPaths> appPathsLazy)
+            public Dependencies(ISite site, Generator<FileSystemLoader> fslGenerator, LazySvc<AppPaths> appPathsLazy)
             {
                 AddToLogQueue(
                     Site = site,
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps.Run
             }
             public ISite Site { get; }
             internal Generator<FileSystemLoader> FslGenerator { get; }
-            internal LazyInit<AppPaths> AppPathsLazy { get; }
+            internal LazySvc<AppPaths> AppPathsLazy { get; }
         }
 
         /// <summary>

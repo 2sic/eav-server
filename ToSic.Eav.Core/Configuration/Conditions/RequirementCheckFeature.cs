@@ -6,8 +6,8 @@ namespace ToSic.Eav.Configuration
     {
         public const string ConditionIsFeature = "feature";
 
-        public RequirementCheckFeature(LazyInit<IFeaturesInternal> features) => Features = features;
-        private LazyInit<IFeaturesInternal> Features { get; }
+        public RequirementCheckFeature(LazySvc<IFeaturesInternal> features) => Features = features;
+        private LazySvc<IFeaturesInternal> Features { get; }
 
         public override string NameId => ConditionIsFeature;
 

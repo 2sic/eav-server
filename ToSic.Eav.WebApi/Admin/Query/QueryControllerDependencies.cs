@@ -12,24 +12,24 @@ namespace ToSic.Eav.WebApi.Admin.Query
 {
     public class QueryControllerDependencies: ServiceDependencies
     {
-        public LazyInit<AppManager> AppManagerLazy { get; }
+        public LazySvc<AppManager> AppManagerLazy { get; }
         /// <summary>
         /// The lazy reader should only be used in the Definition - it's important that it's a new object
         /// when used, to ensure it has the changes previously saved
         /// </summary>
-        public LazyInit<AppRuntime> AppReaderLazy { get; }
+        public LazySvc<AppRuntime> AppReaderLazy { get; }
         public QueryBuilder QueryBuilder { get; }
-        public LazyInit<ConvertToEavLight> EntToDicLazy { get; }
-        public LazyInit<QueryInfo> QueryInfoLazy { get; }
-        public LazyInit<DataSourceCatalog> DataSourceCatalogLazy { get; }
+        public LazySvc<ConvertToEavLight> EntToDicLazy { get; }
+        public LazySvc<QueryInfo> QueryInfoLazy { get; }
+        public LazySvc<DataSourceCatalog> DataSourceCatalogLazy { get; }
         public Generator<JsonSerializer> JsonSerializer { get; }
 
-        public QueryControllerDependencies(LazyInit<AppManager> appManagerLazy,
-            LazyInit<AppRuntime> appReaderLazy,
+        public QueryControllerDependencies(LazySvc<AppManager> appManagerLazy,
+            LazySvc<AppRuntime> appReaderLazy,
             QueryBuilder queryBuilder,
-            LazyInit<ConvertToEavLight> entToDicLazy,
-            LazyInit<QueryInfo> queryInfoLazy,
-            LazyInit<DataSourceCatalog> dataSourceCatalogLazy,
+            LazySvc<ConvertToEavLight> entToDicLazy,
+            LazySvc<QueryInfo> queryInfoLazy,
+            LazySvc<DataSourceCatalog> dataSourceCatalogLazy,
             Generator<JsonSerializer> jsonSerializer)
         {
             AppManagerLazy = appManagerLazy;

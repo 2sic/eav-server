@@ -14,8 +14,8 @@ namespace ToSic.Eav.Apps.Parts
     // ReSharper disable once InheritdocConsiderUsage
     public class EntityRuntime: PartOf<AppRuntime>
     {
-        private readonly LazyInit<DataSourceFactory> _dataSourceFactory;
-        public EntityRuntime(LazyInit<DataSourceFactory> dataSourceFactory): base ("RT.EntRun") =>
+        private readonly LazySvc<DataSourceFactory> _dataSourceFactory;
+        public EntityRuntime(LazySvc<DataSourceFactory> dataSourceFactory): base ("RT.EntRun") =>
             ConnectServices(
                 _dataSourceFactory = dataSourceFactory
             );

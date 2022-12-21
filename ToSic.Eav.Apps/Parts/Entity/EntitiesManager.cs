@@ -26,14 +26,14 @@ namespace ToSic.Eav.Apps.Parts
         private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false));
         private Import _import;
         public EntitiesManager(
-            LazyInit<ImportListXml> lazyImportListXml,
-            LazyInit<Import> importLazy,
-            LazyInit<IImportExportEnvironment> environmentLazy, 
+            LazySvc<ImportListXml> lazyImportListXml,
+            LazySvc<Import> importLazy,
+            LazySvc<IImportExportEnvironment> environmentLazy, 
             SystemManager systemManager,
-            LazyInit<IAppLoaderTools> appLoaderTools,
-            LazyInit<EntitySaver> entitySaverLazy,
+            LazySvc<IAppLoaderTools> appLoaderTools,
+            LazySvc<EntitySaver> entitySaverLazy,
             AppsCacheSwitch appsCache, // Note: Singleton
-            LazyInit<JsonSerializer> jsonSerializer,
+            LazySvc<JsonSerializer> jsonSerializer,
             Generator<ExportListXml> exportListXmlGenerator
             ) : base("App.EntMan")
         {
@@ -50,15 +50,15 @@ namespace ToSic.Eav.Apps.Parts
             
             Serializer = jsonSerializer.SetInit(j => j.Init(Log).SetApp(Parent.AppState));
         }
-        private readonly LazyInit<ImportListXml> _lazyImportListXml;
-        private readonly LazyInit<Import> _importLazy;
-        private readonly LazyInit<IImportExportEnvironment> _environmentLazy;
-        private readonly LazyInit<IAppLoaderTools> _appLoaderTools;
-        private readonly LazyInit<EntitySaver> _entitySaverLazy;
+        private readonly LazySvc<ImportListXml> _lazyImportListXml;
+        private readonly LazySvc<Import> _importLazy;
+        private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
+        private readonly LazySvc<IAppLoaderTools> _appLoaderTools;
+        private readonly LazySvc<EntitySaver> _entitySaverLazy;
         private readonly AppsCacheSwitch _appsCache;
         private readonly Generator<ExportListXml> _exportListXmGenerator;
         protected readonly SystemManager SystemManager;
-        private LazyInit<JsonSerializer> Serializer { get; }
+        private LazySvc<JsonSerializer> Serializer { get; }
 
         #endregion
 

@@ -22,7 +22,7 @@ namespace ToSic.Eav.WebApi.ImportExport
     /// <inheritdoc />
     public class ContentImportApi : ServiceBase
     {
-        public ContentImportApi(LazyInit<AppManager> appManagerLazy, LazyInit<JsonSerializer> jsonSerializerLazy, SystemManager systemManager, IAppStates appStates) : base("Api.EaCtIm")
+        public ContentImportApi(LazySvc<AppManager> appManagerLazy, LazySvc<JsonSerializer> jsonSerializerLazy, SystemManager systemManager, IAppStates appStates) : base("Api.EaCtIm")
         {
             ConnectServices(
                 _appManagerLazy = appManagerLazy,
@@ -31,8 +31,8 @@ namespace ToSic.Eav.WebApi.ImportExport
                 _appStates = appStates
             );
         }
-        private readonly LazyInit<AppManager> _appManagerLazy;
-        private readonly LazyInit<JsonSerializer> _jsonSerializerLazy;
+        private readonly LazySvc<AppManager> _appManagerLazy;
+        private readonly LazySvc<JsonSerializer> _jsonSerializerLazy;
         private readonly SystemManager _systemManager;
         private readonly IAppStates _appStates;
         private AppManager _appManager;

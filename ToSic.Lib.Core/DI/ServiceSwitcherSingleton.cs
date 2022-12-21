@@ -13,7 +13,7 @@ namespace ToSic.Lib.DI
     {
         public ServiceSwitcherSingleton(
             ILogStore logStore,
-            LazyInit<ServiceSwitcher<T>> serviceSwitcher
+            LazySvc<ServiceSwitcher<T>> serviceSwitcher
         ) : base($"{LogNames.Eav}.SrvSwS") =>
             ConnectServices(
                 _logStore = logStore,
@@ -21,7 +21,7 @@ namespace ToSic.Lib.DI
             );
 
         private readonly ILogStore _logStore;
-        private readonly LazyInit<ServiceSwitcher<T>> _serviceSwitcher;
+        private readonly LazySvc<ServiceSwitcher<T>> _serviceSwitcher;
 
         public T Value => GetSingletonSwitchableService();
 

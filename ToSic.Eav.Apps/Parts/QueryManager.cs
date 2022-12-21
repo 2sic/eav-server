@@ -20,10 +20,10 @@ namespace ToSic.Eav.Apps.Parts
     public class QueryManager: PartOf<AppManager>
     {
         public QueryManager(
-            LazyInit<SystemManager> systemManagerLazy,
-            LazyInit<ValueBuilder> valueBuilder,
-            LazyInit<JsonSerializer> jsonSerializer,
-            LazyInit<Eav.DataSources.Queries.QueryManager> queryManager
+            LazySvc<SystemManager> systemManagerLazy,
+            LazySvc<ValueBuilder> valueBuilder,
+            LazySvc<JsonSerializer> jsonSerializer,
+            LazySvc<Eav.DataSources.Queries.QueryManager> queryManager
             ) : base("App.QryMng")
         {
             ConnectServices(
@@ -33,10 +33,10 @@ namespace ToSic.Eav.Apps.Parts
                 _queryManager = queryManager
             );
         }
-        private readonly LazyInit<SystemManager> _systemManagerLazy;
-        private readonly LazyInit<ValueBuilder> _valueBuilder;
-        private LazyInit<JsonSerializer> Serializer { get; }
-        private readonly LazyInit<Eav.DataSources.Queries.QueryManager> _queryManager;
+        private readonly LazySvc<SystemManager> _systemManagerLazy;
+        private readonly LazySvc<ValueBuilder> _valueBuilder;
+        private LazySvc<JsonSerializer> Serializer { get; }
+        private readonly LazySvc<Eav.DataSources.Queries.QueryManager> _queryManager;
 
         public void SaveCopy(int id) => SaveCopy(Parent.Read.Queries.Get(id));
 

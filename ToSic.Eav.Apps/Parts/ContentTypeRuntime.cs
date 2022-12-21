@@ -14,14 +14,14 @@ namespace ToSic.Eav.Apps.Parts
     public class ContentTypeRuntime : PartOf<AppRuntime>
     {
 
-        public ContentTypeRuntime(LazyInit<AppRuntime> lazyMetadataAppRuntime, LazyInit<IAppFileSystemLoader> appFileSystemLoaderLazy, IAppStates appStates) : base("RT.ConTyp") =>
+        public ContentTypeRuntime(LazySvc<AppRuntime> lazyMetadataAppRuntime, LazySvc<IAppFileSystemLoader> appFileSystemLoaderLazy, IAppStates appStates) : base("RT.ConTyp") =>
             ConnectServices(
                 _lazyMetadataAppRuntime = lazyMetadataAppRuntime,
                 _appFileSystemLoaderLazy = appFileSystemLoaderLazy,
                 _appStates = appStates
             );
-        private readonly LazyInit<AppRuntime> _lazyMetadataAppRuntime;
-        private readonly LazyInit<IAppFileSystemLoader> _appFileSystemLoaderLazy;
+        private readonly LazySvc<AppRuntime> _lazyMetadataAppRuntime;
+        private readonly LazySvc<IAppFileSystemLoader> _appFileSystemLoaderLazy;
         private readonly IAppStates _appStates;
 
         public IEnumerable<IContentType> All => Parent.AppState.ContentTypes;

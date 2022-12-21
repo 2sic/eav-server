@@ -12,15 +12,15 @@ namespace ToSic.Eav.Run
     {
         #region Constructor / DI
 
-        public GlobalPaths(LazyInit<IServerPaths> serverPaths, LazyInit<IGlobalConfiguration> config): base("Viw.Help")
+        public GlobalPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config): base("Viw.Help")
         {
             ConnectServices(
                 _serverPaths = serverPaths,
                 _config = config
             );
         }
-        private readonly LazyInit<IServerPaths> _serverPaths;
-        private readonly LazyInit<IGlobalConfiguration> _config;
+        private readonly LazySvc<IServerPaths> _serverPaths;
+        private readonly LazySvc<IGlobalConfiguration> _config;
 
         #endregion
         

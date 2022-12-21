@@ -12,8 +12,8 @@ namespace ToSic.Eav.Persistence.Efc
     {
         #region DI Constructor
 
-        public EfcMetadataTargetTypes(LazyInit<EavDbContext> dbLazy) => _dbLazy = dbLazy;
-        private readonly LazyInit<EavDbContext> _dbLazy;
+        public EfcMetadataTargetTypes(LazySvc<EavDbContext> dbLazy) => _dbLazy = dbLazy;
+        private readonly LazySvc<EavDbContext> _dbLazy;
 
         #endregion
 
