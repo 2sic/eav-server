@@ -62,7 +62,7 @@ namespace ToSic.Lib.Logging
                 if (Pause) return;
 
                 // don't keep in journal if it shouldn't be preserved
-                if (!log.Preserve) return;
+                if ((log as Log)?.Preserve != true) return;
             }
 
             // auto-pause after 1000 logs were run through this, till someone decides to unpause again

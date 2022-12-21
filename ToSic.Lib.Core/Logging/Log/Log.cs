@@ -130,7 +130,7 @@ namespace ToSic.Lib.Logging
             {
                 _preserve = value;
                 // pass it on to the parent if suddenly turned on, so that the chain knows if it should be preserved
-                if (value && Parent != null) Parent.Preserve = true;
+                if (value && Parent is Log logParent) logParent.Preserve = true;
             }
         }
         private bool _preserve = true;

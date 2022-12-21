@@ -8,31 +8,20 @@ namespace ToSic.Lib.Logging
     /// If chained, it can broadcast the messages to the other loggers from that time forward.
     /// Basically this is the backbone of Insights.
     ///
-    /// Note that just about all APIs to add things to logs etc. are null-safe extension methods, so they are not listed here.
+    /// To add messages/logs of all kinds you must use null-safe extension methods.
+    /// It will require you to add the namespace <see cref="Logging"/>.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just FYI")]
     public interface ILog
     {
         /// <summary>
-        /// A unique identifier containing a special XXX.yyyyy[id] name
+        /// A unique identifier containing a special `Scp.NameOf[id]` name.
+        /// This consists of
+        /// 
+        /// 1. `Scp` Scope - up to 3 characters
+        /// 1. `NameOf` Name - up to 6 characters
+        /// 1. `id` A random id 2 characters long
         /// </summary>
         string NameId { get; }
-
-        /// <summary>
-        /// Determines if this log should be preserved in the short term.
-        /// Like for live-analytics / live-insights.
-        /// Default is true, but in certain cases it will default to false.
-        /// </summary>
-        [PrivateApi]
-        bool Preserve { get; set; }
-
-        ///// <summary>
-        ///// Special internal property which is only used to ensure Logs and LogCalls both work.
-        ///// 
-        ///// Because of the way the logging works, it can be null!
-        ///// This is because it's possible to pass a null-logger around, to ensure that logging is disabled.
-        ///// </summary>
-        //[PrivateApi]
-        //ILog _RealLog { get; }
     }
 }

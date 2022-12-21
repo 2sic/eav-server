@@ -40,10 +40,5 @@ namespace ToSic.Lib.Logging
 
         public string NameId => Log?.NameId;
 
-        public bool Preserve
-        {
-            get => Log?.Preserve ?? true;
-            set { if (Log != null) Log.Preserve = value; }
-        }
     }
 }
