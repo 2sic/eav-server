@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps.Parts
             LazyInitLog<EntitySaver> entitySaverLazy,
             AppsCacheSwitch appsCache, // Note: Singleton
             LazyInit<JsonSerializer> jsonSerializer,
-            GeneratorLog<ExportListXml> exportListXmlGenerator
+            Generator<ExportListXml> exportListXmlGenerator
             ) : base("App.EntMan")
         {
             ConnectServices(
@@ -56,7 +56,7 @@ namespace ToSic.Eav.Apps.Parts
         private readonly Lazy<IAppLoaderTools> _appLoaderTools;
         private readonly LazyInitLog<EntitySaver> _entitySaverLazy;
         private readonly AppsCacheSwitch _appsCache;
-        private readonly GeneratorLog<ExportListXml> _exportListXmGenerator;
+        private readonly Generator<ExportListXml> _exportListXmGenerator;
         protected readonly SystemManager SystemManager;
         private LazyInit<JsonSerializer> Serializer { get; }
 

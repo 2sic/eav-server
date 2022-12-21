@@ -18,7 +18,7 @@ namespace ToSic.Lib.DI
             // Generators
             services.TryAddTransient(typeof(Generator<>));
             services.TryAddTransient(typeof(IGenerator<>), typeof(Generator<>));
-            services.TryAddTransient(typeof(GeneratorLog<>));
+            //services.TryAddTransient(typeof(Generator<>));
 
             // Service Switchers
             services.TryAddTransient(typeof(ServiceSwitcher<>));

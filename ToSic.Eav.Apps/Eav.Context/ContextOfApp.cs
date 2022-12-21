@@ -30,7 +30,7 @@ namespace ToSic.Eav.Context
                 IAppStates appStates,
                 Lazy<IFeaturesInternal> features,
                 LazyInitLog<AppUserLanguageCheck> langChecks,
-                GeneratorLog<IEnvironmentPermission> environmentPermissions,
+                Generator<IEnvironmentPermission> environmentPermissions,
                 LazyInitLog<AppSettingsStack> settingsStack
             ) => AddToLogQueue(
                 EnvironmentPermissions = environmentPermissions,
@@ -44,7 +44,7 @@ namespace ToSic.Eav.Context
             public Lazy<IFeaturesInternal> Features { get; }
             public LazyInitLog<AppUserLanguageCheck> LangChecks { get; }
             public LazyInitLog<AppSettingsStack> SettingsStack { get; }
-            internal readonly GeneratorLog<IEnvironmentPermission> EnvironmentPermissions;
+            internal readonly Generator<IEnvironmentPermission> EnvironmentPermissions;
         }
 
         public ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies) : base(siteCtxDeps)

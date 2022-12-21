@@ -24,8 +24,8 @@ namespace ToSic.Eav.Apps.Parts
         #region Constructor / DI
 
         public AppInitializer(
-            GeneratorLog<IRepositoryLoader> repositoryLoaderGenerator,
-            GeneratorLog<AppManager> appManagerGenerator,
+            Generator<IRepositoryLoader> repositoryLoaderGenerator,
+            Generator<AppManager> appManagerGenerator,
             SystemManager systemManager,
             IAppStates appStates) : base("Eav.AppBld")
         {
@@ -37,8 +37,8 @@ namespace ToSic.Eav.Apps.Parts
             );
         }
 
-        private readonly GeneratorLog<AppManager> _appManagerGenerator;
-        private readonly GeneratorLog<IRepositoryLoader> _repositoryLoaderGenerator;
+        private readonly Generator<AppManager> _appManagerGenerator;
+        private readonly Generator<IRepositoryLoader> _repositoryLoaderGenerator;
         private readonly IAppStates _appStates;
         protected readonly SystemManager SystemManager;
 

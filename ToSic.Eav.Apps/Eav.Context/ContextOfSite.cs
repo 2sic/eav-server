@@ -20,12 +20,12 @@ namespace ToSic.Eav.Context
         {
             public ISite Site { get; }
             public IUser User { get; }
-            public GeneratorLog<AppPermissionCheck> AppPermissionCheck { get; }
+            public Generator<AppPermissionCheck> AppPermissionCheck { get; }
 
             public Dependencies(
                 ISite site,
                 IUser user,
-                GeneratorLog<AppPermissionCheck> appPermissionCheck
+                Generator<AppPermissionCheck> appPermissionCheck
             ) => AddToLogQueue(
                 Site = site,
                 User = user,
