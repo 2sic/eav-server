@@ -61,28 +61,28 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         // TODO: #RemoveContentTypeDescription
         // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-        internal ToSicEavAttributeSets PrepareDbAttribSet(string name, string description, string staticName, string scope, bool skipExisting, int? appId)
+        internal ToSicEavAttributeSets PrepareDbAttribSet(string name, /*string description,*/ string nameId, string scope, bool skipExisting, int? appId)
         {
-            if (string.IsNullOrEmpty(staticName))
-                staticName = Guid.NewGuid().ToString();
+            if (string.IsNullOrEmpty(nameId))
+                nameId = Guid.NewGuid().ToString();
 
             var targetAppId = appId ?? DbContext.AppId;
 
             // ensure AttributeSet with StaticName doesn't exist on App
-            if (DbContext.AttribSet.DbAttribSetExists(targetAppId, staticName))
+            if (DbContext.AttribSet.DbAttribSetExists(targetAppId, nameId))
             {
                 if (skipExisting)
                     return null;
-                throw new Exception("An AttributeSet with StaticName \"" + staticName + "\" already exists.");
+                throw new Exception("An AttributeSet with StaticName \"" + nameId + "\" already exists.");
             }
 
             var newSet = new ToSicEavAttributeSets
             {
                 Name = name,
-                StaticName = staticName,
+                StaticName = nameId,
                 // TODO: #RemoveContentTypeDescription
                 // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                Description = description ?? "",
+                Description = /*description ??*/ "",
                 Scope = scope,
                 ChangeLogCreated = DbContext.Versioning.GetChangeLogId(),
                 AppId = targetAppId

@@ -60,7 +60,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // add new AttributeSet, do basic configuration if possible, then save
             if (destinationSet == null)
                 // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                destinationSet = DbContext.AttribSet.PrepareDbAttribSet(contentType.Name, "", /*contentType.Description,*/
+                destinationSet = DbContext.AttribSet.PrepareDbAttribSet(contentType.Name, /*contentType.Description,*/
                     contentType.NameId, contentType.Scope, false, null);
 
             // to use existing attribute Set, do some minimal conflict-checking

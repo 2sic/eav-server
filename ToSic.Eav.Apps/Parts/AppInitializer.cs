@@ -90,11 +90,12 @@ namespace ToSic.Eav.Apps.Parts
                     ? eavAppName
                     : RemoveIllegalCharsFromPath(newAppName);
 
-            var addList = new List<AddItemTask>();
+            var addList = new List<AddContentTypeTask>();
             if (appConfig == null)
-                addList.Add(new AddItemTask(AppLoadConstants.TypeAppConfig,
-                    "App Metadata",
-                    new Dictionary<string, object>
+                addList.Add(new AddContentTypeTask(AppLoadConstants.TypeAppConfig,
+                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                    //"App Metadata",
+                    values: new Dictionary<string, object>
                     {
                         {"DisplayName", string.IsNullOrEmpty(newAppName) ? eavAppName : newAppName},
                         {"Folder", folder},
@@ -110,13 +111,15 @@ namespace ToSic.Eav.Apps.Parts
 
             // Add new (empty) ContentType for Settings
             if (appSettings == null)
-                addList.Add(new AddItemTask(AppLoadConstants.TypeAppSettings,
-                    "Stores settings for an app"));
+                addList.Add(new AddContentTypeTask(AppLoadConstants.TypeAppSettings
+                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                    /*"Stores settings for an app"*/));
 
             // add new (empty) ContentType for Resources
             if (appResources == null)
-                addList.Add(new AddItemTask(AppLoadConstants.TypeAppResources,
-                    "Stores resources like translations for an app"));
+                addList.Add(new AddContentTypeTask(AppLoadConstants.TypeAppResources
+                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                    /*"Stores resources like translations for an app"*/));
 
             if (CreateAllMissingContentTypes(addList))
             {
@@ -137,7 +140,7 @@ namespace ToSic.Eav.Apps.Parts
 
 
 
-        private bool CreateAllMissingContentTypes(List<AddItemTask> newItems)
+        private bool CreateAllMissingContentTypes(List<AddContentTypeTask> newItems)
         {
             var wrapLog = Log.Fn<bool>($"Check for {newItems.Count}");
             var addedTypes = false;
@@ -146,7 +149,7 @@ namespace ToSic.Eav.Apps.Parts
                 {
                     Log.A("couldn't find type, will create");
                     // create App-Man if not created yet
-                    AppManager.ContentTypes.Create(item.SetName, item.SetName, item.Label, Scopes.App);
+                    AppManager.ContentTypes.Create(item.SetName, item.SetName, /* item.Description,*/ Scopes.App);
                     addedTypes = true;
                 }
                 else
@@ -155,11 +158,11 @@ namespace ToSic.Eav.Apps.Parts
             return wrapLog.ReturnAsOk(addedTypes);
         }
         
-        private void MetadataEnsureTypeAndSingleEntity(AddItemTask item)
+        private void MetadataEnsureTypeAndSingleEntity(AddContentTypeTask contentType)
         {
-            var wrapLog = Log.Fn($"{item.SetName} and {item.Label} for app {AppState.AppId} - inApp: {item.InAppType}");
+            var wrapLog = Log.Fn($"{contentType.SetName} for app {AppState.AppId} - inApp: {contentType.InAppType}");
 
-            var ct = FindContentType(item.SetName, item.InAppType);
+            var ct = FindContentType(contentType.SetName, contentType.InAppType);
 
             // if it's still null, we have a problem...
             if (ct == null)
@@ -169,7 +172,7 @@ namespace ToSic.Eav.Apps.Parts
                 throw new Exception("something went wrong - can't find type in app, but it's not a global type, so I must cancel");
             }
 
-            var values = item.Values ?? new Dictionary<string, object>();
+            var values = contentType.Values ?? new Dictionary<string, object>();
 
             var newEnt = new Entity(AppState.AppId, Guid.NewGuid(), ct, values);
             newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
@@ -201,17 +204,19 @@ namespace ToSic.Eav.Apps.Parts
         }
 
 
-        private class AddItemTask
+        private class AddContentTypeTask
         {
             public readonly string SetName;
-            public readonly string Label;
+            // TODO: #RemoveContentTypeDescription
+            // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+            //public readonly string Description;
             public readonly Dictionary<string, object> Values;
             public readonly bool InAppType;
 
-            public AddItemTask(string setName, string label, Dictionary<string, object> values = null, bool inAppType = true)
+            public AddContentTypeTask(string setName, /*string description = "",*/ Dictionary<string, object> values = null, bool inAppType = true)
             {
                 SetName = setName;
-                Label = label;
+                //Description = description;
                 Values = values;
                 InAppType = inAppType;
             }
