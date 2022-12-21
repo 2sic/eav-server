@@ -10,32 +10,33 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Admin.Metadata;
 using ToSic.Eav.WebApi.Dto;
+using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public class AppInternalsControllerReal : HasLog, IAppInternalsController
+    public class AppInternalsControllerReal : ServiceBase, IAppInternalsController
     {
         public const string LogSuffix = "AppInternals";
         public AppInternalsControllerReal(
-            LazyInitLog<IContextOfSite> context,
-            Lazy<ContentTypeApi> ctApiLazy,
-            Lazy<IAppStates> appStates,
-            Lazy<EntityApi> entityApi,
-            Lazy<MetadataControllerReal> metadataControllerReal)
-            : base("Api.AppInternalsRl")
-        {
-            _context = context.SetLog(Log);
-            _ctApiLazy = ctApiLazy;
-            _appStates = appStates;
-            _entityApi = entityApi;
-            _metadataControllerReal = metadataControllerReal;
-        }
+            LazyInit<IContextOfSite> context,
+            LazyInit<ContentTypeApi> ctApiLazy,
+            LazyInit<IAppStates> appStates,
+            LazyInit<EntityApi> entityApi,
+            LazyInit<MetadataControllerReal> metadataControllerReal)
+            : base("Api.AppInternalsRl") =>
+            ConnectServices(
+                _context = context,
+                _ctApiLazy = ctApiLazy,
+                _appStates = appStates,
+                _entityApi = entityApi,
+                _metadataControllerReal = metadataControllerReal
+            );
 
-        private readonly LazyInitLog<IContextOfSite> _context;
-        private readonly Lazy<ContentTypeApi> _ctApiLazy;
-        private readonly Lazy<IAppStates> _appStates;
-        private readonly Lazy<EntityApi> _entityApi;
-        private readonly Lazy<MetadataControllerReal> _metadataControllerReal;
+        private readonly LazyInit<IContextOfSite> _context;
+        private readonly LazyInit<ContentTypeApi> _ctApiLazy;
+        private readonly LazyInit<IAppStates> _appStates;
+        private readonly LazyInit<EntityApi> _entityApi;
+        private readonly LazyInit<MetadataControllerReal> _metadataControllerReal;
 
         /// <inheritdoc/>
         public AppInternalsDto Get(int appId, int targetType, string keyType, string key)

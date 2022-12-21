@@ -16,11 +16,10 @@ namespace ToSic.Eav.Caching
         public AppsCacheSwitch(
             ILogStore logStore,
             IFeaturesInternal featuresService,
-            LazyInitLog<ServiceSwitcher<IAppsCacheSwitchable>> serviceSwitcher
-        ) : base(logStore, serviceSwitcher)
-        {
-            _featuresService = featuresService;
-        }
+            LazyInit<ServiceSwitcher<IAppsCacheSwitchable>> serviceSwitcher
+        ) : base(logStore, serviceSwitcher) =>
+            ConnectServices(_featuresService = featuresService);
+
         private readonly IFeaturesInternal _featuresService;
 
         public new IAppsCacheSwitchable Value => _value.Get(GetOnceDuringCurrentRequest);

@@ -10,6 +10,7 @@ using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
+using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Admin.Metadata
 {
@@ -17,26 +18,27 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
 	/// Web API Controller for MetaData
 	/// Metadata-entities (content-items) are additional information about some other object
 	/// </summary>
-	public class MetadataControllerReal: HasLog, IMetadataController
+	public class MetadataControllerReal: ServiceBase, IMetadataController
     {
         public const string LogSuffix = "MetaDt";
 
         #region Constructor
 
-        public MetadataControllerReal(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazyInitLog<MdRecommendations> mdRead) : base($"{LogNames.WebApi}.{LogSuffix}Rl")
+        public MetadataControllerReal(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazyInit<MdRecommendations> mdRead) : base($"{LogNames.WebApi}.{LogSuffix}Rl")
         {
-            _converter = converter;
-            _appStates = appStates;
-            _metadataTargets = metadataTargets;
-            _mdRead = mdRead.SetLog(Log);
-
+            ConnectServices(
+                _converter = converter,
+                _appStates = appStates,
+                _metadataTargets = metadataTargets,
+                _mdRead = mdRead
+            );
             _converter.Type.Serialize = true;
             _converter.Type.WithDescription = true;
         }
         private readonly IConvertToEavLight _converter;
         private readonly IAppStates _appStates;
         private readonly ITargetTypes _metadataTargets;
-        private readonly LazyInitLog<MdRecommendations> _mdRead;
+        private readonly LazyInit<MdRecommendations> _mdRead;
 
         #endregion
 

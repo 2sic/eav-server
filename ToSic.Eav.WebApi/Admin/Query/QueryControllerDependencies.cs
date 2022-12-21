@@ -17,19 +17,19 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// The lazy reader should only be used in the Definition - it's important that it's a new object
         /// when used, to ensure it has the changes previously saved
         /// </summary>
-        public LazyInitLog<AppRuntime> AppReaderLazy { get; }
+        public LazyInit<AppRuntime> AppReaderLazy { get; }
         public QueryBuilder QueryBuilder { get; }
-        public LazyInitLog<ConvertToEavLight> EntToDicLazy { get; }
-        public LazyInitLog<QueryInfo> QueryInfoLazy { get; }
-        public LazyInitLog<DataSourceCatalog> DataSourceCatalogLazy { get; }
+        public LazyInit<ConvertToEavLight> EntToDicLazy { get; }
+        public LazyInit<QueryInfo> QueryInfoLazy { get; }
+        public LazyInit<DataSourceCatalog> DataSourceCatalogLazy { get; }
         public Generator<JsonSerializer> JsonSerializer { get; }
 
         public QueryControllerDependencies(Lazy<AppManager> appManagerLazy,
-            LazyInitLog<AppRuntime> appReaderLazy,
+            LazyInit<AppRuntime> appReaderLazy,
             QueryBuilder queryBuilder,
-            LazyInitLog<ConvertToEavLight> entToDicLazy,
-            LazyInitLog<QueryInfo> queryInfoLazy,
-            LazyInitLog<DataSourceCatalog> dataSourceCatalogLazy,
+            LazyInit<ConvertToEavLight> entToDicLazy,
+            LazyInit<QueryInfo> queryInfoLazy,
+            LazyInit<DataSourceCatalog> dataSourceCatalogLazy,
             Generator<JsonSerializer> jsonSerializer)
         {
             AppManagerLazy = appManagerLazy;

@@ -23,24 +23,26 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         private const string DefaultLicenseFileName = "default.license.json";
 
         public LicenseControllerReal(
-            Lazy<ILicenseService> licenseServiceLazy, 
-            Lazy<IFeaturesInternal> featuresLazy,
-            Lazy<IGlobalConfiguration> globalConfiguration,
-            LazyInitLog<EavSystemLoader> systemLoaderLazy,
-            Lazy<LicenseCatalog> licenseCatalog
+            LazyInit<ILicenseService> licenseServiceLazy, 
+            LazyInit<IFeaturesInternal> featuresLazy,
+            LazyInit<IGlobalConfiguration> globalConfiguration,
+            LazyInit<EavSystemLoader> systemLoaderLazy,
+            LazyInit<LicenseCatalog> licenseCatalog
             ) : base("Bck.Lics")
         {
-            _licenseServiceLazy = licenseServiceLazy;
-            _featuresLazy = featuresLazy;
-            _globalConfiguration = globalConfiguration;
-            _licenseCatalog = licenseCatalog;
-            _systemLoaderLazy = systemLoaderLazy.SetLog(Log);
+            ConnectServices(
+                _licenseServiceLazy = licenseServiceLazy,
+                _featuresLazy = featuresLazy,
+                _globalConfiguration = globalConfiguration,
+                _licenseCatalog = licenseCatalog,
+                _systemLoaderLazy = systemLoaderLazy
+            );
         }
-        private readonly Lazy<ILicenseService> _licenseServiceLazy;
-        private readonly Lazy<IFeaturesInternal> _featuresLazy;
-        private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
-        private readonly Lazy<LicenseCatalog> _licenseCatalog;
-        private readonly LazyInitLog<EavSystemLoader> _systemLoaderLazy;
+        private readonly LazyInit<ILicenseService> _licenseServiceLazy;
+        private readonly LazyInit<IFeaturesInternal> _featuresLazy;
+        private readonly LazyInit<IGlobalConfiguration> _globalConfiguration;
+        private readonly LazyInit<LicenseCatalog> _licenseCatalog;
+        private readonly LazyInit<EavSystemLoader> _systemLoaderLazy;
 
         private string ConfigurationsPath
         {
@@ -62,8 +64,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         public IEnumerable<LicenseDto> Summary()
         {
             var licSer = _licenseServiceLazy.Value;
-            var licenses = _licenseCatalog.Value.List // licSer.Catalog()
-                .OrderBy(l => l.Priority);
+            var licenses = _licenseCatalog.Value.List.OrderBy(l => l.Priority);
 
             var features = _featuresLazy.Value.All;
 
@@ -131,7 +132,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             var wrapLog = Log.Fn<LicenseFileResultDto>();
 
             var fingerprint = _systemLoaderLazy.Value.Fingerprint.GetFingerprint();
-            var url = $"https://patrons.2sxc.org/api/license/get?fingerprint={fingerprint}";
+            var url = $"https://patrons.2sxc.org/api/license/get?fingerprint={fingerprint}&version={EavSystemInfo.Version.Major}";
             Log.A($"retrieve license from url:{url}");
 
             string content;

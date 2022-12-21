@@ -26,12 +26,12 @@ namespace ToSic.Eav.Apps.Parts
         private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false));
         private Import _import;
         public EntitiesManager(
-            LazyInitLog<ImportListXml> lazyImportListXml,
-            LazyInitLog<Import> importLazy,
-            LazyInitLog<IImportExportEnvironment> environmentLazy, 
+            LazyInit<ImportListXml> lazyImportListXml,
+            LazyInit<Import> importLazy,
+            LazyInit<IImportExportEnvironment> environmentLazy, 
             SystemManager systemManager,
             Lazy<IAppLoaderTools> appLoaderTools,
-            LazyInitLog<EntitySaver> entitySaverLazy,
+            LazyInit<EntitySaver> entitySaverLazy,
             AppsCacheSwitch appsCache, // Note: Singleton
             LazyInit<JsonSerializer> jsonSerializer,
             Generator<ExportListXml> exportListXmlGenerator
@@ -50,11 +50,11 @@ namespace ToSic.Eav.Apps.Parts
             
             Serializer = jsonSerializer.SetInit(j => j.Init(Log).SetApp(Parent.AppState));
         }
-        private readonly LazyInitLog<ImportListXml> _lazyImportListXml;
-        private readonly LazyInitLog<Import> _importLazy;
-        private readonly LazyInitLog<IImportExportEnvironment> _environmentLazy;
+        private readonly LazyInit<ImportListXml> _lazyImportListXml;
+        private readonly LazyInit<Import> _importLazy;
+        private readonly LazyInit<IImportExportEnvironment> _environmentLazy;
         private readonly Lazy<IAppLoaderTools> _appLoaderTools;
-        private readonly LazyInitLog<EntitySaver> _entitySaverLazy;
+        private readonly LazyInit<EntitySaver> _entitySaverLazy;
         private readonly AppsCacheSwitch _appsCache;
         private readonly Generator<ExportListXml> _exportListXmGenerator;
         protected readonly SystemManager SystemManager;

@@ -1,4 +1,5 @@
 ﻿using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Lib.DI
 {
@@ -8,18 +9,19 @@ namespace ToSic.Lib.DI
     /// Reason is that this way we don't keep a list of all possible services active in memory, just the one that's been selected.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ServiceSwitcherSingleton<T>: HasLog, ILazyLike<T> where T : ISwitchableService
+    public class ServiceSwitcherSingleton<T>: ServiceBase, ILazyLike<T> where T : ISwitchableService
     {
         public ServiceSwitcherSingleton(
             ILogStore logStore,
-            LazyInitLog<ServiceSwitcher<T>> serviceSwitcher
-        ) : base($"{LogNames.Eav}.SrvSwS")
-        {
-            _logStore = logStore;
-            _serviceSwitcher = serviceSwitcher.SetLog(Log);
-        }
+            LazyInit<ServiceSwitcher<T>> serviceSwitcher
+        ) : base($"{LogNames.Eav}.SrvSwS") =>
+            ConnectServices(
+                _logStore = logStore,
+                _serviceSwitcher = serviceSwitcher
+            );
+
         private readonly ILogStore _logStore;
-        private readonly LazyInitLog<ServiceSwitcher<T>> _serviceSwitcher;
+        private readonly LazyInit<ServiceSwitcher<T>> _serviceSwitcher;
 
         public T Value => GetSingletonSwitchableService();
 

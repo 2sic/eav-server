@@ -12,7 +12,7 @@ namespace ToSic.Eav.Context
     /// All these objects should normally be injectable
     /// In rare cases you may want to replace them, which is why Site/User have Set Accessors
     /// </summary>
-    public class ContextOfSite: HasLog, IContextOfSite
+    public class ContextOfSite: ServiceBase, IContextOfSite
     {
         #region Constructor / DI
 

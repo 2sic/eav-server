@@ -28,9 +28,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Constructor / DI
 
-        public Import(LazyInitLog<AppManager> appManagerLazy, 
+        public Import(LazyInit<AppManager> appManagerLazy, 
             IImportExportEnvironment importExportEnvironment,
-            LazyInitLog<EntitySaver> entitySaverLazy
+            LazyInit<EntitySaver> entitySaverLazy
             ) : base("Eav.Import")
         {
             ConnectServices(
@@ -39,9 +39,9 @@ namespace ToSic.Eav.Apps.ImportExport
                 _entitySaver = entitySaverLazy
             );
         }
-        private readonly LazyInitLog<AppManager> _appManagerLazy;
+        private readonly LazyInit<AppManager> _appManagerLazy;
         private readonly IImportExportEnvironment _importExportEnvironment;
-        private readonly LazyInitLog<EntitySaver> _entitySaver;
+        private readonly LazyInit<EntitySaver> _entitySaver;
 
 
         public Import Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes)

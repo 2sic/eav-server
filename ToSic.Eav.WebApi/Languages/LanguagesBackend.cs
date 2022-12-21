@@ -10,25 +10,27 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Security;
+using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Languages
 {
-    public class LanguagesBackend: HasLog
+    public class LanguagesBackend: ServiceBase
     {
         #region Constructor & DI
         
-        public LanguagesBackend(LazyInitLog<IZoneMapper> zoneMapper, Lazy<ZoneManager> zoneManager, ISite site, LazyInitLog<AppUserLanguageCheck> appUserLanguageCheckLazy) 
-            : base("Bck.Admin")
-        {
-            _zoneManager = zoneManager;
-            _site = site;
-            _appUserLanguageCheckLazy = appUserLanguageCheckLazy.SetLog(Log);
-            _zoneMapper = zoneMapper.SetLog(Log);
-        }
-        private readonly LazyInitLog<IZoneMapper> _zoneMapper;
-        private readonly Lazy<ZoneManager> _zoneManager;
+        public LanguagesBackend(LazyInit<IZoneMapper> zoneMapper, LazyInit<ZoneManager> zoneManager, ISite site, LazyInit<AppUserLanguageCheck> appUserLanguageCheckLazy) 
+            : base("Bck.Admin") =>
+            ConnectServices(
+                _zoneManager = zoneManager,
+                _site = site,
+                _appUserLanguageCheckLazy = appUserLanguageCheckLazy,
+                _zoneMapper = zoneMapper
+            );
+
+        private readonly LazyInit<IZoneMapper> _zoneMapper;
+        private readonly LazyInit<ZoneManager> _zoneManager;
         private readonly ISite _site;
-        private readonly LazyInitLog<AppUserLanguageCheck> _appUserLanguageCheckLazy;
+        private readonly LazyInit<AppUserLanguageCheck> _appUserLanguageCheckLazy;
 
         #endregion
 

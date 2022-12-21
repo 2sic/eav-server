@@ -4,42 +4,42 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport.Options;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Eav.WebApi.Plumbing;
+using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public class EntityControllerReal<THttpResponseType> : HasLog, IEntityController<THttpResponseType> 
+    public class EntityControllerReal<THttpResponseType> : ServiceBase, IEntityController<THttpResponseType> 
     {
         public const string LogSuffix = "Entity";
         public EntityControllerReal(
-            LazyInitLog<IContextOfSite> context, 
-            Lazy<IAppStates> appStates, 
-            Lazy<EntityApi> entityApi, 
-            Lazy<ContentExportApi<THttpResponseType>> contentExport, 
-            Lazy<ContentImportApi> contentImport, 
-            Lazy<IUser> user,
+            LazyInit<IContextOfSite> context, 
+            LazyInit<IAppStates> appStates, 
+            LazyInit<EntityApi> entityApi, 
+            LazyInit<ContentExportApi<THttpResponseType>> contentExport, 
+            LazyInit<ContentImportApi> contentImport, 
+            LazyInit<IUser> user,
             ResponseMaker<THttpResponseType> responseMaker)
-            : base("Api.EntityRl")
-        {
-            _context = context.SetLog(Log);
-            _appStates = appStates;
-            _entityApi = entityApi;
-            _contentExport = contentExport;
-            _contentImport = contentImport;
-            _user = user;
-            _responseMaker = responseMaker;
-        }
+            : base("Api.EntityRl") =>
+            ConnectServices(
+                _context = context,
+                _appStates = appStates,
+                _entityApi = entityApi,
+                _contentExport = contentExport,
+                _contentImport = contentImport,
+                _user = user,
+                _responseMaker = responseMaker
+            );
 
-        private readonly LazyInitLog<IContextOfSite> _context;
-        private readonly Lazy<IAppStates> _appStates;
-        private readonly Lazy<EntityApi> _entityApi;
-        private readonly Lazy<ContentExportApi<THttpResponseType>> _contentExport;
-        private readonly Lazy<ContentImportApi> _contentImport;
-        private readonly Lazy<IUser> _user;
+        private readonly LazyInit<IContextOfSite> _context;
+        private readonly LazyInit<IAppStates> _appStates;
+        private readonly LazyInit<EntityApi> _entityApi;
+        private readonly LazyInit<ContentExportApi<THttpResponseType>> _contentExport;
+        private readonly LazyInit<ContentImportApi> _contentImport;
+        private readonly LazyInit<IUser> _user;
         private readonly ResponseMaker<THttpResponseType> _responseMaker;
 
 

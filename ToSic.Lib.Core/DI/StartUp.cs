@@ -13,7 +13,7 @@ namespace ToSic.Lib.DI
 
             // Lazy Init
             services.TryAddTransient(typeof(LazyInit<>));
-            services.TryAddTransient(typeof(LazyInitLog<>));
+            //services.TryAddTransient(typeof(LazyInitLog<>));
 
             // Generators
             services.TryAddTransient(typeof(Generator<>));

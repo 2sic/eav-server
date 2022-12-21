@@ -5,22 +5,23 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Languages;
 using ToSic.Eav.WebApi.Zone;
+using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Admin
 {
     /// <summary>
     /// This one supplies portal-wide (or cross-portal) settings / configuration
     /// </summary>
-    public class ZoneControllerReal : HasLog, IZoneController
+    public class ZoneControllerReal : ServiceBase, IZoneController
     {
         public const string LogSuffix = "Zone";
-        public ZoneControllerReal(LazyInitLog<LanguagesBackend> languagesBackend, LazyInitLog<ZoneBackend> zoneBackend): base("Api.ZoneRl")
-        {
-            _languagesBackend = languagesBackend.SetLog(Log);
-            _zoneBackend = zoneBackend.SetLog(Log);
-        }
-        private readonly LazyInitLog<LanguagesBackend> _languagesBackend;
-        private readonly LazyInitLog<ZoneBackend> _zoneBackend;
+        public ZoneControllerReal(LazyInit<LanguagesBackend> languagesBackend, LazyInit<ZoneBackend> zoneBackend): base("Api.ZoneRl") =>
+            ConnectServices(
+                _languagesBackend = languagesBackend,
+                _zoneBackend = zoneBackend
+            );
+        private readonly LazyInit<LanguagesBackend> _languagesBackend;
+        private readonly LazyInit<ZoneBackend> _zoneBackend;
 
         /// <inheritdoc />
         public IList<SiteLanguageDto> GetLanguages() => _languagesBackend.Value.GetLanguages();

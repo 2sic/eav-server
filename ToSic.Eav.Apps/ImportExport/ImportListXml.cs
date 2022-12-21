@@ -11,6 +11,7 @@ using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.Services;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -19,19 +20,19 @@ namespace ToSic.Eav.Apps.ImportExport
     /// <summary>
     /// Import a virtual table of content-items
     /// </summary>
-    public partial class ImportListXml: HasLog 
+    public partial class ImportListXml: ServiceBase 
     {
         #region Dependency Injection
 
-        private readonly Lazy<Import> _importerLazy;
+        private readonly LazyInit<Import> _importerLazy;
 
-        public ImportListXml(LazyInitLog<AttributeBuilderForImport> lazyAttributeBuilder, Lazy<Import> importerLazy) : base("App.ImpVtT")
-        {
-            AttributeBuilder = lazyAttributeBuilder.SetLog(Log);
-            _importerLazy = importerLazy;
-        }
+        public ImportListXml(LazyInit<AttributeBuilderForImport> lazyAttributeBuilder, LazyInit<Import> importerLazy) : base("App.ImpVtT") =>
+            ConnectServices(
+                AttributeBuilder = lazyAttributeBuilder,
+                _importerLazy = importerLazy
+            );
 
-        private readonly LazyInitLog<AttributeBuilderForImport> AttributeBuilder;
+        private readonly LazyInit<AttributeBuilderForImport> AttributeBuilder;
 
 
         #endregion
@@ -239,7 +240,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 AppMan.Entities.Delete(idsToDelete);
             }
 
-            var import = _importerLazy.Value.Init(Log).Init(null, _appId, false, true);
+            var import = _importerLazy.Value.Init(null, _appId, false, true);
             import.ImportIntoDb(null, ImportEntities);
             // important note: don't purge cache here, but the caller MUST do this!
 

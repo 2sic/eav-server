@@ -12,25 +12,27 @@ using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.DI;
 using static System.StringComparison;
+using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.Apps.Languages
 {
-    public class AppUserLanguageCheck: HasLog
+    public class AppUserLanguageCheck: ServiceBase
     {
-        public AppUserLanguageCheck(LazyInitLog<IZoneMapper> zoneMapperLazy, IContextOfSite ctx, Generator<AppPermissionCheck> checkGenerator, Lazy<IAppStates> appStatesLazy,
+        public AppUserLanguageCheck(LazyInit<IZoneMapper> zoneMapperLazy, IContextOfSite ctx, Generator<AppPermissionCheck> checkGenerator, LazyInit<IAppStates> appStatesLazy,
             Lazy<IFeaturesInternal> featuresLazy)
-            : base($"{LogNames.Eav}.LngChk")
-        {
-            _zoneMapperLazy = zoneMapperLazy.SetLog(Log);
-            _ctx = ctx;
-            _checkGenerator = checkGenerator;
-            _appStatesLazy = appStatesLazy;
-            _featuresLazy = featuresLazy;
-        }
-        private readonly LazyInitLog<IZoneMapper> _zoneMapperLazy;
+            : base($"{LogNames.Eav}.LngChk") =>
+            ConnectServices(
+                _zoneMapperLazy = zoneMapperLazy,
+                _ctx = ctx,
+                _checkGenerator = checkGenerator,
+                _appStatesLazy = appStatesLazy,
+                _featuresLazy = featuresLazy
+            );
+
+        private readonly LazyInit<IZoneMapper> _zoneMapperLazy;
         private readonly IContextOfSite _ctx;
         private readonly Generator<AppPermissionCheck> _checkGenerator;
-        private readonly Lazy<IAppStates> _appStatesLazy;
+        private readonly LazyInit<IAppStates> _appStatesLazy;
         private readonly Lazy<IFeaturesInternal> _featuresLazy;
 
         /// <summary>

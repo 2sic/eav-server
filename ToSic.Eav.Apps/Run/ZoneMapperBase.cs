@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Context;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Run
 {
@@ -10,7 +11,7 @@ namespace ToSic.Eav.Apps.Run
     /// Base class for other zone mappers.
     /// Has prepared code which should be the same across implementations. 
     /// </summary>
-    public abstract class ZoneMapperBase: HasLog, IZoneMapper
+    public abstract class ZoneMapperBase: ServiceBase, IZoneMapper
     {
 
         /// <summary>
@@ -18,7 +19,9 @@ namespace ToSic.Eav.Apps.Run
         /// </summary>
         protected ZoneMapperBase(IAppStates appStates, string logName) : base(logName)
         {
-            AppStates = appStates;
+            ConnectServices(
+                AppStates = appStates
+            );
         }
         protected readonly IAppStates AppStates;
 

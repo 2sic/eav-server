@@ -15,13 +15,14 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Persistence.Xml;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
     // this has a minimal risk of being different!
     // should all get it from cache only!
 
-    public abstract class XmlExporter : HasLog
+    public abstract class XmlExporter : ServiceBase
     {
 
         #region simple properties
@@ -45,8 +46,10 @@ namespace ToSic.Eav.Apps.ImportExport
 
         protected XmlExporter(XmlSerializer xmlSerializer, IAppStates appStates, string logPrefix) : base(logPrefix + "XmlExp")
         {
-            AppStates = appStates;
-            Serializer = xmlSerializer;
+            ConnectServices(
+                AppStates = appStates,
+                Serializer = xmlSerializer
+            );
         }
         public XmlSerializer Serializer { get; }
         protected readonly IAppStates AppStates;
