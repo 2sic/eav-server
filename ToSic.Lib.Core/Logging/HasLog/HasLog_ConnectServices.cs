@@ -9,7 +9,7 @@ namespace ToSic.Lib.Logging
         /// <summary>
         /// Add Log to all dependencies listed in <see cref="services"/>
         /// </summary>
-        /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
+        /// <param name="services">One or more services which could implement <see cref="ILazySvc{T}"/> or <see cref="IHasLog"/></param>
         [PrivateApi]
         public static void ConnectServices(this IHasLog parent, params object[] services)
         {

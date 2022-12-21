@@ -9,7 +9,7 @@ namespace ToSic.Lib.DI
     /// This should reduce the amount of plumbing in many code files
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LazyInit<T>: ILazyInitLog, ILazyLike<T> where T : class
+    public class LazyInit<T>: ILazySvc<T> where T : class
     {
         public LazyInit(Lazy<T> valueLazy) => _valueLazy = valueLazy;
         private readonly Lazy<T> _valueLazy;

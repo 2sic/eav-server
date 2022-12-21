@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using ToSic.Eav.Context;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Security;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Security
 {
-    public abstract class EnvironmentPermission : HasLog, IEnvironmentPermission
+    public abstract class EnvironmentPermission : ServiceBase, IEnvironmentPermission
     {
         // Constant keys for security, historic from Dnn
         protected const string SalPrefix = "SecurityAccessLevel";

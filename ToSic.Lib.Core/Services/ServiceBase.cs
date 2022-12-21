@@ -28,10 +28,5 @@ namespace ToSic.Lib.Services
         /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
         [PrivateApi]
         protected void ConnectServices(params object[] services) => (this as IHasLog).ConnectServices(services);
-        //{
-        //    var depLogs = new DependencyLogs();
-        //    depLogs.Add(services);
-        //    depLogs.SetLog(Log);
-        //}
     }
 }
