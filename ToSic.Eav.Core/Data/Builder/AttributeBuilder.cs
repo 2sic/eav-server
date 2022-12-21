@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Builder
 {
-    public class AttributeBuilder: HasLog
+    public class AttributeBuilder: ServiceBase
     {
         #region Dependency Injection
 

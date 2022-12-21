@@ -8,38 +8,41 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
-    public class DataSourceFactory: HasLog
+    public class DataSourceFactory: ServiceBase
     {
         #region Constructor / DI
 
         public DataSourceFactory(IServiceProvider serviceProvider,
             Generator<IAppStates> appStatesGen,
-            Lazy<ILookUpEngineResolver> lookupResolveLazy, 
-            Lazy<IDataBuilder> dataBuilderLazy,
-            Lazy<IZoneCultureResolver> zoneCultureResolverLazy,
-            Lazy<DataSourceErrorHandling> dataSourceErrorsLazy,
-            Lazy<QueryBuilder> queryBuilderLazy
+            LazyInit<ILookUpEngineResolver> lookupResolveLazy, 
+            Generator<IDataBuilder> dataBuilderLazy,
+            LazyInit<IZoneCultureResolver> zoneCultureResolverLazy,
+            LazyInit<DataSourceErrorHandling> dataSourceErrorsLazy,
+            LazyInit<QueryBuilder> queryBuilderLazy
             ) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
-            _serviceProvider = serviceProvider;
-            _appStatesGen = appStatesGen;
-            _lookupResolveLazy = lookupResolveLazy;
-            _dataBuilderLazy = dataBuilderLazy;
-            _zoneCultureResolverLazy = zoneCultureResolverLazy;
-            _dataSourceErrorsLazy = dataSourceErrorsLazy;
-            _queryBuilderLazy = queryBuilderLazy;
+            ConnectServices(
+                _serviceProvider = serviceProvider,
+                _appStatesGen = appStatesGen,
+                _lookupResolveLazy = lookupResolveLazy,
+                _dataBuilderLazy = dataBuilderLazy,
+                _zoneCultureResolverLazy = zoneCultureResolverLazy,
+                _dataSourceErrorsLazy = dataSourceErrorsLazy,
+                _queryBuilderLazy = queryBuilderLazy
+            );
         }
 
         private readonly IServiceProvider _serviceProvider;
         private readonly Generator<IAppStates> _appStatesGen;
-        private readonly Lazy<ILookUpEngineResolver> _lookupResolveLazy;
-        private readonly Lazy<IDataBuilder> _dataBuilderLazy;
-        private readonly Lazy<IZoneCultureResolver> _zoneCultureResolverLazy;
-        private readonly Lazy<DataSourceErrorHandling> _dataSourceErrorsLazy;
-        private readonly Lazy<QueryBuilder> _queryBuilderLazy;
+        private readonly LazyInit<ILookUpEngineResolver> _lookupResolveLazy;
+        private readonly Generator<IDataBuilder> _dataBuilderLazy;
+        private readonly LazyInit<IZoneCultureResolver> _zoneCultureResolverLazy;
+        private readonly LazyInit<DataSourceErrorHandling> _dataSourceErrorsLazy;
+        private readonly LazyInit<QueryBuilder> _queryBuilderLazy;
 
         #endregion
 

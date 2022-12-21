@@ -5,20 +5,24 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Dto;
+using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public class FieldControllerReal : HasLog, IFieldController
+    public class FieldControllerReal : ServiceBase, IFieldController
     {
         public const string LogSuffix = "Field";
 
-        public FieldControllerReal(Lazy<AppRuntime> appRuntime, Lazy<ContentTypeApi> ctApiLazy): base("Api.FieldRl")
+        public FieldControllerReal(LazyInit<AppRuntime> appRuntime, LazyInit<ContentTypeApi> ctApiLazy): base("Api.FieldRl")
         {
-            _appRuntime = appRuntime;
-            _ctApiLazy = ctApiLazy;
+            ConnectServices(
+                _appRuntime = appRuntime,
+                _ctApiLazy = ctApiLazy
+            );
         }
-        private readonly Lazy<AppRuntime> _appRuntime;
-        private readonly Lazy<ContentTypeApi> _ctApiLazy;
+        private readonly LazyInit<AppRuntime> _appRuntime;
+        private readonly LazyInit<ContentTypeApi> _ctApiLazy;
 
         #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
 

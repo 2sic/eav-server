@@ -1,19 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Configuration
 {
     /// <summary>
     /// Internal service to check if a requirement has been met
     /// </summary>
-    public class RequirementsService: HasLog
+    public class RequirementsService: ServiceBase
     {
-        public RequirementsService(Lazy<ServiceSwitcher<IRequirementCheck>> checkers) : base(LogNames.Eav + "ReqSvc")
-            => Checkers = checkers;
-        protected Lazy<ServiceSwitcher<IRequirementCheck>> Checkers { get; }
+        public RequirementsService(LazyInit<ServiceSwitcher<IRequirementCheck>> checkers) : base(LogNames.Eav + "ReqSvc")
+        {
+            ConnectServices(
+                Checkers = checkers
+            );
+        }
+
+        protected LazyInit<ServiceSwitcher<IRequirementCheck>> Checkers { get; }
 
         public List<ConditionError> Check(IEnumerable<IHasRequirements> withRequirements)
         {

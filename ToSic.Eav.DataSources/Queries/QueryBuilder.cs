@@ -7,13 +7,14 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources.Queries
 {
 	/// <summary>
 	/// Factory to create a Data Query
 	/// </summary>
-	public class QueryBuilder: HasLog
+	public class QueryBuilder: ServiceBase
 	{
         #region Dependency Injection
 
@@ -25,10 +26,12 @@ namespace ToSic.Eav.DataSources.Queries
 		/// </remarks>
         public QueryBuilder(DataSourceFactory dataSourceFactory, IZoneCultureResolver cultureResolver, IAppStates appStates) : base("DS.PipeFt")
         {
-            _cultureResolver = cultureResolver;
-            _appStates = appStates;
-            _dataSourceFactory = dataSourceFactory.Init(Log);
-            _dataSourceFactory.Init(Log);
+            ConnectServices(
+                _cultureResolver = cultureResolver,
+                _appStates = appStates,
+                _dataSourceFactory = dataSourceFactory,
+                _dataSourceFactory
+            );
         }
 
         private readonly DataSourceFactory _dataSourceFactory;

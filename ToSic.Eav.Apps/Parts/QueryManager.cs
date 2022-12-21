@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps.Parts
     {
         public QueryManager(
             LazyInit<SystemManager> systemManagerLazy,
-            Lazy<ValueBuilder> valueBuilder,
+            LazyInit<ValueBuilder> valueBuilder,
             LazyInit<JsonSerializer> jsonSerializer,
             LazyInit<Eav.DataSources.Queries.QueryManager> queryManager
             ) : base("App.QryMng")
@@ -29,12 +29,12 @@ namespace ToSic.Eav.Apps.Parts
             ConnectServices(
                 _systemManagerLazy = systemManagerLazy,
                 _valueBuilder = valueBuilder,
+                Serializer = jsonSerializer.SetInit(j => j.SetApp(Parent.AppState)),
                 _queryManager = queryManager
             );
-            Serializer = jsonSerializer.SetInit(j => j.Init(Log).SetApp(Parent.AppState));
         }
         private readonly LazyInit<SystemManager> _systemManagerLazy;
-        private readonly Lazy<ValueBuilder> _valueBuilder;
+        private readonly LazyInit<ValueBuilder> _valueBuilder;
         private LazyInit<JsonSerializer> Serializer { get; }
         private readonly LazyInit<Eav.DataSources.Queries.QueryManager> _queryManager;
 

@@ -11,16 +11,20 @@ using IEntity = ToSic.Eav.Data.IEntity;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Serialization
 {
-    public abstract class SerializerBase: HasLog, IDataSerializer
+    public abstract class SerializerBase: ServiceBase, IDataSerializer
     {
         #region Constructor / DI
 
         public class Dependencies: ServiceDependencies
         {
-            public Dependencies(ITargetTypes metadataTargets, IAppStates appStates) => AddToLogQueue(
-                MetadataTargets = metadataTargets,
-                AppStates = appStates
-            );
+            public Dependencies(ITargetTypes metadataTargets, IAppStates appStates)
+            {
+                AddToLogQueue(
+                    MetadataTargets = metadataTargets,
+                    AppStates = appStates
+                );
+            }
+
             public ITargetTypes MetadataTargets { get; }
             public IAppStates AppStates { get; }
         }

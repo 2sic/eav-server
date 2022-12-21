@@ -18,6 +18,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 #if NETFRAMEWORK
 using System.Web.Http;
 #else
@@ -26,22 +27,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ToSic.Eav.WebApi.ImportExport
 {
-    public class ContentExportApi<THttpResponseType> : HasLog
+    public class ContentExportApi<THttpResponseType> : ServiceBase
     {
         private AppManager _appManager;
         public ContentExportApi(
-            Lazy<AppManager> appManagerLazy, 
+            LazyInit<AppManager> appManagerLazy, 
             IAppStates appStates,
             Generator<JsonSerializer> jsonSerializer,
             ResponseMaker<THttpResponseType> responseMaker
             ) : base("Api.EaCtEx")
         {
-            _appManagerLazy = appManagerLazy;
-            _appStates = appStates;
-            _jsonSerializer = jsonSerializer;
-            _responseMaker = responseMaker;
+            ConnectServices(
+                _appManagerLazy = appManagerLazy,
+                _appStates = appStates,
+                _jsonSerializer = jsonSerializer,
+                _responseMaker = responseMaker
+            );
         }
-        private readonly Lazy<AppManager> _appManagerLazy;
+        private readonly LazyInit<AppManager> _appManagerLazy;
         private readonly IAppStates _appStates;
         private readonly Generator<JsonSerializer> _jsonSerializer;
         private readonly ResponseMaker<THttpResponseType> _responseMaker;

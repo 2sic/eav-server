@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Security;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Security
 {
@@ -12,11 +12,13 @@ namespace ToSic.Eav.Apps.Security
         private const string LogName = "Sec.MPTyps";
         protected IEnumerable<string> ContentTypes;
 
-        public MultiPermissionsTypes(Dependencies dependencies, Lazy<IAppStates> appStates): base(dependencies, LogName)
+        public MultiPermissionsTypes(Dependencies dependencies, LazyInit<IAppStates> appStates): base(dependencies, LogName)
         {
-            _appStates = appStates;
+            ConnectServices(
+                _appStates = appStates
+            );
         }
-        private readonly Lazy<IAppStates> _appStates;
+        private readonly LazyInit<IAppStates> _appStates;
 
         // Note: AppState must be public, as we have some extension methods that need it
         public AppState AppState => _appState ?? (_appState = App as AppState ?? _appStates.Value.Get(App));

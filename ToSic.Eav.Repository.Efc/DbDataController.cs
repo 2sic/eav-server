@@ -16,12 +16,13 @@ using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Parts;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc
 {
 
-    public class DbDataController : HasLog, IStorage, IAppIdentity
+    public class DbDataController : ServiceBase, IStorage, IAppIdentity
     {
         #region Extracted, now externalized objects with actions and private fields
 
@@ -105,29 +106,31 @@ namespace ToSic.Eav.Repository.Efc
 
         public DbDataController(
             EavDbContext dbContext,
-            Lazy<Efc11Loader> efcLoaderLazy,
-            Lazy<IUser> userLazy,
+            LazyInit<Efc11Loader> efcLoaderLazy,
+            LazyInit<IUser> userLazy,
             AppsCacheSwitch appsCache,
             Generator<JsonSerializer> jsonSerializerGenerator,
             ILogStore logStore,
-            Lazy<Compressor> compressor
+            LazyInit<Compressor> compressor
             ) : base("Db.Data")
         {
-            _efcLoaderLazy = efcLoaderLazy;
-            _userLazy = userLazy;
-            _appsCache = appsCache;
-            _logStore = logStore;
-            SqlDb = dbContext;
-            JsonSerializerGenerator = jsonSerializerGenerator;
+            ConnectServices(
+                _efcLoaderLazy = efcLoaderLazy,
+                _userLazy = userLazy,
+                _appsCache = appsCache,
+                _logStore = logStore,
+                SqlDb = dbContext,
+                JsonSerializerGenerator = jsonSerializerGenerator,
+                _compressor = compressor
+            );
             SqlDb.AlternateSaveHandler += SaveChanges;
-            _compressor = compressor;
         }
 
-        private readonly Lazy<Efc11Loader> _efcLoaderLazy;
-        private readonly Lazy<IUser> _userLazy;
+        private readonly LazyInit<Efc11Loader> _efcLoaderLazy;
+        private readonly LazyInit<IUser> _userLazy;
         private readonly AppsCacheSwitch _appsCache;
         private readonly ILogStore _logStore;
-        private readonly Lazy<Compressor> _compressor;
+        private readonly LazyInit<Compressor> _compressor;
 
         public EavDbContext SqlDb { get; }
         internal Generator<JsonSerializer> JsonSerializerGenerator { get; }

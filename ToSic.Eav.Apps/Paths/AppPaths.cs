@@ -5,6 +5,8 @@ using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
+using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 using ToSic.Sxc.Apps.Paths;
 using static System.IO.Path;
 
@@ -28,18 +30,20 @@ namespace ToSic.Eav.Apps.Paths
     /// * Future: We should find a way to scope some DI to a module, so it doesn't bleed to others
     ///   But that is a bit difficult, because there are also some services like the IPage which should be shared across modules
     /// </remarks>
-    public class AppPaths: HasLog, IAppPaths
+    public class AppPaths: ServiceBase, IAppPaths
     {
         private const bool Debug = true;
 
-        public AppPaths(Lazy<IServerPaths> serverPaths, Lazy<IGlobalConfiguration> config) : base($"{LogNames.Eav}.AppPth")
+        public AppPaths(LazyInit<IServerPaths> serverPaths, LazyInit<IGlobalConfiguration> config) : base($"{LogNames.Eav}.AppPth")
         {
-            _serverPaths = serverPaths;
-            _config = config;
+            ConnectServices(
+                _serverPaths = serverPaths,
+                _config = config
+            );
         }
 
-        private readonly Lazy<IServerPaths> _serverPaths;
-        private readonly Lazy<IGlobalConfiguration> _config;
+        private readonly LazyInit<IServerPaths> _serverPaths;
+        private readonly LazyInit<IGlobalConfiguration> _config;
 
         /// <summary>
         /// 

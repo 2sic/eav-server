@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Lib.DI;
 
 namespace ToSic.Testing.Shared.Mocks
 {
@@ -25,7 +26,7 @@ namespace ToSic.Testing.Shared.Mocks
             }).ToImmutableDictionary();
         }
 
-        public MockGlobalMetadataProvider(Lazy<EavDbContext> dbLazy) : base(dbLazy)
+        public MockGlobalMetadataProvider(LazyInit<EavDbContext> dbLazy) : base(dbLazy)
         {
         }
     }

@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps.Languages
     public class AppUserLanguageCheck: ServiceBase
     {
         public AppUserLanguageCheck(LazyInit<IZoneMapper> zoneMapperLazy, IContextOfSite ctx, Generator<AppPermissionCheck> checkGenerator, LazyInit<IAppStates> appStatesLazy,
-            Lazy<IFeaturesInternal> featuresLazy)
+            LazyInit<IFeaturesInternal> featuresLazy)
             : base($"{LogNames.Eav}.LngChk") =>
             ConnectServices(
                 _zoneMapperLazy = zoneMapperLazy,
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps.Languages
         private readonly IContextOfSite _ctx;
         private readonly Generator<AppPermissionCheck> _checkGenerator;
         private readonly LazyInit<IAppStates> _appStatesLazy;
-        private readonly Lazy<IFeaturesInternal> _featuresLazy;
+        private readonly LazyInit<IFeaturesInternal> _featuresLazy;
 
         /// <summary>
         /// Test if the current user has explicit language editing permissions.

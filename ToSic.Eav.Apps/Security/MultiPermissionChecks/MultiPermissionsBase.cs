@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Security;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Security
 {
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Apps.Security
     /// A permission checker which is initialized with various items which must be checked
     /// Calling Ensure or similar will verify that all permission checks succeed
     /// </summary>
-    public abstract class MultiPermissionsBase: HasLog, IMultiPermissionCheck
+    public abstract class MultiPermissionsBase: ServiceBase, IMultiPermissionCheck
     {
         #region Constructor / Init stuff
 

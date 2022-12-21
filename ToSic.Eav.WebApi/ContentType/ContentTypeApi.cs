@@ -11,6 +11,8 @@ using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Security;
+using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi
 {
@@ -18,31 +20,33 @@ namespace ToSic.Eav.WebApi
 	/// <summary>
 	/// Web API Controller for ContentTypes
 	/// </summary>
-	public partial class ContentTypeApi : HasLog
+	public partial class ContentTypeApi : ServiceBase
     {
         #region Constructor / DI
 
         public ContentTypeApi(
-            Lazy<AppRuntime> appRuntimeLazy, 
-            Lazy<AppManager> appManagerLazy, 
-            Lazy<DbDataController> dbLazy, 
+            LazyInit<AppRuntime> appRuntimeLazy, 
+            LazyInit<AppManager> appManagerLazy, 
+            LazyInit<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
-            Lazy<IConvertToEavLight> convertToEavLight, 
+            LazyInit<IConvertToEavLight> convertToEavLight, 
             IAppStates appStates) : base("Api.EavCTC")
         {
-            _appRuntimeLazy = appRuntimeLazy;
-            _appManagerLazy = appManagerLazy;
-            _dbLazy = dbLazy;
-            _appInitializedChecker = appInitializedChecker;
-            _convertToEavLight = convertToEavLight;
-            _appStates = appStates;
+            ConnectServices(
+                _appRuntimeLazy = appRuntimeLazy,
+                _appManagerLazy = appManagerLazy,
+                _dbLazy = dbLazy,
+                _appInitializedChecker = appInitializedChecker,
+                _convertToEavLight = convertToEavLight,
+                _appStates = appStates
+            );
         }
 
-        private readonly Lazy<AppRuntime> _appRuntimeLazy;
-        private readonly Lazy<AppManager> _appManagerLazy;
-        private readonly Lazy<DbDataController> _dbLazy;
+        private readonly LazyInit<AppRuntime> _appRuntimeLazy;
+        private readonly LazyInit<AppManager> _appManagerLazy;
+        private readonly LazyInit<DbDataController> _dbLazy;
         private readonly AppInitializedChecker _appInitializedChecker;
-        private readonly Lazy<IConvertToEavLight> _convertToEavLight;
+        private readonly LazyInit<IConvertToEavLight> _convertToEavLight;
         private readonly IAppStates _appStates;
         private AppManager AppManager { get; set; }
 

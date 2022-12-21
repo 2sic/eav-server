@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Configuration
 {
@@ -6,8 +6,8 @@ namespace ToSic.Eav.Configuration
     {
         public const string ConditionIsFeature = "feature";
 
-        public RequirementCheckFeature(Lazy<IFeaturesInternal> features) => Features = features;
-        private Lazy<IFeaturesInternal> Features { get; }
+        public RequirementCheckFeature(LazyInit<IFeaturesInternal> features) => Features = features;
+        private LazyInit<IFeaturesInternal> Features { get; }
 
         public override string NameId => ConditionIsFeature;
 

@@ -7,47 +7,50 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public abstract partial class XmlImportWithFiles: HasLog
+    public abstract partial class XmlImportWithFiles: ServiceBase
 	{
-        public class Dependencies
+        public class Dependencies: ServiceDependencies
         {
-            public Lazy<ContentTypeAttributeBuilder> CtAttribBuilder { get; }
+            public LazyInit<ContentTypeAttributeBuilder> CtAttribBuilder { get; }
+            internal readonly LazyInit<Import> _importerLazy;
+            internal readonly LazyInit<DbDataController> _dbDataForNewApp;
+            internal readonly LazyInit<DbDataController> _dbDataForAppImport;
+            internal readonly IImportExportEnvironment _environment;
+            internal readonly ITargetTypes _metaTargetTypes;
+            internal readonly IAppStates AppStates;
+            internal readonly LazyInit<XmlToEntity> _xmlToEntity;
+            internal readonly SystemManager SystemManager;
 
             public Dependencies(
-                Lazy<Import> importerLazy,
-                Lazy<DbDataController> dbDataForNewApp,
-                Lazy<DbDataController> dbDataForAppImport,
+                LazyInit<Import> importerLazy,
+                LazyInit<DbDataController> dbDataForNewApp,
+                LazyInit<DbDataController> dbDataForAppImport,
                 IImportExportEnvironment importExportEnvironment,
                 ITargetTypes metaTargetTypes,
                 SystemManager systemManager,
                 IAppStates appStates,
-                Lazy<XmlToEntity> xmlToEntity,
-                Lazy<ContentTypeAttributeBuilder> ctAttribBuilder
+                LazyInit<XmlToEntity> xmlToEntity,
+                LazyInit<ContentTypeAttributeBuilder> ctAttribBuilder
                     )
             {
-                CtAttribBuilder = ctAttribBuilder;
-                _importerLazy = importerLazy;
-                _dbDataForNewApp = dbDataForNewApp;
-                _dbDataForAppImport = dbDataForAppImport;
-                _environment = importExportEnvironment;
-                _metaTargetTypes = metaTargetTypes;
-                AppStates = appStates;
-                _xmlToEntity = xmlToEntity;
-                SystemManager = systemManager;
+                AddToLogQueue(
+                    CtAttribBuilder = ctAttribBuilder,
+                    _importerLazy = importerLazy,
+                    _dbDataForNewApp = dbDataForNewApp,
+                    _dbDataForAppImport = dbDataForAppImport,
+                    _environment = importExportEnvironment,
+                    _metaTargetTypes = metaTargetTypes,
+                    AppStates = appStates,
+                    _xmlToEntity = xmlToEntity,
+                    SystemManager = systemManager
+                );
             }
-            internal readonly Lazy<Import> _importerLazy;
-            internal readonly Lazy<DbDataController> _dbDataForNewApp;
-            internal readonly Lazy<DbDataController> _dbDataForAppImport;
-            internal readonly IImportExportEnvironment _environment;
-            internal readonly ITargetTypes _metaTargetTypes;
-            internal readonly IAppStates AppStates;
-            internal readonly Lazy<XmlToEntity> _xmlToEntity;
-            internal readonly SystemManager SystemManager;
         }
 
         private List<DimensionDefinition> _targetDimensions;
@@ -72,9 +75,7 @@ namespace ToSic.Eav.Apps.ImportExport
         protected XmlImportWithFiles(
             Dependencies dependencies, string logName = null) : base(logName ?? "Xml.ImpFil")
         {
-            Deps = dependencies;
-            dependencies.SystemManager.Init(Log);
-            dependencies._environment.Init(Log);
+            Deps = dependencies.SetLog(Log);
         }
 
         protected Dependencies Deps;

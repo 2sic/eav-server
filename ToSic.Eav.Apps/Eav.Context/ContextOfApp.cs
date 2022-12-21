@@ -28,7 +28,7 @@ namespace ToSic.Eav.Context
         {
             public Dependencies(
                 IAppStates appStates,
-                Lazy<IFeaturesInternal> features,
+                LazyInit<IFeaturesInternal> features,
                 LazyInit<AppUserLanguageCheck> langChecks,
                 Generator<IEnvironmentPermission> environmentPermissions,
                 LazyInit<AppSettingsStack> settingsStack
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Context
             );
 
             public IAppStates AppStates { get; }
-            public Lazy<IFeaturesInternal> Features { get; }
+            public LazyInit<IFeaturesInternal> Features { get; }
             public LazyInit<AppUserLanguageCheck> LangChecks { get; }
             public LazyInit<AppSettingsStack> SettingsStack { get; }
             internal readonly Generator<IEnvironmentPermission> EnvironmentPermissions;

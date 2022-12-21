@@ -1,25 +1,28 @@
-﻿using System;
+﻿using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Builder
 {
-    public class MultiBuilder
+    public class MultiBuilder: ServiceBase
     {
 
         public MultiBuilder(
-            Lazy<EntityBuilder> entityBuilder,
-            Lazy<AttributeBuilderForImport> attributeBuilder,
-            Lazy<ValueBuilder> valueBuilder,
-            Lazy<ContentTypeBuilder> contentTypeBuilder)
+            LazyInit<EntityBuilder> entityBuilder,
+            LazyInit<AttributeBuilderForImport> attributeBuilder,
+            LazyInit<ValueBuilder> valueBuilder,
+            LazyInit<ContentTypeBuilder> contentTypeBuilder): base(LogNames.Eav + "MltBld")
         {
-            _entityBuilder = entityBuilder;
-            _attributeBuilder = attributeBuilder;
-            _valueBuilder = valueBuilder;
-            _contentTypeBuilder = contentTypeBuilder;
+            ConnectServices(
+                _entityBuilder = entityBuilder,
+                _attributeBuilder = attributeBuilder,
+                _valueBuilder = valueBuilder,
+                _contentTypeBuilder = contentTypeBuilder
+            );
         }
-        private readonly Lazy<EntityBuilder> _entityBuilder;
-        private readonly Lazy<AttributeBuilderForImport> _attributeBuilder;
-        private readonly Lazy<ValueBuilder> _valueBuilder;
-        private readonly Lazy<ContentTypeBuilder> _contentTypeBuilder;
+        private readonly LazyInit<EntityBuilder> _entityBuilder;
+        private readonly LazyInit<AttributeBuilderForImport> _attributeBuilder;
+        private readonly LazyInit<ValueBuilder> _valueBuilder;
+        private readonly LazyInit<ContentTypeBuilder> _contentTypeBuilder;
 
         public EntityBuilder Entity => _entityBuilder.Value;
         public AttributeBuilderForImport Attribute => _attributeBuilder.Value;

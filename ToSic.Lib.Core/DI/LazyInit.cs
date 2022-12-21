@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Lib.Helper;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Lib.DI
@@ -8,7 +9,7 @@ namespace ToSic.Lib.DI
     /// This should reduce the amount of plumbing in many code files
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LazyInit<T>: ILazyInitLog where T : class
+    public class LazyInit<T>: ILazyInitLog, ILazyLike<T> where T : class
     {
         public LazyInit(Lazy<T> valueLazy) => _valueLazy = valueLazy;
         private readonly Lazy<T> _valueLazy;
@@ -31,21 +32,25 @@ namespace ToSic.Lib.DI
 
         public bool HasInitCall => _initCall != null;
 
-        public T Value
+        public T Value => _valueGet.Get(() =>
         {
-            get
-            {
-                if (_value != null) return _value;
-                _value = _valueLazy.Value;
-                _initCall?.Invoke(_value);
-                InitLogOrNull?.Invoke(_value);
-                return _value;
-            }
-        }
-        private T _value;
+            var value = _valueLazy.Value;
+            _initCall?.Invoke(value);
+            InitLogOrNull?.Invoke(value);
+            return value;
+        });
+
+        //if (_value != null) return _value;
+        //_value = _valueLazy.Value;
+        //_initCall?.Invoke(_value);
+        //InitLogOrNull?.Invoke(_value);
+        //return _value;
+        public bool IsValueCreated => _valueGet.IsValueCreated;
+
+        //private T _value;
+        private readonly GetOnce<T> _valueGet = new GetOnce<T>();
 
         private Action<T> _initCall;
-
 
         protected Action<T> InitLogOrNull;
 

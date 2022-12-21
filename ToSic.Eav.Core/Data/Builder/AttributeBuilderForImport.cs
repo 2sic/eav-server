@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data.Builder
 {
     public class AttributeBuilderForImport: AttributeBuilder
     {
-        public AttributeBuilderForImport(Lazy<IValueConverter> valueConverter, ValueBuilder valueBuilder) : base(valueBuilder)
+        public AttributeBuilderForImport(LazyInit<IValueConverter> valueConverter, ValueBuilder valueBuilder) : base(valueBuilder)
         {
-            _valueConverter = valueConverter;
+            ConnectServices(
+                _valueConverter = valueConverter
+            );
         }
-        private readonly Lazy<IValueConverter> _valueConverter;
+        private readonly LazyInit<IValueConverter> _valueConverter;
 
 
         #region Helper to add a value with languages to an existing list of Attributes

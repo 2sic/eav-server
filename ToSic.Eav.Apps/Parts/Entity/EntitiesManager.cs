@@ -30,7 +30,7 @@ namespace ToSic.Eav.Apps.Parts
             LazyInit<Import> importLazy,
             LazyInit<IImportExportEnvironment> environmentLazy, 
             SystemManager systemManager,
-            Lazy<IAppLoaderTools> appLoaderTools,
+            LazyInit<IAppLoaderTools> appLoaderTools,
             LazyInit<EntitySaver> entitySaverLazy,
             AppsCacheSwitch appsCache, // Note: Singleton
             LazyInit<JsonSerializer> jsonSerializer,
@@ -53,7 +53,7 @@ namespace ToSic.Eav.Apps.Parts
         private readonly LazyInit<ImportListXml> _lazyImportListXml;
         private readonly LazyInit<Import> _importLazy;
         private readonly LazyInit<IImportExportEnvironment> _environmentLazy;
-        private readonly Lazy<IAppLoaderTools> _appLoaderTools;
+        private readonly LazyInit<IAppLoaderTools> _appLoaderTools;
         private readonly LazyInit<EntitySaver> _entitySaverLazy;
         private readonly AppsCacheSwitch _appsCache;
         private readonly Generator<ExportListXml> _exportListXmGenerator;

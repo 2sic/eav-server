@@ -9,6 +9,8 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Dto;
+using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 #if NETFRAMEWORK
 using System.Web.Http;
 #else
@@ -18,17 +20,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace ToSic.Eav.WebApi.ImportExport
 {
     /// <inheritdoc />
-    public class ContentImportApi : HasLog
+    public class ContentImportApi : ServiceBase
     {
-        public ContentImportApi(Lazy<AppManager> appManagerLazy, Lazy<JsonSerializer> jsonSerializerLazy, SystemManager systemManager, IAppStates appStates) : base("Api.EaCtIm")
+        public ContentImportApi(LazyInit<AppManager> appManagerLazy, LazyInit<JsonSerializer> jsonSerializerLazy, SystemManager systemManager, IAppStates appStates) : base("Api.EaCtIm")
         {
-            _appManagerLazy = appManagerLazy;
-            _jsonSerializerLazy = jsonSerializerLazy;
-            _systemManager = systemManager;
-            _appStates = appStates;
+            ConnectServices(
+                _appManagerLazy = appManagerLazy,
+                _jsonSerializerLazy = jsonSerializerLazy,
+                _systemManager = systemManager,
+                _appStates = appStates
+            );
         }
-        private readonly Lazy<AppManager> _appManagerLazy;
-        private readonly Lazy<JsonSerializer> _jsonSerializerLazy;
+        private readonly LazyInit<AppManager> _appManagerLazy;
+        private readonly LazyInit<JsonSerializer> _jsonSerializerLazy;
         private readonly SystemManager _systemManager;
         private readonly IAppStates _appStates;
         private AppManager _appManager;

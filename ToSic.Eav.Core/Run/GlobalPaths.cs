@@ -1,22 +1,26 @@
 ﻿using System;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Helpers;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 using static System.IO.Path;
 
 namespace ToSic.Eav.Run
 {
-    public class GlobalPaths: HasLog
+    public class GlobalPaths: ServiceBase
     {
         #region Constructor / DI
 
-        public GlobalPaths(Lazy<IServerPaths> serverPaths, Lazy<IGlobalConfiguration> config): base("Viw.Help")
+        public GlobalPaths(LazyInit<IServerPaths> serverPaths, LazyInit<IGlobalConfiguration> config): base("Viw.Help")
         {
-            _serverPaths = serverPaths;
-            _config = config;
+            ConnectServices(
+                _serverPaths = serverPaths,
+                _config = config
+            );
         }
-        private readonly Lazy<IServerPaths> _serverPaths;
-        private readonly Lazy<IGlobalConfiguration> _config;
+        private readonly LazyInit<IServerPaths> _serverPaths;
+        private readonly LazyInit<IGlobalConfiguration> _config;
 
         #endregion
         

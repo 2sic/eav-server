@@ -12,7 +12,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 {
     public class QueryControllerDependencies: ServiceDependencies
     {
-        public Lazy<AppManager> AppManagerLazy { get; }
+        public LazyInit<AppManager> AppManagerLazy { get; }
         /// <summary>
         /// The lazy reader should only be used in the Definition - it's important that it's a new object
         /// when used, to ensure it has the changes previously saved
@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         public LazyInit<DataSourceCatalog> DataSourceCatalogLazy { get; }
         public Generator<JsonSerializer> JsonSerializer { get; }
 
-        public QueryControllerDependencies(Lazy<AppManager> appManagerLazy,
+        public QueryControllerDependencies(LazyInit<AppManager> appManagerLazy,
             LazyInit<AppRuntime> appReaderLazy,
             QueryBuilder queryBuilder,
             LazyInit<ConvertToEavLight> entToDicLazy,

@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -31,7 +32,7 @@ namespace ToSic.Eav.DataSources.Sys
     public sealed class QueryInfo : DataSourceBase
     {
         public QueryBuilder QueryBuilder { get; }
-        private readonly Lazy<QueryManager> _queryManagerLazy;
+        private readonly LazyInit<QueryManager> _queryManagerLazy;
         private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value.Init(Log));
         private QueryManager _queryManager;
 
@@ -65,10 +66,12 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-        public QueryInfo(Lazy<QueryManager> queryManagerLazy, QueryBuilder queryBuilder)
+        public QueryInfo(LazyInit<QueryManager> queryManagerLazy, QueryBuilder queryBuilder)
         {
-            QueryBuilder = queryBuilder.Init(Log);
-            _queryManagerLazy = queryManagerLazy;
+            ConnectServices(
+                QueryBuilder = queryBuilder,
+                _queryManagerLazy = queryManagerLazy
+            );
             Provide(GetStreams);
             Provide("Attributes", GetAttributes);
             ConfigMask(QueryKey, $"[Settings:{QueryNameField}||{DefQuery}]");

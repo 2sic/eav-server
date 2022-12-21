@@ -6,32 +6,36 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
+using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Persistence.Efc
 {
-    public partial class Efc11Loader: HasLog, IRepositoryLoader
+    public partial class Efc11Loader: ServiceBase, IRepositoryLoader
     {
         #region constructor and private vars
 
         public Efc11Loader(
             EavDbContext dbContext,
-            Lazy<IZoneCultureResolver> environmentLazy,
+            LazyInit<IZoneCultureResolver> environmentLazy,
             IServiceProvider serviceProvider,
             IAppInitializedChecker initializedChecker,
             IAppStates appStates,
             ILogStore logStore,
-            Lazy<IFeaturesInternal> featuresService,
+            LazyInit<IFeaturesInternal> featuresService,
             MultiBuilder multiBuilder
             ) : base("Db.Efc11")
         {
-            ServiceProvider = serviceProvider;
-            _dbContext = dbContext;
-            _environmentLazy = environmentLazy;
-            _initializedChecker = initializedChecker;
-            _appStates = appStates;
-            _logStore = logStore;
-            _featuresService = featuresService;
-            _multiBuilder = multiBuilder;
+            ConnectServices(
+                ServiceProvider = serviceProvider,
+                _dbContext = dbContext,
+                _environmentLazy = environmentLazy,
+                _initializedChecker = initializedChecker,
+                _appStates = appStates,
+                _logStore = logStore,
+                _featuresService = featuresService,
+                _multiBuilder = multiBuilder
+            );
         }
 
         public Efc11Loader UseExistingDb(EavDbContext dbContext)
@@ -42,11 +46,11 @@ namespace ToSic.Eav.Persistence.Efc
 
         private IServiceProvider ServiceProvider { get; }
         private EavDbContext _dbContext;
-        private readonly Lazy<IZoneCultureResolver> _environmentLazy;
+        private readonly LazyInit<IZoneCultureResolver> _environmentLazy;
         private readonly IAppInitializedChecker _initializedChecker;
         private readonly IAppStates _appStates;
         private readonly ILogStore _logStore;
-        private readonly Lazy<IFeaturesInternal> _featuresService;
+        private readonly LazyInit<IFeaturesInternal> _featuresService;
         private readonly MultiBuilder _multiBuilder;
 
         #endregion

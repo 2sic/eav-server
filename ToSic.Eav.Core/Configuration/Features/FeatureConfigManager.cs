@@ -7,18 +7,22 @@ using System.Text.Json.Nodes;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
+using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Configuration
 {
-    public class FeatureConfigManager : HasLog
+    public class FeatureConfigManager : ServiceBase
     {
-        private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
-        private readonly Lazy<SystemFingerprint> _fingerprint;
+        private readonly LazyInit<IGlobalConfiguration> _globalConfiguration;
+        private readonly LazyInit<SystemFingerprint> _fingerprint;
 
-        public FeatureConfigManager(Lazy<IGlobalConfiguration> globalConfiguration, Lazy<SystemFingerprint> fingerprint) : base("FeatCfgMng")
+        public FeatureConfigManager(LazyInit<IGlobalConfiguration> globalConfiguration, LazyInit<SystemFingerprint> fingerprint) : base("FeatCfgMng")
         {
-            _globalConfiguration = globalConfiguration;
-            _fingerprint = fingerprint;
+            ConnectServices(
+                _globalConfiguration = globalConfiguration,
+                _fingerprint = fingerprint
+            );
         }
 
         /// <summary>

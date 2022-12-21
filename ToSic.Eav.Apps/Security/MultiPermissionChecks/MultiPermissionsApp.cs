@@ -39,7 +39,7 @@ namespace ToSic.Eav.Apps.Security
         /// </summary>
         public MultiPermissionsApp(Dependencies dependencies) : this(dependencies, "Api.Perms") { }
 
-        protected MultiPermissionsApp(Dependencies dependencies, string logName) : base("Api.Perms") 
+        protected MultiPermissionsApp(Dependencies dependencies, string logName) : base(logName) 
             => _deps = dependencies.SetLog(Log);
         private readonly Dependencies _deps;
 

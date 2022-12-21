@@ -1,27 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Configuration;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Run
 {
     /// <summary>
     /// WIP - the main loader which will run pre-loaders first, then the main loader
     /// </summary>
-    public class SystemLoader: HasLog
+    public class SystemLoader: ServiceBase
     {
         public SystemLoader(
             ILogStore logStore,
             IEnumerable<IStartUpRegistrations> registrations,
-            Lazy<EavSystemLoader> systemLoaderLazy // This must be lazy, as some dependencies of it could change till it's needed
-        ) : base($"{LogNames.Eav}SysLdr", initialMessage: "EAV System Loader")
+            LazyInit<EavSystemLoader> systemLoaderLazy // This must be lazy, as some dependencies of it could change till it's needed
+        ) : base($"{LogNames.Eav}SysLdr")
         {
             logStore.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
-            _registrations = registrations;
-            _systemLoaderLazy = systemLoaderLazy;
+            Log.A("EAV System Loader");
+            ConnectServices(
+                _registrations = registrations,
+                _systemLoaderLazy = systemLoaderLazy
+            );
         }
         private readonly IEnumerable<IStartUpRegistrations> _registrations;
-        private readonly Lazy<EavSystemLoader> _systemLoaderLazy;
+        private readonly LazyInit<EavSystemLoader> _systemLoaderLazy;
 
         /// <summary>
         /// This is just for public access, don't use in this file

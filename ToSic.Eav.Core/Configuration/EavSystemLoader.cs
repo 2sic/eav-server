@@ -11,6 +11,7 @@ using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Data;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Configuration
@@ -23,7 +24,7 @@ namespace ToSic.Eav.Configuration
         public EavSystemLoader(
             SystemFingerprint fingerprint, 
             IRuntime runtime, 
-            Lazy<IGlobalConfiguration> globalConfiguration, 
+            LazyInit<IGlobalConfiguration> globalConfiguration, 
             AppsCacheSwitch appsCache, 
             IFeaturesInternal features, 
             FeatureConfigManager featureConfigManager, 
@@ -32,19 +33,21 @@ namespace ToSic.Eav.Configuration
             IAppStates appStates
         ) : base(logStore, null, $"{LogNames.Eav}SysLdr", "System Load")
         {
-            Fingerprint = fingerprint;
-            _globalConfiguration = globalConfiguration;
-            _appsCache = appsCache;
-            _logStore = logStore;
-            _appStates = appStates;
-            _appStateLoader = runtime.Init(Log);
-            Features = features;
-            _featureConfigManager = featureConfigManager;
-            _licenseCatalog = licenseCatalog;
+            this.ConnectServices(
+                Fingerprint = fingerprint,
+                _globalConfiguration = globalConfiguration,
+                _appsCache = appsCache,
+                _logStore = logStore,
+                _appStates = appStates,
+                _appStateLoader = runtime.Init(Log),
+                Features = features,
+                _featureConfigManager = featureConfigManager,
+                _licenseCatalog = licenseCatalog
+            );
         }
         public SystemFingerprint Fingerprint { get; }
         private readonly IRuntime _appStateLoader;
-        private readonly Lazy<IGlobalConfiguration> _globalConfiguration;
+        private readonly LazyInit<IGlobalConfiguration> _globalConfiguration;
         private readonly AppsCacheSwitch _appsCache;
         public readonly IFeaturesInternal Features;
         private readonly FeatureConfigManager _featureConfigManager;

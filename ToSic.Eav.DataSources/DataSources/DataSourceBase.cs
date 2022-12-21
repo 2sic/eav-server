@@ -1,7 +1,10 @@
 ﻿using System;
 using ToSic.Eav.Data;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helper;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
@@ -9,7 +12,7 @@ namespace ToSic.Eav.DataSources
     /// The base class, which should always be inherited. Already implements things like Get One / Get many, Caching and a lot more.
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public abstract partial class DataSourceBase : HasLog, IDataSource, IDataTarget
+    public abstract partial class DataSourceBase : ServiceBase, IDataSource, IDataTarget
     {
         /// <inheritdoc/>
         [PrivateApi]
@@ -45,12 +48,13 @@ namespace ToSic.Eav.DataSources
 
         #region Properties which the Factory must add
 
-        protected IDataBuilder DataBuilder => _dataBuilderLazy.Value;
+        protected IDataBuilder DataBuilder => _dataBuilder.Get(() => _dataBuilderLazy.New());
+        private readonly GetOnce<IDataBuilder> _dataBuilder = new GetOnce<IDataBuilder>();
         [PrivateApi]
-        internal Lazy<IDataBuilder> _dataBuilderLazy;
+        internal Generator<IDataBuilder> _dataBuilderLazy;
 
         [PrivateApi] public DataSourceErrorHandling ErrorHandler => _dataSourceErrorHandlingLazy.Value;
-        [PrivateApi] internal Lazy<DataSourceErrorHandling> _dataSourceErrorHandlingLazy;
+        [PrivateApi] internal LazyInit<DataSourceErrorHandling> _dataSourceErrorHandlingLazy;
 
         #endregion
 

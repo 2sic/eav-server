@@ -1,9 +1,9 @@
-﻿using System;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.ImportExport.Json
@@ -17,15 +17,17 @@ namespace ToSic.Eav.ImportExport.Json
 
         public new class Dependencies: SerializerBase.Dependencies
         {
-            public Dependencies(ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder, Lazy<IValueConverter> valueConverter)
+            public Dependencies(ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder, LazyInit<IValueConverter> valueConverter)
                 : base(metadataTargets, appStates)
             {
-                MultiBuilder = multiBuilder;
-                ValueConverter = valueConverter;
+                AddToLogQueue(
+                    MultiBuilder = multiBuilder,
+                    ValueConverter = valueConverter
+                );
             }
 
             public MultiBuilder MultiBuilder { get; }
-            public Lazy<IValueConverter> ValueConverter { get; }
+            public LazyInit<IValueConverter> ValueConverter { get; }
         }
 
         #endregion
@@ -41,6 +43,7 @@ namespace ToSic.Eav.ImportExport.Json
         /// </summary>
         protected JsonSerializer(Dependencies dependencies, string logName): base(dependencies, logName)
         {
+            // note: no need to SetLog because it already happens in base
             Deps = dependencies;
             MultiBuilder = dependencies.MultiBuilder;
         }

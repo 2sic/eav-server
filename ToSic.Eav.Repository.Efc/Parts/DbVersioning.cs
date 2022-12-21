@@ -5,16 +5,17 @@ using System.Data;
 using System.Linq;
 using ToSic.Eav.Compression;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
     public  partial class DbVersioning: BllCommandBase
     {
-        private readonly Lazy<Compressor> _compressor;
+        private readonly LazyInit<Compressor> _compressor;
         private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
-        internal DbVersioning(DbDataController db, Lazy<Compressor> compressor) : base(db, "Db.Vers")
+        internal DbVersioning(DbDataController db, LazyInit<Compressor> compressor) : base(db, "Db.Vers")
         {
             _compressor = compressor;
         }

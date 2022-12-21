@@ -1,5 +1,7 @@
 ﻿using System;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data
 {
@@ -7,11 +9,16 @@ namespace ToSic.Eav.Data
     /// Trivial value converter - doesn't convert anything.
     /// </summary>
     [PrivateApi]
-    public abstract class ValueConverterBase : IValueConverter
+    public abstract class ValueConverterBase : ServiceBase, IValueConverter
     {
         public const string PrefixPage = "page";
         public const string PrefixFile = "file";
         public const string Separator = ":";
+
+
+        protected ValueConverterBase(string logName) : base(logName)
+        {
+        }
 
 
         public virtual string ToReference(string value) => value;
@@ -62,5 +69,6 @@ namespace ToSic.Eav.Data
                 return originalValue;
             }
         }
+
     }
 }

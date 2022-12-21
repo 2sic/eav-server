@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -11,8 +12,8 @@ namespace ToSic.Eav.Persistence.Efc
     {
         #region DI Constructor
 
-        public EfcMetadataTargetTypes(Lazy<EavDbContext> dbLazy) => _dbLazy = dbLazy;
-        private readonly Lazy<EavDbContext> _dbLazy;
+        public EfcMetadataTargetTypes(LazyInit<EavDbContext> dbLazy) => _dbLazy = dbLazy;
+        private readonly LazyInit<EavDbContext> _dbLazy;
 
         #endregion
 

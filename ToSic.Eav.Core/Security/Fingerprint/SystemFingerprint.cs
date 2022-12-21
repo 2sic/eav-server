@@ -21,25 +21,29 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
+using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Security.Fingerprint
 {
     /// <summary>
     /// Class responsible for generating the fingerprint
     /// </summary>
-    public sealed class SystemFingerprint: IFingerprint
+    public sealed class SystemFingerprint: ServiceBase, IFingerprint
     {
         /// <summary>
         /// Constructor - gets Lazy PlatformInfo, because it's only used once for initial generation
         /// </summary>
-        public SystemFingerprint(Lazy<IPlatformInfo> platform, Lazy<IDbConfiguration> dbConfigLazy)
+        public SystemFingerprint(LazyInit<IPlatformInfo> platform, LazyInit<IDbConfiguration> dbConfigLazy): base($"{LogNames.Eav}SysFpr")
         {
-            _platform = platform;
-            _dbConfig = dbConfigLazy;
+            ConnectServices(
+                _platform = platform,
+                _dbConfig = dbConfigLazy
+            );
         }
 
-        private readonly Lazy<IPlatformInfo> _platform;
-        private readonly Lazy<IDbConfiguration> _dbConfig;
+        private readonly LazyInit<IPlatformInfo> _platform;
+        private readonly LazyInit<IDbConfiguration> _dbConfig;
 
         public string GetFingerprint()
         {

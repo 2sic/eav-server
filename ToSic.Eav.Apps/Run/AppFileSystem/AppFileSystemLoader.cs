@@ -10,6 +10,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Run
 {
@@ -24,17 +25,19 @@ namespace ToSic.Eav.Apps.Run
 
         #region Dependencies and Constructor
 
-        public class Dependencies
+        public class Dependencies: ServiceDependencies
         {
-            public Dependencies(ISite site, Generator<FileSystemLoader> fslGenerator, Lazy<AppPaths> appPathsLazy)
+            public Dependencies(ISite site, Generator<FileSystemLoader> fslGenerator, LazyInit<AppPaths> appPathsLazy)
             {
-                Site = site;
-                FslGenerator = fslGenerator;
-                AppPathsLazy = appPathsLazy;
+                AddToLogQueue(
+                    Site = site,
+                    FslGenerator = fslGenerator,
+                    AppPathsLazy = appPathsLazy
+                );
             }
             public ISite Site { get; }
             internal Generator<FileSystemLoader> FslGenerator { get; }
-            internal Lazy<AppPaths> AppPathsLazy { get; }
+            internal LazyInit<AppPaths> AppPathsLazy { get; }
         }
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace ToSic.Eav.Apps.Run
         /// <param name="logName"></param>
         protected AppFileSystemLoader(Dependencies deps, string logName) : base(logName)
         {
-            Deps = deps;
+            Deps = deps.SetLog(Log);
             Site = deps.Site;
         }
         protected readonly Dependencies Deps;

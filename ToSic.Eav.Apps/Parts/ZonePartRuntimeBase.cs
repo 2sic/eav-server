@@ -1,11 +1,12 @@
 ﻿using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
     /// <summary>
     /// Base class for any kind of read/runtime operations
     /// </summary>
-    public abstract class ZonePartRuntimeBase : HasLog
+    public abstract class ZonePartRuntimeBase : ServiceBase
     {
         protected internal ZoneRuntime ZoneRuntime { get; internal set; }
 
