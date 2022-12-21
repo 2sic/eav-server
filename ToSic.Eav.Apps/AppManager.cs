@@ -27,18 +27,20 @@ namespace ToSic.Eav.Apps
             string logName
             ) : base(dependencies, logName)
         {
-            _appRuntime = appRuntime.SetInit(r => r.Init(Log).InitWithState(AppState, ShowDrafts));
-            _dbDataController = dbDataController.SetInit(c =>
-            {
-                // TODO: STV this is a bit of a hack, but it's the only way to get the app-state into the DbDataController
-                // find what is wrong with AppState
-                if ((Dependencies.AppStates as AppStates)?.IsCached(this) ?? false)
-                    c.Init(Log).Init(AppState);
-                else
-                    c.Init(Log).Init(ZoneId, AppId);
-            });
-            _entitiesManager = entitiesManager.SetInit(m => m.Init(Log).ConnectTo(this));
-            _queryManager = queryManager.SetInit(m => m.Init(Log).ConnectTo(this));
+            this.ConnectServices(
+                _appRuntime = appRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts)),
+                _dbDataController = dbDataController.SetInit(c =>
+                {
+                    // TODO: STV this is a bit of a hack, but it's the only way to get the app-state into the DbDataController
+                    // find what is wrong with AppState
+                    if ((Dependencies.AppStates as AppStates)?.IsCached(this) ?? false)
+                        c.Init(AppState);
+                    else
+                        c.Init(ZoneId, AppId);
+                }),
+                _entitiesManager = entitiesManager.SetInit(m => m.ConnectTo(this)),
+                _queryManager = queryManager.SetInit(m => m.ConnectTo(this))
+            );
         }
 
         public AppManager(AppRuntimeDependencies dependencies,

@@ -12,7 +12,5 @@ namespace ToSic.Lib.DI
             (this as ILazyInitLog).SetLog(parentLog);
             return this;
         }
-
-        void ILazyInitLog.SetLog(ILog parentLog) => InitLogOrNull = thingWithLog => thingWithLog.Init(parentLog);
     }
 }

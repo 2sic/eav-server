@@ -22,21 +22,16 @@ namespace ToSic.Lib.Services
 
         }
 
-        ///// <summary>
-        ///// Special helper to keep track of all dependencies which need a log, to init once SetLog is called
-        ///// </summary>
-        //private DependencyLogs DependencyLogs { get; } = new DependencyLogs();
-
         /// <summary>
         /// Add Log to all dependencies listed in <see cref="services"/>
         /// </summary>
         /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
         [PrivateApi]
-        protected void ConnectServices(params object[] services)
-        {
-            var depLogs = new DependencyLogs();
-            depLogs.Add(services);
-            depLogs.SetLog(Log);
-        }
+        protected void ConnectServices(params object[] services) => (this as IHasLog).ConnectServices(services);
+        //{
+        //    var depLogs = new DependencyLogs();
+        //    depLogs.Add(services);
+        //    depLogs.SetLog(Log);
+        //}
     }
 }

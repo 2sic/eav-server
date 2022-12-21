@@ -16,7 +16,9 @@ namespace ToSic.Eav.Apps.Parts
 
         protected AppRuntimeBase(AppRuntimeDependencies dependencies, string logName): base(logName, new CodeRef())
         {
-            Dependencies = dependencies.SetLog(Log);
+            this.ConnectServices(
+                Dependencies = dependencies
+            );
         }
         protected readonly AppRuntimeDependencies Dependencies;
 

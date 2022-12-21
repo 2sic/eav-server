@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Lib.DI
 {
@@ -7,7 +8,7 @@ namespace ToSic.Lib.DI
     /// This should reduce the amount of plumbing in many code files
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LazyInit<T> where T : class
+    public class LazyInit<T>: ILazyInitLog where T : class
     {
         public LazyInit(Lazy<T> valueLazy) => _valueLazy = valueLazy;
         private readonly Lazy<T> _valueLazy;
@@ -47,5 +48,7 @@ namespace ToSic.Lib.DI
 
 
         protected Action<T> InitLogOrNull;
+
+        void ILazyInitLog.SetLog(ILog parentLog) => InitLogOrNull = thingWithLog => (thingWithLog as IHasLog)?.Init(parentLog);
     }
 }
