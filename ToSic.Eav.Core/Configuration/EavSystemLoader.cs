@@ -39,7 +39,7 @@ namespace ToSic.Eav.Configuration
                 _appsCache = appsCache,
                 _logStore = logStore,
                 _appStates = appStates,
-                _appStateLoader = runtime.Init(Log),
+                _appStateLoader = runtime,
                 Features = features,
                 _featureConfigManager = featureConfigManager,
                 _licenseCatalog = licenseCatalog

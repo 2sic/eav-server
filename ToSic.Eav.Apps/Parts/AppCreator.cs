@@ -65,7 +65,7 @@ namespace ToSic.Eav.Apps.Parts
         private int CreateInDb(string appGuid, int? inheritAppId)
         {
             Log.A("create new app");
-            var app = _db.Init(Log).Init(_zoneId, null).App.AddApp(null, appGuid, inheritAppId);
+            var app = _db.Init(_zoneId, null).App.AddApp(null, appGuid, inheritAppId);
 
             SystemManager.PurgeZoneList();
             Log.A($"app created a:{app.AppId}, guid:{appGuid}");

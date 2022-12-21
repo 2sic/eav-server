@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
         {
             var wrapLog = Log.Fn<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
-		    _eavContext = Deps._dbDataForAppImport.Value.Init(Log).Init(zoneId, appId);
+		    _eavContext = Deps._dbDataForAppImport.Value.Init(zoneId, appId);
             
 			AppId = appId;
 			ZoneId = zoneId;
@@ -60,7 +60,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             _targetDimensions = Deps.AppStates.Languages(zoneId, true);
 
-            _xmlBuilder = Deps._xmlToEntity.Value.Init(Log).Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
+            _xmlBuilder = Deps._xmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
             #endregion
 
             var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		    var importEntities = BuildEntities(entNodes, (int)TargetTypes.None);
 
 
-			var import = Deps._importerLazy.Value.Init(Log).Init(ZoneId, AppId, leaveExistingValuesUntouched, true);
+			var import = Deps._importerLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true);
 
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
 

@@ -8,10 +8,11 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public class ZipImport : HasLog
+    public class ZipImport : ServiceBase
     {
         private readonly Generator<XmlImportWithFiles> _xmlImpExpFiles;
         private readonly IAppStates _appStates;
@@ -26,10 +27,12 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public ZipImport(IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) : base("Zip.Imp")
         {
-            _xmlImpExpFiles = xmlImpExpFiles;
-            _appStates = appStates;
-            _systemManager = systemManager.Init(Log);
-            Env = environment.Init(Log);
+            ConnectServices(
+                _xmlImpExpFiles = xmlImpExpFiles,
+                _appStates = appStates,
+                _systemManager = systemManager,
+                Env = environment
+            );
             Messages = new List<Message>();
         }
 
@@ -230,7 +233,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // New in V11 - now that we just imported content types into the /system folder
             // the App must be refreshed to ensure these are available for working
             // Must happen after CopyAppFiles(...)
-            _systemManager.Init(Log).PurgeApp(appId);
+            _systemManager.PurgeApp(appId);
 
             wrapLog.Done("ok");
         }

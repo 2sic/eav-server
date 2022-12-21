@@ -38,7 +38,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         public TImplementation Init(int appId)
         {
             if (appId != 0) // if 0, then no context is available or used
-                _appManager = _dependencies.AppManagerLazy.Value.Init(Log).Init(appId);
+                _appManager = _dependencies.AppManagerLazy.Value.Init(appId);
             return this as TImplementation;
         }
 

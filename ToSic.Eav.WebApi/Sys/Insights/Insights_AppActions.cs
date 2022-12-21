@@ -9,7 +9,7 @@ namespace ToSic.Eav.WebApi.Sys
             if (UrlParamsIncomplete(appId, out var message))
                 return message;
 
-            SystemManager.Init(Log).PurgeApp(appId.Value);
+            SystemManager.PurgeApp(appId.Value);
 
             return $"app {appId} has been purged";
         }

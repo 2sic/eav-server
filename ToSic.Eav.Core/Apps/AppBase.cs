@@ -1,5 +1,6 @@
 ﻿using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps
 {
@@ -7,7 +8,7 @@ namespace ToSic.Eav.Apps
     /// Base object for things that have a full app-identity (app-id and zone-id) and can also log their state.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public abstract class AppBase: HasLog, IAppIdentity
+    public abstract class AppBase: ServiceBase, IAppIdentity
     {
         /// <inheritdoc />
         public int ZoneId { get; private set; }

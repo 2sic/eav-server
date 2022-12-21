@@ -71,12 +71,14 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public ValueSort(ValueLanguages valLanguages)
 		{
+            ConnectServices(
+                _valLanguages = valLanguages
+            );
+
             Provide(GetValueSort);
 		    ConfigMask(AttrKey, $"[Settings:{AttrKey}]");
 		    ConfigMask(DirectionKey, $"[Settings:{DirectionKey}]");
 		    ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
-
-            _valLanguages = valLanguages.Init(Log);
         }
         private readonly ValueLanguages _valLanguages;
 

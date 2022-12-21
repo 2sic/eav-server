@@ -4,11 +4,12 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security
 {
-    public abstract partial class PermissionCheckBase : HasLog, IPermissionCheck
+    public abstract partial class PermissionCheckBase : ServiceBase, IPermissionCheck
     {
 
         #region Permission Targets and resulting list of metadata to control

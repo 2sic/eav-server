@@ -45,10 +45,9 @@ namespace ToSic.Eav.Apps.Parts
                 _appLoaderTools = appLoaderTools,
                 _entitySaverLazy = entitySaverLazy,
                 _appsCache = appsCache,
-                _exportListXmGenerator = exportListXmlGenerator
+                _exportListXmGenerator = exportListXmlGenerator,
+                Serializer = jsonSerializer.SetInit(j => j.SetApp(Parent.AppState))
             );
-            
-            Serializer = jsonSerializer.SetInit(j => j.Init(Log).SetApp(Parent.AppState));
         }
         private readonly LazySvc<ImportListXml> _lazyImportListXml;
         private readonly LazySvc<Import> _importLazy;

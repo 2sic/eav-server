@@ -24,8 +24,12 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public override string LogId => "DS.AppCUD";
 
-        public AppData(LazySvc<SimpleDataController> dataController, IAppStates appStates): base(appStates) 
-            => DataController = dataController.SetInit(dc => dc.Init(Log).Init(ZoneId, AppId, false));
+        public AppData(LazySvc<SimpleDataController> dataController, IAppStates appStates): base(appStates)
+        {
+            ConnectServices(
+                DataController = dataController.SetInit(dc => dc.Init(ZoneId, AppId, false))
+            );
+        }
 
         #endregion
 

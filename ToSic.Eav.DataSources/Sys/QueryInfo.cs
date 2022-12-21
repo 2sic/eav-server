@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources.Sys
     {
         public QueryBuilder QueryBuilder { get; }
         private readonly LazySvc<QueryManager> _queryManagerLazy;
-        private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value.Init(Log));
+        private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value);
         private QueryManager _queryManager;
 
         #region Configuration-properties (no config)

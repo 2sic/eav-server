@@ -44,9 +44,8 @@ namespace ToSic.Eav.WebApi
         public AppRuntime AppRead;
 
 
-        public EntityApi Init(int appId, bool showDrafts, ILog parentLog)
+        public EntityApi Init(int appId, bool showDrafts, ILog parentLog = null)
         {
-            this.Init(parentLog);
             AppRead = _appRuntime.Init(appId, showDrafts);
             return this;
         }
@@ -65,7 +64,6 @@ namespace ToSic.Eav.WebApi
                 if (_entitiesToDictionary != null) return _entitiesToDictionary;
                 _entitiesToDictionary = _entitiesToDicLazy.Value;
                 _entitiesToDictionary.WithGuid = true;
-                (_entitiesToDictionary as ConvertToEavLight)?.Init(Log);
                 return _entitiesToDictionary;
             }
         }
@@ -143,8 +141,11 @@ namespace ToSic.Eav.WebApi
         /// <param name="force">try to force-delete</param>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        public void Delete(string contentType, int id, bool force = false, int? parentId = null, string parentField = null) 
-            => _appManagerLazy.Value.Init(AppRead.Log).Init(AppRead).Entities.Delete(id, contentType, force, false, parentId, parentField);
+        public void Delete(string contentType, int id, bool force = false, int? parentId = null, string parentField = null)
+        {
+            _appManagerLazy.Value.Init(AppRead).Entities
+                .Delete(id, contentType, force, false, parentId, parentField);
+        }
 
         /// <summary>
         /// Delete the entity specified by GUID.
@@ -180,12 +181,12 @@ namespace ToSic.Eav.WebApi
         }
 
         // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
-        public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Eav.Security.Grants> requiredGrants, ILog parentLog)
+        public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Eav.Security.Grants> requiredGrants)
         {
             var permCheck = _multiPermissionsTypes.New().Init(context, app, contentType);
             if (!permCheck.EnsureAll(requiredGrants, out var error))
                 throw HttpException.PermissionDenied(error);
-            return Init(app.AppId, true, parentLog);
+            return Init(app.AppId, true);
         }
 
         public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType, bool excludeAncestor = false)

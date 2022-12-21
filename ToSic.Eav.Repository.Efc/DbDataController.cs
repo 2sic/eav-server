@@ -311,7 +311,7 @@ namespace ToSic.Eav.Repository.Efc
         /// The loader must use the same connection, to ensure it runs in existing transactions.
         /// Otherwise the loader would be blocked from getting intermediate data while we're running changes. 
         /// </summary>
-        public IRepositoryLoader Loader => _loader ?? (_loader = _efcLoaderLazy.Value.UseExistingDb(SqlDb).Init(Log));
+        public IRepositoryLoader Loader => _loader ?? (_loader = _efcLoaderLazy.Value.UseExistingDb(SqlDb));
         private IRepositoryLoader _loader;
 
         public void DoWhileQueuingVersioning(Action action) => Versioning.DoAndSaveHistoryQueue(action);

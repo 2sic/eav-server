@@ -7,6 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Services;
 using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -16,13 +17,15 @@ namespace ToSic.Eav.DataSources.Queries
 	/// Helpers to work with Data Queries
 	/// </summary>
 	[PrivateApi]
-	public class QueryManager: HasLog
+	public class QueryManager: ServiceBase
 	{
         public DataSourceFactory DataSourceFactory { get; }
 
         public QueryManager(DataSourceFactory dataSourceFactory): base($"{DataSourceConstants.LogPrefix}.QryMan")
         {
-            DataSourceFactory = dataSourceFactory.Init(Log);
+            ConnectServices(
+                DataSourceFactory = dataSourceFactory
+            );
         }
 
 	    /// <summary>

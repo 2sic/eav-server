@@ -92,14 +92,16 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public ValueFilter(ValueLanguages valLanguages)
         {
+            ConnectServices(
+                _valueLanguageService = valLanguages
+            );
+
             Provide(GetValueFilterOrFallback);
             ConfigMask(AttrKey, $"[Settings:{AttrKey}]");
             ConfigMask(ExpectedKey, $"[Settings:{ExpectedKey}]");
             ConfigMask(OperatorKey, $"[Settings:{OperatorKey}||==]");
             ConfigMask(TakeKey, $"[Settings:{TakeKey}]");
             ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
-
-            _valueLanguageService = valLanguages.Init(Log);
         }
         private readonly ValueLanguages _valueLanguageService;
 

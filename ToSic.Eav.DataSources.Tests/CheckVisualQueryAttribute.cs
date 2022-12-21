@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources.Catalog;
-using ToSic.Lib.Logging;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests
@@ -13,7 +12,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void CheckGlobalNames()
         {
-            var dsCatalog = Build<DataSourceCatalog>().Init(null);
+            var dsCatalog = Build<DataSourceCatalog>();
 
             var allDS = DataSourceCatalog.GetAll(true).ToList();
 

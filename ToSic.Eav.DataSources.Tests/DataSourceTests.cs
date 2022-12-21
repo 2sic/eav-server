@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void AutoFindAllDataSources()
         {
-            var dsCatalog = Build<DataSourceCatalog>().Init(null);
+            var dsCatalog = Build<DataSourceCatalog>();
             var dsList = DataSourceCatalog.GetAll(false);
             Assert.AreEqual(StandardInstalledDSCount, dsList.Count(), "expect a correct number of DSs");
 
@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void AutoFindPipelineDataSources()
         {
-            var dsCatalog = Build<DataSourceCatalog>().Init(null);
+            var dsCatalog = Build<DataSourceCatalog>();
 
             var dsList = DataSourceCatalog.GetAll(true);
             Assert.AreEqual(StandardInstalledPipeLineDS, dsList.Count(), "expect a correct number of DSs");

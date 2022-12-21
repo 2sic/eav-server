@@ -49,10 +49,9 @@ namespace ToSic.Eav.WebApi.ImportExport
         private readonly Generator<JsonSerializer> _jsonSerializer;
         private readonly ResponseMaker<THttpResponseType> _responseMaker;
 
-        public ContentExportApi<THttpResponseType> Init(int appId, ILog parentLog)
+        public ContentExportApi<THttpResponseType> Init(int appId)
         {
-            this.Init(parentLog);
-            _appManager = _appManagerLazy.Value.Init(Log).Init(appId);
+            _appManager = _appManagerLazy.Value.Init(appId);
             Log.A($"For app: {appId}");
             return this;
         }
@@ -105,7 +104,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             Log.A($"get fields type:{name}");
             SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
             var type = _appManager.Read.ContentTypes.Get(name);
-            var serializer = _jsonSerializer.New().Init(Log).SetApp(_appManager.AppState);
+            var serializer = _jsonSerializer.New().SetApp(_appManager.AppState);
             var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                 .RemoveNonFilenameCharacters();
  
@@ -118,7 +117,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             Log.A($"get fields id:{id}");
             SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
             var entity = _appManager.Read.Entities.Get(id);
-            var serializer = _jsonSerializer.New().Init(Log).SetApp(_appManager.AppState);
+            var serializer = _jsonSerializer.New().SetApp(_appManager.AppState);
 
             return _responseMaker.File(
                 serializer.Serialize(entity, withMetadata ? FileSystemLoader.QueryMetadataDepth : 0),
@@ -170,7 +169,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 .Select(et => et.MetadataFor.KeyString).ToList();
             Log.A($"count owners:{owners.Count()}");
 
-            var serializer = _jsonSerializer.New().Init(Log).SetApp(_appManager.AppState);
+            var serializer = _jsonSerializer.New().SetApp(_appManager.AppState);
 
             // TODO: wrong JSON v1 format is generated
             var bundleList = new JsonBundle();

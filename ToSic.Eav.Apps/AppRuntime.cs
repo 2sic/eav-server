@@ -26,10 +26,12 @@ namespace ToSic.Eav.Apps
             string logName = null) : base(dependencies,
             logName ?? "Eav.AppRt")
         {
-            _entityRuntime = entityRuntime.SetInit(r => r.Init(Log).ConnectTo(this));
-            _metadataRuntime = metadataRuntime.SetInit(r => r.Init(Log).ConnectTo(this));
-            _contentTypeRuntime = contentTypeRuntime.SetInit(r => r.Init(Log).ConnectTo(this));
-            _queryRuntime = queryRuntime.SetInit(r => r.Init(Log).ConnectTo(this));
+            ConnectServices(
+                _entityRuntime = entityRuntime.SetInit(r => r.ConnectTo(this)),
+                _metadataRuntime = metadataRuntime.SetInit(r => r.ConnectTo(this)),
+                _contentTypeRuntime = contentTypeRuntime.SetInit(r => r.ConnectTo(this)),
+                _queryRuntime = queryRuntime.SetInit(r => r.ConnectTo(this))
+            );
         }
 
 

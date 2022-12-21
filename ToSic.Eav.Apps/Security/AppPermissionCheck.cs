@@ -16,8 +16,10 @@ namespace ToSic.Eav.Apps.Security
         #region Constructor & DI
         public AppPermissionCheck(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{AppConstants.LogName}.PrmChk")
         {
-            _appStates = appStates;
-            _environmentPermission = (EnvironmentPermission) dependencies.EnvironmentPermission.Init(Log);
+            ConnectServices(
+                _appStates = appStates,
+                _environmentPermission = (EnvironmentPermission)dependencies.EnvironmentPermission
+            );
         }
         private readonly IAppStates _appStates;
         private readonly EnvironmentPermission _environmentPermission;

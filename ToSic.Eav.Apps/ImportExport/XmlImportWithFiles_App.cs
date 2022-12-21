@@ -48,7 +48,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     appGuid = Guid.NewGuid().ToString();
 
                 // Adding app to EAV
-                var eavDc = Deps._dbDataForNewApp.Value.Init(Log).Init(zoneId, null);
+                var eavDc = Deps._dbDataForNewApp.Value.Init(zoneId, null);
 
                 // ParentApp
                 parentAppId = GetParentAppId(xmlSource, eavDc);

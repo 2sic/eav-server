@@ -14,7 +14,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public class AppFileSystemLoader: HasLog, IAppFileSystemLoader, IAppRepositoryLoader
+    public class AppFileSystemLoader: ServiceBase, IAppFileSystemLoader, IAppRepositoryLoader
     {
         #region Constants
 

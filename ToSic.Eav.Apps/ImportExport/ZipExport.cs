@@ -14,10 +14,11 @@ using ToSic.Lib.Logging;
 
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public class ZipExport
+    public class ZipExport: ServiceBase
     {
         private int _appId;
         private int _zoneId;
@@ -40,12 +41,14 @@ namespace ToSic.Eav.Apps.ImportExport
         public ZipExport(AppRuntime appRuntime,
             DataSourceFactory dataSourceFactory,
             XmlExporter xmlExporter,
-            IGlobalConfiguration globalConfiguration)
+            IGlobalConfiguration globalConfiguration): base(LogNames.Eav + ".ZipExp")
         {
-            _xmlExporter = xmlExporter;
-            _globalConfiguration = globalConfiguration;
-            AppRuntime = appRuntime;
-            DataSourceFactory = dataSourceFactory.Init(Log);
+            ConnectServices(
+                _xmlExporter = xmlExporter,
+                _globalConfiguration = globalConfiguration,
+                AppRuntime = appRuntime,
+                DataSourceFactory = dataSourceFactory
+            );
         }
 
         private readonly XmlExporter _xmlExporter;
@@ -63,7 +66,7 @@ namespace ToSic.Eav.Apps.ImportExport
             Log = new Log("Zip.Exp", parentLog);
             FileManager = new FileManager(_physicalAppPath).Init(Log);
             FileManagerGlobal = new FileManager(physicalPathGlobal).Init(Log);
-            AppRuntime.Init(Log).InitQ(new AppIdentity(_zoneId, _appId), true);
+            AppRuntime.InitQ(new AppIdentity(_zoneId, _appId), true);
             return this;
         }
         #endregion

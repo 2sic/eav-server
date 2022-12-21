@@ -55,7 +55,7 @@ namespace ToSic.Eav.WebApi
             this.Init(parentLog);
             Log.A($"Will use app {appId}");
             _appId = appId;
-            AppManager = _appManagerLazy.Value.Init(Log).Init(appId);
+            AppManager = _appManagerLazy.Value.Init(appId);
             return this;
         }
 
@@ -195,7 +195,7 @@ namespace ToSic.Eav.WebApi
             var hasAncestor = type.HasAncestor();
             var ancestorDecorator = type.GetDecorator<IAncestor>();
 
-            var appInputTypes = _appRuntimeLazy.Value.Init(Log).Init(_appId, true).ContentTypes.GetInputTypes();
+            var appInputTypes = _appRuntimeLazy.Value.Init(_appId, true).ContentTypes.GetInputTypes();
 
             var ser = _convertToEavLight.Value;
             return fields.Select(a =>
@@ -331,7 +331,7 @@ namespace ToSic.Eav.WebApi
 
         #endregion
 
-        private DbDataController GetDb() => _db ?? (_db = _dbLazy.Value.Init(Log).Init(null, _appId));
+        private DbDataController GetDb() => _db ?? (_db = _dbLazy.Value.Init(null, _appId));
         private DbDataController _db;
     }
 

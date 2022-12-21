@@ -6,20 +6,23 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Dto;
+using ToSic.Lib.Services;
 using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi
 {
-    public class EntityPickerApi : HasLog
+    public class EntityPickerApi : ServiceBase
     {
         #region DI Constructor
 
         public EntityPickerApi(AppRuntime appRuntime, IZoneCultureResolver cultureResolver, IUser user) : base("Api.EntPck")
         {
-            _cultureResolver = cultureResolver;
-            _user = user;
-            AppRuntime = appRuntime;
+            ConnectServices(
+                _cultureResolver = cultureResolver,
+                _user = user,
+                AppRuntime = appRuntime
+            );
         }
         public AppRuntime AppRuntime { get; }
         private readonly IZoneCultureResolver _cultureResolver;
@@ -34,7 +37,7 @@ namespace ToSic.Eav.WebApi
         {
             Log.A($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
-            AppRuntime.Init(Log).Init(appId, withDrafts);
+            AppRuntime.Init(appId, withDrafts);
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
             {

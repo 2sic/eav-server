@@ -45,7 +45,7 @@ namespace ToSic.Eav.WebApi.Admin
 
         /// <inheritdoc/>
         public IEnumerable<Dictionary<string, object>> List(int appId, string contentType)
-            => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.ReadSomething, Log)
+            => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.ReadSomething)
                 .GetEntitiesForAdmin(contentType);
 
 
@@ -53,9 +53,9 @@ namespace ToSic.Eav.WebApi.Admin
         public void Delete(string contentType, int appId, int? id, Guid? guid, bool force = false, int? parentId = null,
             string parentField = null)
         {
-            if (id.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.DeleteSomething, Log)
+            if (id.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.DeleteSomething)
                 .Delete(contentType, id.Value, force, parentId, parentField);
-            else if (guid.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.DeleteSomething, Log)
+            else if (guid.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.DeleteSomething)
                 .Delete(contentType, guid.Value, force, parentId, parentField);
             else
                 throw new Exception($"When using '{nameof(Delete)}' you must use 'id' or 'guid' parameters.");
@@ -64,7 +64,7 @@ namespace ToSic.Eav.WebApi.Admin
 
         /// <inheritdoc/>
         public THttpResponseType Json(int appId, int id, string prefix, bool withMetadata)
-            => _contentExport.Value.Init(appId, Log).DownloadEntityAsJson(_user.Value, id, prefix, withMetadata);
+            => _contentExport.Value.Init(appId).DownloadEntityAsJson(_user.Value, id, prefix, withMetadata);
 
 
         /// <inheritdoc/>
@@ -78,7 +78,7 @@ namespace ToSic.Eav.WebApi.Admin
             ExportLanguageResolution languageReferences, 
             string selectedIds = null)
         {
-            var (content, fileName) = _contentExport.Value.Init(appId, Log).ExportContent(
+            var (content, fileName) = _contentExport.Value.Init(appId).ExportContent(
                 _user.Value,
                 language, defaultLanguage, contentType,
                 recordExport, resourcesReferences,
@@ -90,16 +90,16 @@ namespace ToSic.Eav.WebApi.Admin
 
         /// <inheritdoc/>
         public ContentImportResultDto XmlPreview(ContentImportArgsDto args)
-            => _contentImport.Value.Init(args.AppId, Log).XmlPreview(args);
+            => _contentImport.Value.Init(args.AppId).XmlPreview(args);
 
 
         /// <inheritdoc/>
         public ContentImportResultDto XmlUpload(ContentImportArgsDto args)
-            => _contentImport.Value.Init(args.AppId, Log).XmlImport(args);
+            => _contentImport.Value.Init(args.AppId).XmlImport(args);
 
 
         /// <inheritdoc/>
-        public bool Upload(EntityImportDto args) => _contentImport.Value.Init(args.AppId, Log).Import(args);
+        public bool Upload(EntityImportDto args) => _contentImport.Value.Init(args.AppId).Import(args);
 
 
         /// <inheritdoc/>

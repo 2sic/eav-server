@@ -63,7 +63,9 @@ namespace ToSic.Eav.DataSources.Queries
         [PrivateApi]
         public Query(DataSourceFactory dataSourceFactory)
         {
-            DataSourceFactory = dataSourceFactory.Init(Log);
+            ConnectServices(
+                DataSourceFactory = dataSourceFactory
+            );
         }
 
         /// <summary>
@@ -108,7 +110,7 @@ namespace ToSic.Eav.DataSources.Queries
             wrapLog.Done("ok");
         }
 
-        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = DataSourceFactory.QueryBuilder.Init(Log));
+        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = DataSourceFactory.QueryBuilder);
         private QueryBuilder _queryBuilder;
 
 

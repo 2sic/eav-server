@@ -37,10 +37,9 @@ namespace ToSic.Eav.WebApi.ImportExport
         private readonly IAppStates _appStates;
         private AppManager _appManager;
 
-        public ContentImportApi Init(int appId, ILog parentLog)
+        public ContentImportApi Init(int appId)
         {
-            this.Init(parentLog);
-            _appManager = _appManagerLazy.Value.Init(Log).Init(appId);
+            _appManager = _appManagerLazy.Value.Init(appId);
             Log.A($"For app: {appId}");
             return this;
         }
@@ -76,7 +75,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             if (!import.ErrorLog.HasErrors)
             {
                 import.PersistImportToRepository();
-                _systemManager.Init(Log).PurgeApp(args.AppId);
+                _systemManager.PurgeApp(args.AppId);
             }
 
             return wrapLog.Return(new ContentImportResultDto(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);
@@ -101,7 +100,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             try
             {
                 var callLog = Log.Fn<bool>(null, "import json item" + args.DebugInfo);
-                var deserializer = _jsonSerializerLazy.Value.Init(Log).SetApp(_appManager.AppState);
+                var deserializer = _jsonSerializerLazy.Value.SetApp(_appManager.AppState);
                 // Since we're importing directly into this app, we prefer local content-types
                 deserializer.PreferLocalAppTypes = true;
 

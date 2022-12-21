@@ -4,6 +4,7 @@ using ToSic.Eav.DataSources;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps
 {
@@ -24,22 +25,18 @@ namespace ToSic.Eav.Apps
         /// Helper class, so inheriting stuff doesn't need to update the constructor all the time
         /// </summary>
         [PrivateApi]
-        public class AppDependencies
+        public class AppDependencies: ServiceDependencies
         {
-            //internal readonly IServiceProvider ServiceProvider;
             internal readonly IZoneMapper ZoneMapper;
             internal readonly ISite Site;
             internal readonly IAppStates AppStates;
             internal readonly DataSourceFactory DataSourceFactory;
 
-            public AppDependencies(
-                //IServiceProvider serviceProvider,
-                IZoneMapper zoneMapper,
+            public AppDependencies(IZoneMapper zoneMapper,
                 ISite site,
                 IAppStates appStates,
                 DataSourceFactory dataSourceFactory)
             {
-                //ServiceProvider = serviceProvider;
                 ZoneMapper = zoneMapper;
                 Site = site;
                 AppStates = appStates;
@@ -56,9 +53,8 @@ namespace ToSic.Eav.Apps
         /// <param name="logName">must be null by default, because of DI</param>
         public App(AppDependencies dependencies, string logName = null): base(logName ?? "Eav.App", new CodeRef())
         {
-            _dependencies = dependencies;
-            dependencies.ZoneMapper.Init(Log);
-            DataSourceFactory = dependencies.DataSourceFactory.Init(Log);
+            _dependencies = dependencies.SetLog(Log);
+            DataSourceFactory = dependencies.DataSourceFactory;
             
             Site = dependencies.Site;
         }
