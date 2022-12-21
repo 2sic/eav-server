@@ -20,9 +20,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                      ?? Create(scope, usesConfigurationOfOtherSet, alwaysShareConfig);
 
             ct.Name = name;
-            // TODO: #RemoveContentTypeDescription
-            // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-            ct.Description = ""; // description ?? string.Empty; // FIX: to ensure non nullable value in DB
             ct.Scope = scope;
             ct.ChangeLogCreated = DbContext.Versioning.GetChangeLogId();
 

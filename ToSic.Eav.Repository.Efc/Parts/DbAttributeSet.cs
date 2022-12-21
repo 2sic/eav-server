@@ -79,9 +79,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 Name = name,
                 StaticName = nameId,
-                // TODO: #RemoveContentTypeDescription
-                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                Description = /*description ??*/ "",
                 Scope = scope,
                 ChangeLogCreated = DbContext.Versioning.GetChangeLogId(),
                 AppId = targetAppId
