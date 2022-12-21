@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace ToSic.Lib.Logging
 {
@@ -17,7 +18,9 @@ namespace ToSic.Lib.Logging
             // this is critical because we cannot guarantee that sometimes a LinkTo is called more than once on something
             if (newParent != null)
             {
-                if (Parent == null)
+                // Only allow switching if the target doesn't have a parent
+                // or if it was auto-linked but never used yet
+                if (Parent == null || !Entries.Any())
                 {
                     Parent = newParent;
                     Depth = (newParent as Log)?.Depth + 1 ?? 0;
@@ -25,7 +28,7 @@ namespace ToSic.Lib.Logging
                         throw new Exception(
                             $"LOG ERROR - Adding parent to logger but exceeded max depth of {MaxParentDepth}");
                 }
-                // show an error, if it the new parent is different from the old one
+                // show info if it the new parent is different from the old one
                 else if ((Parent as Log)?.FullIdentifier != (newParent as Log)?.FullIdentifier)
                     this.A("LOG INFO - this logger already has a parent, but trying to attach to new parent. " +
                            $"Existing parent: {(Parent as Log)?.FullIdentifier}. " +
