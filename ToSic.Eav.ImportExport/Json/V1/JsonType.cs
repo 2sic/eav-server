@@ -8,6 +8,7 @@ namespace ToSic.Eav.ImportExport.Json.V1
         public string Name;
         public string Id;
 
+        // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
         /// <summary>
         /// Additional description for the type, usually not included.
         /// Sometimes added in admin-UI scenarios, where additional info is useful
@@ -38,7 +39,8 @@ namespace ToSic.Eav.ImportExport.Json.V1
             {
                 var description = entity.Type.Metadata.DetailsOrNull;
                 Title = description?.Title ?? entity.Type.NameId;
-                Description = description?.Description ?? entity.Type.Description;
+                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                Description = description?.Description ?? ""; // entity.Type.Description;
             }
         }
     }

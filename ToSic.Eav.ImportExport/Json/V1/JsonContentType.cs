@@ -14,6 +14,7 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// <remarks>V 1.0</remarks>
         public string Scope;
 
+        // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
         /// <remarks>V 1.0</remarks>
         public string Description;
 

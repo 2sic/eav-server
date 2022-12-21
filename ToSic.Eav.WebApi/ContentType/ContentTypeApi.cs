@@ -7,7 +7,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Dto;
@@ -111,7 +110,8 @@ namespace ToSic.Eav.WebApi
                 Label = nameOverride,
                 StaticName = t.NameId,
                 Scope = t.Scope,
-                Description = t.Description.UseFallbackIfNoValue(details?.Description),
+                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                Description = /*t.Description.UseFallbackIfNoValue*/(details?.Description),
                 EditInfo = new EditInfoDto(t),
                 UsesSharedDef = ancestorDecorator != null,
                 SharedDefId = ancestorDecorator?.Id,
@@ -153,8 +153,10 @@ namespace ToSic.Eav.WebApi
 	        GetDb().ContentType.AddOrUpdate(
                 item["StaticName"], 
                 item["Scope"], 
-                item["Name"], 
-                item["Description"],
+                item["Name"],
+                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+
+                //item["Description"],
                 null, false);
 	        return true;
 	    }

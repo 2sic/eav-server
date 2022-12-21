@@ -98,7 +98,8 @@ namespace ToSic.Eav.Apps.ImportExport
 	                ? xmlContentType.Attribute(XmlConstants.Scope).Value
 	                : Deps._environment.FallbackContentTypeScope,
 	            nameId: xmlContentType.Attribute(XmlConstants.Static).Value,
-	            description: xmlContentType.Attribute(XmlConstants.Description).Value,
+                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                // description: xmlContentType.Attribute(XmlConstants.Description).Value,
 	            AllowUpdateOnSharedTypes && isSharedType
 	        );
 	        return wrapLog.ReturnAsOk(ct);

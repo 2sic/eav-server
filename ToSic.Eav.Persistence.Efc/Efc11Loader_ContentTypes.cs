@@ -106,7 +106,8 @@ namespace ToSic.Eav.Persistence.Efc
                     set.Name,
                     set.StaticName,
                     set.Scope,
-                    set.Description,
+                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                    //set.Description,
                     Attributes = set.ToSicEavAttributesInSets
                         .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
                         .Select(a => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type,
@@ -143,7 +144,8 @@ namespace ToSic.Eav.Persistence.Efc
                 var notGhost = set.IsGhost == null;
 
                 return (IContentType)new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
-                    set.Scope, set.Description, set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent,
+                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                    set.Scope, /*set.Description,*/ set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent,
                     metaSourceFinder: () => notGhost ? source : _appStates.Get(new AppIdentity(set.ZoneId, set.AppId))
                 )
                 {

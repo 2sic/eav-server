@@ -63,7 +63,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 StaticName = attSet.StaticName,
                 Name = attSet.Name,
                 Scope = attSet.Scope,
-                Description = attSet.Description,
+                // TODO: #RemoveContentTypeDescription
+                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                Description = "", // attSet.Description,
                 UsesConfigurationOfAttributeSet = attSet.AttributeSetId,
                 AlwaysShareConfiguration = false, // this is copy, never re-share
                 ChangeLogCreated = DbContext.Versioning.GetChangeLogId()

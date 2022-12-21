@@ -16,6 +16,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public string StaticName { get; set; }
         public string Name { get; set; }
         public string Scope { get; set; }
+        // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
         public string Description { get; set; }
         public int ChangeLogCreated { get; set; }
         public int? ChangeLogDeleted { get; set; }

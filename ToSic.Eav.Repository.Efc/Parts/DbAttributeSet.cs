@@ -59,6 +59,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private bool DbAttribSetExists(int appId, string staticName)
             => GetSetCoreQuery(appId).Any(a => a.StaticName == staticName);
 
+        // TODO: #RemoveContentTypeDescription
+        // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
         internal ToSicEavAttributeSets PrepareDbAttribSet(string name, string description, string staticName, string scope, bool skipExisting, int? appId)
         {
             if (string.IsNullOrEmpty(staticName))
@@ -78,7 +80,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             {
                 Name = name,
                 StaticName = staticName,
-                Description = description,
+                // TODO: #RemoveContentTypeDescription
+                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                Description = description ?? "",
                 Scope = scope,
                 ChangeLogCreated = DbContext.Versioning.GetChangeLogId(),
                 AppId = targetAppId

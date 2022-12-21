@@ -184,7 +184,8 @@ namespace ToSic.Eav.Apps.ImportExport
                 var attributeSet = new XElement(XmlConstants.AttributeSet,
                     new XAttribute(XmlConstants.Static, set.NameId),
                     new XAttribute(XmlConstants.Name, set.Name),
-                    new XAttribute(XmlConstants.Description, set.Description),
+                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                    // new XAttribute(XmlConstants.Description, set.Description),
                     new XAttribute(XmlConstants.Scope, set.Scope),
                     new XAttribute(XmlConstants.AlwaysShareConfig, set.AlwaysShareConfiguration),
                     attributes);

@@ -34,7 +34,8 @@ namespace ToSic.Eav.ImportExport.Json
 
                 var type = new ContentType(AppId, jsonType.Name, jsonType.Id, 0,
                     jsonType.Scope,
-                    jsonType.Description,
+                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                    //jsonType.Description,
                     jsonType.Sharing?.ParentId, 
                     jsonType.Sharing?.ParentZoneId ?? 0,
                     jsonType.Sharing?.ParentAppId ?? 0,

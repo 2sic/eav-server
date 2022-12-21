@@ -126,6 +126,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.Property(e => e.AppId).HasColumnName("AppID");
 
+                // TODO: #RemoveContentTypeDescription
+                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
                 entity.Property(e => e.Description).IsRequired();
 
                 entity.Property(e => e.Name).HasMaxLength(150);

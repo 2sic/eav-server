@@ -35,9 +35,10 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public string NameId { get; private set; }
 
-        /// <inheritdoc />
-        [Obsolete("Obsolete in v12, used to contain the description, which is now in the metadata")]
-        public string Description { get; private set; }
+        // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+        ///// <inheritdoc />
+        //[Obsolete("Obsolete in v12, used to contain the description, which is now in the metadata")]
+        //public string Description { get; private set; }
 
         /// <inheritdoc />
         public string Scope { get; private set; }
@@ -88,7 +89,8 @@ namespace ToSic.Eav.Data
         /// </summary>
         [PrivateApi]
         public ContentType(int appId, string name, string nameId, int attributeSetId, string scope,
-            string description, 
+            // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+            //string description = default, 
             int? parentTypeId = null, 
             int configZoneId = 0, 
             int configAppId = 0,
@@ -96,7 +98,8 @@ namespace ToSic.Eav.Data
             Func<IHasMetadataSource> metaSourceFinder = null): this(appId, name, nameId)
         {
             Id = attributeSetId;
-            Description = description;
+            // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+            //Description = description;
             Scope = Scopes.RenameOldScope(scope);
 
             AlwaysShareConfiguration = configurationIsOmnipresent;

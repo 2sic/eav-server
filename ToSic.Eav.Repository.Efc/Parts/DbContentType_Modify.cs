@@ -13,14 +13,16 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbContentType
     {
-
-        public void AddOrUpdate(string staticName, string scope, string name, string description, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
+        // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+        public void AddOrUpdate(string staticName, string scope, string name, /*string description,*/ int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
         {
             var ct = GetTypeByStaticName(staticName) 
                      ?? Create(scope, usesConfigurationOfOtherSet, alwaysShareConfig);
 
             ct.Name = name;
-            ct.Description = description ?? string.Empty; // FIX: to ensure non nullable value in DB
+            // TODO: #RemoveContentTypeDescription
+            // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+            ct.Description = ""; // description ?? string.Empty; // FIX: to ensure non nullable value in DB
             ct.Scope = scope;
             ct.ChangeLogCreated = DbContext.Versioning.GetChangeLogId();
 
@@ -57,7 +59,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // add new AttributeSet, do basic configuration if possible, then save
             if (destinationSet == null)
-                destinationSet = DbContext.AttribSet.PrepareDbAttribSet(contentType.Name, contentType.Description,
+                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                destinationSet = DbContext.AttribSet.PrepareDbAttribSet(contentType.Name, "", /*contentType.Description,*/
                     contentType.NameId, contentType.Scope, false, null);
 
             // to use existing attribute Set, do some minimal conflict-checking
