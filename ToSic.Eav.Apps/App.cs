@@ -17,11 +17,7 @@ namespace ToSic.Eav.Apps
     [PublicApi_Stable_ForUseInYourCode]
     public partial class App: AppBase, IApp
     {
-
         #region Constructor / DI
-
-        [PrivateApi]
-        protected DataSourceFactory DataSourceFactory { get; }
 
         /// <summary>
         /// Helper class, so inheriting stuff doesn't need to update the constructor all the time
@@ -53,8 +49,6 @@ namespace ToSic.Eav.Apps
                 );
             }
         }
-        [PrivateApi]
-        private readonly AppDependencies _deps;
 
         /// <summary>
         /// 
@@ -64,11 +58,13 @@ namespace ToSic.Eav.Apps
         public App(AppDependencies dependencies, string logName = null): base(logName ?? "Eav.App", new CodeRef())
         {
             _deps = dependencies.SetLog(Log);
-            // TODO: TRY REMOVE USE OF THIS
-            DataSourceFactory = dependencies.DataSourceFactory;
+            _dsFactory = dependencies.DataSourceFactory;
             
             Site = dependencies.Site;
         }
+        private readonly AppDependencies _deps;
+        private readonly DataSourceFactory _dsFactory;
+
 
         #endregion
 

@@ -60,9 +60,9 @@ namespace ToSic.Eav.Apps
                                     "Please call InitData first to provide this data.");
 
             // Note: ModulePermissionController does not work when indexing, return false for search
-            var initialSource = DataSourceFactory.GetPublishing(this, ShowDrafts, ConfigurationProvider);
+            var initialSource = _dsFactory.GetPublishing(this, ShowDrafts, ConfigurationProvider);
 
-            var appDataWithCreate = DataSourceFactory.GetDataSource<AppData>(initialSource);
+            var appDataWithCreate = _dsFactory.GetDataSource<AppData>(initialSource);
 
             return wrapLog.ReturnAsOk(appDataWithCreate);
         }
