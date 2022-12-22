@@ -25,6 +25,8 @@ namespace ToSic.Eav.ImportExport
 
             services.TryAddTransient<XmlToEntity>();
 
+            services.TryAddTransient<FileManager>();
+
             return services;
         }
 

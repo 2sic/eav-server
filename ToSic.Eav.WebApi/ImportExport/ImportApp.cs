@@ -12,24 +12,27 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 using ISite = ToSic.Eav.Context.ISite;
 
 namespace ToSic.Eav.WebApi.ImportExport
 {
-    public class ImportApp: HasLog
+    public class ImportApp: ServiceBase
     {
         #region DI Constructor
 
         public ImportApp(IEnvironmentLogger envLogger, ZipImport zipImport, IGlobalConfiguration globalConfiguration, IUser user, AppFinder appFinder, ISite site, Generator<XmlImportWithFiles> xmlImpExpFiles, IFeaturesInternal features) : base("Bck.Export")
         {
-            _envLogger = envLogger;
-            _zipImport = zipImport;
-            _globalConfiguration = globalConfiguration;
-            _user = user;
-            _appFinder = appFinder;
-            _site = site;
-            _xmlImpExpFiles = xmlImpExpFiles;
-            _features = features;
+            ConnectServices(
+                _envLogger = envLogger,
+                _zipImport = zipImport,
+                _globalConfiguration = globalConfiguration,
+                _user = user,
+                _appFinder = appFinder,
+                _site = site,
+                _xmlImpExpFiles = xmlImpExpFiles,
+                _features = features
+            );
         }
 
         private readonly IEnvironmentLogger _envLogger;
@@ -53,7 +56,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             var zipImport = _zipImport;
             try
             {
-                zipImport.Init(zoneId, null, _user.IsSystemAdmin, Log);
+                zipImport.Init(zoneId, null, _user.IsSystemAdmin);
                 var temporaryDirectory = Path.Combine(_globalConfiguration.TemporaryFolder, Mapper.GuidCompress(Guid.NewGuid()).Substring(0, 8));
 
                 // Increase script timeout to prevent timeouts
@@ -106,7 +109,7 @@ namespace ToSic.Eav.WebApi.ImportExport
 
                 try
                 {
-                    var importer = _xmlImpExpFiles.New().Init(null, false, Log);
+                    var importer = _xmlImpExpFiles.New().Init(null, false);
                     var importXmlReader = new ImportXmlReader(appXml, importer, Log);
                     var pendingAppDto = new PendingAppDto
                     {
@@ -152,7 +155,7 @@ namespace ToSic.Eav.WebApi.ImportExport
 
             try
             {
-                _zipImport.Init(zoneId, null, _user.IsSystemAdmin, Log);
+                _zipImport.Init(zoneId, null, _user.IsSystemAdmin);
                 foreach (var pendingAppDto in pendingApps)
                 {
                     var appDirectory = Path.Combine(_site.AppsRootPhysicalFull, pendingAppDto.ServerFolder);

@@ -13,20 +13,22 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         #region DI Constructor
 
-        public ZipFromUrlImport(IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, 
+        public ZipFromUrlImport(Dependencies dependencies, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, 
             IGlobalConfiguration globalConfiguration, SystemManager systemManager, IAppStates appStates)
-            : base(environment, xmlImpExpFiles, systemManager, appStates)
+            : base(dependencies, environment, xmlImpExpFiles, systemManager, appStates)
         {
-            _globalConfiguration = globalConfiguration;
+            ConnectServices(
+                _globalConfiguration = globalConfiguration
+            );
         }
 
         private readonly IGlobalConfiguration _globalConfiguration;
 
         #endregion
 
-        public new ZipFromUrlImport Init(int zoneId, int? appId, bool allowCode, ILog parentLog)
+        public new ZipFromUrlImport Init(int zoneId, int? appId, bool allowCode)
         {
-            base.Init(zoneId, appId, allowCode, parentLog);
+            base.Init(zoneId, appId, allowCode);
             return this;
         }
 

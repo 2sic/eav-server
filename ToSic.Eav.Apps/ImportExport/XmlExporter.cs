@@ -54,10 +54,9 @@ namespace ToSic.Eav.Apps.ImportExport
         public XmlSerializer Serializer { get; }
         protected readonly IAppStates AppStates;
 
-        protected void Constructor(int zoneId, AppRuntime app, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, ILog parentLog)
+        protected void Constructor(int zoneId, AppRuntime app, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
         {
             ZoneId = zoneId;
-            this.Init(parentLog);
             Log.A("start XML exporter using app-package");
             AppState = app.AppState;
             Serializer.Init(AppStates.Languages(zoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId),
@@ -74,7 +73,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
         /// </summary>
         /// <returns></returns>
-        public abstract XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds, ILog parentLog);
+        public abstract XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds);
 
         private void EnsureThisIsInitialized()
         {

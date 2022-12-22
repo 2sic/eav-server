@@ -82,7 +82,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             using (FileStream fsSource = new FileStream(testFileName, FileMode.Open, FileAccess.Read))
             {
-                _zipImport.Init(ZoneId, null, true, null);
+                _zipImport.Init(ZoneId, null, true);
                 succeeded = _zipImport.ImportZip(fsSource, baseTestPath + @"Temp\");
             }
             Assert.IsTrue(succeeded, "should succeed!");
@@ -92,9 +92,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public void DeleteAnApp(string appGuid)
         {
-            var applist = _dbData.Init(Log).Init(ZoneId, null).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
+            var applist = _dbData.Init(ZoneId, null).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
             var appId = applist.FirstOrDefault(a => a.Name == appGuid)?.AppId ?? 0;
-            if (appId > 0) _zoneManager.Init(Log).SetId(ZoneId).DeleteApp(appId, true);
+            if (appId > 0) _zoneManager.SetId(ZoneId).DeleteApp(appId, true);
 
         }
     }

@@ -173,7 +173,7 @@ namespace ToSic.Eav.DataSources
             if (configLookUp != null) 
                 newDs.Init(configLookUp);
 
-            newDs.Init(Log);
+            newDs.LinkLog(Log);
             wrapLog.Done("ok");
         }
 

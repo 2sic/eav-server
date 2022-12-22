@@ -65,6 +65,6 @@ namespace ToSic.Eav.Context
         public Dependencies SiteDeps { get; }
 
         /// <inheritdoc />
-        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(SiteDeps).Init(parentLog);
+        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(SiteDeps).LinkLog(parentLog);
     }
 }

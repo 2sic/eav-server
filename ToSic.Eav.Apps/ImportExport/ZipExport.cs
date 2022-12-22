@@ -14,12 +14,14 @@ using ToSic.Lib.Logging;
 
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipExport: ServiceBase
     {
+        private readonly Generator<FileManager> _fileManagerGenerator;
         private int _appId;
         private int _zoneId;
         private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
@@ -39,13 +41,15 @@ namespace ToSic.Eav.Apps.ImportExport
         public ZipExport(AppRuntime appRuntime,
             DataSourceFactory dataSourceFactory,
             XmlExporter xmlExporter,
+            Generator<FileManager> fileManagerGenerator,
             IGlobalConfiguration globalConfiguration): base(LogNames.Eav + ".ZipExp")
         {
             ConnectServices(
                 _xmlExporter = xmlExporter,
                 _globalConfiguration = globalConfiguration,
                 AppRuntime = appRuntime,
-                DataSourceFactory = dataSourceFactory
+                DataSourceFactory = dataSourceFactory,
+                _fileManagerGenerator = fileManagerGenerator
             );
         }
 
@@ -62,8 +66,8 @@ namespace ToSic.Eav.Apps.ImportExport
             _physicalAppPath = physicalAppPath;
             _physicalPathGlobal = physicalPathGlobal;
             ConnectServices(
-                FileManager = new FileManager(_physicalAppPath),
-                FileManagerGlobal = new FileManager(physicalPathGlobal)
+                FileManager = _fileManagerGenerator.New().SetFolder(_physicalAppPath), // new FileManager(_physicalAppPath),
+                FileManagerGlobal = _fileManagerGenerator.New().SetFolder(physicalPathGlobal) // new FileManager(physicalPathGlobal)
             );
             AppRuntime.InitQ(new AppIdentity(_zoneId, _appId), true);
             return this;
@@ -218,7 +222,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            var runtime = AppRuntime.Init(Log).InitQ(new AppIdentity(_zoneId, _appId), true);
+            var runtime = AppRuntime.InitQ(new AppIdentity(_zoneId, _appId), true);
             var attributeSets = runtime.ContentTypes.All.OfScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
@@ -253,7 +257,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var entityIds = entities
                 .Select(e => e.EntityId.ToString()).ToArray();
 
-            var xmlExport = _xmlExporter.Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds, Log);
+            var xmlExport = _xmlExporter.Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds);
 
             #region reset App Guid if necessary
 

@@ -40,11 +40,6 @@ namespace ToSic.Lib.DI
             return value;
         });
 
-        //if (_value != null) return _value;
-        //_value = _valueLazy.Value;
-        //_initCall?.Invoke(_value);
-        //InitLogOrNull?.Invoke(_value);
-        //return _value;
         public bool IsValueCreated => _valueGet.IsValueCreated;
 
         //private T _value;
@@ -54,6 +49,6 @@ namespace ToSic.Lib.DI
 
         protected Action<T> InitLogOrNull;
 
-        void ILazyInitLog.SetLog(ILog parentLog) => InitLogOrNull = thingWithLog => (thingWithLog as IHasLog)?.Init(parentLog);
+        void ILazyInitLog.SetLog(ILog parentLog) => InitLogOrNull = thingWithLog => (thingWithLog as IHasLog)?.LinkLog(parentLog);
     }
 }

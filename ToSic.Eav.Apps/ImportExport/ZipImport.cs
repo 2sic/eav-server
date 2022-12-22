@@ -14,6 +14,7 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public class ZipImport : ServiceBase
     {
+        private readonly Dependencies _deps;
         private readonly Generator<XmlImportWithFiles> _xmlImpExpFiles;
         private readonly IAppStates _appStates;
         private readonly SystemManager _systemManager;
@@ -25,8 +26,35 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public bool AllowCodeImport;
 
-        public ZipImport(IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) : base("Zip.Imp")
+        public class Dependencies: ServiceDependencies
         {
+            public Generator<FileManager> FileManagerGenerator { get; }
+            public IImportExportEnvironment Environment { get; }
+            public Generator<XmlImportWithFiles> XmlImpExpFiles { get; }
+            public SystemManager SystemManager { get; }
+            public IAppStates AppStates { get; }
+
+            public Dependencies(Generator<FileManager> fileManagerGenerator,
+                IImportExportEnvironment environment,
+                Generator<XmlImportWithFiles> xmlImpExpFiles,
+                SystemManager systemManager,
+                IAppStates appStates
+            )
+            {
+                AddToLogQueue(
+                    FileManagerGenerator = fileManagerGenerator,
+                    Environment = environment,
+                    XmlImpExpFiles = xmlImpExpFiles,
+                    SystemManager = systemManager,
+                    AppStates = appStates
+                );
+            }
+        }
+
+        public ZipImport(Dependencies dependencies, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) : base("Zip.Imp")
+        {
+            _deps = dependencies.SetLog(Log);
+            Env = _deps.Environment;
             ConnectServices(
                 _xmlImpExpFiles = xmlImpExpFiles,
                 _appStates = appStates,
@@ -36,9 +64,8 @@ namespace ToSic.Eav.Apps.ImportExport
             Messages = new List<Message>();
         }
 
-        public ZipImport Init(int zoneId, int? appId, bool allowCode, ILog parentLog)
+        public ZipImport Init(int zoneId, int? appId, bool allowCode)
         {
-            this.Init(parentLog);
             _initialAppId = appId;
             _zoneId = zoneId;
             AllowCodeImport = allowCode;
@@ -178,7 +205,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var wrapLog = Log.Fn($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
 
             int appId;
-            var importer = _xmlImpExpFiles.New().Init(null, false, Log); // new XmlImportWithFiles(Log);
+            var importer = _xmlImpExpFiles.New().Init(null, false);
 
             var imp = new ImportXmlReader(Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), Constants.AppDataFile), importer, Log);
 
@@ -256,7 +283,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var templateRoot = Env.TemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForAppStuff);
             if (Directory.Exists(appTemplateRoot))
-                new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(templateRoot, false, importMessages);
+                _deps.FileManagerGenerator.New().SetFolder(appTemplateRoot)/* new FileManager(appTemplateRoot).Init(Log)*/.CopyAllFiles(templateRoot, false, importMessages);
             wrapLog.Done("ok");
         }
 
@@ -280,7 +307,8 @@ namespace ToSic.Eav.Apps.ImportExport
                     TryToDeleteDirectory(globalTemplatesRoot, Log);
 
                 Log.A("copy all files to app global template folder");
-                new FileManager(appTemplateRoot).Init(Log).CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
+                _deps.FileManagerGenerator.New()
+                /*new FileManager(appTemplateRoot).Init(Log)*/.CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
             }
 
             wrapLog.Done("ok");

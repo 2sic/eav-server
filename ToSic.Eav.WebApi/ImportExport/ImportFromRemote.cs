@@ -5,10 +5,11 @@ using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Context;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.ImportExport
 {
-    public class ImportFromRemote: HasLog
+    public class ImportFromRemote: ServiceBase
     {
         private readonly IEnvironmentLogger _envLogger;
         private readonly ZipFromUrlImport _zipImportFromUrl;
@@ -17,8 +18,10 @@ namespace ToSic.Eav.WebApi.ImportExport
 
         public ImportFromRemote(IEnvironmentLogger envLogger, ZipFromUrlImport zipImportFromUrl) : base("Bck.Export")
         {
-            _envLogger = envLogger;
-            _zipImportFromUrl = zipImportFromUrl;
+            ConnectServices(
+                _envLogger = envLogger,
+                _zipImportFromUrl = zipImportFromUrl
+            );
         }
 
         private IUser _user;
@@ -41,7 +44,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             var importer = _zipImportFromUrl;
             try
             {
-                success = importer.Init(zoneId, appId, _user.IsSystemAdmin, Log)
+                success = importer.Init(zoneId, appId, _user.IsSystemAdmin)
                     .ImportUrl(packageUrl, isApp);
             }
             catch (Exception ex)

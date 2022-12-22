@@ -14,8 +14,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
         }
 
-        public override XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds,
-            ILog parentLog)
+        public override XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
         {
             // do nothing
             return this;

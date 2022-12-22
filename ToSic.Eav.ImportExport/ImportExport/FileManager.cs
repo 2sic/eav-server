@@ -13,16 +13,24 @@ namespace ToSic.Eav.ImportExport
 {
     public class FileManager : HasLog
     {
-        public FileManager(string sourceFolder) : base("FileMan")
+        public FileManager() : base(LogNames.Eav + ".FileMn") { }
+
+        //public FileManager(string sourceFolder) : base("FileMan")
+        //{
+        //    _sourceFolder = sourceFolder;
+        //}
+
+        public FileManager SetFolder(string sourceFolder)
         {
             _sourceFolder = sourceFolder;
+            return this;
         }
 
         /// <summary>
         /// Folder-names of folders which won't be exported or imported
         /// </summary>
 
-        private readonly string _sourceFolder;
+        private string _sourceFolder;
 
         /// <summary>
         /// Copy all files from SourceFolder to DestinationFolder (directly on the file system)

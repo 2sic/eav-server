@@ -1,6 +1,8 @@
-﻿namespace ToSic.Eav.Configuration
+﻿using ToSic.Lib.Logging;
+
+namespace ToSic.Eav.Configuration
 {
-    public interface IGlobalConfiguration
+    public interface IGlobalConfiguration: ILogShouldNeverConnect
     {
         /// <summary>
         /// The absolute folder where the data is stored, usually ends in "App_Data\system" (or ".data")

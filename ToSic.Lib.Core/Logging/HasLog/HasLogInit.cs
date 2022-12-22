@@ -8,10 +8,21 @@ namespace ToSic.Lib.Logging
     public static class HasLogInit
     {
         /// <summary>
-        /// Null-Safe method to link logs together. Both the parent and the Log could be null. 
+        /// Null-Safe method to link logs together. Both the parent and the Log could be null.
+        ///
+        /// todo: this will become obsolete - but I must verify each case.
+        /// as long as it's Init - it must be reviewed.
+        /// Those that should stay should be changed to linklog...
         /// </summary>
         /// <returns>The same object as started this, to allow chaining</returns>
         public static T Init<T>(this T thingWithLog, ILog parentLog) where T: class, IHasLog 
+            => thingWithLog.Init(parentLog, name: null);
+
+        /// <summary>
+        /// Null-Safe method to link logs together. Both the parent and the Log could be null. 
+        /// </summary>
+        /// <returns>The same object as started this, to allow chaining</returns>
+        public static T LinkLog<T>(this T thingWithLog, ILog parentLog) where T: class, IHasLog 
             => thingWithLog.Init(parentLog, name: null);
 
         /// <summary>

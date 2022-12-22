@@ -14,7 +14,7 @@ namespace ToSic.Lib.DI
         public T New()
         {
             var created = _sp.Build<T>();
-            if (created is IHasLog withLog) withLog.Init(Log);
+            if (created is IHasLog withLog) withLog.LinkLog(Log);
             return created;
         }
 

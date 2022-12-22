@@ -4,13 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
-
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Testing.Shared;
 using IEntity = ToSic.Eav.Data.IEntity;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {
@@ -23,7 +21,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             _loader1 = Build<Efc11Loader>();
             _loader2 = Build<Efc11Loader>();
             _environment = Build<IImportExportEnvironment>();
-            _entitySaver = Build<EntitySaver>().Init(new Log("Tst.Merge"));
+            _entitySaver = Build<EntitySaver>();
         }
         private readonly DbDataController _dbData;
         private readonly Efc11Loader _loader1;
@@ -43,7 +41,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var test = new SpecsDataEditing();
             var so = _environment.SaveOptions(test.ZoneId);
-            var dbi = _dbData.Init(Log).Init(test.ZoneId, test.AppId);
+            var dbi = _dbData.Init(test.ZoneId, test.AppId);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load an entity
@@ -74,7 +72,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
 
-            var dbi = _dbData.Init(Log).Init(test.ZoneId, test.AppId);
+            var dbi = _dbData.Init(test.ZoneId, test.AppId);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // todo: load a simple, 1 language entity
@@ -115,7 +113,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             so.PreserveUntouchedAttributes = true;
             so.PreserveUnknownLanguages = true;
 
-            var dbi = _dbData.Init(Log).Init(test.ZoneId, test.AppId);
+            var dbi = _dbData.Init(test.ZoneId, test.AppId);
             var trans = dbi.SqlDb.Database.BeginTransaction();
 
             // load content type to start creating an item...

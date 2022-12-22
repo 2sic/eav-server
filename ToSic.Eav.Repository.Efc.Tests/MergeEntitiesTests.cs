@@ -17,7 +17,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
     {
         public MergeEntitiesTests()
         {
-            _entitySaver = Build<EntitySaver>().Init(new Log("Tst.Merge"));
+            _entitySaver = Build<EntitySaver>();
             BuildData = Build<MultiBuilder>();
         }
         private readonly EntitySaver _entitySaver;
