@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.DataSources;
 using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -17,10 +16,10 @@ namespace ToSic.Eav.Apps.Parts
         protected AppRuntimeBase(AppRuntimeDependencies dependencies, string logName): base(logName, new CodeRef())
         {
             this.ConnectServices(
-                Dependencies = dependencies
+                _Deps = dependencies
             );
         }
-        protected readonly AppRuntimeDependencies Dependencies;
+        protected readonly AppRuntimeDependencies _Deps;
 
         internal void InitInternal(IAppIdentity app, bool showDrafts)
         {
@@ -36,7 +35,7 @@ namespace ToSic.Eav.Apps.Parts
 
         #region Data & Cache
 
-        public IDataSource Data => _data ?? (_data = Dependencies.DataSourceFactory.GetPublishing(this, showDrafts: ShowDrafts));
+        public IDataSource Data => _data ?? (_data = _Deps.DataSourceFactory.GetPublishing(this, showDrafts: ShowDrafts));
         private IDataSource _data;
         
 
@@ -45,7 +44,7 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         public AppState AppState
         {
-            get => _appState ?? (_appState = Dependencies.AppStates.Get(this));
+            get => _appState ?? (_appState = _Deps.AppStates.Get(this));
             protected set => _appState = value;
         }
 

@@ -3,6 +3,7 @@
     // ReSharper disable once InconsistentNaming
     public static class LogCall_BoolExtensions
     {
+
         public static bool ReturnTrue(this LogCall<bool> logCall) => logCall.ReturnTrue("");
         
         public static bool ReturnTrue(this LogCall<bool> logCall, string message) => logCall?.Return(true, $"{true} {message}") ?? true;

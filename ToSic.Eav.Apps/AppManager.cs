@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Apps.Parts;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps
 {
@@ -12,48 +12,59 @@ namespace ToSic.Eav.Apps
     /// </summary>
     public class AppManager: AppRuntimeBase
     {
-        private readonly LazySvc<AppRuntime> _appRuntime;
-        private readonly LazySvc<DbDataController> _dbDataController;
-        private readonly LazySvc<EntitiesManager> _entitiesManager;
-        private readonly LazySvc<QueryManager> _queryManager;
-
         #region Constructors
 
-        protected AppManager(AppRuntimeDependencies dependencies,
-            LazySvc<AppRuntime> appRuntime,
-            LazySvc<DbDataController> dbDataController,
-            LazySvc<EntitiesManager> entitiesManager,
-            LazySvc<QueryManager> queryManager,
-            string logName
-            ) : base(dependencies, logName)
+        public class Dependencies: ServiceDependencies<AppRuntimeDependencies>
         {
-            this.ConnectServices(
-                _appRuntime = appRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts)),
-                _dbDataController = dbDataController.SetInit(c =>
-                {
-                    // TODO: STV this is a bit of a hack, but it's the only way to get the app-state into the DbDataController
-                    // find what is wrong with AppState
-                    if ((Dependencies.AppStates as AppStates)?.IsCached(this) ?? false)
-                        c.Init(AppState);
-                    else
-                        c.Init(ZoneId, AppId);
-                }),
-                _entitiesManager = entitiesManager.SetInit(m => m.ConnectTo(this)),
-                _queryManager = queryManager.SetInit(m => m.ConnectTo(this))
-            );
+            public LazySvc<AppRuntime> AppRuntime { get; }
+            public LazySvc<DbDataController> DbDataController { get; }
+            public LazySvc<EntitiesManager> EntitiesManager { get; }
+            public LazySvc<QueryManager> QueryManager { get; }
+            public LazySvc<ContentTypeManager> ContentTypeManager { get; }
+
+            public Dependencies(AppRuntimeDependencies rootDependencies,
+                LazySvc<AppRuntime> appRuntime,
+                LazySvc<DbDataController> dbDataController,
+                LazySvc<EntitiesManager> entitiesManager,
+                LazySvc<QueryManager> queryManager,
+                LazySvc<ContentTypeManager> contentTypeManager
+            ) : base(rootDependencies)
+            {
+                AddToLogQueue(
+                    AppRuntime = appRuntime,
+                    DbDataController = dbDataController,
+                    EntitiesManager = entitiesManager,
+                    QueryManager = queryManager,
+                    ContentTypeManager = contentTypeManager
+                );
+            }
         }
 
-        public AppManager(AppRuntimeDependencies dependencies,
-            LazySvc<AppRuntime> appRuntime,
-            LazySvc<DbDataController> dbDataController,
-            LazySvc<EntitiesManager> entitiesManager,
-            LazySvc<QueryManager> queryManager
-            ) : this(dependencies, appRuntime, dbDataController, entitiesManager, queryManager, "Eav.AppMan")
+        protected AppManager(Dependencies dependencies, string logName) : base(dependencies.RootDependencies, logName)
+        {
+            _deps = dependencies.SetLog(Log);
+            _deps.AppRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts));
+            _deps.DbDataController.SetInit(c =>
+            {
+                // TODO: STV this is a bit of a hack, but it's the only way to get the app-state into the DbDataController
+                // find what is wrong with AppState
+                if ((base._Deps.AppStates as AppStates)?.IsCached(this) ?? false)
+                    c.Init(AppState);
+                else
+                    c.Init(ZoneId, AppId);
+            });
+            _deps.EntitiesManager.SetInit(m => m.ConnectTo(this));
+            _deps.QueryManager.SetInit(m => m.ConnectTo(this));
+            _deps.ContentTypeManager.SetInit(ct => ct.ConnectTo(this));
+        }
+        private readonly Dependencies _deps;
+
+        public AppManager(Dependencies dependencies) : this(dependencies, "Eav.AppMan")
         { }
 
         public new AppManager Init(IAppIdentity app) => this.InitQ(app, true);
 
-        public AppManager Init(int appId) => this.InitQ(Dependencies.AppStates.IdentityOfApp(appId), true);
+        public AppManager Init(int appId) => this.InitQ(_Deps.AppStates.IdentityOfApp(appId), true);
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.
@@ -69,17 +80,18 @@ namespace ToSic.Eav.Apps
         #endregion
 
         #region Access the Runtime
+
         /// <summary>
         /// Read / Runtime system of the AppManager, to read data
         /// </summary>
-        public AppRuntime Read => _appRuntime.Value;
+        public AppRuntime Read => _deps.AppRuntime.Value;
 
         #endregion
 
         /// <summary>
         /// Database controller / DB-Context
         /// </summary>
-        internal DbDataController DataController =>  _dbDataController.Value;
+        internal DbDataController DataController => _deps.DbDataController.Value;
 
 
         /// <summary>
@@ -90,18 +102,17 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The entity-management subsystem
         /// </summary>
-        public EntitiesManager Entities => _entitiesManager.Value;
+        public EntitiesManager Entities => _deps.EntitiesManager.Value;
 
         /// <summary>
         /// Queries Management Subsystem
         /// </summary>
-        public QueryManager Queries => _queryManager.Value;
+        public QueryManager Queries => _deps.QueryManager.Value;
 
         /// <summary>
         /// Content-Types Manager Subsystem
         /// </summary>
-        public ContentTypeManager ContentTypes => _contentTypes ?? (_contentTypes = new ContentTypeManager().Init(Log).ConnectTo(this));
-        private ContentTypeManager  _contentTypes;
+        public ContentTypeManager ContentTypes => _deps.ContentTypeManager.Value;
 
     }
 }

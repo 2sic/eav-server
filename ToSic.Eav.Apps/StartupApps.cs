@@ -29,6 +29,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppRuntimeDependencies>();
             services.TryAddTransient<AppRuntime>();
             services.TryAddTransient<AppManager>();
+            services.TryAddTransient<AppManager.Dependencies>();
             services.TryAddTransient<ZoneRuntime>();
             services.TryAddTransient<ZoneManager>();
             services.TryAddTransient<QueryManager>();
