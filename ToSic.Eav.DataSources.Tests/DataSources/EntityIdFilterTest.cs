@@ -93,7 +93,7 @@ namespace ToSic.Eav.DataSourceTests
         public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
         {
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
-            var filtered = new EntityIdFilter()
+            var filtered = Build<EntityIdFilter>()
                 .Init(ds.Configuration.LookUpEngine);
             filtered.AttachForTests(ds);
             filtered.EntityIds = entityIdsValue;

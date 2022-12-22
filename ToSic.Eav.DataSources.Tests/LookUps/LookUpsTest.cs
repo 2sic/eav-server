@@ -12,13 +12,13 @@ namespace ToSic.Eav.DataSourceTests.LookUps
         [TestMethod]
         public void DataTargetValueProvider_General()
         {
-            var testSource = this.GetTestDataSource<EntityIdFilter>(); // new EntityIdFilter();
+            var testSource = this.GetTestDataSource<EntityIdFilter>(); 
             testSource.EntityIds = "1001";  // needed to ensure 
             // Assemble a simple source-stream with demo data
             const int ItemsToGenerate = 499;
             const string ItemToFilter = "1023";
             var ds = new DataTablePerson(this).Generate(ItemsToGenerate, 1001);
-            var myConfDs = new EntityIdFilter()
+            var myConfDs = Build<EntityIdFilter>()
                 .Init(ds.Configuration.LookUpEngine);
             //myConfDs.ConfigurationProvider = ds.ConfigurationProvider;
             myConfDs.AttachForTests(ds);

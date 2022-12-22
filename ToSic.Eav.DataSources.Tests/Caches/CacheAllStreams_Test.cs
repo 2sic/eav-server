@@ -70,10 +70,9 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
         private CacheAllStreams CreateCacheDS(IDataSource filtered)
         {
-            var cacher = new CacheAllStreams();
+            var cacher = Build<CacheAllStreams>();
             cacher.AttachForTests(filtered);
             cacher.Init(filtered.Configuration.LookUpEngine);
-            // ((LookUpEngine)cacher.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
             return cacher;
         }
 
@@ -85,7 +84,6 @@ namespace ToSic.Eav.DataSourceTests.Caches
             secondFilter.AttachForTests(filtered);
             secondFilter.TypeName = "Person";
             secondFilter.Init(filtered.Configuration.LookUpEngine);
-            // ((LookUpEngine)secondFilter.Configuration.LookUpEngine).Link(filtered.Configuration.LookUpEngine);
 
             var cacher = CreateCacheDS(secondFilter);
             var listCache = new ListCache(null);
@@ -182,8 +180,8 @@ namespace ToSic.Eav.DataSourceTests.Caches
         public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue, bool useCacheForSpeed = true)
         {
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001, useCacheForSpeed);
-            var filtered = new EntityIdFilter()
-                .Init(ds.Configuration.LookUpEngine); //{ConfigurationProvider = ds.ConfigurationProvider};
+            var filtered = Build<EntityIdFilter>()
+                .Init(ds.Configuration.LookUpEngine);
             filtered.AttachForTests(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;
