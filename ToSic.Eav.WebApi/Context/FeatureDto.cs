@@ -6,7 +6,6 @@ namespace ToSic.Eav.WebApi.Context
     {
         public string NameId { get; set; }
         public bool Enabled { get; set; }
-        public Guid Guid { get; set; }
         public string Name { get; set; }
     }
 }

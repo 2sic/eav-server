@@ -48,7 +48,6 @@ namespace ToSic.Eav.WebApi.Cms
                     NameId = f.NameId,
                     Enabled = f.Enabled,
                     Name = f.Name,
-                    Guid = f.Guid
                 })
                 .ToList();
     }
