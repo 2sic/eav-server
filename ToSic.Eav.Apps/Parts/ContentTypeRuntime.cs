@@ -144,7 +144,7 @@ namespace ToSic.Eav.Apps.Parts
             try
             {
                 var appState = Parent.AppState;
-                var appLoader = _appFileSystemLoaderLazy.Value.Init(appState, Log);
+                var appLoader = _appFileSystemLoaderLazy.Value.Init(appState);
                 var inputTypes = appLoader.InputTypes();
                 return wrapLog.Return(inputTypes);
             }

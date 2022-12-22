@@ -11,9 +11,8 @@ namespace ToSic.Eav.Repositories
     {
         public AppRepositoryLoaderUnknown(WarnUseOfUnknown<AppRepositoryLoaderUnknown> warn) : base(LogNames.NotImplemented + ".RepLdr") { }
 
-        public IAppRepositoryLoader Init(AppState app, ILog log)
+        public IAppRepositoryLoader Init(AppState app)
         {
-            this.Init(log);
             Log.A("Unknown App Repo loader - won't load anything");
             return this;
         }

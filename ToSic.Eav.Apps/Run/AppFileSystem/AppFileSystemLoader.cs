@@ -69,19 +69,17 @@ namespace ToSic.Eav.Apps.Run
 
         #region Inits
 
-        public IAppFileSystemLoader Init(AppState app, ILog log)
+        public IAppFileSystemLoader Init(AppState app)
         {
-            this.Init(log);
-
             var wrapLog = Log.Fn<IAppFileSystemLoader>($"{app.AppId}, {app.Folder}, ...");
             _appState = app;
-            _appPaths = Deps.AppPathsLazy.Value?.Init(Site, app, log);
+            _appPaths = Deps.AppPathsLazy.Value?.Init(Site, app);
             InitPathAfterAppId();
 
             return wrapLog.Return(this);
         }
 
-        IAppRepositoryLoader IAppRepositoryLoader.Init(AppState app, ILog log) => Init(app, log) as IAppRepositoryLoader;
+        IAppRepositoryLoader IAppRepositoryLoader.Init(AppState app) => Init(app) as IAppRepositoryLoader;
 
         /// <summary>
         /// Init Path After AppId must be in an own method, as each implementation may have something custom to handle this

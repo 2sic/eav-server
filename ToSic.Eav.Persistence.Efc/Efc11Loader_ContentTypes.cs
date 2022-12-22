@@ -7,9 +7,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
-using ToSic.Eav.Repositories;
-using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -64,7 +61,7 @@ namespace ToSic.Eav.Persistence.Efc
         {
             var wrapLog = Log.Fn<IList<IContentType>>();
             // must create a new loader for each app
-            var loader = ServiceProvider.Build<IAppRepositoryLoader>().Init(app, Log);
+            var loader = _appFileContentTypesLoader.New();
             var types = loader.ContentTypes(app);
             return wrapLog.ReturnAsOk(types);
         }

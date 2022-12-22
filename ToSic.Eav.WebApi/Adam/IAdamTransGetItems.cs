@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.WebApi.Dto;
 
+// TODO: PROBABLY MOVE TO 2SXC
+
 namespace ToSic.Eav.WebApi.Adam
 {
     public interface IAdamTransGetItems: IAdamTransactionBase

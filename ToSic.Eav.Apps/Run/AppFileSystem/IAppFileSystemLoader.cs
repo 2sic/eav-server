@@ -10,9 +10,8 @@ namespace ToSic.Eav.Apps.Run
         /// Real constructor, after DI
         /// </summary>
         /// <param name="app"></param>
-        /// <param name="log"></param>
         /// <returns></returns>
-        IAppFileSystemLoader Init(AppState app, ILog log);
+        IAppFileSystemLoader Init(AppState app);
 
         string Path { get; set; }
         string PathShared { get; set; }

@@ -1,10 +1,11 @@
 ﻿using System;
-using ToSic.Lib.Logging;
+
+// TODO: PROBABLY MOVE TO 2SXC
 
 namespace ToSic.Eav.WebApi.Adam
 {
     public interface IAdamTransactionBase
     {
-        void Init(int appId, string contentType, Guid itemGuid, string field, bool usePortalRoot, ILog parentLog);
+        void Init(int appId, string contentType, Guid itemGuid, string field, bool usePortalRoot);
     }
 }

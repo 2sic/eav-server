@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Builder;
@@ -14,6 +13,7 @@ namespace ToSic.Eav.Persistence.Efc
 {
     public partial class Efc11Loader: ServiceBase, IRepositoryLoader
     {
+        private readonly Generator<IAppRepositoryLoader> _appFileContentTypesLoader;
         private readonly Generator<IDataDeserializer> _dataDeserializer;
 
         #region constructor and private vars
@@ -21,18 +21,15 @@ namespace ToSic.Eav.Persistence.Efc
         public Efc11Loader(
             EavDbContext dbContext,
             LazySvc<IZoneCultureResolver> environmentLazy,
-            IServiceProvider serviceProvider,
             IAppInitializedChecker initializedChecker,
             IAppStates appStates,
             ILogStore logStore,
             LazySvc<IFeaturesInternal> featuresService,
             MultiBuilder multiBuilder,
-            Generator<IDataDeserializer> dataDeserializer
-            ) : base("Db.Efc11")
+            Generator<IDataDeserializer> dataDeserializer,
+            Generator<IAppRepositoryLoader> appFileContentTypesLoader) : base("Db.Efc11")
         {
-            
             ConnectServices(
-                ServiceProvider = serviceProvider,
                 _dbContext = dbContext,
                 _environmentLazy = environmentLazy,
                 _initializedChecker = initializedChecker,
@@ -40,7 +37,8 @@ namespace ToSic.Eav.Persistence.Efc
                 _logStore = logStore,
                 _featuresService = featuresService,
                 _multiBuilder = multiBuilder,
-                _dataDeserializer = dataDeserializer
+                _dataDeserializer = dataDeserializer,
+                _appFileContentTypesLoader = appFileContentTypesLoader
             );
         }
 
@@ -50,7 +48,6 @@ namespace ToSic.Eav.Persistence.Efc
             return this;
         }
 
-        private IServiceProvider ServiceProvider { get; }
         private EavDbContext _dbContext;
         private readonly LazySvc<IZoneCultureResolver> _environmentLazy;
         private readonly IAppInitializedChecker _initializedChecker;

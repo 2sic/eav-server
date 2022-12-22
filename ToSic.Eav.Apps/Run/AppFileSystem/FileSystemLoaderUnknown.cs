@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Run
         public FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> warn): base(LogConstants.FullNameUnknown)
         { }
 
-        public IAppFileSystemLoader Init(AppState app, ILog log)
+        public IAppFileSystemLoader Init(AppState app)
         {
             // do nothing
             return this;

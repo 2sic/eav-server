@@ -57,6 +57,8 @@ namespace ToSic.Eav.Run
             var callReg = Log.Fn(registration.NameId);
             try
             {
+                // TODO: to remove this init, we need to implement something in the ConnectService #dropLogInit
+                // which can handle DI-IEnumerables. To dev this we would need unit tests
                 registration.Init(Log);
                 registration.Register();
             }

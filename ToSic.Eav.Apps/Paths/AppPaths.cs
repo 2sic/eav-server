@@ -50,13 +50,11 @@ namespace ToSic.Eav.Apps.Paths
         /// </summary>
         /// <param name="site">The site - in some cases the site of the App can be different from the context-site, so it must be passed in</param>
         /// <param name="appState"></param>
-        /// <param name="parentLog"></param>
         /// <returns></returns>
-        public AppPaths Init(ISite site, AppState appState, ILog parentLog)
+        public AppPaths Init(ISite site, AppState appState)
         {
             _site = site;
             _appState = appState;
-            this.Init(parentLog);
             InitDone = true;
             return this;
         }

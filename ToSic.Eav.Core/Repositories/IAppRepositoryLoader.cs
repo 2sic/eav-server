@@ -16,7 +16,7 @@ namespace ToSic.Eav.Repositories
         /// <param name="app"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        IAppRepositoryLoader Init(AppState app, ILog log);
+        IAppRepositoryLoader Init(AppState app);
 
         /// <summary>
         /// Get all ContentTypes for specified AppId.
