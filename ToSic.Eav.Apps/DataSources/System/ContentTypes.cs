@@ -36,11 +36,10 @@ namespace ToSic.Eav.DataSources.Sys
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
     // ReSharper disable once UnusedMember.Global
-    public sealed class ContentTypes: DataSourceBase
+    public sealed class ContentTypes: DataSource
 	{
 
         #region Configuration-properties (no config)
-	    public override string LogId => "DS.EavCTs";
 
         private const string AppIdKey = "AppId";
         private const string AppIdField = "AppId";
@@ -77,9 +76,11 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new ContentTypes DS
         /// </summary>
         [PrivateApi]
-        public ContentTypes(IAppStates appStates)
-		{
-            _appStates = appStates;
+        public ContentTypes(Dependencies dependencies, IAppStates appStates): base(dependencies, $"{DataSourceConstants.LogPrefix}.CTypes")
+        {
+            ConnectServices(
+                _appStates = appStates
+            );
             Provide(GetList);
 		    ConfigMask(AppIdKey, $"[Settings:{AppIdField}]");
 		    ConfigMask(ScopeKey, $"[Settings:{ScopeField}||Default]");

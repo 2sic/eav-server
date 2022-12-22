@@ -23,12 +23,9 @@ namespace ToSic.Eav.DataSources
         In = new[] { Constants.DefaultStreamNameRequired },
         ExpectsDataOfType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
         HelpLink = "https://r.2sxc.org/DsShuffle")]
-	public sealed class Shuffle: DataSourceBase
+	public sealed class Shuffle: DataSource
 	{
         #region Configuration-properties (no config)
-        /// <inheritdoc/>
-        [PrivateApi]
-	    public override string LogId => "DS.Shuffl";
 
         private const string TakeKey = "Take";
 
@@ -55,8 +52,8 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-        public Shuffle()
-		{
+        public Shuffle(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Shuffl")
+        {
             Provide(GetShuffle);
 		    ConfigMask(TakeKey, "[Settings:Take||0]");
         }

@@ -19,19 +19,20 @@ namespace ToSic.Eav.DataSources
         DynamicOut = true,
         DynamicIn = true)]
 
-    public class PassThrough : DataSourceBase
+    public class PassThrough : DataSource
 	{
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => "DS.PasThr";
-
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new PassThrough DataSources
         /// </summary>
         [PrivateApi]
-        public PassThrough()
-		{
+        public PassThrough(Dependencies dependencies) : this(dependencies, $"{DataSourceConstants.LogPrefix}.PasThr")
+        {
+        }
+
+        [PrivateApi]
+        protected PassThrough(Dependencies dependencies, string logName) : base(dependencies, logName)
+        {
             Out = In;
         }
 

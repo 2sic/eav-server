@@ -5,7 +5,7 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
-    public abstract partial class DataSourceBase
+    public abstract partial class DataSource
     {
         #region Experimental new Connections
 

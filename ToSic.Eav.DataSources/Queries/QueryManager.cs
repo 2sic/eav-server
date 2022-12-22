@@ -6,6 +6,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 using static System.StringComparison;
@@ -19,12 +20,16 @@ namespace ToSic.Eav.DataSources.Queries
 	[PrivateApi]
 	public class QueryManager: ServiceBase
 	{
+        private readonly ILazySvc<IAppStates> _appStates;
+        private readonly Generator<Query> _queryGenerator;
         public DataSourceFactory DataSourceFactory { get; }
 
-        public QueryManager(DataSourceFactory dataSourceFactory): base($"{DataSourceConstants.LogPrefix}.QryMan")
+        public QueryManager(DataSourceFactory dataSourceFactory, Generator<Query> queryGenerator, ILazySvc<IAppStates> appStates) : base($"{DataSourceConstants.LogPrefix}.QryMan")
         {
             ConnectServices(
-                DataSourceFactory = dataSourceFactory
+                DataSourceFactory = dataSourceFactory,
+                _queryGenerator = queryGenerator,
+                _appStates = appStates
             );
         }
 
@@ -63,7 +68,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(app))
 	        {
-	            var delayedQuery = new Query(DataSourceFactory).Init(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider, showDrafts, null, Log);
+	            var delayedQuery = _queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider, showDrafts, null, Log);
                 // make sure it doesn't break if two queries have the same name...
 	            var name = entQuery.Title[0].ToString();
 	            if (!dict.ContainsKey(name))
@@ -76,7 +81,8 @@ namespace ToSic.Eav.DataSources.Queries
 	    internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app)
         {
             var wrapLog = Log.Fn<IImmutableList<IEntity>>();
-            var appState = DataSourceFactory.AppStates.Get(app);
+            // TODO
+            var appState = _appStates.Value.Get(app);
             var result = QueryEntities(appState);
             return wrapLog.ReturnAsOk(result);
         }

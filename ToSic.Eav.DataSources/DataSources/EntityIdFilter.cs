@@ -27,12 +27,9 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
         HelpLink = "https://r.2sxc.org/DsIdFilter")]
 
-    public class EntityIdFilter : DataSourceBase
+    public class EntityIdFilter : DataSource
 	{
         #region Configuration-properties
-        /// <inheritdoc/>
-        [PrivateApi]
-	    public override string LogId => "DS.EntIdF";
 
         private const string EntityIdKey = "EntityIds";
 
@@ -56,8 +53,9 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new EntityIdFilter
 		/// </summary>
 		[PrivateApi]
-		public EntityIdFilter()
-		{
+		public EntityIdFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.EntIdF")
+
+        {
             Provide(GetList);
 		    ConfigMask(EntityIdKey, "[Settings:EntityIds]");
 		}

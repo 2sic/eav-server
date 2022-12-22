@@ -28,11 +28,8 @@ namespace ToSic.Eav.DataSources.Caching
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
     [PublicApi_Stable_ForUseInYourCode]
-	public class CacheAllStreams : DataSourceBase
+	public class CacheAllStreams : DataSource
     {
-        [PrivateApi]
-	    public override string LogId => "DS.CachAl";
-
         #region Configuration-properties
         private const string RefreshOnSourceRefreshKey = "RefreshOnSourceRefresh";
         private const string CacheDurationInSecondsKey = "CacheDurationInSeconds";
@@ -88,7 +85,7 @@ namespace ToSic.Eav.DataSources.Caching
 		/// Constructs a new App DataSource
 		/// </summary>
 		[PrivateApi]
-		public CacheAllStreams()
+		public CacheAllStreams(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.CachAl")
 		{
 			// this one is unusual, so don't pre-attach a default data stream
             //OutIsDynamic = true;

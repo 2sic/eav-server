@@ -25,10 +25,6 @@ namespace ToSic.Eav.DataSources
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
     public class Parents : RelationshipDataSourceBase
     {
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => $"{DataSourceConstants.LogPrefix}.Parent";
-
         /// <summary>
         /// Name of the field (in the parent) pointing to the child.
         /// If left blank, will use get all children.
@@ -53,6 +49,9 @@ namespace ToSic.Eav.DataSources
             set => Configuration[nameof(ContentTypeName)] = value;
         }
 
+        public Parents(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Parent")
+        {
+        }
 
         /// <summary>
         /// Construct function for the get of the related items
@@ -63,5 +62,6 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         protected override Func<IEntity, IEnumerable<IEntity>> InnerGet(string fieldName, string typeName) 
             => o => o.Relationships.FindParents(typeName, fieldName, Log);
+
     }
 }

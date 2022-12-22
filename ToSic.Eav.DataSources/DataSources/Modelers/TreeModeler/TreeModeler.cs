@@ -31,10 +31,9 @@ namespace ToSic.Eav.DataSources
         HelpLink = "https://r.2sxc.org/DsTreeModeler")]
     [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
     // ReSharper disable once UnusedMember.Global
-    public sealed class TreeModeler : DataSourceBase
+    public sealed class TreeModeler : DataSource
     {
         #region Constants & Properties
-        public override string LogId => "Ds.Tree"; // this text is added to all internal logs, so it's easier to debug
 
         private const string ParentIdentifierAttributeConfigKey = "ParentIdentifierAttribute";
         private const string ChildParentAttributeConfigKey = "ChildParentAttribute";
@@ -85,7 +84,8 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public TreeModeler(MultiBuilder multiBuilder, AttributeBuilder attributeBuilder, EntityBuilder entityBuilder)
+        public TreeModeler(MultiBuilder multiBuilder, AttributeBuilder attributeBuilder, EntityBuilder entityBuilder, Dependencies dependencies) 
+            : base(dependencies, $"{DataSourceConstants.LogPrefix}.Tree")
         {
             _multiBuilder = multiBuilder;
             _attributeBuilder = attributeBuilder;

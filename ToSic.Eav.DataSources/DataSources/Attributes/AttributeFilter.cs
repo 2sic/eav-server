@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.AttributeFilter",
         HelpLink = "https://r.2sxc.org/DsAttributeFilter")]
 
-    public class AttributeFilter : DataSourceBase
+    public class AttributeFilter : DataSource
 	{
         #region Constants
 
@@ -39,10 +39,6 @@ namespace ToSic.Eav.DataSources
         
         private const string AttributeNamesKey = "AttributeNames";
         private const string ModeKey = "Mode";
-
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => "DS.AtribF";
 
         /// <summary>
         /// A string containing one or more attribute names. like "FirstName" or "FirstName,LastName,Birthday"
@@ -70,7 +66,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeFilter(EntityBuilder entityBuilder)
+		public AttributeFilter(EntityBuilder entityBuilder, Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.AtribF")
         {
             _entityBuilder = entityBuilder;
             Provide(GetList);

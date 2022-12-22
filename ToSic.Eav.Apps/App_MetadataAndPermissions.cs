@@ -55,7 +55,7 @@ namespace ToSic.Eav.Apps
         #endregion
 
         [PublicApi]
-        public AppState AppState => _appState ?? (_appState = _dependencies.AppStates.Get(this));
+        public AppState AppState => _appState ?? (_appState = _deps.AppStates.Get(this));
         private AppState _appState;
     }
 }

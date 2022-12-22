@@ -25,12 +25,9 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
         HelpLink = "https://r.2sxc.org/DsRelationshipFilter")]
-    public sealed class RelationshipFilter : DataSourceBase
+    public sealed class RelationshipFilter : DataSource
     {
         #region Configuration-properties
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => $"{DataSourceConstants.LogPrefix}.RelFil";
 
         /// <summary>
         /// Settings-keys as they are used in the entity which provides settings
@@ -144,7 +141,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new RelationshipFilter
         /// </summary>
         [PrivateApi]
-        public RelationshipFilter()
+        public RelationshipFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.Relfil")
         {
             Provide(GetRelationshipsOrFallback);
             ConfigMask(RelationshipKey, $"[Settings:{Settings.Relationship}]");

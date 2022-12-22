@@ -22,14 +22,8 @@ namespace ToSic.Eav.DataSources
         DynamicIn = true,
 	    HelpLink = "https://r.2sxc.org/DsStreamFallback")]
 
-    public sealed class StreamFallback : DataSourceBase
+    public sealed class StreamFallback : DataSource
 	{
-        #region Configuration-properties (no config)
-        /// <inheritdoc/>
-        [PrivateApi]
-	    public override string LogId => "DS.Fallbk";
-
-        #endregion
 
         #region Debug-Properties
         [PrivateApi]
@@ -42,7 +36,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public StreamFallback()
+		public StreamFallback(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.FallBk")
 		{
 			Provide(GetStreamFallback);
 		}

@@ -5,7 +5,7 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
-    public partial class DataSourceBase
+    public partial class DataSource
     {
         /// <summary>
         /// This variable contains a stream of exceptions to return as a result of the DataSource.

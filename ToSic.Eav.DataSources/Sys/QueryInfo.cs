@@ -29,15 +29,15 @@ namespace ToSic.Eav.DataSources.Sys
         ExpectsDataOfType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
         HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.System.QueryInfo.html")]
 
-    public sealed class QueryInfo : DataSourceBase
+    public sealed class QueryInfo : DataSource
     {
+        private readonly ILazySvc<DataSourceFactory> _dataSourceFactory;
         public QueryBuilder QueryBuilder { get; }
         private readonly LazySvc<QueryManager> _queryManagerLazy;
         private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value);
         private QueryManager _queryManager;
 
         #region Configuration-properties (no config)
-        public override string LogId => "DS.EavQIn";
 
         private const string QueryKey = "Query";
         private const string QueryNameField = "QueryName";
@@ -66,11 +66,12 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-        public QueryInfo(LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder)
+        public QueryInfo(Dependencies dependencies, ILazySvc<DataSourceFactory> dataSourceFactory, LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.EavQIn")
         {
             ConnectServices(
                 QueryBuilder = queryBuilder,
-                _queryManagerLazy = queryManagerLazy
+                _queryManagerLazy = queryManagerLazy,
+                _dataSourceFactory = dataSourceFactory
             );
             Provide(GetStreams);
             Provide("Attributes", GetAttributes);
@@ -110,7 +111,7 @@ namespace ToSic.Eav.DataSources.Sys
             if (!_query.Out.ContainsKey(StreamName))
                 return ImmutableArray<IEntity>.Empty;
 
-            var attribInfo = DataSourceFactory.GetDataSource<Attributes>(_query);
+            var attribInfo = _dataSourceFactory.Value.GetDataSource<Attributes>(_query);
             if (StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query, StreamName);
 

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Plumbing;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helper;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -13,11 +14,9 @@ namespace ToSic.Eav.DataSources.Queries
 	/// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 
 	/// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
-	public sealed class Query : DataSourceBase, IQuery
+	public sealed class Query : DataSource, IQuery
 	{
         #region Configuration-properties
-        [PrivateApi]
-	    public override string LogId => $"{DataSourceConstants.LogPrefix}.Query";
 
         /// <inheritdoc />
         public QueryDefinition Definition { get; private set; }
@@ -61,23 +60,25 @@ namespace ToSic.Eav.DataSources.Queries
 
         /// <inheritdoc />
         [PrivateApi]
-        public Query(DataSourceFactory dataSourceFactory)
+        public Query(Dependencies dependencies, ILazySvc<QueryBuilder> queryBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Query")
         {
             ConnectServices(
-                DataSourceFactory = dataSourceFactory
+                _queryBuilderLazy = queryBuilder
             );
         }
+        private readonly ILazySvc<QueryBuilder> _queryBuilderLazy;
 
         /// <summary>
         /// Initialize a full query object. This is necessary for it to work
         /// </summary>
         /// <returns></returns>
         [PrivateApi]
+        // TODO: REMOVE LOG...
 		public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source, ILog parentLog)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
-            this.Init(parentLog, LogId);
+            this.Init(parentLog);
             Definition = new QueryDefinition(queryDef, appId, Log);
             this.Init(config);
             _showDrafts = showDrafts;
@@ -110,8 +111,8 @@ namespace ToSic.Eav.DataSources.Queries
             wrapLog.Done("ok");
         }
 
-        private QueryBuilder QueryBuilder => _queryBuilder ?? (_queryBuilder = DataSourceFactory.QueryBuilder);
-        private QueryBuilder _queryBuilder;
+        private QueryBuilder QueryBuilder => _queryBuilder.Get(() => _queryBuilderLazy.Value);
+        private readonly GetOnce<QueryBuilder> _queryBuilder = new GetOnce<QueryBuilder>();
 
 
 

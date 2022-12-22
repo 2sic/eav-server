@@ -34,10 +34,9 @@ namespace ToSic.Eav.DataSources.Sys
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Zones: DataSourceBase
+    public sealed class Zones: DataSource
 	{
         #region Configuration-properties (no config)
-	    public override string LogId => "DS.EavZns";
 
 	    private const string ZoneContentTypeName = "EAV_Zones";
 
@@ -48,10 +47,12 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Zones DS
         /// </summary>
         [PrivateApi]
-		public Zones(IZoneMapper zoneMapper, IAppStates appStates)
+		public Zones(Dependencies dependencies, IZoneMapper zoneMapper, IAppStates appStates): base(dependencies, $"{DataSourceConstants.LogPrefix}.Zones")
         {
-            _zoneMapper = zoneMapper;
-            _appStates = appStates;
+            ConnectServices(
+                _zoneMapper = zoneMapper,
+                _appStates = appStates
+            );
             Provide(GetList);
         }
         private readonly IZoneMapper _zoneMapper;

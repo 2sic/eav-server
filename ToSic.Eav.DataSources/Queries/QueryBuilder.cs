@@ -7,6 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -16,6 +17,11 @@ namespace ToSic.Eav.DataSources.Queries
 	/// </summary>
 	public class QueryBuilder: ServiceBase
 	{
+        private readonly Generator<PassThrough> _passThrough;
+        private readonly DataSourceFactory _dataSourceFactory;
+        private readonly IZoneCultureResolver _cultureResolver;
+        private readonly IAppStates _appStates;
+
         #region Dependency Injection
 
         /// <summary>
@@ -24,19 +30,21 @@ namespace ToSic.Eav.DataSources.Queries
 		/// <remarks>
 		/// Never call this constructor from your code, as it re-configures the DataSourceFactory it gets
 		/// </remarks>
-        public QueryBuilder(DataSourceFactory dataSourceFactory, IZoneCultureResolver cultureResolver, IAppStates appStates) : base("DS.PipeFt")
+        public QueryBuilder(
+            DataSourceFactory dataSourceFactory, 
+            IZoneCultureResolver cultureResolver,
+			Generator<PassThrough> passThrough,
+            IAppStates appStates) : base("DS.PipeFt")
         {
             ConnectServices(
                 _cultureResolver = cultureResolver,
                 _appStates = appStates,
                 _dataSourceFactory = dataSourceFactory,
-                _dataSourceFactory
+                _dataSourceFactory,
+                _passThrough = passThrough
             );
         }
 
-        private readonly DataSourceFactory _dataSourceFactory;
-        private readonly IZoneCultureResolver _cultureResolver;
-        private readonly IAppStates _appStates;
         
 
         #endregion
@@ -107,7 +115,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 			// tell the primary-out that it has this guid, for better debugging
             var passThroughConfig = new LookUpEngine(templateConfig, Log);
-            IDataSource outTarget = new PassThrough().Init(passThroughConfig);
+            IDataSource outTarget = _passThrough.New().Init(passThroughConfig);
 			if (outTarget.Guid == Guid.Empty)
 	            outTarget.Guid = queryDef.Entity.EntityGuid;
 

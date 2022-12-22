@@ -24,12 +24,9 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
         HelpLink = "https://r.2sxc.org/DsTypeFilter")]
 
-    public class EntityTypeFilter : DataSourceBase
+    public class EntityTypeFilter : DataSource
 	{
         #region Configuration-properties
-        /// <inheritdoc/>
-        [PrivateApi]
-	    public override string LogId => "DS.TypeF";
 
         private const string TypeNameKey = "TypeName";
 
@@ -48,8 +45,9 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityTypeFilter
         /// </summary>
         [PrivateApi]
-        public EntityTypeFilter(IAppStates appStates)
-		{
+        public EntityTypeFilter(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.TypeF")
+
+        {
             _appStates = appStates;
             Provide(GetList);
 		    ConfigMask(TypeNameKey, "[Settings:TypeName]");

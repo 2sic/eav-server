@@ -8,7 +8,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSources
 {
-    public abstract partial class DataSourceBase
+    public abstract partial class DataSource
     {
         #region Caching stuff
 

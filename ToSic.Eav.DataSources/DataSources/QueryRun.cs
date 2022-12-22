@@ -5,7 +5,9 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
@@ -25,12 +27,11 @@ namespace ToSic.Eav.DataSources
         )]
 
     // ReSharper disable once UnusedMember.Global
-    public class QueryRun : DataSourceBase
+    public class QueryRun : DataSource
 	{
+        private readonly Generator<Query> _queryGenerator;
+
         #region Configuration-properties
-        /// <inheritdoc/>
-        [PrivateApi]
-	    public override string LogId => "DS.QryRun";
 
         private const string FieldQuery = "Query";
         private const string FieldParams = "Params";
@@ -43,14 +44,21 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
+        #region Constructor
+        
+
         /// <summary>
         /// Constructs a new QueryRun
         /// </summary>
         [PrivateApi]
-		public QueryRun()
+		public QueryRun(Dependencies dependencies, Generator<Query> queryGenerator) : base(dependencies, $"{DataSourceConstants.LogPrefix}.QryRun")
         {
+            ConnectServices(
+                _queryGenerator = queryGenerator
+            );
             ConfigMask(QueryConstants.ParamsShowDraftKey, QueryConstants.ParamsShowDraftToken);
         }
+        #endregion
 
         #region Out
         /// <inheritdoc/>
@@ -110,7 +118,7 @@ namespace ToSic.Eav.DataSources
             Log.A($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
 
             // create the query & set params
-            var query = new Query(DataSourceFactory).Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), ShowDrafts, null, Log);
+            var query = _queryGenerator.New().Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), ShowDrafts, null, Log);
             query.Params(ResolveParams(configEntity));
             return wrapLog.ReturnAsOk(query);
         }

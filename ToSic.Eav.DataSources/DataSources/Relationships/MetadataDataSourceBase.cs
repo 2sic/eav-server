@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources
     /// Base class for Children and Parents - since they share a lot of code
     /// </summary>
 
-    public abstract class MetadataDataSourceBase : DataSourceBase
+    public abstract class MetadataDataSourceBase : DataSource
     {
         /// <summary>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constructor
         /// </summary>
-        protected MetadataDataSourceBase()
+        protected MetadataDataSourceBase(Dependencies dependencies, string logName): base(dependencies, logName)
         {
             Provide(GetMetadata);
             ConfigMask(nameof(ContentTypeName));

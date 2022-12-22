@@ -8,12 +8,8 @@ namespace ToSic.Eav.DataSources
     /// Base DataSource class for providing data from external systems
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public abstract class ExternalData: DataSourceBase
+    public abstract class ExternalData: DataSource
     {
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => "DS.Extern";
-
         /// <summary>
         /// Initializes an external data source.
         /// </summary>
@@ -23,7 +19,10 @@ namespace ToSic.Eav.DataSources
         /// but renew when it is updates
         /// </remarks>
         [PrivateApi]
-        protected ExternalData() => CacheTimestamp = DateTime.Now.Ticks;
+        protected ExternalData(Dependencies dependencies, string logName) : base(dependencies, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
+        {
+            CacheTimestamp = DateTime.Now.Ticks;
+        }
 
         /// <inheritdoc />
         public override long CacheTimestamp { get; }

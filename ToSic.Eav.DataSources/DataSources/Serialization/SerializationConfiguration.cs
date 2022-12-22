@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "5c84cd3f-f853-40b3-81cf-dee6a07dc411",
         HelpLink = "https://r.2sxc.org/DsSerializationConfiguration")]
 
-    public partial class SerializationConfiguration : DataSourceBase
+    public partial class SerializationConfiguration : DataSource
 	{
         #region Constants
 
@@ -61,10 +61,6 @@ namespace ToSic.Eav.DataSources
         private const string IncludeRelationshipIdKey = "IncludeRelationshipId";
         private const string IncludeRelationshipGuidKey = "IncludeRelationshipGuid";
         private const string IncludeRelationshipTitleKey = "IncludeRelationshipTitle";
-
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => "DS.SerCnf";
 
         #region Basic Fields
 
@@ -198,8 +194,8 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public SerializationConfiguration()
-		{
+		public SerializationConfiguration(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.SerCnf")
+        {
             // Basic system properties
             ConfigMask(IncludeIdKey, $"[Settings:{IncludeIdKey}]");
             ConfigMask(IncludeGuidKey, $"[Settings:{IncludeGuidKey}]");

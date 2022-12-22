@@ -23,13 +23,10 @@ namespace ToSic.Eav.Apps
 
                 if (ConfigurationProvider == null)
                     throw new Exception("Can't use app-queries, because the necessary configuration provider hasn't been initialized. Call InitData first.");
-                return _queries = QueryManager.AllQueries(this, ConfigurationProvider, ShowDrafts);
+                return _queries = _deps.QueryManager.Value.AllQueries(this, ConfigurationProvider, ShowDrafts);
             }
         }
         private IDictionary<string, IQuery> _queries;
-
-        private QueryManager QueryManager => _qMan ?? (_qMan = new QueryManager(DataSourceFactory).Init(Log));
-        private QueryManager _qMan;
 
         /// <inheritdoc />
         public Query GetQuery(string name)
@@ -57,15 +54,15 @@ namespace ToSic.Eav.Apps
         {
             // try parent
             var parentAppState = AppState.ParentApp?.AppState;
-            var qent = parentAppState == null ? null : QueryManager.FindQuery(parentAppState, name);
+            var qent = parentAppState == null ? null : _deps.QueryManager.Value.FindQuery(parentAppState, name);
 
             // for inherited app, parent-app is master shared app, so we need parent-parent-app to check the global queries
             if (qent == null && parentAppState.ParentApp?.AppState != null)
-                qent = QueryManager.FindQuery(parentAppState.ParentApp.AppState, name);
+                qent = _deps.QueryManager.Value.FindQuery(parentAppState.ParentApp.AppState, name);
 
             if (qent == null && errorOnNotFound != null) throw new Exception(errorOnNotFound);
 
-            return new Query(DataSourceFactory).Init(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts, null, Log);
+            return _deps.QueryGenerator.New().Init(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts, null, Log);
         }
     }
 }

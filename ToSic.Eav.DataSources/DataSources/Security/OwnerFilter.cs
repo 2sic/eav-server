@@ -23,12 +23,9 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.OwnerFilter",
         HelpLink = "https://r.2sxc.org/DsOwnerFilter")]
 
-    public class OwnerFilter : DataSourceBase
+    public class OwnerFilter : DataSource
 	{
         #region Configuration-properties
-        /// <inheritdoc/>
-        [PrivateApi]
-	    public override string LogId => "DS.OwnrF";
 
         private const string IdentityCode = "IdentityCode";
 
@@ -47,8 +44,8 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new PublishingFilter
 		/// </summary>
 		[PrivateApi]
-		public OwnerFilter()
-		{
+		public OwnerFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.OwnrFl")
+        {
             Provide(GetList);
 		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
         }

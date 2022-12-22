@@ -37,10 +37,6 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => "DS.CSV";
-
         private const string FilePathKey = "FilePath";
 
         /// <summary>
@@ -122,7 +118,7 @@ namespace ToSic.Eav.DataSources
 
 
         [PrivateApi]
-        public CsvDataSource(IUser user, IServerPaths serverPaths)
+        public CsvDataSource(IUser user, IServerPaths serverPaths, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Csv")
         {
             _user = user;
             _serverPaths = serverPaths;

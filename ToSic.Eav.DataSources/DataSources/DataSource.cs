@@ -1,9 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Data;
-using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helper;
-using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
@@ -12,16 +10,16 @@ namespace ToSic.Eav.DataSources
     /// The base class, which should always be inherited. Already implements things like Get One / Get many, Caching and a lot more.
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public abstract partial class DataSourceBase : ServiceBase, IDataSource, IDataTarget
+    public abstract partial class DataSource : ServiceBase, IDataSource, IDataTarget
     {
-        /// <inheritdoc/>
-        [PrivateApi]
-        public abstract string LogId { get; }
-
         /// <summary>
         /// Constructor - must be without parameters, otherwise the DI can't construct it.
         /// </summary>
-        protected DataSourceBase() : base("DS.Base") { }
+        protected DataSource(Dependencies dependencies, string logName) : base(logName)
+        {
+            _deps = dependencies.SetLog(Log);
+        }
+        private readonly Dependencies _deps;
 
         /// <inheritdoc />
         public string Name => GetType().Name;
@@ -40,7 +38,7 @@ namespace ToSic.Eav.DataSources
 
 
         /// <inheritdoc />
-        public IDataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(this));
+        public IDataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(_deps.ConfigDependencies, this));
         private IDataSourceConfiguration _config;
 
 
@@ -48,21 +46,12 @@ namespace ToSic.Eav.DataSources
 
         #region Properties which the Factory must add
 
-        protected IDataBuilder DataBuilder => _dataBuilder.Get(() => _dataBuilderLazy.New());
+        protected IDataBuilder DataBuilder => _dataBuilder.Get(() => _deps.DataBuilder.Value);
         private readonly GetOnce<IDataBuilder> _dataBuilder = new GetOnce<IDataBuilder>();
-        [PrivateApi]
-        internal Generator<IDataBuilder> _dataBuilderLazy;
-
-        [PrivateApi] public DataSourceErrorHandling ErrorHandler => _dataSourceErrorHandlingLazy.Value;
-        [PrivateApi] internal LazySvc<DataSourceErrorHandling> _dataSourceErrorHandlingLazy;
-
-        #endregion
-
-
-        #region Special Region so that each data sources has a factory if needed
 
         [PrivateApi]
-        protected internal DataSourceFactory DataSourceFactory { get; set; }
+        public DataSourceErrorHandling ErrorHandler => _errorHandler.Get(() => _deps.ErrorHandler.Value);
+        private readonly GetOnce<DataSourceErrorHandling> _errorHandler = new GetOnce<DataSourceErrorHandling>();
 
         #endregion
 

@@ -25,11 +25,10 @@ namespace ToSic.Eav.DataSources.Sys
         ExpectsDataOfType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes")]
 
-    public sealed class Attributes: DataSourceBase
+    public sealed class Attributes: DataSource
 	{
 
         #region Configuration-properties (no config)
-	    public override string LogId => "DS.EavAts";
 
         private const string ContentTypeKey = "ContentType";
         private const string ContentTypeField = "ContentTypeName";
@@ -51,8 +50,8 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public Attributes(IAppStates appStates)
-		{
+		public Attributes(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Attrib")
+        {
             _appStates = appStates;
             Provide(GetList);
 		    ConfigMask(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");

@@ -1,8 +1,10 @@
 ﻿using System;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
@@ -27,6 +29,8 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public class AppDependencies: ServiceDependencies
         {
+            public Generator<Query> QueryGenerator { get; }
+            public ILazySvc<QueryManager> QueryManager { get; }
             internal readonly IZoneMapper ZoneMapper;
             internal readonly ISite Site;
             internal readonly IAppStates AppStates;
@@ -35,16 +39,22 @@ namespace ToSic.Eav.Apps
             public AppDependencies(IZoneMapper zoneMapper,
                 ISite site,
                 IAppStates appStates,
-                DataSourceFactory dataSourceFactory)
+                DataSourceFactory dataSourceFactory,
+                ILazySvc<QueryManager> queryManager,
+                Generator<Query> queryGenerator)
             {
-                ZoneMapper = zoneMapper;
-                Site = site;
-                AppStates = appStates;
-                DataSourceFactory = dataSourceFactory;
+                AddToLogQueue(
+                    ZoneMapper = zoneMapper,
+                    Site = site,
+                    AppStates = appStates,
+                    DataSourceFactory = dataSourceFactory,
+                    QueryManager = queryManager,
+                    QueryGenerator = queryGenerator
+                );
             }
         }
         [PrivateApi]
-        private readonly AppDependencies _dependencies;
+        private readonly AppDependencies _deps;
 
         /// <summary>
         /// 
@@ -53,7 +63,8 @@ namespace ToSic.Eav.Apps
         /// <param name="logName">must be null by default, because of DI</param>
         public App(AppDependencies dependencies, string logName = null): base(logName ?? "Eav.App", new CodeRef())
         {
-            _dependencies = dependencies.SetLog(Log);
+            _deps = dependencies.SetLog(Log);
+            // TODO: TRY REMOVE USE OF THIS
             DataSourceFactory = dependencies.DataSourceFactory;
             
             Site = dependencies.Site;
@@ -87,7 +98,7 @@ namespace ToSic.Eav.Apps
             // in case the DI gave a bad tenant, try to look up
             if (Site.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
                 appIdentity.AppId != AppConstants.AppIdNotFound)
-                Site = _dependencies.ZoneMapper.SiteOfApp(appIdentity.AppId);
+                Site = _deps.ZoneMapper.SiteOfApp(appIdentity.AppId);
 
             // if zone is missing, try to find it - but always assume current context
             if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
@@ -99,7 +110,7 @@ namespace ToSic.Eav.Apps
             // Look up name in cache
             // 2020-11-25 changed to use State.Get. before it was this...
             //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
-            NameId = _dependencies.AppStates.Get(this).NameId;
+            NameId = _deps.AppStates.Get(this).NameId;
 
             InitializeResourcesSettingsAndMetadata();
 

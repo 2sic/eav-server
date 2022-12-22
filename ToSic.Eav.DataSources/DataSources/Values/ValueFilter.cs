@@ -26,12 +26,9 @@ namespace ToSic.Eav.DataSources
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://r.2sxc.org/DsValueFilter")]
 
-    public sealed class ValueFilter : DataSourceBase
+    public sealed class ValueFilter : DataSource
     {
         #region Configuration-properties Attribute, Value, Language, Operator
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => "DS.ValueF";
 
         private const string AttrKey = "Attribute";
         private const string ExpectedKey = "Value";
@@ -90,7 +87,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new ValueFilter
         /// </summary>
         [PrivateApi]
-        public ValueFilter(ValueLanguages valLanguages)
+        public ValueFilter(ValueLanguages valLanguages, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.ValFil")
         {
             ConnectServices(
                 _valueLanguageService = valLanguages

@@ -6,9 +6,9 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -37,10 +37,9 @@ namespace ToSic.Eav.DataSources.Sys
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Apps: DataSourceBase
+    public sealed class Apps: DataSource
 	{
         #region Configuration-properties (no config)
-	    public override string LogId => "DS.EavAps";
 
         private const string ZoneKey = "Zone";
         private const string ZoneIdField = "ZoneId";
@@ -56,25 +55,46 @@ namespace ToSic.Eav.DataSources.Sys
             set => Configuration[ZoneKey] = value.ToString();
 	    }
 
-	    #endregion
+        #endregion
 
+        #region Constructor
+
+        public new class Dependencies: ServiceDependencies<DataSource.Dependencies>
+        {
+            public Generator<Eav.Apps.App> AppGenerator { get; }
+            public IAppStates AppStates { get; }
+
+            public Dependencies(
+                DataSource.Dependencies rootDependencies,
+                Generator<Eav.Apps.App> appGenerator,
+                IAppStates appStates
+                ) : base(rootDependencies)
+            {
+                AddToLogQueue(
+                    AppGenerator = appGenerator,
+                    AppStates = appStates
+                );
+            }
+        }
+        
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps(Generator<Eav.Apps.App> appGenerator, IAppStates appStates)
+        public Apps(Dependencies dependencies): base(dependencies.RootDependencies, $"{DataSourceConstants.LogPrefix}.Apps")
         {
-            ConnectServices(
-                _appGenerator = appGenerator,
-                _appStates = appStates
-            );
+            dependencies.SetLog(Log);
+            _appGenerator = dependencies.AppGenerator;
+            _appStates = dependencies.AppStates;
 
             Provide(GetList);
             ConfigMask(ZoneKey, $"[Settings:{ZoneIdField}]");
 		}
         private readonly Generator<Eav.Apps.App> _appGenerator;
         private readonly IAppStates _appStates;
+
+        #endregion
 
         private ImmutableArray<IEntity> GetList()
         {

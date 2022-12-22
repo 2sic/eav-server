@@ -15,6 +15,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -40,9 +41,6 @@ namespace ToSic.Eav.DataSources
 
 	public class Sql : ExternalData
 	{
-        /// <inheritdoc/>
-        [PrivateApi] public override string LogId => "DS.ExtSql";
-
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
         [PrivateApi]
@@ -129,10 +127,15 @@ namespace ToSic.Eav.DataSources
         #region Constructor
 
         [PrivateApi]
-		public class Dependencies
+		public new class Dependencies: ServiceDependencies<DataSource.Dependencies>
         {
             public SqlPlatformInfo SqlPlatformInfo { get; }
-            public Dependencies(SqlPlatformInfo sqlPlatformInfo) => SqlPlatformInfo = sqlPlatformInfo;
+            public Dependencies(SqlPlatformInfo sqlPlatformInfo, DataSource.Dependencies rootDependencies): base(rootDependencies)
+            {
+                AddToLogQueue(
+                    SqlPlatformInfo = sqlPlatformInfo
+                );
+            }
         }
 
 		// Important: This constructor must come BEFORE the other constructors
@@ -141,9 +144,9 @@ namespace ToSic.Eav.DataSources
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
 		[PrivateApi]
-		public Sql(Dependencies dependencies)
-		{
-            Deps = dependencies;
+		public Sql(Dependencies dependencies) : base(dependencies.RootDependencies, $"{DataSourceConstants.LogPrefix}.ExtSql")
+        {
+            SqlDeps = dependencies.SetLog(Log);
             Provide(GetList);
 		    ConfigMask(TitleFieldKey, $"[Settings:EntityTitleField||{Attributes.EntityFieldTitle}]");
 		    ConfigMask(EntityIdFieldKey, $"[Settings:EntityIdField||{Attributes.EntityFieldId}]");
@@ -153,7 +156,7 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(ConnectionStringKey);
 		    ConfigMask(ConnectionStringNameKey);
         }
-        [PrivateApi] protected readonly Dependencies Deps;
+        [PrivateApi] protected readonly Dependencies SqlDeps;
 
         #endregion
 
@@ -256,10 +259,10 @@ namespace ToSic.Eav.DataSources
                 {
                     var conStringName = string.IsNullOrWhiteSpace(ConnectionStringName) ||
                                         ConnectionStringName.EqualsInsensitive(SqlPlatformInfo.DefaultConnectionPlaceholder)
-                        ? Deps.SqlPlatformInfo.DefaultConnectionStringName
+                        ? SqlDeps.SqlPlatformInfo.DefaultConnectionStringName
                         : ConnectionStringName;
 
-                    ConnectionString = Deps.SqlPlatformInfo.FindConnectionString(conStringName);
+                    ConnectionString = SqlDeps.SqlPlatformInfo.FindConnectionString(conStringName);
                 }
 			    catch(Exception ex)
                 {

@@ -22,12 +22,9 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false, 
         HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
 
-    public class PublishingFilter : DataSourceBase
+    public class PublishingFilter : DataSource
 	{
         #region Configuration-properties
-        /// <inheritdoc/>
-        [PrivateApi]
-	    public override string LogId => "DS.Publsh";
 
 		/// <summary>
 		/// Indicates whether to show drafts or only Published Entities. 
@@ -44,8 +41,8 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new PublishingFilter
 		/// </summary>
 		[PrivateApi]
-		public PublishingFilter()
-		{
+		public PublishingFilter(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Publsh")
+        {
             Provide(PublishingFilterList);
 		    ConfigMask(QueryConstants.ParamsShowDraftKey, QueryConstants.ParamsShowDraftToken);
        }

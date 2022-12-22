@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources.Debug
             {
                 Guid = ds.Guid;
                 Type = ds.GetType().Name;
-                Connections = (ds as DataSourceBase)?.Connections;
+                Connections = (ds as DataSource)?.Connections;
                 Configuration = ds.Configuration.Values;
 
                 try

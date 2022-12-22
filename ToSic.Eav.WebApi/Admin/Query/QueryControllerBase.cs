@@ -27,10 +27,10 @@ namespace ToSic.Eav.WebApi.Admin.Query
     {
         protected QueryControllerBase(QueryControllerDependencies dependencies, string logName) : base(logName)
         {
-            _dependencies = dependencies.SetLog(Log);
+            _deps = dependencies.SetLog(Log);
             QueryBuilder = dependencies.QueryBuilder;
         }
-        private readonly QueryControllerDependencies _dependencies;
+        private readonly QueryControllerDependencies _deps;
         private AppManager _appManager;
         private QueryBuilder QueryBuilder { get; }
 
@@ -38,7 +38,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         public TImplementation Init(int appId)
         {
             if (appId != 0) // if 0, then no context is available or used
-                _appManager = _dependencies.AppManagerLazy.Value.Init(appId);
+                _appManager = _deps.AppManagerLazy.Value.Init(appId);
             return this as TImplementation;
         }
 
@@ -54,7 +54,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             if (!id.HasValue) return l.Return(query, "no id, empty");
 
-            var reader = _dependencies.AppReaderLazy.Value.Init(appId, false);
+            var reader = _deps.AppReaderLazy.Value.Init(appId, false);
             var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
@@ -62,7 +62,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             query.Pipeline = qDef.Entity.AsDictionary();
             query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
 
-            var converter = _dependencies.EntToDicLazy.Value;
+            var converter = _deps.EntToDicLazy.Value;
             converter.Type.Serialize = true;
             converter.Type.WithDescription = true;
             converter.WithGuid = true;
@@ -85,7 +85,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// </summary>
         public IEnumerable<DataSourceDto> DataSources()
         {
-            var dsCatalog = _dependencies.DataSourceCatalogLazy.Value/*.Init(Log)*/;
+            var dsCatalog = _deps.DataSourceCatalogLazy.Value;
 
             var callLog = Log.Fn<IEnumerable<DataSourceDto>>();
             var installedDataSources = DataSourceCatalog.GetAll(true);
@@ -149,7 +149,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 var resultStream = source.Out[streamName];
                 
                 // Repackage as DataSource since that's expected / needed
-                var passThroughDs = new PassThrough();
+                var passThroughDs = _deps.PassThrough.New();
                 passThroughDs.Attach(streamName, resultStream);
 
                 return passThroughDs;
@@ -171,7 +171,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             var serializeWrap = Log.Fn("Serialize", startTimer: true);
             var timer = new Stopwatch();
             timer.Start();
-            var converter = _dependencies.EntToDicLazy.Value;
+            var converter = _deps.EntToDicLazy.Value;
             converter.WithGuid = true;//.EnableGuids();
             converter.MaxItems = top;
 		    var results = converter.Convert(partLookup(builtQuery));
@@ -179,7 +179,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             serializeWrap.Done("ok");
 
             // Now get some more debug info
-            var debugInfo = _dependencies.QueryInfoLazy.Value.BuildQueryInfo(qDef, outSource);
+            var debugInfo = _deps.QueryInfoLazy.Value.BuildQueryInfo(qDef, outSource);
 
             // ...and return the results
 			return wrapLog.Return(new QueryRunDto
@@ -188,7 +188,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 				Streams = debugInfo.Streams.Select(si =>
                 {
                     if(si.ErrorData != null && si.ErrorData is IEntity errorEntity)
-                        si.ErrorData = _dependencies.EntToDicLazy.Value.Convert(errorEntity);
+                        si.ErrorData = _deps.EntToDicLazy.Value.Convert(errorEntity);
                     return si;
                 }).ToList(),
 				Sources = debugInfo.Sources,
@@ -218,7 +218,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             {
                 Log.A("import content" + args.DebugInfo);
 
-                var deser = _dependencies.JsonSerializer.New()/*.Init(Log)*/.SetApp(_appManager.AppState);
+                var deser = _deps.JsonSerializer.New()/*.Init(Log)*/.SetApp(_appManager.AppState);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents, args.AppId, Log);
                 _appManager.Queries.SaveCopy(qdef);

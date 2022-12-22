@@ -30,10 +30,6 @@ namespace ToSic.Eav.DataSources
 
     public class MetadataTargets: MetadataDataSourceBase
     {
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => $"{DataSourceConstants.LogPrefix}.Child";
-
         /// <summary>
         /// TODO
         /// </summary>
@@ -54,7 +50,7 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetBool(nameof(FilterDuplicates));
             set => Configuration.SetBool(nameof(FilterDuplicates), value);
         }
-        public MetadataTargets(IAppStates appStates)
+        public MetadataTargets(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.MetaTg")
         {
             ConfigMask(nameof(FilterDuplicates) + "||true");
             _appStates = appStates;

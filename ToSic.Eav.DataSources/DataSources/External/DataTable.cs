@@ -23,10 +23,6 @@ namespace ToSic.Eav.DataSources
         // help Link: https://r.2sxc.org/DsDataTable
 		#region Configuration-properties
 
-		/// <inheritdoc/>
-		[PrivateApi]
-        public override string LogId => "DS.DtaTbl";
-
         private const string TitleFieldKey = "TitleField";
 		private const string EntityIdFieldKey = "EntityIdField";
 		private const string ContentTypeKey = "ContentType";
@@ -90,8 +86,8 @@ namespace ToSic.Eav.DataSources
         /// Initializes a new instance of the DataTableDataSource class
         /// </summary>
         [PrivateApi]
-        public DataTable()
-		{
+        public DataTable(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.ExtTbl")
+        {
             Provide(GetEntities);
 		    ConfigMask(TitleFieldKey, EntityTitleDefaultColumnName);
 		    ConfigMask(EntityIdFieldKey, EntityIdDefaultColumnName);

@@ -22,11 +22,8 @@ namespace ToSic.Eav.DataSources
         GlobalName = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a"   // namespace or guid
     )]
     [PublicApi]
-    public class Error: DataSourceBase
+    public class Error: DataSource
     {
-        [PrivateApi]
-        public override string LogId => "DS.Error";
-
         /// <summary>
         /// The error title. Defaults to "Demo Error"
         /// </summary>
@@ -41,7 +38,8 @@ namespace ToSic.Eav.DataSources
         /// Constructor to tell the system what out-streams we have.
         /// In this case it's just the "Default" containing a fake exception.
         /// </summary>
-        public Error() => Provide(GenerateExceptionStream);
+        public Error(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Error")
+            => Provide(GenerateExceptionStream);
 
         private ImmutableArray<IEntity> GenerateExceptionStream()
         {

@@ -22,15 +22,8 @@ namespace ToSic.Eav.DataSources
         In = new[] { Constants.DefaultStreamName },
 	    HelpLink = "https://r.2sxc.org/DsFilterDuplicates")]
 
-    public sealed class ItemFilterDuplicates: DataSourceBase
+    public sealed class ItemFilterDuplicates: DataSource
 	{
-        #region Configuration-properties (no config)
-        /// <inheritdoc/>
-        [PrivateApi]
-	    public override string LogId => "DS.StMrge";
-
-        #endregion
-
 	    internal const string DuplicatesStreamName = "Duplicates";
 
 
@@ -39,8 +32,8 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public ItemFilterDuplicates()
-		{
+		public ItemFilterDuplicates(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.Duplic")
+        {
             Provide(GetUnique);
             Provide(DuplicatesStreamName, GetDuplicates);
 		}

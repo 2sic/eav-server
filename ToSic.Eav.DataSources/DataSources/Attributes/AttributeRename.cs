@@ -27,16 +27,12 @@ namespace ToSic.Eav.DataSources
         ExpectsDataOfType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
         HelpLink = "https://r.2sxc.org/DsAttributeRename")]
 
-    public class AttributeRename : DataSourceBase
+    public class AttributeRename : DataSource
 	{
 		#region Configuration-properties
 		private const string AttributeMapKey = "AttributeMap";
 		private const string KeepOtherAttributesKey = "KeepOtherAttributes";
         private const string TypeNameKey = "TypeName";
-
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => "DS.AtrRen";
 
         /// <summary>
         /// A string containing one or more attribute maps.
@@ -74,8 +70,9 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeRename(MultiBuilder multiBuilder)
-		{
+		public AttributeRename(MultiBuilder multiBuilder, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.AtrRen")
+
+        {
             _multiBuilder = multiBuilder;
 
             Provide(GetList);

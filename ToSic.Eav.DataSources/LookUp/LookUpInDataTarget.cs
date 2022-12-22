@@ -2,7 +2,6 @@
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 
 // ReSharper disable once CheckNamespace
@@ -23,19 +22,21 @@ namespace ToSic.Eav.LookUp
         public const string InStreamName = "In";
 
 	    private readonly IDataTarget _dataTarget;
+        private readonly IZoneCultureResolver _cultureResolver;
 
         /// <summary>
 		/// Constructor expecting the data-target, of which it will use the In-Stream
 		/// </summary>
-        public LookUpInDataTarget(IDataTarget dataTarget)
+        public LookUpInDataTarget(IDataTarget dataTarget, IZoneCultureResolver cultureResolver)
 		{
 		    _dataTarget = dataTarget;
+            _cultureResolver = cultureResolver;
 
             Name = InStreamName;
 		}
 
-        private string[] Dimensions => _dimensions ?? (_dimensions = 
-            (_dataTarget as DataSourceBase)?.DataSourceFactory.ZoneCultureResolver.SafeLanguagePriorityCodes());
+        private string[] Dimensions => _dimensions ?? (_dimensions = _cultureResolver
+            /*(_dataTarget as DataSources.DataSource)?.DataSourceFactory.ZoneCultureResolver*/.SafeLanguagePriorityCodes());
 
         private string[] _dimensions;
 

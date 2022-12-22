@@ -5,11 +5,9 @@ using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.DataSourceTests.TestData
 {
-    public class PersonsDataSource: DataSourceBase
+    public class PersonsDataSource: DataSources.DataSource
     {
-        public override string LogId => "TST.Person";
-
-        public PersonsDataSource(MultiBuilder multiBuilder)
+        public PersonsDataSource(Dependencies dependencies, MultiBuilder multiBuilder): base(dependencies, "TST.Person")
         {
             _multiBuilder = multiBuilder;
             Provide(GetPersons);

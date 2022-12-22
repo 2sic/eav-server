@@ -1,17 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Context;
 using ToSic.Eav.LookUp;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
-    public class DataSourceConfiguration : IDataSourceConfiguration
+    public class DataSourceConfiguration : ServiceBase, IDataSourceConfiguration
     {
-        #region Constructor (non DI)
-        
-        [PrivateApi] public DataSourceConfiguration(DataSourceBase ds) => DataSource = ds;
+        #region Dependencies - Must be in DI
 
-        [PrivateApi] internal DataSourceBase DataSource;
+        public class Dependencies: ServiceDependencies
+        {
+            public LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy { get; }
+
+            public Dependencies(LazySvc<IZoneCultureResolver> zoneCultureResolverLazy)
+            {
+                AddToLogQueue(
+                    ZoneCultureResolverLazy = zoneCultureResolverLazy
+                );
+            }
+        }
+
+        #endregion
+
+        #region Constructor (non DI)
+
+        [PrivateApi] public DataSourceConfiguration(Dependencies dependencies, DataSource ds) : base($"{DataSourceConstants.LogPrefix}.Config")
+        {
+            _deps = dependencies.SetLog(Log);
+            DataSource = ds;
+        }
+
+        private readonly Dependencies _deps;
+        [PrivateApi] internal DataSource DataSource;
 
         #endregion
 
@@ -67,7 +91,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         private IDictionary<string, ILookUp> OverrideLookUps 
             => _overrideLookUps 
-               ?? (_overrideLookUps = new Dictionary<string, ILookUp> { { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSource) } });
+               ?? (_overrideLookUps = new Dictionary<string, ILookUp> { { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSource, _deps.ZoneCultureResolverLazy.Value) } });
         private IDictionary<string, ILookUp> _overrideLookUps;
 
 

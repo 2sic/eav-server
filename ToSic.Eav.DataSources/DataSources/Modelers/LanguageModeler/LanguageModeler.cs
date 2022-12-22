@@ -31,12 +31,10 @@ namespace ToSic.Eav.DataSources
         In = new[] { Constants.DefaultStreamName + "*" },
         HelpLink = "https://r.2sxc.org/DsLanguageModeler")]
     [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
-    public sealed class LanguageModeler : DataSourceBase
+    public sealed class LanguageModeler : DataSource
     {
 
         #region Constants / Properties
-
-        public override string LogId => "Ds.FldMap"; // this text is added to all internal logs, so it's easier to debug
 
         private const string FieldMapConfigKey = "FieldMap";
 
@@ -54,7 +52,7 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public LanguageModeler(MultiBuilder multiBuilder)
+        public LanguageModeler(MultiBuilder multiBuilder, Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.LngMod")
         {
             _multiBuilder = multiBuilder;
             // Specify what out-streams this data-source provides. Usually just one, called "Default"

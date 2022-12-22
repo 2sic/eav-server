@@ -26,12 +26,9 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Paging",
         HelpLink = "https://r.2sxc.org/DsPaging")]
 
-    public sealed class Paging: DataSourceBase
+    public sealed class Paging: DataSource
 	{
         #region Configuration-properties (no config)
-        /// <inheritdoc/>
-        [PrivateApi]
-	    public override string LogId => "DS.Page";
 
         private const string PageSizeKey = "PageSize";
 	    private const int DefPageSize = 10;
@@ -77,8 +74,9 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public Paging()
-		{
+		public Paging(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.Page")
+
+        {
             Provide(GetList);
             Provide("Paging", GetPaging);
 		    ConfigMask(PageSizeKey, "[Settings:" + PageSizeKey + "||" + DefPageSize + "]");

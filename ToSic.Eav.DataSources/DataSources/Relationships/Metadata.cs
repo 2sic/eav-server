@@ -28,10 +28,6 @@ namespace ToSic.Eav.DataSources
 
     public class Metadata : MetadataDataSourceBase
     {
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => $"{DataSourceConstants.LogPrefix}.Child";
-
         /// <summary>
         /// TODO
         /// </summary>
@@ -39,6 +35,9 @@ namespace ToSic.Eav.DataSources
         {
             get => Configuration[nameof(ContentTypeName)];
             set => Configuration[nameof(ContentTypeName)] = value;
+        }
+        public Metadata(Dependencies dependencies, string logName) : base(dependencies, $"{DataSourceConstants.LogPrefix}.MetaDt")
+        {
         }
 
         protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName)
@@ -51,7 +50,6 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Construct function for the get of the related items
         /// </summary>
-        /// <param name="fieldName"></param>
         /// <param name="typeName"></param>
         /// <returns></returns>
         [PrivateApi]
@@ -61,5 +59,6 @@ namespace ToSic.Eav.DataSources
 
             return o => o.Metadata.OfType(typeName);
         }
+
     }
 }

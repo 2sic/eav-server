@@ -24,17 +24,12 @@ namespace ToSic.Eav.DataSources
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueSort",
         HelpLink = "https://r.2sxc.org/DsValueSort")]
 
-    public sealed class ValueSort : DataSourceBase
+    public sealed class ValueSort : DataSource
 	{
 
         #region Configuration-properties
-        /// <inheritdoc/>
-        [PrivateApi]
-	    public override string LogId => "DS.ValueS";
-
         private const string AttrKey = "Attributes";
 		private const string DirectionKey = "Directions";
-		//private const string LangKey = "Language";
         
 		/// <summary>
 		/// The attribute whose value will be sorted by.
@@ -69,8 +64,8 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new ValueSort
 		/// </summary>
 		[PrivateApi]
-		public ValueSort(ValueLanguages valLanguages)
-		{
+		public ValueSort(ValueLanguages valLanguages, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.ValSrt")
+        {
             ConnectServices(
                 _valLanguages = valLanguages
             );

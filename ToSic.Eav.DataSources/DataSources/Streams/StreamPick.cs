@@ -26,12 +26,9 @@ namespace ToSic.Eav.DataSources
         DynamicIn = true,
         HelpLink = "https://r.2sxc.org/DsStreamPick")]
 
-    public sealed class StreamPick : DataSourceBase
+    public sealed class StreamPick : DataSource
     {
         #region Configuration-properties
-        /// <inheritdoc/>
-        [PrivateApi]
-        public override string LogId => "DS.StmPck";
 
         private const string StreamNameKey = "StreamName";
         private const string SearchInParentKey = "UseParentStreams";
@@ -66,7 +63,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-        public StreamPick()
+        public StreamPick(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.StmPck")
         {
             Provide(StreamPickList);
             ConfigMask(StreamNameKey, "[Settings:StreamName||Default]");

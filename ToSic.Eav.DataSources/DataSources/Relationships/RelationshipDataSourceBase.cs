@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
     /// Base class for Children and Parents - since they share a lot of code
     /// </summary>
 
-    public abstract class RelationshipDataSourceBase : DataSourceBase
+    public abstract class RelationshipDataSourceBase : DataSource
     {
         /// <summary>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constructor
         /// </summary>
-        protected RelationshipDataSourceBase()
+        protected RelationshipDataSourceBase(Dependencies dependencies, string logName): base(dependencies, logName)
         {
             Provide(GetRelated);
             ConfigMask(nameof(FieldName));

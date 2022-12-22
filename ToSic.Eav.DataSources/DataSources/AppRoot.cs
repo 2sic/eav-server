@@ -12,14 +12,10 @@ namespace ToSic.Eav.DataSources
     /// This is also the object returned as the root in any query.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class AppRoot : DataSourceBase, IAppRoot
+    public class AppRoot : DataSource, IAppRoot
     {
-
         [PrivateApi]
-        public override string LogId => "DS.Root";
-
-        [PrivateApi]
-        public AppRoot(IAppStates appStates)
+        public AppRoot(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Root")
         {
             _appStates = appStates;
             Provide(() => AppState.List);
