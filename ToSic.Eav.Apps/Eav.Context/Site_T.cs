@@ -17,13 +17,7 @@ namespace ToSic.Eav.Context
         /// <inheritdoc />
         public abstract ISite Init(int siteId, ILog parentLog);
 
-        // 2022-12-23 2dm Removed - use GetContents
-        ///// <summary>
-        ///// The tenant settings - usually the DNN PortalSettings
-        ///// </summary>
-        //protected virtual T WrappedSite => _contents;
         public virtual T GetContents() => UnwrappedSite;
-        // ReSharper disable once InconsistentNaming
         [PrivateApi] protected virtual T UnwrappedSite { get; set; }
 
         /// <inheritdoc />
