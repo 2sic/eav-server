@@ -54,7 +54,6 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		[PrivateApi]
 		public EntityIdFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.EntIdF")
-
         {
             Provide(GetList);
 		    ConfigMask(EntityIdKey, "[Settings:EntityIds]");
