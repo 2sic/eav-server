@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helper;
 
 namespace ToSic.Eav.DataSources
 {
@@ -49,45 +50,45 @@ namespace ToSic.Eav.DataSources
             return new DataStream(intendedSource, "ConnectionStreamError", () => entityList);
         }
 
-        public IDataStream UnwrappedContents => _dataStream ?? (_dataStream = LoadStream());
-        public IDataStream GetContents() => UnwrappedContents;
+        public IDataStream GetContents() => UnwrappedDataStream;
+        private IDataStream UnwrappedDataStream => _dataStream.Get(LoadStream);
+        private readonly GetOnce<IDataStream> _dataStream = new GetOnce<IDataStream>();
 
-        private IDataStream _dataStream;
 
         #region Simple properties linked to the underlying Stream
 
         public bool AutoCaching
         {
-            get => UnwrappedContents.AutoCaching;
-            set => UnwrappedContents.AutoCaching = value;
+            get => UnwrappedDataStream.AutoCaching;
+            set => UnwrappedDataStream.AutoCaching = value;
         }
 
         public int CacheDurationInSeconds
         {
-            get => UnwrappedContents.CacheDurationInSeconds;
-            set => UnwrappedContents.CacheDurationInSeconds = value;
+            get => UnwrappedDataStream.CacheDurationInSeconds;
+            set => UnwrappedDataStream.CacheDurationInSeconds = value;
         }
 
         public bool CacheRefreshOnSourceRefresh
         {
-            get => UnwrappedContents.CacheRefreshOnSourceRefresh;
-            set => UnwrappedContents.CacheRefreshOnSourceRefresh = value;
+            get => UnwrappedDataStream.CacheRefreshOnSourceRefresh;
+            set => UnwrappedDataStream.CacheRefreshOnSourceRefresh = value;
         }
 
-        public void PurgeList(bool cascade = false) => UnwrappedContents.PurgeList(cascade);
+        public void PurgeList(bool cascade = false) => UnwrappedDataStream.PurgeList(cascade);
 
-        public IEnumerator<IEntity> GetEnumerator() => UnwrappedContents.GetEnumerator();
+        public IEnumerator<IEntity> GetEnumerator() => UnwrappedDataStream.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => UnwrappedContents.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => UnwrappedDataStream.GetEnumerator();
 
-        public IEnumerable<IEntity> List => UnwrappedContents.List;
+        public IEnumerable<IEntity> List => UnwrappedDataStream.List;
 
-        public IDataSource Source => UnwrappedContents.Source;
+        public IDataSource Source => UnwrappedDataStream.Source;
 
-        public string Name => UnwrappedContents.Name;
-        public string Scope => UnwrappedContents.Scope;
+        public string Name => UnwrappedDataStream.Name;
+        public string Scope => UnwrappedDataStream.Scope;
 
-        public DataStreamCacheStatus Caching => UnwrappedContents.Caching;
+        public DataStreamCacheStatus Caching => UnwrappedDataStream.Caching;
 
         #endregion
     }

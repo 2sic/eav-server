@@ -9,18 +9,15 @@ namespace ToSic.Eav.Data
     public abstract class Wrapper<T>: IWrapper<T>
     {
         /// <summary>
-        /// Property with the contents - should be used for all internal access to the UnwrappedContent
+        /// Property with the contents - should be used for all private/internal access to the UnwrappedContent
         /// </summary>
         [PrivateApi]
-        protected T _contents;
+        protected virtual T UnwrappedContents { get; private set; }
 
-        [PrivateApi]
-        public T UnwrappedContents => _contents;
+        public T GetContents() => UnwrappedContents;
 
-        public T GetContents() => _contents;
+        protected Wrapper(T contents) => UnwrappedContents = contents;
 
-        protected Wrapper(T contents) => _contents = contents;
-
-        protected void Init(T contents) => _contents = contents;
+        protected void Init(T contents) => UnwrappedContents = contents;
     }
 }

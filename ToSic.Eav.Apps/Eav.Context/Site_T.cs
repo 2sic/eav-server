@@ -17,13 +17,14 @@ namespace ToSic.Eav.Context
         /// <inheritdoc />
         public abstract ISite Init(int siteId, ILog parentLog);
 
-        /// <summary>
-        /// The tenant settings - usually the DNN PortalSettings
-        /// </summary>
-        public virtual T UnwrappedContents => _contents;
-        public T GetContents() => _contents;
+        // 2022-12-23 2dm Removed - use GetContents
+        ///// <summary>
+        ///// The tenant settings - usually the DNN PortalSettings
+        ///// </summary>
+        //protected virtual T WrappedSite => _contents;
+        public virtual T GetContents() => UnwrappedSite;
         // ReSharper disable once InconsistentNaming
-        [PrivateApi] protected T _contents;
+        [PrivateApi] protected virtual T UnwrappedSite { get; set; }
 
         /// <inheritdoc />
         public abstract string CurrentCultureCode { get; }

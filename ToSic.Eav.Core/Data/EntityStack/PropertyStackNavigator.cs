@@ -93,11 +93,11 @@ namespace ToSic.Eav.Data
 
             // 2022-05-02 2dm - there seem to be cases where this wrapper is created without an own entity.
             // Not yet sure why, but in this case we must be sure to not return something.
-            if (_contents == null)
+            if (UnwrappedContents == null)
                 return safeWrap.ReturnNull("no entity/contents");
 
             path = path.Add("OwnItem", specs.Field);
-            var childResult = _contents.FindPropertyInternal(specs, path);
+            var childResult = UnwrappedContents.FindPropertyInternal(specs, path);
             if (childResult == null)
                 return safeWrap.ReturnNull("null");
             
