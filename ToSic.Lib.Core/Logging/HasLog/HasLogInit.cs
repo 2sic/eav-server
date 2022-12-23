@@ -16,20 +16,20 @@ namespace ToSic.Lib.Logging
         /// </summary>
         /// <returns>The same object as started this, to allow chaining</returns>
         public static T Init<T>(this T thingWithLog, ILog parentLog) where T: class, IHasLog 
-            => thingWithLog.Init(parentLog, name: null);
+            => thingWithLog.LinkLog(parentLog, name: null);
 
         /// <summary>
         /// Null-Safe method to link logs together. Both the parent and the Log could be null. 
         /// </summary>
         /// <returns>The same object as started this, to allow chaining</returns>
         public static T LinkLog<T>(this T thingWithLog, ILog parentLog) where T: class, IHasLog 
-            => thingWithLog.Init(parentLog, name: null);
+            => thingWithLog.LinkLog(parentLog, name: null);
 
         /// <summary>
         /// Null-Safe method to link logs together. Both the parent and the Log could be null. 
         /// </summary>
         /// <returns>The same object as started this, to allow chaining</returns>
-        public static T Init<T>(this T thingWithLog, ILog parentLog, string name, bool forceConnect = false) where T: class, IHasLog
+        public static T LinkLog<T>(this T thingWithLog, ILog parentLog, string name, bool forceConnect = false) where T: class, IHasLog
         {
             if (thingWithLog == null) return null;
             if (thingWithLog is ILogShouldNeverConnect && !forceConnect)

@@ -43,9 +43,8 @@ namespace ToSic.Eav.Apps.Security
             => _deps = dependencies.SetLog(Log);
         private readonly Dependencies _deps;
 
-        public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app, ILog parentLog = null, string logName = null)
+        public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app)
         {
-            this.Init(parentLog, logName ?? "Api.PermApp");
             var wrapLog = Log.Fn<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
             Context = context;
             App = app;

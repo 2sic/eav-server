@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps
         public AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base($"App.St-{id.AppId}", new CodeRef())
         {
             Log.A($"AppState for App {id.AppId}");
-            this.Init(parentLog, null, forceConnect: true);
+            this.LinkLog(parentLog, null, forceConnect: true);
             Init(id);
 
             ParentApp = parentApp;
