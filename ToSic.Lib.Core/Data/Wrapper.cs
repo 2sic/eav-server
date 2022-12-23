@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Lib.Data
 {
     /// <summary>
     /// Helper base class for all wrappers
@@ -19,6 +19,6 @@ namespace ToSic.Eav.Data
 
         protected Wrapper(T contents) => UnwrappedContents = contents;
 
-        protected void Init(T contents) => UnwrappedContents = contents;
+        protected void Wrap(T contents) => UnwrappedContents = contents;
     }
 }
