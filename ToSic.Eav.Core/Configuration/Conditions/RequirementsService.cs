@@ -22,7 +22,7 @@ namespace ToSic.Eav.Configuration
 
         public List<ConditionError> Check(IEnumerable<IHasRequirements> withRequirements)
         {
-            var wrapLog = Log.Fn<List<ConditionError>>(startTimer: true);
+            var wrapLog = Log.Fn<List<ConditionError>>(timer: true);
             var result = withRequirements?.SelectMany(Check).ToList() ?? new List<ConditionError>();
             return wrapLog.Return(result, $"{result.Count} requirements failed");
         }

@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps
 		[PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
 		public void InitContentTypes(IList<IContentType> contentTypes)
         {
-            var wrapLog = Log.Fn(message: $"init content types {contentTypes?.Count}", startTimer: true);
+            var wrapLog = Log.Fn(message: $"init content types {contentTypes?.Count}", timer: true);
 	        if (!Loading)
 	            throw new Exception("trying to set content-types, but not in loading state. set that first!");
 
@@ -49,7 +49,7 @@ namespace ToSic.Eav.Apps
 
         private void BuildCacheForTypesByName(IList<IContentType> allTypes)
         {
-            var wrapLog = Log.Fn(message: $"build cache for type names for {allTypes.Count} items", startTimer: true);
+            var wrapLog = Log.Fn(message: $"build cache for type names for {allTypes.Count} items", timer: true);
 	        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
 	        var keepTypes = allTypes;

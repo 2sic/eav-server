@@ -61,7 +61,7 @@ namespace ToSic.Lib.Logging
         /// The topic this log belongs to, like Eav, Sxc, etc.
         /// Max length is 3 chars.
         /// </summary>
-        internal string Scope = LogConstants.ScopeUnknown;
+        internal string Scope = LogScopes.Unknown;
 
         /// <summary>
         /// The current logs name.

@@ -69,7 +69,7 @@ namespace ToSic.Eav.Configuration
             // Pre-Load the Assembly list into memory to log separately
             var assemblyLoadLog = new Log(EavLogs.Eav + "AssLdr", null, "Load Assemblies");
             _logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, assemblyLoadLog);
-            var l = Log.Fn(startTimer: true);
+            var l = Log.Fn(timer: true);
             AssemblyHandling.GetTypes(assemblyLoadLog);
 
             // Build the cache of all system-types. Must happen before everything else

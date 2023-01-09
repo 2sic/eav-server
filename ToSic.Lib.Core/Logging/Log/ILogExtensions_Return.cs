@@ -4,8 +4,8 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging
 {
-
-    public static partial class LogExtensions
+    // ReSharper disable once InconsistentNaming
+    public static partial class ILogExtensions
     {
 
         #region Return / ToDo: rename
@@ -19,9 +19,9 @@ namespace ToSic.Lib.Logging
         [PrivateApi]
         public static T Return<T>(this ILog log,
             Func<T> generate,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
         ) => log.Return(null, generate, cPath, cName, cLine);
 
 
@@ -29,18 +29,17 @@ namespace ToSic.Lib.Logging
         /// Intercept the result of an inner method, log it, then pass result on
         /// </summary>
         /// <returns></returns>
-        /// <remarks>Is null-safe, so if there is no log, things still work and it still returns a valid <see cref="LogCall"/> </remarks>
         [PrivateApi]
 // TODO: This should be renamed to DoAndReturn() for clarity
         public static T Return<T>(this ILog log,
             string message, 
             Func<T> generate,
-            [CallerFilePath] string cPath = null,
-            [CallerMemberName] string cName = null,
-            [CallerLineNumber] int cLine = 0
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
         )
         {
-            var callLog = log.GetRealLog().Fn<T>(message: message, code: CodeRef.Create(cPath, cName, cLine));
+            var callLog = log.GetRealLog().Fn<T>(message: message, cPath: cPath, cName: cName, cLine: cLine);
             var result = generate();
             return callLog.ReturnAndLog(result);
         }

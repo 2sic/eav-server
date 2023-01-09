@@ -35,7 +35,7 @@ namespace ToSic.Eav.Persistence.Efc
 
         private void LoadEntities(AppState app, int[] entityIds = null)
         {
-            var wrapLog = Log.Fn($"{app.AppId}, {entityIds?.Length ?? 0}", startTimer: true);
+            var wrapLog = Log.Fn($"{app.AppId}, {entityIds?.Length ?? 0}", timer: true);
             AddLogCount = 0; // reset, so anything in this call will be logged again up to 1000 entries
             var appId = app.AppId;
 

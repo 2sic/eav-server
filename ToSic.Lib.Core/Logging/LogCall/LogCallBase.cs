@@ -1,22 +1,24 @@
 ﻿using System.Diagnostics;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging
 {
-    public class LogCallBase : ILog, ILogLike
-
+    [PrivateApi("no need to publish this")]
+    public class LogCallBase : ILogLike, ILogCall
     {
         /// <summary>
         /// Keep constructor internal
         /// </summary>
+        [PrivateApi]
         internal LogCallBase(ILog log,
             CodeRef code,
             bool isProperty,
             string parameters = null,
             string message = null,
-            bool startTimer = false)
+            bool timer = false)
         {
             // Always init the stopwatch, as it could be used later even without a parent log
-            Stopwatch = startTimer ? Stopwatch.StartNew() : new Stopwatch();
+            Timer = timer ? Stopwatch.StartNew() : new Stopwatch();
 
             // Keep the log, but quit if it's not valid
             if (!(log is Log typedLog)) return;
@@ -26,18 +28,22 @@ namespace ToSic.Lib.Logging
             var entry = Entry = Log.AddInternalReuse(openingMessage, code);
             entry.WrapOpen = true;
             typedLog.WrapDepth++;
-            IsOpen = true;
+            //IsOpen = true;
         }
 
+        /// <inheritdoc />
         public ILog Log { get; }
 
+        /// <inheritdoc />
         public Entry Entry { get; }
 
-        public Stopwatch Stopwatch { get; }
+        /// <inheritdoc />
+        public Stopwatch Timer { get; }
 
-        internal bool IsOpen;
+        //[PrivateApi]
+        //internal bool IsOpen;
 
-
+        [PrivateApi("will probably remove")]
         public string NameId => Log?.NameId;
 
     }

@@ -19,5 +19,9 @@
         /// </summary>
         public const string Base = "Bas";
 
+        /// <summary>
+        /// Scope / prefix to use when the scope wasn't provided.
+        /// </summary>
+        public const string Unknown = "tdo";
     }
 }

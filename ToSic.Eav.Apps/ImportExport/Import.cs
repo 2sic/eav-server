@@ -80,7 +80,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities)
         {
-            var callLog = Log.Fn($"types: {newTypes?.Count}; entities: {newEntities?.Count}", startTimer: true);
+            var callLog = Log.Fn($"types: {newTypes?.Count}; entities: {newEntities?.Count}", timer: true);
             Storage.DoWithDelayedCacheInvalidation(() =>
             {
                 #region import AttributeSets if any were included but rollback transaction if necessary
@@ -94,7 +94,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         // important: must always create a new loader, because it will cache content-types which hurts the import
                         Storage.DoWhileQueuingVersioning(() =>
                         {
-                            var logImpTypes = Log.Fn(message: "Import Types in Sys-Scope", startTimer: true);
+                            var logImpTypes = Log.Fn(message: "Import Types in Sys-Scope", timer: true);
                             // load everything, as content-type metadata is normal entities
                             // but disable initialized, as this could cause initialize stuff we're about to import
                             var appStateTemp = Storage.Loader.AppState(AppId, false); 
@@ -110,7 +110,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                 MergeAndSaveContentTypes(appStateTemp, sysAttributeSets);
                             logImpTypes.Done();
 
-                            logImpTypes = Log.Fn(message: "Import Types in non-Sys scopes", startTimer: true);
+                            logImpTypes = Log.Fn(message: "Import Types in non-Sys scopes", timer: true);
                             // now reload the app state as it has new content-types
                             // and it may need these to load the remaining attributes of the content-types
                             appStateTemp = Storage.Loader.AppState(AppId, false);
@@ -131,7 +131,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     Log.A("Not entities to import");
                 else
                 {
-                    var logImpEnts = Log.Fn(message: "Pre-Import Entities merge", startTimer: true);
+                    var logImpEnts = Log.Fn(message: "Pre-Import Entities merge", timer: true);
                     var appStateTemp = Storage.Loader.AppState(AppId, false); // load all entities
                     newEntities = newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
@@ -175,7 +175,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private void MergeAndSaveContentTypes(AppState appState, List<IContentType> contentTypes)
         {
-            var callLog = Log.Fn(startTimer: true);
+            var callLog = Log.Fn(timer: true);
             // Here's the problem! #badmergeofmetadata
             contentTypes.ForEach(type => MergeContentTypeUpdateWithExisting(appState, type));
             var so = _importExportEnvironment.SaveOptions(ZoneId);

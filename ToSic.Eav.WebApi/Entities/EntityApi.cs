@@ -191,7 +191,7 @@ namespace ToSic.Eav.WebApi
 
         public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType, bool excludeAncestor = false)
         {
-            var wrapLog = Log.Fn<IEnumerable<Dictionary<string, object>>>(startTimer: true);
+            var wrapLog = Log.Fn<IEnumerable<Dictionary<string, object>>>(timer: true);
             EntityToDic.ConfigureForAdminUse();
             var originals = AppRead.Entities.Get(contentType).ToList();
 
@@ -202,7 +202,7 @@ namespace ToSic.Eav.WebApi
 
             var list = EntityToDic.Convert(originals).ToList();
 
-            var timer = Log.Fn(null, "truncate dictionary", startTimer: true);
+            var timer = Log.Fn(null, "truncate dictionary", timer: true);
             var result = list
                 .Select(li => li.ToDictionary(x1 => x1.Key, x2 => Truncate(x2.Value, 50)))
                 .ToList();

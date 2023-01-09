@@ -40,7 +40,7 @@ namespace ToSic.Eav.Apps.Security
         /// <returns></returns>
         public virtual bool EnvironmentAllows(List<Grants> grants)
         {
-            var logWrap = Log.Fn<bool>(() => $"[{string.Join(",", grants)}]");
+            var logWrap = Log.Fn<bool>( Log.Try(() => $"[{string.Join(",", grants)}]"));
             if (UserIsAnonymous()) logWrap.Return(false, "user anonymous");
             var ok = UserIsSystemAdmin(); // superusers are always ok
             if (!ok && CurrentZoneMatchesSiteZone())

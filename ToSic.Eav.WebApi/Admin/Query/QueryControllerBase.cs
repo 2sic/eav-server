@@ -168,7 +168,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             var outSource = builtQuery.Item1;
             
             
-            var serializeWrap = Log.Fn("Serialize", startTimer: true);
+            var serializeWrap = Log.Fn("Serialize", timer: true);
             var timer = new Stopwatch();
             timer.Start();
             var converter = _deps.EntToDicLazy.Value;

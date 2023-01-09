@@ -117,7 +117,7 @@ namespace ToSic.Eav.DataSources
                 // Note about Logging
                 // In rare cases the Source is null - and we don't want to cause Errors just because we can't log
                 // These cases usually occur when error-streams are created - in which case they sometimes don't have a source
-                var wrapLog = Source?.Log.Fn<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}", startTimer: true);
+                var wrapLog = Source?.Log.Fn<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}", timer: true);
 
                 // If already retrieved return last result to be faster
                 if (_listLoaded) return wrapLog?.Return(_list, "reuse previous") ?? _list;

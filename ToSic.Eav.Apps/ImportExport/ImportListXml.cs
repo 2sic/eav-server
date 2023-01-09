@@ -120,7 +120,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         private bool ValidateAndImportToMemory()
         {
-            var callLog = Log.Fn<bool>(startTimer: true);
+            var callLog = Log.Fn<bool>(timer: true);
             var nodesCount = 0;
             var entityGuidManager = new ImportItemGuidManager();
 
@@ -230,7 +230,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <returns>True if succeeded</returns>
         public bool PersistImportToRepository()
         {
-            var callLog = Log.Fn<bool>(startTimer: true);
+            var callLog = Log.Fn<bool>(timer: true);
             if (ErrorLog.HasErrors) return callLog.ReturnFalse();
 
             Timer.Start();

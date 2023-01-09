@@ -23,7 +23,7 @@ namespace ToSic.Eav.Persistence.Efc
 
         private IList<IContentType> LoadExtensionsTypesAndMerge(AppState app, IList<IContentType> dbTypes)
         {
-            var wrapLog = Log.Fn<IList<IContentType>>(startTimer: true);
+            var wrapLog = Log.Fn<IList<IContentType>>(timer: true);
             try
             {
                 if (string.IsNullOrEmpty(app.Folder)) return wrapLog.Return(dbTypes, "no path");
@@ -84,7 +84,7 @@ namespace ToSic.Eav.Persistence.Efc
             // 1. Collect AppIds used in content-types and attributes here
             // 2. After loading the types, access the app-state of each of these IDs to ensure it's loaded already
 
-            var wrapLog = Log.Fn<ImmutableList<IContentType>>(startTimer: true);
+            var wrapLog = Log.Fn<ImmutableList<IContentType>>(timer: true);
             // Load from DB
             var sqlTime = Stopwatch.StartNew();
             var query = _dbContext.ToSicEavAttributeSets

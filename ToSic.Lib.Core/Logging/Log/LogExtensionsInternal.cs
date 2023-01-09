@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging
 {
@@ -33,23 +32,6 @@ namespace ToSic.Lib.Logging
             //return e;
         }
 
-
-        /// <summary>
-        /// Try to call a function generating a message. 
-        /// This will be inside a try/catch, to prevent crashes because of looping on nulls etc.
-        /// </summary>
-        /// <param name="messageMaker"></param>
-        internal static string Try(Func<string> messageMaker)
-        {
-            try
-            {
-                return messageMaker.Invoke();
-            }
-            catch (Exception ex)
-            {
-                return "LOG: failed to generate from code, error: " + ex.Message;
-            }
-        }
 
     }
 }

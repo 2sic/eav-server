@@ -10,7 +10,7 @@ namespace ToSic.Lib.Logging
     public class LogStoreLive : ILogStoreLive
     {
         [PrivateApi]
-        public int MaxItems => LogConstants.LiveHistoryMaxItems;
+        public int MaxItems => LogConstants.LiveStoreMaxItems;
 
         /// <inheritdoc />
         public int SegmentSize
@@ -18,7 +18,7 @@ namespace ToSic.Lib.Logging
             get => _segmentSize; 
             set => _segmentSize = value;
         } 
-        private static int _segmentSize = LogConstants.LiveHistorySegmentSize;
+        private static int _segmentSize = LogConstants.LiveStoreSegmentSize;
 
         /// <inheritdoc />
         public ConcurrentDictionary<string, FixedSizedQueue<ILog>> Segments => StaticSegments;

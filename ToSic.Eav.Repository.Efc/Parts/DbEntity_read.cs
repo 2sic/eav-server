@@ -48,7 +48,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns>Entity or throws InvalidOperationException</returns>
         internal ToSicEavEntities[] GetDbEntities(int[] repositoryIds)
         {
-            var callLog = DbContext.Log.Fn<ToSicEavEntities[]>($"Get {repositoryIds.Length}", startTimer: true);
+            var callLog = DbContext.Log.Fn<ToSicEavEntities[]>($"Get {repositoryIds.Length}", timer: true);
             var found = EntityQuery.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
             return callLog.Return(found, found.Length.ToString());
         }
@@ -84,7 +84,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         internal Dictionary<Guid, int> GetMostCurrentDbEntities(Guid[] entityGuid)
         // GetEntity should never return a draft entity that has a published version
         {
-            var callLog = Log.Fn<Dictionary<Guid, int>>(startTimer: true);
+            var callLog = Log.Fn<Dictionary<Guid, int>>(timer: true);
             var result = GetEntitiesByGuid(entityGuid)
                 .ToList() // necessary for EF 3 - before GroupBy
                 .GroupBy(e => e.EntityGuid)

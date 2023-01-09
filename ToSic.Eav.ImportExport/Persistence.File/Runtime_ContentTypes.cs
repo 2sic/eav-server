@@ -32,7 +32,7 @@ namespace ToSic.Eav.Persistence.File
 
         private List<IContentType> SetInternalTypes(List<IContentType> types)
         {
-            var wrapLog = Log.Fn<List<IContentType>>(startTimer: true);
+            var wrapLog = Log.Fn<List<IContentType>>(timer: true);
             var changeCount = 0;
             try
             {
@@ -75,7 +75,7 @@ namespace ToSic.Eav.Persistence.File
 
         private int UpdateTypes(string name, IEnumerable<IEntity> entitiesToRetype, IDictionary<string, IContentType> typeDic)
         {
-            var wrapLog = Log.Fn<int>(name, startTimer: true);
+            var wrapLog = Log.Fn<int>(name, timer: true);
             var changeCount = 0;
             foreach (var entity in entitiesToRetype)
                 if (entity.Type.IsDynamic)

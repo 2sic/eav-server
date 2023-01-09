@@ -96,7 +96,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// </summary>
 		private void CreateOutWithAllStreams()
         {
-            var wrapLog = Log.Fn(message:$"Query: '{Definition.Entity.GetBestTitle()}'", startTimer: true);
+            var wrapLog = Log.Fn(message:$"Query: '{Definition.Entity.GetBestTitle()}'", timer: true);
 
             // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
             // and the current In

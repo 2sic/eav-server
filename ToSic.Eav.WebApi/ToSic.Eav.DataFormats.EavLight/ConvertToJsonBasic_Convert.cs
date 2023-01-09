@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         /// <inheritdoc/>
         public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntity> entities)
         {
-            var wrapLog = Log.Fn<IEnumerable<EavLightEntity>>(startTimer: true);
+            var wrapLog = Log.Fn<IEnumerable<EavLightEntity>>(timer: true);
             var topEntities = MaxItems == 0 ? entities : entities.Take(MaxItems);
             var result = topEntities.Select(GetDictionaryFromEntity).ToList();
             return wrapLog.ReturnAsOk(result);
@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         /// <inheritdoc/>
         public EavLightEntity Convert(IEntity entity)
         {
-            var wrapLog = Log.Fn<EavLightEntity>(startTimer: true);
+            var wrapLog = Log.Fn<EavLightEntity>(timer: true);
             var result = entity == null ? null : GetDictionaryFromEntity(entity);
             return wrapLog.ReturnAsOk(result);
         }

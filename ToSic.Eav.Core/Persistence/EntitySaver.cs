@@ -34,7 +34,7 @@ namespace ToSic.Eav.Persistence
                 ? Log.Fn<Entity>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}" )
                 : null;
             if (saveOptions == null) throw new ArgumentNullException(nameof(saveOptions));
-            Log.A(() => "opts " + saveOptions.LogInfo);
+            Log.A(Log.Try(() => "opts " + saveOptions.LogInfo));
             #region Step 0: initial error checks
             if(update == null) throw new Exception("can't prepare entities for saving, no new item with attributes provided");
 

@@ -117,7 +117,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="entityIds">EntityId of the Published Entity</param>
         internal Dictionary<int, int?> GetDraftBranchMap(List<int> entityIds)
         {
-            var wrapLog = Log.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", startTimer: true);
+            var wrapLog = Log.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
             var nullList = entityIds.Cast<int?>().ToList();
             var ids = DbContext.SqlDb.ToSicEavEntities
                 .Where(e => nullList.Contains(e.PublishedEntityId) && !e.ChangeLogDeleted.HasValue)

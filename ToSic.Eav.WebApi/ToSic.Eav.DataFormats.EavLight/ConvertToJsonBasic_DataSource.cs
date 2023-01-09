@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         [PrivateApi("not public yet, as the signature is not final yet")]
         public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids)
         {
-            var wrapLog = Log.Fn<IDictionary<string, IEnumerable<EavLightEntity>>>(startTimer: true);
+            var wrapLog = Log.Fn<IDictionary<string, IEnumerable<EavLightEntity>>>(timer: true);
             string[] streamsList;
             if (streams != null)
             {

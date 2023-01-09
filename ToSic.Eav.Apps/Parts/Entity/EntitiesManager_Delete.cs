@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <exception cref="Exception"></exception>
         public bool Delete(int[] ids, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null)
         {
-            var callLog = Log.Fn<bool>($"delete id:{ids.Length}, type:{contentType}, force:{force}", startTimer: true);
+            var callLog = Log.Fn<bool>($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true);
 
             // do optional type-check and if necessary, throw error
             BatchCheckTypesMatch(ids, contentType);
@@ -161,7 +161,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public bool Delete(List<int> ids)
         {
-            var callLog = Log.Fn<bool>($"ids:{ids.Count}", startTimer: true);
+            var callLog = Log.Fn<bool>($"ids:{ids.Count}", timer: true);
             var result = Delete(ids.ToArray(), null, false, true);
             //var result = ids.Aggregate(true, (current, entityId) => current && Delete(entityId, null, false, true));
             return callLog.ReturnAndLog(result);

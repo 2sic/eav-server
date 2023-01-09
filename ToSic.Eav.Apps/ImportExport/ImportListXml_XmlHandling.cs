@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private bool RunDocumentValidityChecks()
         {
-            var wrapLog = Log.Fn<bool>(startTimer: true);
+            var wrapLog = Log.Fn<bool>(timer: true);
             // #1 Assure that each element has a GUID and language child element
             foreach (var element in DocumentElements)
             {
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private bool LoadStreamIntoDocumentElement(Stream dataStream)
         {
-            var wrapLog = Log.Fn<bool>(startTimer: true);
+            var wrapLog = Log.Fn<bool>(timer: true);
             Document = XDocument.Load(dataStream);
             dataStream.Position = 0;
             if (Document == null)

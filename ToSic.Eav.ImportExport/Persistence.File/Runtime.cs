@@ -64,7 +64,7 @@ namespace ToSic.Eav.Persistence.File
                         Log.A($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
                         Log.Ex(e);
                     }
-                Log.A(() => string.Join(",", _paths));
+                Log.A(Log.Try(() => string.Join(",", _paths)));
                 return wrapLog.Return(_paths, $"{_paths.Count} paths");
             }
         }
@@ -82,14 +82,14 @@ namespace ToSic.Eav.Persistence.File
 
         public AppState LoadFullAppState()
         {
-            var outerWrapLog = Log.Fn<AppState>(startTimer: true);
+            var outerWrapLog = Log.Fn<AppState>(timer: true);
 
             var appState = new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);
 
             appState.Load(() =>
             {
                 var msg = $"get app data package for a#{appState.AppId}";
-                var wrapLog = Log.Fn(message: msg, startTimer: true);
+                var wrapLog = Log.Fn(message: msg, timer: true);
 
                 // Prepare metadata lists & relationships etc.
                 appState.InitMetadata(new Dictionary<int, string>().ToImmutableDictionary());
@@ -97,7 +97,7 @@ namespace ToSic.Eav.Persistence.File
                 appState.Folder = Constants.PresetName;
 
 
-                Log.DoAndLog(startTimer: true, action: () =>
+                Log.DoAndLog(timer: true, action: () =>
                 {
                     var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
                     // Just attach all global content-types to this app, as they belong here

@@ -11,7 +11,7 @@ namespace ToSic.Lib.Logging
             // Null-check
             if (!(log.GetRealLog() is Log realLog)) return;
 
-            var wrapLog = realLog.Fn(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
+            var wrapLog = realLog.FnCode(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
             var recursion = 1;
             while (true)
             {

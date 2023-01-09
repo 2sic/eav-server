@@ -4,12 +4,13 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging
 {
-    public static partial class LogExtensions
+    // ReSharper disable once InconsistentNaming
+    public static partial class ILogExtensions
     {
-        [PrivateApi]
         /// <summary>
         /// Dump result to an internal format - not very important in public use cases
         /// </summary>
+        [PrivateApi]
         public static string Dump(
             this ILog log,
             string separator = " - ", 

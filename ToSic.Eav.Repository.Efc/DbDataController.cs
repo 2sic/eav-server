@@ -225,7 +225,7 @@ namespace ToSic.Eav.Repository.Efc
 
         internal void DoAndSave(Action action, string message = null)
         {
-            var wrapLog = Log.Fn(message: message, startTimer: true);
+            var wrapLog = Log.Fn(message: message, timer: true);
             action.Invoke();
             SqlDb.SaveChanges();
             wrapLog.Done("completed");
@@ -234,7 +234,7 @@ namespace ToSic.Eav.Repository.Efc
 
         internal void DoAndSaveWithoutChangeDetection(Action action, string message = null)
         {
-            var wrapLog = Log.Fn(message: message, startTimer: true);
+            var wrapLog = Log.Fn(message: message, timer: true);
             
             action.Invoke();
 
@@ -262,7 +262,7 @@ namespace ToSic.Eav.Repository.Efc
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
             var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
-            var wrapLog = Log.Fn($"id:{randomId} - create new trans:{ownTransaction != null}", startTimer: true);
+            var wrapLog = Log.Fn($"id:{randomId} - create new trans:{ownTransaction != null}", timer: true);
             try
             {
                 action.Invoke();
@@ -288,7 +288,7 @@ namespace ToSic.Eav.Repository.Efc
 
         public void DoButSkipAppCachePurge(Action action)
         {
-            var callLog = Log.Fn(startTimer: true);
+            var callLog = Log.Fn(timer: true);
             var before = _purgeAppCacheOnSave;
             _purgeAppCacheOnSave = false;
             action.Invoke();
@@ -298,7 +298,7 @@ namespace ToSic.Eav.Repository.Efc
 
         public void DoWithDelayedCacheInvalidation(Action action)
         {
-            var wrapLog = Log.Fn(startTimer: true);
+            var wrapLog = Log.Fn(timer: true);
             _purgeAppCacheOnSave = false;
             action.Invoke();
 
@@ -319,7 +319,7 @@ namespace ToSic.Eav.Repository.Efc
 
         public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
         {
-            var callLog = Log.Fn<List<int>>(startTimer: true);
+            var callLog = Log.Fn<List<int>>(timer: true);
             _logStore.Add("save-data", Log);
             return callLog.ReturnAsOk(Entities.SaveEntity(entities, saveOptions));
         }

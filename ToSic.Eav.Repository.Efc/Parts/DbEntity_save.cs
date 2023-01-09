@@ -42,7 +42,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (logDetails)
             {
                 Log.A($"lang checks - zone language⋮{_zoneLangs.Count}, usedLanguages⋮{usedLanguages.Count}");
-                Log.A(() => $"langs zone:[{string.Join(",", _zoneLangs.Select(z => z.EnvironmentKey))}] used:[{string.Join(",", usedLanguages.Select(u => u.Key))}]");
+                Log.A(Log.Try(() => $"langs zone:[{string.Join(",", _zoneLangs.Select(z => z.EnvironmentKey))}] used:[{string.Join(",", usedLanguages.Select(u => u.Key))}]"));
             }
 
 
@@ -228,7 +228,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns></returns>
         private Tuple<int?, bool> GetDraftAndCorrectIdAndBranching(IEntity newEnt, bool logDetails)
         {
-            var wrapLog = Log.Fn<Tuple<int?, bool>>($"entity:{newEnt.EntityId}", startTimer: true);
+            var wrapLog = Log.Fn<Tuple<int?, bool>>($"entity:{newEnt.EntityId}", timer: true);
 
             // only do this, if we were given an EntityId, otherwise we assume new entity
             if (newEnt.EntityId <= 0)

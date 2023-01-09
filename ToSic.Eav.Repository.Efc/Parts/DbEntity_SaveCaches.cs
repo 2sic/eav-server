@@ -35,7 +35,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (logDetails)
             {
                 Log.A($"header checked type:{contentTypeId}, attribDefs⋮{attributes?.Count}");
-                if (attributes != null) Log.A(() => $"attribs: [{string.Join(",", attributes.Select(a => a.AttributeId + ":" + a.StaticName))}]");
+                if (attributes != null) Log.A(Log.Try(() => $"attribs: [{string.Join(",", attributes.Select(a => a.AttributeId + ":" + a.StaticName))}]"));
             }
             attributeDefinition = attributes;
             return contentTypeId;

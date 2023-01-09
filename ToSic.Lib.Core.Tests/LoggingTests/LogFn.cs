@@ -88,7 +88,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         public void A_StringFunction(string testName, string expected, string message, string result, int depth)
         {
             var log = LogFactory();
-            log.LogForAdd.A(() => message);
+            log.LogForAdd.A(log.LogForAdd.Try(() => message));
             Finish(log);
             AssertDepthAndEntryCount(testName, log.RealLog, LogDepth, EntryCount);
             AssertEntry(testName, log.RealLog.Entries[0], WrapperSignature, ExpectedResult, depth);

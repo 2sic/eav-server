@@ -8,7 +8,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
     {
         protected override void Finish((ILog LogForAdd, Log RealLog) log)
         {
-            (log.LogForAdd as LogCall).Done(ExpectedResult);
+            (log.LogForAdd as ILogCall).Done(ExpectedResult);
         }
 
         protected override int EntryCount => 3;

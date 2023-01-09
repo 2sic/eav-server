@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps
         [PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
         public void Load(Action loader)
         {
-            var wrapLog = Log.Fn(message: $"zone/app:{ZoneId}/{AppId} - Hash: {GetHashCode()}", startTimer: true);
+            var wrapLog = Log.Fn(message: $"zone/app:{ZoneId}/{AppId} - Hash: {GetHashCode()}", timer: true);
 
             try
             {

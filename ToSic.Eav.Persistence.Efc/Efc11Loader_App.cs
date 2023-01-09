@@ -90,7 +90,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <inheritdoc />
         public AppState AppState(int appId, bool ensureInitialized)
         {
-            var wrapLog = Log.Fn<AppState>($"{appId}, {ensureInitialized}", startTimer: true);
+            var wrapLog = Log.Fn<AppState>($"{appId}, {ensureInitialized}", timer: true);
 
             var appState = LoadBasicAppState(appId);
             if (!ensureInitialized) return wrapLog.Return(appState, "won't check initialized");
@@ -115,7 +115,7 @@ namespace ToSic.Eav.Persistence.Efc
             app.Load(() =>
             {
                 var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
-                var wrapLog = Log.Fn(message: msg, startTimer: true);
+                var wrapLog = Log.Fn(message: msg, timer: true);
 
                 // prepare metadata lists & relationships etc.
                 if (startAt <= AppStateLoadSequence.MetadataInit)

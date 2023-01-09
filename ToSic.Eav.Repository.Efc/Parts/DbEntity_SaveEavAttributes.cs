@@ -19,7 +19,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="entityId"></param>
         private bool ClearAttributesInDbModel(int entityId)
         {
-            var callLog = Log.Fn<bool>(startTimer: true);
+            var callLog = Log.Fn<bool>(timer: true);
             var val = DbContext.SqlDb.ToSicEavValues
                 .Include(v => v.ToSicEavValuesDimensions)
                 .Where(v => v.EntityId == entityId)
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             List<DimensionDefinition> zoneLanguages,
             bool logDetails)
         {
-            var wrapLog = Log.Fn($"id:{newEnt.EntityId}", startTimer: true);
+            var wrapLog = Log.Fn($"id:{newEnt.EntityId}", timer: true);
             if (!_attributeQueueActive) throw new Exception("Attribute save-queue not ready - should be wrapped");
             foreach (var attribute in newEnt.Attributes.Values)
             {
@@ -89,8 +89,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     #endregion
 
-                    if (logDetails) Log.A(() =>
-                        $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count}, dim⋮{toSicEavValuesDimensions?.Count}");
+                    if (logDetails) Log.A(Log.Try(() => $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count}, dim⋮{toSicEavValuesDimensions?.Count}"));
 
                     var newVal = new ToSicEavValues
                     {
@@ -134,7 +133,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private void AttributeQueueRun()
         {
-            var wrap = Log.Fn(startTimer: true);
+            var wrap = Log.Fn(timer: true);
             _attributeUpdateQueue.ForEach(a => a.Invoke());
             _attributeUpdateQueue.Clear();
             wrap.Done();

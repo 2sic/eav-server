@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources
 
 		    var result = entityIds.Select(eid => originals.One(eid)).Where(e => e != null).ToImmutableArray();
 
-		    Log.A(() => $"get ids:[{string.Join(",",entityIds)}] found:{result.Length}");
+		    Log.A(Log.Try(() => $"get ids:[{string.Join(",", entityIds)}] found:{result.Length}"));
             return wrapLog.ReturnAsOk(result);
         }
 

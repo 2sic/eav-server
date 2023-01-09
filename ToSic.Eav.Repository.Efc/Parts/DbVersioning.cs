@@ -59,7 +59,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         public void DoAndSaveHistoryQueue(Action action)
         {
-            var callLog = Log.Fn(startTimer: true);
+            var callLog = Log.Fn(timer: true);
             action.Invoke();
             Save();
             callLog.Done();
@@ -86,7 +86,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void Save()
         {
-            var callLog = Log.Fn(startTimer: true);
+            var callLog = Log.Fn(timer: true);
             DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue));
             _queue.Clear();
             callLog.Done();

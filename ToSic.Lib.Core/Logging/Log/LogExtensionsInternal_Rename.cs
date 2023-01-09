@@ -3,7 +3,7 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging
 {
-    public static partial class LogExtensions
+    internal static partial class LogExtensionsInternal
     {
         /// <summary>
         /// Rename this logger - usually used when a base-class has a logger, 
@@ -13,7 +13,7 @@ namespace ToSic.Lib.Logging
         /// limits the length to 6 chars to make the output readable
         /// </remarks>
         [PrivateApi]
-        public static void Rename(this ILog log, string name)
+        internal static void Rename(this ILog log, string name)
         {
             if (name == null) return;
             if (!(log is Log realLog)) return;

@@ -45,8 +45,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void UpdateEntityRelationshipsAndSave(List<RelationshipUpdatePackage> packages)
         {
-            var wrapLog = Log.Fn(startTimer: true);
-            packages.ForEach(p => Log.A(() => $"i:{p.Entity.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]"));
+            var wrapLog = Log.Fn(timer: true);
+            packages.ForEach(p => Log.A(Log.Try(() => $"i:{p.Entity.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]")));
             // remove existing Relationships that are not in new list
             var existingRelationships = packages.SelectMany(p => p.Entity.RelationshipsWithThisAsParent
                 .Where(e => e.AttributeId == p.AttributeId))
@@ -114,7 +114,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         private void ImportRelationshipQueueAndSave()
         {
-            var wrapLog = Log.Fn("", startTimer: true);
+            var wrapLog = Log.Fn("", timer: true);
             // if SaveOptions determines it, clear all existing relationships first
             var fullFlush = _saveQueue
                 .Where(r => r.FlushAllEntityRelationships)
@@ -214,7 +214,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal void FlushChildrenRelationships(List<int> parentIds)
         {
-            var wrapLog = Log.Fn($"{parentIds?.Count} items", message: "will do full-flush", startTimer: true);
+            var wrapLog = Log.Fn($"{parentIds?.Count} items", message: "will do full-flush", timer: true);
             
             // Delete all existing relationships - but not the target, just the relationship
             // note: can't use .Clear(), as that will try to actually delete the children
@@ -254,7 +254,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         internal void ChangeRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<ToSicEavAttributes> attributeDefs, SaveOptions so)
         {
-            var wrapLog = Log.Fn(startTimer: true);
+            var wrapLog = Log.Fn(timer: true);
 
             // some initial error checking
             if(dbEntity.EntityId <= 0)

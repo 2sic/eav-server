@@ -47,10 +47,17 @@ namespace ToSic.Eav.Context
             internal readonly Generator<IEnvironmentPermission> EnvironmentPermissions;
         }
 
-        public ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies) : base(siteCtxDeps)
+        /// <summary>
+        /// Constructor for DI
+        /// </summary>
+        /// <param name="siteCtxDeps"></param>
+        /// <param name="dependencies"></param>
+        public ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies) : this(siteCtxDeps, dependencies, "Sxc.CtxApp")
+        {
+        }
+        protected ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies, string logName) : base(siteCtxDeps, logName)
         {
             Deps = dependencies.SetLog(Log);
-            Log.Rename("Sxc.CtxApp");
         }
         protected readonly Dependencies Deps;
 
