@@ -31,8 +31,9 @@ namespace ToSic.Eav.Configuration
             LicenseCatalog licenseCatalog, 
             ILogStore logStore,
             IAppStates appStates
-        ) : base(logStore, null, $"{EavLogs.Eav}SysLdr", "System Load")
+        ) : base(logStore, $"{EavLogs.Eav}SysLdr")
         {
+            Log.A("System Load");
             this.ConnectServices(
                 Fingerprint = fingerprint,
                 _globalConfiguration = globalConfiguration,
@@ -91,7 +92,8 @@ namespace ToSic.Eav.Configuration
 
             // V13 - Load Licenses
             // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_logStore, _licenseCatalog, lic, Log)
+            new LicenseLoader(_logStore, _licenseCatalog, lic)
+                .Init(Log)
                 .LoadLicenses(Fingerprint.GetFingerprint(), _globalConfiguration.Value.ConfigFolder);
 
             // Now do a normal reload of configuration and features

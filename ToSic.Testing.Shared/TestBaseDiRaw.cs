@@ -1,12 +1,11 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
+using ToSic.Lib.Services;
 
 namespace ToSic.Testing.Shared
 {
-    public abstract class TestBaseDiRaw : HasLog, IServiceBuilder
+    public abstract class TestBaseDiRaw : ServiceBase, IServiceBuilder
     {
         private IServiceProvider ServiceProvider { get; }
 

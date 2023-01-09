@@ -130,7 +130,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private LookUpEngine LookUpWithoutParams()
         {
-            var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, true);
+            var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, true).Init(Log);
             if (lookUpsWithoutParams.HasSource(QueryConstants.ParamsLookup))
                 lookUpsWithoutParams.Sources.Remove(QueryConstants.ParamsLookup);
             // 1.1 note: can't add Override here because the underlying params don't exist yet - so an override wouldn't keep them

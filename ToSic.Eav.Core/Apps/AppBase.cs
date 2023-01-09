@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// DI Constructor - always run Init afterwards
         /// </summary>
-        protected AppBase(string logName, CodeRef codeRef): base(logName ?? "App.Base", codeRef) { }
+        protected AppBase(string logName): base(logName ?? "App.Base") { }
 
         /// <summary>
         /// App identity containing zone/app combination

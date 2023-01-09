@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSourceTests
         public void PassThrough_CacheKey()
         {
             var outSource = Build<DataSources.PassThrough>();
-            outSource.Init(new LookUpEngine(null));
+            outSource.Init(new LookUpEngine());
             var partialKey = outSource.CachePartialKey;
             var fullKey = outSource.CacheFullKey;
             Trace.WriteLine("Partial Key:" + partialKey);

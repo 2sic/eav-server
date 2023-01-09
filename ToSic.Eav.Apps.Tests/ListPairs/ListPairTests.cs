@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.Tests
                 new Dictionary<string, List<int?>> {
                     {PName, new List<int?> {1, 2, null, 3} },
                     {CName, new List<int?> {null, null} }
-                }, null);
+                });
             AssertLength(pair, 4);
         }
 
@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.Tests
                 new Dictionary<string, List<int?>> {
                     {primaryField, primary},
                     {coupledField, coupled }
-                }, null);
+                });
         }
 
         private void AssertLength(CoupledIdLists pair, int expectedLength)

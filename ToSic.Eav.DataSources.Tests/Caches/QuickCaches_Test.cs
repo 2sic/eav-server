@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
             //var cache = ds.Root;
-            var listCache = new ListCache(null);// cache.Lists;// as IListCache;
+            var listCache = new ListCache();
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
             // manually add to cache
@@ -56,8 +56,8 @@ namespace ToSic.Eav.DataSourceTests.Caches
             const string ItemToFilter = "1027";
             var ds = CreateFilterForTesting(100, ItemToFilter);
 
-            var listCache = new ListCache(null);// ds.Root.Lists; //as IListCache;
-            (listCache as ListCache).DefaultDuration = 1;
+            var listCache = new ListCache();
+            listCache.DefaultDuration = 1;
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
             listCache.Set(ds.CacheFullKey, ds.ListForTests().ToImmutableArray(), ds.CacheTimestamp);

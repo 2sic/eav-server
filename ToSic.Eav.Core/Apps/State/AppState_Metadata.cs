@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps
@@ -32,7 +33,7 @@ namespace ToSic.Eav.Apps
             if (!Loading)
                 throw new Exception("trying to init metadata, but not in loading state. set that first!");
             _metadataManager = _appTypesFromRepository == null
-                ? new AppMetadataManager(this, metadataTypes, Log)
+                ? new AppMetadataManager(this, metadataTypes).Init(Log)
                 : throw new Exception("can't set metadata if content-types are already set");
 
             Metadata = GetMetadataOf(TargetTypes.App, AppId, "App (" + AppId + ") " + Name + " (" + Folder + ")");

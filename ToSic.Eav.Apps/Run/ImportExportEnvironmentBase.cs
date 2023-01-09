@@ -6,10 +6,11 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public abstract class ImportExportEnvironmentBase: HasLog, IImportExportEnvironment
+    public abstract class ImportExportEnvironmentBase: ServiceBase, IImportExportEnvironment
     {
         #region constructor / DI
 

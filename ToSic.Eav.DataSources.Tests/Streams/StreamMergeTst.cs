@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         [TestMethod]
         public void StreamMerge_In0()
         {
-            var sf = DataSourceFactory.GetDataSource<StreamMerge>(new AppIdentity(0, 0), null, new LookUpEngine(null as ILog));
+            var sf = DataSourceFactory.GetDataSource<StreamMerge>(new AppIdentity(0, 0), null, new LookUpEngine());
             VerifyStreams(sf, 0, 0, 0, 0);
         }
 

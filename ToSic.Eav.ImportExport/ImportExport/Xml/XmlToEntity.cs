@@ -7,13 +7,14 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Repositories;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.ImportExport.Xml
 {
 	/// <summary>
 	/// Import EAV Data from XML Format
 	/// </summary>
-	public class XmlToEntity: HasLog
+	public class XmlToEntity: ServiceBase
 	{
         private class TargetLanguageToSourceLanguage: DimensionDefinition
         {
@@ -22,7 +23,9 @@ namespace ToSic.Eav.ImportExport.Xml
 
         public XmlToEntity(IAppStates appStates, MultiBuilder multiBuilder) : base("Imp.XmlEnt")
         {
-            _multiBuilder = multiBuilder;
+            ConnectServices(
+                _multiBuilder = multiBuilder
+            );
             _presetApp = appStates.GetPresetApp();
         }
 

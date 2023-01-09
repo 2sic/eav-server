@@ -35,9 +35,10 @@ namespace ToSic.Eav.Configuration.Licenses
         /// <summary>
         /// Constructor - not meant for DI
         /// </summary>
-        internal LicenseLoader(ILogStore logStore, LicenseCatalog licenseCatalog, List<LicenseData> licenseData, ILog parentLog)
-            : base(logStore, parentLog, EavLogs.Eav + "LicLdr", "Load Licenses")
+        internal LicenseLoader(ILogStore logStore, LicenseCatalog licenseCatalog, List<LicenseData> licenseData)
+            : base(logStore, EavLogs.Eav + "LicLdr")
         {
+            Log.A("Load Licenses");
             _licenseCatalog = licenseCatalog;
             _licenseData = licenseData;
         }

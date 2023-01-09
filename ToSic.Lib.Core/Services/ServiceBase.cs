@@ -1,4 +1,6 @@
-﻿using ToSic.Lib.DI;
+﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -10,17 +12,18 @@ namespace ToSic.Lib.Services
     /// Provides a special Dependency-list and will auto-set the log for all if they support logs.
     /// </summary>
     [PrivateApi]
-    public abstract class ServiceBase: HasLog
+    public abstract class ServiceBase: IHasLog
     {
         [PrivateApi]
-        protected ServiceBase(string logName) : base(logName)
+        protected ServiceBase(string logName)
         {
-
+            Log = new Log(logName);
         }
-        protected ServiceBase(string logName, CodeRef codeRef) : base(logName, codeRef)
-        {
 
-        }
+        /// <inheritdoc />
+        [JsonIgnore]
+        [IgnoreDataMember]
+        public ILog Log { get; }
 
         /// <summary>
         /// Add Log to all dependencies listed in <see cref="services"/>

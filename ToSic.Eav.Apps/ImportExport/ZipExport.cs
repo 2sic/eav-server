@@ -189,7 +189,7 @@ namespace ToSic.Eav.Apps.ImportExport
             File.WriteAllText(Path.Combine(tmpAppDataProtectedFolder, Constants.AppDataFile), xml);
 
             // Zip directory and return as stream
-            var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
+            var stream = new Zipping().Init(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
 
             ZipImport.TryToDeleteDirectory(temporaryDirectoryPath, Log);
 

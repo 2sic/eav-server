@@ -1,11 +1,12 @@
 ﻿using System;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Sys
 {
     // Release routes
 
-    public class LogControllerReal: HasLog
+    public class LogControllerReal: ServiceBase
     {
         public const string LogSuffix = "Log";
 

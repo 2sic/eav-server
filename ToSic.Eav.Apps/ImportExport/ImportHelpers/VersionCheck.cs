@@ -4,16 +4,19 @@ using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 {
-    internal class VersionCheck: HasLog
+    internal class VersionCheck: ServiceBase
     {
         private readonly IImportExportEnvironment _environment;
 
-        public VersionCheck(IImportExportEnvironment env, ILog parentLog) : base("Imp.VerChk", parentLog)
+        public VersionCheck(IImportExportEnvironment env) : base("Imp.VerChk")
         {
-            _environment = env;
+            ConnectServices(
+                _environment = env
+            );
         }
 
         internal void EnsureVersions(XElement appConfig)

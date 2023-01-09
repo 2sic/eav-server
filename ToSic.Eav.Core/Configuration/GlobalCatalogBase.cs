@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using ToSic.Lib.Data;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Configuration
 {
@@ -13,12 +14,12 @@ namespace ToSic.Eav.Configuration
     /// Goal is that it should be implemented by a specific class, 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class GlobalCatalogBase<T>: HasLog, ILogShouldNeverConnect where T : IHasIdentityNameId
+    public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect where T : IHasIdentityNameId
     {
-        protected GlobalCatalogBase(ILogStore logStore, string logName, CodeRef code)
-            : base(logName, code: code, initialMessage: $"Catalog Created for {typeof(T).Name}")
+        protected GlobalCatalogBase(ILogStore logStore, string logName, CodeRef code) : base(logName)
         {
-            logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, Log);
+            logStore.Add(LogNames.LogStoreStartUp, Log);
+            Log.A($"Catalog Created for {typeof(T).Name}", code.Path, code.Name, code.Line);
         }
 
         /// <summary>

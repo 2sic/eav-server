@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Lib.Helper;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Lib.DI
 {
-    public class ServiceSwitcher<T>: HasLog, ILazyLike<T> where T : ISwitchableService
+    public class ServiceSwitcher<T>: ServiceBase, ILazyLike<T> where T : ISwitchableService
     {
         // TODO
         // - add to global log history when regenerating incl. choice
 
-        public ServiceSwitcher(IEnumerable<T> allServices) : base(LogScopes.Lib + ".SrvSwt")
+        public ServiceSwitcher(IEnumerable<T> allServices) : base($"{LogScopes.Lib}.SrvSwt")
         {
             AllServices = allServices?.ToList();
         }

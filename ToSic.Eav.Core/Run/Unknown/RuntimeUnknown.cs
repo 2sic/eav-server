@@ -1,10 +1,11 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 
 namespace ToSic.Eav.Run.Unknown
 {
-    public class RuntimeUnknown: HasLog, IRuntime, IIsUnknown
+    public class RuntimeUnknown: ServiceBase, IRuntime, IIsUnknown
     {
         public RuntimeUnknown(WarnUseOfUnknown<RuntimeUnknown> warn) : base("Eav.BscRnt") { }
 

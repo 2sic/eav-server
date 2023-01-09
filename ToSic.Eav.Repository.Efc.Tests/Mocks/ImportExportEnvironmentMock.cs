@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 {
-    internal class ImportExportEnvironmentMock : HasLog, IImportExportEnvironment
+    internal class ImportExportEnvironmentMock : ServiceBase, IImportExportEnvironment
     {
         #region Constructors
 
         public ImportExportEnvironmentMock(IAppStates appStates) : base("Mck.ImpExp")
         {
-            _appStates = appStates;
+            ConnectServices(
+                _appStates = appStates
+            );
         }
         private readonly IAppStates _appStates;
 

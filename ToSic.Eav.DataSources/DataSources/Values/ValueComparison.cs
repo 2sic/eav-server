@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 using static System.StringComparison;
 using static ToSic.Eav.DataSources.CompareOperators;
 
 namespace ToSic.Eav.DataSources
 {
     [PrivateApi]
-    public class ValueComparison: HasLog
+    public class ValueComparison: ServiceBase
     {
-        internal ValueComparison(Action<string, string> errCallback, ILog parentLog): base("Eav.DsCmMk", parentLog)
+        internal ValueComparison(Action<string, string> errCallback): base("Eav.DsCmMk")
         {
             _errCallback = errCallback ?? throw new ArgumentNullException(nameof(errCallback));
         }

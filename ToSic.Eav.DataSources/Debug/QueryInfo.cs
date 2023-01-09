@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources.Debug
 {
-    public class QueryInfo: HasLog
+    public class QueryInfo: ServiceBase
     {
         /// <summary>
         /// DI Constructor

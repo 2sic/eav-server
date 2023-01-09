@@ -6,19 +6,22 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
     /// <summary>
     /// For exporting a content-type into xml, either just the schema or with data
     /// </summary>
-    public class ExportListXml: HasLog
+    public class ExportListXml: ServiceBase
     {
         #region Dependency Injection and Init
 
         public ExportListXml(ExportImportValueConversion valueConverter) : base("App.LstExp")
         {
-            ValueConverter = valueConverter;
+            ConnectServices(
+                ValueConverter = valueConverter
+            );
         }
 
         protected ExportImportValueConversion ValueConverter { get; }

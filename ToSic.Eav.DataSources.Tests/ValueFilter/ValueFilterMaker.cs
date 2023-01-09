@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var ds = useDataTable
                 ? new DataTablePerson(this).Generate(itemsToGenerate) as IDataSource
-                : _dataSourceFactory.GetDataSource<PersonsDataSource>(new AppIdentity(1, 1), null, new LookUpEngine(null as ILog))
+                : _dataSourceFactory.GetDataSource<PersonsDataSource>(new AppIdentity(1, 1), null, new LookUpEngine())
                     .Init(itemsToGenerate, multiLanguage: multiLanguage).Init(LookUpTestData.AppSetAndRes());
             var filtered = _dataSourceFactory.GetDataSource<ValueFilter>(new AppIdentity(1, 1), ds);
             return filtered;
@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var ds = useDataTable
                 ? new DataTablePerson(this).Generate(itemsToGenerate) as IDataSource
-                : _dataSourceFactory.GetDataSource<PersonsDataSource>(new AppIdentity(1, 1), null, new LookUpEngine(null as ILog))
+                : _dataSourceFactory.GetDataSource<PersonsDataSource>(new AppIdentity(1, 1), null, new LookUpEngine())
                     .Init(itemsToGenerate, multiLanguage: multiLanguage).Init(LookUpTestData.AppSetAndRes());
             var filtered = _dataSourceFactory.GetDataSource<ValueSort>(ds, ds);
             return filtered;

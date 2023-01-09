@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps
 {
-    public sealed class AppFinder: HasLog
+    public sealed class AppFinder: ServiceBase
     {
         #region Constructor / DI
 

@@ -61,7 +61,7 @@ namespace ToSic.Eav.Data
                 if (!result.IsFinal) continue;
 
                 var parentRefForNewChildren = new StackAddress(this, specs.Field, sourceIndex, null);
-                var wrapper = new StackReWrapper(parentRefForNewChildren, specs.LogOrNull);
+                var wrapper = new StackReWrapper(parentRefForNewChildren).Init(specs.LogOrNull);
                 result = wrapper.ReWrapIfPossible(result);
                 return l.Return(result,
                     result.ResultOriginal == null ? "simple value, final" : "re-wrapped with stack nav");

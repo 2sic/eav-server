@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.DataSources;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -13,7 +12,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public bool ShowDrafts { get; private set; }
 
-        protected AppRuntimeBase(AppRuntimeDependencies dependencies, string logName): base(logName, new CodeRef())
+        protected AppRuntimeBase(AppRuntimeDependencies dependencies, string logName): base(logName)
         {
             this.ConnectServices(
                 _Deps = dependencies

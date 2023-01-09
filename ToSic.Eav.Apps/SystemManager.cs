@@ -1,11 +1,12 @@
 ﻿using System;
 using ToSic.Eav.Caching;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps
 {
     // Todo: Probably rename since it's only job is to purge - maybe AppStatePurger
-    public class SystemManager: HasLog
+    public class SystemManager: ServiceBase
     {
         #region Constructor
 

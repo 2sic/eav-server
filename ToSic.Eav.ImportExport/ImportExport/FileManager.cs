@@ -7,11 +7,12 @@ using ToSic.Eav.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Serialization;
+using ToSic.Lib.Services;
 using static System.IO.Path;
 
 namespace ToSic.Eav.ImportExport
 {
-    public class FileManager : HasLog
+    public class FileManager : ServiceBase
     {
         public FileManager() : base(EavLogs.Eav + ".FileMn") { }
 

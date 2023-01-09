@@ -66,7 +66,7 @@ namespace ToSic.Eav.Apps.ImportExport
             ImportResolveReferenceMode resolveLinkMode)
         {
             ImportEntities = new List<Entity>();
-            ErrorLog = new ImportErrorLog(Log);
+            ErrorLog = new ImportErrorLog().Init(Log);
 
             AppMan = appMan;
             App = appMan.AppState;

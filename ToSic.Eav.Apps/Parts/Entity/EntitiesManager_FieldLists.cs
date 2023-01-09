@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Apps.Parts.Tools;
 using ToSic.Eav.Data;
+using ToSic.Lib.Logging;
 using Callback = System.Func<ToSic.Eav.Apps.Parts.Tools.CoupledIdLists, System.Collections.Generic.Dictionary<string, object>>;
 
 namespace ToSic.Eav.Apps.Parts
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
     {
         public void FieldListUpdate(IEntity target, string[] fields, bool asDraft, Callback callback)
         {
-            var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
+            var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f)))).Init(Log);
             var values = callback.Invoke(lists);
             Parent.Entities.UpdatePartsFromValues(target, values, SimpleDataController.DraftAndBranch(asDraft));
         }

@@ -1,4 +1,4 @@
-﻿using ToSic.Lib.Logging;
+﻿using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi
 {
@@ -7,7 +7,7 @@ namespace ToSic.Eav.WebApi
     /// Created 2022-02
     /// Probably remove again once we're done migrating - see https://r.2sxc.org/proxy-controllers
     /// </summary>
-    public class DummyControllerReal: HasLog
+    public class DummyControllerReal: ServiceBase
     {
         public DummyControllerReal() : base("") { }
     }

@@ -5,6 +5,7 @@ using System.Runtime.Caching;
 using ToSic.Eav.Caching;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Caching
@@ -13,7 +14,7 @@ namespace ToSic.Eav.DataSources.Caching
     /// Responsible for caching lists / streams. Usually used in queries or sources which have an intensive loading or querying time.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class ListCache: HasLog, IListCache
+    public class ListCache: ServiceBase, IListCache
     {
         #region Static Caching and Lock Variables
         private static ObjectCache Cache => MemoryCache.Default;
@@ -26,7 +27,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// Constructor
         /// </summary>
         [PrivateApi]
-        public ListCache(ILog parentLog) : base("DS.LstCch", parentLog) { }
+        public ListCache() : base("DS.LstCch") { }
 
         #region Has in Cache
 

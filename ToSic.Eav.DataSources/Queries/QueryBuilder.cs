@@ -6,7 +6,6 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
@@ -96,7 +95,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity, _cultureResolver.SafeLanguagePriorityCodes());
 
             // centralizing building of the primary configuration template for each part
-            var templateConfig = new LookUpEngine(lookUpEngineToClone, Log);
+            var templateConfig = new LookUpEngine(lookUpEngineToClone).Init(Log);
 
             if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
                 paramsLookup.Properties[QueryConstants.ParamsShowDraftKey] = showDrafts.ToString();
@@ -114,7 +113,7 @@ namespace ToSic.Eav.DataSources.Queries
 			#region Load Query Entity and Query Parts
 
 			// tell the primary-out that it has this guid, for better debugging
-            var passThroughConfig = new LookUpEngine(templateConfig, Log);
+            var passThroughConfig = new LookUpEngine(templateConfig).Init(Log);
             IDataSource outTarget = _passThrough.New().Init(passThroughConfig);
 			if (outTarget.Guid == Guid.Empty)
 	            outTarget.Guid = queryDef.Entity.EntityGuid;
@@ -135,7 +134,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        {
 	            #region Init Configuration Provider
 
-	            var partConfig = new LookUpEngine(templateConfig, Log);
+	            var partConfig = new LookUpEngine(templateConfig).Init(Log);
                 // add / set item part configuration
 	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart.Entity, _cultureResolver.SafeLanguagePriorityCodes()));
 

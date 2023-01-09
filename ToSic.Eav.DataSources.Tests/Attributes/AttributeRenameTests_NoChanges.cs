@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSourceTests
@@ -13,7 +12,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void DefaultConfiguration()
         {
-            var attrRename = DataSourceFactory.GetDataSource<AttributeRename>(new AppIdentity(1, 1), null, new LookUpEngine(null as ILog));
+            var attrRename = DataSourceFactory.GetDataSource<AttributeRename>(new AppIdentity(1, 1), null, new LookUpEngine());
             attrRename.Configuration.Parse();
             Assert.AreEqual(true, attrRename.KeepOtherAttributes);
             Assert.AreEqual("", attrRename.AttributeMap);

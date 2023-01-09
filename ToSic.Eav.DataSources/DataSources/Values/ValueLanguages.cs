@@ -1,16 +1,19 @@
 ﻿using System;
 using ToSic.Eav.Context;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
-    public class ValueLanguages : HasLog
+    public class ValueLanguages : ServiceBase
     {
         #region Constructor / DI
 
         public ValueLanguages(IZoneCultureResolver cultureResolver) : base("Ds.ValLng")
         {
-            _cultureResolver = cultureResolver;
+            ConnectServices(
+                _cultureResolver = cultureResolver
+            );
         }
         private readonly IZoneCultureResolver _cultureResolver;
 

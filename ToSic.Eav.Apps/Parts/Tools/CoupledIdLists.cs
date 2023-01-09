@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 using DicNameInt = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int?>>;
 using DicNameObj = System.Collections.Generic.Dictionary<string, object>;
 
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
     /// These are usually relationship-properties of an entity,
     /// like the Content items on a ContentBlock
     /// </summary>
-    public class CoupledIdLists: HasLog
+    public class CoupledIdLists: ServiceBase
     {
         public DicNameInt Lists = new DicNameInt(StringComparer.InvariantCultureIgnoreCase);
 
@@ -20,9 +21,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// Constructor
         /// </summary>
         /// <param name="lists">Lists to use for working on</param>
-        /// <param name="parentLog">Logger</param>
-        public CoupledIdLists(DicNameInt lists, ILog parentLog)
-            : base("App.LstPai", parentLog)
+        public CoupledIdLists(DicNameInt lists) : base("App.LstPai")
         {
             foreach (var keyValuePair in lists) Lists.Add(keyValuePair.Key, keyValuePair.Value);
             SyncListLengths();

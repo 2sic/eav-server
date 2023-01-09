@@ -7,14 +7,15 @@ using ToSic.Eav.Apps.Adam;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 {
-    internal class RenameOnImport: HasLog
+    internal class RenameOnImport: ServiceBase
     {
         public readonly string From;
         public readonly string To;
-        internal RenameOnImport(string from, string to, ILog parentLog) : base("Imp.Rename", parentLog)
+        internal RenameOnImport(string from, string to) : base("Imp.Rename")
         {
             From = from;
             To = to;

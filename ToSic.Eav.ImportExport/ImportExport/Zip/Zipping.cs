@@ -4,13 +4,14 @@ using System.IO.Compression;
 using ToSic.Eav.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Security.Files;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.ImportExport.Zip
 {
-    public class Zipping : HasLog
+    public class Zipping : ServiceBase
     {
 
-        public Zipping(ILog parentLog) : base("Zip.Abstrc", parentLog, "starting")
+        public Zipping() : base("Zip.Abstrc")
         {
         }
 

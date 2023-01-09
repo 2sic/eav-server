@@ -55,7 +55,7 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="dependencies">All the dependencies of this app, managed by this app</param>
         /// <param name="logName">must be null by default, because of DI</param>
-        public App(AppDependencies dependencies, string logName = null): base(logName ?? "Eav.App", new CodeRef())
+        public App(AppDependencies dependencies, string logName = null): base(logName ?? "Eav.App")
         {
             _deps = dependencies.SetLog(Log);
             _dsFactory = dependencies.DataSourceFactory;

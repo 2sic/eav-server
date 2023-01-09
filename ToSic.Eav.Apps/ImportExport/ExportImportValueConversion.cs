@@ -2,8 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Run;
+using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.ImportExport
@@ -11,7 +10,7 @@ namespace ToSic.Eav.Apps.ImportExport
     /// <summary>
     /// For exporting a content-type into xml, either just the schema or with data
     /// </summary>
-    public class ExportImportValueConversion : HasLog
+    public class ExportImportValueConversion : ServiceBase
     {
         #region Dependency Injection
 

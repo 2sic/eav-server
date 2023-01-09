@@ -126,7 +126,7 @@ namespace ToSic.Eav.DataSources
                 if (AutoCaching)
                 {
                     Source?.Log.A($"{nameof(AutoCaching)}:{AutoCaching}");
-                    var cacheItem = new ListCache(Source?.Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
+                    var cacheItem = new ListCache().Init(Source?.Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
                     _list = cacheItem.List;
                 }
                 else
@@ -182,7 +182,7 @@ namespace ToSic.Eav.DataSources
             _list = new ImmutableArray<IEntity>();
             _listLoaded = false;
             log.A("kill in list-cache");
-            new ListCache(Source.Log).Remove(this);
+            new ListCache().Init(log).Remove(this);
             if (cascade)
             {
                 log.A("tell upstream source to flush as well");

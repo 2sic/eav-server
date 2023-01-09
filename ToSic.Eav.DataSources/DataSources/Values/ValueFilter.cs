@@ -167,7 +167,7 @@ namespace ToSic.Eav.DataSources
             // then lazy-entities are marked as LazyEntity or similar, and NOT "Entity"
             //if (netTypeName.Contains(Constants.DataTypeEntity)) netTypeName = Constants.DataTypeEntity;
 
-            var compMaker = new ValueComparison((title, message) => SetError(title, message), Log);
+            var compMaker = new ValueComparison((title, message) => SetError(title, message)).Init(Log);
             var compare = compMaker.GetComparison(fieldType, /*firstValue,*/ fieldName, op, languages, Value);
 
             return !ErrorStream.IsDefaultOrEmpty

@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Persistence.Logging
 {
-    public class ImportErrorLog : HasLog, IEnumerable<ImportError>
+    public class ImportErrorLog : ServiceBase, IEnumerable<ImportError>
     {
-        public ImportErrorLog(ILog parentLog = null) : base("Imp.ErrLog", parentLog) { }
+        public ImportErrorLog() : base("Imp.ErrLog") { }
 
         public ImportError this[int index] => Errors[index];
 

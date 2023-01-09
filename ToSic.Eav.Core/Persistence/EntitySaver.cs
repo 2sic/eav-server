@@ -4,17 +4,20 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence
 {
-    public class EntitySaver : HasLog
+    public class EntitySaver : ServiceBase
     {
         public EntitySaver(
             MultiBuilder multiBuilder
         ) : base("Dta.Saver")
         {
-            _multiBuilder = multiBuilder;
+            ConnectServices(
+                _multiBuilder = multiBuilder
+            );
         }
 
         private readonly MultiBuilder _multiBuilder;

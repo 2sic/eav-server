@@ -1,21 +1,21 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Context;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Tests.Mocks
 {
-    public class MockZoneMapper: HasLog, IZoneMapper
+    public class MockZoneMapper: ServiceBase, IZoneMapper
     {
+        public MockZoneMapper() : base("Tst.MckZM") { }
+
         public int GetZoneId(int siteId) => -1;
 
         public ISite SiteOfZone(int zoneId) => new MockSite();
         public ISite SiteOfApp(int appId) => new MockSite();
 
         public List<ISiteLanguageState> CulturesWithState(ISite site) => new List<ISiteLanguageState>();
-
-        public MockZoneMapper() : base("Tst.MckZM") { }
 
     }
 }

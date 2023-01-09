@@ -4,10 +4,11 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Repositories
 {
-    public class AppRepositoryLoaderUnknown: HasLog, IAppRepositoryLoader, IIsUnknown
+    public class AppRepositoryLoaderUnknown: ServiceBase, IAppRepositoryLoader, IIsUnknown
     {
         public AppRepositoryLoaderUnknown(WarnUseOfUnknown<AppRepositoryLoaderUnknown> warn) : base(LogScopes.NotImplemented + ".RepLdr") { }
 
