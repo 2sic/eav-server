@@ -16,9 +16,9 @@ namespace ToSic.Lib.Logging
         /// <param name="parameters">Optional parameters used in the call</param>
         /// <param name="message">Optional message</param>
         /// <param name="timer">Enable the timer/stopwatch.</param>
-        /// <param name="cPath">Caller file path - automatically added by the compiler</param>
-        /// <param name="cName">Caller method/property name, automatically added by the compiler</param>
-        /// <param name="cLine">The line number in the code, automatically added by the compiler</param>
+        /// <param name="cPath">Code file path, auto-added by compiler</param>
+        /// <param name="cName">Code method name, auto-added by compiler</param>
+        /// <param name="cLine">Code line number, auto-added by compiler</param>
         /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
         /// <returns></returns>
         public static ILogCall<T> Fn<T>(this ILog log,
@@ -39,9 +39,9 @@ namespace ToSic.Lib.Logging
         /// <param name="parameters">Optional parameters used in the call</param>
         /// <param name="message">Optional message</param>
         /// <param name="timer">Enable the timer/stopwatch.</param>
-        /// <param name="cPath">Caller file path - automatically added by the compiler</param>
-        /// <param name="cName">Caller method/property name, automatically added by the compiler</param>
-        /// <param name="cLine">The line number in the code, automatically added by the compiler</param>
+        /// <param name="cPath">Code file path, auto-added by compiler</param>
+        /// <param name="cName">Code method name, auto-added by compiler</param>
+        /// <param name="cLine">Code line number, auto-added by compiler</param>
         /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
         /// <returns></returns>
         public static ILogCall<T> Fn<T>(this ILog log,
@@ -62,9 +62,9 @@ namespace ToSic.Lib.Logging
         /// <param name="parameters">Optional parameters used in the call</param>
         /// <param name="message">Optional message</param>
         /// <param name="timer">Enable the timer/stopwatch.</param>
-        /// <param name="cPath">Caller file path - automatically added by the compiler</param>
-        /// <param name="cName">Caller method/property name, automatically added by the compiler</param>
-        /// <param name="cLine">The line number in the code, automatically added by the compiler</param>
+        /// <param name="cPath">Code file path, auto-added by compiler</param>
+        /// <param name="cName">Code method name, auto-added by compiler</param>
+        /// <param name="cLine">Code line number, auto-added by compiler</param>
         /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
         public static ILogCall Fn(this ILog log,
             string parameters = default,
