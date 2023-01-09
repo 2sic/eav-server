@@ -18,9 +18,9 @@ namespace ToSic.Lib.Logging
         /// </summary>
         /// <param name="log">The log object (or null)</param>
         /// <param name="exception">The exception object.</param>
-        /// <param name="cPath">Caller file path - automatically added by the compiler</param>
-        /// <param name="cName">Caller method/property name, automatically added by the compiler</param>
-        /// <param name="cLine">The line number in the code, automatically added by the compiler</param>
+        /// <param name="cPath">Code file path, auto-added by compiler</param>
+        /// <param name="cName">Code method name, auto-added by compiler</param>
+        /// <param name="cLine">Code line number, auto-added by compiler</param>
         /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
         public static void Ex(this ILog log,
             Exception exception,

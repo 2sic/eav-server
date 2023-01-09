@@ -23,15 +23,7 @@ namespace ToSic.Lib.Logging
             return realLog.CreateAndAdd(message, code);
         }
 
-        internal static Entry AddInternalReuse(this ILog log, string message, CodeRef code)
-        {
-            return log.AddInternal(message, code) ?? new Entry(null, null, 0, code);
-            //// Null-check
-            //if (!(log.GetRealLog() is ILogInternal realLog)) return new Entry(null, null, 0, code);
-            //var e = realLog.CreateAndAdd(message, code);
-            //return e;
-        }
-
-
+        internal static Entry AddInternalReuse(this ILog log, string message, CodeRef code) 
+            => log.AddInternal(message, code) ?? new Entry(null, null, 0, code);
     }
 }
