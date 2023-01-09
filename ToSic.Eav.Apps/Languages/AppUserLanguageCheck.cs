@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.Languages
     {
         public AppUserLanguageCheck(LazySvc<IZoneMapper> zoneMapperLazy, IContextOfSite ctx, Generator<AppPermissionCheck> checkGenerator, LazySvc<IAppStates> appStatesLazy,
             LazySvc<IFeaturesInternal> featuresLazy)
-            : base($"{LogNames.Eav}.LngChk") =>
+            : base($"{EavLogs.Eav}.LngChk") =>
             ConnectServices(
                 _zoneMapperLazy = zoneMapperLazy,
                 _ctx = ctx,

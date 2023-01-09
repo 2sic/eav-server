@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.ImportExport
             DataSourceFactory dataSourceFactory,
             XmlExporter xmlExporter,
             Generator<FileManager> fileManagerGenerator,
-            IGlobalConfiguration globalConfiguration): base(LogNames.Eav + ".ZipExp")
+            IGlobalConfiguration globalConfiguration): base(EavLogs.Eav + ".ZipExp")
         {
             ConnectServices(
                 _xmlExporter = xmlExporter,

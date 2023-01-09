@@ -6,7 +6,7 @@ namespace ToSic.Eav.Configuration
     {
         public LoaderBase(ILogStore logStore, ILog parentLog, string logName, string initialMessage) : base(logName, parentLog, initialMessage)
         {
-            logStore.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
+            logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, Log);
         }
     }
 }

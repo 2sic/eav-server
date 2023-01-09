@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data.Builder
             LazySvc<EntityBuilder> entityBuilder,
             LazySvc<AttributeBuilderForImport> attributeBuilder,
             LazySvc<ValueBuilder> valueBuilder,
-            LazySvc<ContentTypeBuilder> contentTypeBuilder): base(LogNames.Eav + "MltBld")
+            LazySvc<ContentTypeBuilder> contentTypeBuilder): base(EavLogs.Eav + "MltBld")
         {
             ConnectServices(
                 _entityBuilder = entityBuilder,

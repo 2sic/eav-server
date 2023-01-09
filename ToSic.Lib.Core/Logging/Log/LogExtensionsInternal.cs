@@ -6,26 +6,31 @@ namespace ToSic.Lib.Logging
     [PrivateApi]
     internal static partial class LogExtensionsInternal
     {
+        /// <summary>
+        /// Get the real log object - either the object passed in, or if it's a LogCall, then the underlying log object.
+        /// </summary>
+        /// <param name="log"></param>
+        /// <returns>The target Log object OR null</returns>
         internal static ILog GetRealLog(this ILog log) => log as Log ?? (log as ILogLike)?.Log ?? log;
 
 
         /// <summary>
         /// Add a message
         /// </summary>
-        internal static void AddInternal(this ILog log, string message, CodeRef code)
+        internal static Entry AddInternal(this ILog log, string message, CodeRef code)
         {
             // Null-check
-            if (!(log.GetRealLog() is ILogInternal realLog)) return;
-            realLog.CreateAndAdd(message, code);
+            if (!(log.GetRealLog() is ILogInternal realLog)) return null;
+            return realLog.CreateAndAdd(message, code);
         }
 
-        // todo: should become internal once ToSic.Eav.Logging isn't using it any more
         internal static Entry AddInternalReuse(this ILog log, string message, CodeRef code)
         {
-            // Null-check
-            if (!(log.GetRealLog() is ILogInternal realLog)) return new Entry(null, null, 0, code);
-            var e = realLog.CreateAndAdd(message, code);
-            return e;
+            return log.AddInternal(message, code) ?? new Entry(null, null, 0, code);
+            //// Null-check
+            //if (!(log.GetRealLog() is ILogInternal realLog)) return new Entry(null, null, 0, code);
+            //var e = realLog.CreateAndAdd(message, code);
+            //return e;
         }
 
 

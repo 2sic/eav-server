@@ -11,7 +11,7 @@ namespace ToSic.Eav.Configuration
     /// </summary>
     public class RequirementsService: ServiceBase
     {
-        public RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> checkers) : base(LogNames.Eav + "ReqSvc")
+        public RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> checkers) : base(EavLogs.Eav + "ReqSvc")
         {
             ConnectServices(
                 Checkers = checkers

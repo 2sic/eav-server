@@ -13,7 +13,7 @@ namespace ToSic.Eav.ImportExport
 {
     public class FileManager : HasLog
     {
-        public FileManager() : base(LogNames.Eav + ".FileMn") { }
+        public FileManager() : base(EavLogs.Eav + ".FileMn") { }
 
         //public FileManager(string sourceFolder) : base("FileMan")
         //{

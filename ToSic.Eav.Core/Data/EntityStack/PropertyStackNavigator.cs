@@ -41,7 +41,7 @@ namespace ToSic.Eav.Data
 
         public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path)
         {
-            var logOrNull = specs.LogOrNull.SubLogOrNull(LogNames.Eav + ".PSNav");
+            var logOrNull = specs.LogOrNull.SubLogOrNull(EavLogs.Eav + ".PSNav");
             var l = logOrNull.Fn<PropReqResult>($"{specs.Dump()}, {nameof(startAtSource)}:{startAtSource}");
 
             // Catch errors with infinite recursions

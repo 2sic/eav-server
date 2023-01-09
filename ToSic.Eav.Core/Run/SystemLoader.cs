@@ -16,9 +16,9 @@ namespace ToSic.Eav.Run
             ILogStore logStore,
             IEnumerable<IStartUpRegistrations> registrations,
             LazySvc<EavSystemLoader> systemLoaderLazy // This must be lazy, as some dependencies of it could change till it's needed
-        ) : base($"{LogNames.Eav}SysLdr")
+        ) : base($"{EavLogs.Eav}SysLdr")
         {
-            logStore.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
+            logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, Log);
             Log.A("EAV System Loader");
             ConnectServices(
                 _registrations = registrations,

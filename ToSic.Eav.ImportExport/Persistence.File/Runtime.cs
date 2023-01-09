@@ -96,14 +96,6 @@ namespace ToSic.Eav.Persistence.File
                 appState.Name = Constants.PresetName;
                 appState.Folder = Constants.PresetName;
 
-                // prepare content-types
-                // Experimental new log wrapping...
-
-                //var wrapLoadTypes = Log.Fn(startTimer: true);
-                //// Just attach all global content-types to this app, as they belong here
-                //var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
-                //appState.InitContentTypes(types);
-                //wrapLoadTypes.Done($"types loaded");
 
                 Log.DoAndLog(startTimer: true, action: () =>
                 {

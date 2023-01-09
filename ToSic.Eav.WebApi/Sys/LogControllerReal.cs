@@ -9,7 +9,7 @@ namespace ToSic.Eav.WebApi.Sys
     {
         public const string LogSuffix = "Log";
 
-        public LogControllerReal() : base($"{LogNames.WebApi}.{LogSuffix}Rl") { }
+        public LogControllerReal() : base($"{EavLogs.WebApi}.{LogSuffix}Rl") { }
 
         public string EnableDebug(Func<int, string> activateForDuration, int duration = 1)
         {

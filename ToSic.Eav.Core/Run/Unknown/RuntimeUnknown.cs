@@ -8,7 +8,7 @@ namespace ToSic.Eav.Run.Unknown
     {
         public RuntimeUnknown(WarnUseOfUnknown<RuntimeUnknown> warn) : base("Eav.BscRnt") { }
 
-        public AppState LoadFullAppState() => new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogNames.NotImplemented));
+        public AppState LoadFullAppState() => new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogScopes.NotImplemented));
 
         public void ReloadConfigEntities() { /* do nothing */ }
     }

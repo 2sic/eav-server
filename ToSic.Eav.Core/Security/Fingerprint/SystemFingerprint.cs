@@ -34,7 +34,7 @@ namespace ToSic.Eav.Security.Fingerprint
         /// <summary>
         /// Constructor - gets Lazy PlatformInfo, because it's only used once for initial generation
         /// </summary>
-        public SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IDbConfiguration> dbConfigLazy): base($"{LogNames.Eav}SysFpr")
+        public SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IDbConfiguration> dbConfigLazy): base($"{EavLogs.Eav}SysFpr")
         {
             ConnectServices(
                 _platform = platform,

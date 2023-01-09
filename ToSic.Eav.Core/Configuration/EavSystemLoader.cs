@@ -31,7 +31,7 @@ namespace ToSic.Eav.Configuration
             LicenseCatalog licenseCatalog, 
             ILogStore logStore,
             IAppStates appStates
-        ) : base(logStore, null, $"{LogNames.Eav}SysLdr", "System Load")
+        ) : base(logStore, null, $"{EavLogs.Eav}SysLdr", "System Load")
         {
             this.ConnectServices(
                 Fingerprint = fingerprint,
@@ -67,8 +67,9 @@ namespace ToSic.Eav.Configuration
             _startupAlreadyRan = true;
 
             // Pre-Load the Assembly list into memory to log separately
-            var assemblyLoadLog = new Log(LogNames.Eav + "AssLdr", null, "Load Assemblies");
-            _logStore.Add(LogNames.LogHistoryGlobalAndStartUp, assemblyLoadLog);
+            var assemblyLoadLog = new Log(EavLogs.Eav + "AssLdr", null, "Load Assemblies");
+            _logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, assemblyLoadLog);
+            var l = Log.Fn(startTimer: true);
             AssemblyHandling.GetTypes(assemblyLoadLog);
 
             // Build the cache of all system-types. Must happen before everything else
@@ -77,6 +78,7 @@ namespace ToSic.Eav.Configuration
             _appsCache.Value.Add(presetApp);
 
             LoadLicenseAndFeatures();
+            l.Done();
         }
 
         /// <summary>

@@ -58,15 +58,15 @@ namespace ToSic.Eav.Apps.Parts
 
         private Dictionary<int, Tuple<bool, string>> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant, int? parentId = null, string parentField = null)
         {
-            // Commented in v13, new implementation is based on AppState.Relationships that knows about
-            // relationships with json types (that are missing in db relationships).
-            //var canDeleteList = Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(ids);
             var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(ids, parentId, parentField);
 
             foreach (var canDelete in canDeleteList)
                 if (!canDelete.Value.Item1 && !force && !skipIfCant)
-                    throw new InvalidOperationException(
-                        Log.AddAndReuse($"Can't delete Item {canDelete.Key}. It is used by others. {canDelete.Value.Item2}"));
+                {
+                    var msg = $"Can't delete Item {canDelete.Key}. It is used by others. {canDelete.Value.Item2}";
+                    Log.A(msg);
+                    throw new InvalidOperationException(msg);
+                }
 
             return canDeleteList;
         }
@@ -80,10 +80,6 @@ namespace ToSic.Eav.Apps.Parts
                     throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
             }
         }
-
-        // Commented in v13, new implementation is based on AppState.Relationships.
-        //internal Tuple<bool, string> CanDeleteEntityBasedOnDbRelationships(int entityId) 
-        //    => Parent.DataController.Entities.CanDeleteEntityBasedOnDbRelationships(new[] {entityId}).First().Value;
 
         internal Tuple<bool, string> CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(int entityId, int? parentId = null, string parentField = null) 
             => CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(new[] {entityId}, parentId, parentField).First().Value;

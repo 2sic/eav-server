@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
 
         #region Constructor
 
-        public MetadataControllerReal(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazySvc<MdRecommendations> mdRead) : base($"{LogNames.WebApi}.{LogSuffix}Rl")
+        public MetadataControllerReal(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazySvc<MdRecommendations> mdRead) : base($"{EavLogs.WebApi}.{LogSuffix}Rl")
         {
             ConnectServices(
                 _converter = converter,

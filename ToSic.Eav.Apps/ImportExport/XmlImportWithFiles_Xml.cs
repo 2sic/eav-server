@@ -26,18 +26,13 @@ namespace ToSic.Eav.Apps.ImportExport
 			ZoneId = zoneId;
 
 			if (!IsCompatible(doc))
-			{
-				Messages.Add(new Message(Log.AddAndReuse("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
-				return wrapLog.ReturnFalse();
-			}
+                return wrapLog.ReturnFalse(LogError("The import file is not compatible with the installed version of 2sxc."));
 
-			// Get root node "SexyContent"
+            // Get root node "SexyContent"
 			var xmlSource = doc.Element(XmlConstants.RootNode);
             if (xmlSource == null)
-            {
-                Messages.Add(new Message(Log.AddAndReuse("Xml doesn't have expected root node: " + XmlConstants.RootNode), Message.MessageTypes.Error));
-                return wrapLog.ReturnFalse();
-			}
+                return wrapLog.ReturnFalse(LogError("Xml doesn't have expected root node: " + XmlConstants.RootNode));
+
             PrepareFolderIdCorrectionListAndCreateMissingFolders(xmlSource);
 			PrepareFileIdCorrectionList(xmlSource);
 
@@ -47,10 +42,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
 		    if (sourceDimensions == null || sourceDefaultLanguage == null)
-		    {
-                Messages.Add(new Message(Log.AddAndReuse("Can't find source dimensions or source-default language."), Message.MessageTypes.Error));
-                return wrapLog.ReturnFalse();
-            }
+                return wrapLog.ReturnFalse(LogError("Can't find source dimensions or source-default language."));
 
             var sourceDefaultDimensionId = sourceDimensions.Any() ?
                 sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId

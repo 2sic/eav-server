@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps.Paths
     {
         private const bool Debug = true;
 
-        public AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config) : base($"{LogNames.Eav}.AppPth")
+        public AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config) : base($"{EavLogs.Eav}.AppPth")
         {
             ConnectServices(
                 _serverPaths = serverPaths,

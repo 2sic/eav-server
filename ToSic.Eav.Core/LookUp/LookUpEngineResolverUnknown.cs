@@ -10,7 +10,7 @@ namespace ToSic.Eav.LookUp
     /// </summary>
     public sealed class LookUpEngineResolverUnknown: HasLog, ILookUpEngineResolver, IIsUnknown
     {
-        public LookUpEngineResolverUnknown(WarnUseOfUnknown<LookUpEngineResolverUnknown> warn) : base($"{LogNames.NotImplemented}.LookUp")
+        public LookUpEngineResolverUnknown(WarnUseOfUnknown<LookUpEngineResolverUnknown> warn) : base($"{LogScopes.NotImplemented}.LookUp")
         {
         }
 

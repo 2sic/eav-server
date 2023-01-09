@@ -16,7 +16,7 @@ namespace ToSic.Eav.WebApi.ApiExplorer
         public IApiInspector Inspector { get; }
         public ResponseMaker<THttpResponseType> ResponseMaker { get; }
 
-        public ApiExplorerControllerReal(IApiInspector inspector, ResponseMaker<THttpResponseType> responseMaker): base($"{LogNames.WebApi}.{LogSuffix}Rl")
+        public ApiExplorerControllerReal(IApiInspector inspector, ResponseMaker<THttpResponseType> responseMaker): base($"{EavLogs.WebApi}.{LogSuffix}Rl")
         {
             Inspector = inspector;
             ResponseMaker = responseMaker;

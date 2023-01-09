@@ -24,7 +24,7 @@ namespace ToSic.Eav.Persistence.File
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
-        public FileSystemLoader(Generator<JsonSerializer> jsonSerGenerator) : base($"{LogNames.Eav}.FsLoad")
+        public FileSystemLoader(Generator<JsonSerializer> jsonSerGenerator) : base($"{EavLogs.Eav}.FsLoad")
         {
             ConnectServices(
                 _jsonSerGenerator = jsonSerGenerator

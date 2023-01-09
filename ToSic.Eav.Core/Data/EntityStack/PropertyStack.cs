@@ -44,7 +44,7 @@ namespace ToSic.Eav.Data
 
         public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path)
         {
-            specs = specs.SubLog(LogNames.Eav + ".PStack");
+            specs = specs.SubLog(EavLogs.Eav + ".PStack");
             var l = specs.LogOrNull.Fn<PropReqResult>($"{specs.Dump()}, {nameof(startAtSource)}: {startAtSource}");
             // Start with empty result, may be filled in later on
             var result = PropReqResult.Null(path);

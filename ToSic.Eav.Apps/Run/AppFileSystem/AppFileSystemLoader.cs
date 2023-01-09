@@ -44,7 +44,7 @@ namespace ToSic.Eav.Apps.Run
         /// DI Constructor
         /// </summary>
         /// <param name="deps"></param>
-        public AppFileSystemLoader(Dependencies deps) : this(deps, LogNames.Eav + ".AppFSL") { }
+        public AppFileSystemLoader(Dependencies deps) : this(deps, EavLogs.Eav + ".AppFSL") { }
 
         /// <summary>
         /// Inheritance constructor

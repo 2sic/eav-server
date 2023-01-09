@@ -29,7 +29,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns>An object with everything which an app has, usually for caching</returns>
         private AppState LoadBasicAppState(int appId)
         {
-            _logStore.Add(LogNames.LogHistoryGlobalAppStateLoader, Log);
+            _logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
 
             var wrapLog = Log.Fn<AppState>($"AppId: {appId}");
             var appIdentity =_appStates.IdentityOfApp(appId);

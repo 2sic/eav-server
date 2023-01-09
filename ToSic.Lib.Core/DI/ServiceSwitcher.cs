@@ -11,7 +11,7 @@ namespace ToSic.Lib.DI
         // TODO
         // - add to global log history when regenerating incl. choice
 
-        public ServiceSwitcher(IEnumerable<T> allServices) : base(LogNames.Eav + ".SrvSwt")
+        public ServiceSwitcher(IEnumerable<T> allServices) : base(LogScopes.Lib + ".SrvSwt")
         {
             AllServices = allServices?.ToList();
         }

@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Linq;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using static ToSic.Razor.Blade.Tag;
@@ -14,6 +14,13 @@ namespace ToSic.Eav.WebApi.Sys
         }
 
         private TimeSpan FullTime { get; }
+
+        public string ShowTime(Log log)
+        {
+            if (log == null) return "";
+            var firstWithTime = log.Entries.FirstOrDefault(e => e.Elapsed != TimeSpan.Zero);
+            return ShowTime(firstWithTime, default);
+        }
 
         public string ShowTime(Entry e, TimeSpan parentTime)
         {
