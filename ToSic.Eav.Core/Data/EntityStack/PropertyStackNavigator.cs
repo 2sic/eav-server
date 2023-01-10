@@ -112,7 +112,7 @@ namespace ToSic.Eav.Data
 
             // TODO: @2dm - this doesn't look right yet, why are we making "this" the new parent?
             var maybeAdjustedParent = StackAddress.Child(this, specs.Field, childResult.SourceIndex);
-            var reWrapper = new StackReWrapper(maybeAdjustedParent).Init(logOrNull);
+            var reWrapper = new StackReWrapper(maybeAdjustedParent, logOrNull);
 
             var final = reWrapper.ReWrapIfPossible(childResult);
             return safeWrap.Return(final, final.ResultOriginal != null ? "re-wrapped" : "not null/entities, final");

@@ -18,7 +18,7 @@ namespace ToSic.Eav.Data
             // Log & Return
             l.A($"Another sibling found. Name:{sibling.Name} #{sibling.SourceIndex}. Will try to check it's properties. ");
             
-            var stackWrapper = new StackReWrapper(StackAddress.NewWithOtherIndex(sibling.SourceIndex)).Init(logOrNull);
+            var stackWrapper = new StackReWrapper(StackAddress.NewWithOtherIndex(sibling.SourceIndex), logOrNull);
             return stackWrapper.ReWrapIfPossible(sibling);
         }
         

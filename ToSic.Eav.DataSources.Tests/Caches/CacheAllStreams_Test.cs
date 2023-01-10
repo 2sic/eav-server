@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
             var cacher = CreateCacheDS(filtered);
 
-            var listCache = new ListCache();
+            var listCache = QuickCachesTest.GetTestListCache();
 
             Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
                             ">EntityIdFilter:NoGuid&EntityIds=1067", filtered.CacheFullKey);
@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var filtered = CreateFilterForTesting(100, FilterIdForManyTests);
 
             var cacher = CreateCacheDS(filtered);
-            var listCache = new ListCache();
+            var listCache = QuickCachesTest.GetTestListCache();
 
             // Should already be in - even though it may be an old copy
             Assert.IsTrue(listCache.Has(cacher.Out[Constants.DefaultStreamName]),
@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var filtered = CreateFilterForTesting(100, AlternateIdForAlternateTests);
 
             CreateCacheDS(filtered);
-            var listCache = new ListCache();
+            var listCache = QuickCachesTest.GetTestListCache();
 
             Assert.IsFalse(listCache.Has(filtered.Out[Constants.DefaultStreamName]),
                 "Should not be in because the previous test added different item");
@@ -86,7 +86,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             secondFilter.Init(filtered.Configuration.LookUpEngine);
 
             var cacher = CreateCacheDS(secondFilter);
-            var listCache = new ListCache();
+            var listCache = QuickCachesTest.GetTestListCache();
 
             Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
                             ">EntityIdFilter:NoGuid&EntityIds=1067" +
@@ -102,7 +102,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var uniqueIdsForThisTest = "1001,1005,1043";
             var filtered = CreateFilterForTesting(100, uniqueIdsForThisTest, false);
             var query = CreateCacheDS(filtered);
-            var listCache = new ListCache();
+            var listCache = QuickCachesTest.GetTestListCache();
 
             // shouldn't be in cache et...
             Assert.IsFalse(listCache.Has(query.Out[Constants.DefaultStreamName]),
@@ -127,7 +127,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var uniqueIdsForThisTest = "1001,1005,1043,1099";
             var filtered = CreateFilterForTesting(100, uniqueIdsForThisTest);
             var query = CreateCacheDS(filtered);
-            var listCache = new ListCache();
+            var listCache = QuickCachesTest.GetTestListCache();
 
             // Get first list from direct query and from cache - compare. Should be same
             var results1 = query[Constants.DefaultStreamName].ListForTests();
@@ -158,7 +158,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var filtered = CreateFilterForTesting(100, uniqueIdsForThisTest);
             var cacher = CreateCacheDS(filtered);
             cacher.CacheDurationInSeconds = 1;
-            var listCache = new ListCache();
+            var listCache = QuickCachesTest.GetTestListCache();
 
             // Get first list from direct query and from cache - compare. Should be same
             var originalList = cacher[Constants.DefaultStreamName].ListForTests();

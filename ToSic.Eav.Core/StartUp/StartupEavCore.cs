@@ -75,6 +75,8 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient<RequirementsService>();
             services.AddTransient<IRequirementCheck, RequirementCheckFeature>();
 
+            services.TryAddTransient<LicenseLoader>();
+
             services.TryAddTransient<Compressor>();
 
             return services;

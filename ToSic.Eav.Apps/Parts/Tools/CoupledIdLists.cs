@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
     /// These are usually relationship-properties of an entity,
     /// like the Content items on a ContentBlock
     /// </summary>
-    public class CoupledIdLists: ServiceBase
+    public class CoupledIdLists: HelperBase
     {
         public DicNameInt Lists = new DicNameInt(StringComparer.InvariantCultureIgnoreCase);
 
@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// Constructor
         /// </summary>
         /// <param name="lists">Lists to use for working on</param>
-        public CoupledIdLists(DicNameInt lists) : base("App.LstPai")
+        public CoupledIdLists(DicNameInt lists, ILog parentLog) : base(parentLog, "App.LstPai")
         {
             foreach (var keyValuePair in lists) Lists.Add(keyValuePair.Key, keyValuePair.Value);
             SyncListLengths();

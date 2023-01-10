@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.DataSourceTests
         public void PassThrough_CacheKey()
         {
             var outSource = Build<DataSources.PassThrough>();
-            outSource.Init(new LookUpEngine());
+            outSource.Init(LookUpTestData.EmptyLookupEngine);
             var partialKey = outSource.CachePartialKey;
             var fullKey = outSource.CacheFullKey;
             Trace.WriteLine("Partial Key:" + partialKey);

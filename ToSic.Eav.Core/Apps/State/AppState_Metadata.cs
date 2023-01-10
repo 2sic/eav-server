@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps
@@ -26,15 +24,16 @@ namespace ToSic.Eav.Apps
         /// The first init-command to run after creating the package
         /// it's needed, so the metadata knows what lookup types are supported
         /// </summary>
-        /// <param name="metadataTypes"></param>
         [PrivateApi("internal use only")]
-        public void InitMetadata(ImmutableDictionary<int, string> metadataTypes)
+        // #removeUnusedPreloadOfMetaTypes
+        public void InitMetadata(/*ImmutableDictionary<int, string> metadataTypes*/)
         {
             if (!Loading)
-                throw new Exception("trying to init metadata, but not in loading state. set that first!");
-            _metadataManager = _appTypesFromRepository == null
-                ? new AppMetadataManager(this, metadataTypes).Init(Log)
-                : throw new Exception("can't set metadata if content-types are already set");
+                throw new Exception("Trying to init metadata, but App is not in loading state.");
+            if (_appContentTypesFromRepository != null)
+                throw new Exception("Can't init metadata if content-types are already set");
+            // #removeUnusedPreloadOfMetaTypes
+            _metadataManager = new AppMetadataManager(this /*, metadataTypes*/);
 
             Metadata = GetMetadataOf(TargetTypes.App, AppId, "App (" + AppId + ") " + Name + " (" + Folder + ")");
         }

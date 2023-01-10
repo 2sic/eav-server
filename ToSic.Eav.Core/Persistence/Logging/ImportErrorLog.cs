@@ -6,9 +6,9 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Persistence.Logging
 {
-    public class ImportErrorLog : ServiceBase, IEnumerable<ImportError>
+    public class ImportErrorLog : HelperBase, IEnumerable<ImportError>
     {
-        public ImportErrorLog() : base("Imp.ErrLog") { }
+        public ImportErrorLog(ILog parentLog) : base(parentLog, "Imp.ErrLog") { }
 
         public ImportError this[int index] => Errors[index];
 

@@ -1,19 +1,16 @@
-﻿using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
+﻿using ToSic.Lib.Services;
 
 
 namespace ToSic.Eav.Repository.Efc
 {
-    public class BllCommandBase: ServiceBase
+    public class BllCommandBase: HelperBase
     {
         protected DbDataController DbContext { get; }
 
-        internal BllCommandBase(DbDataController dataController, string logName): base(logName)
+        internal BllCommandBase(DbDataController dataController, string logName): base(dataController.Log, logName)
         {
             // Don't connect service - this was initialized before...
             DbContext = dataController;
-            this.Init(dataController.Log);
-            // Log = new Log(logName, dataController.Log);
         }
     }
 }

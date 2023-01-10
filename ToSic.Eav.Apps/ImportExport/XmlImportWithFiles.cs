@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Xml;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
@@ -87,9 +86,8 @@ namespace ToSic.Eav.Apps.ImportExport
 	    /// <param name="parentLog"></param>
 	    /// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
 	    /// <param name="allowUpdateOnSharedTypes">Specify if the import should be able to change system-wide things like shared attributesets</param>
-        public XmlImportWithFiles Init(string defaultLanguage, bool allowUpdateOnSharedTypes, ILog parentLog = null)
+        public XmlImportWithFiles Init(string defaultLanguage, bool allowUpdateOnSharedTypes)
         {
-            this.Init(parentLog);
             // Prepare
             Messages = new List<Message>();
             DefaultLanguage = (defaultLanguage ?? Deps._environment.DefaultLanguage).ToLowerInvariant();

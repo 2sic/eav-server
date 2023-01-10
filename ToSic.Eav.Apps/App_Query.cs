@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps
 
             if (qent == null && errorOnNotFound != null) throw new Exception(errorOnNotFound);
 
-            return _deps.QueryGenerator.New().Init(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts, null, Log);
+            return _deps.QueryGenerator.New().Init(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts, null);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace ToSic.Eav.Configuration
     {
         public LoaderBase(ILogStore logStore, string logName) : base(logName)
         {
-            logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, Log);
+            logStore.Add(LogNames.LogStoreStartUp, Log);
         }
     }
 }

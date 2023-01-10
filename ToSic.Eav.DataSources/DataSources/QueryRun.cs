@@ -118,7 +118,7 @@ namespace ToSic.Eav.DataSources
             Log.A($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
 
             // create the query & set params
-            var query = _queryGenerator.New().Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), ShowDrafts, null, Log);
+            var query = _queryGenerator.New().Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), ShowDrafts, null);
             query.Params(ResolveParams(configEntity));
             return wrapLog.ReturnAsOk(query);
         }
@@ -130,7 +130,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private LookUpEngine LookUpWithoutParams()
         {
-            var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, true).Init(Log);
+            var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, true);
             if (lookUpsWithoutParams.HasSource(QueryConstants.ParamsLookup))
                 lookUpsWithoutParams.Sources.Remove(QueryConstants.ParamsLookup);
             // 1.1 note: can't add Override here because the underlying params don't exist yet - so an override wouldn't keep them

@@ -13,7 +13,7 @@ namespace ToSic.Eav.LookUp
     /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
     /// </summary>
     [PrivateApi("hide implementation")]
-    public class LookUpEngine : ServiceBase, ILookUpEngine
+    public class LookUpEngine : HelperBase, ILookUpEngine
 	{
         #region Constants
 
@@ -31,7 +31,7 @@ namespace ToSic.Eav.LookUp
         /// </summary>
         private readonly TokenReplace _reusableTokenReplace;
 
-        public LookUpEngine(): base("EAV.LookUp")
+        public LookUpEngine(ILog parentLog): base(parentLog, "EAV.LookUp")
 		{
 			_reusableTokenReplace = new TokenReplace(this);
 		}
@@ -40,7 +40,7 @@ namespace ToSic.Eav.LookUp
         /// <summary>
         /// Cloning another LookUpEngine and keep the sources.
         /// </summary>
-        public LookUpEngine(ILookUpEngine original, bool makeOwnCopyOfSources = false): this()
+        public LookUpEngine(ILookUpEngine original, ILog parentLog, bool makeOwnCopyOfSources = false): this(parentLog)
 		{
 		    if (original == null) return;
             var wrapLog = Log.Fn(null, $"clone: {original.Log.NameId}; LogDetailed: {LogDetailed}");
@@ -112,7 +112,7 @@ namespace ToSic.Eav.LookUp
             // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
             if (overrides == null || overrides.Count <= 0) return wrapLog.ReturnAsOk(LookUp(values, depth));
 
-            var innerLookup = new LookUpEngine(this).Init(Log);
+            var innerLookup = new LookUpEngine(this, Log);
             foreach (var pa in overrides)
                 innerLookup.Sources.Add(pa.Key, pa.Value);
             return wrapLog.ReturnAsOk(innerLookup.LookUp(values, depth));

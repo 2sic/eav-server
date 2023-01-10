@@ -120,7 +120,8 @@ namespace ToSic.Eav.Persistence.Efc
                 // prepare metadata lists & relationships etc.
                 if (startAt <= AppStateLoadSequence.MetadataInit)
                 {
-                    _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app, _dbContext));
+                    // #removeUnusedPreloadOfMetaTypes
+                    _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app/*, _dbContext*/));
                     // New in V11.01
                     var nameAndFolder = PreLoadAppPath(app.AppId);
                     app.Name = nameAndFolder?.Item1;

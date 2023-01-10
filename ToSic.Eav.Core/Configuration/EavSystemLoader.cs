@@ -19,6 +19,8 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class EavSystemLoader : LoaderBase
     {
+        private readonly LicenseLoader _licenseLoader;
+
         #region Constructor / DI
 
         public EavSystemLoader(
@@ -28,13 +30,13 @@ namespace ToSic.Eav.Configuration
             AppsCacheSwitch appsCache, 
             IFeaturesInternal features, 
             FeatureConfigManager featureConfigManager, 
-            LicenseCatalog licenseCatalog, 
+            LicenseLoader licenseLoader,
             ILogStore logStore,
             IAppStates appStates
         ) : base(logStore, $"{EavLogs.Eav}SysLdr")
         {
             Log.A("System Load");
-            this.ConnectServices(
+            ConnectServices(
                 Fingerprint = fingerprint,
                 _globalConfiguration = globalConfiguration,
                 _appsCache = appsCache,
@@ -43,7 +45,7 @@ namespace ToSic.Eav.Configuration
                 _appStateLoader = runtime,
                 Features = features,
                 _featureConfigManager = featureConfigManager,
-                _licenseCatalog = licenseCatalog
+                _licenseLoader = licenseLoader
             );
         }
         public SystemFingerprint Fingerprint { get; }
@@ -52,7 +54,6 @@ namespace ToSic.Eav.Configuration
         private readonly AppsCacheSwitch _appsCache;
         public readonly IFeaturesInternal Features;
         private readonly FeatureConfigManager _featureConfigManager;
-        private readonly LicenseCatalog _licenseCatalog;
         private readonly ILogStore _logStore;
         private readonly IAppStates _appStates;
 
@@ -90,11 +91,7 @@ namespace ToSic.Eav.Configuration
             var globalApp = _appStates.GetPresetOrNull();
             var lic = globalApp.List.OfType(LicenseData.TypeNameId).Select(e => new LicenseData(e)).ToList();
 
-            // V13 - Load Licenses
-            // Avoid using DI, as otherwise someone could inject a different license loader
-            new LicenseLoader(_logStore, _licenseCatalog, lic)
-                .Init(Log)
-                .LoadLicenses(Fingerprint.GetFingerprint(), _globalConfiguration.Value.ConfigFolder);
+            _licenseLoader.Init(lic).LoadLicenses();
 
             // Now do a normal reload of configuration and features
             ReloadFeatures();

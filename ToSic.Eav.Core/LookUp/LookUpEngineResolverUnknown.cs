@@ -15,6 +15,6 @@ namespace ToSic.Eav.LookUp
         {
         }
 
-        public ILookUpEngine GetLookUpEngine(int moduleId) => new LookUpEngine().Init(Log);
+        public ILookUpEngine GetLookUpEngine(int moduleId) => new LookUpEngine(Log);
     }
 }

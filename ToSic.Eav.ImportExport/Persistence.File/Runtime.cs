@@ -92,7 +92,8 @@ namespace ToSic.Eav.Persistence.File
                 var wrapLog = Log.Fn(message: msg, timer: true);
 
                 // Prepare metadata lists & relationships etc.
-                appState.InitMetadata(new Dictionary<int, string>().ToImmutableDictionary());
+                // #removeUnusedPreloadOfMetaTypes
+                appState.InitMetadata(/*new Dictionary<int, string>().ToImmutableDictionary()*/);
                 appState.Name = Constants.PresetName;
                 appState.Folder = Constants.PresetName;
 

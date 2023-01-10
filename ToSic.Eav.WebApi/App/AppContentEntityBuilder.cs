@@ -14,9 +14,9 @@ namespace ToSic.Eav.WebApi.App
     // - Probably move to EAV
     // - Probably use constants for the switch-cases
     // - probably rename to AppData
-    internal class AppContentEntityBuilder: ServiceBase
+    internal class AppContentEntityBuilder: HelperBase
     {
-        public AppContentEntityBuilder() : base("Api.Bldr")
+        public AppContentEntityBuilder(ILog parentLog) : base(parentLog, "Api.Bldr")
         {
         }
 

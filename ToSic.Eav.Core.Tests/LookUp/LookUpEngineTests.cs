@@ -74,7 +74,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         public void InheritEngine()
         {
             var original = LookUpTestData.AppSetAndRes();
-            var cloned = new LookUpEngine(original);
+            var cloned = new LookUpEngine(original, null);
             Assert.AreEqual(0, cloned.Sources.Count);
             AssertLookUpEngineHasSourcesOfOriginal(cloned.Downstream);
         }

@@ -260,7 +260,7 @@ Now try a token which returns a token: Daniel";
             appS.Properties.Add("UserNameMaybeFromUrl", "[QueryString:UserName||Samantha]");
             var tok = new LookUpInDictionary("token");
             tok.Properties.Add("key", "What a Token!");
-            var engine = new LookUpEngine();
+            var engine = LookUpTestData.EmptyLookupEngine;
             engine.Add(qs);
             engine.Add(mod);
             engine.Add(appS);

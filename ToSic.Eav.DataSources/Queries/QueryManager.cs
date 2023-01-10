@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
 	        foreach (var entQuery in AllQueryItems(app))
 	        {
-	            var delayedQuery = _queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider, showDrafts, null, Log);
+	            var delayedQuery = _queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider, showDrafts, null);
                 // make sure it doesn't break if two queries have the same name...
 	            var name = entQuery.Title[0].ToString();
 	            if (!dict.ContainsKey(name))

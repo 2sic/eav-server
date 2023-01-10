@@ -7,6 +7,7 @@ using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
+using ToSic.Eav.Core.Tests.LookUp;
 
 namespace ToSic.Eav.DataSourceTests.Streams
 {
@@ -19,7 +20,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         [TestMethod]
         public void StreamMerge_In0()
         {
-            var sf = DataSourceFactory.GetDataSource<StreamMerge>(new AppIdentity(0, 0), null, new LookUpEngine());
+            var sf = DataSourceFactory.GetDataSource<StreamMerge>(new AppIdentity(0, 0), null, LookUpTestData.EmptyLookupEngine);
             VerifyStreams(sf, 0, 0, 0, 0);
         }
 

@@ -11,11 +11,11 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 {
-    internal class RenameOnImport: ServiceBase
+    internal class RenameOnImport: HelperBase
     {
         public readonly string From;
         public readonly string To;
-        internal RenameOnImport(string from, string to) : base("Imp.Rename")
+        internal RenameOnImport(string from, string to, ILog parentLog) : base(parentLog, "Imp.Rename")
         {
             From = from;
             To = to;

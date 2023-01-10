@@ -91,7 +91,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 Directory.CreateDirectory(temporaryDirectory);
 
                 // unzip to temp directory
-                new Zipping().Init(Log).ExtractZipFile(zipStream, temporaryDirectory, AllowCodeImport);
+                new Zipping(Log).ExtractZipFile(zipStream, temporaryDirectory, AllowCodeImport);
 
                 // Loop through each root-folder.
                 // For now only it should only contain the "Apps" folder.
@@ -207,7 +207,8 @@ namespace ToSic.Eav.Apps.ImportExport
             int appId;
             var importer = _xmlImpExpFiles.New().Init(null, false);
 
-            var imp = new ImportXmlReader(Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), Constants.AppDataFile), importer).Init(Log);
+            var imp = new ImportXmlReader(
+                Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), Constants.AppDataFile), importer, Log);
 
             if (imp.IsAppImport)
             {
@@ -215,7 +216,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 // Version Checks (new in 08.03.03)
                 // todo: register in DI and add to dependencies, then remove Init(log)
-                new VersionCheck(Env).Init(Log).EnsureVersions(imp.AppConfig);
+                new VersionCheck(Env, Log).EnsureVersions(imp.AppConfig);
 
                 var folder = imp.AppFolder;
 
@@ -223,7 +224,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 if (!string.IsNullOrEmpty(rename))
                 {
                     Log.A($"User rename to '{rename}'");
-                    var renamer = new RenameOnImport(folder, rename).Init(Log);
+                    var renamer = new RenameOnImport(folder, rename, Log);
                     renamer.FixAppXmlForImportAsDifferentApp(imp);
                     renamer.FixPortalFilesAdamAppFolderName(appDirectory, pendingApp);
                     folder = rename;

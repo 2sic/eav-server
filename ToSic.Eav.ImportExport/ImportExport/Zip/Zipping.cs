@@ -8,10 +8,10 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.ImportExport.Zip
 {
-    public class Zipping : ServiceBase
+    public class Zipping : HelperBase
     {
 
-        public Zipping() : base("Zip.Abstrc")
+        public Zipping(ILog parentLog) : base(parentLog, "Zip.Abstrc")
         {
         }
 

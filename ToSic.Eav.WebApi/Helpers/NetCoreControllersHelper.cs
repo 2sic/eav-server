@@ -63,7 +63,7 @@ namespace ToSic.Eav.WebApi.Helpers
         public TService GetService<TService>() => ServiceProvider.Build<TService>();
 
         public TRealController Real<TRealController>() where TRealController : class, IHasLog
-            => ServiceProvider?.Build<TRealController>().Init(LogOrNull) ??
+            => ServiceProvider?.Build<TRealController>().LinkLog(LogOrNull) ??
                throw new Exception($"Can't use {nameof(Real)} before {nameof(OnActionExecuting)}");
     }
 }

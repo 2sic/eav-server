@@ -10,9 +10,9 @@ using static ToSic.Eav.DataSources.CompareOperators;
 namespace ToSic.Eav.DataSources
 {
     [PrivateApi]
-    public class ValueComparison: ServiceBase
+    public class ValueComparison: HelperBase
     {
-        internal ValueComparison(Action<string, string> errCallback): base("Eav.DsCmMk")
+        internal ValueComparison(Action<string, string> errCallback, ILog parentLog): base(parentLog, "Eav.DsCmMk")
         {
             _errCallback = errCallback ?? throw new ArgumentNullException(nameof(errCallback));
         }

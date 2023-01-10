@@ -110,7 +110,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 try
                 {
                     var importer = _xmlImpExpFiles.New().Init(null, false);
-                    var importXmlReader = new ImportXmlReader(appXml, importer).Init(Log);
+                    var importXmlReader = new ImportXmlReader(appXml, importer, Log);
                     var pendingAppDto = new PendingAppDto
                     {
                         ServerFolder = folderName,

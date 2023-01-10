@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps
 	    /// <summary>
 	    /// All ContentTypes in this App
 	    /// </summary>
-	    public IEnumerable<IContentType> ContentTypes => _appTypesFromRepository.Union(ParentApp.ContentTypes);
+	    public IEnumerable<IContentType> ContentTypes => _appContentTypesFromRepository.Union(ParentApp.ContentTypes);
 
 
 		/// <summary>
@@ -39,9 +39,9 @@ namespace ToSic.Eav.Apps
 					// situations which the static types shouldn't be used for, as they are json-typed
                 .Where(x => x.Id != 0 && x.Id < FsDataConstants.GlobalContentTypeMin)
                 .ToImmutableDictionary(x => x.Id, x => x.NameId);
-	        _appTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
+	        _appContentTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
 	        // build types by name
-	        BuildCacheForTypesByName(_appTypesFromRepository);
+	        BuildCacheForTypesByName(_appContentTypesFromRepository);
 	        //ContentTypesShouldBeReloaded = false;
             wrapLog.Done("ok");
         }
@@ -78,7 +78,7 @@ namespace ToSic.Eav.Apps
 
 
 	    private IDictionary<string, IContentType> _appTypesByName;
-	    private ImmutableArray<IContentType> _appTypesFromRepository;
+	    private ImmutableArray<IContentType> _appContentTypesFromRepository;
 	    private ImmutableDictionary<int, string> _appTypeMap;
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace ToSic.Eav.Apps
 		[PublicApi]
 	    public IContentType GetContentType(int contentTypeId)
 	    {
-            var found = _appTypesFromRepository.FirstOrDefault(c => c.Id == contentTypeId);
+            var found = _appContentTypesFromRepository.FirstOrDefault(c => c.Id == contentTypeId);
             if (found != null) return found;
 
             var name = _appTypeMap.FirstOrDefault(x => x.Key == contentTypeId).Value;

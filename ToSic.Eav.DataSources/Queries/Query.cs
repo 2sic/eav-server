@@ -74,11 +74,10 @@ namespace ToSic.Eav.DataSources.Queries
         /// <returns></returns>
         [PrivateApi]
         // TODO: REMOVE LOG...
-		public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source, ILog parentLog)
+		public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
-            this.Init(parentLog);
             Definition = new QueryDefinition(queryDef, appId, Log);
             this.Init(config);
             _showDrafts = showDrafts;

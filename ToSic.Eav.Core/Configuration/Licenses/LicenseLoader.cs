@@ -22,6 +22,8 @@ using System.Text;
 using System.Text.Json;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
+using ToSic.Eav.Security.Fingerprint;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -30,31 +32,49 @@ namespace ToSic.Eav.Configuration.Licenses
     /// <summary>
     /// Will check the loaded licenses and prepare validity information for use during system runtime
     /// </summary>
-    internal sealed class LicenseLoader: LoaderBase
+    /// <remarks>Must be SEALED, to prevent inheritance and prevent injection of alternate loader</remarks>
+    public sealed class LicenseLoader: LoaderBase
     {
         /// <summary>
-        /// Constructor - not meant for DI
+        /// Constructor - for DI
         /// </summary>
-        internal LicenseLoader(ILogStore logStore, LicenseCatalog licenseCatalog, List<LicenseData> licenseData)
-            : base(logStore, EavLogs.Eav + "LicLdr")
+        public LicenseLoader(
+            ILogStore logStore,
+            LicenseCatalog licenseCatalog,
+            SystemFingerprint fingerprint,
+            LazySvc<IGlobalConfiguration> globalConfiguration
+        ) : base(logStore, $"{EavLogs.Eav}LicLdr")
         {
             Log.A("Load Licenses");
-            _licenseCatalog = licenseCatalog;
-            _licenseData = licenseData;
+            ConnectServices(
+                _licenseCatalog = licenseCatalog,
+                _fingerprint = fingerprint,
+                _globalConfiguration = globalConfiguration
+            );
         }
+
+        internal LicenseLoader Init(List<LicenseData> licenseData)
+        {
+            _licenseData = licenseData;
+            return this;
+        }
+
         private readonly LicenseCatalog _licenseCatalog;
-        private readonly List<LicenseData> _licenseData;
+        private readonly SystemFingerprint _fingerprint;
+        private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
+        private List<LicenseData> _licenseData;
 
         /// <summary>
         /// Pre-Load enabled / disabled global features
         /// </summary>
         [PrivateApi]
-        internal void LoadLicenses(string fingerprint, string configFolder)
+        internal void LoadLicenses()
         {
             var wrapLog = Log.Fn(timer: true);
+            var fingerprint = _fingerprint.GetFingerprint();
             try
             {
-                var licensesStored = LicensesStoredInConfigFolder(configFolder);
+                var licensesStored = LicensesStoredInConfigFolder();
                 Log.A($"Found {licensesStored.Count} licenseStored in files");
                 var licenses = licensesStored.SelectMany(ls => LicensesStateBuilder(ls, fingerprint)).ToList();
                 var autoEnabled = AutoEnabledLicenses();
@@ -70,11 +90,12 @@ namespace ToSic.Eav.Configuration.Licenses
             }
         }
 
-        public List<LicenseStored> LicensesStoredInConfigFolder(string configFolder)
+        private List<LicenseStored> LicensesStoredInConfigFolder()
         {
             var wrapLog = Log.Fn<List<LicenseStored>>();
-            
+
             // ensure that path to store files already exits
+            var configFolder = _globalConfiguration.Value.ConfigFolder;
             Directory.CreateDirectory(configFolder);
 
             var licensesStored = Directory.EnumerateFiles(configFolder, "*.license.json")
