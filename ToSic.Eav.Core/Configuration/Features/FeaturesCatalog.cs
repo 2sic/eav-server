@@ -47,7 +47,7 @@ namespace ToSic.Eav.Configuration
                 EditUiDisableDraft,
 
                 // Beta features
-                BlockFileResolveOutsideOfEntityAdam
+                AdamRestrictLookupToEntity
             );
         }
 
