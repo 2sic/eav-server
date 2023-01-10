@@ -4,6 +4,10 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Lib.DI
 {
+    /// <summary>
+    /// Extension methods used for dependency injection work.
+    /// Mostly internal.
+    /// </summary>
     // ReSharper disable once InconsistentNaming
     public static class IServiceProviderExtensions
     {
@@ -15,12 +19,12 @@ namespace ToSic.Lib.DI
         /// <returns></returns>
         public static T Build<T>(this IServiceProvider serviceProvider)
         {
+            // Try to first check registered types, otherwise try to find in DLLs etc. using Activator Utilities
             var found = serviceProvider.GetService<T>();
-
-            return found != null 
-                ? found
-                // If it's an unregistered type, try to find in DLLs etc.
-                : ActivatorUtilities.CreateInstance<T>(serviceProvider);
+            // If it's an unregistered type, try to find in DLLs etc. - note that ?? doesn't work
+            // ReSharper disable once ConvertIfStatementToNullCoalescingExpression
+            if (found == null) found = ActivatorUtilities.CreateInstance<T>(serviceProvider);
+            return found;
         }
 
         /// <summary>
@@ -40,12 +44,11 @@ namespace ToSic.Lib.DI
 
         public static T Build<T>(this IServiceProvider serviceProvider, Type type, ILog parentLog = null) where T: class
         {
-            var service = serviceProvider.GetService(type);
+            // Try to first check registered types, otherwise try to find in DLLs etc. using Activator Utilities
+            var service = serviceProvider.GetService(type)
+                          ?? ActivatorUtilities.CreateInstance(serviceProvider, type);
             if (service is IHasLog withLog && parentLog != null) withLog.LinkLog(parentLog);
-            if (service != null) return service as T;
-
-            // If it's an unregistered type, try to find in DLLs etc.
-            return ActivatorUtilities.CreateInstance(serviceProvider, type) as T;
+            return service as T;
         }
 
     }

@@ -10,7 +10,7 @@ namespace ToSic.Testing.Shared
         protected IServiceProvider ServiceProvider => _serviceProvider;
         private IServiceProvider _serviceProvider;
 
-        public T Resolve<T>() => ServiceProvider.Build<T>();
+        public T Resolve<T>() => ServiceProvider.Build<T>(Log);
 
         protected TestBaseWithCustomDependencyInjection(Func<IServiceCollection, IServiceCollection> configure): base("Tst.BaseDI")
         {

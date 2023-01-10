@@ -9,7 +9,7 @@ namespace ToSic.Testing.Shared
     {
         private IServiceProvider ServiceProvider { get; }
 
-        public T Build<T>() => ServiceProvider.Build<T>();
+        public T Build<T>() => ServiceProvider.Build<T>(Log);
 
         protected TestBaseDiRaw(string logName = null) : base("Tst." + (logName ?? "BaseDI"))
         {
