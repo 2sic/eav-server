@@ -11,12 +11,7 @@ namespace ToSic.Lib.DI
         public Generator(IServiceProvider sp) => _sp = sp;
         private readonly IServiceProvider _sp;
 
-        public T New()
-        {
-            var created = _sp.Build<T>();
-            if (created is IHasLog withLog) withLog.LinkLog(Log);
-            return created;
-        }
+        public T New() => _sp.Build<T>(Log);
 
         void ILazyInitLog.SetLog(ILog parentLog) => Log = parentLog;
 

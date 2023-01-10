@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources
         private IDataSource GetDataSource(Type type, IAppIdentity app, IDataSource upstream, ILookUpEngine lookUps)
         {
             var wrapLog = Log.Fn<IDataSource>();
-            var newDs = _serviceProvider.Build<DataSource>(type);
+            var newDs = _serviceProvider.Build<DataSource>(type, Log);
             ConfigureNewDataSource(newDs, app, upstream, lookUps);
             return wrapLog.ReturnAsOk(newDs);
         }
@@ -108,7 +108,7 @@ namespace ToSic.Eav.DataSources
             if (upstream == null && lookUps == null)
                 throw new Exception("Can't get GetDataSource<T> because both upstream and lookUps are null.");
 
-            var newDs = _serviceProvider.Build<T>();
+            var newDs = _serviceProvider.Build<T>(Log);
             ConfigureNewDataSource(newDs, appIdentity, upstream, lookUps ?? upstream.Configuration.LookUpEngine);
             return wrapLog.ReturnAsOk(newDs);
         }
@@ -173,7 +173,6 @@ namespace ToSic.Eav.DataSources
             if (configLookUp != null) 
                 newDs.Init(configLookUp);
 
-            newDs.LinkLog(Log);
             wrapLog.Done("ok");
         }
 

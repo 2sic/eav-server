@@ -59,7 +59,7 @@ namespace ToSic.Eav.Run
             {
                 // TODO: to remove this init, we need to implement something in the ConnectService #dropLogInit
                 // which can handle DI-IEnumerables. To dev this we would need unit tests
-                registration.Init(Log);
+                registration.LinkLog(Log);
                 registration.Register();
             }
             catch (Exception ex)

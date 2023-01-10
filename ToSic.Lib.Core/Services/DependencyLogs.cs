@@ -36,7 +36,6 @@ namespace ToSic.Lib.Services
         {
             LazyInitLogs.ForEach(s => s.SetLog(log));
             HasLogs.ForEach(hl => hl.LinkLog(log));
-            //return this as TDependencies;
         }
     }
 }

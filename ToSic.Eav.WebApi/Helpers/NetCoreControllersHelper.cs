@@ -60,11 +60,12 @@ namespace ToSic.Eav.WebApi.Helpers
             _actionTimerWrap = null; // just to mark that Action Delegate is not in use any more, so GC can collect it
         }
 
-        public TService GetService<TService>() => ServiceProvider.Build<TService>();
+        public TService GetService<TService>() where TService : class =>
+            ServiceProvider?.Build<TService>(LogOrNull)
+            ?? throw new Exception($"Can't use {nameof(GetService)} before {nameof(OnActionExecuting)}");
 
         public TRealController Real<TRealController>() where TRealController : class, IHasLog
-            => ServiceProvider?.Build<TRealController>().LinkLog(LogOrNull) ??
-               throw new Exception($"Can't use {nameof(Real)} before {nameof(OnActionExecuting)}");
+            => GetService<TRealController>();
     }
 }
 #endif 
