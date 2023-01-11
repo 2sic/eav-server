@@ -74,6 +74,11 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         public bool EnabledByDefault { get; }
 
+        /// <summary>
+        /// The link which will be used to show more details online.
+        /// eg: https://patrons.2sxc.org/rf?ContentSecurityPolicy
+        /// </summary>
+        public string Link => $"https://patrons.2sxc.org/rf?{NameId}";
 
 
         public FeatureState(FeatureDefinition definition, DateTime expires, bool enabled, string msgShort, string msgLong, bool licenseEnabled, bool enabledByDefault, bool? enabledStored)
