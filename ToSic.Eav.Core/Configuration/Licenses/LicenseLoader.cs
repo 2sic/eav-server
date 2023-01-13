@@ -145,16 +145,18 @@ namespace ToSic.Eav.Configuration.Licenses
             var validDate = DateTime.Now.CompareTo(licenseStored.Expires) <= 0;
             Log.A($"Expired: {validDate}");
 
-            var licenses = licenseStored.LicensesArray;
-            Log.A($"Licenses: {licenses.Length}");
+            var licenses = licenseStored?.Licenses ?? new List<LicenseStoredDetails>();
+            Log.A($"Licenses: {licenses.Count}");
 
-            var licenseStates = licenses.Select(l => new LicenseState
+            var licenseStates = licenses
+                .Where(l => !string.IsNullOrEmpty(l.Id))
+                .Select(l => new LicenseState
                 {
                     Title = licenseStored.Title,
-                    License = _licenseCatalog.TryGet(l),
+                    License = _licenseCatalog.TryGet(l.Id),
                     EntityGuid = licenseStored.GuidSalt,
                     LicenseKey = licenseStored.Key,
-                    Expiration = licenseStored.Expires,
+                    Expiration = l.Expires ?? licenseStored.Expires,
                     ValidExpired = validDate,
                     ValidFingerprint = validFp,
                     ValidSignature = validSig,
