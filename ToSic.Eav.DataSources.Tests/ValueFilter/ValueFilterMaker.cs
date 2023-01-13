@@ -2,8 +2,6 @@
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Lib.Logging;
-using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests

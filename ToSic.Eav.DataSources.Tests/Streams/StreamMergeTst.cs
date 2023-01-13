@@ -4,8 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Lib.Logging;
-using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 using ToSic.Eav.Core.Tests.LookUp;
 

@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests

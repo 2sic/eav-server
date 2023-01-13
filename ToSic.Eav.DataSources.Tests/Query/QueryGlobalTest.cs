@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
-using ToSic.Lib.Logging;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Query

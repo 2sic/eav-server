@@ -4,7 +4,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSourceTests
 {
