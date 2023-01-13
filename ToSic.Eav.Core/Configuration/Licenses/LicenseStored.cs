@@ -100,14 +100,26 @@ namespace ToSic.Eav.Configuration.Licenses
 
         public string GenerateIdentity()
         {
+            const string dateFormat = "yyyy-MM-dd";
+
+            // License expiry must be built in a way
+            // where it's an empty string (no additions)
+            // if none of the items expires
+            // This is to preserve compatibility with the generated Identity in v13/14
+            var licenseExpiry = Licenses
+                .Where(l => l.Expires != null)
+                .Select(l => l.Expires?.ToString(dateFormat))
+                .ToList();
+
             var parts = new[]
             {
                 "key: " + Key,
                 "licenses:" + string.Join(",", LicensesArray), // 2. Add all licenses
+                !licenseExpiry.Any() ? "" : "license-expiry:" + string.Join(",", licenseExpiry),
                 "fingerprints:" + string.Join(",", FingerprintsArray), // 3. Add all fingerprints
                 "versions:" + Versions,
-                "expires:" + Expires.ToString("yyyy-MM-dd"),
-                "generated:" + Generated.ToString("yyyy-MM-dd"),
+                "expires:" + Expires.ToString(dateFormat),
+                "generated:" + Generated.ToString(dateFormat),
                 "salt:" + GuidSalt
             };
 
@@ -115,23 +127,5 @@ namespace ToSic.Eav.Configuration.Licenses
             var licNoSpaces = Regex.Replace(licenseString, @"\s+", "");
             return licNoSpaces;
         }
-    }
-
-    public class LicenseStoredDetails
-    {
-        /// <summary>
-        /// A fingerprint / License
-        /// </summary>
-        public string Id { get; set; }
-
-        /// <summary>
-        /// Optional comments, like what system it's for
-        /// </summary>
-        public string Comments { get; set; }
-
-        /// <summary>
-        /// If parts of a license can expire, then it would be specified here.
-        /// </summary>
-        public DateTime Expires { get; set; }
     }
 }
