@@ -149,7 +149,7 @@
     <Compile Include="ValueFilter\ValueFilterMaker.cs" />
     <Compile Include="Query\QueryBasicTest.cs" />
     <Compile Include="Query\QueryGlobalTest.cs" />
-    <Compile Include="Query\ParamsTests.cs" />
+    <Compile Include="Query\ParamsFromUrlTests.cs" />
     <Compile Include="RelationshipTests\RelationshipTestCase.cs" />
     <Compile Include="RelationshipTests\RelationshipTestBase.cs" />
     <Compile Include="RelationshipTests\RelationshipFilterTest_Modes.cs" />

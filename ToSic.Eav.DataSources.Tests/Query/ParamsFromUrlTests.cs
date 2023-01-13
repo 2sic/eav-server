@@ -6,7 +6,7 @@ using ToSic.Lib.Logging;
 namespace ToSic.Eav.DataSourceTests.Query
 {
     [TestClass]
-    public class ParamsTests
+    public class ParamsFromUrlTests
     {
         [TestMethod]
         public void ManyParams()

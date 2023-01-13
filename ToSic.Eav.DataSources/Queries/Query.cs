@@ -6,6 +6,7 @@ using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helper;
+using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -119,6 +120,8 @@ namespace ToSic.Eav.DataSources.Queries
         public void Params(string key, string value)
         {
             var wrapLog = Log.Fn($"{key}, {value}");
+            if (IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
             // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
             if(!_requiresRebuildOfOut)
             {
@@ -132,6 +135,9 @@ namespace ToSic.Eav.DataSources.Queries
             Definition.Params[key] = value;
             wrapLog.Done();
         }
+
+        /// <inheritdoc />
+        public void Params(string key, object value) => Params(key, value?.ToString());
 
 
         /// <inheritdoc />
