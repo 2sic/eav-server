@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Plumbing;
+using static System.String;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
@@ -107,23 +108,26 @@ namespace ToSic.Eav.Configuration.Licenses
             // if none of the items expires
             // This is to preserve compatibility with the generated Identity in v13/14
             var licenseExpiry = Licenses
-                .Where(l => l.Expires != null)
+                .Where(l => l.Expires != null && l.Expires != DateTime.MinValue)
                 .Select(l => l.Expires?.ToString(dateFormat))
                 .ToList();
 
             var parts = new[]
-            {
-                "key: " + Key,
-                "licenses:" + string.Join(",", LicensesArray), // 2. Add all licenses
-                !licenseExpiry.Any() ? "" : "license-expiry:" + string.Join(",", licenseExpiry),
-                "fingerprints:" + string.Join(",", FingerprintsArray), // 3. Add all fingerprints
-                "versions:" + Versions,
-                "expires:" + Expires.ToString(dateFormat),
-                "generated:" + Generated.ToString(dateFormat),
-                "salt:" + GuidSalt
-            };
+                {
+                    "key: " + Key,
+                    "licenses:" + Join(",", LicensesArray), // 2. Add all licenses
+                    !licenseExpiry.Any() ? "" : "license-expiry:" + Join(",", licenseExpiry),
+                    "fingerprints:" + Join(",", FingerprintsArray), // 3. Add all fingerprints
+                    "versions:" + Versions,
+                    "expires:" + Expires.ToString(dateFormat),
+                    "generated:" + Generated.ToString(dateFormat),
+                    "salt:" + GuidSalt
+                }
+                // Remove blank entries (usually the license-expiry) to ensure it's identical w/v13/15
+                .Where(p => !IsNullOrEmpty(p))
+                .ToArray();
 
-            var licenseString = string.Join(";", parts);
+            var licenseString = Join(";", parts);
             var licNoSpaces = Regex.Replace(licenseString, @"\s+", "");
             return licNoSpaces;
         }
