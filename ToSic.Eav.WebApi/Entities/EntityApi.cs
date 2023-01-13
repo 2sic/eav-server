@@ -189,9 +189,9 @@ namespace ToSic.Eav.WebApi
             return Init(app.AppId, true);
         }
 
-        public IEnumerable<Dictionary<string, object>> GetEntitiesForAdmin(string contentType, bool excludeAncestor = false)
+        public List<Dictionary<string, object>> GetEntitiesForAdmin(string contentType, bool excludeAncestor = false)
         {
-            var wrapLog = Log.Fn<IEnumerable<Dictionary<string, object>>>(timer: true);
+            var wrapLog = Log.Fn<List<Dictionary<string, object>>>(timer: true);
             EntityToDic.ConfigureForAdminUse();
             var originals = AppRead.Entities.Get(contentType).ToList();
 
