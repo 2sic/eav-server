@@ -29,13 +29,14 @@ namespace ToSic.Eav.Configuration
                 EditUiGpsCustomDefaults,    // new v15
 
                 // Features for Patrons Advanced CMS
-                EditUiTranslateWithGoogle, // WIP/Beta, v15
+                EditUiTranslateWithGoogle,  // v15
 
                 // Patron SuperAdmin
-                AppSyncWithSiteFiles,  // WIP/Beta
+                AppSyncWithSiteFiles,       // v15
+                AppAutoInstallerConfigurable,   // v15
 
                 // Patron Infrastructure
-                SqlCompressDataTimeline, // WIP / Beta v15
+                SqlCompressDataTimeline, // v15
 
                 // 2sxc 10.24+
                 WebFarmCache,

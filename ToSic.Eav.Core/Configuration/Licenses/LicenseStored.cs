@@ -87,12 +87,6 @@ namespace ToSic.Eav.Configuration.Licenses
         /// </summary>
         public string Owner { get; set; }
 
-        ///// <summary>
-        ///// Internal property to work with the data, shouldn't end up in the json
-        ///// </summary>
-        //[JsonIgnore]
-        //public string[] LicensesArray => Licenses?.Select(l => l.Id).ToArray().TrimmedAndWithoutEmpty() ?? Array.Empty<string>();
-
         /// <summary>
         /// Internal property to work with the data, shouldn't end up in the json
         /// </summary>
@@ -103,17 +97,17 @@ namespace ToSic.Eav.Configuration.Licenses
         {
             const string dateFormat = "yyyy-MM-dd";
 
+            var licenseList = Licenses ?? new List<LicenseStoredDetails>();
+            var licenses = licenseList.Select(l => l.Id).ToArray().TrimmedAndWithoutEmpty();
+
             // License expiry must be built in a way
             // where it's an empty string (no additions)
             // if none of the items expires
             // This is to preserve compatibility with the generated Identity in v13/14
-            var licenseList = Licenses ?? new List<LicenseStoredDetails>();
             var licenseExpiry = licenseList
                 .Where(l => l.Expires != null && l.Expires != DateTime.MinValue)
                 .Select(l => l.Expires?.ToString(dateFormat))
                 .ToList();
-
-            var licenses = licenseList.Select(l => l.Id).ToArray().TrimmedAndWithoutEmpty();
 
             var parts = new[]
                 {
