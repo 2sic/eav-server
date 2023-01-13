@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.PropertyLookup;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -10,19 +11,22 @@ namespace ToSic.Eav.Data
     public partial class PropertyStack
     {
         public PropReqResult InternalGetPath(string path, ILog logOrNull = null)
-            => InternalGetPath(new PropReqSpecs(path, Array.Empty<string>(), logOrNull),
-                new PropertyLookupPath());
+            => InternalGetPath(new PropReqSpecs(path, Array.Empty<string>(), logOrNull), new PropertyLookupPath());
 
-        public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path) 
-            => TraversePath(specs, path.KeepOrNew(), this);
+        public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path)
+            => TraversePath(specs, path.KeepOrNew(), this, NameId);
 
         [PrivateApi]
-        public static PropReqResult TraversePath(PropReqSpecs specs, PropertyLookupPath path, IPropertyLookup initialSource)
+        public static PropReqResult TraversePath(PropReqSpecs specs, PropertyLookupPath path, IPropertyLookup initialSource, string prefixToIgnore = null)
         {
             var l = specs.LogOrNull.Fn<PropReqResult>(specs.Field);
             var fields = specs.Field.Split('.');
+            if (prefixToIgnore != null && fields.Any() && prefixToIgnore.EqualsInsensitive(fields.First()))
+                fields = fields.Skip(1).ToArray();
+
             PropReqResult result = null;
             var currentSource = initialSource;
+
             for (var i = 0; i < fields.Length; i++)
             {
                 var field = fields[i];

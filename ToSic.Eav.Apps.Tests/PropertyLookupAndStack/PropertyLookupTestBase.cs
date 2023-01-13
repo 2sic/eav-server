@@ -5,6 +5,7 @@ namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack
 {
     public class PropertyLookupTestBase
     {
+
         protected object GetResult(IPropertyLookup source, string fieldName, PropertyLookupPath path = null) =>
             GetRequest(source, fieldName, path).Result;
 
