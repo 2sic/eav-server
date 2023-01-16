@@ -60,7 +60,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         [TestMethod] public void Func_ReturnValueAndMessage()
         {
             var log = new Log("tst.Test");
-            var x = log.FnMsg(() => (7, "ok"));
+            var x = log.Func(() => (7, "ok"));
             AreEqual(7, x);
             AreEqual(2, log.Entries.Count, "should have two entries (start/stop)");
             var header = log.Entries[0];
@@ -111,7 +111,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         public void Func_ParamsMessage_ReturnNumberAndMessage()
         {
             var log = new Log("test");
-            var x = log.FnMsg("7", message: "get 7", func: () => (7, "all ok"));
+            var x = log.Func("7", message: "get 7", func: () => (7, "all ok"));
             AreEqual(2, log.Entries.Count, "should have two entries (start/stop)");
             AreEqual($"{ThisMethodName()}(7) get 7", log.Entries[0].Message);
             AreEqual("7 - all ok", log.Entries[0].Result);

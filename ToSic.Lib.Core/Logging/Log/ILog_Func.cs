@@ -56,7 +56,7 @@ namespace ToSic.Lib.Logging
         #region Func with Result/Message returned
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
-        public static TResult FnMsg<TResult>(this ILog log,
+        public static TResult Func<TResult>(this ILog log,
             Func<(TResult Result, string Message)> func,
             bool timer = default,
             [CallerFilePath] string cPath = default,
@@ -65,7 +65,7 @@ namespace ToSic.Lib.Logging
         ) => log.FuncMessage(func, null, null, timer, Create(cPath, cName, cLine));
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
-        public static TResult FnMsg<TResult>(this ILog log,
+        public static TResult Func<TResult>(this ILog log,
             string parameters,
             Func<(TResult Result, string Message)> func,
             bool timer = default,
