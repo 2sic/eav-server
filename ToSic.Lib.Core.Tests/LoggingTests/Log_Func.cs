@@ -7,13 +7,20 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
     // ReSharper disable once InconsistentNaming
     public class Log_Func: LogTestBase
     {
+        #region Basic Tests
+
         [TestMethod]
-        public void EnsureNullSafe()
+        public void Basic_EnsureNullSafe()
         {
             var log = null as ILog;
             var x = log.Func(() => 7);
             AreEqual(7, x);
         }
+
+        #endregion
+
+        #region Return Values
+
 
         [TestMethod]
         public void Func_ReturnNull()
@@ -48,7 +55,25 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
             AreEqual(expected, x);
         }
 
-        // TODO: TEST RETURNVALUE-TIMER
+        #endregion
+
+        [TestMethod] public void Func_ReturnValueAndMessage()
+        {
+            var log = new Log("tst.Test");
+            var x = log.FnMsg(() => (7, "ok"));
+            AreEqual(7, x);
+            AreEqual(2, log.Entries.Count, "should have two entries (start/stop)");
+            var header = log.Entries[0];
+            AreEqual("7 - ok", header.Result);
+            AreEqual($"{ThisMethodName()}()", header.Message);
+        }
+
+        #region TODO: timer
+
+        #endregion
+
+
+        #region With Params
 
         [TestMethod]
         public void Func_Params_ReturnValue()
@@ -56,21 +81,10 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
             var log = new Log("test");
             var x = log.Func("id: 7", () => 7);
             AreEqual(2, log.Entries.Count, "should have two entries (start/stop)");
-            AreEqual($"{nameof(Func_Params_ReturnValue)}(id: 7)", log.Entries[0].Message);
+            AreEqual($"{ThisMethodName()}(id: 7)", log.Entries[0].Message);
             AreEqual("7", log.Entries[0].Result);
         }
 
-        [TestMethod]
-        public void Func_ReturnValueAndMessage()
-        {
-            var log = new Log("tst.Test");
-            var x = log.Func(() => (7, "ok"));
-            AreEqual(7, x);
-            AreEqual(2, log.Entries.Count, "should have two entries (start/stop)");
-            var header = log.Entries[0];
-            AreEqual("7 - ok", header.Result);
-            AreEqual($"{nameof(Func_ReturnValueAndMessage)}()", header.Message);
-        }
 
         [TestMethod]
         public void Func_Params_ReturnNumber()
@@ -78,7 +92,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
             var log = new Log("test");
             var x = log.Func("7", func: () => 7);
             AreEqual(2, log.Entries.Count, "should have two entries (start/stop)");
-            AreEqual($"{nameof(Func_ParamsMessage_ReturnNumber)}(7)", log.Entries[0].Message);
+            AreEqual($"{ThisMethodName()}(7)", log.Entries[0].Message);
             AreEqual("7", log.Entries[0].Result);
         }
 
@@ -89,7 +103,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
             var log = new Log("test");
             var x = log.Func("7", message: "get 7", func: () => 7);
             AreEqual(2, log.Entries.Count, "should have two entries (start/stop)");
-            AreEqual($"{nameof(Func_ParamsMessage_ReturnNumber)}(7) get 7", log.Entries[0].Message);
+            AreEqual($"{ThisMethodName()}(7) get 7", log.Entries[0].Message);
             AreEqual("7", log.Entries[0].Result);
         }
 
@@ -97,12 +111,80 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         public void Func_ParamsMessage_ReturnNumberAndMessage()
         {
             var log = new Log("test");
-            var x = log.Func("7", message: "get 7", func: () => (7, "all ok"));
+            var x = log.FnMsg("7", message: "get 7", func: () => (7, "all ok"));
             AreEqual(2, log.Entries.Count, "should have two entries (start/stop)");
-            AreEqual($"{nameof(Func_ParamsMessage_ReturnNumberAndMessage)}(7) get 7", log.Entries[0].Message);
+            AreEqual($"{ThisMethodName()}(7) get 7", log.Entries[0].Message);
             AreEqual("7 - all ok", log.Entries[0].Result);
+        }
+        #endregion
+
+        #region With Inner Log
+
+        [TestMethod]
+        public void Func_InnerLog_Value()
+        {
+            var parentLog = new Log("tst.Test");
+            var x = parentLog.Func(log =>
+            {
+                log.A("nice");
+                return 7;
+            });
+            AreEqual(7, x);
+            AreEqual($"{ThisMethodName()}()", parentLog.Entries[0].Message);
+            AreEqual("7", parentLog.Entries[0].Result);
+            AreEqual(3, parentLog.Entries.Count);
+        }
+
+        [TestMethod]
+        public void Func_InnerLog_ParamAndValue()
+        {
+            var parentLog = new Log("tst.Test");
+            var x = parentLog.Func("id: 7", log =>
+            {
+                log.A("nice");
+                return 7;
+            });
+            AreEqual(7, x);
+            AreEqual($"{ThisMethodName()}(id: 7)", parentLog.Entries[0].Message);
+            AreEqual("7", parentLog.Entries[0].Result);
+            AreEqual(3, parentLog.Entries.Count);
         }
 
 
+        #endregion
+
+        #region Inner Log with Result and Message
+
+        [TestMethod]
+        public void Func_InnerLog_ValueAndMessage()
+        {
+            var parentLog = new Log("tst.Test");
+            var x = parentLog.Func(log =>
+            {
+                log.A("nice");
+                return (7, "ok");
+            });
+            AreEqual(7, x);
+            AreEqual($"{ThisMethodName()}()", parentLog.Entries[0].Message);
+            AreEqual("7 - ok", parentLog.Entries[0].Result);
+            AreEqual(3, parentLog.Entries.Count);
+        }
+
+        [TestMethod]
+        public void Func_InnerLog_ParamAndValueAndMessage()
+        {
+            var parentLog = new Log("tst.Test");
+            var x = parentLog.Func<int>("id: 7", log =>
+            {
+                log.A("nice");
+                return (7, "ok");
+            });
+            AreEqual(7, x);
+            AreEqual($"{ThisMethodName()}(id: 7)", parentLog.Entries[0].Message);
+            AreEqual("7 - ok", parentLog.Entries[0].Result);
+            AreEqual(3, parentLog.Entries.Count);
+        }
+
+        #endregion
     }
 }

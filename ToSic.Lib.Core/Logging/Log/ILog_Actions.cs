@@ -51,8 +51,8 @@ namespace ToSic.Lib.Logging
         public static void Do(this ILog log,
             string parameters,
             Action action,
-            string message = null,
             bool timer = default,
+            string message = null,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default

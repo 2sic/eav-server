@@ -94,11 +94,11 @@ namespace ToSic.Lib.Logging
         /// <summary>
         /// Special helper to use a function to create a message, but ignore any errors to avoid problems when only logging.
         /// </summary>
-        /// <param name="log">The log object - not used, just for syntax</param>
+        /// <param name="_">The log object - not used, just for syntax</param>
         /// <param name="messageMaker">Function to generate the message.</param>
         /// <returns></returns>
         [InternalApi_DoNotUse_MayChangeWithoutNotice("will probably be moved elsewhere some day")]
-        public static string Try(this ILog log, Func<string> messageMaker)
+        public static string Try(this ILog _, Func<string> messageMaker)
         {
             try
             {

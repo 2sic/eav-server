@@ -9,59 +9,41 @@ namespace ToSic.Lib.Logging
     // ReSharper disable once InconsistentNaming
     public static class ILog_Func
     {
-
         #region Func with return value only
 
-        ///// <summary>
-        ///// Call a method to get the result and intercept / log what was returned
-        ///// </summary>
-        ///// <returns></returns>
-        //[PrivateApi]
-        //public static T GetAndLog<T>(this ILog log,
-        //    Func<T> func,
-        //    [CallerFilePath] string cPath = default,
-        //    [CallerMemberName] string cName = default,
-        //    [CallerLineNumber] int cLine = default
-        //) => log.Func(null, func, cPath: cPath, cName: cName, cLine: cLine);
-
-        [PrivateApi]
-        // 2dm - experimental, don't use yet...
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
         public static TResult Func<TResult>(this ILog log,
             Func<TResult> func,
             bool timer = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => log.FuncInternal(func, true, null, null, timer,
-            Create(cPath, cName, cLine));
+        ) => log.FuncResult(func, null, null, timer, Create(cPath, cName, cLine));
 
 
         /// <summary>
         /// Call a method to get the result and intercept / log what was returned
         /// </summary>
         /// <returns></returns>
-        [PrivateApi]
-        public static T Func<T>(this ILog log,
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
+        public static TResult Func<TResult>(this ILog log,
             string parameters,
-            Func<T> func,
+            Func<TResult> func,
             bool timer = default,
             string message = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => log.FuncInternal(func, true, parameters, message, timer, Create(cPath, cName, cLine));
+        ) => log.FuncResult(func, parameters, message, timer, Create(cPath, cName, cLine));
 
 
-        [PrivateApi]
-        // 2dm - experimental, don't use yet...
-        private static TResult FuncInternal<TResult>(this ILog log,
+        private static TResult FuncResult<TResult>(this ILog log,
             Func<TResult> func,
-            bool logResult,
             string parameters,
             string message,
             bool timer,
-            CodeRef code
-        )
+            CodeRef code,
+            bool logResult = true)
         {
             var l = log.FnCode<TResult>(parameters, message, timer, code);
             var result = func();
@@ -73,9 +55,17 @@ namespace ToSic.Lib.Logging
 
         #region Func with Result/Message returned
 
-        [PrivateApi]
-        // 2dm - experimental, don't use yet...
-        public static TResult Func<TResult>(this ILog log,
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
+        public static TResult FnMsg<TResult>(this ILog log,
+            Func<(TResult Result, string Message)> func,
+            bool timer = default,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        ) => log.FuncMessage(func, null, null, timer, Create(cPath, cName, cLine));
+
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
+        public static TResult FnMsg<TResult>(this ILog log,
             string parameters,
             Func<(TResult Result, string Message)> func,
             bool timer = default,
@@ -83,45 +73,103 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => log.FuncInternal(func, false, true, parameters, message, timer,
-            Create(cPath, cName, cLine));
+        ) => log.FuncMessage(func, parameters, message, timer, Create(cPath, cName, cLine));
 
 
-        [PrivateApi]
-        // 2dm - experimental, don't use yet...
-        public static TResult Func<TResult>(this ILog log,
+        private static TResult FuncMessage<TResult>(this ILog log,
             Func<(TResult Result, string Message)> func,
-            bool timer = default,
-            [CallerFilePath] string cPath = default,
-            [CallerMemberName] string cName = default,
-            [CallerLineNumber] int cLine = default
-        ) => log.FuncInternal(func, false, true, null, null, timer,
-            Create(cPath, cName, cLine));
-
-
-        [PrivateApi]
-        // 2dm - experimental, don't use yet...
-        internal static TResult FuncInternal<TResult>(this ILog log,
-            Func<(TResult Result, string Message)> func,
-            bool isProperty,
-            bool logResult,
             string parameters,
             string message,
             bool timer,
-            CodeRef code
-        )
+            CodeRef code,
+            bool logResult = true)
         {
-            var l = new LogCall<TResult>(log, code, isProperty, parameters, message, timer);
-            var result = func();
-            return logResult ? l.ReturnAndLog(result.Result, result.Message) : l.Return(result.Result, result.Message);
+            var l = log.FnCode<TResult>(parameters, message, timer, code);
+            var (result, resultMsg) = func();
+            return logResult ? l.ReturnAndLog(result, resultMsg) : l.Return(result, resultMsg);
         }
 
 
         #endregion
 
+        #region Func Log / Result
+
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
+        public static TResult Func<TResult>(this ILog log,
+            Func<ILogCall, TResult> func,
+            bool timer = default,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        ) => log.FuncLogResult(func, null, null, timer, Create(cPath, cName, cLine));
+
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
+        public static TResult Func<TResult>(this ILog log,
+            string parameters,
+            Func<ILogCall, TResult> func,
+            bool timer = default,
+            string message = default,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        ) => log.FuncLogResult(func, parameters, message, timer, Create(cPath, cName, cLine));
+
+        private static TResult FuncLogResult<TResult>(this ILog log,
+            Func<ILogCall, TResult> func,
+            string parameters,
+            string message,
+            bool timer,
+            CodeRef code,
+            bool logResult = true)
+        {
+            var l = log.FnCode<TResult>(parameters, message, timer, code);
+            var result = func(l);
+            return logResult ? l.ReturnAndLog(result) : l.Return(result);
+        }
+
+        #endregion
+
+        #region Func Log Result Message
 
 
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
+        // 2dm - experimental, don't use yet...
+        public static TResult Func<TResult>(this ILog log,
+            Func<ILogCall, (TResult Result, string Message)> func,
+            bool timer = default,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        ) => log.FuncLogResultMessage(func, null, null, timer,
+            Create(cPath, cName, cLine));
 
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
+        // 2dm - experimental, don't use yet...
+        public static TResult Func<TResult>(this ILog log,
+            string parameters,
+            Func<ILogCall, (TResult Result, string Message)> func,
+            bool timer = default,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        ) => log.FuncLogResultMessage(func, parameters, null, timer,
+            Create(cPath, cName, cLine));
+
+
+        private static TResult FuncLogResultMessage<TResult>(this ILog log,
+            Func<ILogCall, (TResult Result, string Message)> func,
+            string parameters,
+            string message,
+            bool timer,
+            CodeRef code,
+            bool logResult = true)
+        {
+            var l = log.FnCode<TResult>(parameters, message, timer, code);
+            var (result, resultMessage) = func(l);
+            return logResult ? l.ReturnAndLog(result, resultMessage) : l.Return(result, resultMessage);
+        }
+
+        #endregion
 
     }
 }
