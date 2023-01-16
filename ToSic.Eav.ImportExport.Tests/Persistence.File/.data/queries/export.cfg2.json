@@ -1,0 +1,33 @@
+{
+  "_": {
+    "V": 1
+  },
+  "Entity": {
+    "Id": 203788,
+    "Version": 2,
+    "Guid": "22db39d7-8a59-43be-be68-ea0f28880c10",
+    "Type": {
+      "Name": "SystemExportConfiguration",
+      "Id": "d7f2e4fa-5306-41bb-a3cd-d9529c838879"
+    },
+    "Attributes": {
+      "String": {
+        "ExportFormat": {
+          "en-us": "json"
+        },
+        "FileName": {
+          "en-us": "cfg2-app-data.json"
+        },
+        "Name": {
+          "en-us": "cfg2"
+        }
+      },
+      "Boolean": {
+        "PreserveMarkers": {
+          "en-us": true
+        }
+      }
+    },
+    "Owner": "dnn:userid=1"
+  }
+}

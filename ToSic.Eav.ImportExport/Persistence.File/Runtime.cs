@@ -70,10 +70,6 @@ namespace ToSic.Eav.Persistence.File
         }
         private List<string> _paths;
 
-        
-
-
-
 
         internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths
             .Select(path => _fslGenerator.New().Init(Constants.PresetAppId, path, Source, true, null)).ToList());
@@ -100,7 +96,7 @@ namespace ToSic.Eav.Persistence.File
 
                 Log.Do(timer: true, action: () =>
                 {
-                    var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
+                    var types = LoadGlobalContentTypes();
                     // Just attach all global content-types to this app, as they belong here
                     appState.InitContentTypes(types);
                     return "types loaded";

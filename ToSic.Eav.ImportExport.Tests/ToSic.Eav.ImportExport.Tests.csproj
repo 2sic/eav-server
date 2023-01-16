@@ -95,6 +95,7 @@
     <Compile Include="FeatureTests\FeaturesStaticTests.cs" />
     <Compile Include="FeatureTests\IFeaturesTests.cs" />
     <Compile Include="FeatureTests\IFeaturesInternalTests.cs" />
+    <Compile Include="ImportExport\BundleLoaderTest.cs" />
     <Compile Include="Json\JsonCtDeSerialization.cs" />
     <Compile Include="Json\JsonReSerialization.cs" />
     <Compile Include="Json\JsonCtSerialization.cs" />
@@ -153,6 +154,10 @@
     <ProjectReference Include="..\ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj">
       <Project>{2bba13d2-f6d2-443b-b7c8-8f4c31432c03}</Project>
       <Name>ToSic.Eav.Repository.Efc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.WebApi\ToSic.Eav.WebApi.csproj">
+      <Project>{04F3A07C-2C6C-4D87-9E8D-E2DB611B0D52}</Project>
+      <Name>ToSic.Eav.WebApi</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj">
       <Project>{bc93efb1-d740-4617-9c90-d9167f9e4545}</Project>

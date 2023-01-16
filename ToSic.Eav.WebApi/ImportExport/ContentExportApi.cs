@@ -6,7 +6,6 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Validation;
-using ToSic.Eav.Metadata;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
@@ -15,7 +14,6 @@ using ToSic.Eav.WebApi.Security;
 using System.Collections.Generic;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
@@ -37,6 +35,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             ResponseMaker<THttpResponseType> responseMaker
             ) : base("Api.EaCtEx")
         {
+
             ConnectServices(
                 _appManagerLazy = appManagerLazy,
                 _appStates = appStates,
@@ -47,6 +46,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly IAppStates _appStates;
         private readonly Generator<JsonSerializer> _jsonSerializer;
+
         private readonly ResponseMaker<THttpResponseType> _responseMaker;
 
         public ContentExportApi<THttpResponseType> Init(int appId)
@@ -130,8 +130,27 @@ namespace ToSic.Eav.WebApi.ImportExport
         public THttpResponseType JsonBundleExport(IUser user, Guid exportConfiguration)
         {
             Log.A($"create Json Bundle Export for ExportConfiguration:{exportConfiguration}");
-            //SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin); // TODO: uncomment this
+            SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
 
+            var export = ExportConfigurationBuildOrThrow(exportConfiguration);
+
+            // find all decorator metadata of type SystemExportDecorator
+            Log.A($"metadataExportMarkers:{export.ExportMarkers.Count()}");
+
+            var serializer = _jsonSerializer.New().SetApp(_appManager.AppState);
+            
+            var bundle = BundleBuild(export, serializer);
+
+            // create a file which contains this new bundle
+            var fileContent = serializer.SerializeJsonBundle(bundle);
+
+            // give it to the browser with the name specified in the Export Configuration
+            Log.A($"OK, export fileName:{export.FileName}, size:{fileContent.Count()}");
+            return _responseMaker.File(fileContent, export.FileName, MimeHelper.Json);
+        }
+        
+        public ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfiguration)
+        {
             var systemExportConfiguration = _appManager.AppState.List.One(exportConfiguration);
             if (systemExportConfiguration == null)
             {
@@ -143,71 +162,59 @@ namespace ToSic.Eav.WebApi.ImportExport
             // check that have correct contentType
             if (systemExportConfiguration.Type.Is("ExportConfiguration"))
             {
-                var exception = new KeyNotFoundException($"ExportConfiguration:{exportConfiguration} is not of type ExportConfiguration");
+                var exception =
+                    new KeyNotFoundException($"ExportConfiguration:{exportConfiguration} is not of type ExportConfiguration");
                 Log.Ex(exception);
                 throw exception;
             }
+            
+            return new ExportConfiguration(systemExportConfiguration);
+        }
 
-            // TODO: implement PreserveMarkers functionality
-            var preserveMarkers = systemExportConfiguration.GetBestValue<bool>("PreserveMarkers", null);
-            Log.A($"preserveMarkers:{preserveMarkers}");
-
-            // 1. Find all decorator metadata of type SystemExportDecorator
-            // use the guid for finding them: 32698880-1c2e-41ab-bcfc-420091d3263f
-            // filter by the Configuration field
-
-            // TODO create type that is EntityBasedType
-
-
-            var metadataExportMarkers = systemExportConfiguration.Parents(Decorators.SystemExportDecorator);
-            Log.A($"metadataExportMarkers:{metadataExportMarkers.Count()}");
-
-
-            // 2. From the metadata, find all owners
-            // TODO: should be other way to get this selection (also this is not working for entities)
-            var owners = metadataExportMarkers.Where(e => e.MetadataFor.TargetType == (int)TargetTypes.ContentType)
-                .Select(et => et.MetadataFor.KeyString).ToList();
-            Log.A($"count owners:{owners.Count()}");
-
-            var serializer = _jsonSerializer.New().SetApp(_appManager.AppState);
-
-            // TODO: wrong JSON v1 format is generated
+        public JsonBundle BundleBuild(ExportConfiguration export, JsonSerializer serializer)
+        {
             var bundleList = new JsonBundle();
 
-            // 3. Loop through content types and add them to the bundlelist
-            var contentTypes = _appManager.Read.AppState.ContentTypes.Where(ct => owners.Contains(ct.NameId)).ToList();
-            Log.A($"count export contentTypes:{contentTypes.Count()}");
-            foreach (var contentType in contentTypes)
+            // loop through content types and add them to the bundlelist
+            Log.A($"count export content types:{export.ContentTypes.Count()}");
+            foreach (var contentTypeName in export.ContentTypes)
             {
-                var jsonType = serializer.ToPackage(contentType, true);
                 if (bundleList.ContentTypes == null) bundleList.ContentTypes = new List<JsonContentTypeSet>();
+
+                var contentType = _appManager.Read.ContentTypes.Get(contentTypeName);
+                var jsonType = serializer.ToPackage(contentType, true);
                 bundleList.ContentTypes.Add(new JsonContentTypeSet
                 {
-                    ContentType = jsonType.ContentType,
+                    ContentType = PreserveMarker(export.PreserveMarkers, jsonType.ContentType),
                     Entities = jsonType.Entities
                 });
             }
 
-            // 4. loop through entities and add them to the bundle list
-            var entities = _appManager.Read.AppState.List.Where(e => owners.Contains(e.EntityGuid.ToString()));
-            Log.A($"count export entities:{entities.Count()}");
-            foreach (var entity in entities)
+            // loop through entities and add them to the bundle list
+            Log.A($"count export entities:{export.Entities.Count()}");
+            foreach (var entityGuid in export.Entities)
             {
                 if (bundleList.Entities == null) bundleList.Entities = new List<JsonEntity>();
+
+                var entity = _appManager.Read.Entities.Get(entityGuid);
                 bundleList.Entities.Add(serializer.ToJson(entity));
             }
 
-            // 5. Create a file which contains this new bundle
-            var fileContent = System.Text.Json.JsonSerializer.Serialize(new JsonFormat
-            {
-                Bundles = new List<JsonBundle>() { bundleList }
-            }, Serialization.JsonOptions.UnsafeJsonWithoutEncodingHtml);
+            return bundleList;
+        }
 
-            // 6. give it to the browser with the name specified in the Export Configuration
-            var fileName = systemExportConfiguration.GetBestValue<string>("FileName", null);
+        public JsonContentType PreserveMarker(bool preserveMarkers, JsonContentType jsonContentType)
+        {
+            Log.A($"preserveMarkers:{preserveMarkers}");
+            if (preserveMarkers) return jsonContentType;
+            
+            var removeQue = jsonContentType.Metadata
+                .Where(metaData => metaData.Type.Name == ExportConfiguration.ContentType).ToList();
 
-            Log.A($"OK, export fileName:{fileName}, size:{fileContent.Count()}");
-            return _responseMaker.File(fileContent, fileName, MimeHelper.Json);
+            foreach (var item in removeQue)
+                jsonContentType.Metadata.Remove(item);
+            
+            return jsonContentType;
         }
     }
 }

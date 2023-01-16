@@ -1,0 +1,166 @@
+{
+  "Bundles": [
+    {
+      "Name": "default",
+      "ContentTypes": [
+        {
+          "ContentType": {
+            "Id": "bddec03e-2f88-459d-8e12-bccd42d529f3",
+            "Name": "SomeData",
+            "Scope": "Default",
+            "Description": null,
+            "Attributes": [
+              {
+                "Name": "FirstProperty",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": true,
+                "Metadata": [
+                  {
+                    "Id": 210037,
+                    "Version": 1,
+                    "Guid": "fb52bbe2-ea13-4ffe-a6c1-f2e0eed23b2d",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "InputType": {
+                          "*": "string-default"
+                        },
+                        "Name": {
+                          "*": "FirstProperty"
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": [
+                          ]
+                        },
+                        "Formulas": {
+                          "*": [
+                          ]
+                        },
+                        "Warnings": {
+                          "*": [
+                          ]
+                        }
+                      },
+                      "Boolean": {
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "SecondProperty",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 210038,
+                    "Version": 1,
+                    "Guid": "b6b0d485-384f-4696-9b18-05b0de01a592",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "InputType": {
+                          "*": "string-default"
+                        },
+                        "Name": {
+                          "*": "SecondProperty"
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": [
+                          ]
+                        },
+                        "Formulas": {
+                          "*": [
+                          ]
+                        },
+                        "Warnings": {
+                          "*": [
+                          ]
+                        }
+                      },
+                      "Boolean": {
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              }
+            ],
+            "Metadata": [
+              {
+                "Id": 211093,
+                "Version": 1,
+                "Guid": "7713ae28-285d-4bcf-a678-e454a0903d5c",
+                "Type": {
+                  "Name": "SystemExportDecorator",
+                  "Id": "32698880-1c2e-41ab-bcfc-420091d3263f"
+                },
+                "Attributes": {
+                  "Entity": {
+                    "Configuration": {
+                      "*": [
+                        "b13842c5-7664-4813-8f17-d1a8451594ed"
+                      ]
+                    }
+                  }
+                },
+                "Owner": "dnn:userid=1",
+                "For": {
+                  "Target": "ContentType",
+                  "TargetType": 5,
+                  "String": "bddec03e-2f88-459d-8e12-bccd42d529f3"
+                }
+              }
+            ]
+          },
+          "Entities": [
+          ]
+        }
+      ],
+      "Entities": [
+        {
+          "Id": 210041,
+          "Version": 1,
+          "Guid": "181e495d-d207-4cab-b12c-6b2acccdb495",
+          "Type": {
+            "Name": "SomeData",
+            "Id": "bddec03e-2f88-459d-8e12-bccd42d529f3"
+          },
+          "Attributes": {
+            "String": {
+              "FirstProperty": {
+                "en-us": "fp638089655185445243"
+              },
+              "SecondProperty": {
+                "en-us": "sp638089655185445243"
+              }
+            }
+          },
+          "Owner": "dnn:userid=1"
+        }
+      ]
+    }
+  ],
+  "_": {
+    "V": 1
+  }
+}

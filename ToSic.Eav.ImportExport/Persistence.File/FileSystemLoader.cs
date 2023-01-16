@@ -24,14 +24,14 @@ namespace ToSic.Eav.Persistence.File
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
-        public FileSystemLoader(Generator<JsonSerializer> jsonSerGenerator) : base($"{EavLogs.Eav}.FsLoad")
+        public FileSystemLoader(Generator<JsonSerializer> jsonSerializerGenerator) : base($"{EavLogs.Eav}.FsLoad")
         {
             ConnectServices(
-                _jsonSerGenerator = jsonSerGenerator
+                _jsonSerializerGenerator = jsonSerializerGenerator
             );
         }
 
-        private readonly Generator<JsonSerializer> _jsonSerGenerator;
+        private readonly Generator<JsonSerializer> _jsonSerializerGenerator;
 
         public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource)
         {
@@ -58,7 +58,7 @@ namespace ToSic.Eav.Persistence.File
             get
             {
                 if (_ser != null) return _ser;
-                _ser = _jsonSerGenerator.New();
+                _ser = _jsonSerializerGenerator.New();
                 _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
@@ -68,12 +68,12 @@ namespace ToSic.Eav.Persistence.File
 
         internal void ResetSerializer(AppState appState)
         {
-            var serializer = _jsonSerGenerator.New().SetApp(appState);
+            var serializer = _jsonSerializerGenerator.New().SetApp(appState);
             _ser = serializer;
         }
         internal void ResetSerializer(List<IContentType> types)
         {
-            var serializer = _jsonSerGenerator.New();
+            var serializer = _jsonSerializerGenerator.New();
             serializer.Initialize(AppId, types, null);
             _ser = serializer;
         }
@@ -108,9 +108,9 @@ namespace ToSic.Eav.Persistence.File
                 .Where(entity => entity != null)
                 .ToList();
 
-            // #3.3 Put all found entities into the source
-            relationshipsList.AddRange(entities);
-            
+            // #4 load entities from files in bundles folder
+            entities.AddRange(EntitiesInBundles());
+
             return entities;
         }
 
@@ -122,8 +122,6 @@ namespace ToSic.Eav.Persistence.File
         public int IdSeed = -1;
 
         public IList<IContentType> ContentTypes() => ContentTypes(AppId, null);
-
-        
 
         /// <inheritdoc />
         /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
@@ -147,6 +145,9 @@ namespace ToSic.Eav.Persistence.File
             var cts = jsons
                 .Select(json => LoadAndBuildCt(Serializer, json, IdSeed == -1 ? 0 : IdSeed++))
                 .Where(ct => ct != null).ToList();
+
+            // #4 load content-types from files in bundles folder
+            cts.AddRange(ContentTypesInBundles());
 
             return cts;
         }
@@ -184,6 +185,130 @@ namespace ToSic.Eav.Persistence.File
             }
         }
         #endregion
+
+        #region Bundle
+
+        public Dictionary<string, string> JsonBundleBundles
+        {
+            get
+            {
+                if (_jsonBundles != null) return _jsonBundles;
+                _jsonBundles = new Dictionary<string, string>();
+                
+                // #1. check that folder exists
+                if (!CheckPathExists(Path) || !CheckPathExists(BundlesPath))
+                    return _jsonBundles;
+
+                // #2 find all bundle files in folder
+                Directory.GetFiles(BundlesPath, "*" + Extension(Files.json)).OrderBy(f => f).ToList()
+                    .ForEach(p => _jsonBundles[p] = System.IO.File.ReadAllText(p));
+
+                return _jsonBundles;
+            }
+        }
+        private Dictionary<string, string> _jsonBundles;
+
+        public IList<IContentType> ContentTypesInBundles()
+        {
+            if (JsonBundleBundles.Any() == false) return new List<IContentType>();
+
+            var bundles = JsonBundleBundles
+                .SelectMany(json => LoadBundlesAndBuildContentTypes(Serializer, json.Key, json.Value, IdSeed == -1 ? 0 : IdSeed++))
+                .Where(ct => ct != null).ToList();
+
+            var contentTypesInBundles = bundles
+                .Where(b => b.ContentTypeSets?.Any() == true)
+                .SelectMany(b => b.ContentTypeSets.Select(s => s.ContentType))
+                .ToList();
+
+            return contentTypesInBundles;
+        }
+
+        public IList<Entity> EntitiesInBundles(List<IEntity> relationshipsList = null)
+        {
+            if (JsonBundleBundles.Any() == false) return new List<Entity>();
+
+            var bundles = JsonBundleBundles
+                .SelectMany(json => LoadBundlesAndBuildEntities(Serializer, json.Value, IdSeed == -1 ? 0 : IdSeed++, relationshipsList))
+                .Where(ct => ct != null).ToList();
+
+            var entities = bundles
+                .Where(b => b.Entities?.Any() == true)
+                .SelectMany(b => b.Entities).ToList();
+
+            // #3.3 Put all found entities into the source
+            if (entities?.Any() == true) relationshipsList?.AddRange(entities);
+
+            return entities;
+        }
+
+        private string BundlesPath => System.IO.Path.Combine(Path, Configuration.FsDataConstants.BundlesFolder);
+
+        /// <summary>
+        /// Try to load a bundle file, but if anything fails, just return a null
+        /// </summary>
+        /// <returns></returns>
+        private List<Bundle> LoadBundlesAndBuildContentTypes(JsonSerializer ser, string path, string json, int id)
+        {
+            Log.A($"Loading bundles and building content-types from json:{json.Length}");
+            var infoIfError = "couldn't read bundle-file";
+            try
+            {
+                var bundleList = ser.DeserializeContentTypes(json);
+                
+                foreach (var contentTypeSet in bundleList
+                             .Where(bundle => bundle.ContentTypeSets?.Any() == true)
+                             .SelectMany(bundle => bundle.ContentTypeSets))
+                    (contentTypeSet.ContentType as ContentType).SetSourceParentAndIdForPresetTypes(RepoType, Constants.PresetContentTypeFakeParent, path, ++id);
+                
+                return bundleList;
+            }
+            catch (IOException e)
+            {
+                Log.A("Failed loading type - couldn't import bundle-file, IO exception: " + e);
+                return null;
+            }
+            catch (Exception e)
+            {
+                Log.A($"Failed loading bundle - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Try to load a bundle file, but if anything fails, just return a null
+        /// </summary>
+        /// <returns></returns>
+        private List<Bundle> LoadBundlesAndBuildEntities(JsonSerializer ser, string json, int id, List<IEntity> relationshipsList = null)
+        {
+            Log.A($"Loading bundles and build entities from json:{json.Length}");
+            var infoIfError = "couldn't read bundle-file";
+            try
+            {
+                // #3.1 WIP - Allow relationships between loaded items
+                // If we are loading from a larger context, then we have a reference to a list
+                // which will be repopulated later, so only create a new one if there is none
+                relationshipsList = relationshipsList ?? new List<IEntity>();
+                var relationshipsSource = new DirectEntitiesSource(relationshipsList);
+
+                var bundleList = ser.DeserializeEntities(json, id, relationshipsSource);
+
+                return bundleList;
+            }
+            catch (IOException e)
+            {
+                Log.A("Failed loading type - couldn't import bundle-file, IO exception: " + e);
+                return null;
+            }
+            catch (Exception e)
+            {
+                Log.A($"Failed loading bundle - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
+                return null;
+            }
+        }
+
+        #endregion
+
 
 
         #region todo someday items
