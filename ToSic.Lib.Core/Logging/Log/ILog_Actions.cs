@@ -91,6 +91,7 @@ namespace ToSic.Lib.Logging
             if (enabled) l.Done();
         }
 
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
         public static void Do(this ILog log,
             string parameters,
             Action<ILogCall> action,
@@ -118,7 +119,6 @@ namespace ToSic.Lib.Logging
         /// <param name="cPath">Code file path, auto-added by compiler</param>
         /// <param name="cName">Code method name, auto-added by compiler</param>
         /// <param name="cLine">Code line number, auto-added by compiler</param>
-        [PrivateApi]
         [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
         public static void Do(this ILog log,
             Func<string> action,
@@ -128,12 +128,8 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        )
-        {
-            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, null, message, timer);
-            var msg = action();
-            if (enabled) l.Done(msg);
-        }
+        ) => log.Do(null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
+
 
         /// <summary>
         /// Do something and the inner call can return a message which will be logged.
@@ -147,7 +143,6 @@ namespace ToSic.Lib.Logging
         /// <param name="cPath">Code file path, auto-added by compiler</param>
         /// <param name="cName">Code method name, auto-added by compiler</param>
         /// <param name="cLine">Code line number, auto-added by compiler</param>
-        [PrivateApi]
         [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
         public static void Do(this ILog log,
             string parameters,
@@ -164,5 +159,38 @@ namespace ToSic.Lib.Logging
             var msg = action();
             if (enabled) l.Done(msg);
         }
+
+
+        #region Func With LogCall and Message
+
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+        public static void Do(this ILog log,
+            Func<ILogCall, string> action,
+            bool timer = default,
+            bool enabled = true,
+            string message = null,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        ) => log.Do(null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
+
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+        public static void Do(this ILog log,
+            string parameters,
+            Func<ILogCall, string> action,
+            bool timer = default,
+            bool enabled = true,
+            string message = null,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        )
+        {
+            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, parameters, message, timer);
+            var msg = action(l);
+            if (enabled) l.Done(msg);
+        }
+
+        #endregion
     }
 }
