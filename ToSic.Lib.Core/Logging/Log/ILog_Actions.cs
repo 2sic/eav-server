@@ -26,12 +26,13 @@ namespace ToSic.Lib.Logging
             Action action,
             bool timer = default,
             bool enabled = true,
+            string message = null,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = enabled ? new LogCall(log, Create(cPath, cName, cLine), false, null, null, timer): null;
+            var l = enabled ? new LogCall(log, Create(cPath, cName, cLine), false, null, message, timer): null;
             action();
             if (enabled) l.Done();
         }
@@ -79,16 +80,32 @@ namespace ToSic.Lib.Logging
             Action<ILogCall> action,
             bool timer = default,
             bool enabled = true,
+            string message = null,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, null, null, timer);
+            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, null, message, timer);
             action(l);
             if (enabled) l.Done();
         }
 
+        public static void Do(this ILog log,
+            string parameters,
+            Action<ILogCall> action,
+            bool timer = default,
+            bool enabled = true,
+            string message = null,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        )
+        {
+            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, parameters, message, timer);
+            action(l);
+            if (enabled) l.Done();
+        }
 
         /// <summary>
         /// Do something and the inner call can return a message which will be logged.
@@ -107,12 +124,13 @@ namespace ToSic.Lib.Logging
             Func<string> action,
             bool timer = default,
             bool enabled = true,
+            string message = null,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, null, null, timer);
+            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, null, message, timer);
             var msg = action();
             if (enabled) l.Done(msg);
         }
@@ -136,12 +154,13 @@ namespace ToSic.Lib.Logging
             Func<string> action,
             bool timer = default,
             bool enabled = true,
+            string message = null,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, parameters, null, timer);
+            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, parameters, message, timer);
             var msg = action();
             if (enabled) l.Done(msg);
         }
