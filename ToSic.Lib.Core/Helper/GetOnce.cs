@@ -55,6 +55,7 @@ namespace ToSic.Lib.Helper
         /// <returns></returns>
         public T Get(ILog log, Func<T> generator,
             bool timer = default,
+            bool enabled = true,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
@@ -62,7 +63,7 @@ namespace ToSic.Lib.Helper
         {
             if (IsValueCreated) return _value;
             IsValueCreated = true;
-            return _value = log.Getter(generator, timer: timer, cPath: cPath, cName: cName, cLine: cLine);
+            return _value = log.Getter(generator, timer: timer, enabled: enabled, cPath: cPath, cName: cName, cLine: cLine);
         }
 
 

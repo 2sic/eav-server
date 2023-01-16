@@ -30,29 +30,29 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = default
         ) => new LogCall<T>(log, CodeRef.Create(cPath, cName, cLine), false, parameters, message, timer);
 
-        /// <summary>
-        /// Log a function call from start up until returning the result.
-        /// </summary>
-        /// <typeparam name="T">The type of the final result.</typeparam>
-        /// <param name="log">The parent <see cref="ILog"/> or <see cref="ILogCall"/> object.</param>
-        /// <param name="enabled">Boolean toggle. If false, logging won't happen.</param>
-        /// <param name="parameters">Optional parameters used in the call</param>
-        /// <param name="message">Optional message</param>
-        /// <param name="timer">Enable the timer/stopwatch.</param>
-        /// <param name="cPath">Code file path, auto-added by compiler</param>
-        /// <param name="cName">Code method name, auto-added by compiler</param>
-        /// <param name="cLine">Code line number, auto-added by compiler</param>
-        /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
-        /// <returns></returns>
-        public static ILogCall<T> Fn<T>(this ILog log,
-            bool enabled,
-            string parameters = default,
-            string message = default,
-            bool timer = false,
-            [CallerFilePath] string cPath = default,
-            [CallerMemberName] string cName = default,
-            [CallerLineNumber] int cLine = default
-        ) => new LogCall<T>(enabled ? log : null, CodeRef.Create(cPath, cName, cLine), false, parameters, message, timer);
+        ///// <summary>
+        ///// Log a function call from start up until returning the result.
+        ///// </summary>
+        ///// <typeparam name="T">The type of the final result.</typeparam>
+        ///// <param name="log">The parent <see cref="ILog"/> or <see cref="ILogCall"/> object.</param>
+        ///// <param name="enabled">Boolean toggle. If false, logging won't happen.</param>
+        ///// <param name="parameters">Optional parameters used in the call</param>
+        ///// <param name="message">Optional message</param>
+        ///// <param name="timer">Enable the timer/stopwatch.</param>
+        ///// <param name="cPath">Code file path, auto-added by compiler</param>
+        ///// <param name="cName">Code method name, auto-added by compiler</param>
+        ///// <param name="cLine">Code line number, auto-added by compiler</param>
+        ///// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+        ///// <returns></returns>
+        //public static ILogCall<T> Fn<T>(this ILog log,
+        //    bool enabled,
+        //    string parameters = default,
+        //    string message = default,
+        //    bool timer = false,
+        //    [CallerFilePath] string cPath = default,
+        //    [CallerMemberName] string cName = default,
+        //    [CallerLineNumber] int cLine = default
+        //) => new LogCall<T>(enabled ? log : null, CodeRef.Create(cPath, cName, cLine), false, parameters, message, timer);
 
 
         /// <summary>

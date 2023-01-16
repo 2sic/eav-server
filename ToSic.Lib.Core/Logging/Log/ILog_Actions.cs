@@ -25,14 +25,15 @@ namespace ToSic.Lib.Logging
         public static void Do(this ILog log,
             Action action,
             bool timer = default,
+            bool enabled = true,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall(log, Create(cPath, cName, cLine), false, null, null, timer);
+            var l = enabled ? new LogCall(log, Create(cPath, cName, cLine), false, null, null, timer): null;
             action();
-            l.Done();
+            if (enabled) l.Done();
         }
 
         /// <summary>
@@ -52,15 +53,16 @@ namespace ToSic.Lib.Logging
             string parameters,
             Action action,
             bool timer = default,
+            bool enabled = true,
             string message = null,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall(log, Create(cPath, cName, cLine), false, parameters, message, timer);
+            var l = enabled ? new LogCall(log, Create(cPath, cName, cLine), false, parameters, message, timer) : null;
             action();
-            l.Done();
+            if (enabled) l.Done();
         }
 
         /// <summary>
@@ -76,14 +78,15 @@ namespace ToSic.Lib.Logging
         public static void Do(this ILog log,
             Action<ILogCall> action,
             bool timer = default,
+            bool enabled = true,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall(log, Create(cPath, cName, cLine), false, null, null, timer);
+            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, null, null, timer);
             action(l);
-            l.Done();
+            if (enabled) l.Done();
         }
 
 
@@ -103,11 +106,16 @@ namespace ToSic.Lib.Logging
         public static void Do(this ILog log,
             Func<string> action,
             bool timer = default,
+            bool enabled = true,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => new LogCall(log, Create(cPath, cName, cLine), false, null, null, timer)
-                .Done(action());
+        )
+        {
+            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, null, null, timer);
+            var msg = action();
+            if (enabled) l.Done(msg);
+        }
 
         /// <summary>
         /// Do something and the inner call can return a message which will be logged.
@@ -127,10 +135,15 @@ namespace ToSic.Lib.Logging
             string parameters,
             Func<string> action,
             bool timer = default,
+            bool enabled = true,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => new LogCall(log, Create(cPath, cName, cLine), false, parameters, null, timer)
-                .Done(action());
+        )
+        {
+            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, parameters, null, timer);
+            var msg = action();
+            if (enabled) l.Done(msg);
+        }
     }
 }

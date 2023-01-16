@@ -22,30 +22,33 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         #region Return Values
 
 
-        [TestMethod]
-        public void Func_ReturnNull()
-        {
-            var log = new Log("test");
-            var x = log.Func(() => null as IEnumerable<string>);
-            AreEqual(2, log.Entries.Count, "should have two entries (start/stop)");
-            AreEqual("", log.Entries[0].Result);
-            IsNull(x);
-        }
+        [TestMethod] public void Func_ReturnNull() => 
+            Func_ReturnValue_Assert<string>(ThisMethodName(), log => log.Func(() => null as string), null, 2);
 
-        [TestMethod]
-        public void Func_ReturnValue()
+        [TestMethod] public void Func_ReturnValue() => 
+            Func_ReturnValue_Assert(ThisMethodName(), log => log.Func(() => 7), 7, 2);
+
+        [TestMethod] public void Func_EnabledTrue_ReturnValue() => 
+            Func_ReturnValue_Assert(ThisMethodName(), log => log.Func(() => 27, enabled: true), 27, 2);
+
+        [TestMethod] public void Func_EnabledFalse_ReturnValue() => 
+            Func_ReturnValue_Assert(ThisMethodName(), log => log.Func(() => 42, enabled: false), 42, 0);
+
+        private static void Func_ReturnValue_Assert<T>(string fnName, Func<Log, T> logFunc, T expected, int expectedCount)
         {
             var log = new Log("tst.Test");
-            var x = log.Func(() => 7);
-            AreEqual(7, x);
-            AreEqual(2, log.Entries.Count, "should have two entries (start/stop)");
-            var header = log.Entries[0];
-            AreEqual("7", header.Result);
-            AreEqual($"{nameof(Func_ReturnValue)}()", header.Message);
+            var x = logFunc(log);
+            AreEqual(expected, x);
+            AreEqual(expectedCount, log.Entries.Count, "should have two entries (start/stop)");
+            if (log.Entries.Any())
+            {
+                var header = log.Entries[0];
+                AreEqual(expected?.ToString() ?? "", header.Result);
+                AreEqual($"{fnName}()", header.Message);
+            }
         }
 
-        [TestMethod]
-        public void Func_ReturnDateTime()
+        [TestMethod] public void Func_ReturnDateTime()
         {
             var expected = new DateTime();
             var log = new Log("test");
