@@ -60,7 +60,7 @@ namespace ToSic.Eav.Context
         public IUser User { get; }
 
         /// <inheritdoc />
-        public virtual bool UserMayEdit => Log.GetAndLog<bool>(_ =>
+        public virtual bool UserMayEdit => Log.Getter(() =>
         {
             var u = User;
             if (u == null) return false;

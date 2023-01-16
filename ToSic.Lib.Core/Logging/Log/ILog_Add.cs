@@ -5,8 +5,13 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging
 {
+    /// <summary>
+    /// Various extensions for <see cref="ILog"/> objects to add logs.
+    /// They are all implemented as extension methods, so that they will not fail even if the log object is null.
+    /// </summary>
+    [PublicApi]
     // ReSharper disable once InconsistentNaming
-    public static partial class ILogExtensions
+    public static partial class ILog_Add
     {
         /// <summary>
         /// Add a message to the log.
@@ -25,8 +30,17 @@ namespace ToSic.Lib.Logging
         ) => log.AddInternal(message, CodeRef.Create(cPath, cName, cLine));
 
 
-        [PrivateApi]
+        /// <summary>
+        /// Add a message to the log.
+        /// </summary>
+        /// <param name="log">The log object (or null)</param>
+        /// <param name="enabled">If true, will add the message, otherwise not</param>
+        /// <param name="message">The message to add</param>
+        /// <param name="cPath">Code file path, auto-added by compiler</param>
+        /// <param name="cName">Code method name, auto-added by compiler</param>
+        /// <param name="cLine">Code line number, auto-added by compiler</param>
         /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+        [PrivateApi]
         public static void A(this ILog log,
             bool enabled, 
             string message,

@@ -68,19 +68,19 @@ namespace ToSic.Eav.Apps.Security
         /// Check if user is anonymous - also log the ID to assist in debugging
         /// </summary>
         /// <returns></returns>
-        protected bool UserIsAnonymous() => Log.Return($"UserId:{Context.User?.Id.ToString()}", () => Context.User?.IsAnonymous ?? true);
+        protected bool UserIsAnonymous() => Log.Func($"UserId:{Context.User?.Id.ToString()}", () => Context.User?.IsAnonymous ?? true);
 
         /// <summary>
         /// Check if user is super user
         /// </summary>
         /// <returns></returns>
-        protected bool UserIsSystemAdmin() => Log.Return(() => Context.User?.IsSystemAdmin ?? false);
+        protected bool UserIsSystemAdmin() => Log.Func(() => Context.User?.IsSystemAdmin ?? false);
 
         /// <summary>
         /// Check if user is valid admin of current portal / zone
         /// </summary>
         /// <returns></returns>
-        protected bool UserIsContentAdmin() => Log.Return(() => Context.User?.IsContentAdmin ?? false);
+        protected bool UserIsContentAdmin() => Log.Func(() => Context.User?.IsContentAdmin ?? false);
 
         /// <summary>
         /// Verify that we're in the same zone, allowing admin/module checks

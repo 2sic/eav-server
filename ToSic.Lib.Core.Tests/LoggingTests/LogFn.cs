@@ -22,7 +22,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
 
         protected virtual void Finish((ILog LogForAdd, Log RealLog) log) { /* do nothing in base class */ }
 
-        protected virtual string WrapperSignature => $"{nameof(LogFactory)}() ";
+        protected virtual string WrapperSignature => $"{nameof(LogFactory)}()";
 
         // protected override int LogDepth => 1;
         /// <summary>

@@ -178,7 +178,7 @@ namespace ToSic.Eav.WebApi.Sys
                    + " - "
                    + HtmlEncode(e.Message)
                    + (e.Result != null
-                       ? $"{ResStart}{HtmlEncode(e.Result)}{ResEnd}"
+                       ? $" {ResStart}{HtmlEncode(e.Result)}{ResEnd}"
                        : string.Empty)
                    + time.ShowTime(e, parentTime)
                    + (e.Code != null

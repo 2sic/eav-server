@@ -98,7 +98,7 @@ namespace ToSic.Eav.Persistence.File
                 appState.Folder = Constants.PresetName;
 
 
-                Log.DoAndLog(timer: true, action: () =>
+                Log.Do(timer: true, action: () =>
                 {
                     var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
                     // Just attach all global content-types to this app, as they belong here

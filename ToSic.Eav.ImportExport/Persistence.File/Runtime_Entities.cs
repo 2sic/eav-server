@@ -30,7 +30,7 @@ namespace ToSic.Eav.Persistence.File
         }
 
 
-        private List<EntitySetsToLoad> LoadAndDeduplicateEntitySets() => Log.WrpFn<List<EntitySetsToLoad>>(l =>
+        private List<EntitySetsToLoad> LoadAndDeduplicateEntitySets() => Log.Func<List<EntitySetsToLoad>>(l =>
         {
             // This will be the source of all relationships
             // In the end it must contain all entities - but not deleted ones...

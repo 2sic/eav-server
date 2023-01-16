@@ -83,6 +83,14 @@ namespace ToSic.Lib.Logging
             CodeRef code = default
         ) => new LogCall(log, code, false, parameters, message, timer);
 
+        [PrivateApi]
+        internal static ILogCall<TResult> FnCode<TResult>(this ILog log,
+            string parameters = default,
+            string message = default,
+            bool timer = false,
+            CodeRef code = default
+        ) => new LogCall<TResult>(log, code, false, parameters, message, timer);
+
         /// <summary>
         /// Special helper to use a function to create a message, but ignore any errors to avoid problems when only logging.
         /// </summary>

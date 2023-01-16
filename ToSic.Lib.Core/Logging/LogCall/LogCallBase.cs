@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using ToSic.Lib.Documentation;
+using static System.String;
 
 namespace ToSic.Lib.Logging
 {
@@ -21,10 +22,12 @@ namespace ToSic.Lib.Logging
             Timer = timer ? Stopwatch.StartNew() : new Stopwatch();
 
             // Keep the log, but quit if it's not valid
-            if (!(log is Log typedLog)) return;
+            if (!(log.GetRealLog() is Log typedLog)) return;
             Log = typedLog;
-            
-            var openingMessage = $"{code.Name}" + (isProperty ? "" : $"({parameters})") + $" {message}";
+
+            var openingMessage = $"{code.Name}" + (isProperty ? "" : $"({parameters})");
+            if (!IsNullOrWhiteSpace(message)) 
+                openingMessage += (IsNullOrWhiteSpace(openingMessage) ? "" : " ") + $"{message}";
             var entry = Entry = Log.AddInternalReuse(openingMessage, code);
             entry.WrapOpen = true;
             typedLog.WrapDepth++;

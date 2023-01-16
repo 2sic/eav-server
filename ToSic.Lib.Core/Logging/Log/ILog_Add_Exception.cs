@@ -5,10 +5,10 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Lib.Logging
 {
     // ReSharper disable once InconsistentNaming
-    public static partial class ILogExtensions
+    public static partial class ILog_Add
     {
         [PrivateApi("not in use yet, better keep secret for now")]
-        public static void Ex(this ILog log,
+        internal static void ExWithCode(this ILog log,
             Exception exception,
             CodeRef codeRef
             ) => log?.ExceptionInternal(exception, codeRef);

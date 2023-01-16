@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -13,7 +14,7 @@ namespace ToSic.Lib.Helper
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [PrivateApi("internal use only")]
-    public class GetOnce<T>
+    public class GetOnce<T>: IHasLog
     {
         public GetOnce() {}
 
@@ -44,6 +45,28 @@ namespace ToSic.Lib.Helper
         }
 
         /// <summary>
+        /// EXPERIMENTAL - getter with will log when it gets the property the first time
+        /// </summary>
+        /// <param name="log"></param>
+        /// <param name="generator"></param>
+        /// <param name="cPath"></param>
+        /// <param name="cName"></param>
+        /// <param name="cLine"></param>
+        /// <returns></returns>
+        public T Get(ILog log, Func<T> generator,
+            bool timer = default,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        )
+        {
+            if (IsValueCreated) return _value;
+            IsValueCreated = true;
+            return _value = log.Getter(generator, timer: timer, cPath: cPath, cName: cName, cLine: cLine);
+        }
+
+
+        /// <summary>
         /// Get the value once only. If not yet retrieved, use the generator function.
         ///
         /// Also log what the returned value was for better insights.
@@ -69,5 +92,7 @@ namespace ToSic.Lib.Helper
         /// </summary>
         public bool IsValueCreated { get; private set; }
         private T _value;
+
+        public ILog Log { get; private set; }
     }
 }

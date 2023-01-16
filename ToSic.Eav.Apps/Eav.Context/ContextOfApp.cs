@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
@@ -81,13 +80,12 @@ namespace ToSic.Eav.Context
                 _appSettingsStack.Reset();
                 _settings.Reset();
                 _resources.Reset();
-                //_userMayEdit = null;
                 _userMayEditGet.Reset();
             }
         }
         private IAppIdentity _appIdentity;
 
-        public override bool UserMayEdit => _userMayEditGet.Get(() => Log.GetAndLog<bool>(_ =>
+        public override bool UserMayEdit => _userMayEditGet.Get(() => Log.Getter(() =>
         {
             // Case 1: Superuser always may
             if (User.IsSystemAdmin) return (true, "super");
