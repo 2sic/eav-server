@@ -7,9 +7,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Efc.Intermediate;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
-using ToSic.Lib.DI;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -33,7 +31,7 @@ namespace ToSic.Eav.Persistence.Efc
 
         internal int AddLogCount;
 
-        private void LoadEntities(AppState app, int[] entityIds = null) => Log.Do($"{app.AppId}, {entityIds?.Length ?? 0}", l =>
+        private void LoadEntities(AppState app, int[] entityIds = null) => Log.Do($"{app.AppId}, {entityIds?.Length ?? 0}", timer: true, action: l =>
         {
             AddLogCount = 0; // reset, so anything in this call will be logged again up to 1000 entries
             var appId = app.AppId;
@@ -77,7 +75,6 @@ namespace ToSic.Eav.Persistence.Efc
 
             l.A($"Found {relatedEntities.Count} entity relationships in {sqlTime.ElapsedMilliseconds}ms");
 
-
             #region load attributes & values
 
             var chunkedAttributes = entityIdChunks.Select(GetAttributesOfEntityChunk);
@@ -113,9 +110,8 @@ namespace ToSic.Eav.Persistence.Efc
 
             #endregion
 
-
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
-        }, timer: true);
+        });
 
 
 

@@ -113,7 +113,7 @@ namespace ToSic.Eav.Persistence.Efc
             var outerWrapLog = Log.Fn<AppState>(message: "What happens inside this is logged in the app-state loading log");
             
             var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
-            app.Load(() => Log.DoTimed(l =>
+            app.Load(() => Log.Do(timer: true, message: msg, action: l =>
             {
                 // prepare metadata lists & relationships etc.
                 if (startAt <= AppStateLoadSequence.MetadataInit)
@@ -151,7 +151,7 @@ namespace ToSic.Eav.Persistence.Efc
                     l.A("skipping items load");
 
                 l.A($"timers sql:sqlAll:{_sqlTotalTime}");
-            }, message: msg));
+            }));
 
             return outerWrapLog.ReturnAsOk(app);
         }

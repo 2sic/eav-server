@@ -17,54 +17,53 @@ namespace ToSic.Eav.Apps
 	    public IEnumerable<IContentType> ContentTypes => _appContentTypesFromRepository.Union(ParentApp.ContentTypes);
 
 
-		/// <summary>
-		/// The second init-command
-		/// Load content-types
-		/// </summary>
-		/// <param name="contentTypes"></param>
-		[PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
-		public void InitContentTypes(IList<IContentType> contentTypes)
+        /// <summary>
+        /// The second init-command
+        /// Load content-types
+        /// </summary>
+        /// <param name="contentTypes"></param>
+        [PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
+        public void InitContentTypes(IList<IContentType> contentTypes
+        ) => Log.Do($"contentTypes count: {contentTypes?.Count}", timer: true, action: () =>
         {
-            var wrapLog = Log.Fn(message: $"init content types {contentTypes?.Count}", timer: true);
-	        if (!Loading)
-	            throw new Exception("trying to set content-types, but not in loading state. set that first!");
+            if (!Loading)
+                throw new Exception("trying to set content-types, but not in loading state. set that first!");
 
             if (_metadataManager == null || Index.Any())
-	            throw new Exception("can't set content types before setting Metadata manager, or after entities-list already exists");
+                throw new Exception(
+                    "can't set content types before setting Metadata manager, or after entities-list already exists");
 
-	        _appTypeMap = contentTypes
-					// temp V11.01 - all the local content-types in the /system/ folder have id=0
-					// will filter out for now, because otherwise we get duplicate keys-errors
-					// believe this shouldn't be an issue, as it only seems to be used in fairly edge-case export/import
-					// situations which the static types shouldn't be used for, as they are json-typed
+            _appTypeMap = contentTypes
+                // temp V11.01 - all the local content-types in the /system/ folder have id=0
+                // will filter out for now, because otherwise we get duplicate keys-errors
+                // believe this shouldn't be an issue, as it only seems to be used in fairly edge-case export/import
+                // situations which the static types shouldn't be used for, as they are json-typed
                 .Where(x => x.Id != 0 && x.Id < FsDataConstants.GlobalContentTypeMin)
                 .ToImmutableDictionary(x => x.Id, x => x.NameId);
-	        _appContentTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
-	        // build types by name
-	        BuildCacheForTypesByName(_appContentTypesFromRepository);
-	        //ContentTypesShouldBeReloaded = false;
-            wrapLog.Done("ok");
-        }
+            _appContentTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
+            // build types by name
+            BuildCacheForTypesByName(_appContentTypesFromRepository);
+            //ContentTypesShouldBeReloaded = false;
+        });
 
 
-        private void BuildCacheForTypesByName(IList<IContentType> allTypes)
+        private void BuildCacheForTypesByName(IList<IContentType> allTypes
+        ) => Log.Do(message: $"build cache for type names for {allTypes.Count} items", timer: true, action: () =>
         {
-            var wrapLog = Log.Fn(message: $"build cache for type names for {allTypes.Count} items", timer: true);
-	        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
+            _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
-	        var keepTypes = allTypes;
+            var keepTypes = allTypes;
 
-	        // add with static name - as the primary key
-	        foreach (var type in keepTypes)
-	            if (!_appTypesByName.ContainsKey(type.NameId))
-	                _appTypesByName.Add(type.NameId, type);
+            // add with static name - as the primary key
+            foreach (var type in keepTypes)
+                if (!_appTypesByName.ContainsKey(type.NameId))
+                    _appTypesByName.Add(type.NameId, type);
 
-	        // add with nice name, if not already added
-	        foreach (var type in keepTypes)
-	            if (!_appTypesByName.ContainsKey(type.Name))
-	                _appTypesByName.Add(type.Name, type);
-            wrapLog.Done("ok");
-        }
+            // add with nice name, if not already added
+            foreach (var type in keepTypes)
+                if (!_appTypesByName.ContainsKey(type.Name))
+                    _appTypesByName.Add(type.Name, type);
+        });
 
 	    private ImmutableArray<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> appTypes)
         {

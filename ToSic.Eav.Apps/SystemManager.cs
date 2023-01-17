@@ -60,13 +60,12 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Run some code and then purge the cache after that for full rebuild
         /// </summary>
-        public void DoAndPurge(int zoneId, int appId, Action action, bool global = false)
+        public void DoAndPurge(int zoneId, int appId, Action action, bool global = false) => Log.Do($"{zoneId}, {appId}, fn(...), {global}", () =>
         {
-            var wrapLog = Log.Fn($"{zoneId}, {appId}, fn(...), {global}");
             action.Invoke();
             Purge(zoneId, appId, global);
-            wrapLog.Done("ok");
-        }
+        });
+
         #endregion
 
     }

@@ -69,7 +69,7 @@ namespace ToSic.Eav.Configuration.Licenses
         /// Pre-Load enabled / disabled global features
         /// </summary>
         [PrivateApi]
-        internal void LoadLicenses() => Log.Do(l=>
+        internal void LoadLicenses() => Log.Do(timer: true, action: l=>
         {
             var fingerprint = _fingerprint.GetFingerprint();
             try
@@ -88,7 +88,7 @@ namespace ToSic.Eav.Configuration.Licenses
                 l.Ex(ex);
                 return "error";
             }
-        }, timer: true);
+        });
 
         private List<LicenseStored> LicensesStoredInConfigFolder()
         {

@@ -222,14 +222,14 @@ namespace ToSic.Eav.Repository.Efc
 
         #region Shorthand for do & save
 
-        internal void DoAndSave(Action action, string message = null) => Log.DoTimed(() =>
+        internal void DoAndSave(Action action, string message = null) => Log.Do(timer: true, message: message, action: () =>
         {
             action.Invoke();
             SqlDb.SaveChanges();
-        }, message: message);
+        });
 
 
-        internal void DoAndSaveWithoutChangeDetection(Action action, string message = null) => Log.DoTimed(l =>
+        internal void DoAndSaveWithoutChangeDetection(Action action, string message = null) => Log.Do(timer: true, message: message, action: l =>
         {
             action.Invoke();
 
@@ -248,15 +248,14 @@ namespace ToSic.Eav.Repository.Efc
             {
                 SqlDb.ChangeTracker.AutoDetectChangesEnabled = preserve;
             }
-
-        }, message: message);
+        });
 
 
         public void DoInTransaction(Action action)
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
             var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
-            Log.Do(l =>
+            Log.Do(timer: true, message: $"id:{randomId} - create new trans:{ownTransaction != null}", action: l =>
             {
                 try
                 {
@@ -273,7 +272,7 @@ namespace ToSic.Eav.Repository.Efc
                     l.Ex(e);
                     throw;
                 }
-            }, message: $"id:{randomId} - create new trans:{ownTransaction != null}", timer: true);
+            });
         }
 
         /// <summary>
@@ -282,7 +281,7 @@ namespace ToSic.Eav.Repository.Efc
         /// <remarks>Useful if many changes are made in a batch and Cache should be purged after that batch</remarks>
         private bool _purgeAppCacheOnSave = true;
 
-        public void DoButSkipAppCachePurge(Action action) => Log.DoTimed(() =>
+        public void DoButSkipAppCachePurge(Action action) => Log.Do(timer: true, action: () =>
         {
             var before = _purgeAppCacheOnSave;
             _purgeAppCacheOnSave = false;
@@ -290,7 +289,7 @@ namespace ToSic.Eav.Repository.Efc
             _purgeAppCacheOnSave = before;
         });
 
-        public void DoWithDelayedCacheInvalidation(Action action) => Log.DoTimed(() =>
+        public void DoWithDelayedCacheInvalidation(Action action) => Log.Do(timer: true, action: () =>
         {
             _purgeAppCacheOnSave = false;
             action.Invoke();

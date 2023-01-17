@@ -25,40 +25,35 @@ namespace ToSic.Eav.Apps
 
 
         [PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
-        public void Load(Action loader)
+        public void Load(Action loader) => Log.Do(message: $"zone/app:{ZoneId}/{AppId} - Hash: {GetHashCode()}", timer: true, action: l =>
         {
-            var wrapLog = Log.Fn(message: $"zone/app:{ZoneId}/{AppId} - Hash: {GetHashCode()}", timer: true);
-
             try
             {
                 // first set a lock, to ensure that only one update/load is running at the same time
                 lock (this)
-                {
-                    var inLockLog = Log.Fn($"loading: {Loading}", "app loading start in lock");
+                    l.Do($"loading: {Loading} (app loading start in lock)", action: () =>
+                    {
+                        // only if loading is true will the AppState object accept changes
+                        Loading = true;
+                        loader.Invoke();
+                        CacheResetTimestamp("load complete");
+                        EnsureNameAndFolderInitialized();
+                        if (!FirstLoadCompleted) FirstLoadCompleted = true;
 
-                    // only if loading is true will the AppState object accept changes
-                    Loading = true;
-                    loader.Invoke();
-                    CacheResetTimestamp("load complete");
-                    EnsureNameAndFolderInitialized();
-                    if (!FirstLoadCompleted) FirstLoadCompleted = true;
-
-                    inLockLog.Done($"done - dynamic load count: {DynamicUpdatesCount}");
-                }
+                        return $"done - dynamic load count: {DynamicUpdatesCount}";
+                    });
             }
             catch (Exception ex)
             {
-                Log.A("Error");
-                Log.Ex(ex);
+                l.A("Error");
+                l.Ex(ex);
             }
             finally
             {
                 // set loading to false again, to ensure that AppState won't accept changes
                 Loading = false;
-
-                wrapLog.Done("ok");
             }
-        }
+        });
         
         private bool EnsureNameAndFolderInitialized()
         {

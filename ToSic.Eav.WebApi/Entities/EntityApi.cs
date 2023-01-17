@@ -202,12 +202,9 @@ namespace ToSic.Eav.WebApi
 
             var list = EntityToDic.Convert(originals).ToList();
 
-            var timer = Log.Fn(null, "truncate dictionary", timer: true);
-            var result = list
+            var result = Log.Func(null, message: "truncate dictionary", timer: true, func: () => list
                 .Select(li => li.ToDictionary(x1 => x1.Key, x2 => Truncate(x2.Value, 50)))
-                .ToList();
-            timer.Done("ok");
-
+                .ToList());
             return wrapLog.Return(result, result.Count.ToString());
         }
 

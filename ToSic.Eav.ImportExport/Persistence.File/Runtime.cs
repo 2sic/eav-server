@@ -81,7 +81,7 @@ namespace ToSic.Eav.Persistence.File
             var appState = new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);
             var msg = $"get app data package for a#{appState.AppId}";
 
-            appState.Load(() => Log.DoTimed(l =>
+            appState.Load(() => Log.Do(timer: true, message: msg, action: l =>
             {
                 // Prepare metadata lists & relationships etc.
                 // #removeUnusedPreloadOfMetaTypes
@@ -126,7 +126,7 @@ namespace ToSic.Eav.Persistence.File
                     l.A("Error: Failed adding Entities");
                     l.Ex(ex);
                 }
-            }, message: msg));
+            }));
 
             return outerWrapLog.ReturnAsOk(appState);
         }

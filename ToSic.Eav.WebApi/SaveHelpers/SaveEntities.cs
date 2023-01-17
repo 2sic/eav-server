@@ -17,9 +17,10 @@ namespace ToSic.Eav.WebApi.SaveHelpers
         public SaveEntities(ILog parentLog) : base(parentLog, "Eav.SavHlp") {}
 
 
-        public void UpdateGuidAndPublishedAndSaveMany(AppManager appMan, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
+        public void UpdateGuidAndPublishedAndSaveMany(AppManager appMan, List<BundleWithHeader<IEntity>> itemsToImport,
+            bool enforceDraft
+        ) => Log.Do(l =>
         {
-            var wrapLog = Log.Fn("");
             foreach (var bundle in itemsToImport)
             {
                 var curEntity = (Entity)bundle.Entity;
@@ -27,21 +28,18 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                 if (enforceDraft)
                     EnforceDraft(curEntity);
             }
-            
+
             var entitiesToImport = itemsToImport.Select(e => e.Entity).ToList();
 
-            Log.A("will save " + entitiesToImport.Count + " items");
+            l.A("will save " + entitiesToImport.Count + " items");
             appMan.Entities.Save(entitiesToImport);
-            wrapLog.Done();
-        }
+        });
 
-        private void EnforceDraft(Entity currEntity)
+        private void EnforceDraft(Entity currEntity) => Log.Do($"will set published/isbranch on {currEntity.EntityGuid}", () =>
         {
-            var wrapLog = Log.Fn($"will set published/isbranch on {currEntity.EntityGuid}");
             currEntity.IsPublished = false;
             currEntity.PlaceDraftInBranch = true;
-            wrapLog.Done();
-        }
+        });
 
         /// <summary>
         /// Generate pairs of guid/id of the newly added items

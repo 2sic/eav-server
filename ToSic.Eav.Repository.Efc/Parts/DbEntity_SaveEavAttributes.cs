@@ -39,7 +39,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             ToSicEavEntities dbEnt,
             int changeId,
             bool logDetails
-        ) => Log.Do($"id:{newEnt.EntityId}", () =>
+        ) => Log.Do($"id:{newEnt.EntityId}", timer: true, action: () =>
         {
             if (!_attributeQueueActive) throw new Exception("Attribute save-queue not ready - should be wrapped");
             foreach (var attribute in newEnt.Attributes.Values)
@@ -103,7 +103,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                     return "ok";
                 });
-        }, timer: true);
+        });
 
         internal void DoWhileQueueingAttributes(Action action)
         {
@@ -131,7 +131,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
         private void AttributeQueueAdd(Action next) => _attributeUpdateQueue.Add(next);
 
-        private void AttributeQueueRun() => Log.DoTimed(() =>
+        private void AttributeQueueRun() => Log.Do(timer: true, action: () =>
         {
             _attributeUpdateQueue.ForEach(a => a.Invoke());
             _attributeUpdateQueue.Clear();
