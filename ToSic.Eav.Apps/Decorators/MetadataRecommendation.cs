@@ -44,6 +44,12 @@ namespace ToSic.Eav.Apps.Decorators
         [JsonIgnore]
         public IContentType Type { get; }
 
+        [JsonIgnore]
+        internal bool PushToUi => Enabled || !string.IsNullOrWhiteSpace(MissingFeature);
+
+        public bool Enabled { get; set; }
+        public string MissingFeature { get; set; }
+
         public MetadataRecommendation(IContentType type, IEntity recommendation, int? count, string debugMessage, int priority)
         {
             Type = type;

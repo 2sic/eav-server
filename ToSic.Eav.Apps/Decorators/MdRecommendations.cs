@@ -8,6 +8,7 @@ using ToSic.Eav.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
+using static System.String;
 using static ToSic.Eav.Apps.Decorators.MetadataRecommendation;
 
 namespace ToSic.Eav.Apps.Decorators
@@ -34,7 +35,15 @@ namespace ToSic.Eav.Apps.Decorators
             var recommendations = GetRecommendations(targetTypeId, key, recommendedTypeName);
 
             var remaining = recommendations
-                .Where(r => _requirements.Value.RequirementMet(r.Type.Metadata))
+                .Select(r =>
+                {
+                    var status = _requirements.Value.RequirementMet(r.Type.Metadata);
+                    r.Enabled = status.Approved;
+                    if (!status.Approved && !IsNullOrWhiteSpace(status.FeatureId))
+                        r.MissingFeature = status.FeatureId;
+                    return r;
+                })
+                .Where(r => r.PushToUi)
                 .ToList();
             return remaining;
         }
@@ -47,7 +56,7 @@ namespace ToSic.Eav.Apps.Decorators
             // Option 1. Specified typeName
             // If a specific contentType was given, that's the only thing we'll recommend
             // This is the case for a Permissions dialog
-            if (!string.IsNullOrWhiteSpace(recommendedTypeName))
+            if (!IsNullOrWhiteSpace(recommendedTypeName))
             {
                 var recommendedType = AppState.GetContentType(recommendedTypeName);
                 if (recommendedType == null) return wrapLog.ReturnNull("type name not found");
@@ -224,7 +233,7 @@ namespace ToSic.Eav.Apps.Decorators
                     var rec = new ExpectedDecorator(rEntity);
                     var config = rec.Types;
                     var delWarning = rec.DeleteWarning;
-                    if (string.IsNullOrWhiteSpace(config))
+                    if (IsNullOrWhiteSpace(config))
                     {
                         l.W("Found case with no values in config");
                         return new List<MetadataRecommendation>();
@@ -248,7 +257,7 @@ namespace ToSic.Eav.Apps.Decorators
         private MetadataRecommendation TypeAsRecommendation(string name, string debug, int priority, string delWarning
         ) => Log.Func(() =>
         {
-            if (string.IsNullOrWhiteSpace(name)) return (null, "empty name");
+            if (IsNullOrWhiteSpace(name)) return (null, "empty name");
 
             var type = AppState.GetContentType(name);
             return type == null
