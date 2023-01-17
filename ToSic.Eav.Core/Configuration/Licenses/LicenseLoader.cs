@@ -20,6 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
@@ -33,7 +34,7 @@ namespace ToSic.Eav.Configuration.Licenses
     /// Will check the loaded licenses and prepare validity information for use during system runtime
     /// </summary>
     /// <remarks>Must be SEALED, to prevent inheritance and prevent injection of alternate loader</remarks>
-    public sealed class LicenseLoader: LoaderBase
+    public sealed class LicenseLoader : LoaderBase
     {
         /// <summary>
         /// Constructor - for DI
@@ -68,27 +69,26 @@ namespace ToSic.Eav.Configuration.Licenses
         /// Pre-Load enabled / disabled global features
         /// </summary>
         [PrivateApi]
-        internal void LoadLicenses()
+        internal void LoadLicenses() => Log.Do(l=>
         {
-            var wrapLog = Log.Fn(timer: true);
             var fingerprint = _fingerprint.GetFingerprint();
             try
             {
                 var licensesStored = LicensesStoredInConfigFolder();
-                Log.A($"Found {licensesStored.Count} licenseStored in files");
+                l.A($"Found {licensesStored.Count} licenseStored in files");
                 var licenses = licensesStored.SelectMany(ls => LicensesStateBuilder(ls, fingerprint)).ToList();
                 var autoEnabled = AutoEnabledLicenses();
                 LicenseService.Update(autoEnabled.Union(licenses).ToList());
-                Log.A($"Found {licenses.Count} licenses");
-                wrapLog.Done("ok");
+                l.A($"Found {licenses.Count} licenses");
+                return "ok";
             }
             catch (Exception ex)
             {
                 // Just log and ignore
-                Log.Ex(ex);
-                wrapLog.Done("error");
+                l.Ex(ex);
+                return "error";
             }
-        }
+        }, timer: true);
 
         private List<LicenseStored> LicensesStoredInConfigFolder()
         {

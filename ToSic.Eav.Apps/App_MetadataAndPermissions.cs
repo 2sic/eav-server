@@ -29,10 +29,8 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Assign all kinds of metadata / resources / settings (App-Mode only)
         /// </summary>
-        protected void InitializeResourcesSettingsAndMetadata()
+        protected void InitializeResourcesSettingsAndMetadata() => Log.Do(() =>
         {
-            var wrapLog = Log.Fn();
-
             var appState = AppState;
             Metadata = appState.Metadata;
 
@@ -50,8 +48,7 @@ namespace ToSic.Eav.Apps
 
             Hidden = AppConfiguration?.Value<bool>(AppConstants.FieldHidden) ?? false;
             Log.A($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
-            wrapLog.Done();
-        }
+        });
         #endregion
 
         [PublicApi]

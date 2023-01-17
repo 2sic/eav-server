@@ -126,10 +126,8 @@ namespace ToSic.Eav.DataSources.Sys
         }
 
 
-        private void BuildQuery()
+        private void BuildQuery() => Log.Do(() =>
         {
-            var wrapLog = Log.Fn();
-
             var qName = QueryName;
             if (string.IsNullOrWhiteSpace(qName))
                 return;
@@ -139,13 +137,13 @@ namespace ToSic.Eav.DataSources.Sys
                 ? QueryManager.FindQuery(Constants.PresetIdentity, qName)
                 : QueryManager.FindQuery(this, qName);
 
-            if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{qName}'");
+            if (found == null)
+                throw new Exception($"Can't build information about query - couldn't find query '{qName}'");
 
             var builtQuery = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log),
                 false, Configuration.LookUpEngine);
             _query = builtQuery.Item1;
-            wrapLog.Done();
-        }
+        });
 
         private IDataSource _query;
 

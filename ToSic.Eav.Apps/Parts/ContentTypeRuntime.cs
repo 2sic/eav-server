@@ -39,18 +39,18 @@ namespace ToSic.Eav.Apps.Parts
         public List<InputTypeInfo> GetInputTypes()
         {
             // Inner helper to log each intermediate state
-            void LogListOfInputTypes(string title, List<InputTypeInfo> inputsToLog)
-            {
-                var wrapLog2 = Log.Fn($"{title}, {inputsToLog.Count}");
-                try
+            void LogListOfInputTypes(string title, List<InputTypeInfo> inputsToLog) =>
+                Log.Do($"{title}, {inputsToLog.Count}", () =>
                 {
-                    wrapLog2.Done(string.Join(",", inputsToLog.Select(it => it.Type)));
-                }
-                catch (Exception)
-                {
-                    wrapLog2.Done("error");
-                }
-            }
+                    try
+                    {
+                        return string.Join(",", inputsToLog.Select(it => it.Type));
+                    }
+                    catch (Exception)
+                    {
+                        return "error";
+                    }
+                });
 
             var wrapLog = Log.Fn<List<InputTypeInfo>>();
 

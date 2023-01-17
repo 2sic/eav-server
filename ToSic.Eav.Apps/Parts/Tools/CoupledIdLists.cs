@@ -149,9 +149,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
         private void SyncListLengths()
         {
             var expectedLength = Lists.First().Value.Count;
-            var wrapLog = Log.Fn($"length: {expectedLength}");
-            Lists.Skip(1).ForEach(l => l.SetLength(expectedLength));
-            wrapLog.Done("ok");
+            Log.Do($"length: {expectedLength}", () => Lists.Skip(1).ForEach(l => l.SetLength(expectedLength)));
         }
     }
 }

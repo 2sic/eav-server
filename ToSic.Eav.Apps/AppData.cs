@@ -79,27 +79,24 @@ namespace ToSic.Eav.Apps
         }
 
         /// <inheritdoc />
-        public void Update(int entityId, Dictionary<string, object> values, string userName = null)
+        public void Update(int entityId, Dictionary<string, object> values, string userName = null
+        ) => Log.Do($"app update i:{entityId}", () =>
         {
-            var wrapLog = Log.Fn($"app update i:{entityId}");
             // userName is not used (to change owner of updated entity).
             DataController.Value.Update(entityId, values);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
-            wrapLog.Done();
-        }
+        });
 
 
         /// <inheritdoc />
-        public void Delete(int entityId, string userName = null)
+        public void Delete(int entityId, string userName = null) => Log.Do($"app delete i:{entityId}", () =>
         {
-            var wrapLog = Log.Fn($"app delete i:{entityId}");
             // userName is not used (to change owner of deleted entity).
             DataController.Value.Delete(entityId);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
-            wrapLog.Done();
-        }
+        });
 
         /// <summary>
         /// All 2sxc data is always snapshot, so read will only run a query once and keep it till the objects are killed.

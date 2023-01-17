@@ -220,36 +220,37 @@ namespace ToSic.Eav.ImportExport.Xml
         /// <param name="tempTargetValues"></param>
         /// <param name="envLang"></param>
         /// <param name="readOnly"></param>
-	    private void AddNodeToImportListOrEnhancePrevious(XElement sourceValueNode, List<ImportValue> tempTargetValues,
-            TargetLanguageToSourceLanguage envLang, bool readOnly)
-	    {
-	        var wrapLog = Log.Fn();
-	        var logText = "";
-	        var dimensionsToAdd = new List<ILanguage>();
-	        if (_envLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
-	        {
-	            dimensionsToAdd.Add(new Language {Key = envLang.EnvironmentKey, ReadOnly = readOnly});
-	            logText += "built dimension-list";
-	        }
+        private void AddNodeToImportListOrEnhancePrevious(XElement sourceValueNode, List<ImportValue> tempTargetValues,
+            TargetLanguageToSourceLanguage envLang, bool readOnly
+        ) => Log.Do(() =>
+        {
+            var logText = "";
+            var dimensionsToAdd = new List<ILanguage>();
+            if (_envLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
+            {
+                dimensionsToAdd.Add(new Language { Key = envLang.EnvironmentKey, ReadOnly = readOnly });
+                logText += "built dimension-list";
+            }
 
-	        // If value has already been added to the list, add just dimension with original ReadOnly state
-	        var existingImportValue = tempTargetValues.FirstOrDefault(p => p.XmlValue == sourceValueNode);
-	        if (existingImportValue != null)
-	        {
-	            existingImportValue.Dimensions.AddRange(dimensionsToAdd);
-	            logText += "targeNode already used for another node, just added dimension";
-	        }
-	        else
-	        {
-	            tempTargetValues.Add(new ImportValue
-	            {
-	                Dimensions = dimensionsToAdd,
-	                XmlValue = sourceValueNode
-	            });
-	            logText += "targetNode was not used yet, added it";
-	        }
-	        wrapLog.Done(logText);
-	    }
+            // If value has already been added to the list, add just dimension with original ReadOnly state
+            var existingImportValue = tempTargetValues.FirstOrDefault(p => p.XmlValue == sourceValueNode);
+            if (existingImportValue != null)
+            {
+                existingImportValue.Dimensions.AddRange(dimensionsToAdd);
+                logText += "targetNode already used for another node, just added dimension";
+            }
+            else
+            {
+                tempTargetValues.Add(new ImportValue
+                {
+                    Dimensions = dimensionsToAdd,
+                    XmlValue = sourceValueNode
+                });
+                logText += "targetNode was not used yet, added it";
+            }
+
+            return logText;
+        });
 
 	    private XElement GetFallbackAttributeInXml(List<XElement> xmlValuesOfAttrib)
 	    {

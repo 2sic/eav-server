@@ -43,26 +43,19 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="appIdentity"></param>
         /// <param name="global">if true, will flush everything</param>
-        public void Purge(IAppIdentity appIdentity, bool global = false)
+        public void Purge(IAppIdentity appIdentity, bool global = false) => Log.Do($"{appIdentity.Show()}, {global}", () =>
         {
-            var wrapLog = Log.Fn($"{appIdentity.Show()}, {global}");
             if (global)
                 _appsCache.Value.PurgeZones();
             else
                 _appsCache.Value.Purge(appIdentity);
-            wrapLog.Done("ok");
-        }
+        });
 
         /// <summary>
         /// Purge the cache of one app
         /// </summary>
         /// <param name="appId"></param>
-        public void PurgeApp(int appId)
-        {
-            var wrapLog = Log.Fn($"{appId}");
-            Purge(_appStates.IdentityOfApp(appId));
-            wrapLog.Done("ok");
-        }
+        public void PurgeApp(int appId) => Log.Do($"{appId}", () => Purge(_appStates.IdentityOfApp(appId)));
 
         /// <summary>
         /// Run some code and then purge the cache after that for full rebuild

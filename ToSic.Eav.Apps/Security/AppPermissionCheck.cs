@@ -93,10 +93,11 @@ namespace ToSic.Eav.Apps.Security
         {
             Init(targetType ?? targetItem?.Type, targetItem, permissions);
             _environmentPermission.Init(ctx, appIdentity);
-            var logWrap = Log.Fn($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
-            Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
-            AppIdentity = appIdentity;
-            logWrap.Done();
+            Log.Do($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ", () =>
+            {
+                Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
+                AppIdentity = appIdentity;
+            });
         }
 
         protected IContextOfSite Context { get; private set; }

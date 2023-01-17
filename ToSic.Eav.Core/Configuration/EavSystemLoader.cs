@@ -71,16 +71,17 @@ namespace ToSic.Eav.Configuration
             // Pre-Load the Assembly list into memory to log separately
             var assemblyLoadLog = new Log(EavLogs.Eav + "AssLdr", null, "Load Assemblies");
             _logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, assemblyLoadLog);
-            var l = Log.Fn(timer: true);
-            AssemblyHandling.GetTypes(assemblyLoadLog);
+            Log.Do(l =>
+            {
+                AssemblyHandling.GetTypes(assemblyLoadLog);
 
-            // Build the cache of all system-types. Must happen before everything else
-            Log.A("Try to load global app-state");
-            var presetApp = _appStateLoader.LoadFullAppState();
-            _appsCache.Value.Add(presetApp);
+                // Build the cache of all system-types. Must happen before everything else
+                l.A("Try to load global app-state");
+                var presetApp = _appStateLoader.LoadFullAppState();
+                _appsCache.Value.Add(presetApp);
 
-            LoadLicenseAndFeatures();
-            l.Done();
+                LoadLicenseAndFeatures();
+            }, timer: true);
         }
 
         /// <summary>

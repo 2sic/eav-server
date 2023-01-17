@@ -13,12 +13,8 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="id"></param>
         /// <param name="values"></param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        public void UpdateParts(int id, UpdateList values, (bool published, bool branch)? draftAndBranch = null)
-        {
-            var wrapLog = Log.Fn($"id:{id}");
-            UpdatePartsFromValues(Parent.AppState.List.FindRepoId(id), values, draftAndBranch);
-            wrapLog.Done("ok");
-        }
+        public void UpdateParts(int id, UpdateList values, (bool published, bool branch)? draftAndBranch = null) => 
+            Log.Do($"id:{id}", () => UpdatePartsFromValues(Parent.AppState.List.FindRepoId(id), values, draftAndBranch));
 
         /// <summary>
         /// Update an entity
@@ -26,12 +22,8 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="id"></param>
         /// <param name="values"></param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        public void UpdateParts(int id, Entity values, (bool published, bool branch)? draftAndBranch = null)
-        {
-            var wrapLog = Log.Fn($"id:{id}");
-            UpdatePartFromEntity(Parent.AppState.List.FindRepoId(id), values, draftAndBranch);
-            wrapLog.Done("ok");
-        }
+        public void UpdateParts(int id, Entity values, (bool published, bool branch)? draftAndBranch = null) =>
+            Log.Do($"id:{id}", () => UpdatePartFromEntity(Parent.AppState.List.FindRepoId(id), values, draftAndBranch));
 
         /// <summary>
         /// Update an entity

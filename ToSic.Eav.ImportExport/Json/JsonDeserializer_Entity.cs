@@ -105,9 +105,8 @@ namespace ToSic.Eav.ImportExport.Json
             return wrapLog.ReturnAsOk(newEntity);
         }
 
-        private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null)
+        private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null) => Log.Do(() =>
         {
-            var wrapLog = Log.Fn();
             BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, newEntity, null);
             BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, newEntity, null);
             BuildAttrib(jAtts.Custom, ValueTypes.Custom, newEntity, null);
@@ -116,8 +115,7 @@ namespace ToSic.Eav.ImportExport.Json
             BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, newEntity, null);
             BuildAttrib(jAtts.Number, ValueTypes.Number, newEntity, null);
             BuildAttrib(jAtts.String, ValueTypes.String, newEntity, null);
-            wrapLog.Done("ok");
-        }
+        });
 
         private void BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, ValueTypes type, Entity newEntity, IEntitiesSource relationshipsSource)
         {
@@ -131,9 +129,8 @@ namespace ToSic.Eav.ImportExport.Json
             }
         }
 
-        private void BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, Entity newEntity, IEntitiesSource relationshipsSource = null)
+        private void BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, Entity newEntity, IEntitiesSource relationshipsSource = null) => Log.Do(() =>
         {
-            var wrapLog = Log.Fn();
             foreach (var definition in contentType.Attributes)
             {
                 var newAtt = MultiBuilder.Attribute.CreateTyped(definition.Name, definition.Type);
@@ -185,8 +182,7 @@ namespace ToSic.Eav.ImportExport.Json
                 if (definition.IsTitle)
                     newEntity.SetTitleField(definition.Name);
             }
-            wrapLog.Done("ok");
-        }
+        });
 
         private void BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IContentTypeAttribute attrDef, IAttribute target)
         {

@@ -35,22 +35,18 @@ namespace ToSic.Eav.Run
             ? _systemLoaderLazy.Value
             : throw new Exception("Can't access this property unless StartUp has run first");
 
-        public void StartUp()
+        public void StartUp() => Log.Do(() =>
         {
-            var call = Log.Fn();
             DoRegistrations();
             Log.A("Will now run StartUp on EAv SystemLoader - logs are tracked separately");
             _systemLoaderLazy.Value.StartUp();
-            call.Done();
-        }
+        });
 
-        private void DoRegistrations()
+        private void DoRegistrations() => Log.Do(() =>
         {
-            var call = Log.Fn();
-            foreach (var registration in _registrations) 
+            foreach (var registration in _registrations)
                 DoRegistration(registration);
-            call.Done();
-        }
+        });
 
         private void DoRegistration(IStartUpRegistrations registration)
         {

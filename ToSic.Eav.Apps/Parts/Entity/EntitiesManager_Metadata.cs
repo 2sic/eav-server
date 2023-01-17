@@ -11,10 +11,9 @@ namespace ToSic.Eav.Apps.Parts
     public partial class EntitiesManager
     {
         // todo: should be in metadata manager?
-        public void SaveMetadata(Target target, string typeName, Dictionary<string, object> values)
+        public void SaveMetadata(Target target, string typeName, Dictionary<string, object> values
+        ) => Log.Do("target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count, () =>
         {
-            var wrapLog = Log.Fn("target:" + target.KeyNumber + "/" + target.KeyGuid + ", values count:" + values.Count);
-
             if (target.TargetType != (int)TargetTypes.Attribute || target.KeyNumber == null || target.KeyNumber == 0)
                 throw new NotSupportedException("atm this command only creates metadata for entities with id-keys");
 
@@ -29,7 +28,6 @@ namespace ToSic.Eav.Apps.Parts
                 saveEnt.SetMetadata(target);
                 Save(saveEnt);
             }
-            wrapLog.Done("ok");
-        }
+        });
     }
 }
