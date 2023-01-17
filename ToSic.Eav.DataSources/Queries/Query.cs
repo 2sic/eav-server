@@ -91,25 +91,22 @@ namespace ToSic.Eav.DataSources.Queries
             return this;
         }
 
-		/// <summary>
-		/// Create a stream for each data-type
-		/// </summary>
-		private void CreateOutWithAllStreams()
+        /// <summary>
+        /// Create a stream for each data-type
+        /// </summary>
+        private void CreateOutWithAllStreams() => Log.Do(timer: true, message: $"Query: '{Definition.Entity.GetBestTitle()}'", action: () =>
         {
-            var wrapLog = Log.Fn(message:$"Query: '{Definition.Entity.GetBestTitle()}'", timer: true);
-
             // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
             // and the current In
             var resolvedParams = Configuration.LookUpEngine.LookUp(Definition.Params);
 
             // now provide an override source for this
             var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, resolvedParams);
-		    var queryInfos = QueryBuilder.BuildQuery(Definition, Configuration.LookUpEngine, 
-                new List<ILookUp> {paramsOverride}, _showDrafts);
+            var queryInfos = QueryBuilder.BuildQuery(Definition, Configuration.LookUpEngine,
+                new List<ILookUp> { paramsOverride }, _showDrafts);
             _source = queryInfos.Item1;
             _out = new StreamDictionary(this, _source.Out);
-            wrapLog.Done("ok");
-        }
+        });
 
         private QueryBuilder QueryBuilder => _queryBuilder.Get(() => _queryBuilderLazy.Value);
         private readonly GetOnce<QueryBuilder> _queryBuilder = new GetOnce<QueryBuilder>();

@@ -22,12 +22,13 @@ namespace ToSic.Lib.Logging
         /// <param name="cName">Code method name, auto-added by compiler</param>
         /// <param name="cLine">Code line number, auto-added by compiler</param>
         /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
-        public static void Ex(this ILog log,
-            Exception exception,
+        public static TException Ex<TException>(this ILog log,
+            TException exception,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => log?.ExceptionInternal(exception, CodeRef.Create(cPath, cName, cLine));
+        ) where TException : Exception
+            => log?.ExceptionInternal(exception, CodeRef.Create(cPath, cName, cLine));
 
     }
 }

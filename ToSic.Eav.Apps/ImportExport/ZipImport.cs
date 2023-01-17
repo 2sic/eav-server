@@ -142,9 +142,8 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         /// <param name="directoryPath"></param>
         /// <param name="log"></param>
-        public static void TryToDeleteDirectory(string directoryPath, ILog log)
+        public static void TryToDeleteDirectory(string directoryPath, ILog log) => log.Do(directoryPath, () =>
         {
-            var wrapLog = log.Fn(directoryPath);
             var retryDelete = 0;
             do
             {
@@ -163,8 +162,8 @@ namespace ToSic.Eav.Apps.ImportExport
                 }
             } while (Directory.Exists(directoryPath) && retryDelete <= 20);
 
-            wrapLog.Done(Directory.Exists(directoryPath) ? "error, can't delete" : "ok");
-        }
+            return Directory.Exists(directoryPath) ? "error, can't delete" : "ok";
+        });
 
 
         /// <summary>
@@ -200,15 +199,15 @@ namespace ToSic.Eav.Apps.ImportExport
             return wrapLog.ReturnTrue("ok");
         }
 
-        private void ImportAppXmlAndFiles(string rename, string appDirectory, List<Message> importMessages, bool pendingApp)
+        private void ImportAppXmlAndFiles(string rename, string appDirectory, List<Message> importMessages, bool pendingApp
+        ) => Log.Do($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...", () =>
         {
-            var wrapLog = Log.Fn($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
-
             int appId;
             var importer = _xmlImpExpFiles.New().Init(null, false);
 
             var imp = new ImportXmlReader(
-                Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), Constants.AppDataFile), importer, Log);
+                Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), Constants.AppDataFile), importer,
+                Log);
 
             if (imp.IsAppImport)
             {
@@ -257,15 +256,16 @@ namespace ToSic.Eav.Apps.ImportExport
             importMessages.AddRange(importer.Messages);
             if (!pendingApp) CopyAppFiles(importMessages, appId, appDirectory);
 
-            var tmpAppGlobalFilesRoot = pendingApp ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder) : appDirectory;
-            CopyAppGlobalFiles(importMessages, appId, tmpAppGlobalFilesRoot, deleteGlobalTemplates: true, overwriteFiles: true);
+            var tmpAppGlobalFilesRoot =
+                pendingApp ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder) : appDirectory;
+            CopyAppGlobalFiles(importMessages, appId, tmpAppGlobalFilesRoot, deleteGlobalTemplates: true,
+                overwriteFiles: true);
             // New in V11 - now that we just imported content types into the /system folder
             // the App must be refreshed to ensure these are available for working
             // Must happen after CopyAppFiles(...)
             _systemManager.PurgeApp(appId);
 
-            wrapLog.Done("ok");
-        }
+        });
 
         private static string AppDataProtectedFolderPath(string appDirectory, bool pendingApp)
             => pendingApp
@@ -279,15 +279,13 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="appId"></param>
         /// <param name="tempFolder"></param>
         /// <remarks>The zip file still uses the old "2sexy" folder name instead of "2sxc"</remarks>
-        private void CopyAppFiles(List<Message> importMessages, int appId, string tempFolder)
+        private void CopyAppFiles(List<Message> importMessages, int appId, string tempFolder) => Log.Do($"..., {appId}, {tempFolder}", () =>
         {
-            var wrapLog = Log.Fn($"..., {appId}, {tempFolder}");
             var templateRoot = Env.TemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForAppStuff);
             if (Directory.Exists(appTemplateRoot))
-                _deps.FileManagerGenerator.New().SetFolder(appTemplateRoot)/* new FileManager(appTemplateRoot).Init(Log)*/.CopyAllFiles(templateRoot, false, importMessages);
-            wrapLog.Done("ok");
-        }
+                _deps.FileManagerGenerator.New().SetFolder(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
+        });
 
         /// <summary>
         /// Copy all files in 2sexyGlobal folder to global 2sexy folder
@@ -298,9 +296,10 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="deleteGlobalTemplates"></param>
         /// <param name="overwriteFiles"></param>
         /// <remarks>The zip file still uses the "2sexyGlobal" folder name instead of "2sxcGlobal"</remarks>
-        public void CopyAppGlobalFiles(List<Message> importMessages, int appId, string tempFolder, bool deleteGlobalTemplates = false, bool overwriteFiles = false)
+        public void CopyAppGlobalFiles(List<Message> importMessages, int appId, string tempFolder,
+            bool deleteGlobalTemplates = false, bool overwriteFiles = false
+        ) => Log.Do($"..., {appId}, {tempFolder}, {deleteGlobalTemplates}, {overwriteFiles}", () =>
         {
-            var wrapLog = Log.Fn($"..., {appId}, {tempFolder}, {deleteGlobalTemplates}, {overwriteFiles}");
             var globalTemplatesRoot = Env.GlobalTemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForGlobalAppStuff);
             if (Directory.Exists(appTemplateRoot))
@@ -310,26 +309,23 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 Log.A("copy all files to app global template folder");
                 _deps.FileManagerGenerator.New()
-                /*new FileManager(appTemplateRoot).Init(Log)*/.CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
+                    .CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
             }
+        });
 
-            wrapLog.Done("ok");
-        }
-
-        private void HandlePortalFilesFolder(string appDirectory, bool pendingApp)
+        private void HandlePortalFilesFolder(string appDirectory, bool pendingApp) => Log.Do(() =>
         {
-            var wrapLog = Log.Fn();
             // Handle PortalFiles/SiteFiles folder
             var portalTempRoot = pendingApp
                 ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder, Constants.ZipFolderForSiteFiles)
-                : Path.Combine(appDirectory, Constants.ZipFolderForPortalFiles); // TODO: probably replace with Constants.ZipFolderForSiteFiles
+                : Path.Combine(appDirectory,
+                    Constants.ZipFolderForPortalFiles); // TODO: probably replace with Constants.ZipFolderForSiteFiles
             if (Directory.Exists(portalTempRoot))
             {
                 var messages = Env.TransferFilesToSite(portalTempRoot, string.Empty);
                 Messages.AddRange(messages);
             }
-            wrapLog.Done();
-        }
+        });
 
         /// <summary>
         /// for import only, migrate app.xml or old 2sexy/.data/app.xml to 2sexy/App_Data

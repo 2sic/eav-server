@@ -166,17 +166,19 @@ namespace ToSic.Eav.WebApi.Admin.Query
 		    var qDef = QueryBuilder.GetQueryDefinition(appId, id);
 			var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, true, lookUps);
             var outSource = builtQuery.Item1;
-            
-            
-            var serializeWrap = Log.Fn("Serialize", timer: true);
+
+
             var timer = new Stopwatch();
             timer.Start();
-            var converter = _deps.EntToDicLazy.Value;
-            converter.WithGuid = true;//.EnableGuids();
-            converter.MaxItems = top;
-		    var results = converter.Convert(partLookup(builtQuery));
+            var results = Log.Func(message: "Serialize", timer: true, func: () =>
+            {
+                var converter = _deps.EntToDicLazy.Value;
+                converter.WithGuid = true;
+                converter.MaxItems = top;
+                var converted = converter.Convert(partLookup(builtQuery));
+                return (converted, "ok");
+            });
             timer.Stop();
-            serializeWrap.Done("ok");
 
             // Now get some more debug info
             var debugInfo = _deps.QueryInfoLazy.Value.BuildQueryInfo(qDef, outSource);
@@ -187,7 +189,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 				Query = results, 
 				Streams = debugInfo.Streams.Select(si =>
                 {
-                    if(si.ErrorData != null && si.ErrorData is IEntity errorEntity)
+                    if(si.ErrorData is IEntity errorEntity)
                         si.ErrorData = _deps.EntToDicLazy.Value.Convert(errorEntity);
                     return si;
                 }).ToList(),

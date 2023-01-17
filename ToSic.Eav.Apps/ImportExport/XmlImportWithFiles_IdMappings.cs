@@ -16,29 +16,26 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly Dictionary<int, int> _folderIdCorrectionList = new Dictionary<int, int>();
 
 
-        private void PrepareFileIdCorrectionList(XElement sexyContentNode)
-		{
-            var callLog = Log.Fn();
-			if (!sexyContentNode.Elements(XmlConstants.PortalFiles).Any())
-				return;
-
-			var portalFiles = sexyContentNode.Element(XmlConstants.PortalFiles)?.Elements(XmlConstants.FileNode);
-		    if (portalFiles == null) return;
-		    var filesAndPaths = portalFiles.ToDictionary(
-		        p => int.Parse(p.Attribute(XmlConstants.FileIdAttr).Value),
-		        v => v.Attribute(XmlConstants.FolderNodePath).Value
-		    );
-            Deps._environment.MapExistingFilesToImportSet(filesAndPaths, _fileIdCorrectionList);
-            callLog.Done("ok");
-        }
-
-
-	    private void PrepareFolderIdCorrectionListAndCreateMissingFolders(XElement sexyContentNode)
+        private void PrepareFileIdCorrectionList(XElement sexyContentNode) => Log.Do(() =>
         {
-            var callLog = Log.Fn();
-            if (!sexyContentNode.Elements(XmlConstants.FolderGroup).Any()) 
+            if (!sexyContentNode.Elements(XmlConstants.PortalFiles).Any())
                 return;
-            
+
+            var portalFiles = sexyContentNode.Element(XmlConstants.PortalFiles)?.Elements(XmlConstants.FileNode);
+            if (portalFiles == null) return;
+            var filesAndPaths = portalFiles.ToDictionary(
+                p => int.Parse(p.Attribute(XmlConstants.FileIdAttr).Value),
+                v => v.Attribute(XmlConstants.FolderNodePath).Value
+            );
+            Deps._environment.MapExistingFilesToImportSet(filesAndPaths, _fileIdCorrectionList);
+        });
+
+
+        private void PrepareFolderIdCorrectionListAndCreateMissingFolders(XElement sexyContentNode) => Log.Do(() =>
+        {
+            if (!sexyContentNode.Elements(XmlConstants.FolderGroup).Any())
+                return;
+
             var portalFiles = sexyContentNode.Element(XmlConstants.FolderGroup)?.Elements(XmlConstants.Folder);
             if (portalFiles == null) return;
 
@@ -47,10 +44,9 @@ namespace ToSic.Eav.Apps.ImportExport
                 v => v.Attribute(XmlConstants.FolderNodePath).Value
             );
             Deps._environment.CreateFoldersAndMapToImportIds(foldersAndPath, _folderIdCorrectionList, Messages);
-            callLog.Done("ok");
-        }
+        });
 
 
-	}
+    }
 
 }

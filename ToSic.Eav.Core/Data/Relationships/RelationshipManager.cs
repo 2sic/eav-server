@@ -73,66 +73,56 @@ namespace ToSic.Eav.Data
 
 
 	    #region Relationship-Navigation
+
         /// <inheritdoc />
-	    public List<IEntity> FindChildren(string field = null, string type = null, ILog log = null)
-	    {
-            var wrap = log?.Fn($"field:{field}; type:{type}");
-	        List<IEntity> rels;
-	        if (string.IsNullOrEmpty(field))
-	            rels = ChildRelationships().Select(r => r.Child).ToList();
+        public List<IEntity> FindChildren(string field = null, string type = null, ILog log = null
+        ) => log.Func($"field:{field}; type:{type}", () =>
+        {
+            List<IEntity> rels;
+            if (string.IsNullOrEmpty(field))
+                rels = ChildRelationships().Select(r => r.Child).ToList();
             else
             {
                 // If the field doesn't exist, return empty list
-                if (!((IEntity) _entity).Attributes.ContainsKey(field))
-                    rels = new List<IEntity>();
-                else
-                    // if it does exist, still catch any situation where it's not a relationship field
-                    try
-                    {
-                        rels = Children[field].ToList();
-                    }
-                    catch
-                    {
-                        return new List<IEntity>();
-                    }
+                if (!((IEntity)_entity).Attributes.ContainsKey(field))
+                    return (new List<IEntity>(), "empty list, field doesn't exist");
+                
+                // if it does exist, still catch any situation where it's not a relationship field
+                try
+                {
+                    rels = Children[field].ToList();
+                }
+                catch
+                {
+                    return (new List<IEntity>(), "empty list, doesn't seem to be relationship field");
+                }
             }
 
             // Optionally filter by type
-	        if (!string.IsNullOrEmpty(type) && rels.Any())
-	            rels = rels.OfType(type).ToList();
-	        wrap?.Done(rels.Count.ToString());
-	        return rels;
-	    }
+            if (!string.IsNullOrEmpty(type) && rels.Any())
+                rels = rels.OfType(type).ToList();
+            return (rels, rels.Count.ToString());
+        });
 
         /// <inheritdoc />
-        public List<IEntity> FindParents(string type = null, string field = null, ILog log = null)
-	    {
-	        var wrap = log?.Fn($"type:{type}; field:{field}");
+        public List<IEntity> FindParents(string type = null, string field = null, ILog log = null
+        ) => log.Func($"type:{type}; field:{field}", () =>
+        {
             var list = ParentRelationships() as IEnumerable<EntityRelationship>;
-	        if (!string.IsNullOrEmpty(type))
-	            list = list.Where(r => r.Parent.Type.Is(type));
+            if (!string.IsNullOrEmpty(type))
+                list = list.Where(r => r.Parent.Type.Is(type));
 
-	        if (string.IsNullOrEmpty(field))
+            if (string.IsNullOrEmpty(field))
             {
-                var rez = list.Select(r => r.Parent).ToList();
-                wrap?.Done(rez.Count.ToString());
-                return rez;
-            };
+                var all = list.Select(r => r.Parent).ToList();
+                return (all, all.Count.ToString());
+            }
+            
+            list = list.Where(r => r.Parent.Relationships.FindChildren(field).Any(c => c == r.Child));
+            var result = list.Select(r => r.Parent).ToList();
+            return (result, result.Count.ToString());
+        });
 
-	        list = list.Where(r => r.Parent.Relationships.FindChildren(field).Any(c => c == r.Child));
-	        var result = list.Select(r => r.Parent).ToList();
-            wrap?.Done(result.Count.ToString());
-            return result;
-	    }
-		#endregion
-
-		//#region Relationship Information
-  //      [PrivateApi]
-  //      public IEnumerable<string> Fields()
-  //      {
-  //          return null;
-  //      }
-
-  //      #endregion
+        #endregion
     }
 }

@@ -114,9 +114,8 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// <param name="index"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public DicNameObj Replace(int index, Tuple<bool, int?>[] values)
+        public DicNameObj Replace(int index, Tuple<bool, int?>[] values) => Log.Func($"index: {index}", () =>
         {
-            Log.Fn($"index: {index}").Done();
             if (index == -1)
                 throw new Exception("Sort order is never -1 any more; deprecated");
 
@@ -131,7 +130,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
             });
 
             return ok ? Lists.ToObject() : null;
-        }
+        });
 
         private static bool ReplaceItemAtIndexIfChanged(List<int?> listMain, int index, int? entityId)
         {

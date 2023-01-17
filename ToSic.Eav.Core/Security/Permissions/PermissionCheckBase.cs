@@ -88,20 +88,22 @@ namespace ToSic.Eav.Security
         {
             var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
 
-            var wrapLog = Log.Fn($"type:{targetType?.NameId}, " +
-                                            $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
-                                            $"permList1: {permissions1?.Count()}, " +
-                                            $"permList2: {permList2?.Count}");
+            Log.Do($"type:{targetType?.NameId}, " +
+                   $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
+                   $"permList1: {permissions1?.Count()}, " +
+                   $"permList2: {permList2?.Count}",
+                action: () =>
+                {
 
-            TargetType = targetType;
-            TargetItem = targetItem;
+                    TargetType = targetType;
+                    TargetItem = targetItem;
 
-            _additionalMetadata = permissions1 ?? new List<Permission>();
-            if (permList2 != null)
-                _additionalMetadata = _additionalMetadata.Concat(permList2);
+                    _additionalMetadata = permissions1 ?? new List<Permission>();
+                    if (permList2 != null)
+                        _additionalMetadata = _additionalMetadata.Concat(permList2);
 
-            GrantedBecause = Conditions.Undefined;
-            wrapLog.Done("ready");
+                    GrantedBecause = Conditions.Undefined;
+                });
         }
 
         #endregion

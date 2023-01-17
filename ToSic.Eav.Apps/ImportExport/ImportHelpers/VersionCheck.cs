@@ -17,9 +17,8 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
             _environment = env;
         }
 
-        internal void EnsureVersions(XElement appConfig)
+        internal void EnsureVersions(XElement appConfig) => Log.Do(() =>
         {
-            var wrapLog = Log.Fn();
             var reqVersionNode = appConfig.Elements(XmlConstants.ValueNode)
                 .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "RequiredVersion")
                 ?.Attribute(XmlConstants.ValueAttr)?.Value;
@@ -28,31 +27,31 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
                 ?.Attribute(XmlConstants.ValueAttr)?.Value;
 
             CheckRequiredEnvironmentVersions(reqVersionNode, reqVersionNodeDnn);
-            wrapLog.Done("ok");
-        }
+        });
 
-        private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodeDnn)
+        private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodePlatform
+        ) => Log.Do($"{reqVersionNode}, {reqVersionNodePlatform}", () =>
         {
-            var wrapLog = Log.Fn($"{reqVersionNode}, {reqVersionNodeDnn}");
             if (reqVersionNode != null)
             {
                 var vEav = Version.Parse(_environment.ModuleVersion);
                 var reqEav = Version.Parse(reqVersionNode);
                 if (reqEav.CompareTo(vEav) == 1) // required is bigger
                     throw new Exception("this app requires eav/2sxc version " + reqVersionNode +
-                                        ", installed is " + vEav + ". cannot continue. see also 2sxc.org/en/help?tag=app");
+                                        ", installed is " + vEav +
+                                        ". cannot continue. see also 2sxc.org/en/help?tag=app");
             }
 
-            if (reqVersionNodeDnn != null)
+            if (reqVersionNodePlatform != null)
             {
                 var vHost = _environment.TenantVersion;
-                var reqHost = Version.Parse(reqVersionNodeDnn);
+                var reqHost = Version.Parse(reqVersionNodePlatform);
                 if (reqHost.CompareTo(vHost) == 1) // required is bigger
-                    throw new Exception("this app requires host/dnn version " + reqVersionNodeDnn +
-                                        ", installed is " + vHost + ". cannot continue. see also 2sxc.org/en/help?tag=app");
+                    throw new Exception("this app requires host/dnn version " + reqVersionNodePlatform +
+                                        ", installed is " + vHost +
+                                        ". cannot continue. see also 2sxc.org/en/help?tag=app");
             }
-            wrapLog.Done("completed");
-        }
+        });
 
     }
 }

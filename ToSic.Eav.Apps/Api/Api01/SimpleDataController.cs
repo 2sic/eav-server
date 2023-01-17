@@ -105,35 +105,31 @@ namespace ToSic.Eav.Api.Api01
         /// </param>
         /// <param name="target"></param>
         /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
-        public IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null)
+        public IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null
+        ) => Log.Func($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}", l =>
         {
-            var wrapLog = Log.Fn<IEnumerable<int>>($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}");
-
-            if (multiValues == null) return wrapLog.ReturnNull("values were null");
+            if (multiValues == null) return (null, "values were null");
 
             // ensure the type really exists
             var type = _appManager.Read.ContentTypes.Get(contentTypeName);
             if (type == null)
-            {
-                var msg = "Error: Content type '" + contentTypeName + "' does not exist.";
-                wrapLog.ReturnNull(msg);
-                throw new ArgumentException(msg);
-            }
+                throw Log.Ex(new ArgumentException("Error: Content type '" + contentTypeName + "' does not exist."));
 
-            Log.A($"Type {contentTypeName} found. Will build entities to save...");
+            l.A($"Type {contentTypeName} found. Will build entities to save...");
 
-            var importEntity = multiValues.Select(values => BuildEntity(type, values, target, null, out var draftAndBranch)).ToList();
+            var importEntity = multiValues.Select(values => BuildEntity(type, values, target, null).Entity).ToList();
 
             var ids = _appManager.Entities.Save(importEntity);
-            return wrapLog.Return(ids);
-        }
+            return (ids, "ok");
+        });
 
-        private IEntity BuildEntity(IContentType type, Dictionary<string, object> values, ITarget target, bool? existingIsPublished, out (bool, bool)? draftAndBranch)
+        private (IEntity Entity, (bool Draft, bool Branch)? DraftAndBranch) BuildEntity(
+            IContentType type, Dictionary<string, object> values, ITarget target, bool? existingIsPublished
+        ) => Log.Func($"{type.Name}, {values?.Count}, target: {target != null}", () =>
         {
-            var wrapLog = Log.Fn<IEntity>($"{type.Name}, {values?.Count}, target: {target != null}");
             // ensure it's case insensitive...
             values = new Dictionary<string, object>(values, StringComparer.InvariantCultureIgnoreCase);
-            
+
             if (values.All(v => v.Key.ToLowerInvariant() != Attributes.EntityFieldGuid))
             {
                 Log.A("Add new generated guid, as none was provided.");
@@ -158,9 +154,10 @@ namespace ToSic.Eav.Api.Api01
             }
 
             var preparedValues = ConvertEntityRelations(values);
-            AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false, true, existingIsPublished, out draftAndBranch);
-            return wrapLog.Return(importEntity);
-        }
+            var draftAndBranch = AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false, true,
+                existingIsPublished);
+            return (importEntity, draftAndBranch);
+        });
 
 
         /// <summary>
@@ -179,9 +176,9 @@ namespace ToSic.Eav.Api.Api01
             Log.A($"update i:{entityId}");
             var original = _appManager.AppState.List.FindRepoId(entityId);
 
-            var importEntity = BuildEntity(original.Type, values, null, original.IsPublished, out var draftAndBranch) as Entity;
+            var import = BuildEntity(original.Type, values, null, original.IsPublished);
 
-            _appManager.Entities.UpdateParts(entityId, importEntity, draftAndBranch);
+            _appManager.Entities.UpdateParts(entityId, import.Entity as Entity, import.DraftAndBranch);
         }
 
 
@@ -221,15 +218,13 @@ namespace ToSic.Eav.Api.Api01
             return result;
         }
 
-        private void AddValues(Entity entity, IContentType contentType, Dictionary<string, object> valuePairs, string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink, bool? existingIsPublished, out (bool, bool)? draftAndBranch)
+        private (bool Draft, bool Branch)? AddValues(Entity entity, IContentType contentType, Dictionary<string, object> valuePairs,
+            string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink, bool? existingIsPublished
+        ) => Log.Func($"..., ..., values: {valuePairs?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}", l =>
         {
-            var wrapLog = Log.Fn($"..., ..., values: {valuePairs?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}");
-            draftAndBranch = null;
+            (bool Draft, bool Branch)? draftAndBranch = null;
             if (valuePairs == null)
-            {
-                wrapLog.Done("no values");
-                return;
-            }
+                return (draftAndBranch, "no values");
 
             // On update, by default preserve IsPublished state
             if (existingIsPublished.HasValue) entity.IsPublished = existingIsPublished.Value;
@@ -253,14 +248,14 @@ namespace ToSic.Eav.Api.Api01
 
                     if (draftAndBranch.HasValue) entity.IsPublished = draftAndBranch.Value.Item1; // published
 
-                    Log.A($"IsPublished: {entity.IsPublished}");
+                    l.A($"IsPublished: {entity.IsPublished}");
                     continue;
                 }
 
                 // Ignore entity guid - it's already set earlier
                 if (keyValuePair.Key.ToLowerInvariant() == Attributes.EntityFieldGuid)
                 {
-                    Log.A("entity-guid, ignore here");
+                    l.A("entity-guid, ignore here");
                     continue;
                 }
 
@@ -268,13 +263,14 @@ namespace ToSic.Eav.Api.Api01
                 var attribute = contentType[keyValuePair.Key];
                 if (attribute != null && keyValuePair.Value != null)
                 {
-                    AttributeBuilder.Value.AddValue(entity.Attributes, attribute.Name, keyValuePair.Value, attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
-                    Log.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({attribute.Type})");
+                    AttributeBuilder.Value.AddValue(entity.Attributes, attribute.Name, keyValuePair.Value,
+                        attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    l.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({attribute.Type})");
                 }
             }
             
-            wrapLog.Done("done");
-        }
+            return (draftAndBranch, "done");
+        });
 
         #region Permission Checks
 
