@@ -10,6 +10,7 @@ using ToSic.Eav.WebApi.Cms;
 using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Eav.WebApi.Languages;
 using ToSic.Eav.WebApi.Plumbing;
+using ToSic.Eav.WebApi.Serialization;
 using ToSic.Eav.WebApi.Sys;
 using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Zone;
@@ -53,6 +54,12 @@ namespace ToSic.Eav.WebApi
             // Here we only register the dependencies, as the final converter must be registered elsewhere
             services.TryAddTransient<ConvertToEavLight.Dependencies>();
             services.TryAddTransient<ConvertToEavLight, ConvertToEavLight>();
+
+            // WIP json serialization converters eav related
+            services.TryAddTransient<EavJsonConverter>();
+            services.TryAddTransient<EavCollectionJsonConverter>();
+            services.TryAddTransient<EntityWrapperJsonConverter>();
+            services.TryAddTransient<EntityWrapperCollectionJsonConverter>();
 
 
 #if NETFRAMEWORK
