@@ -9,6 +9,7 @@ namespace ToSic.Eav.Configuration
         public const string QueriesFolder = "queries";
         public const string ConfigFolder = "configurations";
         public const string EntitiesFolder = "entities";
+        public const string BundlesFolder = "bundles";
         public static string[] EntityItemFolders = { QueriesFolder, EntitiesFolder };
 
         /// <summary>
