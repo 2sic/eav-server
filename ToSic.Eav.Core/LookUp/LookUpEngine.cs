@@ -43,17 +43,19 @@ namespace ToSic.Eav.LookUp
         public LookUpEngine(ILookUpEngine original, ILog parentLog, bool makeOwnCopyOfSources = false): this(parentLog)
 		{
 		    if (original == null) return;
-            var wrapLog = Log.Fn(null, $"clone: {original.Log.NameId}; LogDetailed: {LogDetailed}");
-            if (makeOwnCopyOfSources)
+            Log.Do(() =>
             {
-                Link(original.Downstream);
-                foreach (var srcSet in original.Sources)
-                    Sources.Add(srcSet.Key, srcSet.Value);
-            }
-            else
-                Link(original);
+                if (makeOwnCopyOfSources)
+                {
+                    Link(original.Downstream);
+                    foreach (var srcSet in original.Sources)
+                        Sources.Add(srcSet.Key, srcSet.Value);
+                }
+                else
+                    Link(original);
 
-            wrapLog.Done($"cloned {original.Sources.Count}");
+                return $"cloned {original.Sources.Count}";
+            }, message: $"clone: {original.Log.NameId}; LogDetailed: {LogDetailed}");
         }
 
         [PrivateApi("still wip")]
@@ -127,17 +129,15 @@ namespace ToSic.Eav.LookUp
         }
 
         /// <inheritdoc />
-        public void AddOverride(ILookUp lookUp)
+        public void AddOverride(ILookUp lookUp) => Log.Do(() =>
         {
-            var wrapLog = LogDetailed ? Log.Fn() : null;
-	        if (Sources.ContainsKey(lookUp.Name))
-	            Sources[lookUp.Name] =
-	                new LookUpInLookUps(lookUp.Name, lookUp,
-	                    Sources[lookUp.Name]);
-	        else
-	            Sources.Add(lookUp.Name, lookUp);
-            wrapLog.Done("ok");
-        }
+            if (Sources.ContainsKey(lookUp.Name))
+                Sources[lookUp.Name] =
+                    new LookUpInLookUps(lookUp.Name, lookUp,
+                        Sources[lookUp.Name]);
+            else
+                Sources.Add(lookUp.Name, lookUp);
+        }, enabled: LogDetailed);
 
         /// <inheritdoc />
 	    public void AddOverride(IEnumerable<ILookUp> lookUps)

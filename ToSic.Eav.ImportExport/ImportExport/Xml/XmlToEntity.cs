@@ -140,52 +140,50 @@ namespace ToSic.Eav.ImportExport.Xml
                 .ToList();
 
 		    // Process each attribute (values grouped by StaticName)
-            foreach (var sourceAttrib in valuesGroupedByStaticName)
+            foreach (var sourceAttrib in valuesGroupedByStaticName) Log.Do(sourceAttrib.StaticName, () =>
             {
-                var wrapAttrib = Log.Fn($"{sourceAttrib.StaticName}");
+                var xmlValuesOfAttrib = sourceAttrib.Values;
+                var tempTargetValues = new List<ImportValue>();
 
-				var xmlValuesOfAttrib = sourceAttrib.Values;
-				var tempTargetValues = new List<ImportValue>();
-
-				// Process each target's language
-				foreach (var envLang in envLangsSortedByPriority)
-				{
+                // Process each target's language
+                foreach (var envLang in envLangsSortedByPriority)
+                {
                     var maybeExactMatch = FindAttribWithLanguageMatch(envLang, xmlValuesOfAttrib);
-				    var sourceValueNode = maybeExactMatch.Item1;
-				    var readOnly = maybeExactMatch.Item2;
+                    var sourceValueNode = maybeExactMatch.Item1;
+                    var readOnly = maybeExactMatch.Item2;
 
                     // Take first value if there is only one value without a dimension (default / fallback value), but only in primary language
-				    if (sourceValueNode == null && xmlValuesOfAttrib.Count > 0 && envLang.Matches(_envDefLang))
-				        sourceValueNode = GetFallbackAttributeInXml(xmlValuesOfAttrib);
+                    if (sourceValueNode == null && xmlValuesOfAttrib.Count > 0 && envLang.Matches(_envDefLang))
+                        sourceValueNode = GetFallbackAttributeInXml(xmlValuesOfAttrib);
 
-				    // Override ReadOnly for primary target language
+                    // Override ReadOnly for primary target language
                     if (envLang.Matches(_envDefLang))
                         readOnly = false;
 
                     // Process found value
-				    if (sourceValueNode != null)
-				        AddNodeToImportListOrEnhancePrevious(sourceValueNode, tempTargetValues, envLang, readOnly);
+                    if (sourceValueNode != null)
+                        AddNodeToImportListOrEnhancePrevious(sourceValueNode, tempTargetValues, envLang, readOnly);
                 }
 
                 // construct value elements
-			    var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
-			            => _multiBuilder.Value.Build(tempImportValue.XmlValue.Attribute(
-			                               XmlConstants.EntityTypeAttribute)?.Value ??
-			                           throw new NullReferenceException("cant' build attribute with unknown value-type"),
-			                tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
-			                throw new NullReferenceException("can't build attribute without value"),
-			                tempImportValue.Dimensions))
-			        .ToList();
+                var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
+                        => _multiBuilder.Value.Build(tempImportValue.XmlValue.Attribute(
+                                                         XmlConstants.EntityTypeAttribute)?.Value ??
+                                                     throw new NullReferenceException(
+                                                         "cant' build attribute with unknown value-type"),
+                            tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
+                            throw new NullReferenceException("can't build attribute without value"),
+                            tempImportValue.Dimensions))
+                    .ToList();
 
                 // construct the attribute with these value elements
-			    var newAttr =_multiBuilder.Attribute.CreateTyped(sourceAttrib.StaticName, 
+                var newAttr = _multiBuilder.Attribute.CreateTyped(sourceAttrib.StaticName,
                     tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value,
-			        currentAttributesImportValues);
+                    currentAttributesImportValues);
 
                 // attach to attributes-list
                 finalAttributes.Add(sourceAttrib.StaticName, newAttr);
-                wrapAttrib.Done();
-            }
+            });
 
 		    var typeName = xEntity.Attribute(XmlConstants.AttSetStatic)?.Value;
             if(typeName == null)
@@ -220,8 +218,7 @@ namespace ToSic.Eav.ImportExport.Xml
         /// <param name="tempTargetValues"></param>
         /// <param name="envLang"></param>
         /// <param name="readOnly"></param>
-        private void AddNodeToImportListOrEnhancePrevious(XElement sourceValueNode, List<ImportValue> tempTargetValues,
-            TargetLanguageToSourceLanguage envLang, bool readOnly
+        private void AddNodeToImportListOrEnhancePrevious(XElement sourceValueNode, List<ImportValue> tempTargetValues, TargetLanguageToSourceLanguage envLang, bool readOnly
         ) => Log.Do(() =>
         {
             var logText = "";

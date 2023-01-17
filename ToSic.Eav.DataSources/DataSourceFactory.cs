@@ -157,24 +157,20 @@ namespace ToSic.Eav.DataSources
             T newSource,
             IAppIdentity appIdentity,
             IDataSource upstream = null,
-            ILookUpEngine configLookUp = null) where T : IDataSource
+            ILookUpEngine configLookUp = null) where T : IDataSource => Log.Do($"DataSource {newSource.Name}", () =>
         {
-            var wrapLog = Log.Fn($"DataSource {newSource.Name}");
+            var wrapLog = Log.Fn();
             if (!(newSource is DataSource newDs))
-            {
-                wrapLog.Done("can't configure, not a base source");
-                return;
-            }
+                return "can't configure, not a base source";
 
             newDs.ZoneId = appIdentity.ZoneId;
             newDs.AppId = appIdentity.AppId;
             if (upstream != null)
                 ((IDataTarget)newDs).Attach(upstream);
-            if (configLookUp != null) 
+            if (configLookUp != null)
                 newDs.Init(configLookUp);
-
-            wrapLog.Done("ok");
-        }
+            return "ok";
+        });
 
         #endregion
     }

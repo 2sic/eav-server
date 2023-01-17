@@ -23,29 +23,31 @@ namespace ToSic.Lib.Logging
             Func<TProperty> getter,
             bool timer = default,
             bool enabled = true,
+            string message = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, "get:" + cName, cLine), true, null, null, timer) : null;
+            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, "get:" + cName, cLine), true, null, message, timer) : null;
             var result = getter();
             return !enabled ? result : l.ReturnAndLog(result);
         }
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
         public static TProperty Getter<TProperty>(this ILog log,
-            Func<(TProperty Result, string Message)> getter,
+            Func<(TProperty Result, string FinalMessage)> getter,
             bool timer = default,
             bool enabled = true,
+            string message = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, "get:" + cName, cLine), true, null, null, timer) : null;
-            var (result, message) = getter();
-            return !enabled ? result : l.Return(result, message);
+            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, "get:" + cName, cLine), true, null, message, timer) : null;
+            var (result, finalMsg) = getter();
+            return !enabled ? result : l.Return(result, finalMsg);
         }
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
@@ -53,12 +55,13 @@ namespace ToSic.Lib.Logging
             Action setter,
             bool timer = default,
             bool enabled = true,
+            string message = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = enabled ? new LogCall(log, Create(cPath, "set:" + cName, cLine), true, null, null, timer) : null;
+            var l = enabled ? new LogCall(log, Create(cPath, "set:" + cName, cLine), true, null, message, timer) : null;
             setter();
             if (!enabled) return;
             l.Done();
@@ -69,12 +72,13 @@ namespace ToSic.Lib.Logging
             Func<TProperty> setter,
             bool timer = default,
             bool enabled = true,
+            string message = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall<TProperty>(log, Create(cPath, "set:" + cName + "=", cLine), true, null, null, timer);
+            var l = new LogCall<TProperty>(log, Create(cPath, "set:" + cName + "=", cLine), true, null, message, timer);
             var result = setter();
             if (!enabled) return;
             l.ReturnAndLog(result);

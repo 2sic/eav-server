@@ -71,7 +71,7 @@ namespace ToSic.Eav.Configuration
             // Pre-Load the Assembly list into memory to log separately
             var assemblyLoadLog = new Log(EavLogs.Eav + "AssLdr", null, "Load Assemblies");
             _logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, assemblyLoadLog);
-            Log.Do(l =>
+            Log.DoTimed(l =>
             {
                 AssemblyHandling.GetTypes(assemblyLoadLog);
 
@@ -81,7 +81,7 @@ namespace ToSic.Eav.Configuration
                 _appsCache.Value.Add(presetApp);
 
                 LoadLicenseAndFeatures();
-            }, timer: true);
+            });
         }
 
         /// <summary>

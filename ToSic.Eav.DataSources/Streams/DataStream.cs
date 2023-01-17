@@ -171,21 +171,19 @@ namespace ToSic.Eav.DataSources
 
 
 
-        public void PurgeList(bool cascade = false)
+        public void PurgeList(bool cascade = false) => Log.Do(l =>
         {
-            var callLog = Log.Fn(message: $"PurgeList on Stream: {Name}, {nameof(cascade)}:{cascade}");
-            Log.A("kill the very local temp cache");
+            l.A("kill the very local temp cache");
             _list = new ImmutableArray<IEntity>();
             _listLoaded = false;
-            Log.A("kill in list-cache");
+            l.A("kill in list-cache");
             new ListCache(Log).Remove(this);
             if (cascade)
             {
-                Log.A("tell upstream source to flush as well");
+                l.A("tell upstream source to flush as well");
                 Source.PurgeList(true);
             }
-            callLog.Done("ok");
-        }
+        }, message: $"PurgeList on Stream: {Name}, {nameof(cascade)}:{cascade}");
 
         /// <inheritdoc />
         /// <summary>

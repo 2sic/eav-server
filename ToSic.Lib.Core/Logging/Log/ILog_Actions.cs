@@ -17,25 +17,28 @@ namespace ToSic.Lib.Logging
         /// </summary>
         /// <param name="log"></param>
         /// <param name="action"></param>
-        /// <param name="timer"></param>
         /// <param name="cPath">Code file path, auto-added by compiler</param>
         /// <param name="cName">Code method name, auto-added by compiler</param>
         /// <param name="cLine">Code line number, auto-added by compiler</param>
         [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
         public static void Do(this ILog log,
             Action action,
-            bool timer = default,
             bool enabled = true,
             string message = null,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        )
-        {
-            var l = enabled ? new LogCall(log, Create(cPath, cName, cLine), false, null, message, timer): null;
-            action();
-            if (enabled) l.Done();
-        }
+        ) => log.Do(null, action, timer: false, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
+
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+        public static void DoTimed(this ILog log,
+            Action action,
+            bool enabled = true,
+            string message = null,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        ) => log.Do(null, action, timer: true, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
 
         /// <summary>
         /// Run code / action and just log that it happened.
@@ -78,18 +81,22 @@ namespace ToSic.Lib.Logging
         [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
         public static void Do(this ILog log,
             Action<ILogCall> action,
-            bool timer = default,
             bool enabled = true,
             string message = null,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        )
-        {
-            var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, null, message, timer);
-            action(l);
-            if (enabled) l.Done();
-        }
+        ) => log.Do(null, action, timer: false, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
+
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+        public static void DoTimed(this ILog log,
+            Action<ILogCall> action,
+            bool enabled = true,
+            string message = null,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        ) => log.Do(null, action, timer: true, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
         public static void Do(this ILog log,

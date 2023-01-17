@@ -213,29 +213,24 @@ namespace ToSic.Eav.Repository.Efc
             return modifiedCount;
         }
 
-        private void PurgeAppCacheIfReady()
+        private void PurgeAppCacheIfReady() => Log.Do($"{_purgeAppCacheOnSave}", () =>
         {
-            Log.Fn($"{_purgeAppCacheOnSave}").Done();
             if (_purgeAppCacheOnSave) _appsCache.Value.Purge(this);
-        }
+        });
 
         #endregion
 
         #region Shorthand for do & save
 
-        internal void DoAndSave(Action action, string message = null)
+        internal void DoAndSave(Action action, string message = null) => Log.DoTimed(() =>
         {
-            var wrapLog = Log.Fn(message: message, timer: true);
             action.Invoke();
             SqlDb.SaveChanges();
-            wrapLog.Done("completed");
-        }
-      
+        }, message: message);
 
-        internal void DoAndSaveWithoutChangeDetection(Action action, string message = null)
+
+        internal void DoAndSaveWithoutChangeDetection(Action action, string message = null) => Log.DoTimed(l =>
         {
-            var wrapLog = Log.Fn(message: message, timer: true);
-            
             action.Invoke();
 
             var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
@@ -246,38 +241,39 @@ namespace ToSic.Eav.Repository.Efc
             }
             catch (Exception ex)
             {
-                wrapLog.A($"error: save changes without change detection failed, {ex.Message}");
-                Log.Ex(ex);
+                l.A($"error: save changes without change detection failed, {ex.Message}");
+                l.Ex(ex);
             }
             finally
             {
                 SqlDb.ChangeTracker.AutoDetectChangesEnabled = preserve;
             }
 
-            wrapLog.Done("completed");
-        }
+        }, message: message);
 
 
         public void DoInTransaction(Action action)
         {
             var randomId = Guid.NewGuid().ToString().Substring(0, 4);
             var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
-            var wrapLog = Log.Fn($"id:{randomId} - create new trans:{ownTransaction != null}", timer: true);
-            try
+            Log.Do(l =>
             {
-                action.Invoke();
-                ownTransaction?.Commit();
-                Log.A($"Transaction {randomId} - completed"); // adds ok to end of block
-                wrapLog.Done("transaction ok"); // adds ok to top of block
-            }
-            catch (Exception e)
-            {
-                ownTransaction?.Rollback();
-                Log.A("Error: " + e.Message);
-                Log.A($"Transaction {randomId} failed / rollback");
-                wrapLog.Done("transaction failed / rollback");
-                throw;
-            }
+                try
+                {
+                    action.Invoke();
+                    ownTransaction?.Commit();
+                    l.A($"Transaction {randomId} - completed"); // adds ok to end of block
+                    return "transaction ok"; // adds ok to top of block
+                }
+                catch (Exception e)
+                {
+                    ownTransaction?.Rollback();
+                    l.A($"Transaction {randomId} failed / rollback");
+                    l.A("transaction failed / rollback");
+                    l.Ex(e);
+                    throw;
+                }
+            }, message: $"id:{randomId} - create new trans:{ownTransaction != null}", timer: true);
         }
 
         /// <summary>
@@ -286,26 +282,22 @@ namespace ToSic.Eav.Repository.Efc
         /// <remarks>Useful if many changes are made in a batch and Cache should be purged after that batch</remarks>
         private bool _purgeAppCacheOnSave = true;
 
-        public void DoButSkipAppCachePurge(Action action)
+        public void DoButSkipAppCachePurge(Action action) => Log.DoTimed(() =>
         {
-            var callLog = Log.Fn(timer: true);
             var before = _purgeAppCacheOnSave;
             _purgeAppCacheOnSave = false;
             action.Invoke();
             _purgeAppCacheOnSave = before;
-            callLog.Done();
-        }
+        });
 
-        public void DoWithDelayedCacheInvalidation(Action action)
+        public void DoWithDelayedCacheInvalidation(Action action) => Log.DoTimed(() =>
         {
-            var wrapLog = Log.Fn(timer: true);
             _purgeAppCacheOnSave = false;
             action.Invoke();
 
             _purgeAppCacheOnSave = true;
             PurgeAppCacheIfReady();
-            wrapLog.Done("ok");
-        }
+        });
 
         /// <summary>
         /// The loader must use the same connection, to ensure it runs in existing transactions.

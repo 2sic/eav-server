@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
@@ -81,12 +79,10 @@ namespace ToSic.Eav.Persistence.File
             var outerWrapLog = Log.Fn<AppState>(timer: true);
 
             var appState = new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);
+            var msg = $"get app data package for a#{appState.AppId}";
 
-            appState.Load(() =>
+            appState.Load(() => Log.DoTimed(l =>
             {
-                var msg = $"get app data package for a#{appState.AppId}";
-                var wrapLog = Log.Fn(message: msg, timer: true);
-
                 // Prepare metadata lists & relationships etc.
                 // #removeUnusedPreloadOfMetaTypes
                 appState.InitMetadata(/*new Dictionary<int, string>().ToImmutableDictionary()*/);
@@ -94,7 +90,7 @@ namespace ToSic.Eav.Persistence.File
                 appState.Folder = Constants.PresetName;
 
 
-                Log.Do(timer: true, action: () =>
+                l.Do(timer: true, action: () =>
                 {
                     var types = LoadGlobalContentTypes();
                     // Just attach all global content-types to this app, as they belong here
@@ -111,28 +107,26 @@ namespace ToSic.Eav.Persistence.File
                     // That's because it's loaded from the JSON, where the metadata is part of the json-file.
                     // This should probably not cause any problems, but it's important to know
                     // We may optimize / change this some day
-                    Log.A("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
+                    l.A("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
                     var appTypes = appState.ContentTypes.ToList();
-                    Loaders.ForEach(l => l.ResetSerializer(appTypes));
+                    Loaders.ForEach(ldr => ldr.ResetSerializer(appTypes));
 
-                    Log.A("Load items");
+                    l.A("Load items");
 
                     var entitySets = LoadAndDeduplicateEntitySets();
 
                     foreach (var eSet in entitySets)
                     {
-                        Log.A($"Load {eSet.Folder} - {eSet.Entities.Count} items");
+                        l.A($"Load {eSet.Folder} - {eSet.Entities.Count} items");
                         foreach (var c in eSet.Entities) appState.Add(c as Entity, null, true);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.A("Error: Failed adding Entities");
-                    Log.Ex(ex);
+                    l.A("Error: Failed adding Entities");
+                    l.Ex(ex);
                 }
-
-                wrapLog.Done("ok");
-            });
+            }, message: msg));
 
             return outerWrapLog.ReturnAsOk(appState);
         }

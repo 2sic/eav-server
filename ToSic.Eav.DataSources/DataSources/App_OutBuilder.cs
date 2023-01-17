@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
@@ -43,9 +42,8 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Create a stream for each data-type
         /// </summary>
-        private void CreateAppOutWithAllStreams()
+        private void CreateAppOutWithAllStreams() => Log.Do(l =>
         {
-            var wrapLog = Log.Fn();
             IDataStream upstream;
             try
             {
@@ -78,7 +76,8 @@ namespace ToSic.Eav.DataSources
                 typeList += typeName + ",";
 
                 var deferredStream = new DataStreamWithCustomCaching(
-                    () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState, $"Name={typeName}&Drafts={showDrafts}"),
+                    () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState,
+                        $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
                     () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableArray(),
@@ -87,10 +86,8 @@ namespace ToSic.Eav.DataSources
                 _out.Add(typeName, deferredStream);
             }
 
-            Log.A($"Added with drafts:{showDrafts} streams: {typeList}");
-
-            wrapLog.Done();
-        }
+            l.A($"Added with drafts:{showDrafts} streams: {typeList}");
+        });
 
         /// <summary>
         /// Ask the current configuration system if the current user should see drafts

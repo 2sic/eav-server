@@ -117,24 +117,21 @@ namespace ToSic.Eav.DataSources.Queries
 
 
         /// <inheritdoc />
-        public void Params(string key, string value)
+        public void Params(string key, string value) => Log.Do($"{key}, {value}", l =>
         {
-            var wrapLog = Log.Fn($"{key}, {value}");
             if (IsNullOrWhiteSpace(key))
                 throw new ArgumentNullException(nameof(key));
             // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
-            if(!_requiresRebuildOfOut)
+            if (!_requiresRebuildOfOut)
             {
-                Log.A("Can't set param - query already compiled");
-                wrapLog.Done("error");
+                l.A("Can't set param - query already compiled, error");
                 throw new Exception("Can't set param any more, the query has already been compiled. " +
                                     "Always set params before accessing the data. " +
                                     "To Re-Run the query with other params, call Reset() first.");
             }
 
             Definition.Params[key] = value;
-            wrapLog.Done();
-        }
+        });
 
         /// <inheritdoc />
         public void Params(string key, object value) => Params(key, value?.ToString());
@@ -165,23 +162,21 @@ namespace ToSic.Eav.DataSources.Queries
         /// Override PurgeList, because we don't really have In streams, unless we use parameters. 
         /// </summary>
         /// <param name="cascade"></param>
-        public override void PurgeList(bool cascade = false)
+        public override void PurgeList(bool cascade = false) => Log.Do($"{cascade} - on {GetType().Name}", l =>
         {
-            var callLog = Log.Fn($"{cascade}", $"on {GetType().Name}");
             // PurgeList on all In, as would usually happen
             // This will only purge query-in used for parameter
             base.PurgeList(cascade);
 
-            Log.A("Now purge the lists which the Query has on the Out");
+            l.A("Now purge the lists which the Query has on the Out");
             foreach (var stream in Source.Out)
                 stream.Value.PurgeList(cascade);
-            if (!Source.Out.Any()) Log.A("No streams on Source.Out found to clear");
+            if (!Source.Out.Any()) l.A("No streams on Source.Out found to clear");
 
-            Log.A("Update RequiresRebuildOfOut");
+            l.A("Update RequiresRebuildOfOut");
             _requiresRebuildOfOut = true;
-            callLog.Done("ok");
 
-        }
+        });
     }
 
 }

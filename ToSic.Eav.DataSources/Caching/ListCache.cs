@@ -118,9 +118,9 @@ namespace ToSic.Eav.DataSources.Caching
 
         /// <inheritdoc />
         public void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, int durationInSeconds = 0,
-            bool slidingExpiration = true)
+            bool slidingExpiration = true
+        ) => Log.Do($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}", () =>
         {
-            var callLog = Log.Fn($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
             var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
             var expiration = new TimeSpan(0, 0, duration);
             var policy = slidingExpiration
@@ -129,8 +129,7 @@ namespace ToSic.Eav.DataSources.Caching
 
             var cache = MemoryCache.Default;
             cache.Set(key, new ListCacheItem(list, sourceTimestamp), policy);
-            callLog.Done("ok");
-        }
+        });
         
 
         /// <inheritdoc />
@@ -141,13 +140,9 @@ namespace ToSic.Eav.DataSources.Caching
         #endregion
 
         #region Remove List
+
         /// <inheritdoc />
-        public void Remove(string key)
-        {
-            var callLog = Log.Fn(key);
-            MemoryCache.Default.Remove(key);
-            callLog.Done("ok");
-        }
+        public void Remove(string key) => Log.Do(() => MemoryCache.Default.Remove(key));
 
         /// <inheritdoc />
         public void Remove(IDataStream dataStream) => Remove(CacheKey(dataStream));

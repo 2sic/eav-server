@@ -112,16 +112,14 @@ namespace ToSic.Eav.Persistence.Efc
         {
             var outerWrapLog = Log.Fn<AppState>(message: "What happens inside this is logged in the app-state loading log");
             
-            app.Load(() =>
+            var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
+            app.Load(() => Log.DoTimed(l =>
             {
-                var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
-                var wrapLog = Log.Fn(message: msg, timer: true);
-
                 // prepare metadata lists & relationships etc.
                 if (startAt <= AppStateLoadSequence.MetadataInit)
                 {
                     // #removeUnusedPreloadOfMetaTypes
-                    _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app/*, _dbContext*/));
+                    _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app));
                     // New in V11.01
                     var nameAndFolder = PreLoadAppPath(app.AppId);
                     app.Name = nameAndFolder?.Item1;
@@ -141,20 +139,19 @@ namespace ToSic.Eav.Persistence.Efc
                     dbTypes = LoadExtensionsTypesAndMerge(app, dbTypes);
                     app.InitContentTypes(dbTypes);
                     typeTimer.Stop();
-                    Log.A($"timers types:{typeTimer.Elapsed}");
+                    l.A($"timers types:{typeTimer.Elapsed}");
                 }
                 else
-                    Log.A("skipping content-type load");
+                    l.A("skipping content-type load");
 
                 // load data
                 if (startAt <= AppStateLoadSequence.ItemLoad)
                     LoadEntities(app, entityIds);
                 else
-                    Log.A("skipping items load");
+                    l.A("skipping items load");
 
-                Log.A($"timers sql:sqlAll:{_sqlTotalTime}");
-                wrapLog.Done("ok");
-            });
+                l.A($"timers sql:sqlAll:{_sqlTotalTime}");
+            }, message: msg));
 
             return outerWrapLog.ReturnAsOk(app);
         }

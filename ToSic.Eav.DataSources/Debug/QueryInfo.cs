@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources.Debug
         /// </summary>
         private void GetStreamInfosRecursive(IDataTarget target, ref List<StreamInfo> streams, ref Dictionary<Guid, DataSourceInfo> sources)
         {
-            var wrapLog = Log.Fn($"{target.Guid}[{target.In.Count}]", timer: true);
+            var l = Log.Fn($"{target.Guid}[{target.In.Count}]", timer: true);
             
             foreach (var stream in target.In)
             {
@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources.Debug
                 }
                 catch
                 {
-                    Log.A("Error trying to build list of streams on DS");
+                    l.A("Error trying to build list of streams on DS");
                 }
 
                 // Try to add the target to Data-Source-Stats;
@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources.Debug
                 }
                 catch
                 {
-                    Log.A("Error adding target lists");
+                    l.A("Error adding target lists");
                 }
 
                 // Try to add the source to the data-source-stats
@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSources.Debug
                 }
                 catch
                 {
-                    Log.A("Error adding DataSourceInfo");
+                    l.A("Error adding DataSourceInfo");
                 }
 
                 // Get Sub-Streams recursive
@@ -78,11 +78,11 @@ namespace ToSic.Eav.DataSources.Debug
                 }
                 catch
                 {
-                    Log.A("Error in recursion");
+                    l.A("Error in recursion");
                 }
             }
 
-            wrapLog.Done("ok");
+            l.Done("ok");
         }
     }
 }

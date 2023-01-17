@@ -51,9 +51,9 @@ namespace ToSic.Eav.ImportExport.Zip
         /// <summary>
         /// Extracts a Zip (as Stream) to the given OutFolder directory.
         /// </summary>
-        public void ExtractZipFile(Stream zipStream, string outFolder, bool allowCodeImport)
+        public void ExtractZipFile(Stream zipStream, string outFolder, bool allowCodeImport
+        ) => Log.Do($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}", l =>
         {
-            var wrapLog = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
             using (var file = new ZipArchive(zipStream))
             {
                 foreach (var entry in file.Entries)
@@ -66,34 +66,34 @@ namespace ToSic.Eav.ImportExport.Zip
                     if (!string.IsNullOrEmpty(directoryName))
                     {
                         if (!Directory.Exists(directoryName))
-                            Log.A($"Create temp path:{directoryName} (len:{directoryName.Length})");
+                            l.A($"Create temp path:{directoryName} (len:{directoryName.Length})");
                         Directory.CreateDirectory(directoryName);
                     }
 
                     if (fullPath.Length > 240)
-                        Log.W($"file name is very long - could cause trouble:{fullPath}");
+                        l.W($"file name is very long - could cause trouble:{fullPath}");
 
                     // enhanced security check
                     var isCode = FileNames.IsKnownCodeExtension(entry.Name);
                     if (isCode)
                     {
-                        Log.A($"code file detected:{fullPath}");
+                        l.A($"code file detected:{fullPath}");
                         if (!allowCodeImport)
                         {
-                            Log.A("Code file import not permitted - will throw error");
-                            wrapLog.Done("error");
-                            throw new Exception("Importing code files is not permitted - you need super-user permissions to do this. " +
-                                                $"The process was stopped on the file '{entry.FullName}'");
+                            l.A("Code file import not permitted - will throw error");
+                            l.Done("error - will throw exception");
+                            throw new Exception(
+                                "Importing code files is not permitted - you need super-user permissions to do this. " +
+                                $"The process was stopped on the file '{entry.FullName}'");
                         }
                     }
 
                     // Unzip File
                     entry.ExtractToFile(fullPath);
                 }
+                return "ok";
             }
-
-            wrapLog.Done("ok");
-        }
+        });
 
         // Check for illegal zip file path
         public static void CheckZipEntry(ZipArchiveEntry input)

@@ -159,28 +159,24 @@ namespace ToSic.Eav.Apps.Parts
             return wrapLog.ReturnAsOk(addedTypes);
         }
         
-        private void MetadataEnsureTypeAndSingleEntity(AddContentTypeAndOrEntityTask contentTypeAndOrEntity)
+        private void MetadataEnsureTypeAndSingleEntity(AddContentTypeAndOrEntityTask cTypeAndOrEntity
+        ) => Log.Do($"{cTypeAndOrEntity.SetName} for app {AppState.AppId} - inApp: {cTypeAndOrEntity.InAppType}", l =>
         {
-            var wrapLog = Log.Fn($"{contentTypeAndOrEntity.SetName} for app {AppState.AppId} - inApp: {contentTypeAndOrEntity.InAppType}");
-
-            var ct = FindContentType(contentTypeAndOrEntity.SetName, contentTypeAndOrEntity.InAppType);
+            var ct = FindContentType(cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
 
             // if it's still null, we have a problem...
             if (ct == null)
             {
-                Log.A("type is still null, error");
-                wrapLog.Done("error");
+                l.A("type is still null, error");
                 throw new Exception("something went wrong - can't find type in app, but it's not a global type, so I must cancel");
             }
 
-            var values = contentTypeAndOrEntity.Values ?? new Dictionary<string, object>();
+            var values = cTypeAndOrEntity.Values ?? new Dictionary<string, object>();
 
             var newEnt = new Entity(AppState.AppId, Guid.NewGuid(), ct, values);
             newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
             AppManager.Entities.Save(newEnt);
-
-            wrapLog.Done();
-        }
+        });
 
         private IContentType FindContentType(string setName, bool inAppType)
         {
