@@ -20,7 +20,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
@@ -90,10 +89,8 @@ namespace ToSic.Eav.Configuration.Licenses
             }
         });
 
-        private List<LicenseStored> LicensesStoredInConfigFolder()
+        private List<LicenseStored> LicensesStoredInConfigFolder() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<List<LicenseStored>>();
-
             // ensure that path to store files already exits
             var configFolder = _globalConfiguration.Value.ConfigFolder;
             Directory.CreateDirectory(configFolder);
@@ -103,15 +100,13 @@ namespace ToSic.Eav.Configuration.Licenses
                 .Select(j => JsonSerializer.Deserialize<LicenseStored>(j)) // should not use common SxcJsonSerializerOptions
                 .Where(licenses => licenses != null).ToList();
 
-            Log.A($"licensesStored: {licensesStored.Count}");
-            return wrapLog.ReturnAsOk(licensesStored);
-        }
+            l.A($"licensesStored: {licensesStored.Count}");
+            return licensesStored;
+        });
         
-        private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored, string fingerprint)
+        private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored, string fingerprint) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<List<LicenseState>>();
-
-            if (licenseStored == null) return wrapLog.Return(new List<LicenseState>(), "null");
+            if (licenseStored == null) return (new List<LicenseState>(), "null");
 
             // Check signature valid
             var resultForSignature = licenseStored.GenerateIdentity();
@@ -125,14 +120,14 @@ namespace ToSic.Eav.Configuration.Licenses
             catch (Exception ex)
             {
                 // Just log, and ignore
-                Log.Ex(ex);
+                l.Ex(ex);
             }
-            Log.A($"Signature: {validSig}");
+            l.A($"Signature: {validSig}");
 
             // Check fingerprints
             var fps = licenseStored.FingerprintsArray;
-            var validFp = fps.Any(fingerprint.Equals) || _licenseData.Any(l => fps.Any(l.Fingerprint.Equals));
-            Log.A($"Fingerprint: {validFp}");
+            var validFp = fps.Any(fingerprint.Equals) || _licenseData.Any(ld => fps.Any(ld.Fingerprint.Equals));
+            l.A($"Fingerprint: {validFp}");
 
             var validVersion = licenseStored.Versions?
                 .Split(',')
@@ -140,23 +135,23 @@ namespace ToSic.Eav.Configuration.Licenses
                 .Any(v => int.TryParse(v, out var licVersion) && SystemInformation.Version.Major == licVersion)
                 ?? false;
 
-            Log.A($"Version: {validVersion}");
+            l.A($"Version: {validVersion}");
 
             var validDate = DateTime.Now.CompareTo(licenseStored.Expires) <= 0;
-            Log.A($"Expired: {validDate}");
+            l.A($"Expired: {validDate}");
 
             var licenses = licenseStored?.Licenses ?? new List<LicenseStoredDetails>();
-            Log.A($"Licenses: {licenses.Count}");
+            l.A($"Licenses: {licenses.Count}");
 
             var licenseStates = licenses
-                .Where(l => !string.IsNullOrEmpty(l.Id))
-                .Select(l => new LicenseState
+                .Where(ls => !string.IsNullOrEmpty(ls.Id))
+                .Select(ls => new LicenseState
                 {
                     Title = licenseStored.Title,
-                    License = _licenseCatalog.TryGet(l.Id),
+                    License = _licenseCatalog.TryGet(ls.Id),
                     EntityGuid = licenseStored.GuidSalt,
                     LicenseKey = licenseStored.Key,
-                    Expiration = l.Expires ?? licenseStored.Expires,
+                    Expiration = ls.Expires ?? licenseStored.Expires,
                     ValidExpired = validDate,
                     ValidFingerprint = validFp,
                     ValidSignature = validSig,
@@ -165,8 +160,8 @@ namespace ToSic.Eav.Configuration.Licenses
                 })
                 .ToList();
 
-            return wrapLog.Return(licenseStates, licenseStates.Count.ToString());
-        }
+            return (licenseStates, licenseStates.Count.ToString());
+        });
         
 
         private List<LicenseState> AutoEnabledLicenses()

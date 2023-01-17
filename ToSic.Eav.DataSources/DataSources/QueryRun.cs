@@ -7,7 +7,6 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
@@ -78,21 +77,24 @@ namespace ToSic.Eav.DataSources
         private Query _query;
         #endregion
 
-        private Query BuildQuery()
+        private Query BuildQuery() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<Query>();
             // parse config to be sure we get the right query name etc.
             Configuration.Parse();
 
             #region get the configEntity
+
             // go through the metadata-source to find it, since it's usually only used in LookUps
-            var metadataLookUp = (Configuration.LookUpEngine.FindSource(QueryBuilder.ConfigKeyPartSettings)// .Sources[QueryBuilder.ConfigKeyPartSettings] 
-                as LookUpInLookUps)
+            var metadataLookUp =
+                (Configuration.LookUpEngine.FindSource(QueryBuilder
+                        .ConfigKeyPartSettings) // .Sources[QueryBuilder.ConfigKeyPartSettings] 
+                    as LookUpInLookUps)
                 ?.Providers.FirstOrDefault(p => p is LookUpInMetadata) as LookUpInMetadata;
 
             // if found, initialize and get the metadata entity attached
             metadataLookUp?.Initialize();
             var configEntity = metadataLookUp?.Data;
+
             #endregion
 
             #region check for various missing configurations / errors
@@ -101,7 +103,7 @@ namespace ToSic.Eav.DataSources
             if (configEntity == null)
             {
                 Log.A("no configuration found - empty list");
-                return wrapLog.ReturnNull("silent error");
+                return (null, "silent error");
             }
 
             Log.A($"Found query settings'{configEntity.GetBestTitle()}' ({configEntity.EntityId}), will continue");
@@ -111,8 +113,9 @@ namespace ToSic.Eav.DataSources
             if (queryDef == null)
             {
                 Log.A("can't find query in configuration - empty list");
-                return wrapLog.ReturnNull("silent error");
+                return (null, "silent error");
             }
+
             #endregion
 
             Log.A($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
@@ -120,8 +123,8 @@ namespace ToSic.Eav.DataSources
             // create the query & set params
             var query = _queryGenerator.New().Init(ZoneId, AppId, queryDef, LookUpWithoutParams(), ShowDrafts, null);
             query.Params(ResolveParams(configEntity));
-            return wrapLog.ReturnAsOk(query);
-        }
+            return (query, "ok");
+        });
 
         /// <summary>
         /// Create a new lookup machine and remove the params which would be in there right now

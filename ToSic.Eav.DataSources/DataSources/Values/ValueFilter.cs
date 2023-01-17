@@ -102,43 +102,39 @@ namespace ToSic.Eav.DataSources
         }
         private readonly ValueLanguages _valueLanguageService;
 
-        private IImmutableList<IEntity> GetValueFilterOrFallback()
+        private IImmutableList<IEntity> GetValueFilterOrFallback() => Log.Func(() =>
         {
-            var callLog = Log.Fn<IImmutableList<IEntity>>();
-
             // todo: maybe do something about languages?
             Configuration.Parse();
 
             // Get the data, then see if anything came back
             var res = GetValueFilter();
             return res.Any()
-                ? callLog.Return(res, "found")
+                ? (res, "found")
                 : In.HasStreamWithItems(Constants.FallbackStreamName)
-                    ? callLog.Return(In[Constants.FallbackStreamName].List.ToImmutableList(), "fallback")
-                    : callLog.Return(res, "final");
-        }
+                    ? (In[Constants.FallbackStreamName].List.ToImmutableList(), "fallback")
+                    : (res, "final");
+        });
 
 
-        private IImmutableList<IEntity> GetValueFilter()
+        private IImmutableList<IEntity> GetValueFilter() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
-
             Log.A("applying value filter...");
             var fieldName = Attribute;
 
-            var languages = _valueLanguageService.PrepareLanguageList(Languages, Log);
+            var languages = _valueLanguageService.PrepareLanguageList(Languages);
 
             // Get the In-list and stop if error orempty
-            if (!GetRequiredInList(out var originals)) return wrapLog.Return(originals, "error");
-            if (!originals.Any()) return wrapLog.Return(originals, "empty");
+            if (!GetRequiredInList(out var originals)) return (originals, "error");
+            if (!originals.Any()) return (originals, "empty");
 
             var op = Operator.ToLowerInvariant();
 
             // Case 1/2: Handle basic "none" and "all" operators
             if (op == CompareOperators.OpNone)
-                return wrapLog.Return(ImmutableArray.Create<IEntity>(), CompareOperators.OpNone);
+                return (ImmutableArray.Create<IEntity>(), CompareOperators.OpNone);
             if (op == CompareOperators.OpAll)
-                return wrapLog.Return(ApplyTake(originals).ToImmutableArray(), CompareOperators.OpAll);
+                return (ApplyTake(originals).ToImmutableArray(), CompareOperators.OpAll);
 
             // Case 3: Real filter
             // Find first Entity which has this property being not null to detect type
@@ -151,7 +147,7 @@ namespace ToSic.Eav.DataSources
 
             // if I can't find any, return empty list
             if (firstEntity == null)
-                return wrapLog.Return(ImmutableArray<IEntity>.Empty, "empty");
+                return (ImmutableArray<IEntity>.Empty, "empty");
 
             // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
             // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
@@ -168,41 +164,38 @@ namespace ToSic.Eav.DataSources
             //if (netTypeName.Contains(Constants.DataTypeEntity)) netTypeName = Constants.DataTypeEntity;
 
             var compMaker = new ValueComparison((title, message) => SetError(title, message), Log);
-            var compare = compMaker.GetComparison(fieldType, /*firstValue,*/ fieldName, op, languages, Value);
+            var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value);
 
             return !ErrorStream.IsDefaultOrEmpty
-                ? wrapLog.Return(ErrorStream, "error")
-                : wrapLog.ReturnAsOk(GetFilteredWithLinq(originals, compare));
+                ? (ErrorStream, "error")
+                : (GetFilteredWithLinq(originals, compare), "ok");
 
             // Note: the alternate GetFilteredWithLoop has more logging, activate in serious cases
             // Note that the code might not be 100% identical, but it should help find issues
-        }
+        });
 
 
-        private ImmutableArray<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
+        private ImmutableArray<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
             try
             {
                 var results = originals.Where(compare);
                 results = ApplyTake(results);
-                return wrapLog.ReturnAsOk(results.ToImmutableArray());
+                return (results.ToImmutableArray(), "ok");
             }
             catch (Exception ex)
             {
-                return wrapLog.Return(SetError("Unexpected Error",
+                return (SetError("Unexpected Error",
                     "Experienced error while executing the filter LINQ. " +
                     "Probably something with type-mismatch or the same field using different types or null. " +
                     "The exception was logged to Insights.",
                     ex), "error");
             }
-        }
+        });
 
-        private IEnumerable<IEntity> ApplyTake(IEnumerable<IEntity> results)
-        {
-            var wrapLog = Log.Fn<IEnumerable<IEntity>>();
-            return int.TryParse(Take, out var tk) ? wrapLog.Return(results.Take(tk), $"take {tk}") : wrapLog.Return(results, "take all");
-        }
+        private IEnumerable<IEntity> ApplyTake(IEnumerable<IEntity> results) => Log.Func(() => int.TryParse(Take, out var tk)
+            ? (results.Take(tk), $"take {tk}")
+            : (results, "take all"));
 
 
         /// <summary>

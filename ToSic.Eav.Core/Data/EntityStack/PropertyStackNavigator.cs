@@ -88,19 +88,17 @@ namespace ToSic.Eav.Data
         /// Just get the result of the child which we're wrapping. 
         /// </summary>
         /// <returns></returns>
-        private PropReqResult GetResultOfOwnItem(PropReqSpecs specs, ILog logOrNull, PropertyLookupPath path)
+        private PropReqResult GetResultOfOwnItem(PropReqSpecs specs, ILog logOrNull, PropertyLookupPath path) => logOrNull.Func(() =>
         {
-            var safeWrap = logOrNull.Fn<PropReqResult>();
-
             // 2022-05-02 2dm - there seem to be cases where this wrapper is created without an own entity.
             // Not yet sure why, but in this case we must be sure to not return something.
             if (UnwrappedContents == null)
-                return safeWrap.ReturnNull("no entity/contents");
+                return (null, "no entity/contents");
 
             path = path.Add("OwnItem", specs.Field);
             var childResult = UnwrappedContents.FindPropertyInternal(specs, path);
             if (childResult == null)
-                return safeWrap.ReturnNull("null");
+                return (null, "null");
             
             // Test if final was already checked, otherwise update it
             if (!childResult.IsFinal)
@@ -108,16 +106,15 @@ namespace ToSic.Eav.Data
 
             // if it is final, return that
             if (!childResult.IsFinal)
-                return safeWrap.Return(childResult, "not final");
+                return (childResult, "not final");
 
             // TODO: @2dm - this doesn't look right yet, why are we making "this" the new parent?
             var maybeAdjustedParent = StackAddress.Child(this, specs.Field, childResult.SourceIndex);
             var reWrapper = new StackReWrapper(maybeAdjustedParent, logOrNull);
 
             var final = reWrapper.ReWrapIfPossible(childResult);
-            return safeWrap.Return(final, final.ResultOriginal != null ? "re-wrapped" : "not null/entities, final");
-            
-        }
+            return (final, final.ResultOriginal != null ? "re-wrapped" : "not null/entities, final");
+        });
     }
     
     

@@ -119,43 +119,40 @@ namespace ToSic.Eav.Configuration
         /// When old format is detected, it is converted to new format.
         /// </summary>
         /// <returns></returns>
-        private FeatureListStored LoadFeaturesStored()
+        private FeatureListStored LoadFeaturesStored() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<FeatureListStored>();
-
             try
             {
                 var (filePath, fileContent) = _featureConfigManager.LoadFeaturesFile();
                 if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileContent)) 
-                    return wrapLog.ReturnNull("ok, but 'features.json' is missing");
+                    return (null, "ok, but 'features.json' is missing");
 
                 // handle old 'features.json' format
                 var stored = _featureConfigManager.ConvertOldFeaturesFile(filePath, fileContent);
                 if (stored != null) 
-                    return wrapLog.Return(stored, "converted to new features.json");
+                    return (stored, "converted to new features.json");
 
                 // return features stored
-                return wrapLog.Return(JsonSerializer.Deserialize<FeatureListStored>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml), "ok, features loaded");
+                return (JsonSerializer.Deserialize<FeatureListStored>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml), "ok, features loaded");
             }
             catch (Exception e)
             {
-                Log.Ex(e);
-                return wrapLog.ReturnNull("load feature failed:" + e.Message);
+                l.Ex(e);
+                return (null, "load feature failed:" + e.Message);
             }
-        }
+        });
 
 
         /// <summary>
         /// Update existing features config in "features.json". 
         /// </summary>
         [PrivateApi]
-        public bool UpdateFeatures(List<FeatureManagementChange> changes)
+        public bool UpdateFeatures(List<FeatureManagementChange> changes) => Log.Func($"c:{changes?.Count ?? -1}", () =>
         {
-            var wrapLog = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
             var saved = _featureConfigManager.SaveFeaturesUpdate(changes);
             SetFeaturesStored(FeatureListStoredBuilder(changes));
-            return wrapLog.Return(saved, "ok, updated");
-        }
+            return (saved, "ok, updated");
+        });
 
 
         private FeatureListStored FeatureListStoredBuilder(List<FeatureManagementChange> changes)

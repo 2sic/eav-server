@@ -7,14 +7,13 @@ namespace ToSic.Eav.Data
 {
     public partial class PropertyStackNavigator
     {
-        private PropReqResult GetResultOfAncestors(PropReqSpecs specs, ILog logOrNull, PropertyLookupPath path)
+        private PropReqResult GetResultOfAncestors(PropReqSpecs specs, ILog logOrNull, PropertyLookupPath path) => logOrNull.Func(specs.Dump(), l => 
         {
-            var l = logOrNull.Fn<PropReqResult>(specs.Dump());
             l.A("No sibling result found, will check grand parent");
             var ancestor = StackAddress.Ancestor;
             l.A($"Found Grandparent: {ancestor != null}");
             if (ancestor == null)
-                return l.Return(PropReqResult.NullFinal(path), "no ancestor to check");
+                return (PropReqResult.NullFinal(path), "no ancestor to check");
 
             path = path.Add("↩️");
 
@@ -26,7 +25,7 @@ namespace ToSic.Eav.Data
 
                 // If no matching ancestor found, return empty
                 if (!reqResult.IsFinal)
-                    return l.Return(PropReqResult.NullFinal(reqResult.Path), "no more relevant ancestors found");
+                    return (PropReqResult.NullFinal(reqResult.Path), "no more relevant ancestors found");
 
                 // Now try ancestor child
                 var innerLookup = reqResult.Result as IPropertyLookup
@@ -38,14 +37,14 @@ namespace ToSic.Eav.Data
                         ? stackLookup.GetNextInStack(specs, 0, path)
                         : innerLookup.FindPropertyInternal(specs, reqResult.Path);
 
-                    if (ancestorChild.IsFinal) return l.Return(ancestorChild, "found child of ancestor sibling");
+                    if (ancestorChild.IsFinal) return (ancestorChild, "found child of ancestor sibling");
                 }
                 else
                     l.A($"Found ancestor with '{ancestor.Field}' but not a {nameof(IPropertyLookup)} so we can't use; skip");
             }
 
-            return l.Return(PropReqResult.NullFinal(path), "tried max ancestor siblings, nothing found");
-        }
+            return (PropReqResult.NullFinal(path), "tried max ancestor siblings, nothing found");
+        });
 
         private (StackAddress currentAddress, PropReqResult Request) GetAncestorSibling(
             StackAddress ancestorAddress, PropReqSpecs specs, PropertyLookupPath path

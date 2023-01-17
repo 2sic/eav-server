@@ -41,12 +41,11 @@ namespace ToSic.Eav.DataSources
         public Error(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Error")
             => Provide(GenerateExceptionStream);
 
-        private ImmutableArray<IEntity> GenerateExceptionStream()
+        private ImmutableArray<IEntity> GenerateExceptionStream() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
-            Log.A("This is a fake Error / Exception");
-            Log.A("The Error DataSource creates an exception on purpose, to test exception functionality in Visual Query");
-            return wrapLog.Return(SetError(Title, Message), "fake error");
-        }
+            l.A("This is a fake Error / Exception");
+            l.A("The Error DataSource creates an exception on purpose, to test exception functionality in Visual Query");
+            return (SetError(Title, Message), "fake error");
+        });
     }
 }

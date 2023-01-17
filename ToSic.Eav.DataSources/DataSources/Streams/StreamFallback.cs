@@ -47,29 +47,27 @@ namespace ToSic.Eav.DataSources
             return foundStream?.List.ToImmutableArray() ?? ImmutableArray<IEntity>.Empty;
         }
 
-	    private IDataStream FindIdealFallbackStream()
-	    {
-            var wrapLog = Log.Fn<IDataStream>();
-
+        private IDataStream FindIdealFallbackStream() => Log.Func(() =>
+        {
             Configuration.Parse();
 
             // Check if there is a default-stream in with content - if yes, try to return that
             if (In.HasStreamWithItems(Constants.DefaultStreamName))
-                return wrapLog.Return(In[Constants.DefaultStreamName], "found default");
+                return (In[Constants.DefaultStreamName], "found default");
 
             // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
-	        var streamList = In
+            var streamList = In
                 .Where(x => x.Key != Constants.DefaultStreamName)
                 .OrderBy(x => x.Key);
-            
-	        foreach (var stream in streamList)
-	            if (stream.Value.List.Any())
-	            {
-	                ReturnedStreamName = stream.Key;
-                    return wrapLog.Return(stream.Value, $"will return stream:{ReturnedStreamName}");
+
+            foreach (var stream in streamList)
+                if (stream.Value.List.Any())
+                {
+                    ReturnedStreamName = stream.Key;
+                    return (stream.Value, $"will return stream:{ReturnedStreamName}");
                 }
 
-	        return wrapLog.ReturnNull("didn't find any stream, will return empty");
-	    }
-	}
+            return (null, "didn't find any stream, will return empty");
+        });
+    }
 }

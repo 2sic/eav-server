@@ -28,45 +28,23 @@ namespace ToSic.Eav.DataSources
             ConfigMask(nameof(ContentTypeName));
         }
 
-        private IImmutableList<IEntity> GetMetadata()
+        private IImmutableList<IEntity> GetMetadata() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
-
             Configuration.Parse();
 
             // Make sure we have an In - otherwise error
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
+                return (originals, "error");
 
             var typeName = ContentTypeName;
             if (string.IsNullOrWhiteSpace(typeName)) typeName = null;
-            Log.A($"Content Type Name: {typeName}");
+            l.A($"Content Type Name: {typeName}");
 
             IEnumerable<IEntity> relationships = SpecificGet(originals, typeName);
 
-            return wrapLog.Return(relationships.ToImmutableList());
-        }
+            return (relationships.ToImmutableList(), "ok");
+        });
 
         protected abstract IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName);
-        //{
-        //    var find = InnerGet(typeName);
-
-        //    var relationships = originals
-        //        .SelectMany(o => find(o));
-
-        //    relationships = Postprocess(relationships);
-        //    return relationships;
-        //}
-
-        ///// <summary>
-        ///// Construct function for the get of the related items
-        ///// </summary>
-        ///// <param name="fieldName"></param>
-        ///// <param name="typeName"></param>
-        ///// <returns></returns>
-        //[PrivateApi]
-        //protected abstract Func<IEntity, IEnumerable<IEntity>> InnerGet(string typeName);
-
-        //protected virtual IEnumerable<IEntity> Postprocess(IEnumerable<IEntity> results) => results;
     }
 }

@@ -129,39 +129,40 @@ namespace ToSic.Eav.DataSources
 		    return result;
 		}
 
-		/// <summary>
-		/// Convert a DataTable to a Dictionary of EntityModels
-		/// </summary>
-		private ImmutableArray<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
-		{
-			var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
+        /// <summary>
+        /// Convert a DataTable to a Dictionary of EntityModels
+        /// </summary>
+        private ImmutableArray<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null
+        ) => Log.Func(() =>
+        {
+            // Validate Columns
+            if (!source.Columns.Contains(entityIdField))
+                throw new Exception($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");
+            if (!source.Columns.Contains(titleField))
+                throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-			// Validate Columns
-			if (!source.Columns.Contains(entityIdField))
-				throw new Exception($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");
-			if (!source.Columns.Contains(titleField))
-				throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
-
-			// Populate a new Dictionary with EntityModels
-			var result = new List<IEntity>();
+            // Populate a new Dictionary with EntityModels
+            var result = new List<IEntity>();
             var builder = DataBuilder;
-			foreach (DataRow row in source.Rows)
-			{
-				var entityId = global::System.Convert.ToInt32(row[entityIdField]);
-				var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField).ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
-                values = new Dictionary<string, object>(values, StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
-			    var mod = string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?;
+            foreach (DataRow row in source.Rows)
+            {
+                var entityId = global::System.Convert.ToInt32(row[entityIdField]);
+                var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField)
+                    .ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
+                values = new Dictionary<string, object>(values,
+                    StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
+                var mod = string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?;
                 var entity = builder.Entity(values,
                     titleField: titleField,
                     typeName: contentType,
                     id: entityId,
                     modified: mod,
                     appId: Constants.TransientAppId);
-				result.Add(entity);
-			}
+                result.Add(entity);
+            }
 
             var final = result.ToImmutableArray();
-			return wrapLog.Return(final, $"{final.Length}");
-		}
-	}
+            return (final, $"{final.Length}");
+        });
+    }
 }

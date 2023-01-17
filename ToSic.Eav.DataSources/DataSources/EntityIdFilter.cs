@@ -59,39 +59,37 @@ namespace ToSic.Eav.DataSources
 		    ConfigMask(EntityIdKey, "[Settings:EntityIds]");
 		}
 
-		private IImmutableList<IEntity> GetList()
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
-
             var entityIds = CustomConfigurationParse();
 
             // if CustomConfiguration resulted in an error, report now
             if (!ErrorStream.IsDefaultOrEmpty)
-                return wrapLog.Return(ErrorStream, "error");
+                return (ErrorStream, "error");
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
+                return (originals, "error");
 
-		    var result = entityIds.Select(eid => originals.One(eid)).Where(e => e != null).ToImmutableArray();
+            var result = entityIds.Select(eid => originals.One(eid)).Where(e => e != null).ToImmutableArray();
 
-		    Log.A(Log.Try(() => $"get ids:[{string.Join(",", entityIds)}] found:{result.Length}"));
-            return wrapLog.ReturnAsOk(result);
-        }
+            l.A(l.Try(() => $"get ids:[{string.Join(",", entityIds)}] found:{result.Length}"));
+            return (result, "ok");
+        });
 
         [PrivateApi]
-        private int[] CustomConfigurationParse()
+        private int[] CustomConfigurationParse() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<int[]>();
             Configuration.Parse();
 
             #region clean up list of IDs to remove all white-space etc.
+
             try
             {
                 var configEntityIds = EntityIds;
                 // check if we have anything to work with
                 if (string.IsNullOrWhiteSpace(configEntityIds))
-                    return wrapLog.Return(new int[0], "empty");
-                
+                    return (Array.Empty<int>(), "empty");
+
                 var preCleanedIds = configEntityIds
                     .Split(',')
                     .Where(strEntityId => !string.IsNullOrWhiteSpace(strEntityId));
@@ -99,15 +97,16 @@ namespace ToSic.Eav.DataSources
                 foreach (var strEntityId in preCleanedIds)
                     if (int.TryParse(strEntityId, out var entityIdToAdd))
                         lstEntityIds.Add(entityIdToAdd);
-                return wrapLog.Return(lstEntityIds.Distinct().ToArray(), EntityIds);
+                return (lstEntityIds.Distinct().ToArray(), EntityIds);
             }
             catch (Exception ex)
             {
                 SetError("Can't find IDs", "Unable to load EntityIds from Configuration. Unexpected Exception.", ex);
-                return wrapLog.ReturnNull("error");
+                return (null, "error");
             }
-            #endregion
-        }
 
-	}
+            #endregion
+        });
+
+    }
 }

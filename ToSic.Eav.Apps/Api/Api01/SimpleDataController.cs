@@ -64,33 +64,29 @@ namespace ToSic.Eav.Api.Api01
         /// <param name="zoneId">Zone ID</param>
         /// <param name="appId">App ID</param>
         /// <param name="checkWritePermissions"></param>
-        public SimpleDataController Init(int zoneId, int appId, bool checkWritePermissions = true)
+        public SimpleDataController Init(int zoneId, int appId, bool checkWritePermissions = true) => Log.Func($"{zoneId}, {appId}", l =>
         {
-            var wrapLog = Log.Fn<SimpleDataController>($"{zoneId}, {appId}");
             _appId = appId;
-            
+
             // when zoneId is not that same as in current context, we need to set right site for provided zoneId
             if (_ctx.Site.ZoneId != zoneId) _ctx.Site = _zoneMapper.SiteOfZone(zoneId);
-            
+
             _defaultLanguageCode = GetDefaultLanguage(zoneId);
             _context = _dbDataLazy.Value.Init(zoneId, appId);
             _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId));
             _checkWritePermissions = checkWritePermissions;
-            Log.A($"Default language:{_defaultLanguageCode}");
-            return wrapLog.Return(this);
-        }
+            l.A($"Default language:{_defaultLanguageCode}");
+            return this;
+        });
 
-        private string GetDefaultLanguage(int zoneId)
+        private string GetDefaultLanguage(int zoneId) => Log.Func($"{zoneId}", () =>
         {
-            var wrapLog = Log.Fn<string>($"{zoneId}");
-
             var site = _zoneMapper.SiteOfZone(zoneId);
-            if (site == null) return wrapLog.Return("","site is null");
-
+            if (site == null) return ("", "site is null");
 
             var usesLanguages = _zoneMapper.CulturesWithState(site).Any(c => c.IsEnabled);
-            return wrapLog.Return(usesLanguages ? site.DefaultCultureCode : "", $"ok, usesLanguages:{usesLanguages}");
-        }
+            return (usesLanguages ? site.DefaultCultureCode : "", $"ok, usesLanguages:{usesLanguages}");
+        });
         
         #endregion
 

@@ -30,11 +30,7 @@ namespace ToSic.Eav.Apps.Security
         /// Creates a permission checker for an type in this app
         /// </summary>
         /// <returns></returns>
-        private IPermissionCheck BuildItemPermissionChecker(IEntity item)
-        {
-            var wrap = Log.Fn<IPermissionCheck>($"{item.EntityId}");
-            // now do relevant security checks
-            return wrap.ReturnAsOk(BuildPermissionChecker(item.Type, item));
-        }
+        private IPermissionCheck BuildItemPermissionChecker(IEntity item) =>
+            Log.Func($"{item.EntityId}", () => (BuildPermissionChecker(item.Type, item), "ok"));
     }
 }

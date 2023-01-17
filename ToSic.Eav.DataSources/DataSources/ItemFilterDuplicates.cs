@@ -42,42 +42,41 @@ namespace ToSic.Eav.DataSources
         /// Find and return the unique items in the list
         /// </summary>
         /// <returns></returns>
-        private IImmutableList<IEntity> GetUnique()
+        private IImmutableList<IEntity> GetUnique() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
-
-            if (!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
+            if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
+                return (ImmutableArray<IEntity>.Empty, "no in stream with name");
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
+                return (originals, "error");
 
             var result = originals
                 .Distinct()
                 .ToImmutableArray();
-            
-            return wrapLog.ReturnAsOk(result);
-        }
+
+            return (result, "ok");
+        });
 
 
         /// <summary>
         /// Find and return only the duplicate items in the list
         /// </summary>
         /// <returns></returns>
-	    private IImmutableList<IEntity> GetDuplicates()
-	    {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
-	        if (!In.HasStreamWithItems(Constants.DefaultStreamName)) return ImmutableArray<IEntity>.Empty;
+        private IImmutableList<IEntity> GetDuplicates() => Log.Func(() =>
+        {
+            if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
+                return (ImmutableArray<IEntity>.Empty, "no in-stream with name");
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
-            
+                return (originals, "error");
+
             var result = originals
                 .GroupBy(s => s)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
                 .ToImmutableArray();
-            
-            return wrapLog.ReturnAsOk(result);
-        }
+
+            return (result, "ok");
+        });
     }
 }

@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources.Debug
         public QueryInfo BuildQueryInfo(QueryDefinition queryDef, IDataSource queryResult)
         {
             QueryDefinition = queryDef;
-            GetStreamInfosRecursive(queryResult as IDataTarget, ref Streams, ref Sources);
+            GetStreamInfosRecursive(queryResult as IDataTarget);
             return this;
         }
 
@@ -28,19 +28,17 @@ namespace ToSic.Eav.DataSources.Debug
         /// <summary>
         /// Provide an array of infos related to a stream and data source
         /// </summary>
-        private void GetStreamInfosRecursive(IDataTarget target, ref List<StreamInfo> streams, ref Dictionary<Guid, DataSourceInfo> sources)
+        private void GetStreamInfosRecursive(IDataTarget target) => Log.Do($"{target.Guid}[{target.In.Count}]", timer: true, action: l =>
         {
-            var l = Log.Fn($"{target.Guid}[{target.In.Count}]", timer: true);
-            
             foreach (var stream in target.In)
             {
                 // First get all the streams (do this first so they stay together)
                 try
                 {
                     var stmInfo = new StreamInfo(stream.Value, target, stream.Key);
-                    if (streams.Any(existing => existing.Equals(stmInfo)))
+                    if (Streams.Any(existing => existing.Equals(stmInfo)))
                         continue;
-                    streams.Add(stmInfo);
+                    Streams.Add(stmInfo);
                 }
                 catch
                 {
@@ -51,8 +49,8 @@ namespace ToSic.Eav.DataSources.Debug
                 try
                 {
                     var di = new DataSourceInfo(target as IDataSource);
-                    if (!sources.ContainsKey(di.Guid))
-                        sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
+                    if (!Sources.ContainsKey(di.Guid))
+                        Sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
                 }
                 catch
                 {
@@ -63,8 +61,8 @@ namespace ToSic.Eav.DataSources.Debug
                 try
                 {
                     var di = new DataSourceInfo(stream.Value.Source);
-                    if (!sources.ContainsKey(di.Guid))
-                        sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
+                    if (!Sources.ContainsKey(di.Guid))
+                        Sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
                 }
                 catch
                 {
@@ -74,15 +72,13 @@ namespace ToSic.Eav.DataSources.Debug
                 // Get Sub-Streams recursive
                 try
                 {
-                    GetStreamInfosRecursive(stream.Value.Source as IDataTarget, ref streams, ref sources);
+                    GetStreamInfosRecursive(stream.Value.Source as IDataTarget);
                 }
                 catch
                 {
                     l.A("Error in recursion");
                 }
             }
-
-            l.Done("ok");
-        }
+        });
     }
 }

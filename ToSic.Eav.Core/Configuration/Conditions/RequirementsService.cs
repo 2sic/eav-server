@@ -20,12 +20,11 @@ namespace ToSic.Eav.Configuration
 
         protected LazySvc<ServiceSwitcher<IRequirementCheck>> Checkers { get; }
 
-        public List<ConditionError> Check(IEnumerable<IHasRequirements> withRequirements)
+        public List<ConditionError> Check(IEnumerable<IHasRequirements> withRequirements) => Log.Func(timer: true, func: () =>
         {
-            var wrapLog = Log.Fn<List<ConditionError>>(timer: true);
             var result = withRequirements?.SelectMany(Check).ToList() ?? new List<ConditionError>();
-            return wrapLog.Return(result, $"{result.Count} requirements failed");
-        }
+            return (result, $"{result.Count} requirements failed");
+        });
 
         public List<ConditionError> Check(IHasRequirements withRequirements) 
             => Check(withRequirements?.Requirements);

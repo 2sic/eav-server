@@ -38,20 +38,20 @@ namespace ToSic.Eav.Apps
 
         /// <inheritdoc />
         public IEntity Create(string contentTypeName,
-            Dictionary<string, object> values, 
+            Dictionary<string, object> values,
             string userName = null,
-            ITarget target = null)
+            ITarget target = null
+        ) => Log.Func(contentTypeName, () =>
         {
-            var wrapLog = Log.Fn<IEntity>(contentTypeName);
             if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
-            var ids = DataController.Value.Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
+            var ids = DataController.Value.Create(contentTypeName, new List<Dictionary<string, object>> { values }, target);
             var id = ids.FirstOrDefault();
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             // try to find it again (AppState.List contains also draft items)
             var created = AppState.List.One(id);
-            return wrapLog.Return(created);
-        }
+            return created;
+        });
 
         private static void ProvideOwnerInValues(Dictionary<string, object> values, string userIdentityToken)
         {
@@ -61,12 +61,11 @@ namespace ToSic.Eav.Apps
         }
 
         /// <inheritdoc />
-        public IEnumerable<IEntity> Create(string contentTypeName, 
-            IEnumerable<Dictionary<string, object>> multiValues, 
-            string userName = null)
+        public IEnumerable<IEntity> Create(string contentTypeName,
+            IEnumerable<Dictionary<string, object>> multiValues,
+            string userName = null
+        ) => Log.Func(message: $"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}", func: () =>
         {
-            var wrapLog = Log.Fn<IEnumerable<IEntity>>(null, $"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}");
-            
             if (!string.IsNullOrEmpty(userName))
                 foreach (var values in multiValues)
                     ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
@@ -75,8 +74,8 @@ namespace ToSic.Eav.Apps
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             var created = List.Where(e => ids.Contains(e.EntityId)).ToList();
-            return wrapLog.Return(created);
-        }
+            return created;
+        });
 
         /// <inheritdoc />
         public void Update(int entityId, Dictionary<string, object> values, string userName = null

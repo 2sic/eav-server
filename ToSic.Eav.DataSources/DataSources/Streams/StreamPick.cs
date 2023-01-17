@@ -70,29 +70,26 @@ namespace ToSic.Eav.DataSources
             ConfigMask(SearchInParentKey, "[Settings:UseParent||False]");
         }
 
-        private IImmutableList<IEntity> StreamPickList()
+        private IImmutableList<IEntity> StreamPickList() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
             var name = StreamName;
             Log.A($"StreamName to Look for: '{name}'");
             if (string.IsNullOrWhiteSpace(StreamName))
-                return wrapLog.Return(ImmutableArray<IEntity>.Empty, "no name");
+                return (ImmutableArray<IEntity>.Empty, "no name");
 
             name = name.ToLowerInvariant();
             var foundStream = In.FirstOrDefault(pair => pair.Key.ToLowerInvariant() == name);
 
             if (!string.IsNullOrEmpty(foundStream.Key))
-                return wrapLog.ReturnAsOk(foundStream.Value.List.ToImmutableArray());
+                return (foundStream.Value.List.ToImmutableArray(), "ok");
 
             // Error not found
             var msg = $"StreamPick can't find stream by the name '{StreamName}'";
             Log.A(msg);
-            return wrapLog.Return(ErrorHandler.CreateErrorList(source: this, title: "Can't find Stream",
-                message: $"Trying to pick the stream '{StreamName}' but it doesn't exist on the In."),
-                "error");
+            return (ErrorHandler.CreateErrorList(source: this, title: "Can't find Stream", message: $"Trying to pick the stream '{StreamName}' but it doesn't exist on the In."), "error");
 
-        }
+        });
 
     }
 }

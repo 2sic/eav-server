@@ -213,46 +213,49 @@ namespace ToSic.Eav.Apps.Decorators
         /// <param name="debug"></param>
         /// <param name="priority"></param>
         /// <returns></returns>
-        private List<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadataOf md, int meantFor, string debug, int priority)
+        private List<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadataOf md, int meantFor, string debug, int priority) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<List<MetadataRecommendation>>();
-
             var all = md.OfType(ExpectedDecorator.TypeGuid).ToList();
             if (meantFor > 0) all = all.Where(r => meantFor == new ForDecorator(r).TargetType).ToList();
-            if (!all.Any()) return wrapLog.Return(new List<MetadataRecommendation>(), "no recommendations");
+            if (!all.Any()) return (new List<MetadataRecommendation>(), "no recommendations");
 
             var resultAll = all.SelectMany(rEntity =>
-            {
-                var rec = new ExpectedDecorator(rEntity);
-                var config = rec.Types;
-                var delWarning = rec.DeleteWarning;
-                if (string.IsNullOrWhiteSpace(config)) return wrapLog.ReturnNull("no values in config");
-                return config
-                    .Split(',')
-                    .Select(name => TypeAsRecommendation(name.Trim(), debug, priority, delWarning))
-                    .Where(x => x != null)
-                    .ToList();
-            }).ToList();
+                {
+                    var rec = new ExpectedDecorator(rEntity);
+                    var config = rec.Types;
+                    var delWarning = rec.DeleteWarning;
+                    if (string.IsNullOrWhiteSpace(config))
+                    {
+                        l.W("Found case with no values in config");
+                        return new List<MetadataRecommendation>();
+                    }
 
-            return wrapLog.Return(resultAll, $"found {resultAll.Count}");
-        }
+                    return config
+                        .Split(',')
+                        .Select(name => TypeAsRecommendation(name.Trim(), debug, priority, delWarning))
+                        .Where(x => x != null)
+                        .ToList();
+                })
+                .ToList();
+
+            return (resultAll, $"found {resultAll.Count}");
+        });
 
         /// <summary>
         /// Find a content-type and convert it into a recommendation object
         /// </summary>
         /// <returns></returns>
-        private MetadataRecommendation TypeAsRecommendation(string name, string debug, int priority, string delWarning)
+        private MetadataRecommendation TypeAsRecommendation(string name, string debug, int priority, string delWarning
+        ) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<MetadataRecommendation>(name);
-
-            if (string.IsNullOrWhiteSpace(name)) return wrapLog.ReturnNull("empty name");
+            if (string.IsNullOrWhiteSpace(name)) return (null, "empty name");
 
             var type = AppState.GetContentType(name);
             return type == null
-                ? wrapLog.ReturnNull("name not found")
-                : wrapLog.Return(new MetadataRecommendation(type, null, null, debug, priority)
-                        { DeleteWarning = delWarning }, "use existing name");
-        }
+                ? (null, "name not found")
+                : (new MetadataRecommendation(type, null, null, debug, priority)
+                    { DeleteWarning = delWarning }, "use existing name");
+        });
 
     }
 }

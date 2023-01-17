@@ -49,22 +49,20 @@ namespace ToSic.Eav.DataSources
             Provide(GetList);
 		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
         }
-        
-        private IImmutableList<IEntity> GetList()
-        {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
 
+        private IImmutableList<IEntity> GetList() => Log.Func(() =>
+        {
             Configuration.Parse();
 
             Log.A($"get for identity:{Identity}");
-            if (string.IsNullOrWhiteSpace(Identity)) 
-                return wrapLog.Return(ImmutableArray<IEntity>.Empty, "no identity");
+            if (string.IsNullOrWhiteSpace(Identity))
+                return (ImmutableArray<IEntity>.Empty, "no identity");
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
-            
-            return wrapLog.ReturnAsOk(originals.Where(e => e.Owner == Identity).ToImmutableArray());
-        }
+                return (originals, "error");
 
-	}
+            return (originals.Where(e => e.Owner == Identity).ToImmutableArray(), "ok");
+        });
+
+    }
 }

@@ -38,18 +38,17 @@ namespace ToSic.Eav.Apps.Security
         /// </summary>
         /// <param name="grants"></param>
         /// <returns></returns>
-        public virtual bool EnvironmentAllows(List<Grants> grants)
+        public virtual bool EnvironmentAllows(List<Grants> grants) => Log.Func(Log.Try(() => $"[{string.Join(",", grants)}]"), () =>
         {
-            var logWrap = Log.Fn<bool>( Log.Try(() => $"[{string.Join(",", grants)}]"));
-            if (UserIsAnonymous()) logWrap.Return(false, "user anonymous");
+            if (UserIsAnonymous()) return (false, "user anonymous");
             var ok = UserIsSystemAdmin(); // superusers are always ok
             if (!ok && CurrentZoneMatchesSiteZone())
                 ok = UserIsContentAdmin()
                      || UserIsModuleAdmin()
                      || UserIsModuleEditor();
             if (ok) GrantedBecause = Conditions.EnvironmentGlobal;
-            return logWrap.Return(ok, $"{ok} because:{GrantedBecause}");
-        }
+            return (ok, $"{ok} because:{GrantedBecause}");
+        });
 
         protected virtual bool UserIsModuleAdmin() => false;
         protected virtual bool UserIsModuleEditor() => false;
@@ -86,20 +85,18 @@ namespace ToSic.Eav.Apps.Security
         /// Verify that we're in the same zone, allowing admin/module checks
         /// </summary>
         /// <returns></returns>
-        protected bool CurrentZoneMatchesSiteZone()
+        protected bool CurrentZoneMatchesSiteZone() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<bool>();
-            
             // Check if we are running out-of http-context
-            if (Context.Site == null || Context.Site.Id == Constants.NullId) return wrapLog.ReturnFalse("no");
-            
+            if (Context.Site == null || Context.Site.Id == Constants.NullId) return (false, "no");
+
             // Check if no app is provided, like when an app hasn't been selected yet, so it's an empty module, must be on current portal
-            if (AppIdentity == null) return wrapLog.ReturnTrue("no app, so context unchanged"); 
+            if (AppIdentity == null) return (true, "no app, so context unchanged");
 
             // If we have the full context, we must check if the site has changed
             // This will important for other security checks, only allow zone-change for super users
             var result = Context.Site.ZoneId == AppIdentity.ZoneId;
-            return wrapLog.ReturnAndLog(result);
-        }
+            return (result, result.ToString());
+        });
     }
 }

@@ -61,13 +61,8 @@ namespace ToSic.Eav.Apps.Security
         /// </summary>
         /// <param name="grants"></param>
         /// <returns>True if all pass, false if any one fails</returns>
-        public bool EnsureAny(List<Grants> grants)
-        {
-            var wrap = Log.Fn<bool>();
-            return PermissionCheckers.Any(set => set.Value.Ensure(grants, out _)) 
-                ? wrap.ReturnTrue() 
-                : wrap.ReturnFalse();
-        }
+        public bool EnsureAny(List<Grants> grants) => Log.Func(() =>
+            PermissionCheckers.Any(set => set.Value.Ensure(grants, out _)));
 
     }
 }

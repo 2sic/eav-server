@@ -167,15 +167,14 @@ namespace ToSic.Eav.Caching
         #region Update
 
         /// <inheritdoc />
-        public virtual AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
+        public virtual AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools) => log.Func(() =>
         {
-            var wrapLog = log.Fn<AppState>();
             // if it's not cached yet, ignore the request as partial update won't be necessary
-            if (!Has(app)) return wrapLog.ReturnNull("not cached, won't update");
+            if (!Has(app)) return (null, "not cached, won't update");
             var appState = Get(app, tools);
             tools.RepositoryLoader(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
-            return wrapLog.ReturnAsOk(appState);
-        }
+            return (appState, "ok");
+        });
 
         #endregion
 

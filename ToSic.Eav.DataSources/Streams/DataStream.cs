@@ -105,68 +105,64 @@ namespace ToSic.Eav.DataSources
 	    private IImmutableList<IEntity> _list;
 
         private bool _listLoaded;
-        private ILog _log;
 
-        public IEnumerable<IEntity> List
+        public IEnumerable<IEntity> List => Log.Getter(timer: true, message: $"{nameof(Name)}:{Name}", getter: () =>
         {
-            get
+            // Note about Logging
+            // In rare cases the Source is null - and we don't want to cause Errors just because we can't log
+            // These cases usually occur when error-streams are created - in which case they sometimes don't have a source
+
+            // If already retrieved return last result to be faster
+            if (_listLoaded) return (_list, "reuse previous");
+
+            // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
+            if (AutoCaching)
             {
-                // Note about Logging
-                // In rare cases the Source is null - and we don't want to cause Errors just because we can't log
-                // These cases usually occur when error-streams are created - in which case they sometimes don't have a source
-                var wrapLog = Log.Fn<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}", timer: true);
-
-                // If already retrieved return last result to be faster
-                if (_listLoaded) return wrapLog.Return(_list, "reuse previous");
-
-                // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
-                if (AutoCaching)
-                {
-                    Log.A($"{nameof(AutoCaching)}:{AutoCaching}");
-                    var cacheItem = new ListCache(Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
-                    _list = cacheItem.List;
-                }
-                else
-                    _list = ReadUnderlyingList();
-
-                _listLoaded = true;
-                return wrapLog?.ReturnAsOk(_list) ?? _list;
+                Log.A($"{nameof(AutoCaching)}:{AutoCaching}");
+                var cacheItem = new ListCache(Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
+                _list = cacheItem.List;
             }
-        }
+            else
+                _list = ReadUnderlyingList();
+
+            _listLoaded = true;
+            return (_list, "ok");
+        });
 
 
         /// <summary>
         /// Assemble the list - from the initially configured ListDelegate
         /// </summary>
         /// <returns></returns>
-        IImmutableList<IEntity> ReadUnderlyingList()
+        IImmutableList<IEntity> ReadUnderlyingList() => Log.Func<IImmutableList<IEntity>>(() =>
         {
-            var wrapLog = Source.Log.Fn<IImmutableList<IEntity>>();
             // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
             if (_listDelegate == null)
-                return wrapLog.Return(Source.ErrorHandler.CreateErrorList(source: Source,
-                    title: "Error loading Stream",
-                    message: "Can't load stream - no delegate found to supply it"),
+                return (Source.ErrorHandler.CreateErrorList(source: Source,
+                        title: "Error loading Stream",
+                        message: "Can't load stream - no delegate found to supply it"),
                     "error");
 
             try
             {
                 var resultList = ImmutableSmartList.Wrap(_listDelegate());
-                return wrapLog.ReturnAsOk(resultList);
+                return (resultList, "ok");
             }
             catch (InvalidOperationException invEx) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
             {
-                return wrapLog.Return(Source.ErrorHandler.CreateErrorList(source: Source, title: "InvalidOperationException", message: "See details", exception: invEx),
+                return (
+                    Source.ErrorHandler.CreateErrorList(source: Source, title: "InvalidOperationException",
+                        message: "See details", exception: invEx),
                     "error");
             }
             catch (Exception ex)
             {
-                return wrapLog.Return(Source.ErrorHandler.CreateErrorList(source: Source, exception: ex,
-                    title: "Error getting Stream / reading underlying list",
-                    message: $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}"),
+                return (Source.ErrorHandler.CreateErrorList(source: Source, exception: ex,
+                        title: "Error getting Stream / reading underlying list",
+                        message: $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}"),
                     "error");
             }
-        }
+        });
         #endregion
 
 

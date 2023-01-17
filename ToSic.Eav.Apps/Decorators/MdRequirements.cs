@@ -40,60 +40,54 @@ namespace ToSic.Eav.Apps.Decorators
             return wrapLog.ReturnAndLog(result);
         }
 
-        public bool RequirementMet(IEntity requirement)
+        public bool RequirementMet(IEntity requirement) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<bool>();
             // No requirement, all is ok
-            if (requirement == null) return wrapLog.ReturnTrue("no requirement");
+            if (requirement == null) return (true, "no requirement");
             var reqObj = new RequirementDecorator(requirement);
 
             // Check requirement type
             switch (reqObj.RequirementType)
             {
                 case RequirementDecorator.ReqFeature:
-                    return wrapLog.Return(VerifyFeature(reqObj), "feature");
+                    return (VerifyFeature(reqObj), "feature");
                 case RequirementDecorator.ReqLicense:
-                    return wrapLog.Return(VerifyLicense(reqObj), "license");
+                    return (VerifyLicense(reqObj), "license");
                 case RequirementDecorator.ReqPlatform:
-                    return wrapLog.Return(VerifyPlatform(reqObj), "platform");
+                    return (VerifyPlatform(reqObj), "platform");
                 default:
                     // No real requirement, assume not fulfilled
-                    return wrapLog.ReturnFalse("unknown requirement");
+                    return (false, "unknown requirement");
             }
-        }
+        });
 
-        private bool VerifyPlatform(RequirementDecorator reqObj)
+        private bool VerifyPlatform(RequirementDecorator reqObj) => Log.Func($"name: {reqObj.Platform}", () =>
         {
-            var platName = reqObj.Platform;
-            var wrapLog = Log.Fn<bool>($"name: {platName}");
-            if (string.IsNullOrWhiteSpace(platName)) return wrapLog.ReturnTrue("no req. platform");
+            if (string.IsNullOrWhiteSpace(reqObj.Platform)) return (true, "no req. platform");
 
-            var enabled = _platInfo.Value.Name.EqualsInsensitive(platName.Trim());
-            return wrapLog.Return(enabled, $"enabled: {enabled}");
-        }
+            var enabled = _platInfo.Value.Name.EqualsInsensitive(reqObj.Platform.Trim());
+            return (enabled, $"enabled: {enabled}");
+        });
 
-        private bool VerifyFeature(RequirementDecorator reqObj)
+        private bool VerifyFeature(RequirementDecorator reqObj) => Log.Func($"name: {reqObj.Feature}", () =>
         {
-            var featName = reqObj.Feature;
-            var wrapLog = Log.Fn<bool>($"name: {featName}");
-            if (string.IsNullOrWhiteSpace(featName)) return wrapLog.ReturnTrue("no req. feature");
+            if (string.IsNullOrWhiteSpace(reqObj.Feature)) return (true, "no req. feature");
 
-            var enabled = _featsService.Value.IsEnabled(featName.Trim());
-            return wrapLog.Return(enabled, $"enabled: {enabled}");
-        }
-        
-        private bool VerifyLicense(RequirementDecorator reqObj)
+            var enabled = _featsService.Value.IsEnabled(reqObj.Feature.Trim());
+            return (enabled, $"enabled: {enabled}");
+        });
+
+        private bool VerifyLicense(RequirementDecorator reqObj) => Log.Func($"name: {reqObj.License}", () =>
         {
-            var licName = reqObj.License;
-            var wrapLog = Log.Fn<bool>($"name: {licName}");
-            if (string.IsNullOrWhiteSpace(licName)) return wrapLog.ReturnTrue("no req. license");
-            
+            var wrapLog = Log.Fn<bool>($"name: {reqObj.License}");
+            if (string.IsNullOrWhiteSpace(reqObj.License)) return (true, "no req. license");
+
             // find license
-            var matchingLic = _licenseCatalog.TryGet(licName.Trim()); //  LicenseCatalog.Find(licName.Trim());
-            if (matchingLic == null) return wrapLog.ReturnFalse("unknown license");
-            
+            var matchingLic = _licenseCatalog.TryGet(reqObj.License.Trim());
+            if (matchingLic == null) return (false, "unknown license");
+
             var enabled = _licenseService.Value.IsEnabled(matchingLic);
-            return wrapLog.Return(enabled, $"enabled {enabled}");
-        }
+            return (enabled, $"enabled {enabled}");
+        });
     }
 }

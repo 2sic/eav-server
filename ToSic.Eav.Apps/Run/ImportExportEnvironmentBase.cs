@@ -52,12 +52,11 @@ namespace ToSic.Eav.Apps.Run
 
         public abstract void CreateFoldersAndMapToImportIds(Dictionary<int, string> foldersAndPath, Dictionary<int, int> folderIdCorrectionList, List<Message> importLog);
 
-        public SaveOptions SaveOptions(int zoneId)
+        public SaveOptions SaveOptions(int zoneId) => Log.Func($"{nameof(zoneId)}:{zoneId}", () =>
         {
-            var wrapLog = Log.Fn<SaveOptions>($"{nameof(zoneId)}:{zoneId}");
-            var langs = _appStates.Languages(zoneId, true); /*new ZoneRuntime().Init(zoneId, Log).Languages(true)*/
+            var langs = _appStates.Languages(zoneId, true);
             var opts = new SaveOptions(DefaultLanguage, langs);
-            return wrapLog.Return(opts, $"langs: {langs.Count}");
-        }
+            return (opts, $"langs: {langs.Count}");
+        });
     }
 }

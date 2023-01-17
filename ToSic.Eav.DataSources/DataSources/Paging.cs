@@ -84,52 +84,50 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-	    private IImmutableList<IEntity> GetList()
+        private IImmutableList<IEntity> GetList() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
-            var itemsToSkip = (PageNumber - 1)*PageSize;
+            var itemsToSkip = (PageNumber - 1) * PageSize;
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
-
+                return (originals, "error");
 
             var result = originals
                 .Skip(itemsToSkip)
                 .Take(PageSize)
                 .ToImmutableArray();
             Log.A($"get page:{PageNumber} with size{PageSize} found:{result.Length}");
-            return wrapLog.ReturnAsOk(result);
-	    }
-        
-        private IImmutableList<IEntity> GetPaging()
+            return (result, "ok");
+        });
+
+        private IImmutableList<IEntity> GetPaging() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             // Calculate any additional stuff
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
+                return (originals, "error");
 
             var itemCount = originals.Count;
-            var pageCount = Math.Ceiling((decimal) itemCount / PageSize);
+            var pageCount = Math.Ceiling((decimal)itemCount / PageSize);
 
             // Assemble the entity
             var paging = new Dictionary<string, object>
             {
-                {Attributes.TitleNiceName, "Paging Information"},
-                {"PageSize", PageSize},
-                {"PageNumber", PageNumber},
-                {"ItemCount", itemCount},
-                {"PageCount", pageCount}
+                { Attributes.TitleNiceName, "Paging Information" },
+                { "PageSize", PageSize },
+                { "PageNumber", PageNumber },
+                { "ItemCount", itemCount },
+                { "PageCount", pageCount }
             };
 
-            var entity = new Data.Entity(Constants.TransientAppId, 0, DataBuilder.Type("Paging"), paging, Attributes.TitleNiceName);
+            var entity = new Data.Entity(Constants.TransientAppId, 0, DataBuilder.Type("Paging"), paging,
+                Attributes.TitleNiceName);
 
             // Assemble list of this for the stream
-            var list = new List<IEntity> {entity};
-            return wrapLog.ReturnAsOk(list.ToImmutableArray());
-        }
+            var list = new List<IEntity> { entity };
+            return (list.ToImmutableArray(), "ok");
+        });
 
-	}
+    }
 }

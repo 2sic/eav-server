@@ -81,9 +81,8 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-		private IImmutableList<IEntity> GetList()
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             var raw = AttributeNames;
@@ -94,22 +93,22 @@ namespace ToSic.Eav.DataSources
                 .Select(a => a.Trim())
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .ToArray();
-            
-            Log.A($"attrib filter names:[{string.Join(",", attributeNames)}]");
-            
+
+            l.A($"attrib filter names:[{string.Join(",", attributeNames)}]");
+
             // Determine if we should remove or keep the things in the list
             var keepNamedAttributes = Mode != ModeRemove;
-            
-            // If no attributes were given or just one with *, then don't filter at all
-            var noFieldNames = attributeNames.Length == 0 
-                          || attributeNames.Length == 1 && string.IsNullOrWhiteSpace(attributeNames[0]);
 
-            if (!GetRequiredInList(out var sourceList)) 
-                return wrapLog.Return(sourceList, "error");
+            // If no attributes were given or just one with *, then don't filter at all
+            var noFieldNames = attributeNames.Length == 0
+                               || attributeNames.Length == 1 && string.IsNullOrWhiteSpace(attributeNames[0]);
+
+            if (!GetRequiredInList(out var sourceList))
+                return (sourceList, "error");
 
             // Case #1 if we don't change anything, short-circuit and return original
             if (noFieldNames && !keepNamedAttributes)
-                return wrapLog.Return(sourceList, $"keep original {sourceList.Count}");
+                return (sourceList, $"keep original {sourceList.Count}");
 
             var result = sourceList
                 .Select(e =>
@@ -127,8 +126,8 @@ namespace ToSic.Eav.DataSources
                 .Cast<IEntity>()
                 .ToImmutableList();
 
-		    return wrapLog.Return(result, $"modified {result.Count}");
-		}
-        
+            return (result, $"modified {result.Count}");
+        });
+
     }
 }

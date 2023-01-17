@@ -233,31 +233,26 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-		private IImmutableList<IEntity> GetList(string inStreamName = Constants.DefaultStreamName)
+        private IImmutableList<IEntity> GetList(string inStreamName = Constants.DefaultStreamName) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
-
             var original = In[inStreamName].List.ToImmutableList();
-
             var enhanced = AddSerializationRules(original);
-            
-		    return wrapLog.Return(enhanced, $"{enhanced.Count}");
-		}
+            return (enhanced, $"{enhanced.Count}");
+        });
 
-        private IImmutableList<IEntity> AddSerializationRules(IImmutableList<IEntity> before)
+        private IImmutableList<IEntity> AddSerializationRules(IImmutableList<IEntity> before) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             // Skip if no rules defined
             var noRules = string.IsNullOrWhiteSpace(string.Join("", Configuration));
-            if(noRules) return wrapLog.Return(before, "no rules, unmodified");
+            if (noRules) return (before, "no rules, unmodified");
 
             var id = TryParseIncludeRule(IncludeId);
             var title = TryParseIncludeRule(IncludeTitle);
             var guid = TryParseIncludeRule(IncludeGuid);
             var created = TryParseIncludeRule(IncludeCreated);
             var modified = TryParseIncludeRule(IncludeModified);
-            
+
             var dropNullValues = TryParseIncludeRule(RemoveNullValues) ?? false;
             var dropZeroValues = TryParseIncludeRule(RemoveZeroValues) ?? false;
             var dropEmptyStringValues = TryParseIncludeRule(RemoveEmptyStrings) ?? false;
@@ -312,8 +307,8 @@ namespace ToSic.Eav.DataSources
             var result = before
                 .Select(e => (IEntity)new EntityDecorator12<EntitySerializationDecorator>(e, decorator));
 
-            return wrapLog.Return(result.ToImmutableList(), "modified");
-        }
+            return (result.ToImmutableList(), "modified");
+        });
         
         private bool? TryParseIncludeRule(string original)
             => bool.TryParse(original, out var include) ? (bool?)include : null;

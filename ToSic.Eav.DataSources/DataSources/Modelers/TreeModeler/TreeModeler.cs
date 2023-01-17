@@ -107,13 +107,12 @@ namespace ToSic.Eav.DataSources
         /// Internal helper that returns the entities
         /// </summary>
         /// <returns></returns>
-        private IImmutableList<IEntity> GetList()
+        private IImmutableList<IEntity> GetList() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
+                return (originals, "error");
 
             ITreeMapper treeMapper;
             switch (Identifier)
@@ -125,13 +124,11 @@ namespace ToSic.Eav.DataSources
                     treeMapper = new TreeMapper<int>(_multiBuilder);
                     break;
                 default:
-                    return wrapLog.Return(SetError("Invalid Identifier",
-                        "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute."),
-                        "error");
+                    return (SetError("Invalid Identifier", "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute."), "error");
             }
             var res = treeMapper.GetEntitiesWithRelationships(originals, Identifier, ParentReferenceField, NewChildrenField, NewParentField);
-            return wrapLog.Return(res, $"{res.Count}");
-        }
+            return (res, $"{res.Count}");
+        });
 
     }
 }

@@ -37,38 +37,35 @@ namespace ToSic.Eav.DataSources
         /// Prepare language list to use in lookup
         /// </summary>
         /// <returns></returns>
-        internal string[] PrepareLanguageList(string languages, ILog log)
+        internal string[] PrepareLanguageList(string languages) => Log.Func(languages, l =>
         {
             var lang = languages.ToLowerInvariant().Trim();
 
-            var wrapLog = log.Fn<string[]>(lang);
-
-            var resolved = ResolveOneLanguageCode(lang, log);
+            var resolved = ResolveOneLanguageCode(lang);
 
             // if null, not ok - continue to error
             // if String.Empty, then we just want the default, so use empty array (faster)
             if (resolved != null)
-                return wrapLog.Return(resolved == string.Empty ? Array.Empty<string>() : new[] { resolved }, resolved);
+                return (resolved == string.Empty ? Array.Empty<string>() : new[] { resolved }, resolved);
 
 
-            wrapLog.ReturnNull($"Error - can't figure out '{lang}'");
-            throw new Exception($"Can't figure out what language to use: '{lang}'. Expected '{LanguageDefaultPlaceholder}', '{LanguageCurrentPlaceholder}' or a 2-character code");
-        }
+            l.E($"Error - can't figure out '{lang}'");
+            var ex = new Exception($"Can't figure out what language to use: '{lang}'. Expected '{LanguageDefaultPlaceholder}', '{LanguageCurrentPlaceholder}' or a 2-character code");
+            throw Log.Ex(ex);
+        });
 
-        private string ResolveOneLanguageCode(string lang, ILog log)
+        private string ResolveOneLanguageCode(string lang) => Log.Func(lang, () =>
         {
-            var wrapLog = log.Fn<string>(lang);
-
             if (string.IsNullOrWhiteSpace(lang) || lang == LanguageDefaultPlaceholder)
-                return wrapLog.Return(string.Empty, LanguageDefaultPlaceholder); // empty string / no language means the default language
+                return (string.Empty, LanguageDefaultPlaceholder); // empty string / no language means the default language
 
             if (lang == LanguageCurrentPlaceholder)
-                return wrapLog.Return(_cultureResolver.SafeCurrentCultureCode(), LanguageCurrentPlaceholder);
+                return (_cultureResolver.SafeCurrentCultureCode(), LanguageCurrentPlaceholder);
 
             if (lang.Length == 2 || lang.Length == 5 && lang.Contains("-"))
-                return wrapLog.Return(lang, "Exact" + lang);
+                return (lang, "Exact" + lang);
 
-            return wrapLog.ReturnNull();
-        }
+            return (null, "");
+        });
     }
 }
