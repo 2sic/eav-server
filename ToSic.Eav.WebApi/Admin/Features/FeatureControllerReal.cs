@@ -34,22 +34,19 @@ namespace ToSic.Eav.WebApi.Admin.Features
 
         #endregion
 
-        public bool SaveNew(List<FeatureManagementChange> changes)
+        public bool SaveNew(List<FeatureManagementChange> changes) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<bool>();
-
             // validity check 
-            if (changes == null || changes.Count == 0) 
-                return wrapLog.ReturnFalse("no features changes");
-            
-            return wrapLog.ReturnAsOk(_systemLoaderLazy.Value.UpdateFeatures(changes));
-        }
+            if (changes == null || changes.Count == 0)
+                return (false, "no features changes");
 
-        public FeatureState Details(string nameId)
+            return (_systemLoaderLazy.Value.UpdateFeatures(changes), "ok");
+        });
+
+        public FeatureState Details(string nameId) => Log.Func(nameId, () =>
         {
-            var l = Log.Fn<FeatureState>(nameId);
             var details = _featuresLazy.Value.All.FirstOrDefault(f => f.NameId.EqualsInsensitive(nameId));
-            return l.Return(details);
-        }
+            return (details);
+        });
     }
 }

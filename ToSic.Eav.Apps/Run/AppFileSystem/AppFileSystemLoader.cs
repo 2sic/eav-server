@@ -69,15 +69,13 @@ namespace ToSic.Eav.Apps.Run
 
         #region Inits
 
-        public IAppFileSystemLoader Init(AppState app)
+        public IAppFileSystemLoader Init(AppState app) => Log.Func($"{app.AppId}, {app.Folder}, ...", () =>
         {
-            var wrapLog = Log.Fn<IAppFileSystemLoader>($"{app.AppId}, {app.Folder}, ...");
             _appState = app;
             _appPaths = Deps.AppPathsLazy.Value?.Init(Site, app);
             InitPathAfterAppId();
-
-            return wrapLog.Return(this);
-        }
+            return this;
+        });
 
         IAppRepositoryLoader IAppRepositoryLoader.Init(AppState app) => Init(app) as IAppRepositoryLoader;
 
@@ -86,69 +84,61 @@ namespace ToSic.Eav.Apps.Run
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        protected virtual bool InitPathAfterAppId()
+        protected virtual bool InitPathAfterAppId() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<bool>();
             Path = System.IO.Path.Combine(_appPaths.PhysicalPath, Constants.FolderAppExtensions);
             PathShared = System.IO.Path.Combine(_appPaths.PhysicalPathShared, Constants.FolderAppExtensions);
-            return wrapLog.ReturnTrue($"p:{Path}, ps:{PathShared}");
-        }
+            return (true, $"p:{Path}, ps:{PathShared}");
+        });
 
         #endregion
 
 
 
         /// <inheritdoc />
-        public List<InputTypeInfo> InputTypes()
+        public List<InputTypeInfo> InputTypes() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<List<InputTypeInfo>>();
-
             var types = GetInputTypes(Path, AppConstants.AppPathPlaceholder);
             types.AddRange(GetInputTypes(PathShared, AppConstants.AppPathSharedPlaceholder));
+            return (types, $"{types.Count}");
+        });
 
-            return wrapLog.Return(types, $"{types.Count}");
-        }
-        
         /// <inheritdoc />
-        public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource)
+        public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<IList<IContentType>>();
             try
             {
                 var extPaths = ExtensionPaths();
-                Log.A($"Found {extPaths.Count} extensions with .data folder");
+                l.A($"Found {extPaths.Count} extensions with .data folder");
                 var allTypes = extPaths.SelectMany(p => LoadTypesFromOneExtensionPath(p, entitiesSource))
                     .Distinct(new EqualityComparer_ContentType())
                     .ToList();
-                return wrapLog.ReturnAsOk(allTypes);
+                return (allTypes, "ok");
             }
             catch (Exception e)
             {
-                Log.A("error " + e.Message);
+                l.A("error " + e.Message);
             }
 
-            return wrapLog.Return(new List<IContentType>(), "error");
-        }
+            return (new List<IContentType>(), "error");
+        });
 
 
-        private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
+        private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource) => Log.Func(extensionPath, () =>
         {
-            var wrapLog = Log.Fn<IList<IContentType>>(extensionPath);
-            var fsLoader = Deps.FslGenerator.New()
-                .Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
+            var fsLoader = Deps.FslGenerator.New().Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
             var types = fsLoader.ContentTypes();
-            return wrapLog.ReturnAsOk(types);
-        }
+            return types;
+        });
 
 
 
         #region Helpers
 
-        private List<InputTypeInfo> GetInputTypes(string path, string placeholder)
+        private List<InputTypeInfo> GetInputTypes(string path, string placeholder) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<List<InputTypeInfo>>();
             var di = new DirectoryInfo(path);
-            if (!di.Exists) return wrapLog.Return(new List<InputTypeInfo>(), "directory not found");
+            if (!di.Exists) return (new List<InputTypeInfo>(), "directory not found");
             var inputFolders = di.GetDirectories(FieldFolderPrefix + "*");
             Log.A($"found {inputFolders.Length} field-directories");
 
@@ -166,8 +156,8 @@ namespace ToSic.Eav.Apps.Run
                         $"{placeholder}/{Eav.Constants.FolderAppExtensions}/{name}/{JsFile}", false);
                 })
                 .ToList();
-            return wrapLog.Return(types, $"{types.Count}");
-        }
+            return (types, $"{types.Count}");
+        });
 
         private static string NiceName(string name)
         {

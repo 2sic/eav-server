@@ -31,12 +31,12 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <returns>a content-type or null if not found</returns>
         public IContentType Get(string name) => Parent.AppState.GetContentType(name);
-        
+
         /// <summary>
         /// Retrieve a list of all input types known to the current system
         /// </summary>
         /// <returns></returns>
-        public List<InputTypeInfo> GetInputTypes()
+        public List<InputTypeInfo> GetInputTypes() => Log.Func(() =>
         {
             // Inner helper to log each intermediate state
             void LogListOfInputTypes(string title, List<InputTypeInfo> inputsToLog) =>
@@ -51,8 +51,6 @@ namespace ToSic.Eav.Apps.Parts
                         return "error";
                     }
                 });
-
-            var wrapLog = Log.Fn<List<InputTypeInfo>>();
 
             // Initial list is the global, file-system based types
             var globalDef = GetGlobalInputTypesBasedOnContentTypes();
@@ -81,12 +79,12 @@ namespace ToSic.Eav.Apps.Parts
             LogListOfInputTypes("System", systemAppInputTypes);
             AddMissingTypes(inputTypes, systemAppInputTypes);
             LogListOfInputTypes("All combined", inputTypes);
-            
+
             // Sort for better debugging
             inputTypes = inputTypes.OrderBy(i => i.Type).ToList();
 
-            return wrapLog.Return(inputTypes, $"found {inputTypes.Count}");
-        }
+            return (inputTypes, $"found {inputTypes.Count}");
+        });
 
         /// <summary>
         /// Mini-helper to enhance a list with additional entries not yet contained
@@ -138,22 +136,21 @@ namespace ToSic.Eav.Apps.Parts
         /// Experimental v11 - load input types based on folder
         /// </summary>
         /// <returns></returns>
-        private List<InputTypeInfo> GetAppExtensionInputTypes()
+        private List<InputTypeInfo> GetAppExtensionInputTypes() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<List<InputTypeInfo>>();
             try
             {
                 var appState = Parent.AppState;
                 var appLoader = _appFileSystemLoaderLazy.Value.Init(appState);
                 var inputTypes = appLoader.InputTypes();
-                return wrapLog.Return(inputTypes);
+                return (inputTypes, $"{inputTypes.Count}");
             }
             catch (Exception e)
             {
-                Log.A("Error: " + e.Message);
-                return wrapLog.Return(new List<InputTypeInfo>(), "error");
+                l.A("Error: " + e.Message);
+                return (new List<InputTypeInfo>(), "error");
             }
-        }
+        });
 
         private const string FieldTypePrefix = "@";
 

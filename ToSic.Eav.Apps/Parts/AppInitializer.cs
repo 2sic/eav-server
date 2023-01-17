@@ -64,17 +64,16 @@ namespace ToSic.Eav.Apps.Parts
 
 
         #endregion
-        
+
         /// <summary>
         /// Create app-describing entity for configuration and add Settings and Resources Content Type
         /// </summary>
         /// <param name="newAppName">The app-name (for new apps) which would be the folder name as well. </param>
-        public bool InitializeApp(string newAppName = null)
+        public bool InitializeApp(string newAppName = null) => Log.Func($"{nameof(newAppName)}: {newAppName}", () =>
         {
-            var wrapLog = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
-
-            if (AppInitializedChecker.CheckIfAllPartsExist(AppState, out var appConfig, out var appResources, out var appSettings, Log))
-                return wrapLog.ReturnTrue("ok");
+            if (AppInitializedChecker.CheckIfAllPartsExist(AppState, out var appConfig, out var appResources,
+                    out var appSettings, Log))
+                return (true, "ok");
 
             // Get appName from cache - stop if it's a "Default" app
             var eavAppName = AppState.NameId;
@@ -97,14 +96,14 @@ namespace ToSic.Eav.Apps.Parts
                     //"App Metadata",
                     values: new Dictionary<string, object>
                     {
-                        {"DisplayName", string.IsNullOrEmpty(newAppName) ? eavAppName : newAppName},
-                        {"Folder", folder},
-                        {"AllowTokenTemplates", "True"},
-                        {"AllowRazorTemplates", "True"},
+                        { "DisplayName", string.IsNullOrEmpty(newAppName) ? eavAppName : newAppName },
+                        { "Folder", folder },
+                        { "AllowTokenTemplates", "True" },
+                        { "AllowRazorTemplates", "True" },
                         // always trailing with the version it was created with
                         // Note that v13 and 14 both report v13, only 15+ uses the real version
-                        {"Version", $"00.00.{EavSystemInfo.Version.Major:00}"},
-                        {"OriginalId", ""}
+                        { "Version", $"00.00.{EavSystemInfo.Version.Major:00}" },
+                        { "OriginalId", "" }
                     },
                     false));
 
@@ -125,7 +124,7 @@ namespace ToSic.Eav.Apps.Parts
             {
                 SystemManager.Purge(AppState);
                 // get the latest app-state, but not-initialized so we can make changes
-                var repoLoader = _repositoryLoaderGenerator.New();// _serviceProvider.Build<IRepositoryLoader>().Init(Log);
+                var repoLoader = _repositoryLoaderGenerator.New();
                 AppState = repoLoader.AppState(AppState.AppId, false);
                 _appManager = null; // reset, because afterwards we need a clean AppManager
             }
@@ -135,29 +134,28 @@ namespace ToSic.Eav.Apps.Parts
             // Reset App-State to ensure it's reloaded with the added configuration
             SystemManager.Purge(AppState);
 
-            return wrapLog.ReturnFalse("ok");
-        }
+            return (false, "ok");
+        });
 
 
 
-        private bool CreateAllMissingContentTypes(List<AddContentTypeAndOrEntityTask> newItems)
+        private bool CreateAllMissingContentTypes(List<AddContentTypeAndOrEntityTask> newItems) => Log.Func($"Check for {newItems.Count}", l =>
         {
-            var wrapLog = Log.Fn<bool>($"Check for {newItems.Count}");
             var addedTypes = false;
             foreach (var item in newItems)
                 if (item.InAppType && FindContentType(item.SetName, item.InAppType) == null)
                 {
-                    Log.A("couldn't find type, will create");
+                    l.A("couldn't find type, will create");
                     // create App-Man if not created yet
                     // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
                     AppManager.ContentTypes.Create(item.SetName, item.SetName, /* item.Description,*/ Scopes.App);
                     addedTypes = true;
                 }
                 else
-                    Log.A($"Type '{item.SetName}' found");
+                    l.A($"Type '{item.SetName}' found");
 
-            return wrapLog.ReturnAsOk(addedTypes);
-        }
+            return addedTypes;
+        });
         
         private void MetadataEnsureTypeAndSingleEntity(AddContentTypeAndOrEntityTask cTypeAndOrEntity
         ) => Log.Do($"{cTypeAndOrEntity.SetName} for app {AppState.AppId} - inApp: {cTypeAndOrEntity.InAppType}", l =>

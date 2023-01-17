@@ -62,51 +62,47 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// Move an item in the coupled lists
         /// </summary>
         /// <returns></returns>
-        public DicNameObj Move(int sourceIndex, int targetIndex)
+        public DicNameObj Move(int sourceIndex, int targetIndex) => Log.Func($"reorder entities before:{sourceIndex} to after:{targetIndex}", () =>
         {
-            var wrapLog = Log.Fn<DicNameObj>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
             var hasChanges = Lists.Values
                 .Aggregate(false, (prev, l) => l.Move(sourceIndex, targetIndex) || prev);
             return hasChanges
-                ? wrapLog.ReturnAsOk(Lists.ToObject())
-                : wrapLog.ReturnNull("outside of range, no changes");
-        }
+                ? (Lists.ToObject(), "ok")
+                : (null, "outside of range, no changes");
+        });
 
         /// <summary>
         /// Reorder the pair of sequences
         /// </summary>
         /// <param name="newSequence">List of index-IDs how it should be sorted now</param>
         /// <returns></returns>
-        public DicNameObj Reorder(int[] newSequence)
+        public DicNameObj Reorder(int[] newSequence) => Log.Func($"seq:[{string.Join(",", newSequence)}]", l =>
         {
-            var wrapLog = Log.Fn<DicNameObj>($"seq:[{string.Join(",", newSequence)}]");
-
             // some error checks
             if (newSequence.Length != Lists.First().Value.Count)
             {
                 const string msg = "Error: Can't re-order - list length is different";
-                wrapLog.ReturnNull(msg);
-                throw new Exception(msg);
+                throw l.Ex(new Exception(msg));
             }
 
             const int usedMarker = int.MinValue;
-            Lists.ForEach(l =>
+            Lists.ForEach(lst =>
             {
-                var copy = l.ToList();
-                l.Clear();
+                var copy = lst.ToList();
+                lst.Clear();
                 foreach (var index in newSequence)
                 {
                     if (copy[index] == usedMarker)
                         throw new Exception($"Error: Cancelled re-order because index {index} was re-used");
                     var primaryId = copy[index];
                     copy[index] = usedMarker;
-                    l.Add(primaryId);
-                    Log.A($"Added at [{index}] value {primaryId}");
+                    lst.Add(primaryId);
+                    l.A($"Added at [{index}] value {primaryId}");
                 }
             });
 
-            return wrapLog.ReturnAsOk(Lists.ToObject());
-        }
+            return (Lists.ToObject(), "ok");
+        });
 
         /// <summary>
         /// Replace an item in the primary list, and optionally also in the coupled list. 

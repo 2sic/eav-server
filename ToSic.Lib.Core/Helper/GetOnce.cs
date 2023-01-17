@@ -76,12 +76,7 @@ namespace ToSic.Lib.Helper
         /// <param name="log">Logger to use</param>
         /// <param name="name">name of the property we're getting, to mention in the log</param>
         /// <returns></returns>
-        public T Get(Func<T> generator, ILog log, string name)
-        {
-            var wrapLog = log.Fn<T>(name);
-            var result = Get(generator);
-            return wrapLog.ReturnAndLog(result);
-        }
+        public T Get(Func<T> generator, ILog log, string name) => Log.Func(name, () => Get(generator));
 
         /// <summary>
         /// Reset the value so it will be re-generated next time it's needed

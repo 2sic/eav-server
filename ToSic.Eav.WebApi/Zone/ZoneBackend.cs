@@ -41,18 +41,16 @@ namespace ToSic.Eav.WebApi.Zone
         private readonly LazySvc<ILicenseService> _licenseService;
         private readonly ILogStoreLive _logStore;
 
-        public SystemInfoSetDto GetSystemInfo()
+        public SystemInfoSetDto GetSystemInfo() => Log.Func($"{_site.Id}", () =>
         {
-            var wrapLog = Log.Fn<SystemInfoSetDto>($"{_site.Id}");
-
             var zoneId = _site.ZoneId;
 
             var siteStats = new SiteStatsDto
             {
                 SiteId = _site.Id,
-                ZoneId = _site.ZoneId, 
+                ZoneId = _site.ZoneId,
                 Apps = _appStates.Apps(zoneId).Count,
-                Languages = _zoneMapper.CulturesWithState(_site).Count, 
+                Languages = _zoneMapper.CulturesWithState(_site).Count,
             };
 
             var sysInfo = new SystemInfoDto
@@ -93,8 +91,8 @@ namespace ToSic.Eav.WebApi.Zone
                 Messages = warningsDto
             };
 
-            return wrapLog.ReturnAsOk(info);
-        }
+            return info;
+        });
 
         private int CountInsightsMessages(string prefix)
         {

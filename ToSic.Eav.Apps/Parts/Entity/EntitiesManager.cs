@@ -76,10 +76,9 @@ namespace ToSic.Eav.Apps.Parts
         public int Save(IEntity entity, SaveOptions saveOptions = null) 
             => Save(new List<IEntity> {entity}, saveOptions).FirstOrDefault();
 
-        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
+        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null
+        ) => Log.Func(message: "save count:" + entities.Count + ", with Options:" + (saveOptions != null), func: () =>
         {
-            var wrapLog = Log.Fn<List<int>>("", message: "save count:" + entities.Count + ", with Options:" + (saveOptions != null));
-
             // Run the change in a lock/transaction
             // This is to avoid parallel creation of new entities
             // because sometimes the save may be executed twice before the state knows that the entity exists
@@ -100,7 +99,7 @@ namespace ToSic.Eav.Apps.Parts
                         var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
                         if (newType != null) e2.UpdateType(newType); // try to update, but leave if not found
                     }
-                
+
                 // Clear Ephemeral attributes which shouldn't be saved (new in v12)
                 entities.ForEach(e => ClearEphemeralAttributes(e));
 
@@ -120,26 +119,25 @@ namespace ToSic.Eav.Apps.Parts
             List<int> ids = null;
             appState.DoInLock(Log, () => ids = InnerSaveInLock());
 
-            return wrapLog.Return(ids, $"ids:{ids.Count}");
-        }
+            return (ids, $"ids:{ids.Count}");
+        });
 
 
         /// <summary>
         /// WIP - clear attributes which shouldn't be saved at all
         /// </summary>
         /// <param name="entity"></param>
-        private bool ClearEphemeralAttributes(IEntity entity)
+        private bool ClearEphemeralAttributes(IEntity entity) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<bool>();
             var attributes = entity.Type?.Attributes;
-            if(attributes == null || !attributes.Any()) return wrapLog.ReturnFalse("no attributes");
+            if (attributes == null || !attributes.Any()) return (false, "no attributes");
 
             var toClear = attributes.Where(a =>
-                a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral) == true)
+                    a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
                 .ToList();
 
-            if (!toClear.Any()) return wrapLog.ReturnFalse("no ephemeral attributes");
-            
+            if (!toClear.Any()) return (false, "no ephemeral attributes");
+
             foreach (var a in toClear)
                 if (entity.Attributes.TryGetValue(a.Name, out var attr))
                 {
@@ -147,7 +145,7 @@ namespace ToSic.Eav.Apps.Parts
                     Log.A("Cleared " + a.Name);
                 }
 
-            return wrapLog.ReturnTrue("cleared");
-        }
+            return (true, "cleared");
+        });
     }
 }

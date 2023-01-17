@@ -18,17 +18,18 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="contentType">optional content-type name to check before deleting</param>
         /// <param name="force">force delete even if there are relationships, resulting in removal of the relationships</param>
         /// <param name="skipIfCant">skip deleting if relationships exist and force is false</param>
+        /// <param name="parentId"></param>
+        /// <param name="parentField"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool Delete(int[] ids, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null)
+        public bool Delete(int[] ids, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null
+        ) => Log.Func($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true, func: () =>
         {
-            var callLog = Log.Fn<bool>($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true);
-
             // do optional type-check and if necessary, throw error
             BatchCheckTypesMatch(ids, contentType);
 
             // get related metadata ids
-            var metaDataIds = new List<int>();             
+            var metaDataIds = new List<int>();
             foreach (var id in ids) CollectMetaDataIdsRecursively(id, ref metaDataIds);
 
             var deleteIds = ids.ToList<int>();
@@ -42,8 +43,8 @@ namespace ToSic.Eav.Apps.Parts
 
             SystemManager.PurgeApp(Parent.AppId);
 
-            return callLog.ReturnAndLog(ok);
-        }
+            return ok;
+        });
 
         private void CollectMetaDataIdsRecursively(int id, ref List<int> metaDataIds)
         {
@@ -159,13 +160,8 @@ namespace ToSic.Eav.Apps.Parts
             return Delete(Parent.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId, force: true);
         }
 
-        public bool Delete(List<int> ids)
-        {
-            var callLog = Log.Fn<bool>($"ids:{ids.Count}", timer: true);
-            var result = Delete(ids.ToArray(), null, false, true);
-            //var result = ids.Aggregate(true, (current, entityId) => current && Delete(entityId, null, false, true));
-            return callLog.ReturnAndLog(result);
-        }
+        public bool Delete(List<int> ids) => Log.Func($"ids:{ids.Count}", timer: true, func: () => 
+            Delete(ids.ToArray(), null, false, true));
 
     }
     

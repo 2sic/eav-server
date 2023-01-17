@@ -16,13 +16,8 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="queryId"></param>
         /// <returns></returns>
-        public QueryDefinition Get(int queryId)
-        {
-            var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
-            var queryMan = _queryManager.New();
-            return l.Return(new QueryDefinition(queryMan.GetQueryEntity(queryId, Parent.AppState),
-                Parent.AppId, Log));
-        }
+        public QueryDefinition Get(int queryId) => Log.Func($"{nameof(queryId)}:{queryId}", () =>
+            new QueryDefinition(_queryManager.New().GetQueryEntity(queryId, Parent.AppState), Parent.AppId, Log));
 
     }
 }

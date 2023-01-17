@@ -7,10 +7,8 @@ namespace ToSic.Eav.WebApi.Sys
 {
     public partial class InsightsControllerReal
     {
-        private string Help()
+        private string Help() => Log.Func(() =>
         {
-            var logWrap = Log.Fn<string>();
-
             const string typeattribs = "typeattributes?appid=&type=";
             const string typeMeta = "typemetadata?appid=&type=";
             const string typePerms = "typepermissions?appid=&type=";
@@ -29,7 +27,7 @@ namespace ToSic.Eav.WebApi.Sys
 
                     + H2("Most used")
                     + Ol(
-                        Li(LinkTo("Help (this screen", nameof(Help))), 
+                        Li(LinkTo("Help (this screen", nameof(Help))),
                         Li(LinkTo("All Logs", nameof(Logs))),
                         Li(LinkTo("In Memory Cache", nameof(Cache))),
                         Li(LinkTo("ping the system / IsAlive", nameof(IsAlive)))
@@ -40,16 +38,19 @@ namespace ToSic.Eav.WebApi.Sys
                         Li(LinkTo("Global Types in cache", nameof(GlobalTypes))),
                         Li(LinkTo("Global Types loading log", nameof(GlobalTypesLog))),
                         Li(LinkTo("Global logs", nameof(Logs), key: Lib.Logging.LogNames.LogStoreStartUp)),
-                        Li(LinkTo("Licenses &amp; Features", nameof(Licenses))), 
+                        Li(LinkTo("Licenses &amp; Features", nameof(Licenses))),
                         Li(LinkTo("LightSpeed stats", nameof(LightSpeedStats)))
                     )
 
                     + H2("Manual links to access debug information")
                     + Ol(
                         Li("flush an app cache: " + DemoLink("purge?appid=")),
-                        Li($"look at the load-log of an app-cache: <a href='{nameof(LoadLog)}?appid='>{nameof(LoadLog)}?appid=</a>"),
-                        Li($"look at the cache-stats of an app: <a href='{nameof(Stats)}?appid='>{nameof(Stats)}?appid=</a>"),
-                        Li($"look at the content-types of an app: <a href='{nameof(Types)}?appid='>{nameof(Types)}?appid=</a>"),
+                        Li(
+                            $"look at the load-log of an app-cache: <a href='{nameof(LoadLog)}?appid='>{nameof(LoadLog)}?appid=</a>"),
+                        Li(
+                            $"look at the cache-stats of an app: <a href='{nameof(Stats)}?appid='>{nameof(Stats)}?appid=</a>"),
+                        Li(
+                            $"look at the content-types of an app: <a href='{nameof(Types)}?appid='>{nameof(Types)}?appid=</a>"),
                         Li("look at attributes of a type: " + DemoLink(typeattribs)),
                         Li("look at type metadata:" + DemoLink(typeMeta)),
                         Li("look at type permissions:" + DemoLink(typePerms)),
@@ -58,12 +59,14 @@ namespace ToSic.Eav.WebApi.Sys
                         Li("look at entities of a type:" + DemoLink($"{nameof(Entities)}?appid=&type=")),
                         Li("look at all entities:" + DemoLink($"{nameof(Entities)}?appid=&type=all")),
                         Li("look at a single entity by id:" + DemoLink($"{nameof(Entity)}?appId=&entity=")),
-                        Li("look at entity metadata using entity-id:" + DemoLink($"{nameof(EntityMetadata)}?appid=&entity=")),
-                        Li("look at entity permissions using entity-id:" + DemoLink($"{nameof(EntityPermissions)}?appid=&entity="))
+                        Li("look at entity metadata using entity-id:" +
+                           DemoLink($"{nameof(EntityMetadata)}?appid=&entity=")),
+                        Li("look at entity permissions using entity-id:" +
+                           DemoLink($"{nameof(EntityPermissions)}?appid=&entity="))
                     )
                 ;
-            return logWrap.ReturnAsOk(result.ToString());
-        }
+            return result.ToString();
+        });
 
         protected A DemoLink(string labelAndLink) => Tag.A(labelAndLink).Href(labelAndLink);
         

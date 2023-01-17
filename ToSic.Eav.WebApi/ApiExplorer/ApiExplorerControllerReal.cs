@@ -22,21 +22,20 @@ namespace ToSic.Eav.WebApi.ApiExplorer
             ResponseMaker = responseMaker;
         }
 
-        public THttpResponseType Inspect(string path, Func<string, Assembly> getAssembly)
+        public THttpResponseType Inspect(string path, Func<string, Assembly> getAssembly) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<THttpResponseType>();
-
-            if (PreCheckAndCleanPath(ref path, out var error)) return error;
+            if (PreCheckAndCleanPath(ref path, out var error))
+                return (error, "error");
 
             try
             {
-                return wrapLog.Return(AnalyzeClassAndCreateDto(path, getAssembly(path)));
+                return (AnalyzeClassAndCreateDto(path, getAssembly(path)), "ok");
             }
             catch (Exception exc)
             {
-                return wrapLog.Return(ResponseMaker.InternalServerError(exc), $"Error: {exc.Message}.");
+                return (ResponseMaker.InternalServerError(exc), $"Error: {exc.Message}.");
             }
-        }
+        });
 
         private bool PreCheckAndCleanPath(ref string path, out THttpResponseType error)
         {
@@ -81,9 +80,8 @@ namespace ToSic.Eav.WebApi.ApiExplorer
             return wrapLog.ReturnAsOk(responseMessage);
         }
 
-        private ApiControllerDto BuildApiControllerDto(Type controller)
+        private ApiControllerDto BuildApiControllerDto(Type controller) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<ApiControllerDto>();
             var controllerSecurity = Inspector.GetSecurity(controller);
             var controllerDto = new ApiControllerDto
             {
@@ -115,10 +113,10 @@ namespace ToSic.Eav.WebApi.ApiExplorer
                     }),
                 security = controllerSecurity
             };
-            return wrapLog.Return(controllerDto);
-        }
+            return controllerDto;
+        });
 
-        private ApiSecurityDto MergeSecurity(ApiSecurityDto contSec, ApiSecurityDto methSec)
+        private ApiSecurityDto MergeSecurity(ApiSecurityDto contSec, ApiSecurityDto methSec) => Log.Func(() =>
         {
             var wrapLog = Log.Fn<ApiSecurityDto>();
             var ignoreSecurity = contSec.ignoreSecurity || methSec.ignoreSecurity;
@@ -146,7 +144,7 @@ namespace ToSic.Eav.WebApi.ApiExplorer
                 requireContext = !ignoreSecurity && requireContext,
                 requireVerificationToken = !ignoreSecurity && requireVerificationToken,
             };
-            return wrapLog.Return(result);
-        }
+            return result;
+        });
     }
 }
