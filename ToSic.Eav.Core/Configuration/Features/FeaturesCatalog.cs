@@ -34,6 +34,7 @@ namespace ToSic.Eav.Configuration
                 // Patron SuperAdmin
                 AppSyncWithSiteFiles,       // v15
                 AppAutoInstallerConfigurable,   // v15
+                DataExportImportBundles, // v15.01
 
                 // Patron Infrastructure
                 SqlCompressDataTimeline, // v15

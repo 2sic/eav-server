@@ -28,5 +28,16 @@ namespace ToSic.Eav.Configuration
             FeaturesCatalogRules.Security0Neutral,
             ForPatronSuperAdminAutoEnabled
         );
+
+        public static readonly FeatureDefinition DataExportImportBundles = new FeatureDefinition(
+            nameof(DataExportImportBundles),
+            new Guid("32f4d1e6-764c-4702-9cda-521428aca66c"),
+            "Export Data in configured bundles",
+            false,
+            false,
+            "Export Data (Content-Types, Entities) as bundles for repeatable batch export/import.",
+            FeaturesCatalogRules.Security0Neutral,
+            ForPatronSuperAdminAutoEnabled
+        );
     }
 }
