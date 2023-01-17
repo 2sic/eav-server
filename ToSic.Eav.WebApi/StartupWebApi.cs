@@ -55,12 +55,8 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<ConvertToEavLight.Dependencies>();
             services.TryAddTransient<ConvertToEavLight, ConvertToEavLight>();
 
-            // WIP json serialization converters eav related
+            // json serialization converters eav related
             services.TryAddTransient<EavJsonConverter>();
-            services.TryAddTransient<EavCollectionJsonConverter>();
-            services.TryAddTransient<EntityWrapperJsonConverter>();
-            services.TryAddTransient<EntityWrapperCollectionJsonConverter>();
-
 
 #if NETFRAMEWORK
             // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
