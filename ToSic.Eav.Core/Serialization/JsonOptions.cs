@@ -1,4 +1,5 @@
-﻿using System.Text.Encodings.Web;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -108,9 +109,10 @@ namespace ToSic.Eav.Serialization
         public static void SetUnsafeJsonSerializerOptions(this JsonSerializerOptions value)
         {
             value.AllowTrailingCommas = true;
-            value.Converters.Add(new JsonDateTimeConverter()); 
-            value.Converters.Add(new JsonStringEnumConverter());
-            value.Converters.Add(new ObjectToInferredTypesConverter());
+            foreach (var converter in UnsafeJsonWithoutEncodingHtml.Converters)
+            {
+                value.Converters.Add(converter);
+            }
             //value.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
             value.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
             value.IncludeFields = true;
