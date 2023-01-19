@@ -149,7 +149,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             return _responseMaker.File(fileContent, export.FileName, MimeHelper.Json);
         }
         
-        public ExportDecorator ExportConfigurationBuildOrThrow(Guid exportConfiguration)
+        public ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfiguration)
         {
             var systemExportConfiguration = _appManager.AppState.List.One(exportConfiguration);
             if (systemExportConfiguration == null)
@@ -168,10 +168,10 @@ namespace ToSic.Eav.WebApi.ImportExport
                 throw exception;
             }
             
-            return new ExportDecorator(systemExportConfiguration);
+            return new ExportConfiguration(systemExportConfiguration);
         }
 
-        public JsonBundle BundleBuild(ExportDecorator export, JsonSerializer serializer)
+        private JsonBundle BundleBuild(ExportConfiguration export, JsonSerializer serializer)
         {
             var bundleList = new JsonBundle();
 
@@ -209,7 +209,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             if (preserveMarkers) return jsonContentType;
             
             var removeQue = jsonContentType.Metadata
-                .Where(metaData => metaData.Type.Name == ExportDecorator.ContentType).ToList();
+                .Where(metaData => metaData.Type.Name == ExportDecorator.ContentTypeName).ToList();
 
             foreach (var item in removeQue)
                 jsonContentType.Metadata.Remove(item);
