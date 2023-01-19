@@ -113,7 +113,7 @@ namespace ToSic.Eav.DataSources.Sys
 	                /* ignore */
 	            }
 
-                return builder.Entity(BuildDictionary(t),
+                return builder.Entity(ContentTypeUtil.BuildDictionary(t),
                     appId:OfAppId, 
                     id:t.Id, 
                     titleField: ContentTypeType.Name.ToString(),
@@ -124,20 +124,5 @@ namespace ToSic.Eav.DataSources.Sys
 	        var result = list.ToImmutableArray();
             return wrapLog.Return(result, $"{result.Length}");
         }
-
-	    private static Dictionary<string, object> BuildDictionary(IContentType t) => new Dictionary<string, object>
-	    {
-	        {ContentTypeType.Name.ToString(), t.Name},
-	        {ContentTypeType.StaticName.ToString(), t.NameId},
-            // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-	        //{ContentTypeType.Description.ToString(), t.Description},
-	        {ContentTypeType.IsDynamic.ToString(), t.IsDynamic},
-
-	        {ContentTypeType.Scope.ToString(), t.Scope},
-	        {ContentTypeType.AttributesCount.ToString(), t.Attributes.Count},
-
-	        {ContentTypeType.RepositoryType.ToString(), t.RepositoryType.ToString()},
-	        {ContentTypeType.RepositoryAddress.ToString(), t.RepositoryAddress},
-	    };
-	}
+    }
 }
