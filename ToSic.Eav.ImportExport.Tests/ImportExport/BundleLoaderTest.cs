@@ -40,7 +40,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             var systemExportConfiguration = entities.FirstOrDefault(e => e.EntityGuid.Equals(new System.Guid("22db39d7-8a59-43be-be68-ea0f28880c10")));
             Assert.IsNotNull(systemExportConfiguration, "should find the system export configuration");
             
-            var export = new ExportConfiguration(systemExportConfiguration);
+            var export = new ExportDecorator(systemExportConfiguration);
             Assert.AreEqual("cfg2", export.Name, "name should be cfg2");
             Assert.IsTrue(export.PreserveMarkers, "name should be cfg2");
         }

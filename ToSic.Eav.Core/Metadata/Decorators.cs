@@ -39,6 +39,7 @@
         public static string OpenGraphId = "1f1c8118-8ea5-4db5-8e3d-f5ef2131050b";
 
         // Export Configuration v15
-        public static string SystemExportDecorator = "32698880-1c2e-41ab-bcfc-420091d3263f";
+        // moved to the ExportDecorator
+        //public static string SystemExportDecorator = "32698880-1c2e-41ab-bcfc-420091d3263f";
     }
 }

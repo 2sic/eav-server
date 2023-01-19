@@ -6,25 +6,28 @@ using ToSic.Lib.Helper;
 
 namespace ToSic.Eav.WebApi.ImportExport
 {
-    public class ExportConfiguration : EntityBasedType
+    /// <summary>
+    /// Metadata decorator for entities / content-types to mark them for export in a bundle
+    /// </summary>
+    public class ExportDecorator : EntityBasedType
     {
-        public static string TypeNameId = Eav.Metadata.Decorators.SystemExportDecorator;
+        public static string TypeNameId = "32698880-1c2e-41ab-bcfc-420091d3263f";
         public static string ContentType = "SystemExportDecorator";
         
-        public ExportConfiguration(IEntity entity) : base(entity)
+        public ExportDecorator(IEntity entity) : base(entity)
         {
         }
 
-        public string Name => Get("Name", "");
+        public string Name => GetThis("");
 
-        public bool PreserveMarkers => Get("PreserveMarkers", false);
+        public bool PreserveMarkers => GetThis(false);
         
-        public string FileName => Get("FileName", "bundle.json");
+        public string FileName => GetThis("bundle.json");
 
         // find all decorator metadata of type SystemExportDecorator
         // use the guid for finding them: 32698880-1c2e-41ab-bcfc-420091d3263f
         // filter by the Configuration field
-        public List<ExportMarker> ExportMarkers => _exportMarkers.Get(() => Entity.Parents(Eav.Metadata.Decorators.SystemExportDecorator).Select(e => new ExportMarker(e)).ToList());
+        public List<ExportMarker> ExportMarkers => _exportMarkers.Get(() => Entity.Parents(TypeNameId).Select(e => new ExportMarker(e)).ToList());
         private readonly GetOnce<List<ExportMarker>> _exportMarkers = new GetOnce<List<ExportMarker>>();
 
         public List<string> ContentTypes => ExportMarkers
