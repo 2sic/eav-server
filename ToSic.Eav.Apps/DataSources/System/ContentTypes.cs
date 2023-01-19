@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
@@ -90,13 +89,13 @@ namespace ToSic.Eav.DataSources.Sys
 	    private ImmutableArray<IEntity> GetList()
 	    {
             var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
-
+            
             Configuration.Parse();
 
             var appId = OfAppId;
 
 	        var scp = OfScope;
-            if (string.IsNullOrWhiteSpace(scp)) scp = Scopes.Default;
+            if (string.IsNullOrWhiteSpace(scp)) scp = Data.Scopes.Default;
 
             var types = _appStates.Get(appId).ContentTypes.OfScope(scp);
             
