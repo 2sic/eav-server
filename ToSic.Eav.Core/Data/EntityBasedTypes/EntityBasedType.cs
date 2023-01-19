@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
 
@@ -63,5 +64,7 @@ namespace ToSic.Eav.Data
             if (result == null) return fallback;
             return result;
         }
+
+        protected T GetThis<T>(T fallback, [CallerMemberName] string propertyName = default) => Get(propertyName, fallback);
     }
 }

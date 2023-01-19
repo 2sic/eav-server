@@ -37,10 +37,10 @@ namespace ToSic.Eav.Apps.Decorators
             var remaining = recommendations
                 .Select(r =>
                 {
-                    var status = _requirements.Value.RequirementMet(r.Type.Metadata);
-                    r.Enabled = status.Approved;
-                    if (!status.Approved && !IsNullOrWhiteSpace(status.FeatureId))
-                        r.MissingFeature = status.FeatureId;
+                    var (approved, featureId) = _requirements.Value.RequirementMet(r.Type.Metadata);
+                    r.Enabled = approved;
+                    if (!approved && !IsNullOrWhiteSpace(featureId))
+                        r.MissingFeature = featureId;
                     return r;
                 })
                 .Where(r => r.PushToUi)
