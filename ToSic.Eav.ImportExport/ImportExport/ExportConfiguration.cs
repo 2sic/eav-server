@@ -32,9 +32,9 @@ namespace ToSic.Eav.WebApi.ImportExport
         /// </summary>
         public string FileName => GetThis("bundle.json");
 
-        // find all decorator metadata of type SystemExportDecorator
-        // use the guid for finding them: 32698880-1c2e-41ab-bcfc-420091d3263f
-        // filter by the Configuration field
+        /// <summary>
+        /// Find all decorator metadata of type SystemExportDecorator
+        /// </summary>
         public List<ExportDecorator> ExportMarkers => _exportMarkers.Get(() => Entity.Parents(ExportDecorator.TypeNameId).Select(e => new ExportDecorator(e)).ToList());
         private readonly GetOnce<List<ExportDecorator>> _exportMarkers = new GetOnce<List<ExportDecorator>>();
 
