@@ -13,10 +13,10 @@
 
         public ContentTypeDetails(IEntity entity) : base(entity) { }
 
-        public string Icon => Get<string>("Icon", null);
+        public string Icon => GetThis<string>(null);
 
-        public string DynamicChildrenField => Get<string>("DynamicChildrenField", null);
+        public string DynamicChildrenField => GetThis<string>(null);
 
-        public string Description => Get<string>("Description", null);
+        public string Description => GetThis<string>(null);
     }
 }

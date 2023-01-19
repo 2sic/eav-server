@@ -53,7 +53,7 @@ namespace ToSic.Eav.Configuration.Licenses
             );
         }
 
-        internal LicenseLoader Init(List<LicenseData> licenseData)
+        internal LicenseLoader Init(List<LicenseEntity> licenseData)
         {
             _licenseData = licenseData;
             return this;
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Configuration.Licenses
         private readonly LicenseCatalog _licenseCatalog;
         private readonly SystemFingerprint _fingerprint;
         private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
-        private List<LicenseData> _licenseData;
+        private List<LicenseEntity> _licenseData;
 
         /// <summary>
         /// Pre-Load enabled / disabled global features

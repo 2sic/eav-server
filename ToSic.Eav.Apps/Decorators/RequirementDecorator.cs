@@ -13,12 +13,12 @@ namespace ToSic.Eav.Apps.Decorators
 
         public RequirementDecorator(IEntity entity) : base(entity) { }
 
-        public string RequirementType => Get("RequirementType", "");
+        public string RequirementType => GetThis("");
 
-        public string Feature => Get("Feature", "");
+        public string Feature => GetThis("");
 
-        public string License => Get("License", "");
+        public string License => GetThis("");
 
-        public string Platform => Get("Platform", "");
+        public string Platform => GetThis("");
     }
 }

@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps.Decorators
         /// An optional name to specify more exactly what it is.
         /// For example if this targets Entities, this would specify what type
         /// </summary>
-        public string TargetName => Get("TargetName", "");
+        public string TargetName => GetThis("");
 
     }
 }

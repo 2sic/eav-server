@@ -90,7 +90,7 @@ namespace ToSic.Eav.Configuration
         public void LoadLicenseAndFeatures()
         {
             var globalApp = _appStates.GetPresetOrNull();
-            var lic = globalApp.List.OfType(LicenseData.TypeNameId).Select(e => new LicenseData(e)).ToList();
+            var lic = globalApp.List.OfType(LicenseEntity.TypeNameId).Select(e => new LicenseEntity(e)).ToList();
 
             _licenseLoader.Init(lic).LoadLicenses();
 
