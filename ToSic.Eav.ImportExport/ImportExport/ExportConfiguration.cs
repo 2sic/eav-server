@@ -4,7 +4,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Lib.Helper;
 
-namespace ToSic.Eav.WebApi.ImportExport
+namespace ToSic.Eav.ImportExport
 {
     /// <summary>
     /// Metadata decorator for entities / content-types to mark them for export in a bundle

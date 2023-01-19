@@ -2,7 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.WebApi.ImportExport
+namespace ToSic.Eav.ImportExport
 {
     public class ExportDecorator : EntityBasedType
     {
