@@ -248,41 +248,43 @@ namespace ToSic.Eav.Persistence.File
         /// Try to load a bundle file, but if anything fails, just return a null
         /// </summary>
         /// <returns></returns>
-        private List<Bundle> LoadBundlesAndBuildContentTypes(JsonSerializer ser, string path, string json, int id)
+        private List<Bundle> LoadBundlesAndBuildContentTypes(JsonSerializer ser, string path, string json, int id) => Log.Func(l =>
         {
-            Log.A($"Loading bundles and building content-types from json:{json.Length}");
+            l.A($"Loading bundles and building content-types from json:{json.Length}");
             var infoIfError = "couldn't read bundle-file";
             try
             {
                 var bundleList = ser.DeserializeContentTypes(json);
-                
+
                 foreach (var contentTypeSet in bundleList
                              .Where(bundle => bundle.ContentTypeSets?.Any() == true)
                              .SelectMany(bundle => bundle.ContentTypeSets))
-                    (contentTypeSet.ContentType as ContentType).SetSourceParentAndIdForPresetTypes(RepoType, Constants.PresetContentTypeFakeParent, path, ++id);
-                
+                    (contentTypeSet.ContentType as ContentType).SetSourceParentAndIdForPresetTypes(RepoType,
+                        Constants.PresetContentTypeFakeParent, path, ++id);
+
                 return bundleList;
             }
             catch (IOException e)
             {
-                Log.A("Failed loading type - couldn't import bundle-file, IO exception: " + e);
+                l.A("Failed loading type - couldn't import bundle-file, IO exception: " + e);
                 return null;
             }
             catch (Exception e)
             {
-                Log.A($"Failed loading bundle - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
+                l.A($"Failed loading bundle - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
                 return null;
             }
-        }
+        });
 
         /// <summary>
         /// Try to load a bundle file, but if anything fails, just return a null
         /// </summary>
         /// <returns></returns>
-        private List<Bundle> LoadBundlesAndBuildEntities(JsonSerializer ser, string json, int id, List<IEntity> relationshipsList = null)
+        private List<Bundle> LoadBundlesAndBuildEntities(JsonSerializer ser, string json, int id, List<IEntity> relationshipsList = null
+        ) => Log.Func(l =>
         {
-            Log.A($"Loading bundles and build entities from json:{json.Length}");
-            var infoIfError = "couldn't read bundle-file";
+            l.A($"Loading bundles and build entities from json:{json.Length}");
+            const string infoIfError = "couldn't read bundle-file";
             try
             {
                 // #3.1 WIP - Allow relationships between loaded items
@@ -297,15 +299,15 @@ namespace ToSic.Eav.Persistence.File
             }
             catch (IOException e)
             {
-                Log.A("Failed loading type - couldn't import bundle-file, IO exception: " + e);
+                l.A("Failed loading type - couldn't import bundle-file, IO exception: " + e);
                 return null;
             }
             catch (Exception e)
             {
-                Log.A($"Failed loading bundle - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
+                l.A($"Failed loading bundle - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
                 return null;
             }
-        }
+        });
 
         #endregion
 
@@ -318,9 +320,9 @@ namespace ToSic.Eav.Persistence.File
         /// If anything fails, just return a null
         /// </summary>
         /// <returns></returns>
-        private IEntity LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource relationshipSource = null)
+        private IEntity LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource relationshipSource = null) => Log.Func(l =>
         {
-            Log.A("Loading " + path);
+            l.A("Loading " + path);
             try
             {
                 var json = System.IO.File.ReadAllText(path);
@@ -329,17 +331,17 @@ namespace ToSic.Eav.Persistence.File
             }
             catch (IOException e)
             {
-                Log.A($"Failed loading type - couldn't read file on '{path}'");
-                Log.Ex(e);
+                l.A($"Failed loading type - couldn't read file on '{path}'");
+                l.Ex(e);
                 return null;
             }
             catch (Exception e)
             {
-                Log.A($"Failed loading type - couldn't deserialize '{path}' for unknown reason.");
-                Log.Ex(e);
+                l.A($"Failed loading type - couldn't deserialize '{path}' for unknown reason.");
+                l.Ex(e);
                 return null;
             }
-        }
+        });
 
         #endregion
 
@@ -348,15 +350,14 @@ namespace ToSic.Eav.Persistence.File
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        private bool CheckPathExists(string path)
+        private bool CheckPathExists(string path) => Log.Func($"path: check exists '{path}'", l =>
         {
-            var wrapLog = Log.Fn<bool>("path: check exists '" + path + "'");
-            if (Directory.Exists(path)) return wrapLog.ReturnTrue("ok");
+            if (Directory.Exists(path)) return (true, "ok");
             if (!IgnoreMissingStuff)
                 throw new DirectoryNotFoundException("directory '" + path + "' not found, and couldn't ignore");
-            Log.A("path: doesn't exist, but ignore");
-            return wrapLog.ReturnFalse("not found");
-        }
+            l.A("path: doesn't exist, but ignore");
+            return (false, "not found");
+        });
 
     }
 }

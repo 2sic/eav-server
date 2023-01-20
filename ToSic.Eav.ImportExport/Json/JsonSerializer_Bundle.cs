@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Serialization;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization;
 
 
@@ -38,29 +36,26 @@ namespace ToSic.Eav.ImportExport.Json
             var package = UnpackAndTestGenericJsonV1(serialized);
             var result = new List<Bundle>();
 
-            if (package.Bundles?.Any() == true)
+            if (package.Bundles?.Any() != true) return result;
+
+            foreach (var bundle in package.Bundles)
             {
-                foreach (var bundle in package.Bundles)
-                {
-                    var bundleResult = new Bundle();
-                    result.Add(bundleResult);
+                var bundleResult = new Bundle();
+                result.Add(bundleResult);
 
-                    if (bundle.ContentTypes?.Any() == true)
+                // convert JsonContentTypeSet to ContentTypeSet
+                if (bundle.ContentTypes?.Any() == true)
+                    foreach (var jsonContentTypeSet in bundle.ContentTypes)
                     {
-                        // convert JsonContentTypeSet to ContentTypeSet
-                        foreach (var jsonContentTypeSet in bundle.ContentTypes)
-                        {
-                            if (bundleResult.ContentTypeSets == null) bundleResult.ContentTypeSets = new List<ContentTypeSet>();
+                        if (bundleResult.ContentTypeSets == null)
+                            bundleResult.ContentTypeSets = new List<ContentTypeSet>();
 
-                            var contentTypeSet = new ContentTypeSet();
-                            bundleResult.ContentTypeSets.Add(contentTypeSet);
+                        var contentTypeSet = new ContentTypeSet();
+                        bundleResult.ContentTypeSets.Add(contentTypeSet);
 
-                            // convert JsonContentType to ContentType
-                            contentTypeSet.ContentType = ConvertContentType(jsonContentTypeSet);
-                        }
+                        // convert JsonContentType to ContentType
+                        contentTypeSet.ContentType = ConvertContentType(jsonContentTypeSet);
                     }
-
-                }
             }
 
             return result;
