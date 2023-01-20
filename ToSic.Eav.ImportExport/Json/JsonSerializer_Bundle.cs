@@ -47,14 +47,10 @@ namespace ToSic.Eav.ImportExport.Json
                 if (bundle.ContentTypes?.Any() == true)
                     foreach (var jsonContentTypeSet in bundle.ContentTypes)
                     {
-                        if (bundleResult.ContentTypeSets == null)
-                            bundleResult.ContentTypeSets = new List<ContentTypeSet>();
+                        if (bundleResult.ContentTypes == null)
+                            bundleResult.ContentTypes = new List<IContentType>();
 
-                        var contentTypeSet = new ContentTypeSet();
-                        bundleResult.ContentTypeSets.Add(contentTypeSet);
-
-                        // convert JsonContentType to ContentType
-                        contentTypeSet.ContentType = ConvertContentType(jsonContentTypeSet);
+                        bundleResult.ContentTypes.Add(ConvertContentType(jsonContentTypeSet));
                     }
             }
 

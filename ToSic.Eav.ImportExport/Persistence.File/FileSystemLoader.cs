@@ -217,8 +217,8 @@ namespace ToSic.Eav.Persistence.File
                 .Where(ct => ct != null).ToList();
 
             var contentTypesInBundles = bundles
-                .Where(b => b.ContentTypeSets?.Any() == true)
-                .SelectMany(b => b.ContentTypeSets.Select(s => s.ContentType))
+                .Where(b => b.ContentTypes.Any() == true)
+                .SelectMany(b => b.ContentTypes)
                 .ToList();
 
             return contentTypesInBundles;
@@ -251,15 +251,15 @@ namespace ToSic.Eav.Persistence.File
         private List<Bundle> LoadBundlesAndBuildContentTypes(JsonSerializer ser, string path, string json, int id) => Log.Func(l =>
         {
             l.A($"Loading bundles and building content-types from json:{json.Length}");
-            var infoIfError = "couldn't read bundle-file";
+            const string infoIfError = "couldn't read bundle-file";
             try
             {
                 var bundleList = ser.DeserializeContentTypes(json);
 
-                foreach (var contentTypeSet in bundleList
-                             .Where(bundle => bundle.ContentTypeSets?.Any() == true)
-                             .SelectMany(bundle => bundle.ContentTypeSets))
-                    (contentTypeSet.ContentType as ContentType).SetSourceParentAndIdForPresetTypes(RepoType,
+                foreach (var contentType in bundleList
+                             .Where(bundle => bundle.ContentTypes?.Any() == true)
+                             .SelectMany(bundle => bundle.ContentTypes))
+                    (contentType as ContentType).SetSourceParentAndIdForPresetTypes(RepoType,
                         Constants.PresetContentTypeFakeParent, path, ++id);
 
                 return bundleList;
