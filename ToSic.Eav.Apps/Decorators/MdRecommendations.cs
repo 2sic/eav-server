@@ -85,7 +85,7 @@ namespace ToSic.Eav.Apps.Decorators
             var typesForTheTarget = TypesWhichDeclareTheyAreForTheTarget(targetTypeId, key);
             var initialTypes = typesForTheTarget?
                 .Select(set =>
-                    new MetadataRecommendation(set.Type, set.Recommendation, null, "Self-Declaring", PrioMedium))
+                    new MetadataRecommendation(set.Type, set.Decorator, null, "Self-Declaring", PrioMedium))
                 .ToList() ?? new List<MetadataRecommendation>();
 
             attachedRecommendations.AddRange(initialTypes);
@@ -95,8 +95,13 @@ namespace ToSic.Eav.Apps.Decorators
             return (distinct, $"final: {distinct.Count}");
         });
 
-        private List<(IContentType Type, IEntity Recommendation)>
-            TypesWhichDeclareTheyAreForTheTarget(int targetType, string targetKey) => Log.Func(l =>
+        private class RecommendationInfos
+        {
+            public IContentType Type;
+            public MetadataForDecorator Decorator;
+        }
+
+        private List<RecommendationInfos> TypesWhichDeclareTheyAreForTheTarget(int targetType, string targetKey) => Log.Func(l =>
         {
             // for type/attribute path comparisons, make sure we have the slashes cleaned
             var keyForward = (targetKey ?? "").ForwardSlash().Trim();
@@ -117,9 +122,9 @@ namespace ToSic.Eav.Apps.Decorators
                         var allForThisTargetType = allForDecors
                             .Where(dec => dec.TargetType == targetType)
                             .ToList();
-                        l.A($"Type {ct.Name} - Found {allForDecors.Count} {nameof(MetadataForDecorator)}s / " +
-                            $"of which {allForThisTargetType.Count} for targetType {targetType}");
-                        return allForThisTargetType.Select(decorator => new
+                        l.A($"Found {allForDecors.Count} {nameof(MetadataForDecorator)}s " +
+                            $"of which {allForThisTargetType.Count} for targetType {targetType} on {ct.Name}");
+                        return allForThisTargetType.Select(decorator => new RecommendationInfos
                         {
                             Type = ct,
                             Decorator = decorator
@@ -127,9 +132,9 @@ namespace ToSic.Eav.Apps.Decorators
                     }
                     catch (Exception e)
                     {
-                        l.A($"Error on {ct.Name} ({ct.NameId}), will continue with null");
+                        l.A($"Error on {ct.Name} ({ct.NameId}), will skip this");
                         l.Ex(e);
-                        return null;
+                        return Array.Empty<RecommendationInfos>();
                     }
                 })
                 .ToList();
@@ -154,17 +159,17 @@ namespace ToSic.Eav.Apps.Decorators
                             var attr = AppState.FindAttribute(targetKey);
                             return keyForward.EqualsInsensitive($"{attr.Item1.NameId}/{attr.Item2.Name}")
                                    || keyForward.EqualsInsensitive($"{attr.Item1.Name}/{attr.Item2.Name}");
-                        // App and ContentType don't need extra specifiers
+                        // App and ContentType don't need extra conditions / specifiers
                         case (int)TargetTypes.App:
                             return true;
                         case (int)TargetTypes.Entity:
                             // True if the decorator says it's for all entities
-                            if (targetName == "") return true;
+                            if (targetName == "*") return true;
                             // Test if the current item (targetKey) is the expected type
                             if (!Guid.TryParse(targetKey, out var guidKey)) return false;
-                            var entity = AppState.List.One(guidKey);
-                            return entity?.Type?.Is(targetName) ?? false;
-                        // App and ContentType don't need extra specifiers
+                            var currentEntity = AppState.List.One(guidKey);
+                            return currentEntity?.Type?.Is(targetName) ?? false;
+                        // App and ContentType don't need extra conditions / specifiers
                         case (int)TargetTypes.ContentType:
                         case (int)TargetTypes.Zone:
                             return true;
@@ -177,11 +182,7 @@ namespace ToSic.Eav.Apps.Decorators
                 })
                 .ToList();
 
-            var result = recommendedTypes
-                .Select(set => (set.Type, set.Decorator.Entity))
-                .ToList();
-
-            return (result, $"{result.Count}");
+            return (recommendedTypes, $"{recommendedTypes.Count}");
         });
 
         private List<MetadataRecommendation> GetTargetsExpectations(int targetType, string key) => Log.Func($"targetType: {targetType}", () =>
