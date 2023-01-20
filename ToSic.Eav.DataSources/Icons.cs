@@ -23,6 +23,7 @@ namespace ToSic.Eav.DataSources
 
         public const string Description = "description";
         public const string Dns = "dns";
+        public const string Scopes = "workspaces";
 
         public const string DynamicForm = "dynamic_form";
         public const string EditAttributes = "edit_attributes";

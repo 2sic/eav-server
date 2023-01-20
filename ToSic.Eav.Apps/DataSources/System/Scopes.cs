@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
@@ -18,14 +17,13 @@ namespace ToSic.Eav.DataSources.Sys
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
-        NiceName = "beta Scopes",
-        UiHint = "list all the data scopes",
-        Icon = Icons.Dns, // TODO
+        NiceName = "Data Scopes",
+        UiHint = "Data Scopes group Content-Types by topic",
+        Icon = Icons.Scopes,
         Type = DataSourceType.System,
-        GlobalName = "f134e3c1-f09f-4fbc-85be-de43a64c6eed", // new generated
+        GlobalName = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
         Difficulty = DifficultyBeta.Advanced,
-        DynamicOut = false,
-        ExpectsDataOfType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c" // TODO - should have only appId
+        DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global
     public sealed class Scopes : DataSource
@@ -34,14 +32,14 @@ namespace ToSic.Eav.DataSources.Sys
         #region Configuration-properties (no config)
 
         private const string AppIdKey = "AppId";
-        private const string AppIdField = "AppId";
 
         /// <summary>
         /// The app id
         /// </summary>
-        public int OfAppId
+        [PrivateApi("As of now, switching apps is not a feature we want to provide")]
+        private int OfAppId
         {
-            get => int.TryParse(Configuration[AppIdKey], out int aid) ? aid : AppId;
+            get => int.TryParse(Configuration[AppIdKey], out var aid) ? aid : AppId;
             // ReSharper disable once UnusedMember.Global
             set => Configuration[AppIdKey] = value.ToString();
         }
@@ -59,34 +57,29 @@ namespace ToSic.Eav.DataSources.Sys
                 _appStates = appStates
             );
             Provide(GetList);
-            ConfigMask(AppIdKey, $"[Settings:{AppIdField}]");
+            ConfigMask(AppIdKey);
         }
         private readonly IAppStates _appStates;
 
-        private ImmutableArray<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
-
             Configuration.Parse();
 
             var appId = OfAppId;
 
             var scopes = _appStates.Get(appId).ContentTypes.GetAllScopesWithLabels();
 
-            var builder = DataBuilder;
+            var scopeBuilder = new DataBuilderQuickWIP(DataBuilder, appId: appId, typeName: "Scope", titleField: "Title");
             var list = scopes
-                .OrderByDescending(s => s.Key == Data.Scopes.Default)
-                .ThenBy(s => s.Value)
-                .Select((s, i) => builder.Entity(
-                    new Dictionary<string, object> { { "Name", s.Key }, { "Label", s.Value }, },
-                    appId: OfAppId,
-                    id: ++i,
-                    titleField: "Label",
-                    typeName: "EAV_Scopes",
-                    guid: Guid.Empty));
+                .Select(s => scopeBuilder.Create(new Dictionary<string, object>
+                    {
+                        { "NameId", s.Key },
+                        { "Title", s.Value },
+                    }
+                ))
+                .ToImmutableArray();
 
-            var result = list.ToImmutableArray();
-            return wrapLog.Return(result, $"{result.Length}");
-        }
+            return (list, $"{list.Length}");
+        });
     }
 }

@@ -30,12 +30,11 @@ namespace ToSic.Eav.Data
         public static IDictionary<string, string> GetAllScopesWithLabels(this IEnumerable<IContentType> all)
         {
             var scopes = all.GetAllScopesInclDefault();
-
-            var lookup = Scopes.ScopesWithNames; 
-
+            var lookup = Scopes.ScopesWithNames;
             var results = scopes
                 .Select(s => new { value = s, name = lookup.TryGetValue(s, out var label) ? label : s })
-                .OrderBy(s => s.name)
+                .OrderByDescending(s => s.name == Scopes.Default)
+                .ThenBy(s => s.name)
                 .ToDictionary(s => s.value, s => s.name);
             return results;
         }

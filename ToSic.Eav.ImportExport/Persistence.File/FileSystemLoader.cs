@@ -109,7 +109,8 @@ namespace ToSic.Eav.Persistence.File
                 .ToList();
 
             // #4 load entities from files in bundles folder
-            entities.AddRange(EntitiesInBundles());
+            var entitiesInBundle = EntitiesInBundles();
+            entities.AddRange(entitiesInBundle);
 
             return entities;
         }
