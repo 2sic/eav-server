@@ -57,7 +57,7 @@ namespace ToSic.Eav.Apps.Decorators
             var typeDetails = type.Metadata.DetailsOrNull;
             Title = (typeDetails?.Title).UseFallbackIfNoValue(type.Name);
             Icon = typeDetails?.Icon;
-            var recDec = new ForDecorator(recommendation);
+            var recDec = new MetadataForDecorator(recommendation);
             Count = count ?? recDec.Amount;
             Debug = debugMessage;
             DeleteWarning = recDec.DeleteWarning;
