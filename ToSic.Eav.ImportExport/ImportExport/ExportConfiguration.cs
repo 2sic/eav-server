@@ -37,7 +37,7 @@ namespace ToSic.Eav.ImportExport
         /// <summary>
         /// Export with Metadata
         /// </summary>
-        public bool EntityWithMetadata => GetThis(true);
+        public bool EntitiesWithMetadata => GetThis(true);
 
         /// <summary>
         /// Find all decorator metadata of type SystemExportDecorator

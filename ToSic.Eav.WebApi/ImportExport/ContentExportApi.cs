@@ -171,12 +171,12 @@ namespace ToSic.Eav.WebApi.ImportExport
             return new ExportConfiguration(systemExportConfiguration);
         }
 
-        private JsonBundle BundleBuild(ExportConfiguration export, JsonSerializer serializer)
+        private JsonBundle BundleBuild(ExportConfiguration export, JsonSerializer serializer) => Log.Func(l =>
         {
             var bundleList = new JsonBundle();
 
             // loop through content types and add them to the bundlelist
-            Log.A($"count export content types:{export.ContentTypes.Count}");
+            l.A($"count export content types:{export.ContentTypes.Count}");
             foreach (var contentTypeName in export.ContentTypes)
             {
                 if (bundleList.ContentTypes == null) bundleList.ContentTypes = new List<JsonContentTypeSet>();
@@ -191,17 +191,17 @@ namespace ToSic.Eav.WebApi.ImportExport
             }
 
             // loop through entities and add them to the bundle list
-            Log.A($"count export entities:{export.Entities.Count()}");
+            l.A($"count export entities:{export.Entities.Count}");
             foreach (var entityGuid in export.Entities)
             {
                 if (bundleList.Entities == null) bundleList.Entities = new List<JsonEntity>();
 
                 var entity = _appManager.Read.Entities.Get(entityGuid);
-                bundleList.Entities.Add(serializer.ToJson(entity, export.EntityWithMetadata ? FileSystemLoader.QueryMetadataDepth : 0));
+                bundleList.Entities.Add(serializer.ToJson(entity, export.EntitiesWithMetadata ? FileSystemLoader.QueryMetadataDepth : 0));
             }
 
             return bundleList;
-        }
+        });
 
         public JsonContentType PreserveMarker(bool preserveMarkers, JsonContentType jsonContentType)
         {
