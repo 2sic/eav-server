@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -32,13 +33,13 @@ namespace ToSic.Eav.Apps.Parts
         /// WARNING: ATM it respects published/unpublished because it's using the Data.
         /// It's not clear if this is actually intended.
         /// </summary>
-        public IEnumerable<IEntity> OnlyContent(bool withConfiguration)
+        public IEnumerable<IEntity> OnlyContent(bool withConfiguration) => Log.Func(() =>
         {
-            var scopes = withConfiguration 
-                ? new [] { Scopes.Default, Scopes.SystemConfiguration } 
-                : new[] { Scopes.Default }; // Scopes.DefaultList;
+            var scopes = withConfiguration
+                ? new[] { Scopes.Default, Scopes.SystemConfiguration }
+                : new[] { Scopes.Default };
             return Parent.Data.List.Where(e => scopes.Contains(e.Type.Scope));
-        }
+        });
 
         /// <summary>
         /// Get this item or return null if not found

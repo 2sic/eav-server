@@ -55,22 +55,21 @@ namespace ToSic.Eav.DataSources
         private readonly IAppStates _appStates;
 
 
-        private IImmutableList<IEntity> GetList() => Log.Func(() =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             Configuration.Parse();
-            Log.A($"get list with type:{TypeName}");
+            l.A($"get list with type:{TypeName}");
+
+            // Get original from In-Stream
+            if (!GetRequiredInList(out var originals))
+                return (originals, "error");
 
             try
             {
                 var appState = _appStates.Get(this);
                 var foundType = appState?.GetContentType(TypeName);
                 if (foundType != null) // maybe it doesn't find it!
-                {
-                    if (!GetRequiredInList(out var originals))
-                        return (originals, "error");
-
                     return (originals.OfType(foundType).ToImmutableArray(), "fast");
-                }
             }
             catch
             {
@@ -79,10 +78,11 @@ namespace ToSic.Eav.DataSources
 
             // This is the fallback, probably slower. In this case, it tries to match the name instead of the real type
             // Reason is that many dynamically created content-types won't be known to the cache, so they cannot be found the previous way
-            if (!GetRequiredInList(out var originals2))
-                return (originals2, "error");
 
-            return (originals2.OfType(TypeName).ToImmutableArray(), "slower");
+            //if (!GetRequiredInList(out var originals2))
+            //    return (originals2, "error");
+
+            return (originals.OfType(TypeName).ToImmutableArray(), "slower");
         });
 
     }
