@@ -176,7 +176,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             var bundleList = new JsonBundle();
 
             // loop through content types and add them to the bundlelist
-            Log.A($"count export content types:{export.ContentTypes.Count()}");
+            Log.A($"count export content types:{export.ContentTypes.Count}");
             foreach (var contentTypeName in export.ContentTypes)
             {
                 if (bundleList.ContentTypes == null) bundleList.ContentTypes = new List<JsonContentTypeSet>();
@@ -197,7 +197,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 if (bundleList.Entities == null) bundleList.Entities = new List<JsonEntity>();
 
                 var entity = _appManager.Read.Entities.Get(entityGuid);
-                bundleList.Entities.Add(serializer.ToJson(entity));
+                bundleList.Entities.Add(serializer.ToJson(entity, export.EntityWithMetadata ? FileSystemLoader.QueryMetadataDepth : 0));
             }
 
             return bundleList;

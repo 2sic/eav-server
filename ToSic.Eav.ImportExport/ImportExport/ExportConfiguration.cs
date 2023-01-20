@@ -12,6 +12,7 @@ namespace ToSic.Eav.ImportExport
     public class ExportConfiguration : EntityBasedType
     {
         public const string ContentTypeId = "d7f2e4fa-5306-41bb-a3cd-d9529c838879";
+        public const string ContentTypeName = "🧑‍💻SystemExportConfiguration";
         
         public ExportConfiguration(IEntity entity) : base(entity)
         {
@@ -23,7 +24,8 @@ namespace ToSic.Eav.ImportExport
         public string Name => GetThis("");
 
         /// <summary>
-        /// Determine if we should keep or remove the Export-Decorators when exporting
+        /// Determine if we should keep or remove the Export-Decorators when exporting.
+        /// Only relevant if `WithMetadata` is true (default)
         /// </summary>
         public bool PreserveMarkers => GetThis(false);
         
@@ -31,6 +33,11 @@ namespace ToSic.Eav.ImportExport
         /// Expected file name.
         /// </summary>
         public string FileName => GetThis("bundle.json");
+
+        /// <summary>
+        /// Export with Metadata
+        /// </summary>
+        public bool EntityWithMetadata => GetThis(true);
 
         /// <summary>
         /// Find all decorator metadata of type SystemExportDecorator
