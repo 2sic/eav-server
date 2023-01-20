@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSources.Sys
         private int OfAppId
         {
             get => int.TryParse(Configuration[AppIdKey], out var aid) ? aid : AppId;
-            // ReSharper disable once UnusedMember.Global
+            // ReSharper disable once UnusedMember.Local
             set => Configuration[AppIdKey] = value.ToString();
         }
 

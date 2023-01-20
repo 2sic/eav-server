@@ -48,7 +48,7 @@ namespace ToSic.Eav.Apps
             {
                 // TODO: STV this is a bit of a hack, but it's the only way to get the app-state into the DbDataController
                 // find what is wrong with AppState
-                if ((base._Deps.AppStates as AppStates)?.IsCached(this) ?? false)
+                if ((base.Deps.AppStates as AppStates)?.IsCached(this) ?? false)
                     c.Init(AppState);
                 else
                     c.Init(ZoneId, AppId);
@@ -64,7 +64,7 @@ namespace ToSic.Eav.Apps
 
         public new AppManager Init(IAppIdentity app) => this.InitQ(app, true);
 
-        public AppManager Init(int appId) => this.InitQ(_Deps.AppStates.IdentityOfApp(appId), true);
+        public AppManager Init(int appId) => this.InitQ(Deps.AppStates.IdentityOfApp(appId), true);
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.

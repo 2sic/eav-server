@@ -14,11 +14,11 @@ namespace ToSic.Eav.Apps.Parts
 
         protected AppRuntimeBase(AppRuntimeDependencies dependencies, string logName): base(logName)
         {
-            this.ConnectServices(
-                _Deps = dependencies
+            ConnectServices(
+                Deps = dependencies
             );
         }
-        protected readonly AppRuntimeDependencies _Deps;
+        protected readonly AppRuntimeDependencies Deps;
 
         internal void InitInternal(IAppIdentity app, bool showDrafts)
         {
@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps.Parts
 
         #region Data & Cache
 
-        public IDataSource Data => _data ?? (_data = _Deps.DataSourceFactory.GetPublishing(this, showDrafts: ShowDrafts));
+        public IDataSource Data => _data ?? (_data = Deps.DataSourceFactory.GetPublishing(this, showDrafts: ShowDrafts));
         private IDataSource _data;
         
 
@@ -43,7 +43,7 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         public AppState AppState
         {
-            get => _appState ?? (_appState = _Deps.AppStates.Get(this));
+            get => _appState ?? (_appState = Deps.AppStates.Get(this));
             protected set => _appState = value;
         }
 

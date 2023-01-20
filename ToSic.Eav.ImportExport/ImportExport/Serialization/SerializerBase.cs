@@ -11,7 +11,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Serialization
 {
-    public abstract class SerializerBase: ServiceBase, IDataSerializer
+    public abstract class SerializerBase: ServiceBase<SerializerBase.Dependencies>, IDataSerializer
     {
         #region Constructor / DI
 
@@ -32,9 +32,8 @@ namespace ToSic.Eav.Serialization
         /// <summary>
         /// Constructor for inheriting classes
         /// </summary>
-        protected SerializerBase(Dependencies dependencies, string logName): base(logName)
+        protected SerializerBase(Dependencies dependencies, string logName): base(dependencies, logName)
         {
-            dependencies.SetLog(Log);
             MetadataTargets = dependencies.MetadataTargets;
             GlobalApp = dependencies.AppStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
         }

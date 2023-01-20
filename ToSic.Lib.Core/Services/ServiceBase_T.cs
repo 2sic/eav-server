@@ -13,10 +13,6 @@ namespace ToSic.Lib.Services
             Deps = dependencies.SetLog(Log);
         }
 
-        //protected ServiceBase(string logName, CodeRef codeRef) : base(logName, codeRef)
-        //{
-        //}
-
         protected readonly TDeps Deps;
     }
 }

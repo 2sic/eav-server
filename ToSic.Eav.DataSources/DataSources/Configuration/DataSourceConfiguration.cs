@@ -8,7 +8,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
-    public class DataSourceConfiguration : ServiceBase, IDataSourceConfiguration
+    public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.Dependencies>, IDataSourceConfiguration
     {
         #region Dependencies - Must be in DI
 
@@ -28,13 +28,11 @@ namespace ToSic.Eav.DataSources
 
         #region Constructor (non DI)
 
-        [PrivateApi] public DataSourceConfiguration(Dependencies dependencies, DataSource ds) : base($"{DataSourceConstants.LogPrefix}.Config")
+        [PrivateApi] public DataSourceConfiguration(Dependencies dependencies, DataSource ds) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Config")
         {
-            _deps = dependencies.SetLog(Log);
             DataSource = ds;
         }
 
-        private readonly Dependencies _deps;
         [PrivateApi] internal DataSource DataSource;
 
         #endregion
@@ -91,7 +89,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         private IDictionary<string, ILookUp> OverrideLookUps 
             => _overrideLookUps 
-               ?? (_overrideLookUps = new Dictionary<string, ILookUp> { { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSource, _deps.ZoneCultureResolverLazy.Value) } });
+               ?? (_overrideLookUps = new Dictionary<string, ILookUp> { { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSource, Deps.ZoneCultureResolverLazy.Value) } });
         private IDictionary<string, ILookUp> _overrideLookUps;
 
 

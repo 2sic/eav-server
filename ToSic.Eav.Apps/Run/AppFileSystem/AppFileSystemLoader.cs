@@ -14,7 +14,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public class AppFileSystemLoader: ServiceBase, IAppFileSystemLoader, IAppRepositoryLoader
+    public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.Dependencies>, IAppFileSystemLoader, IAppRepositoryLoader
     {
         #region Constants
 
@@ -51,12 +51,10 @@ namespace ToSic.Eav.Apps.Run
         /// </summary>
         /// <param name="deps"></param>
         /// <param name="logName"></param>
-        protected AppFileSystemLoader(Dependencies deps, string logName) : base(logName)
+        protected AppFileSystemLoader(Dependencies deps, string logName) : base(deps, logName)
         {
-            Deps = deps.SetLog(Log);
             Site = deps.Site;
         }
-        protected readonly Dependencies Deps;
 
         #endregion
 

@@ -12,9 +12,8 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public class ZipImport : ServiceBase
+    public class ZipImport : ServiceBase<ZipImport.Dependencies>
     {
-        private readonly Dependencies _deps;
         private readonly Generator<XmlImportWithFiles> _xmlImpExpFiles;
         private readonly IAppStates _appStates;
         private readonly SystemManager _systemManager;
@@ -51,10 +50,9 @@ namespace ToSic.Eav.Apps.ImportExport
             }
         }
 
-        public ZipImport(Dependencies dependencies, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) : base("Zip.Imp")
+        public ZipImport(Dependencies dependencies, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) : base(dependencies, "Zip.Imp")
         {
-            _deps = dependencies.SetLog(Log);
-            Env = _deps.Environment;
+            Env = Deps.Environment;
             ConnectServices(
                 _xmlImpExpFiles = xmlImpExpFiles,
                 _appStates = appStates,
@@ -284,7 +282,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var templateRoot = Env.TemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForAppStuff);
             if (Directory.Exists(appTemplateRoot))
-                _deps.FileManagerGenerator.New().SetFolder(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
+                Deps.FileManagerGenerator.New().SetFolder(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
         });
 
         /// <summary>
@@ -308,7 +306,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     TryToDeleteDirectory(globalTemplatesRoot, Log);
 
                 Log.A("copy all files to app global template folder");
-                _deps.FileManagerGenerator.New()
+                Deps.FileManagerGenerator.New()
                     .CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
             }
         });
