@@ -217,7 +217,7 @@ namespace ToSic.Eav.Persistence.File
                 .Where(ct => ct != null).ToList();
 
             var contentTypesInBundles = bundles
-                .Where(b => b.ContentTypes.Any() == true)
+                .Where(b => b.ContentTypes?.Any() == true)
                 .SelectMany(b => b.ContentTypes)
                 .ToList();
 
