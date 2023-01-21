@@ -128,30 +128,32 @@ namespace ToSic.Eav.Persistence.File
         /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
         /// <param name="source">this is not used ATM - just for interface compatibility</param>
         /// <returns></returns>
-        public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
+        public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) => Log.Func<IList<IContentType>>(l =>
         {
-            // v11.01 experimental - maybe disable this, as now we're loading from the app folder so we have an AppId
-            // 2021-12-06 2dm - disabled this - it prevented app-system-folder content-types from loading
-            // if (appId != Constants.PresetAppId) throw new ArgumentOutOfRangeException(nameof(appId), appId, "appid should only be 0 for now");
-
             // #1. check that folder exists
             var pathCt = ContentTypePath;
             if (!CheckPathExists(Path) || !CheckPathExists(pathCt))
-                return new List<IContentType>();
+                return (new List<IContentType>(), "path doesn't exist");
 
             // #2 find all content-type files in folder
             var jsons = Directory.GetFiles(pathCt, "*" + Extension(Files.json)).OrderBy(f => f);
 
             // #3 load content-types from folder
-            var cts = jsons
+            var contentTypes = jsons
                 .Select(json => LoadAndBuildCt(Serializer, json, IdSeed == -1 ? 0 : IdSeed++))
-                .Where(ct => ct != null).ToList();
+                .Where(ct => ct != null)
+                .ToList();
+            var entityCtCount = contentTypes.Count;
 
             // #4 load content-types from files in bundles folder
-            cts.AddRange(ContentTypesInBundles());
-
-            return cts;
-        }
+            var bundleCts = ContentTypesInBundles();
+            var bundleCtsWithoutDuplicates = bundleCts
+                .Where(bundleCt => contentTypes.Any(ct => ct.Is(bundleCt.NameId)))
+                .ToList();
+            contentTypes.AddRange(bundleCtsWithoutDuplicates);
+            l.A($"Types in Entities: {entityCtCount}; in Bundles {bundleCts.Count}; after remove duplicates {bundleCtsWithoutDuplicates.Count}; total {contentTypes.Count}");
+            return (contentTypes, $"{contentTypes.Count}");
+        });
 
         private string ContentTypePath => System.IO.Path.Combine(Path, Configuration.FsDataConstants.TypesFolder);
 
