@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data
         /// <param name="contents"></param>
         /// <returns></returns>
         public static ImmutableSmartList Wrap(IImmutableList<IEntity> contents) 
-            => contents is ImmutableSmartList alreadySmart ? alreadySmart : new ImmutableSmartList(contents);
+            => contents as ImmutableSmartList ?? new ImmutableSmartList(contents);
 
         /// <summary>
         /// Underlying list
