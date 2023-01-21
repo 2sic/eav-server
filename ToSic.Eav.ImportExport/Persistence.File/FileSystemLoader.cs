@@ -148,7 +148,7 @@ namespace ToSic.Eav.Persistence.File
             // #4 load content-types from files in bundles folder
             var bundleCts = ContentTypesInBundles();
             var bundleCtsWithoutDuplicates = bundleCts
-                .Where(bundleCt => contentTypes.Any(ct => ct.Is(bundleCt.NameId)))
+                .Where(bundleCt => !contentTypes.Any(ct => ct.Is(bundleCt.NameId)))
                 .ToList();
             contentTypes.AddRange(bundleCtsWithoutDuplicates);
             l.A($"Types in Entities: {entityCtCount}; in Bundles {bundleCts.Count}; after remove duplicates {bundleCtsWithoutDuplicates.Count}; total {contentTypes.Count}");
