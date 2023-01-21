@@ -33,7 +33,8 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Returns a list of entities, optionally filtered by contentType.
         /// </summary>
-        public IEnumerable<EntityForPickerDto> GetAvailableEntities(int appId, string[] items, string contentTypeName, bool withDrafts) => Log.Func(l =>
+        // 2dm 2023-01-22 #maybeSupportIncludeParentApps
+        public IEnumerable<EntityForPickerDto> GetForEntityPicker(int appId, string[] items, string contentTypeName, bool withDrafts/*, bool includeParentApps*/) => Log.Func(l =>
         {
             l.A($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
@@ -56,7 +57,7 @@ namespace ToSic.Eav.WebApi
             if (contentType != null)
             {
                 l.A($"filter by type:{contentType.Name}");
-                list = AppRuntime.Entities.Get(contentTypeName);
+                list = AppRuntime.Entities.Get(contentTypeName/*, includeParentApps*/);
             }
             else
             {

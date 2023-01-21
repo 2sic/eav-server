@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
@@ -38,6 +40,10 @@ namespace ToSic.Eav.DataSources
 			get => Configuration[TypeNameKey];
 		    set => Configuration[TypeNameKey] = value;
 		}
+
+        // 2dm 2023-01-22 #maybeSupportIncludeParentApps
+        //[PrivateApi("very experimental v15, special edge case")]
+        //internal bool IncludeParentApps { get; set; }
         #endregion
 
         /// <inheritdoc />
@@ -69,10 +75,26 @@ namespace ToSic.Eav.DataSources
                 var appState = _appStates.Get(this);
                 var foundType = appState?.GetContentType(TypeName);
                 if (foundType != null) // maybe it doesn't find it!
-                    return (originals.OfType(foundType).ToImmutableArray(), "fast");
+                {
+                    var result = originals.OfType(foundType).ToList();
+                    // 2dm 2023-01-22 #maybeSupportIncludeParentApps
+                    //if (IncludeParentApps)
+                    //{
+                    //    l.A($"Special internal case - {nameof(IncludeParentApps)}!");
+                    //    var parent = appState.ParentApp;
+                    //    while (parent?.AppState != null)
+                    //    {
+                    //        var additions = parent.AppState.List.OfType(foundType);
+                    //        result.AddRange(additions);
+                    //        parent = parent.AppState.ParentApp;
+                    //    }
+                    //}
+                    return (result.ToImmutableArray(), "fast");
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                l.Ex(ex);
                 /* ignore */
             }
 

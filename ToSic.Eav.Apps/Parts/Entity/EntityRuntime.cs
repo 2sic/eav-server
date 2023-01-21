@@ -53,10 +53,15 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public IEntity Get(Guid entityGuid) => Parent.AppState.List.One(entityGuid);
 
-        public IEnumerable<IEntity> Get(string contentTypeName)
+        public IEnumerable<IEntity> Get(string contentTypeName
+        // 2dm 2023-01-22 #maybeSupportIncludeParentApps
+        // , bool includeParentApps = false
+        )
         {
             var typeFilter = _dataSourceFactory.Value.GetDataSource<EntityTypeFilter>(Parent.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
+            // 2dm 2023-01-22 #maybeSupportIncludeParentApps
+            //if (includeParentApps) typeFilter.IncludeParentApps = true;
             return typeFilter.List;
         }
 
