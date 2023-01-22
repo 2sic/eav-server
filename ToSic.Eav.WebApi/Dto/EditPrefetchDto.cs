@@ -26,11 +26,5 @@ namespace ToSic.Eav.WebApi.Dto
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Dictionary<string, LinkInfoDto> Links { get; set; }
 
-        /// <summary>
-        /// Prefetched entities for entity picker
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<JsonEntity> SettingsEntities { get; set; }
-
     }
 }

@@ -64,6 +64,13 @@ namespace ToSic.Eav.Apps.Parts
             //if (includeParentApps) typeFilter.IncludeParentApps = true;
             return typeFilter.List;
         }
+        public IEnumerable<IEntity> GetWithParentAppsExperimental(string contentTypeName) => Log.Func(() =>
+        {
+            var merged = _dataSourceFactory.Value.GetDataSource<AppWithParents>(Parent.Data);
+            var typeFilter = _dataSourceFactory.Value.GetDataSource<EntityTypeFilter>(merged);
+            typeFilter.TypeName = contentTypeName;
+            return typeFilter.List;
+        });
 
         #endregion
 
