@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.WebApi.Dto
 {
@@ -17,12 +18,19 @@ namespace ToSic.Eav.WebApi.Dto
         /// Prefetched entities for entity picker
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public IEnumerable<EntityForPickerDto> Entities { get; set; }
+        public List<EntityForPickerDto> Entities { get; set; }
 
         /// <summary>
         /// Prefetched links for hyperlink fields
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Dictionary<string, LinkInfoDto> Links { get; set; }
+
+        /// <summary>
+        /// Prefetched entities for entity picker
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<JsonEntity> SettingsEntities { get; set; }
+
     }
 }
