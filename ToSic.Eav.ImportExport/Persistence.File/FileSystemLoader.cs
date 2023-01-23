@@ -109,7 +109,7 @@ namespace ToSic.Eav.Persistence.File
                 .ToList();
 
             // #4 load entities from files in bundles folder
-            var entitiesInBundle = EntitiesInBundles();
+            var entitiesInBundle = EntitiesInBundles(relationshipsSource);
             entities.AddRange(entitiesInBundle);
 
             return entities;
@@ -216,7 +216,7 @@ namespace ToSic.Eav.Persistence.File
             if (JsonBundleBundles.Any() == false) return new List<IContentType>();
 
             var bundles = JsonBundleBundles
-                .SelectMany(json => LoadBundlesAndBuildContentTypes(Serializer, json.Key, json.Value, IdSeed == -1 ? 0 : IdSeed++))
+                .SelectMany(json => LoadBundlesAndBuildContentTypes(Serializer, json.Key, json.Value, IdSeed == -1 ? 0 : IdSeed++/*, relationshipsList*/))
                 .Where(ct => ct != null).ToList();
 
             var contentTypesInBundles = bundles
@@ -227,12 +227,12 @@ namespace ToSic.Eav.Persistence.File
             return contentTypesInBundles;
         }
 
-        public IList<Entity> EntitiesInBundles(List<IEntity> relationshipsList = null)
+        public IList<Entity> EntitiesInBundles(IEntitiesSource relationshipSource)
         {
             if (JsonBundleBundles.Any() == false) return new List<Entity>();
 
             var bundles = JsonBundleBundles
-                .SelectMany(json => LoadBundlesAndBuildEntities(Serializer, json.Value, IdSeed == -1 ? 0 : IdSeed++, relationshipsList))
+                .SelectMany(json => LoadBundlesAndBuildEntities(Serializer, json.Value, IdSeed == -1 ? 0 : IdSeed++, relationshipSource))
                 .Where(ct => ct != null).ToList();
 
             var entities = bundles
@@ -240,11 +240,12 @@ namespace ToSic.Eav.Persistence.File
                 .SelectMany(b => b.Entities).ToList();
 
             // #3.3 Put all found entities into the source
-            if (entities?.Any() == true) relationshipsList?.AddRange(entities);
+            if (entities?.Any() == true)
+                relationshipSource.List.Concat(entities);
 
             return entities;
         }
-
+        
         private string BundlesPath => System.IO.Path.Combine(Path, Configuration.FsDataConstants.BundlesFolder);
 
         /// <summary>
@@ -283,7 +284,7 @@ namespace ToSic.Eav.Persistence.File
         /// Try to load a bundle file, but if anything fails, just return a null
         /// </summary>
         /// <returns></returns>
-        private List<Bundle> LoadBundlesAndBuildEntities(JsonSerializer ser, string json, int id, List<IEntity> relationshipsList = null
+        private List<Bundle> LoadBundlesAndBuildEntities(JsonSerializer ser, string json, int id, IEntitiesSource relationshipSource = null
         ) => Log.Func(l =>
         {
             l.A($"Loading bundles and build entities from json:{json.Length}");
@@ -293,10 +294,8 @@ namespace ToSic.Eav.Persistence.File
                 // #3.1 WIP - Allow relationships between loaded items
                 // If we are loading from a larger context, then we have a reference to a list
                 // which will be repopulated later, so only create a new one if there is none
-                relationshipsList = relationshipsList ?? new List<IEntity>();
-                var relationshipsSource = new DirectEntitiesSource(relationshipsList);
-
-                var bundleList = ser.DeserializeEntities(json, id, relationshipsSource);
+                relationshipSource = relationshipSource ?? new DirectEntitiesSource(new List<IEntity>());
+                var bundleList = ser.DeserializeEntities(json, id, relationshipSource);
 
                 return bundleList;
             }

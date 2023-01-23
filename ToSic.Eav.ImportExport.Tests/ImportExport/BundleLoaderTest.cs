@@ -66,10 +66,11 @@ namespace ToSic.Eav.Persistence.File.Tests
         {
             Trace.WriteLine($"path:'{TestStorageRoot}'");
             var loader = Build<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+            var relationshipsSource = new DirectEntitiesSource(new List<IEntity>());
             IList<Entity> entities;
             try
             {
-                entities = loader.EntitiesInBundles();
+                entities = loader.EntitiesInBundles(relationshipsSource);
             }
             finally
             {
