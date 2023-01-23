@@ -25,7 +25,7 @@ namespace ToSic.Eav.ImportExport.Json
             return entity;
         }
 
-        protected JsonFormat UnpackAndTestGenericJsonV1(string serialized)
+        internal JsonFormat UnpackAndTestGenericJsonV1(string serialized)
         {
             var wrapLog = Log.Fn<JsonFormat>();
             JsonFormat jsonObj;

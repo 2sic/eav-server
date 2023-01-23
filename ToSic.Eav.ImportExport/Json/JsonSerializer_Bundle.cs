@@ -31,9 +31,8 @@ namespace ToSic.Eav.ImportExport.Json
         public string SerializeJsonBundle(JsonBundle bundleList) =>
             System.Text.Json.JsonSerializer.Serialize(new JsonFormat { Bundles = new List<JsonBundle>() { bundleList } }, JsonOptions.UnsafeJsonWithoutEncodingHtml);
 
-        public List<Bundle> DeserializeContentTypes(string serialized)
+        public List<Bundle> BundleContentTypes(JsonFormat package)
         {
-            var package = UnpackAndTestGenericJsonV1(serialized);
             var result = new List<Bundle>();
 
             if (package.Bundles?.Any() != true) return result;
@@ -57,27 +56,25 @@ namespace ToSic.Eav.ImportExport.Json
             return result;
         }
 
-        public List<Bundle> DeserializeEntities(string serialized, int id = 0, IEntitiesSource relationshipSource = null)
+        public List<Bundle> BundleEntities(JsonFormat package, int id = 0, IEntitiesSource relationshipSource = null)
         {
-            var package = UnpackAndTestGenericJsonV1(serialized);
             var result = new List<Bundle>();
 
-            if (package.Bundles?.Any() == true)
+            if (package.Bundles?.Any() != true) return result;
+            
+            foreach (var bundle in package.Bundles)
             {
-                foreach (var bundle in package.Bundles)
+                var bundleResult = new Bundle();
+                result.Add(bundleResult);
+
+                if (bundle.Entities?.Any() == true)
                 {
-                    var bundleResult = new Bundle();
-                    result.Add(bundleResult);
-
-                    if (bundle.Entities?.Any() == true)
-                    {
-                        if (id != 0) bundle.Entities.ForEach(je => je.Id = ++id);
+                    if (id != 0) bundle.Entities.ForEach(je => je.Id = ++id);
                         
-                        // convert JsonEntities to Entities
-                        bundleResult.Entities = Deserialize(bundle.Entities, allowDynamic: true, skipUnknownType: false, relationshipSource);
+                    // convert JsonEntities to Entities
+                    bundleResult.Entities = Deserialize(bundle.Entities, allowDynamic: true, skipUnknownType: false, relationshipSource);
 
-                        if (id == 0) bundleResult.Entities.ForEach(e => e.ResetEntityId());
-                    }
+                    if (id == 0) bundleResult.Entities.ForEach(e => e.ResetEntityId());
                 }
             }
 

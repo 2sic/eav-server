@@ -6,6 +6,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
@@ -191,32 +192,52 @@ namespace ToSic.Eav.Persistence.File
 
         #region Bundle
 
-        public Dictionary<string, string> JsonBundleBundles
+        public Dictionary<string, JsonFormat> JsonBundleBundles
         {
             get
             {
                 if (_jsonBundles != null) return _jsonBundles;
-                _jsonBundles = new Dictionary<string, string>();
-                
-                // #1. check that folder exists
-                if (!CheckPathExists(Path) || !CheckPathExists(BundlesPath))
-                    return _jsonBundles;
+                _jsonBundles = Log.Func(l =>
+                {
+                    var jsonBundles = new Dictionary<string, JsonFormat>();
 
-                // #2 find all bundle files in folder
-                Directory.GetFiles(BundlesPath, "*" + Extension(Files.json)).OrderBy(f => f).ToList()
-                    .ForEach(p => _jsonBundles[p] = System.IO.File.ReadAllText(p));
+                    // #1. check that folder exists
+                    if (!CheckPathExists(Path) || !CheckPathExists(BundlesPath))
+                        return jsonBundles;
 
+                    const string infoIfError = "couldn't read bundle-file";
+                    try
+                    {
+                        // #2 find all bundle files in folder and unpack/deserialize to JsonFormat
+                        Directory.GetFiles(BundlesPath, "*" + Extension(Files.json)).OrderBy(f => f).ToList()
+                            .ForEach(p =>
+                                jsonBundles[p] = Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p)));
+                    }
+                    catch (IOException e)
+                    {
+                        l.A("Failed loading type - couldn't import bundle-file, IO exception: " + e);
+                        return null;
+                    }
+                    catch (Exception e)
+                    {
+                        l.A($"Failed loading bundle - {infoIfError}, exception '" + e.GetType().FullName + "':" +
+                            e.Message);
+                        return null;
+                    }
+
+                    return jsonBundles;
+                });
                 return _jsonBundles;
             }
         }
-        private Dictionary<string, string> _jsonBundles;
+        private Dictionary<string, JsonFormat> _jsonBundles;
 
         public IList<IContentType> ContentTypesInBundles()
         {
             if (JsonBundleBundles.Any() == false) return new List<IContentType>();
 
             var bundles = JsonBundleBundles
-                .SelectMany(json => LoadBundlesAndBuildContentTypes(Serializer, json.Key, json.Value, IdSeed == -1 ? 0 : IdSeed++/*, relationshipsList*/))
+                .SelectMany(json => BuildContentTypes(Serializer, json.Key, json.Value, IdSeed == -1 ? 0 : IdSeed++/*, relationshipsList*/))
                 .Where(ct => ct != null).ToList();
 
             var contentTypesInBundles = bundles
@@ -249,16 +270,15 @@ namespace ToSic.Eav.Persistence.File
         private string BundlesPath => System.IO.Path.Combine(Path, Configuration.FsDataConstants.BundlesFolder);
 
         /// <summary>
-        /// Try to load a bundle file, but if anything fails, just return a null
+        /// Build contentTypes from bundle json
         /// </summary>
         /// <returns></returns>
-        private List<Bundle> LoadBundlesAndBuildContentTypes(JsonSerializer ser, string path, string json, int id) => Log.Func(l =>
+        private List<Bundle> BuildContentTypes(JsonSerializer ser, string path, JsonFormat bundleJson, int id) => Log.Func(l =>
         {
-            l.A($"Loading bundles and building content-types from json:{json.Length}");
-            const string infoIfError = "couldn't read bundle-file";
+            l.A($"Building content-types from bundle json");
             try
             {
-                var bundleList = ser.DeserializeContentTypes(json);
+                var bundleList = ser.BundleContentTypes(bundleJson);
 
                 foreach (var contentType in bundleList
                              .Where(bundle => bundle.ContentTypes?.Any() == true)
@@ -268,45 +288,34 @@ namespace ToSic.Eav.Persistence.File
 
                 return bundleList;
             }
-            catch (IOException e)
-            {
-                l.A("Failed loading type - couldn't import bundle-file, IO exception: " + e);
-                return null;
-            }
             catch (Exception e)
             {
-                l.A($"Failed loading bundle - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
+                l.A($"Failed building content types from bundle json, exception '" + e.GetType().FullName + "':" + e.Message);
                 return null;
             }
         });
 
         /// <summary>
-        /// Try to load a bundle file, but if anything fails, just return a null
+        /// Build entities from bundle json
         /// </summary>
         /// <returns></returns>
-        private List<Bundle> LoadBundlesAndBuildEntities(JsonSerializer ser, string json, int id, IEntitiesSource relationshipSource = null
+        private List<Bundle> LoadBundlesAndBuildEntities(JsonSerializer ser, JsonFormat bundleJson, int id, IEntitiesSource relationshipSource = null
         ) => Log.Func(l =>
         {
-            l.A($"Loading bundles and build entities from json:{json.Length}");
-            const string infoIfError = "couldn't read bundle-file";
+            l.A($"Build entities from bundle json.");
             try
             {
                 // #3.1 WIP - Allow relationships between loaded items
                 // If we are loading from a larger context, then we have a reference to a list
                 // which will be repopulated later, so only create a new one if there is none
                 relationshipSource = relationshipSource ?? new DirectEntitiesSource(new List<IEntity>());
-                var bundleList = ser.DeserializeEntities(json, id, relationshipSource);
+                var bundleList = ser.BundleEntities(bundleJson, id, relationshipSource);
 
                 return bundleList;
             }
-            catch (IOException e)
-            {
-                l.A("Failed loading type - couldn't import bundle-file, IO exception: " + e);
-                return null;
-            }
             catch (Exception e)
             {
-                l.A($"Failed loading bundle - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
+                l.A($"Failed building entities from bundle json, exception '" + e.GetType().FullName + "':" + e.Message);
                 return null;
             }
         });
