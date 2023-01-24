@@ -66,12 +66,12 @@ namespace ToSic.Eav.DataSources.Sys
                     new Dictionary<string, object>
                     {
                         { "Id", (int)set.TargetType }, 
-                        { "Title", set.Title },
-                        { "NameId", set.TargetType.ToString() }
+                        { DataConstants.TitleField, set.Title },
+                        { DataConstants.NameIdField, set.TargetType.ToString() }
                     },
                     appId: 0,
                     id: (int)set.TargetType,
-                    titleField: "Title",
+                    titleField: DataConstants.TitleField,
                     typeName: "MetadataTargetTypes")
                 ).ToImmutableArray();
             
