@@ -23,7 +23,7 @@ namespace ToSic.Eav.Configuration.Licenses
     {
         public static string TypeNameId = "736b3da6-7d3f-4147-ad09-5d311446f575";
         public static string TypeName = "SystemLicense";
-        public static string FieldTitle = DataConstants.TitleField;
+        public static string FieldTitle = Attributes.TitleNiceName;
         public static string FieldKey = "LicenseKey";
         public static string FieldLicenses = "Licenses";
         public static string FieldFingerprint = "Fingerprints";

@@ -10,7 +10,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public string ContentTypeName = "DataToModify";
 
-        public string TitleField = DataConstants.TitleField;
+        public string TitleField = Attributes.TitleNiceName;
 
         public int ExistingItem = 20980;
 

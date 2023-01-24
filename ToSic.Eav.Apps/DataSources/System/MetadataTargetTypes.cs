@@ -63,12 +63,12 @@ namespace ToSic.Eav.DataSources.Sys
                 .Select(set => DataBuilder.Entity(
                     new Dictionary<string, object>
                     {
-                        { DataConstants.TitleField, set.Title },
-                        { DataConstants.NameIdField, set.TargetType.ToString() }
+                        { Data.Attributes.TitleNiceName, set.Title },
+                        { Data.Attributes.NameIdNiceName, set.TargetType.ToString() }
                     },
                     appId: 0,
                     id: (int)set.TargetType,
-                    titleField: DataConstants.TitleField,
+                    titleField: Data.Attributes.TitleNiceName,
                     typeName: "MetadataTargetTypes")
                 ).ToImmutableArray();
             

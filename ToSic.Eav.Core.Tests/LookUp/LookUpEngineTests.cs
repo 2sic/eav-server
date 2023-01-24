@@ -30,7 +30,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         {
             var settings = Settings();
             Assert.IsTrue(lookUpEngine.Sources.Count == 2, "Should have 2 sources");
-            Assert.AreEqual("App Settings", lookUpEngine.Sources["appsettings"].Get(DataConstants.TitleField));
+            Assert.AreEqual("App Settings", lookUpEngine.Sources["appsettings"].Get(Attributes.TitleNiceName));
             Assert.AreEqual(OriginalSettingDefaultCat, settings["DefaultCategory"]);
             Assert.AreEqual(OriginalSettingMaxItems, settings["MaxItems"]);
         }
@@ -63,7 +63,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
             const string overridenTitle = "overriden Title";
             var overrideDic = new Dictionary<string, string>
             {
-                {DataConstants.TitleField, overridenTitle}
+                {Attributes.TitleNiceName, overridenTitle}
             };
             overrideSources.Add(LookUpTestData.KeyAppSettings, new LookUpInDictionary(LookUpTestData.KeyAppSettings, overrideDic));
             // test before override
@@ -86,7 +86,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         public IDictionary<string, string> Settings() =>
             new Dictionary<string, string>
             {
-                {DataConstants.TitleField, "Settings"},
+                {Attributes.TitleNiceName, "Settings"},
                 {"DefaultCategory", OriginalSettingDefaultCat},
                 {"MaxItems", OriginalSettingMaxItems},
                 {"PicsPerRow", "3"}

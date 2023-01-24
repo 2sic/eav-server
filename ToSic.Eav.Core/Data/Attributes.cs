@@ -26,7 +26,9 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// This is for public values / fields - like when the title is streamed in an API
         /// </summary>
-        public const string TitleNiceName = DataConstants.TitleField;
+        public const string TitleNiceName = "Title";
+
+        public const string NameIdNiceName = "NameId";
 
         public const string ModifiedNiceName = "Modified";
         public const string CreatedNiceName = "Created";

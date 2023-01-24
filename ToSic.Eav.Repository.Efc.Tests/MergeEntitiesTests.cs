@@ -137,7 +137,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             Attributes = new List<IContentTypeAttribute>
             {
-                ContentTypeAttribute(AppId, DataConstants.TitleField, "String", true, 0, 0),
+                ContentTypeAttribute(AppId, Attributes.TitleNiceName, "String", true, 0, 0),
                 ContentTypeAttribute(AppId, "Teaser", "String", false, 0, 0),
                 ContentTypeAttribute(AppId, "Image", "Hyperlink", false, 0, 0),
             }
@@ -146,16 +146,16 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private readonly Entity _prodNull = null;
         private Entity ProdNoLang => new Entity(AppId, 3006, _ctMlProduct, new Dictionary<string, object>()
         {
-            { DataConstants.TitleField, "Original Product No Lang" },
+            { Attributes.TitleNiceName, "Original Product No Lang" },
             { "Teaser", "Original Teaser no lang" },
             { "Image", "file:403" }
-        }, DataConstants.TitleField);
+        }, Attributes.TitleNiceName);
 
         private Entity ProductEntityEn => _prodEn ?? (_prodEn = GetProdEn());
         private Entity _prodEn;
         private Entity GetProdEn() 
         {
-            var title = BuildData.Attribute.CreateTyped(DataConstants.TitleField, "String", new List<IValue>
+            var title = BuildData.Attribute.CreateTyped(Attributes.TitleNiceName, "String", new List<IValue>
             {
                 BuildData.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn)}),
             });
@@ -173,7 +173,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 {title.Name, title},
                 {teaser.Name, teaser},
                 {file.Name, file}
-            }, DataConstants.TitleField);
+            }, Attributes.TitleNiceName);
         }
 
 
@@ -183,7 +183,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private Entity GetProductEntityMl()
         {
-            var title = BuildData.Attribute.CreateTyped(DataConstants.TitleField, "String", new List<IValue>
+            var title = BuildData.Attribute.CreateTyped(Attributes.TitleNiceName, "String", new List<IValue>
             {
                 BuildData.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn) }),
                 BuildData.Value.Build4Test(ValueTypes.String, "Title DE",
@@ -215,7 +215,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 {title.Name, title},
                 {teaser.Name, teaser},
                 {file.Name, file}
-            }, DataConstants.TitleField);
+            }, Attributes.TitleNiceName);
         }
 
 
@@ -230,8 +230,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var merged = _entitySaver.CreateMergedForSaving(_prodNull, ProdNoLang, _saveDefault);
 
-            Assert.AreEqual(1, merged[DataConstants.TitleField].Values.Count, "should only have 1");
-            var firstVal = merged[DataConstants.TitleField].Values.First();
+            Assert.AreEqual(1, merged[Attributes.TitleNiceName].Values.Count, "should only have 1");
+            var firstVal = merged[Attributes.TitleNiceName].Values.First();
             Assert.AreEqual(0, firstVal.Languages.Count, "should still have no languages");
         }
 
@@ -241,8 +241,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var merged = _entitySaver.CreateMergedForSaving(ProdNoLang, ProductEntityMl, _saveDefault);
 
-            Assert.AreEqual(2, merged[DataConstants.TitleField].Values.Count, "should only have 2, no FR");
-            var deVal = merged[DataConstants.TitleField].Values.First(v => v.Languages.Any(l => l.Key == langDeDe.Key));
+            Assert.AreEqual(2, merged[Attributes.TitleNiceName].Values.Count, "should only have 2, no FR");
+            var deVal = merged[Attributes.TitleNiceName].Values.First(v => v.Languages.Any(l => l.Key == langDeDe.Key));
             Assert.AreEqual(2, deVal.Languages.Count, "should have 2 language");
         }
 
@@ -251,8 +251,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var merged = _entitySaver.CreateMergedForSaving(ProdNoLang, ProductEntityMl, _saveKeepUnknownLangs);
 
-            Assert.AreEqual(3, merged[DataConstants.TitleField].Values.Count, "should have 3, with FR");
-            var deVal = merged[DataConstants.TitleField].Values.First(v => v.Languages.Any(l => l.Key == langFr.Key));
+            Assert.AreEqual(3, merged[Attributes.TitleNiceName].Values.Count, "should have 3, with FR");
+            var deVal = merged[Attributes.TitleNiceName].Values.First(v => v.Languages.Any(l => l.Key == langFr.Key));
             Assert.AreEqual(1, deVal.Languages.Count, "should have 1 language");
         }
         #endregion
@@ -263,8 +263,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var merged = _entitySaver.CreateMergedForSaving(ProdNoLang, ProductEntityEn, _saveDefault);
 
-            Assert.AreEqual(1, merged[DataConstants.TitleField].Values.Count, "should only have 1");
-            var firstVal = merged[DataConstants.TitleField].Values.First();
+            Assert.AreEqual(1, merged[Attributes.TitleNiceName].Values.Count, "should only have 1");
+            var firstVal = merged[Attributes.TitleNiceName].Values.First();
             Assert.AreEqual(1, firstVal.Languages.Count, "should have 1 language");
         }
 
@@ -274,13 +274,13 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var merged = _entitySaver.CreateMergedForSaving(ProductEntityMl, ProductEntityEn, _saveKeepExistingLangs);
 
             // check the titles as expected
-            Assert.AreEqual(2, merged[DataConstants.TitleField].Values.Count, "should have 2 titles with languages - EN and a shared DE+CH");
-            Assert.AreEqual(2, merged[DataConstants.TitleField].Values.Single(v => v.Languages.Any(l => l.Key == langDeDe.Key)).Languages.Count, "should have 2 languages on the shared DE+CH");
-            Assert.AreEqual(ProductEntityEn.Value<string>(DataConstants.TitleField), merged.GetBestValue<string>(DataConstants.TitleField, new[] { langEn.Key }), "en title should be the en-value");
-            Assert.AreEqual(ProductEntityMl.GetBestValue(DataConstants.TitleField, new [] {langDeDe.Key}).ToString(), merged.GetBestValue(DataConstants.TitleField, new[] { langDeDe.Key }), "de title should be the ML-value");
-            Assert.AreEqual(ProductEntityMl.GetBestValue(DataConstants.TitleField, new [] {langDeCh.Key}).ToString(), merged.GetBestValue(DataConstants.TitleField, new[] { langDeCh.Key }), "ch title should be the ML-value");
-            Assert.AreNotEqual(ProductEntityEn.GetBestValue(DataConstants.TitleField, new [] {langDeCh.Key}).ToString(), merged.GetBestValue(DataConstants.TitleField, new[] { langDeCh.Key }).ToString(), "ch title should be the ML-value");
-            var firstVal = merged[DataConstants.TitleField].Values.First();
+            Assert.AreEqual(2, merged[Attributes.TitleNiceName].Values.Count, "should have 2 titles with languages - EN and a shared DE+CH");
+            Assert.AreEqual(2, merged[Attributes.TitleNiceName].Values.Single(v => v.Languages.Any(l => l.Key == langDeDe.Key)).Languages.Count, "should have 2 languages on the shared DE+CH");
+            Assert.AreEqual(ProductEntityEn.Value<string>(Attributes.TitleNiceName), merged.GetBestValue<string>(Attributes.TitleNiceName, new[] { langEn.Key }), "en title should be the en-value");
+            Assert.AreEqual(ProductEntityMl.GetBestValue(Attributes.TitleNiceName, new [] {langDeDe.Key}).ToString(), merged.GetBestValue(Attributes.TitleNiceName, new[] { langDeDe.Key }), "de title should be the ML-value");
+            Assert.AreEqual(ProductEntityMl.GetBestValue(Attributes.TitleNiceName, new [] {langDeCh.Key}).ToString(), merged.GetBestValue(Attributes.TitleNiceName, new[] { langDeCh.Key }), "ch title should be the ML-value");
+            Assert.AreNotEqual(ProductEntityEn.GetBestValue(Attributes.TitleNiceName, new [] {langDeCh.Key}).ToString(), merged.GetBestValue(Attributes.TitleNiceName, new[] { langDeCh.Key }).ToString(), "ch title should be the ML-value");
+            var firstVal = merged[Attributes.TitleNiceName].Values.First();
             Assert.AreEqual(1, firstVal.Languages.Count, "should have 1 language");
             Assert.AreEqual(langEn.Key, firstVal.Languages.First().Key, "language should be EN-US");
 
@@ -292,7 +292,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var merged = _entitySaver.CreateMergedForSaving(ProductEntityMl, ProductEntityEn, _saveKeepExistingLangs);
 
             // check the titles as expected
-            Assert.AreEqual(2, merged[DataConstants.TitleField].Values.Count, "should have 2 titles with languages - EN and a shared DE+CH");
+            Assert.AreEqual(2, merged[Attributes.TitleNiceName].Values.Count, "should have 2 titles with languages - EN and a shared DE+CH");
         }
 
         // todo!

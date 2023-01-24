@@ -69,12 +69,12 @@ namespace ToSic.Eav.DataSources.Sys
 
             var scopes = _appStates.Get(appId).ContentTypes.GetAllScopesWithLabels();
 
-            var scopeBuilder = new DataBuilderQuickWIP(DataBuilder, appId: appId, typeName: "Scope", titleField: DataConstants.TitleField);
+            var scopeBuilder = new DataBuilderQuickWIP(DataBuilder, appId: appId, typeName: "Scope", titleField: Data.Attributes.TitleNiceName);
             var list = scopes
                 .Select(s => scopeBuilder.Create(new Dictionary<string, object>
                     {
-                        { DataConstants.NameIdField, s.Key },
-                        { DataConstants.TitleField, s.Value },
+                        { Data.Attributes.NameIdNiceName, s.Key },
+                        { Data.Attributes.TitleNiceName, s.Value },
                     }
                 ))
                 .ToImmutableArray();

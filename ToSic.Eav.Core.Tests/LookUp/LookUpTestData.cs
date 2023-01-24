@@ -34,7 +34,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         {
             var values = new Dictionary<string, object>
             {
-                {DataConstants.TitleField, "App Settings"},
+                {Attributes.TitleNiceName, "App Settings"},
                 {"DefaultCategoryName", LookUpEngineTests.DefaultCategory},
                 {"MaxPictures", LookUpEngineTests.MaxPictures},
                 {"PicsPerRow", "3"}
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         {
             var values = new Dictionary<string, object>
             {
-                {DataConstants.TitleField, "Resources"},
+                {Attributes.TitleNiceName, "Resources"},
                 {"Greeting", "Hello there!"},
                 {"Introduction", "Welcome to this"}
             };
