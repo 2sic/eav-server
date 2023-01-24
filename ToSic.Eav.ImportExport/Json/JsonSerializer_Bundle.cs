@@ -20,7 +20,7 @@ namespace ToSic.Eav.ImportExport.Json
             return System.Text.Json.JsonSerializer.Serialize(new JsonFormat { Entity = ent }, JsonOptions.UnsafeJsonWithoutEncodingHtml);
         }
 
-        public BundleEntityWithAssets DeserializeBundle(string serialized, bool allowDynamic = false, bool skipUnknownType = false)
+        public BundleEntityWithAssets DeserializeEntityWithAssets(string serialized, bool allowDynamic = false, bool skipUnknownType = false)
         {
             var package = UnpackAndTestGenericJsonV1(serialized);
             var entity = Deserialize(package.Entity, allowDynamic, skipUnknownType);
@@ -31,6 +31,7 @@ namespace ToSic.Eav.ImportExport.Json
         public string SerializeJsonBundle(JsonBundle bundleList) =>
             System.Text.Json.JsonSerializer.Serialize(new JsonFormat { Bundles = new List<JsonBundle>() { bundleList } }, JsonOptions.UnsafeJsonWithoutEncodingHtml);
 
+        // TODO: @STV - Make DeserializeBundle
         public List<Bundle> BundleContentTypes(JsonFormat package)
         {
             var result = new List<Bundle>();
@@ -56,6 +57,7 @@ namespace ToSic.Eav.ImportExport.Json
             return result;
         }
 
+        // TODO: @STV - Make DeserializeBundle
         public List<Bundle> BundleEntities(JsonFormat package, int id = 0, IEntitiesSource relationshipSource = null)
         {
             var result = new List<Bundle>();
@@ -69,11 +71,13 @@ namespace ToSic.Eav.ImportExport.Json
 
                 if (bundle.Entities?.Any() == true)
                 {
+                    // TODO: THIS NUMBERING PART should not be in the Deserializer
                     if (id != 0) bundle.Entities.ForEach(je => je.Id = ++id);
                         
                     // convert JsonEntities to Entities
                     bundleResult.Entities = Deserialize(bundle.Entities, allowDynamic: true, skipUnknownType: false, relationshipSource);
 
+                    // TODO: THIS NUMBERING PART should not be in the Deserializer
                     if (id == 0) bundleResult.Entities.ForEach(e => e.ResetEntityId());
                 }
             }
