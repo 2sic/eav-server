@@ -55,17 +55,14 @@ namespace ToSic.Eav.DataSources.Sys
                     value.TargetType,
                     Title = value.Docs?.Documentation ?? value.TargetType.ToString()
                 })
-                .OrderBy(s => s.Title)
+                // Sort, but ensure all the "Custom" are at the end
+                .OrderBy(s => (s.Title.StartsWith("Custom") ? "Z" : "") + s.Title)
                 .ToList();
-
-            // TODO: @2dm "Title" should be a global constant
-            // TODO: @2dm "NameId" should be a global constant
 
             var list = publicTargetTypes
                 .Select(set => DataBuilder.Entity(
                     new Dictionary<string, object>
                     {
-                        { "Id", (int)set.TargetType }, 
                         { DataConstants.TitleField, set.Title },
                         { DataConstants.NameIdField, set.TargetType.ToString() }
                     },
