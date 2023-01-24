@@ -23,7 +23,7 @@
 //        UiHint = "Get the item's target types (if they are metadata)",
 //        Icon = Icons.Metadata, // TODO
 //        Type = DataSourceType.Lookup,
-//        GlobalName = "fba0d40d-f6af-4593-9ccb-54cfd73d8217", // new generated
+//        GlobalName = "TODO", // new generated
 //        In = new[] { Constants.DefaultStreamNameRequired },
 //        DynamicOut = false,
 //        ExpectsDataOfType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232", // TODO - this is the wrong type

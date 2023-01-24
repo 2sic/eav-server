@@ -69,6 +69,7 @@ namespace ToSic.Eav.DataSources
         public const string Tree = "account_tree";
 
         public const string Metadata = "loyalty";
+        public const string MetadataTargetTypes = "interests";
 
         public const string UserCircled = "account_circle";
 

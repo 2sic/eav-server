@@ -18,9 +18,9 @@ namespace ToSic.Eav.DataSources.Sys
     /// Added in v12.10
     /// </remarks>
     [VisualQuery(
-        NiceName = "beta Metadata Target Types",
-        UiHint = "Get Metadata target types",
-        Icon = Icons.Metadata, // TODO
+        NiceName = "Metadata Target Types",
+        UiHint = "Get Target Types which determine what kind of thing/target the metadata is for.",
+        Icon = Icons.MetadataTargetTypes,
         Type = DataSourceType.System,
         GlobalName = "fba0d40d-f6af-4593-9ccb-54cfd73d8217", // new generated
         Difficulty = DifficultyBeta.Advanced,
@@ -37,17 +37,41 @@ namespace ToSic.Eav.DataSources.Sys
 
         private ImmutableArray<IEntity> GetList() => Log.Func(l =>
         {
-            var list = Enum.GetValues(typeof(TargetTypes)).Cast<TargetTypes>()
-                .Select(value => DataBuilder.Entity(
+            var publicTargetTypes = Enum.GetValues(typeof(TargetTypes))
+                .Cast<TargetTypes>()
+                .Select(value =>
+                {
+                    var field = typeof(TargetTypes).GetField(value.ToString());
+                    return new
+                    {
+                        TargetType = value,
+                        IsPrivate = Attribute.IsDefined(field, typeof(PrivateApi)),
+                        Docs = Attribute.GetCustomAttribute(field, typeof(DocsWip)) as DocsWip
+                    };
+                })
+                .Where(value => !value.IsPrivate)
+                .Select(value => new
+                {
+                    value.TargetType,
+                    Title = value.Docs?.Documentation ?? value.TargetType.ToString()
+                })
+                .OrderBy(s => s.Title)
+                .ToList();
+
+            // TODO: @2dm "Title" should be a global constant
+            // TODO: @2dm "NameId" should be a global constant
+
+            var list = publicTargetTypes
+                .Select(set => DataBuilder.Entity(
                     new Dictionary<string, object>
                     {
-                        { "Id", (int)value }, 
-                        { "Name", value },
-                        { "IsPrivate", Attribute.IsDefined(typeof(TargetTypes).GetField(value.ToString()), typeof(PrivateApi))}
+                        { "Id", (int)set.TargetType }, 
+                        { "Title", set.Title },
+                        { "NameId", set.TargetType.ToString() }
                     },
                     appId: 0,
-                    id: (int)value,
-                    titleField: "Name",
+                    id: (int)set.TargetType,
+                    titleField: "Title",
                     typeName: "MetadataTargetTypes")
                 ).ToImmutableArray();
             
