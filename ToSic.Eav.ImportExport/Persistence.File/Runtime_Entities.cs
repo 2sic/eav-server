@@ -33,7 +33,12 @@ namespace ToSic.Eav.Persistence.File
 
                 // Deduplicate entities 
                 var entities = entitySets.SelectMany(es => es.Entities).ToList();
-                var entitiesDeduplicated = entities.GroupBy(x => x.EntityGuid).Select(g => g.Last()).ToList();
+                var entitiesDeduplicated = entities
+                    .GroupBy(x => x.EntityGuid)
+                    .Select(g => g.Last())
+                    // After Deduplicating we want to order them, in case we need to debug something
+                    .OrderBy(e => e.EntityId)
+                    .ToList();
                 var duplicates = entities.Count - entitiesDeduplicated.Count;
                 l.A($"Found {duplicates} duplicate entities from {entities.Count} resulting with {entitiesDeduplicated.Count}");
 
