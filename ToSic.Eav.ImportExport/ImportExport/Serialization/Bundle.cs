@@ -6,6 +6,6 @@ namespace ToSic.Eav.ImportExport.Serialization
     public class Bundle
     {
         public List<IContentType> ContentTypes { get; set; }
-        public List<Entity> Entities { get; set; }
+        public List<IEntity> Entities { get; set; }
     }
 }

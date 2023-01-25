@@ -113,13 +113,10 @@ namespace ToSic.Eav.Persistence.File
 
                     l.A("Load items");
 
-                    var entitySets = LoadAndDeduplicateEntitySets(appState);
-
-                    foreach (var eSet in entitySets)
-                    {
-                        l.A($"Load {eSet.Folder} - {eSet.Entities.Count} items");
-                        foreach (var c in eSet.Entities) appState.Add(c as Entity, null, true);
-                    }
+                    var entities = LoadAndDeduplicateEntities(appState);
+                    l.A($"Load entity {entities.Count} items");
+                    foreach (var entity in entities) 
+                        appState.Add(entity as Entity, null, true);
                 }
                 catch (Exception ex)
                 {

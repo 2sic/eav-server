@@ -10,7 +10,7 @@ namespace ToSic.Eav.Configuration
         public const string ConfigFolder = "configurations";
         public const string EntitiesFolder = "entities";
         public const string BundlesFolder = "bundles";
-        public static string[] EntityItemFolders = { QueriesFolder, EntitiesFolder };
+        public static string[] EntityItemFolders = { BundlesFolder, QueriesFolder, EntitiesFolder };
 
         /// <summary>
         /// Special constant to make our global numbers have a lot of trailing zeros

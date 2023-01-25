@@ -62,7 +62,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             return cts;
         }
         
-        private IList<Entity> LoadAllEntitiesInBundles()
+        private List<IEntity> LoadAllEntitiesInBundles()
         {
             Trace.WriteLine($"path:'{TestStorageRoot}'");
             var loader = Build<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
@@ -70,13 +70,13 @@ namespace ToSic.Eav.Persistence.File.Tests
             IList<Entity> entities;
             try
             {
-                entities = loader.EntitiesInBundles(relationshipsSource);
+                return loader.EntitiesInBundles(relationshipsSource);
             }
             finally
             {
                 Trace.Write(Log.Dump());
             }
-            return entities;
+            return new List<IEntity>();
         }
         
         private IList<IEntity> LoadAllEntities()

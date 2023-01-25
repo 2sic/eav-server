@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Serialization;
@@ -31,61 +30,37 @@ namespace ToSic.Eav.ImportExport.Json
         public string SerializeJsonBundle(JsonBundle bundleList) =>
             System.Text.Json.JsonSerializer.Serialize(new JsonFormat { Bundles = new List<JsonBundle>() { bundleList } }, JsonOptions.UnsafeJsonWithoutEncodingHtml);
 
-        // TODO: @STV - Make DeserializeBundle
-        public List<Bundle> BundleContentTypes(JsonFormat package)
+        public List<IContentType> BundleContentTypes(JsonFormat package)
         {
-            var result = new List<Bundle>();
+            var result = new List<IContentType>();
 
             if (package.Bundles?.Any() != true) return result;
 
             foreach (var bundle in package.Bundles)
-            {
-                var bundleResult = new Bundle();
-                result.Add(bundleResult);
-
                 // convert JsonContentTypeSet to ContentTypeSet
                 if (bundle.ContentTypes?.Any() == true)
                     foreach (var jsonContentTypeSet in bundle.ContentTypes)
-                    {
-                        if (bundleResult.ContentTypes == null)
-                            bundleResult.ContentTypes = new List<IContentType>();
-
-                        bundleResult.ContentTypes.Add(ConvertContentType(jsonContentTypeSet));
-                    }
-            }
+                        result.Add(ConvertContentType(jsonContentTypeSet));
 
             return result;
         }
 
-        // TODO: @STV - Make DeserializeBundle
-        public List<Bundle> BundleEntities(JsonFormat package, int id = 0, IEntitiesSource relationshipSource = null)
+        public List<IEntity> BundleEntities(JsonFormat package, IEntitiesSource relationshipSource = null)
         {
-            var result = new List<Bundle>();
+            var result = new List<IEntity>();
 
             if (package.Bundles?.Any() != true) return result;
             
             foreach (var bundle in package.Bundles)
-            {
-                var bundleResult = new Bundle();
-                result.Add(bundleResult);
-
                 if (bundle.Entities?.Any() == true)
-                {
-                    // TODO: THIS NUMBERING PART should not be in the Deserializer
-                    if (id != 0) bundle.Entities.ForEach(je => je.Id = ++id);
-                        
                     // convert JsonEntities to Entities
-                    bundleResult.Entities = Deserialize(bundle.Entities, allowDynamic: true, skipUnknownType: false, relationshipSource);
-
-                    // TODO: THIS NUMBERING PART should not be in the Deserializer
-                    if (id == 0) bundleResult.Entities.ForEach(e => e.ResetEntityId());
-                }
-            }
+                    result.AddRange(Deserialize(bundle.Entities, allowDynamic: true, skipUnknownType: false,
+                        relationshipSource));
 
             return result;
         }
 
-        private List<Entity> Deserialize(IEnumerable<JsonEntity> entities, bool allowDynamic, bool skipUnknownType, IEntitiesSource dynRelationshipsSource = null) =>
-            entities.Select(entity => (Entity)Deserialize(entity, allowDynamic, skipUnknownType, dynRelationshipsSource)).ToList();
+        private List<IEntity> Deserialize(IEnumerable<JsonEntity> entities, bool allowDynamic, bool skipUnknownType, IEntitiesSource dynRelationshipsSource = null) =>
+            entities.Select(entity => Deserialize(entity, allowDynamic, skipUnknownType, dynRelationshipsSource)).ToList();
     }
 }
