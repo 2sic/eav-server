@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ToSic.Eav.Context;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
@@ -42,6 +43,11 @@ namespace ToSic.Eav.DataSources
             get => Values[key];
             set => Values[key] = value;
         }
+
+        public string GetThis([CallerMemberName] string cName = default) => Values.TryGetValue(cName, out var result) 
+            ? result 
+            : throw new ArgumentException($"Trying to get a configuration by name of {cName} but it doesn't exist. Did you forget to add to ConfigMask?");
+        public void SetThis(string value, [CallerMemberName] string cName = default) => Values[cName] = value;
 
         [PrivateApi("just included for compatibility, as previous public examples used Add")]
         [Obsolete("please use the indexer instead - Configuration[key] = value")]

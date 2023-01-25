@@ -139,7 +139,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             // New 12.05 - drop null values
             if(rules != null) OptimizeRemoveEmptyValues(rules, entityValues);
 
-            AddIdAndGuid(entity, entityValues, rules);
+            AddAllIds(entity, entityValues, rules);
 
             if (WithPublishing) AddPublishingInformation(entity, entityValues);
 

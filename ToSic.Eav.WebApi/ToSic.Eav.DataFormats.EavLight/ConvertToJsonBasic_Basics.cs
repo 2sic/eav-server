@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Serialization;
 
@@ -7,24 +8,37 @@ namespace ToSic.Eav.DataFormats.EavLight
 {
     public partial class ConvertToEavLight
     {
-
-        private void AddIdAndGuid(IEntityLight entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules)
+        /// <summary>
+        /// Add Id, Guid and possibly AppId (new v15)
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="entityValues"></param>
+        /// <param name="rules"></param>
+        private void AddAllIds(IEntityLight entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules)
         {
-            // Add Id and Guid
+            // Id - on by default
             // ...only if these are not already existing with this name in the entity itself as an internal value
-            if (rules?.SerializeId ?? true)
-            {
-                if (entityValues.ContainsKey(Attributes.IdNiceName)) entityValues.Remove(Attributes.IdNiceName);
-                entityValues.Add(Attributes.IdNiceName, entity.EntityId);
-            }
+            if (rules?.SerializeId ?? true) 
+                AddOrReplaceValue(entityValues, Attributes.IdNiceName, entity.EntityId);
+
+            if (rules?.SerializeAppId ?? false)
+                AddOrReplaceValue(entityValues, nameof(IAppIdentity.AppId), entity.AppId);
+
+            // Note: this doesn't work yet - we would have to lookup the ZoneId in the AppStates
+            //if (rules?.SerializeZoneId ?? false)
+            //    AddOrReplaceValue(entityValues, nameof(IAppIdentity.ZoneId), entity.AppId);
 
             // if rules.SerializeGuid are not set, then respect WithGuid
             // otherwise the rules should be applied, but default to false
             if (rules?.SerializeGuid == null && WithGuid || (rules?.SerializeGuid ?? false))
-            {
-                if (entityValues.ContainsKey(Attributes.GuidNiceName)) entityValues.Remove(Attributes.GuidNiceName);
-                entityValues.Add(Attributes.GuidNiceName, entity.EntityGuid);
-            }
+                AddOrReplaceValue(entityValues, Attributes.GuidNiceName, entity.EntityGuid);
+        }
+
+        private static void AddOrReplaceValue(IDictionary<string, object> entityValues, string fieldName, object value)
+        {
+            // Manually remove, because there could be differences in case-sensitivity
+            if (entityValues.ContainsKey(fieldName)) entityValues.Remove(fieldName);
+            entityValues.Add(fieldName, value);
         }
 
 
