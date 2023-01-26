@@ -6,6 +6,7 @@ using System.Net;
 using System.Text.Json;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
@@ -22,12 +23,20 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         // auto-download license file
         private const string DefaultLicenseFileName = "default.license.json";
 
+        private readonly LazySvc<ILicenseService> _licenseServiceLazy;
+        private readonly LazySvc<IFeaturesInternal> _featuresLazy;
+        private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
+        private readonly LazySvc<LicenseCatalog> _licenseCatalog;
+        private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
+        private readonly SystemFingerprint _fingerprint;
+
         public LicenseControllerReal(
             LazySvc<ILicenseService> licenseServiceLazy, 
             LazySvc<IFeaturesInternal> featuresLazy,
             LazySvc<IGlobalConfiguration> globalConfiguration,
             LazySvc<EavSystemLoader> systemLoaderLazy,
-            LazySvc<LicenseCatalog> licenseCatalog
+            LazySvc<LicenseCatalog> licenseCatalog,
+            SystemFingerprint fingerprint
             ) : base("Bck.Lics")
         {
             ConnectServices(
@@ -35,14 +44,10 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                 _featuresLazy = featuresLazy,
                 _globalConfiguration = globalConfiguration,
                 _licenseCatalog = licenseCatalog,
-                _systemLoaderLazy = systemLoaderLazy
+                _systemLoaderLazy = systemLoaderLazy,
+                _fingerprint = fingerprint
             );
         }
-        private readonly LazySvc<ILicenseService> _licenseServiceLazy;
-        private readonly LazySvc<IFeaturesInternal> _featuresLazy;
-        private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
-        private readonly LazySvc<LicenseCatalog> _licenseCatalog;
-        private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
 
         private string ConfigurationsPath
         {
@@ -128,7 +133,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         /// <inheritdoc />
         public LicenseFileResultDto Retrieve() => Log.Func(() =>
         {
-            var fingerprint = _systemLoaderLazy.Value.Fingerprint.GetFingerprint();
+            var fingerprint = _fingerprint.GetFingerprint();
             var url = $"https://patrons.2sxc.org/api/license/get?fingerprint={fingerprint}&version={EavSystemInfo.Version.Major}";
             Log.A($"retrieve license from url:{url}");
 

@@ -101,6 +101,7 @@ namespace ToSic.Eav.Configuration.Licenses
                 .Where(licenses => licenses != null).ToList();
 
             l.A($"licensesStored: {licensesStored.Count}");
+
             return licensesStored;
         });
         

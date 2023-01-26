@@ -11,7 +11,7 @@ using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Data;
-using ToSic.Lib.DI;
+using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Configuration
@@ -19,14 +19,20 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class EavSystemLoader : LoaderBase
     {
+        private readonly IRuntime _appStateLoader;
+        private readonly AppsCacheSwitch _appsCache;
+        public readonly IFeaturesInternal Features;
+        private readonly FeatureConfigManager _featureConfigManager;
+        private readonly ILogStore _logStore;
+        private readonly IAppStates _appStates;
         private readonly LicenseLoader _licenseLoader;
+        private readonly SystemFingerprint _fingerprint; // note: must be of type SystemFingerprint, not IFingerprint
 
         #region Constructor / DI
 
         public EavSystemLoader(
-            SystemFingerprint fingerprint, 
-            IRuntime runtime, 
-            LazySvc<IGlobalConfiguration> globalConfiguration, 
+            SystemFingerprint fingerprint,  // note: must be of type SystemFingerprint, not IFingerprint
+            IRuntime runtime,
             AppsCacheSwitch appsCache, 
             IFeaturesInternal features, 
             FeatureConfigManager featureConfigManager, 
@@ -37,8 +43,7 @@ namespace ToSic.Eav.Configuration
         {
             Log.A("System Load");
             ConnectServices(
-                Fingerprint = fingerprint,
-                _globalConfiguration = globalConfiguration,
+                _fingerprint = fingerprint,
                 _appsCache = appsCache,
                 _logStore = logStore,
                 _appStates = appStates,
@@ -48,21 +53,13 @@ namespace ToSic.Eav.Configuration
                 _licenseLoader = licenseLoader
             );
         }
-        public SystemFingerprint Fingerprint { get; }
-        private readonly IRuntime _appStateLoader;
-        private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
-        private readonly AppsCacheSwitch _appsCache;
-        public readonly IFeaturesInternal Features;
-        private readonly FeatureConfigManager _featureConfigManager;
-        private readonly ILogStore _logStore;
-        private readonly IAppStates _appStates;
 
         #endregion
 
         /// <summary>
         /// Do things needed at application start
         /// </summary>
-        public void StartUp()
+        public void StartUp() => Log.Do(l =>
         {
             // Prevent multiple Inits
             if (_startupAlreadyRan) throw new Exception("Startup should never be called twice.");
@@ -70,33 +67,49 @@ namespace ToSic.Eav.Configuration
 
             // Pre-Load the Assembly list into memory to log separately
             var assemblyLoadLog = new Log(EavLogs.Eav + "AssLdr", null, "Load Assemblies");
-            _logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, assemblyLoadLog);
-            Log.Do(timer: true, action: l =>
+            _logStore.Add(LogNames.LogStoreStartUp, assemblyLoadLog);
+            Log.Do(timer: true, action: ldo =>
             {
                 AssemblyHandling.GetTypes(assemblyLoadLog);
 
                 // Build the cache of all system-types. Must happen before everything else
-                l.A("Try to load global app-state");
+                ldo.A("Try to load global app-state");
                 var presetApp = _appStateLoader.LoadFullAppState();
                 _appsCache.Value.Add(presetApp);
 
                 LoadLicenseAndFeatures();
             });
-        }
+        });
 
         /// <summary>
         /// Standalone Features loading - to make the features API available in tests
         /// </summary>
-        public void LoadLicenseAndFeatures()
+        public void LoadLicenseAndFeatures() => Log.Do(l =>
         {
             var globalApp = _appStates.GetPresetOrNull();
-            var lic = globalApp.List.OfType(LicenseEntity.TypeNameId).Select(e => new LicenseEntity(e)).ToList();
+            var licEntities = globalApp.List
+                .OfType(LicenseEntity.TypeNameId)
+                .Select(e => new LicenseEntity(e))
+                .ToList();
 
-            _licenseLoader.Init(lic).LoadLicenses();
+            // Only keep licenses which have a valid key
+            licEntities = licEntities.Where(lic =>
+                {
+                    var signatureOriginal = $"{lic.Guid};{lic.Title}";
+                    var expected = Sha256.Hash(signatureOriginal);
+                    var ok = expected == lic.Fingerprint;
+                    l.A($"License ${(ok ? "ok" : "not-ok")}; For: '{signatureOriginal}'");
+                    if (!ok) l.W($"Fingerprint Stored/Signed: '{lic.Fingerprint}'; Expected: '{expected}'");
+                    return ok;
+                })
+                .ToList();
+
+
+            _licenseLoader.Init(licEntities).LoadLicenses();
 
             // Now do a normal reload of configuration and features
             ReloadFeatures();
-        }
+        });
         private bool _startupAlreadyRan;
 
         /// <summary>
@@ -170,7 +183,7 @@ namespace ToSic.Eav.Configuration
             return new FeatureListStored
             {
                 Features = storedFeaturesButNotUpdated.Union(updatedFeatures).ToList(),
-                Fingerprint = Fingerprint.GetFingerprint()
+                Fingerprint = _fingerprint.GetFingerprint()
             };
         }
     }
