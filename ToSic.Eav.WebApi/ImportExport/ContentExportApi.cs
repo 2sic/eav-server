@@ -141,7 +141,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             var export = ExportConfigurationBuildOrThrow(exportConfiguration);
 
             // find all decorator metadata of type SystemExportDecorator
-            l.A($"metadataExportMarkers:{export.ExportMarkers.Count()}");
+            l.A($"metadataExportMarkers:{export.ExportMarkers.Count}");
 
             var serializer = _jsonSerializer.New().SetApp(_appManager.AppState);
 
