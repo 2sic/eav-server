@@ -55,6 +55,12 @@ namespace ToSic.Eav.Apps
             // App Dependencies
             services.TryAddTransient<App.AppDependencies>();
 
+            // Context
+            services.TryAddTransient<IContextOfApp, ContextOfApp>();
+            services.TryAddTransient<ContextOfApp.Dependencies>();
+            services.TryAddTransient<ContextOfSite.Dependencies>();
+
+
             // File System Loaders (note: Dnn will introduce it's own to work around a DI issue)
             services.TryAddTransient<IAppFileSystemLoader, AppFileSystemLoader>();
             services.TryAddTransient<IAppRepositoryLoader, AppFileSystemLoader>();
