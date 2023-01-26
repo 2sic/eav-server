@@ -19,10 +19,9 @@ namespace ToSic.Eav.ImportExport.Json
             return simple;
         }
 
-        public JsonFormat ToPackage(IContentType contentType, bool includeSharedTypes)
+        public JsonFormat ToPackage(IContentType contentType, bool includeSharedTypes) => Log.Func(contentType.Name, l =>
         {
-            var wrapLog = Log.Fn<JsonFormat>(contentType.Name);
-            var package = new JsonFormat {ContentType = ToJson(contentType, includeSharedTypes)};
+            var package = new JsonFormat { ContentType = ToJson(contentType, includeSharedTypes) };
 
             // now v12 - try to include metadata items
             try
@@ -30,7 +29,7 @@ namespace ToSic.Eav.ImportExport.Json
                 // check all metadata of these attributes - get possible sub-entities attached
                 var attribMdItems = contentType.Attributes.SelectMany(a => a.Metadata).ToArray();
                 var attribMdEntityAttribs = attribMdItems.SelectMany(m => m.Attributes
-                    .Where(a => a.Value.ControlledType == ValueTypes.Entity))
+                        .Where(a => a.Value.ControlledType == ValueTypes.Entity))
                     .ToArray();
                 var mdParts =
                     // On Dynamically Typed Entities, the Children()-Call won't work, because the Relationship-Manager doesn't know the children.
@@ -40,16 +39,16 @@ namespace ToSic.Eav.ImportExport.Json
                         .Where(e => e != null) // filter out possible null items
                         .ToList();
 
-                Log.A($"Sub items: {mdParts.Count}");
+                l.A($"Sub items: {mdParts.Count}");
                 package.Entities = mdParts.Select(e => ToJson(e, 0)).ToArray();
             }
             catch (Exception ex)
             {
-                Log.Ex(ex);
+                l.Ex(ex);
             }
 
-            return wrapLog.Return(package);
-        }
+            return package;
+        });
 
         public JsonContentType ToJson(IContentType contentType)
             => ToJson(contentType, false);

@@ -43,12 +43,9 @@ namespace ToSic.Eav.ImportExport.Json
         /// </summary>
         protected JsonSerializer(Dependencies dependencies, string logName): base(dependencies, logName)
         {
-            // note: no need to SetLog because it already happens in base
-            Deps = dependencies;
             MultiBuilder = dependencies.MultiBuilder;
         }
         [PrivateApi]
-        protected Dependencies Deps { get; }
         protected MultiBuilder MultiBuilder { get; }
 
         /// <summary>

@@ -201,8 +201,7 @@ namespace ToSic.Eav.ImportExport.Json
         {
             try
             {
-
-                var converter = Deps.ValueConverter.Value;
+                var converter = ((Dependencies)Deps).ValueConverter.Value;
                 var converted = links.ToDictionary(
                     pair => pair.Key,
                     pair => pair.Value.ToDictionary(
