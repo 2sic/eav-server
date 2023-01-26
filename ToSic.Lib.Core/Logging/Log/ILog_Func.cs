@@ -20,17 +20,19 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => log.FuncResult(func, null, message, timer, Create(cPath, cName, cLine), enabled);
+        )
+        {
+            const bool logResult = true;
+            const string parameters = default;
+            //  #duplicateFuncResult<TResult> - Make sure we keep it in sync
+            // This section is a duplicate of other implementations
+            // We're keeping the code duplicate so the call stack doesn't get too deep when debugging
+            var l = enabled ? log.FnCode<TResult>(parameters, message, timer, Create(cPath, cName, cLine)) : null;
+            var result = func();
+            if (!enabled) return result;
+            return logResult ? l.ReturnAndLog(result) : l.Return(result);
 
-
-        //[InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
-        //public static TResult Func<TResult>(this ILog log,
-        //    Func<TResult> func,
-        //    bool timer = default,
-        //    [CallerFilePath] string cPath = default,
-        //    [CallerMemberName] string cName = default,
-        //    [CallerLineNumber] int cLine = default
-        //) => log.FuncResult(func, null, null, timer, Create(cPath, cName, cLine), enabled);
+        }
 
 
         /// <summary>
@@ -47,23 +49,32 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => log.FuncResult(func, parameters, message, timer, Create(cPath, cName, cLine), enabled);
-
-
-        private static TResult FuncResult<TResult>(this ILog log,
-            Func<TResult> func,
-            string parameters,
-            string message,
-            bool timer,
-            CodeRef code,
-            bool enabled,
-            bool logResult = true)
+        )
         {
-            var l = enabled ? log.FnCode<TResult>(parameters, message, timer, code) : null;
+            const bool logResult = true;
+            //  #duplicateFuncResult<TResult> - Make sure we keep it in sync
+            // This section is a duplicate of other implementations
+            // We're keeping the code duplicate so the call stack doesn't get too deep when debugging
+            var l = enabled ? log.FnCode<TResult>(parameters, message, timer, Create(cPath, cName, cLine)) : null;
             var result = func();
             if (!enabled) return result;
             return logResult ? l.ReturnAndLog(result) : l.Return(result);
         }
+
+        //private static TResult FuncResult<TResult>(this ILog log,
+        //    Func<TResult> func,
+        //    string parameters,
+        //    string message,
+        //    bool timer,
+        //    CodeRef code,
+        //    bool enabled,
+        //    bool logResult = true)
+        //{
+        //    var l = enabled ? log.FnCode<TResult>(parameters, message, timer, code) : null;
+        //    var result = func();
+        //    if (!enabled) return result;
+        //    return logResult ? l.ReturnAndLog(result) : l.Return(result);
+        //}
 
 
         #endregion
@@ -79,7 +90,19 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => log.FuncMessage(func, null, message, timer, Create(cPath, cName, cLine), enabled);
+        )
+        {
+            //return log.FuncMessage(func, null, message, timer, Create(cPath, cName, cLine), enabled);
+            const bool logResult = true;
+            const string parameters = default;
+            // #duplicateFuncMessage<TResult>
+            // This section is a duplicate of other implementations
+            // We're keeping the code duplicate so the call stack doesn't get too deep when debugging
+            var l = enabled ? log.FnCode<TResult>(parameters, message, timer, Create(cPath, cName, cLine)) : null;
+            var (result, resultMsg) = func();
+            if (!enabled) return result;
+            return logResult ? l.ReturnAndLog(result, resultMsg) : l.Return(result, resultMsg);
+        }
 
         //[InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
         //public static TResult Func<TResult>(this ILog log,
@@ -101,23 +124,34 @@ namespace ToSic.Lib.Logging
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
-        ) => log.FuncMessage(func, parameters, message, timer, Create(cPath, cName, cLine), enabled);
-
-
-        private static TResult FuncMessage<TResult>(this ILog log,
-            Func<(TResult Result, string Message)> func,
-            string parameters,
-            string message,
-            bool timer,
-            CodeRef code,
-            bool enabled,
-            bool logResult = true)
+        )
         {
-            var l = enabled ? log.FnCode<TResult>(parameters, message, timer, code) : null;
+            //return log.FuncMessage(func, parameters, message, timer, Create(cPath, cName, cLine), enabled);
+            const bool logResult = true;
+            // #duplicateFuncMessage<TResult>
+            // This section is a duplicate of other implementations
+            // We're keeping the code duplicate so the call stack doesn't get too deep when debugging
+            var l = enabled ? log.FnCode<TResult>(parameters, message, timer, Create(cPath, cName, cLine)) : null;
             var (result, resultMsg) = func();
             if (!enabled) return result;
             return logResult ? l.ReturnAndLog(result, resultMsg) : l.Return(result, resultMsg);
         }
+
+
+        //private static TResult FuncMessage<TResult>(this ILog log,
+        //    Func<(TResult Result, string Message)> func,
+        //    string parameters,
+        //    string message,
+        //    bool timer,
+        //    CodeRef code,
+        //    bool enabled,
+        //    bool logResult = true)
+        //{
+        //    var l = enabled ? log.FnCode<TResult>(parameters, message, timer, code) : null;
+        //    var (result, resultMsg) = func();
+        //    if (!enabled) return result;
+        //    return logResult ? l.ReturnAndLog(result, resultMsg) : l.Return(result, resultMsg);
+        //}
 
 
         #endregion
@@ -147,6 +181,9 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = default
         ) => log.FuncLogResult(func, parameters, message, timer, Create(cPath, cName, cLine), enabled);
 
+        // Experimental - try to force inline when compiling, to reduce call stack
+        // https://stackoverflow.com/questions/12303924/how-to-force-inline-functions-in-c
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static TResult FuncLogResult<TResult>(this ILog log,
             Func<ILogCall, TResult> func,
             string parameters,
@@ -193,6 +230,9 @@ namespace ToSic.Lib.Logging
             Create(cPath, cName, cLine), enabled);
 
 
+        // Experimental - try to force inline when compiling, to reduce call stack
+        // https://stackoverflow.com/questions/12303924/how-to-force-inline-functions-in-c
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static TResult FuncLogResultMessage<TResult>(this ILog log,
             Func<ILogCall, (TResult Result, string FinalMessage)> func,
             string parameters,
