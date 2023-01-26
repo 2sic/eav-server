@@ -7,7 +7,7 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class FeaturesCatalog: GlobalCatalogBase<FeatureDefinition>
     {
-        public FeaturesCatalog(ILogStore logStore): base(logStore, EavLogs.Eav + ".FeatCt", new CodeRef())
+        public FeaturesCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.FeatCt", new CodeRef())
         {
             Register(
                 // Released features since the dawn of features
@@ -50,6 +50,12 @@ namespace ToSic.Eav.Configuration
 
                 // Beta features
                 AdamRestrictLookupToEntity
+
+#if DEBUG
+                // Testing features to verify features
+                ,
+                TestingFeature001
+#endif
             );
         }
 

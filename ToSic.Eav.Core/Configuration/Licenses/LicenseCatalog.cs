@@ -22,7 +22,7 @@ namespace ToSic.Eav.Configuration.Licenses
 {
     public class LicenseCatalog: GlobalCatalogBase<LicenseDefinition>
     {
-        public LicenseCatalog(ILogStore logStore): base(logStore, EavLogs.Eav + ".LicCat", new CodeRef())
+        public LicenseCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.LicCat", new CodeRef())
         {
             Register(
                 CoreFree,
@@ -36,6 +36,12 @@ namespace ToSic.Eav.Configuration.Licenses
                 PatronInfrastructure,
                 WebFarmCache,
                 EnterpriseCms
+
+#if DEBUG
+                // disable in production
+                ,
+                CoreTesting
+#endif
             );
         }
     }

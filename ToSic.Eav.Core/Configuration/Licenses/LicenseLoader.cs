@@ -146,18 +146,34 @@ namespace ToSic.Eav.Configuration.Licenses
 
             var licenseStates = licenses
                 .Where(ls => !string.IsNullOrEmpty(ls.Id))
-                .Select(ls => new LicenseState
+                .Select(ls =>
                 {
-                    Title = licenseStored.Title,
-                    License = _licenseCatalog.TryGet(ls.Id),
-                    EntityGuid = licenseStored.GuidSalt,
-                    LicenseKey = licenseStored.Key,
-                    Expiration = ls.Expires ?? licenseStored.Expires,
-                    ValidExpired = validDate,
-                    ValidFingerprint = validFp,
-                    ValidSignature = validSig,
-                    ValidVersion = validVersion,
-                    Owner = licenseStored.Owner,
+                    var licDef = _licenseCatalog.TryGet(ls.Id);
+
+                    // If no real license found with this ID, it's probably a single-feature activation
+                    // For this we must add a virtual license for this feature only
+                    if (licDef == null)
+                    {
+                        licDef = new LicenseDefinition(0, ls.Comments ?? "Feature (unknown)",
+                            Guid.TryParse(ls.Id, out var guidId) ? guidId : Guid.Empty,
+                            $"Feature: {ls.Comments} ({ls.Id})");
+                        l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId}");
+                        _licenseCatalog.Register(licDef);
+                    }
+
+                    return new LicenseState
+                    {
+                        Title = licenseStored.Title,
+                        License = licDef,
+                        EntityGuid = licenseStored.GuidSalt,
+                        LicenseKey = licenseStored.Key,
+                        Expiration = ls.Expires ?? licenseStored.Expires,
+                        ValidExpired = validDate,
+                        ValidFingerprint = validFp,
+                        ValidSignature = validSig,
+                        ValidVersion = validVersion,
+                        Owner = licenseStored.Owner,
+                    };
                 })
                 .ToList();
 

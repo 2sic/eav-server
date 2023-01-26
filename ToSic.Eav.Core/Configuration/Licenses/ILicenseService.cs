@@ -14,6 +14,8 @@
  * So asking for support to finance advanced features is not asking for much. 
  *
  */
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -29,7 +31,7 @@ namespace ToSic.Eav.Configuration.Licenses
         /// <summary>
         /// Enabled licenses, in a dictionary to retrieve with the LicenseDefinition object
         /// </summary>
-        IImmutableDictionary<LicenseDefinition, LicenseState> Enabled { get; }
+        IImmutableDictionary<Guid, LicenseState> Enabled { get; }
 
         /// <summary>
         /// Check if a license is enabled - using the real primary LicenseDefinition object as the key.

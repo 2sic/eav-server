@@ -20,6 +20,8 @@ namespace ToSic.Eav.Configuration.Licenses
 {
     public class LicenseState
     {
+        public LicenseState() { }
+
         public string Title { get; internal set; }
         public string LicenseKey { get; internal set; }
 

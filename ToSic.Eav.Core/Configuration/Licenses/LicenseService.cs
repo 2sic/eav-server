@@ -32,10 +32,10 @@ namespace ToSic.Eav.Configuration.Licenses
         /// <remarks>
         /// We use the real static LicenseDefinition as an index, because this ensures that people can't inject other license objects to bypass security.
         /// </remarks>
-        public IImmutableDictionary<LicenseDefinition, LicenseState> Enabled => EnabledCache;
+        public IImmutableDictionary<Guid, LicenseState> Enabled => EnabledCache;
 
         /// <inheritdoc />
-        public bool IsEnabled(LicenseDefinition license) => EnabledCache.ContainsKey(license);
+        public bool IsEnabled(LicenseDefinition license) => EnabledCache.ContainsKey(license.Guid);
 
         #endregion
 
@@ -44,8 +44,8 @@ namespace ToSic.Eav.Configuration.Licenses
         private static List<LicenseState> AllCache { get; set; } = new List<LicenseState>();
 
 
-        private static IImmutableDictionary<LicenseDefinition, LicenseState> EnabledCache { get; set; } =
-            new Dictionary<LicenseDefinition, LicenseState>().ToImmutableDictionary();
+        private static IImmutableDictionary<Guid, LicenseState> EnabledCache { get; set; } =
+            new Dictionary<Guid, LicenseState>().ToImmutableDictionary();
 
         public static long CacheTimestamp;
 
@@ -58,7 +58,7 @@ namespace ToSic.Eav.Configuration.Licenses
                 // must do Distinct = GroupBy+First to ensure we don't have duplicate keys
                 .GroupBy(l => l.License)
                 .Select(g => g.First())
-                .ToImmutableDictionary(l => l.License, l => l); ;
+                .ToImmutableDictionary(l => l.License.Guid, l => l); ;
             CacheTimestamp = DateTime.Now.Ticks;
             AllLicensesAreInvalid = AreAllLicensesInvalid();
         }
