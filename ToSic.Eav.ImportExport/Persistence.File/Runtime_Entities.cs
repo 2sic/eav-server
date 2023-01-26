@@ -19,7 +19,6 @@ namespace ToSic.Eav.Persistence.File
                 // In the end it must contain all entities - but not deleted ones...
                 var listOfEntitiesForRelationshipMapping = new List<IEntity>();
 
-                //var l = Log.Fn<List<EntitySetsToLoad>>();
                 var entitySets = FsDataConstants.EntityItemFolders
                     .Select(folder => new EntitySetsToLoad
                     {

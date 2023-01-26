@@ -298,7 +298,7 @@ namespace ToSic.Eav.Persistence.File
             l.A($"Building content-types from bundle json: {path}");
             try
             {
-                var contentTypes = ser.BundleContentTypes(bundleJson);
+                var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
 
 
                 contentTypes.ForEach(contentType =>
@@ -330,7 +330,7 @@ namespace ToSic.Eav.Persistence.File
                 // If we are loading from a larger context, then we have a reference to a list
                 // which will be repopulated later, so only create a new one if there is none
                 relationshipSource = relationshipSource ?? new DirectEntitiesSource(new List<IEntity>());
-                var entities = ser.BundleEntities(bundleJson, relationshipSource);
+                var entities = ser.GetEntitiesFromBundles(bundleJson, relationshipSource);
                 entities?.ForEach(e => e.ResetEntityIdAll(++id));
                 return entities;
             }

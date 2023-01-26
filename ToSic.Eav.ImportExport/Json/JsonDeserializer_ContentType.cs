@@ -14,27 +14,25 @@ namespace ToSic.Eav.ImportExport.Json
     {
         public bool AssumeUnknownTypesAreDynamic { get; set; } = false;
 
-        public IContentType DeserializeContentType(string serialized)
+        public IContentType DeserializeContentType(string serialized) => Log.Func($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...", l =>
         {
-            var wrap = Log.Fn<IContentType>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...");
             try
             {
                 var jsonPackage = UnpackAndTestGenericJsonV1(serialized);
                 var type = ConvertContentType(jsonPackage);
 
                 // new in 1.2 2sxc v12 - build relation relationships manager
-                return wrap.Return(type, $"deserialized {type.Name}");
+                return (type, $"deserialized {type.Name}");
             }
             catch (Exception e)
             {
-                wrap.ReturnNull("failed, error '" + e.GetType().FullName + "':" + e.Message);
-                throw;
+                l.A("failed, error '" + e.GetType().FullName);
+                throw l.Ex(e);
             }
-        }
+        });
 
-        public IContentType ConvertContentType(JsonContentTypeSet json)
+        public IContentType ConvertContentType(JsonContentTypeSet json) => Log.Func(l =>
         {
-            var wrap = Log.Fn<IContentType>($"convert JsonContentTypeSet to IContentType");
             try
             {
                 // new in v1.2 2sxc 12
@@ -59,14 +57,14 @@ namespace ToSic.Eav.ImportExport.Json
                     jsonType.Sharing?.ParentAppId ?? 0,
                     jsonType.Sharing?.AlwaysShare ?? false);
 
-                Log.A("deserialize metadata");
+                l.A("deserialize metadata");
                 var ctMeta =
                     jsonType.Metadata?.Select(je => Deserialize(je, AssumeUnknownTypesAreDynamic, false, relationshipsSource)).ToList()
                     ?? new List<IEntity>();
                 allEntities.AddRange(ctMeta);
                 type.Metadata.Use(ctMeta);
 
-                Log.A("deserialize attributes");
+                l.A("deserialize attributes");
                 var attribs = jsonType.Attributes.Select((attr, pos) =>
                 {
                     var attDef = new ContentTypeAttribute(AppId, attr.Name, attr.Type, attr.IsTitle, 0, pos);
@@ -80,14 +78,14 @@ namespace ToSic.Eav.ImportExport.Json
                 type.Attributes = attribs;
 
                 // new in 1.2 2sxc v12 - build relation relationships manager
-                return wrap.Return(type, $"converted {type.Name} with {attribs.Count} attributes");
+                return (type, $"converted {type.Name} with {attribs.Count} attributes");
             }
             catch (Exception e)
             {
-                wrap.ReturnNull("failed, error '" + e.GetType().FullName + "':" + e.Message);
-                throw;
+                l.A("failed, error '" + e.GetType().FullName);
+                throw l.Ex(e);
             }
-        }
+        });
 
     }
 }

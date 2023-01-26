@@ -25,9 +25,8 @@ namespace ToSic.Eav.ImportExport.Json
             return entity;
         }
 
-        internal JsonFormat UnpackAndTestGenericJsonV1(string serialized)
+        internal JsonFormat UnpackAndTestGenericJsonV1(string serialized) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<JsonFormat>();
             JsonFormat jsonObj;
             try
             {
@@ -35,20 +34,17 @@ namespace ToSic.Eav.ImportExport.Json
             }
             catch (Exception ex)
             {
-                const string msg = "cannot deserialize json - bad format";
-                wrapLog.ReturnNull(msg);
-                throw new FormatException(msg, ex);
+                throw l.Ex(new FormatException("cannot deserialize json - bad format", ex));
             }
 
             if (jsonObj._.V != 1)
                 throw new ArgumentOutOfRangeException(nameof(serialized), "unexpected format version");
-            return wrapLog.ReturnAsOk(jsonObj);
-        }
+            return (jsonObj, "ok");
+        });
 
-        public IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType, IEntitiesSource dynRelationshipsSource = null)
+        public IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType, IEntitiesSource dynRelationshipsSource = null
+        ) => Log.Func($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}", l =>
         {
-            var wrapLog = Log.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}");
-
             // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
             var contentType = GetContentType(jEnt.Type.Id)
                                        ?? (allowDynamic || skipUnknownType
@@ -70,14 +66,14 @@ namespace ToSic.Eav.ImportExport.Json
                 ismeta.KeyString = md.String;
             }
 
-            Log.A("build entity");
+            l.A("build entity");
             var newEntity = MultiBuilder.Entity.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
                 AppPackageOrNull, DateTime.MinValue, DateTime.Now, jEnt.Owner, jEnt.Version);
 
             // check if metadata was included
             if (jEnt.Metadata != null)
             {
-                Log.A("found more metadata, will deserialize");
+                l.A("found more metadata, will deserialize");
                 var mdItems = jEnt.Metadata
                     .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
                     .ToList();
@@ -92,7 +88,7 @@ namespace ToSic.Eav.ImportExport.Json
                 if (allowDynamic)
                     BuildAttribsOfUnknownContentType(jEnt.Attributes, newEntity, dynRelationshipsSource);
                 else
-                    Log.A("will not resolve attributes because dynamic not allowed, but skip was ok");
+                    l.A("will not resolve attributes because dynamic not allowed, but skip was ok");
             }
             else
             {
@@ -102,8 +98,8 @@ namespace ToSic.Eav.ImportExport.Json
                 BuildAttribsOfKnownType(jEnt.Attributes, contentType, newEntity, dynRelationshipsSource);
             }
 
-            return wrapLog.ReturnAsOk(newEntity);
-        }
+            return (newEntity, "ok");
+        });
 
         private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null) => Log.Do(() =>
         {
@@ -200,9 +196,9 @@ namespace ToSic.Eav.ImportExport.Json
                 .ToList();
 
 
-        private Dictionary<string, Dictionary<string, string>> ConvertReferences(Dictionary<string, Dictionary<string, string>> links, Guid entityGuid)
+        private Dictionary<string, Dictionary<string, string>> ConvertReferences(Dictionary<string, Dictionary<string, string>> links, Guid entityGuid
+        ) => Log.Func(l =>
         {
-            var log = Log.Fn<Dictionary<string, Dictionary<string, string>>>();
             try
             {
 
@@ -214,16 +210,17 @@ namespace ToSic.Eav.ImportExport.Json
                         val => converter.ToValue(val.Value, entityGuid)
                     )
                 );
-                return log.Return(converted);
+                return (converted, "ok");
             }
             catch (Exception ex)
             {
-                log.A("Ran into an error. Will log bug ignore and return original");
-                Log.Ex(ex);
-                return links;
+                l.A("Ran into an error. Will log bug ignore and return original");
+                l.Ex(ex);
+                return (links, "error/ignored");
             }
-        }
-        private Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs)
+        });
+
+        private Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs) => Log.Func(l =>
         {
             var result = new Dictionary<string, Dictionary<string, T>>();
             attribs.Cast<IAttribute<T>>().ToList().ForEach(a =>
@@ -233,7 +230,7 @@ namespace ToSic.Eav.ImportExport.Json
                 {
                     dimensions = a.Typed.ToDictionary(LanguageKey, v => v.TypedContents);
                 }
-                catch
+                catch (Exception ex)
                 {
                     string langList = null;
                     try
@@ -241,22 +238,22 @@ namespace ToSic.Eav.ImportExport.Json
                         langList = string.Join(",", a.Typed.Select(LanguageKey));
                     }
                     catch { /* ignore */ }
-                    Log.W($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
-                    throw;
+                    l.W($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
+                    throw l.Ex(ex);
                 }
 
                 try
                 {
                     result.Add(a.Name, dimensions);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    Log.W($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
-                    throw;
+                    l.W($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
+                    throw l.Ex(ex);
                 }
             });
             return result;
-        }
+        });
 
         public List<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false) 
             => serialized.Select(s => Deserialize(s, allowDynamic)).ToList();
