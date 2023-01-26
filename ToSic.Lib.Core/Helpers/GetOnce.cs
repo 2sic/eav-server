@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Lib.Helper
+namespace ToSic.Lib.Helpers
 {
     /// <summary>
     /// Simple helper class to use on object properties which should be generated once.

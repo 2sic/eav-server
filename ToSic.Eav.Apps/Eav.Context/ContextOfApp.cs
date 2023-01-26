@@ -5,8 +5,9 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
+using ToSic.Lib;
 using ToSic.Lib.DI;
-using ToSic.Lib.Helper;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 using static ToSic.Eav.Configuration.ConfigurationConstants;
 

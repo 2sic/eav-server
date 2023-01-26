@@ -5,7 +5,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Helper;
+using ToSic.Lib.Helpers;
 using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
 

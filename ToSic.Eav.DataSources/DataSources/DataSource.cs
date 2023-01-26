@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Helper;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
