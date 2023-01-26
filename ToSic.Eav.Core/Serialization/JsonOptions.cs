@@ -52,6 +52,18 @@ namespace ToSic.Eav.Serialization
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
+        // used only for API calls
+        public static JsonSerializerOptions UnsafeJsonWithoutEncodingHtmlOptionsFactory(JsonConverter jc)
+        {
+            var op = new JsonSerializerOptions(DefaultOptions)
+            {
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+            op.Converters.Add(jc);
+            return op;
+        }
+
+
         /// <summary>
         /// When json is used in html attributes, everything except basic charters should be encoded:
         /// - escape HTML-sensitive characters such as <, >, &, and '.
