@@ -61,13 +61,13 @@ namespace ToSic.Eav.DataSources.Queries
 
         /// <inheritdoc />
         [PrivateApi]
-        public Query(Dependencies dependencies, ILazySvc<QueryBuilder> queryBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Query")
+        public Query(Dependencies dependencies, LazySvc<QueryBuilder> queryBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Query")
         {
             ConnectServices(
                 _queryBuilderLazy = queryBuilder
             );
         }
-        private readonly ILazySvc<QueryBuilder> _queryBuilderLazy;
+        private readonly LazySvc<QueryBuilder> _queryBuilderLazy;
 
         /// <summary>
         /// Initialize a full query object. This is necessary for it to work

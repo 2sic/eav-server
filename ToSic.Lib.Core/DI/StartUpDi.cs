@@ -8,18 +8,14 @@ namespace ToSic.Lib.DI
     {
         public static IServiceCollection AddLibDI(this IServiceCollection services)
         {
-            // Lazy
+            // Lazy objects in General
             services.TryAddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
 
-            // Lazy Init
+            // Lazy Services
             services.TryAddTransient(typeof(LazySvc<>));
-            services.TryAddTransient(typeof(ILazySvc<>), typeof(LazySvc<>));
-            //services.TryAddTransient(typeof(LazyInitLog<>));
 
-            // Generators
+            // Service Generators
             services.TryAddTransient(typeof(Generator<>));
-            services.TryAddTransient(typeof(IGenerator<>), typeof(Generator<>));
-            //services.TryAddTransient(typeof(Generator<>));
 
             // Service Switchers
             services.TryAddTransient(typeof(ServiceSwitcher<>));

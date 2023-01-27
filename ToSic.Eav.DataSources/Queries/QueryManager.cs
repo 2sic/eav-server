@@ -20,11 +20,11 @@ namespace ToSic.Eav.DataSources.Queries
 	[PrivateApi]
 	public class QueryManager: ServiceBase
 	{
-        private readonly ILazySvc<IAppStates> _appStates;
+        private readonly LazySvc<IAppStates> _appStates;
         private readonly Generator<Query> _queryGenerator;
         public DataSourceFactory DataSourceFactory { get; }
 
-        public QueryManager(DataSourceFactory dataSourceFactory, Generator<Query> queryGenerator, ILazySvc<IAppStates> appStates) : base($"{DataSourceConstants.LogPrefix}.QryMan")
+        public QueryManager(DataSourceFactory dataSourceFactory, Generator<Query> queryGenerator, LazySvc<IAppStates> appStates) : base($"{DataSourceConstants.LogPrefix}.QryMan")
         {
             ConnectServices(
                 DataSourceFactory = dataSourceFactory,

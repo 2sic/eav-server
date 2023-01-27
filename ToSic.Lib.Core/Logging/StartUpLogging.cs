@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ToSic.Lib.Logging
 {
-    public static class StartUp
+    public static class StartUpLogging
     {
         public static IServiceCollection AddLibLogging(this IServiceCollection services)
         {

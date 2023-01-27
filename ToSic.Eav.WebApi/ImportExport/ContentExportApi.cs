@@ -32,7 +32,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         private readonly IAppStates _appStates;
         private readonly Generator<JsonSerializer> _jsonSerializer;
         private readonly ResponseMaker<THttpResponseType> _responseMaker;
-        private readonly ILazySvc<IFeaturesInternal> _features;
+        private readonly LazySvc<IFeaturesInternal> _features;
 
         private AppManager _appManager;
         public ContentExportApi(
@@ -40,7 +40,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             IAppStates appStates,
             Generator<JsonSerializer> jsonSerializer,
             ResponseMaker<THttpResponseType> responseMaker,
-            ILazySvc<IFeaturesInternal> features
+            LazySvc<IFeaturesInternal> features
             ) : base("Api.EaCtEx")
         {
 

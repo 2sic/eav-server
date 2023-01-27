@@ -13,26 +13,22 @@ namespace ToSic.Lib.Helpers
     /// ATM used in the ResponsiveBase, but we should also use it in other places where we have a second toggle to determine if it had been retrieved already. 
     /// </summary>
     /// <typeparam name="TResult"></typeparam>
-    [PrivateApi("internal use only")]
-    public class GetOnce<TResult>: IHasLog
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    public class GetOnce<TResult>
     {
+        /// <summary>
+        /// Construct an empty GetOnce object for use later on.
+        ///
+        /// In case you're wondering why we can't pass the generator in on the constructor:
+        /// Reason is that in most cases we need real objects in the generator function,
+        /// which doesn't work in a `static` context.
+        /// This means that if the = new GetOnce() is run on the private property
+        /// (which is the most common case) most generators can't be added. 
+        /// </summary>
         public GetOnce() {}
 
         /// <summary>
-        /// WIP experimental, not sure if this second way to use is a good idea
-        /// </summary>
-        public GetOnce(Func<TResult> generator) => _generator = generator;
-        private readonly Func<TResult> _generator;
-
-        /// <summary>
-        /// WIP experimental, not sure if this second way to use is a good idea or causes confusion
-        /// </summary>
-        public TResult Value => Get(_generator 
-                              ??
-                              throw new Exception($"Can't use {nameof(Value)} if the generator wasn't set in the constructor"));
-
-        /// <summary>
-        /// Get the value once only. If not yet retrieved, use the generator function. 
+        /// Get the value. If not yet retrieved, use the generator function (but only once). 
         /// </summary>
         /// <param name="generator">Function which will generate the value on first use.</param>
         /// <returns></returns>
@@ -45,13 +41,18 @@ namespace ToSic.Lib.Helpers
         }
 
         /// <summary>
-        /// EXPERIMENTAL - getter with will log when it gets the property the first time
+        /// Getter with will log it's actions when it retrieves the property the first time.
         /// </summary>
-        /// <param name="log"></param>
-        /// <param name="generator"></param>
-        /// <param name="cPath"></param>
-        /// <param name="cName"></param>
-        /// <param name="cLine"></param>
+        /// <param name="log">Log object to use when logging</param>
+        /// <param name="generator">
+        /// Function which will generate the value on first use.
+        /// The function must return the expected value/type.
+        /// </param>
+        /// <param name="timer">enable a timer from call/close</param>
+        /// <param name="enabled">can be set to false if you want to disable logging</param>
+        /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
+        /// <param name="cName">auto pre filled by the compiler - the method name</param>
+        /// <param name="cLine">auto pre filled by the compiler - the code line</param>
         /// <returns></returns>
         public TResult Get(ILog log, Func<TResult> generator,
             bool timer = default,
@@ -67,13 +68,19 @@ namespace ToSic.Lib.Helpers
         }
 
         /// <summary>
-        /// EXPERIMENTAL - getter with will log when it gets the property the first time
+        /// Getter with will log when it gets the property the first time.
+        /// This will also provide the logger to the generator as a first function parameter.
         /// </summary>
-        /// <param name="log"></param>
-        /// <param name="generator"></param>
-        /// <param name="cPath"></param>
-        /// <param name="cName"></param>
-        /// <param name="cLine"></param>
+        /// <param name="log">Log object to use when logging</param>
+        /// <param name="generator">
+        /// Function which will generate the value on first use.
+        /// The function must return the expected value/type.
+        /// </param>
+        /// <param name="timer">enable a timer from call/close</param>
+        /// <param name="enabled">can be set to false if you want to disable logging</param>
+        /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
+        /// <param name="cName">auto pre filled by the compiler - the method name</param>
+        /// <param name="cLine">auto pre filled by the compiler - the code line</param>
         /// <returns></returns>
         public TResult Get(ILog log, Func<ILog, TResult> generator,
             bool timer = default,
@@ -89,15 +96,21 @@ namespace ToSic.Lib.Helpers
         }
 
         /// <summary>
-        /// EXPERIMENTAL - getter with will log when it gets the property the first time
+        /// Getter with will log when it gets the property the first time.
+        /// It provides the logger as a first function in the parameter.
         /// </summary>
-        /// <param name="log"></param>
-        /// <param name="generator"></param>
-        /// <param name="cPath"></param>
-        /// <param name="cName"></param>
-        /// <param name="cLine"></param>
+        /// <param name="log">Log object to use when logging</param>
+        /// <param name="generator">
+        /// Function which will generate the value on first use.
+        /// The function must return a Tuple `(TResult Result, string Message)` which it uses to log when done.
+        /// </param>
+        /// <param name="timer">enable a timer from call/close</param>
+        /// <param name="enabled">can be set to false if you want to disable logging</param>
+        /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
+        /// <param name="cName">auto pre filled by the compiler - the method name</param>
+        /// <param name="cLine">auto pre filled by the compiler - the code line</param>
         /// <returns></returns>
-        public TResult Get(ILog log, Func<ILog, (TResult, string Message)> generator,
+        public TResult Get(ILog log, Func<ILog, (TResult Result, string Message)> generator,
             bool timer = default,
             bool enabled = true,
             [CallerFilePath] string cPath = default,
@@ -110,30 +123,16 @@ namespace ToSic.Lib.Helpers
             return _value = log.Getter(generator, timer: timer, enabled: enabled, cPath: cPath, cName: cName, cLine: cLine);
         }
 
-
-
         /// <summary>
-        /// Get the value once only. If not yet retrieved, use the generator function.
-        ///
-        /// Also log what the returned value was for better insights.
-        /// </summary>
-        /// <param name="generator">Function which will generate the value on first use.</param>
-        /// <param name="log">Logger to use</param>
-        /// <param name="name">name of the property we're getting, to mention in the log</param>
-        /// <returns></returns>
-        public TResult Get(Func<TResult> generator, ILog log, string name) => Log.Func(name, () => Get(generator));
-
-        /// <summary>
-        /// Reset the value so it will be re-generated next time it's needed
+        /// Reset the state and value so it will be re-generated next time it's needed.
         /// </summary>
         public void Reset() => IsValueCreated = false;
 
         /// <summary>
-        /// Determines if value has been created. Name 'IsValueCreated' is the same as in the Lazy() object
+        /// Determines if value has been created.
+        /// The name `IsValueCreated` is the same as in a Lazy() object
         /// </summary>
         public bool IsValueCreated { get; private set; }
         private TResult _value;
-
-        public ILog Log { get; private set; }
     }
 }

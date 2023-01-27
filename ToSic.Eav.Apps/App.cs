@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps
         public class AppDependencies: ServiceDependencies
         {
             public Generator<Query> QueryGenerator { get; }
-            public ILazySvc<QueryManager> QueryManager { get; }
+            public LazySvc<QueryManager> QueryManager { get; }
             internal readonly IZoneMapper ZoneMapper;
             internal readonly ISite Site;
             internal readonly IAppStates AppStates;
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps
                 ISite site,
                 IAppStates appStates,
                 DataSourceFactory dataSourceFactory,
-                ILazySvc<QueryManager> queryManager,
+                LazySvc<QueryManager> queryManager,
                 Generator<Query> queryGenerator)
             {
                 AddToLogQueue(
