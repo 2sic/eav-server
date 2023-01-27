@@ -21,28 +21,44 @@ namespace ToSic.Eav.ImportExport.Json
                 WriteIndented = indentation != 0
             });
 
-        internal List<IContentType> GetContentTypesFromBundles(JsonFormat package) => Log.Func(() =>
+        internal List<IContentType> GetContentTypesFromBundles(JsonFormat package) => Log.Func(l =>
         {
-            if (package.Bundles?.Any() != true) return new List<IContentType>();
+            if (package.Bundles?.Any() != true) return (new List<IContentType>(), "none found");
 
-            var result = package.Bundles
-                .Where(bundle => bundle.ContentTypes?.Any() == true)
-                .SelectMany(bundle => bundle.ContentTypes.Select(ConvertContentType))
+            // Prepare step-by-step for better logs
+            var bundlesWithTypes = package.Bundles
+                .Where(b => b.ContentTypes?.Any() == true)
+                .ToList();
+            var types = bundlesWithTypes
+                .SelectMany(b => b.ContentTypes)
+                .ToList();
+            l.A($"Bundles: {package.Bundles.Count}; with Types {bundlesWithTypes.Count}; Types: {types.Count}");
+
+            var result = types
+                .Select(ConvertContentType)
                 .ToList();
 
-            return result;
+            return (result, $"{result.Count}");
         });
 
-        internal List<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null) => Log.Func(() =>
+        internal List<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null) => Log.Func(l =>
         {
-            if (package.Bundles?.Any() != true) return new List<IEntity>();
+            if (package.Bundles?.Any() != true) return (new List<IEntity>(), "none found");
 
-            var result = package.Bundles
-                .Where(bundle => bundle.Entities?.Any() == true)
-                .SelectMany(bundle => bundle.Entities.Select(e => Deserialize(e, true, false, relationshipSource)))
+            // Prepare step-by-step for better logs
+            var bundlesWithEntities = package.Bundles
+                .Where(b => b.Entities?.Any() == true)
+                .ToList();
+            var entities = bundlesWithEntities
+                .SelectMany(b => b.Entities)
+                .ToList();
+            l.A($"Bundles: {package.Bundles.Count}; with Entities {bundlesWithEntities.Count}; Entities: {entities.Count}");
+
+            var result = entities
+                .Select(e => Deserialize(e, true, false, relationshipSource))
                 .ToList();
 
-            return result;
+            return (result, $"{result.Count}");
         });
     }
 }

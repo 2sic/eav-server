@@ -10,63 +10,76 @@ namespace ToSic.Eav.Persistence.File
 {
     public partial class Runtime
     {
-        protected int EntityIdSeed = FsDataConstants.GlobalEntityIdMin;
+        private List<IEntity> LoadGlobalEntities(AppState appState) => Log.Func(l =>
+        {
+            // Set TypeID seed for loader so each loaded type has a unique ID
+            var loaderIndex = 1;
+            Loaders.ForEach(ldr => ldr.EntityIdSeed = FsDataConstants.GlobalEntityIdMin + FsDataConstants.GlobalEntitySourceSkip * loaderIndex++);
 
-        private List<IEntity> LoadAndDeduplicateEntities(AppState appState) =>
-            Log.Func(l =>
-            {
-                // This will be the source of all relationships
-                // In the end it must contain all entities - but not deleted ones...
-                var listOfEntitiesForRelationshipMapping = new List<IEntity>();
+            // This will be the source of all relationships
+            // In the end it must contain all entities - but not deleted ones...
+            var listOfEntitiesForRelationshipMapping = new List<IEntity>();
 
-                var entitySets = FsDataConstants.EntityItemFolders
-                    .Select(folder => new EntitySetsToLoad
-                    {
-                        Folder = folder,
-                        Entities = LoadGlobalEntitiesFromAllLoaders(folder, listOfEntitiesForRelationshipMapping,
-                            appState) ?? new List<IEntity>()
-                    })
-                    .ToList();
-
-                l.A($"Found {entitySets.Count} sets");
-
-                // Deduplicate entities 
-                var entities = entitySets.SelectMany(es => es.Entities).ToList();
-                var entitiesDeduplicated = entities
-                    .GroupBy(x => x.EntityGuid)
-                    .Select(g => g.Last())
-                    // After Deduplicating we want to order them, in case we need to debug something
-                    .OrderBy(e => e.EntityId)
-                    .ToList();
-                var duplicates = entities.Count - entitiesDeduplicated.Count;
-                l.A($"Found {duplicates} duplicate entities from {entities.Count} resulting with {entitiesDeduplicated.Count}");
-
-                // Reset list of entities which will be used to find related entities
-                listOfEntitiesForRelationshipMapping.Clear();
-                listOfEntitiesForRelationshipMapping.AddRange(entitiesDeduplicated);
-
-                return (entitiesDeduplicated, "ok");
-            });
-
-        private List<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, List<IEntity> listForRelationships, AppState appState) =>
-            Log.Func(l =>
-            {
-                if (!FsDataConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
-                    throw new ArgumentOutOfRangeException(nameof(groupIdentifier),
-                        "atm we can only load items of type " + string.Join("/", FsDataConstants.EntityItemFolders));
-
-                // Get items
-                var entities = new List<IEntity>();
-                foreach (var loader in Loaders)
+            var entitySets = FsDataConstants.EntityItemFolders
+                .Select(folder => new EntitySetsToLoad
                 {
-                    loader.ResetSerializer(appState);
-                    entities.AddRange(loader.Entities(groupIdentifier, EntityIdSeed, listForRelationships));
-                    EntityIdSeed += FsDataConstants.GlobalEntitySourceSkip; // update the seed for next rounds or other uses of the seed
-                }
+                    Folder = folder,
+                    Entities = LoadGlobalEntitiesFromAllLoaders(folder, listOfEntitiesForRelationshipMapping,
+                        appState) ?? new List<IEntity>()
+                })
+                .ToList();
 
-                l.A($"{entities.Count} items of type {groupIdentifier}");
-                return entities;
-            });
+            l.A($"Found {entitySets.Count} sets");
+
+            // Deduplicate entities 
+            var entities = entitySets.SelectMany(es => es.Entities).ToList();
+            var entitiesGroupedByGuid = entities
+                .GroupBy(x => x.EntityGuid)
+                .ToList();
+            var entitiesDeduplicated = entitiesGroupedByGuid
+                .Select(g => g.Last())
+                // After Deduplicating we want to order them, in case we need to debug something
+                .OrderBy(e => e.EntityId)
+                .ToList();
+
+            // Log duplicates
+            var duplicates = entities.Count - entitiesDeduplicated.Count;
+            l.A(
+                $"Found {duplicates} duplicate entities from {entities.Count} resulting with {entitiesDeduplicated.Count}");
+            foreach (var dupl in entitiesGroupedByGuid.Where(g => g.Count() > 1))
+                l.A($"Removed a duplicate of: {dupl.Key}");
+
+            // Detailed debug - log all IDs because we seem to have duplicate IDs (bug)
+            foreach (var e in entitiesDeduplicated)
+                l.A($"Id: {e.EntityId} ({e.EntityGuid})");
+
+            // Reset list of entities which will be used to find related entities
+            listOfEntitiesForRelationshipMapping.Clear();
+            listOfEntitiesForRelationshipMapping.AddRange(entitiesDeduplicated);
+
+            return (entitiesDeduplicated, "ok");
+        });
+
+        private List<IEntity> LoadGlobalEntitiesFromAllLoaders(
+            string groupIdentifier,
+            List<IEntity> listForRelationships,
+            AppState appState) => Log.Func(groupIdentifier, l =>
+        {
+            if (!FsDataConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
+                throw new ArgumentOutOfRangeException(nameof(groupIdentifier),
+                    "atm we can only load items of type " + string.Join("/", FsDataConstants.EntityItemFolders));
+
+            // Get items
+            var entities = new List<IEntity>();
+            foreach (var loader in Loaders)
+            {
+                loader.ResetSerializer(appState);
+                entities.AddRange(loader.Entities(groupIdentifier, loader.EntityIdSeed, listForRelationships));
+            }
+
+            l.A($"{entities.Count} items of type {groupIdentifier}");
+            return (entities, $"{entities.Count}");
+        });
 
         
         internal class EntitySetsToLoad

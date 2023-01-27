@@ -97,8 +97,8 @@ namespace ToSic.Eav.ImportExport.Json
                 // We'll probably correct this some day, but for now we're including the relationshipSource if defined
                 BuildAttribsOfKnownType(jEnt.Attributes, contentType, newEntity, dynRelationshipsSource);
             }
-
-            return (newEntity, "ok");
+            
+            return (newEntity, l.Try(() => $"'{newEntity?.GetBestTitle()}'", "can't get title"));
         });
 
         private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null) => Log.Do(() =>

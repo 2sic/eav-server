@@ -113,7 +113,7 @@ namespace ToSic.Eav.Persistence.File
 
                     l.A("Load items");
 
-                    var entities = LoadAndDeduplicateEntities(appState);
+                    var entities = LoadGlobalEntities(appState);
                     l.A($"Load entity {entities.Count} items");
                     foreach (var entity in entities) 
                         appState.Add(entity as Entity, null, true);

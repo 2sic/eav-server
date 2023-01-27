@@ -10,26 +10,19 @@ namespace ToSic.Eav.Persistence.File
 {
     public partial class Runtime
     {
-        protected int TypeIdSeed = FsDataConstants.GlobalEntityIdMin;
-        
-        public List<IContentType> LoadGlobalContentTypes()
+        public List<IContentType> LoadGlobalContentTypes() => Log.Func(() =>
         {
-            Log.A("loading types");
+            // Set TypeID seed for loader so each loaded type has a unique ID
+            var loaderIndex = 1;
+            Loaders.ForEach(ldr => ldr.TypeIdSeed = FsDataConstants.GlobalContentTypeMin + FsDataConstants.GlobalContentTypeSourceSkip * loaderIndex++);
 
             // 3 - return content types
-            var types = new List<IContentType>();
-            Loaders.ForEach(l =>
-            {
-                l.IdSeed = TypeIdSeed;
-                types.AddRange(l.ContentTypes());
-                TypeIdSeed = (l.IdSeed / FsDataConstants.GlobalContentTypeSourceSkip + 1) * FsDataConstants.GlobalContentTypeSourceSkip;
-            });
+            var types = Loaders.SelectMany(ldr => ldr.ContentTypes()).ToList();
 
             types = SetInternalTypes(types);
 
-            Log.A($"found {types.Count} types");
-            return types;
-        }
+            return (types, $"found {types.Count} types");
+        });
 
         private List<IContentType> SetInternalTypes(List<IContentType> types)
         {

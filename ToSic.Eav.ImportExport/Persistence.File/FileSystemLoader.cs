@@ -13,6 +13,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 using static ToSic.Eav.ImportExport.ImpExpConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -35,16 +36,16 @@ namespace ToSic.Eav.Persistence.File
 
         private readonly Generator<JsonSerializer> _jsonSerializerGenerator;
 
-        public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource)
+        public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource
+        ) => Log.Func($"init with appId:{appId}, path:{path}, ignore:{ignoreMissing}", () =>
         {
-            Log.A($"init with appId:{appId}, path:{path}, ignore:{ignoreMissing}");
             AppId = appId;
             Path = path + (path.EndsWith("\\") ? "" : "\\");
             RepoType = repoType;
             IgnoreMissingStuff = ignoreMissing;
             EntitiesSource = entitiesSource;
             return this;
-        }
+        });
 
         private string Path { get; set; }
 
@@ -84,64 +85,65 @@ namespace ToSic.Eav.Persistence.File
 
         #region Queries & Configuration
 
-        public IList<IEntity> Entities(string folder, int idSeed, List<IEntity> relationshipsList = null)
-            => Log.Func(l =>
+        public IList<IEntity> Entities(string folder, int idSeed, List<IEntity> relationshipsList = null
+        ) => Log.Func(l =>
+        {
+            // #1. check that folder exists
+            var subPath = System.IO.Path.Combine(Path, folder);
+            if (!CheckPathExists(Path) || !CheckPathExists(subPath))
+                return (new List<IEntity>(), "Path doesn't exist, return none");
+
+            // #2. WIP - Allow relationships between loaded items
+            // If we are loading from a larger context, then we have a reference to a list
+            // which will be repopulated later, so only create a new one if there is none
+            var hasOwnRelationshipList = relationshipsList == null;
+            l.A("hasOwnRelationshipList: " + hasOwnRelationshipList);
+            relationshipsList = relationshipsList ?? new List<IEntity>();
+            var relationshipsSource = new DirectEntitiesSource(relationshipsList);
+
+            // #3A. special case for entities in bundles.
+            if (folder == FsDataConstants.BundlesFolder)
             {
-                // #1. check that folder exists
-                var subPath = System.IO.Path.Combine(Path, folder);
-                if (!CheckPathExists(Path) || !CheckPathExists(subPath))
-                    return new List<IEntity>();
+                // #3A.1 load entities from files in bundles folder
+                var entitiesInBundle = EntitiesInBundles(relationshipsSource).ToList();
+                l.A($"Found {entitiesInBundle.Count} Entities in Bundles");
 
-                // #2. WIP - Allow relationships between loaded items
-                // If we are loading from a larger context, then we have a reference to a list
-                // which will be repopulated later, so only create a new one if there is none
-                var hasOwnRelationshipList = relationshipsList == null;
-                l.A("hasOwnRelationshipList: " + hasOwnRelationshipList);
-                relationshipsList = relationshipsList ?? new List<IEntity>();
-                var relationshipsSource = new DirectEntitiesSource(relationshipsList);
-
-                // #3A. special case for entities in bundles.
-                if (folder == FsDataConstants.BundlesFolder)
-                {
-                    // #3A.1 load entities from files in bundles folder
-                    var entitiesInBundle = EntitiesInBundles(relationshipsSource).ToList();
-                    l.A("found " + entitiesInBundle.Count);
-
-                    // #3A.2 put all found entities into the source
-                    if (hasOwnRelationshipList)
-                        relationshipsList.AddRange(entitiesInBundle);
-
-                    return entitiesInBundle;
-                }
-
-                // #3. older case with single entities
-                // #3.1 find all content-type files in folder
-                var jsons = Directory
-                    .GetFiles(subPath, $"*{Extension(Files.json)}")
-                    .OrderBy(f => f)
-                    .ToArray();
-
-                // #3.2 load entity-items from folder
-                var jsonSerializer = Serializer;
-                var entities = jsons
-                    .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++idSeed, relationshipsSource))
-                    .Where(entity => entity != null)
-                    .ToList();
-                l.A("found " + entities.Count + " entities in " + folder + " folder");
-
-                // #3.3 put all found entities into the source
+                // #3A.2 put all found entities into the source
                 if (hasOwnRelationshipList)
-                    relationshipsList.AddRange(entities);
+                    relationshipsList.AddRange(entitiesInBundle);
 
-                return entities;
-            });
+                return (entitiesInBundle, $"{entitiesInBundle.Count}");
+            }
+
+            // #3. older case with single entities
+            // #3.1 find all content-type files in folder
+            var jsons = Directory
+                .GetFiles(subPath, $"*{Extension(Files.json)}")
+                .OrderBy(f => f)
+                .ToArray();
+
+            // #3.2 load entity-items from folder
+            var jsonSerializer = Serializer;
+            var entities = jsons
+                .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++idSeed, relationshipsSource))
+                .Where(entity => entity != null)
+                .ToList();
+            l.A("found " + entities.Count + " entities in " + folder + " folder");
+
+            // #3.3 put all found entities into the source
+            if (hasOwnRelationshipList)
+                relationshipsList.AddRange(entities);
+
+            return (entities, $"{entities.Count}");
+        });
 
         #endregion
 
 
         #region ContentType
 
-        public int IdSeed = -1;
+        public int EntityIdSeed = -1;
+        public int TypeIdSeed = -1;
 
         public IList<IContentType> ContentTypes() => ContentTypes(AppId, null);
 
@@ -161,7 +163,7 @@ namespace ToSic.Eav.Persistence.File
 
             // #3 load content-types from folder
             var contentTypes = jsons
-                .Select(json => LoadAndBuildCt(Serializer, json, IdSeed == -1 ? 0 : IdSeed++))
+                .Select(json => LoadAndBuildCt(Serializer, json))
                 .Where(ct => ct != null)
                 .ToList();
             var entityCtCount = contentTypes.Count;
@@ -182,9 +184,8 @@ namespace ToSic.Eav.Persistence.File
         /// Try to load a content-type file, but if anything fails, just return a null
         /// </summary>
         /// <returns></returns>
-        private IContentType LoadAndBuildCt(JsonSerializer ser, string path, int id)
+        private IContentType LoadAndBuildCt(JsonSerializer ser, string path) => Log.Func($"Path: {path}", l =>
         {
-            Log.A("Loading " + path);
             var infoIfError = "couldn't read type-file";
             try
             {
@@ -194,98 +195,85 @@ namespace ToSic.Eav.Persistence.File
                 var ct = ser.DeserializeContentType(json);
 
                 infoIfError = "couldn't set source/parent";
-                (ct as ContentType).SetSourceParentAndIdForPresetTypes(RepoType, Constants.PresetContentTypeFakeParent, path, id);
+                (ct as ContentType).SetSourceParentAndIdForPresetTypes(RepoType, Constants.PresetContentTypeFakeParent,
+                    path, ++TypeIdSeed);
                 return ct;
             }
             catch (IOException e)
             {
-                Log.A("Failed loading type - couldn't import type-file, IO exception: " + e);
+                l.Ex("Failed loading type - couldn't import type-file, IO exception", e);
                 return null;
             }
             catch (Exception e)
             {
-                Log.A($"Failed loading type - {infoIfError}, exception '" + e.GetType().FullName + "':" + e.Message);
+                l.Ex($"Failed loading type - {infoIfError}", e);
                 return null;
             }
-        }
+        });
         #endregion
 
         #region Bundle
 
-        public Dictionary<string, JsonFormat> JsonBundleBundles
+        public Dictionary<string, JsonFormat> JsonBundleBundles => _jsonBundles.Get(Log, l =>
         {
-            get
+            // #1. check that folder exists
+            if (!CheckPathExists(Path) || !CheckPathExists(BundlesPath))
+                return (new Dictionary<string, JsonFormat>(), "path doesn't exist");
+
+            const string infoIfError = "couldn't read bundle-file";
+            try
             {
-                if (_jsonBundles != null) return _jsonBundles;
-                _jsonBundles = Log.Func(l =>
-                {
-                    var jsonBundles = new Dictionary<string, JsonFormat>();
-
-                    // #1. check that folder exists
-                    if (!CheckPathExists(Path) || !CheckPathExists(BundlesPath))
-                        return jsonBundles;
-
-                    const string infoIfError = "couldn't read bundle-file";
-                    try
+                // #2 find all bundle files in folder and unpack/deserialize to JsonFormat
+                var jsonBundles = new Dictionary<string, JsonFormat>();
+                Directory.GetFiles(BundlesPath, "*" + Extension(Files.json)).OrderBy(f => f).ToList()
+                    .ForEach(p =>
                     {
-                        // #2 find all bundle files in folder and unpack/deserialize to JsonFormat
-                        Directory.GetFiles(BundlesPath, "*" + Extension(Files.json)).OrderBy(f => f).ToList()
-                            .ForEach(p =>
-                            {
-                                l.A("Loading json bundle" + p);
-                                jsonBundles[p] = Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p));
-                            });
-                    }
-                    catch (IOException e)
-                    {
-                        l.A("Failed loading type - couldn't import bundle-file, IO exception: " + e);
-                        return new Dictionary<string, JsonFormat>();
-                    }
-                    catch (Exception e)
-                    {
-                        l.A($"Failed loading bundle - {infoIfError}, exception '" + e.GetType().FullName + "':" +
-                            e.Message);
-                        return new Dictionary<string, JsonFormat>();
-                    }
-
-                    return jsonBundles;
-                });
-                return _jsonBundles;
+                        l.A("Loading json bundle" + p);
+                        jsonBundles[p] = Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p));
+                    });
+                return (jsonBundles, $"found {jsonBundles.Count}");
             }
-        }
-        private Dictionary<string, JsonFormat> _jsonBundles;
-
-        public List<IContentType> ContentTypesInBundles() =>
-            Log.Func(l =>
+            catch (IOException e)
             {
-                if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.ContentTypes?.Any() == true) != true))
-                    return new List<IContentType>();
-
-                var contentTypes = JsonBundleBundles
-                    .SelectMany(json => BuildContentTypesInBundles(Serializer, json.Key, json.Value,
-                        IdSeed == -1 ? 0 : IdSeed++ /*, relationshipsList*/))
-                    .Where(ct => ct != null).ToList();
-
-                l.A("ContentTypes in bundles: " + contentTypes.Count);
-
-                return contentTypes;
-            });
-
-        public List<IEntity> EntitiesInBundles(IEntitiesSource relationshipSource) =>
-            Log.Func(l =>
+                l.Ex("Failed loading type - couldn't import bundle-file, IO exception", e);
+                return (new Dictionary<string, JsonFormat>(), "IOException");
+            }
+            catch (Exception e)
             {
-                if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.Entities?.Any() == true) != true))
-                    return new List<IEntity>();
+                l.Ex($"Failed loading bundle - {infoIfError}", e);
+                return (new Dictionary<string, JsonFormat>(), "error");
+            }
+        });
+        private readonly GetOnce<Dictionary<string, JsonFormat>> _jsonBundles = new GetOnce<Dictionary<string, JsonFormat>>();
 
-                var entities = JsonBundleBundles
-                    .SelectMany(json =>
-                        BuildEntitiesInBundles(Serializer, json.Key, json.Value, IdSeed == -1 ? 0 : IdSeed++, relationshipSource))
-                    .Where(entity => entity != null).ToList();
+        public List<IContentType> ContentTypesInBundles() => Log.Func(l =>
+        {
+            if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.ContentTypes?.Any() == true) != true))
+                return new List<IContentType>();
 
-                l.A("Entities in bundles: " + entities.Count);
+            var contentTypes = JsonBundleBundles
+                .SelectMany(json => BuildContentTypesInBundles(Serializer, json.Key, json.Value /*, relationshipsList*/))
+                .Where(ct => ct != null).ToList();
 
-                return entities;
-            });
+            l.A("ContentTypes in bundles: " + contentTypes.Count);
+
+            return contentTypes;
+        });
+
+        public List<IEntity> EntitiesInBundles(IEntitiesSource relationshipSource) => Log.Func(l =>
+        {
+            if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.Entities?.Any() == true) != true))
+                return (new List<IEntity>(), "no bundles have entities, return none");
+
+            var entities = JsonBundleBundles
+                .SelectMany(json =>
+                    BuildEntitiesInBundles(Serializer, json.Key, json.Value, relationshipSource))
+                .Where(entity => entity != null).ToList();
+
+            l.A("Entities in bundles: " + entities.Count);
+
+            return (entities, $"{entities.Count}");
+        });
         
         private string BundlesPath => System.IO.Path.Combine(Path, Configuration.FsDataConstants.BundlesFolder);
 
@@ -293,9 +281,9 @@ namespace ToSic.Eav.Persistence.File
         /// Build contentTypes from bundle json
         /// </summary>
         /// <returns></returns>
-        private List<IContentType> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, int id) => Log.Func(l =>
+        private List<IContentType> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson
+        ) => Log.Func($"path: {path}", l =>
         {
-            l.A($"Building content-types from bundle json: {path}");
             try
             {
                 var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
@@ -304,14 +292,14 @@ namespace ToSic.Eav.Persistence.File
                 contentTypes.ForEach(contentType =>
                 {
                     (contentType as ContentType).SetSourceParentAndIdForPresetTypes(RepoType,
-                        Constants.PresetContentTypeFakeParent, path, ++id);
+                        Constants.PresetContentTypeFakeParent, path, ++TypeIdSeed);
                 });
 
                 return contentTypes;
             }
             catch (Exception e)
             {
-                l.A($"Failed building content types from bundle json, exception '" + e.GetType().FullName + "':" + e.Message);
+                l.Ex($"Failed building content types from bundle json", e);
                 return new List<IContentType>();
             }
         });
@@ -320,8 +308,8 @@ namespace ToSic.Eav.Persistence.File
         /// Build entities from bundle json
         /// </summary>
         /// <returns></returns>
-        private List<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, int id, IEntitiesSource relationshipSource = null
-        ) => Log.Func(l =>
+        private List<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource = null
+        ) => Log.Func($"path: {path}", l =>
         {
             l.A($"Build entities from bundle json: {path}.");
             try
@@ -331,13 +319,13 @@ namespace ToSic.Eav.Persistence.File
                 // which will be repopulated later, so only create a new one if there is none
                 relationshipSource = relationshipSource ?? new DirectEntitiesSource(new List<IEntity>());
                 var entities = ser.GetEntitiesFromBundles(bundleJson, relationshipSource);
-                entities?.ForEach(e => e.ResetEntityIdAll(++id));
-                return entities;
+                entities.ForEach(e => e.ResetEntityIdAll(++EntityIdSeed));
+                return (entities, $"{entities.Count}");
             }
             catch (Exception e)
             {
-                l.A($"Failed building entities from bundle json, exception '" + e.GetType().FullName + "':" + e.Message);
-                return new List<IEntity>();
+                l.Ex($"Failed building entities from bundle json", e);
+                return (new List<IEntity>(), "error return none");
             }
         });
 
@@ -363,14 +351,12 @@ namespace ToSic.Eav.Persistence.File
             }
             catch (IOException e)
             {
-                l.A($"Failed loading type - couldn't read file on '{path}'");
-                l.Ex(e);
+                l.Ex($"Failed loading type - couldn't read file on '{path}'", e);
                 return null;
             }
             catch (Exception e)
             {
-                l.A($"Failed loading type - couldn't deserialize '{path}' for unknown reason.");
-                l.Ex(e);
+                l.Ex($"Failed loading type - couldn't deserialize '{path}' for unknown reason.", e);
                 return null;
             }
         });
