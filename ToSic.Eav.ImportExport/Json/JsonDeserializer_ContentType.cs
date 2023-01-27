@@ -26,7 +26,6 @@ namespace ToSic.Eav.ImportExport.Json
             }
             catch (Exception e)
             {
-                l.A("failed, error '" + e.GetType().FullName);
                 throw l.Ex(e);
             }
         });
@@ -50,7 +49,7 @@ namespace ToSic.Eav.ImportExport.Json
 
                 var type = new ContentType(AppId, jsonType.Name, jsonType.Id, 0,
                     jsonType.Scope,
-                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+                    // #RemoveContentTypeDescription #2974 - #remove 2023 Q2 if all works
                     //jsonType.Description,
                     jsonType.Sharing?.ParentId,
                     jsonType.Sharing?.ParentZoneId ?? 0,
@@ -82,7 +81,6 @@ namespace ToSic.Eav.ImportExport.Json
             }
             catch (Exception e)
             {
-                l.A("failed, error '" + e.GetType().FullName);
                 throw l.Ex(e);
             }
         });

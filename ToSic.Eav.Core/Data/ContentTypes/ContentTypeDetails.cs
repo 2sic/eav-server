@@ -18,5 +18,7 @@
         public string DynamicChildrenField => GetThis<string>(null);
 
         public string Description => GetThis<string>(null);
+
+        public string AdditionalSettings => GetThis<string>(null);
     }
 }

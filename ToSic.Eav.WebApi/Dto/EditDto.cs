@@ -67,5 +67,7 @@ namespace ToSic.Eav.WebApi.Dto
     {
         public IDictionary<string, object> Values { get; set; }
         public List<JsonEntity> Entities { get; set; }
+
+        public IDictionary<string, object> Parameters { get; set; }
     }
 }
