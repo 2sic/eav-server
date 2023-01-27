@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Serialization;
@@ -11,8 +12,14 @@ namespace ToSic.Eav.ImportExport.Json
 {
     public partial class JsonSerializer
     {
-        public string SerializeJsonBundle(JsonBundle bundleList) =>
-            System.Text.Json.JsonSerializer.Serialize(new JsonFormat { Bundles = new List<JsonBundle>() { bundleList } }, JsonOptions.UnsafeJsonWithoutEncodingHtml);
+        public string SerializeJsonBundle(JsonBundle bundleList, int indentation) =>
+            System.Text.Json.JsonSerializer.Serialize(new JsonFormat
+            {
+                Bundles = new List<JsonBundle> { bundleList }
+            }, new JsonSerializerOptions(JsonOptions.UnsafeJsonWithoutEncodingHtml)
+            {
+                WriteIndented = indentation != 0
+            });
 
         internal List<IContentType> GetContentTypesFromBundles(JsonFormat package) => Log.Func(() =>
         {

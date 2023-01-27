@@ -6,7 +6,7 @@ namespace ToSic.Eav.Configuration
     public class FeatureConstants
     {
         //internal const bool AllowUnsignedFeatures = true; // testing mode!
-        public const string TypeName = "FeaturesConfiguration";
+        //public const string TypeName = "FeaturesConfiguration";
         //internal const string FeaturesField = "Features";
         //internal const string SignatureField = "Signature";
         [PrivateApi]

@@ -131,7 +131,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         });
 
         [HttpGet]
-        public THttpResponseType JsonBundleExport(IUser user, Guid exportConfiguration) => Log.Func(l =>
+        public THttpResponseType JsonBundleExport(IUser user, Guid exportConfiguration, int indentation) => Log.Func(l =>
         {
             l.A($"create Json Bundle Export for ExportConfiguration:{exportConfiguration}");
             SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
@@ -148,7 +148,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             var bundle = BundleBuild(export, serializer);
 
             // create a file which contains this new bundle
-            var fileContent = serializer.SerializeJsonBundle(bundle);
+            var fileContent = serializer.SerializeJsonBundle(bundle, indentation);
 
             // give it to the browser with the name specified in the Export Configuration
             l.A($"OK, export fileName:{export.FileName}, size:{fileContent.Count()}");
