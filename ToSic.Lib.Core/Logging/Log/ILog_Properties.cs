@@ -36,6 +36,39 @@ namespace ToSic.Lib.Logging
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
         public static TProperty Getter<TProperty>(this ILog log,
+            Func<ILogCall, TProperty> getter,
+            bool timer = default,
+            bool enabled = true,
+            string message = default,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        )
+        {
+            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, "get:" + cName, cLine), true, null, message, timer) : null;
+            var result = getter(l);
+            return !enabled ? result : l.ReturnAndLog(result);
+        }
+
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
+        public static TProperty Getter<TProperty>(this ILog log,
+            Func<ILogCall, (TProperty Result, string Message)> getter,
+            bool timer = default,
+            bool enabled = true,
+            string message = default,
+            [CallerFilePath] string cPath = default,
+            [CallerMemberName] string cName = default,
+            [CallerLineNumber] int cLine = default
+        )
+        {
+            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, "get:" + cName, cLine), true, null, message, timer) : null;
+            var result = getter(l);
+            return !enabled ? result.Result : l.Return(result.Result, result.Message);
+        }
+
+
+        [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
+        public static TProperty Getter<TProperty>(this ILog log,
             Func<(TProperty Result, string FinalMessage)> getter,
             bool timer = default,
             bool enabled = true,
