@@ -12,6 +12,9 @@ namespace ToSic.Lib.DI
     /// * It can also be configured with a lazy init function to keep code clean.
     /// 
     /// This reduces the amount of plumbing in many code files.
+    ///
+    /// It will detect if the provided object/service supports these features.
+    /// So if it's used for anything that doesn't support logging it will just behave like `Lazy`.
     /// </summary>
     /// <typeparam name="TService">Service type, ideally based on <see cref="ToSic.Lib.Services.ServiceBase"/></typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
@@ -20,8 +23,7 @@ namespace ToSic.Lib.DI
         /// <summary>
         /// Constructor, should never be called as it's only meant to be used with Dependency Injection.
         /// </summary>
-        /// <param name="valueLazy"></param>
-        public LazySvc(Lazy<TService> valueLazy) => _valueLazy = valueLazy;
+        public LazySvc(IServiceProvider sp) => _valueLazy = new Lazy<TService>(sp.Build<TService>);
         private readonly Lazy<TService> _valueLazy;
 
         /// <summary>

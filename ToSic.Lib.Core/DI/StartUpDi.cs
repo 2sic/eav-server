@@ -9,7 +9,7 @@ namespace ToSic.Lib.DI
         public static IServiceCollection AddLibDI(this IServiceCollection services)
         {
             // Lazy objects in General
-            services.TryAddTransient(typeof(Lazy<>), typeof(LazyDependencyInjection<>));
+            services.TryAddTransient(typeof(Lazy<>), typeof(LazyImplementation<>));
 
             // Lazy Services
             services.TryAddTransient(typeof(LazySvc<>));

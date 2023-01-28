@@ -4,16 +4,16 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Lib.DI
 {
     /// <summary>
-    /// Enables lazy requesting of objects - won't be available until needed
+    /// Enables lazy requesting of objects - won't be available until needed.
+    /// This is a classic plain-vanilla implementation of Lazy for ServiceProviders.
+    ///
+    /// Note that most code in the ToSic Namespace will prefer <see cref="LazySvc{TService}"/>
     /// </summary>
-    /// <remarks>
-    /// Inspired by https://www.programmersought.com/article/54291773421/
-    /// </remarks>
-    /// <typeparam name="T"></typeparam>
-    [PrivateApi]
-    public class LazyDependencyInjection<T> : Lazy<T>
+    /// <typeparam name="TService"></typeparam>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    public class LazyImplementation<TService> : Lazy<TService>
     {
-        public LazyDependencyInjection(IServiceProvider sp) : base(sp.Build<T>)
+        public LazyImplementation(IServiceProvider sp) : base(sp.Build<TService>)
         {
         }
 
