@@ -24,23 +24,26 @@ namespace ToSic.Eav.Security.Encryption
 
         #endregion
 
-        public static string Encrypt(string value, string password = BuiltInPasswordForSimpleUseOnly)
+        // 2023-01-28 2dm disabled, because probably not FIPS compliant
+        // https://github.com/2sic/2sxc/issues/2988
+        //public static string EncryptAesManaged(string value, string password = BuiltInPasswordForSimpleUseOnly) 
+        //    => Encrypt<AesManaged>(value, password);
+
+        public static string EncryptAesCrypto(string value, string password = BuiltInPasswordForSimpleUseOnly) 
+            => Encrypt<AesCryptoServiceProvider>(value, password);
+
+
+        public static string Encrypt<T>(string value, string password) where T : SymmetricAlgorithm, new()
         {
-            return Encrypt<AesManaged>(value, password);
-        }
-        public static string Encrypt<T>(string value, string password)
-                where T : SymmetricAlgorithm, new()
-        {
-            byte[] vectorBytes = Encoding.ASCII.GetBytes(_vector);
-            byte[] saltBytes = Encoding.ASCII.GetBytes(_salt);
-            byte[] valueBytes = Encoding.UTF8.GetBytes(value);
+            var vectorBytes = Encoding.ASCII.GetBytes(_vector);
+            var saltBytes = Encoding.ASCII.GetBytes(_salt);
+            var valueBytes = Encoding.UTF8.GetBytes(value);
 
             byte[] encrypted;
-            using (T cipher = new T())
+            using (var cipher = new T())
             {
-                PasswordDeriveBytes _passwordBytes =
-                    new PasswordDeriveBytes(password, saltBytes, _hash, _iterations);
-                byte[] keyBytes = _passwordBytes.GetBytes(_keySize / 8);
+                var passwordBytes = new PasswordDeriveBytes(password, saltBytes, _hash, _iterations);
+                var keyBytes = passwordBytes.GetBytes(_keySize / 8);
 
                 cipher.Mode = CipherMode.CBC;
 
@@ -49,55 +52,52 @@ namespace ToSic.Eav.Security.Encryption
                 //cipher.GenerateIV();
                 //Trace.WriteLine("IV:" + Convert.ToBase64String(cipher.IV));
 
-                using (ICryptoTransform encryptor = cipher.CreateEncryptor(keyBytes, vectorBytes))
+                using (var encryption = cipher.CreateEncryptor(keyBytes, vectorBytes))
+                using (var to = new MemoryStream())
+                using (var writer = new CryptoStream(to, encryption, CryptoStreamMode.Write))
                 {
-                    using (MemoryStream to = new MemoryStream())
-                    {
-                        using (CryptoStream writer = new CryptoStream(to, encryptor, CryptoStreamMode.Write))
-                        {
-                            writer.Write(valueBytes, 0, valueBytes.Length);
-                            writer.FlushFinalBlock();
-                            encrypted = to.ToArray();
-                        }
-                    }
+                    writer.Write(valueBytes, 0, valueBytes.Length);
+                    writer.FlushFinalBlock();
+                    encrypted = to.ToArray();
                 }
+
                 cipher.Clear();
             }
             return Convert.ToBase64String(encrypted);
         }
 
-        public static string Decrypt(string value, string password = BuiltInPasswordForSimpleUseOnly)
-        {
-            return Decrypt<AesManaged>(value, password);
-        }
+        // 2023-01-28 2dm disabled, because probably not FIPS compliant
+        // https://github.com/2sic/2sxc/issues/2988
+        //public static string DecryptAesManaged(string value, string password = BuiltInPasswordForSimpleUseOnly) 
+        //    => Decrypt<AesManaged>(value, password);
+
+        public static string DecryptAesCrypto(string value, string password = BuiltInPasswordForSimpleUseOnly) 
+            => Decrypt<AesCryptoServiceProvider>(value, password);
+
         public static string Decrypt<T>(string value, string password) where T : SymmetricAlgorithm, new()
         {
-            byte[] vectorBytes = Encoding.ASCII.GetBytes(_vector);
-            byte[] saltBytes = Encoding.ASCII.GetBytes(_salt);
-            byte[] valueBytes = Convert.FromBase64String(value);
+            var vectorBytes = Encoding.ASCII.GetBytes(_vector);
+            var saltBytes = Encoding.ASCII.GetBytes(_salt);
+            var valueBytes = Convert.FromBase64String(value);
 
             byte[] decrypted;
-            int decryptedByteCount = 0;
+            int decryptedByteCount;
 
-            using (T cipher = new T())
+            using (var cipher = new T())
             {
-                PasswordDeriveBytes _passwordBytes = new PasswordDeriveBytes(password, saltBytes, _hash, _iterations);
-                byte[] keyBytes = _passwordBytes.GetBytes(_keySize / 8);
+                var _passwordBytes = new PasswordDeriveBytes(password, saltBytes, _hash, _iterations);
+                var keyBytes = _passwordBytes.GetBytes(_keySize / 8);
 
                 cipher.Mode = CipherMode.CBC;
 
                 try
                 {
-                    using (ICryptoTransform decryptor = cipher.CreateDecryptor(keyBytes, vectorBytes))
+                    using (var decryptor = cipher.CreateDecryptor(keyBytes, vectorBytes))
+                    using (var from = new MemoryStream(valueBytes))
+                    using (var reader = new CryptoStream(from, decryptor, CryptoStreamMode.Read))
                     {
-                        using (MemoryStream from = new MemoryStream(valueBytes))
-                        {
-                            using (CryptoStream reader = new CryptoStream(from, decryptor, CryptoStreamMode.Read))
-                            {
-                                decrypted = new byte[valueBytes.Length];
-                                decryptedByteCount = reader.Read(decrypted, 0, decrypted.Length);
-                            }
-                        }
+                        decrypted = new byte[valueBytes.Length];
+                        decryptedByteCount = reader.Read(decrypted, 0, decrypted.Length);
                     }
                 }
                 catch

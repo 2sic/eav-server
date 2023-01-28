@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Diagnostics;
 using ToSic.Eav.Security.Encryption;
 
@@ -10,17 +9,16 @@ namespace ToSic.Eav.Core.Tests.Signature
     {
         private const string TestMessage = "This is a test message";
         private const string DummyPassword = "dummy-password";
-        private const string PreviousEncryptionSha1 = "wuEeVGHucRfZHaAohx8dW5ZUEaK6jUNewJWeahGgapA=";
         private const string PreviousEncryptionSha256 = "L3pBTTJ9+Ow1aRRWX4Flykh3UEfO7/XffcEuJPVKABg=";
         [TestMethod]
         public void TestBasicAesCrypto()
         {
-            var encrypted = BasicAesCryptography.Encrypt(TestMessage, DummyPassword);
+            var encrypted = BasicAesCryptography.EncryptAesCrypto(TestMessage, DummyPassword);
             Trace.WriteLine($"encrypted:{encrypted}");
 
             Assert.AreNotEqual(TestMessage, encrypted);
             Assert.AreEqual(PreviousEncryptionSha256, encrypted, "each encryption should give a different result - but that's not implemented yet");
-            var decrypted = BasicAesCryptography.Decrypt(encrypted, DummyPassword);
+            var decrypted = BasicAesCryptography.DecryptAesCrypto(encrypted, DummyPassword);
             Trace.WriteLine($"decrypted:{decrypted}");
             Assert.AreEqual(TestMessage, decrypted);
 
