@@ -10,7 +10,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
-    internal class TreeMapper<T> : HelperBase, ITreeMapper, ICanDebug where T : struct
+    public class TreeMapper<T> : HelperBase, ITreeMapper, ICanDebug where T : struct
     {
         private readonly MultiBuilder _builder;
 
