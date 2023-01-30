@@ -81,6 +81,7 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient<Compressor>();
 
             services.TryAddTransient<AesCryptographyService>();
+            services.TryAddTransient<Rfc2898Generator>();
 
             return services;
         }
