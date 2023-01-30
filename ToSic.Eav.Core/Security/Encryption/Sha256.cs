@@ -14,10 +14,13 @@ namespace ToSic.Eav.Security.Encryption
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
+        /// <remarks>
+        /// In v15.01 we changed this to use the CryptoServiceProvider which should be FIPS compliant
+        /// </remarks>
         public static string Hash(string value)
         {
             var hash = new StringBuilder();
-            using (var crypt = new SHA256Managed())
+            using (var crypt = new SHA256CryptoServiceProvider())
             {
                 var crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(value));
                 foreach (var theByte in crypto)
