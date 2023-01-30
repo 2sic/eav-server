@@ -81,10 +81,10 @@ namespace ToSic.Eav.Security.Encryption
                     using (var decryptor = cipher.CreateDecryptor(_keyGen.GetKeyBytes(configuration), configuration.InitializationVectorBytes()))
                     using (var from = new MemoryStream(value))
                     using (var reader = new CryptoStream(from, decryptor, CryptoStreamMode.Read))
+                    using (StreamReader srDecrypt = new StreamReader(reader))
                     {
-                        var decrypted = new byte[value.Length];
-                        var decryptedByteCount = reader.Read(decrypted, 0, decrypted.Length);
-                        return Encoding.UTF8.GetString(decrypted, 0, decryptedByteCount);
+                        var plaintext = srDecrypt.ReadToEnd();
+                        return plaintext;
                     }
                 }
                 finally
