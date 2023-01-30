@@ -155,17 +155,21 @@ namespace ToSic.Eav.Persistence.File
         {
             // #1. check that folder exists
             var pathCt = ContentTypePath;
-            if (!CheckPathExists(Path) || !CheckPathExists(pathCt))
-                return (new List<IContentType>(), "path doesn't exist");
+            var contentTypes = new List<IContentType>();
+            if (CheckPathExists(Path) && CheckPathExists(pathCt))
+            {
+                // #2 find all content-type files in folder
+                var jsons = Directory.GetFiles(pathCt, "*" + Extension(Files.json)).OrderBy(f => f);
 
-            // #2 find all content-type files in folder
-            var jsons = Directory.GetFiles(pathCt, "*" + Extension(Files.json)).OrderBy(f => f);
+                // #3 load content-types from folder
+                contentTypes = jsons
+                    .Select(json => LoadAndBuildCt(Serializer, json))
+                    .Where(ct => ct != null)
+                    .ToList();
+            }
+            else
+                l.A("path doesn't exist");
 
-            // #3 load content-types from folder
-            var contentTypes = jsons
-                .Select(json => LoadAndBuildCt(Serializer, json))
-                .Where(ct => ct != null)
-                .ToList();
             var entityCtCount = contentTypes.Count;
 
             // #4 load content-types from files in bundles folder
