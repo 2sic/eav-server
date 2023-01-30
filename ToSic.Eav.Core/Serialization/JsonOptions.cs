@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -59,7 +59,13 @@ namespace ToSic.Eav.Serialization
             {
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
+            if (jc == null) return op;
+            
+            foreach (var j in op.Converters.ToList().Where(j => j.GetType() == jc.GetType())) 
+                op.Converters.Remove(j);
+
             op.Converters.Add(jc);
+
             return op;
         }
 
