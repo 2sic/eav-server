@@ -14,6 +14,7 @@ using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
+using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav.StartUp
@@ -78,6 +79,8 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient<LicenseLoader>();
 
             services.TryAddTransient<Compressor>();
+
+            services.TryAddTransient<AesCryptographyService>();
 
             return services;
         }
