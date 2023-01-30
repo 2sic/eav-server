@@ -6,7 +6,7 @@ namespace ToSic.Eav.WebApi.Plumbing
 {
     public class ResponseMakerUnknown<THttpResponseType> : ResponseMaker<THttpResponseType>
     {
-        public ResponseMakerUnknown(WarnUseOfUnknown<ResponseMakerUnknown<THttpResponseType>> warn) { }
+        public ResponseMakerUnknown(WarnUseOfUnknown<ResponseMakerUnknown<THttpResponseType>> _) { }
 
         public override THttpResponseType Error(int statusCode, string message)
         {

@@ -5,7 +5,7 @@ namespace ToSic.Eav.Run.Unknown
 {
     public sealed class ZoneCultureResolverUnknown: IZoneCultureResolver, IIsUnknown
     {
-        public ZoneCultureResolverUnknown(WarnUseOfUnknown<ZoneCultureResolverUnknown> warn)
+        public ZoneCultureResolverUnknown(WarnUseOfUnknown<ZoneCultureResolverUnknown> _)
         {
 
         }

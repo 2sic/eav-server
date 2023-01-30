@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps.Run
     {
         private readonly Generator<ISite> _site;
 
-        public ZoneMapperUnknown(IAppStates appStates, WarnUseOfUnknown<ZoneMapperUnknown> warn, Generator<ISite> site) 
+        public ZoneMapperUnknown(IAppStates appStates, WarnUseOfUnknown<ZoneMapperUnknown> _, Generator<ISite> site) 
             : base(appStates, $"{LogScopes.NotImplemented}.ZonMap")
         {
             _site = site;

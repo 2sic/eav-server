@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Security
 {
     public class EnvironmentPermissionUnknown : EnvironmentPermission
     {
-        public EnvironmentPermissionUnknown(WarnUseOfUnknown<EnvironmentPermissionUnknown> warn) : base(LogScopes.NotImplemented)
+        public EnvironmentPermissionUnknown(WarnUseOfUnknown<EnvironmentPermissionUnknown> _) : base(LogScopes.NotImplemented)
         { }
 
         public override bool EnvironmentAllows(List<Grants> grants) => UserIsSystemAdmin();

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Run
 {
     public sealed class FileSystemLoaderUnknown: ServiceBase, IAppFileSystemLoader, IIsUnknown
     {
-        public FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> warn): base(LogConstants.FullNameUnknown)
+        public FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> _): base(LogConstants.FullNameUnknown)
         { }
 
         public IAppFileSystemLoader Init(AppState app)

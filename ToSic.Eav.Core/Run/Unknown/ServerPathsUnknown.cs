@@ -4,7 +4,7 @@ namespace ToSic.Eav.Run.Unknown
 {
     public sealed class ServerPathsUnknown: ServerPathsBase, IIsUnknown
     {
-        public ServerPathsUnknown(WarnUseOfUnknown<ServerPathsUnknown> warn)
+        public ServerPathsUnknown(WarnUseOfUnknown<ServerPathsUnknown> _)
         {
 
         }

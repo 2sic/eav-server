@@ -8,7 +8,7 @@ namespace ToSic.Eav.WebApi.ApiExplorer
 {
     public class ApiInspectorUnknown: ServiceBase, IApiInspector
     {
-        public ApiInspectorUnknown(WarnUseOfUnknown<ApiInspectorUnknown> warn) : base($"{LogScopes.NotImplemented}.ApiIns")
+        public ApiInspectorUnknown(WarnUseOfUnknown<ApiInspectorUnknown> _) : base($"{LogScopes.NotImplemented}.ApiIns")
         {
         }
 

@@ -10,7 +10,7 @@ namespace ToSic.Eav.Repositories
 {
     public class AppRepositoryLoaderUnknown: ServiceBase, IAppRepositoryLoader, IIsUnknown
     {
-        public AppRepositoryLoaderUnknown(WarnUseOfUnknown<AppRepositoryLoaderUnknown> warn) : base(LogScopes.NotImplemented + ".RepLdr") { }
+        public AppRepositoryLoaderUnknown(WarnUseOfUnknown<AppRepositoryLoaderUnknown> _) : base(LogScopes.NotImplemented + ".RepLdr") { }
 
         public IAppRepositoryLoader Init(AppState app)
         {

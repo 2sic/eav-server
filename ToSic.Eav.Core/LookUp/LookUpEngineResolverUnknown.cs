@@ -11,7 +11,7 @@ namespace ToSic.Eav.LookUp
     /// </summary>
     public sealed class LookUpEngineResolverUnknown: ServiceBase, ILookUpEngineResolver, IIsUnknown
     {
-        public LookUpEngineResolverUnknown(WarnUseOfUnknown<LookUpEngineResolverUnknown> warn) : base($"{LogScopes.NotImplemented}.LookUp")
+        public LookUpEngineResolverUnknown(WarnUseOfUnknown<LookUpEngineResolverUnknown> _) : base($"{LogScopes.NotImplemented}.LookUp")
         {
         }
 
