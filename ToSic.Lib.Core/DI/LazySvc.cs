@@ -18,12 +18,12 @@ namespace ToSic.Lib.DI
     /// </summary>
     /// <typeparam name="TService">Service type, ideally based on <see cref="ToSic.Lib.Services.ServiceBase"/></typeparam>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public class LazySvc<TService>: ILazyLike<TService>, ILazyInitLog where TService : class
+    public class LazySvc<TService>: ILazyLike<TService>, IHasLog, ILazyInitLog where TService : class
     {
         /// <summary>
         /// Constructor, should never be called as it's only meant to be used with Dependency Injection.
         /// </summary>
-        public LazySvc(IServiceProvider sp) => _valueLazy = new Lazy<TService>(sp.Build<TService>);
+        public LazySvc(IServiceProvider sp) => _valueLazy = new Lazy<TService>(() => sp.Build<TService>(Log));
         private readonly Lazy<TService> _valueLazy;
 
         /// <summary>
@@ -46,18 +46,26 @@ namespace ToSic.Lib.DI
         {
             var value = _valueLazy.Value;
             _initCall?.Invoke(value);
-            InitLogOrNull?.Invoke(value);
             return value;
         });
         private readonly GetOnce<TService> _valueGet = new GetOnce<TService>();
 
         public bool IsValueCreated => _valueGet.IsValueCreated;
 
-
         private Action<TService> _initCall;
+        
+        /// <summary>
+        /// Initializer to attach the log to the generator.
+        /// The log is later given to generated objects.
+        /// </summary>
+        /// <param name="parentLog"></param>
+        void ILazyInitLog.SetLog(ILog parentLog) => Log = parentLog;
 
-        protected Action<TService> InitLogOrNull;
+        /// <summary>
+        /// The parent log, which is attached to newly generated objects
+        /// _if_ they support logging.
+        /// </summary>
+        public ILog Log { get; private set; }
 
-        void ILazyInitLog.SetLog(ILog parentLog) => InitLogOrNull = thingWithLog => (thingWithLog as IHasLog)?.LinkLog(parentLog);
     }
 }
