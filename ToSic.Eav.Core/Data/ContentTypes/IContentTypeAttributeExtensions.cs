@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
+using static ToSic.Eav.Data.AttributeMetadata;
 
 namespace ToSic.Eav.Data
 {
@@ -17,25 +19,20 @@ namespace ToSic.Eav.Data
         public static string InputType(this IContentTypeAttribute definition)
         {
             // Preferred storage and available in all fields defined after 2sxc ca. 6 or 7
-            var inputType = definition.Metadata.GetBestValue<string>(
-                AttributeMetadata.GeneralFieldInputType, AttributeMetadata.TypeGeneral);
-
+            var inputType = definition.Metadata.GetBestValue<string>(GeneralFieldInputType, TypeGeneral);
+            if (inputType.HasValue()) return inputType;
+            
             // if not available, check older metadata, where it was on the @String
-            if (string.IsNullOrWhiteSpace(inputType))
-            {
-                inputType = definition.Metadata.GetBestValue<string>(
-                    AttributeMetadata.GeneralFieldInputType, AttributeMetadata.TypeString);
-                // if found, check and maybe add prefix string
-                const string prefix = "string-";
-                if (!string.IsNullOrWhiteSpace(inputType) && !inputType.StartsWith(prefix))
-                    inputType = prefix + inputType;
-            }
+            inputType = definition.Metadata.GetBestValue<string>(GeneralFieldInputType, TypeString);
+            // if found, check and maybe add prefix string
+            const string prefix = "string-";
+            if (inputType.HasValue() && !inputType.StartsWith(prefix))
+                return $"{prefix}{inputType}";
 
             // if still not found, assemble from known type
-            if (string.IsNullOrWhiteSpace(inputType))
-                inputType = definition.Type.ToLowerInvariant() + "-default";
-
-            return inputType;
+            if (inputType.HasValue()) return inputType;
+            
+            return definition.Type.ToLowerInvariant() + "-default";
         }
 
         public static string EntityFieldItemTypePrimary(this IContentTypeAttribute attribute)
