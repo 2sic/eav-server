@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps.Parts;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps
 {
@@ -39,7 +38,7 @@ namespace ToSic.Eav.Apps
         /// Simple Override - to track if the init is being called everywhere
         /// </summary>
         public AppRuntime Init(int appId, bool showDrafts) 
-            => this.InitQ(_Deps.AppStates.IdentityOfApp(appId), showDrafts);
+            => this.InitQ(Deps.AppStates.IdentityOfApp(appId), showDrafts);
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.

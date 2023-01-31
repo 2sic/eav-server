@@ -18,7 +18,7 @@ namespace ToSic.Eav.Data.PropertyLookup
 
 
         public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
-            => FindPropertyInternalOfStackWrapper(this, specs, path, LogNames.Eav + ".PrpNav", $"Source: {UnwrappedContents.NameId}");
+            => FindPropertyInternalOfStackWrapper(this, specs, path, EavLogs.Eav + ".PrpNav", $"Source: {UnwrappedContents.NameId}");
 
         public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path) 
             => Navigator.GetNextInStack(specs, startAtSource, path);

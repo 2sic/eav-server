@@ -32,13 +32,12 @@ namespace ToSic.Eav.Apps.Run
         public abstract ISite SiteOfZone(int zoneId);
 
         /// <inheritdoc />
-        public ISite SiteOfApp(int appId)
+        public ISite SiteOfApp(int appId) => Log.Func($"{appId}", () =>
         {
-            var wrapLog = Log.Fn<ISite>($"{appId}", "Must look for SiteId");
             var appIdentifier = AppStates.IdentityOfApp(appId);
             var tenant = SiteOfZone(appIdentifier.ZoneId);
-            return wrapLog.Return(tenant);
-        }
+            return tenant;
+        });
 
         /// <inheritdoc />
         public abstract List<ISiteLanguageState> CulturesWithState(ISite site);

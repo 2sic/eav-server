@@ -10,16 +10,14 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
-
     /// <inheritdoc />
     /// <summary>
     /// A DataStream to get Entities when needed
     /// </summary>
     [PrivateApi]
-    public class DataStream : IDataStream
+    public class DataStream : IDataStream, IHasLog
     {
         private readonly GetImmutableListDelegate _listDelegate;
-
 
         #region Self-Caching and Results-Persistence Properties / Features
 
@@ -64,21 +62,6 @@ namespace ToSic.Eav.DataSources
         public DataStream(IDataSource source, string name, GetIEnumerableDelegate listDelegate = null, bool enableAutoCaching = false)
             : this(source, name, ConvertDelegate(listDelegate), enableAutoCaching) { }
 
-        private static GetImmutableListDelegate ConvertDelegate(GetIEnumerableDelegate original)
-        {
-            if (original == null) return null;
-            return () =>
-            {
-                var initialResult = original();
-                return initialResult is IImmutableList<IEntity> alreadyImmutable
-                    ? alreadyImmutable
-                    : initialResult.ToImmutableArray();
-            };
-        }
-
-        private static GetImmutableListDelegate ConvertDelegate(GetImmutableArrayDelegate original)
-            => original == null ? (GetImmutableListDelegate)null : () => original();
-
         public DataStream(IDataSource source, string name, GetImmutableArrayDelegate listDelegate = null, bool enableAutoCaching = false)
             : this(source, name, ConvertDelegate(listDelegate), enableAutoCaching) { }
 
@@ -97,6 +80,19 @@ namespace ToSic.Eav.DataSources
             AutoCaching = enableAutoCaching;
         }
 
+        private static GetImmutableListDelegate ConvertDelegate(GetIEnumerableDelegate original)
+        {
+            if (original == null) return null;
+            return () =>
+            {
+                var initialResult = original();
+                return initialResult as IImmutableList<IEntity> ?? initialResult.ToImmutableArray();
+            };
+        }
+
+        private static GetImmutableListDelegate ConvertDelegate(GetImmutableArrayDelegate original)
+            => original == null ? (GetImmutableListDelegate)null : () => original();
+
         #region Get Dictionary and Get List
 
         /// <summary>
@@ -110,92 +106,86 @@ namespace ToSic.Eav.DataSources
 
         private bool _listLoaded;
 
-        public IEnumerable<IEntity> List
+        public IEnumerable<IEntity> List => Log.Getter(timer: true, message: $"{nameof(Name)}:{Name}", getter: () =>
         {
-            get
+            // Note about Logging
+            // In rare cases the Source is null - and we don't want to cause Errors just because we can't log
+            // These cases usually occur when error-streams are created - in which case they sometimes don't have a source
+
+            // If already retrieved return last result to be faster
+            if (_listLoaded) return (_list, "reuse previous");
+
+            // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
+            if (AutoCaching)
             {
-                // Note about Logging
-                // In rare cases the Source is null - and we don't want to cause Errors just because we can't log
-                // These cases usually occur when error-streams are created - in which case they sometimes don't have a source
-                var wrapLog = Source?.Log.Fn<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}", startTimer: true);
-
-                // If already retrieved return last result to be faster
-                if (_listLoaded) return wrapLog?.Return(_list, "reuse previous") ?? _list;
-
-                // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
-                if (AutoCaching)
-                {
-                    Source?.Log.A($"{nameof(AutoCaching)}:{AutoCaching}");
-                    var cacheItem = new ListCache(Source?.Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
-                    _list = cacheItem.List;
-                }
-                else
-                    _list = ReadUnderlyingList();
-
-                _listLoaded = true;
-                return wrapLog?.ReturnAsOk(_list) ?? _list;
+                Log.A($"{nameof(AutoCaching)}:{AutoCaching}");
+                var cacheItem = new ListCache(Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
+                _list = cacheItem.List;
             }
-        }
+            else
+                _list = ReadUnderlyingList();
+
+            _listLoaded = true;
+            return (_list, "ok");
+        });
 
 
         /// <summary>
         /// Assemble the list - from the initially configured ListDelegate
         /// </summary>
         /// <returns></returns>
-        IImmutableList<IEntity> ReadUnderlyingList()
+        IImmutableList<IEntity> ReadUnderlyingList() => Log.Func<IImmutableList<IEntity>>(() =>
         {
-            var wrapLog = Source.Log.Fn<IImmutableList<IEntity>>();
             // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
             if (_listDelegate == null)
-                return wrapLog.Return(Source.ErrorHandler.CreateErrorList(source: Source,
-                    title: "Error loading Stream",
-                    message: "Can't load stream - no delegate found to supply it"),
+                return (Source.ErrorHandler.CreateErrorList(source: Source,
+                        title: "Error loading Stream",
+                        message: "Can't load stream - no delegate found to supply it"),
                     "error");
 
             try
             {
                 var resultList = ImmutableSmartList.Wrap(_listDelegate());
-                return wrapLog.ReturnAsOk(resultList);
+                return (resultList, "ok");
             }
             catch (InvalidOperationException invEx) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
             {
-                return wrapLog.Return(Source.ErrorHandler.CreateErrorList(source: Source, title: "InvalidOperationException", message: "See details", exception: invEx),
+                return (
+                    Source.ErrorHandler.CreateErrorList(source: Source, title: "InvalidOperationException",
+                        message: "See details", exception: invEx),
                     "error");
             }
             catch (Exception ex)
             {
-                return wrapLog.Return(Source.ErrorHandler.CreateErrorList(source: Source, exception: ex,
-                    title: "Error getting Stream / reading underlying list",
-                    message: $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}"),
+                return (Source.ErrorHandler.CreateErrorList(source: Source, exception: ex,
+                        title: "Error getting Stream / reading underlying list",
+                        message: $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}"),
                     "error");
             }
-        }
+        });
         #endregion
 
 
 
-        public void PurgeList(bool cascade = false)
+        public void PurgeList(bool cascade = false) => Log.Do(message: $"PurgeList on Stream: {Name}, {nameof(cascade)}:{cascade}", action: l =>
         {
-            var log = Source.Log;
-            var callLog = log.Fn(message: $"PurgeList on Stream: {Name}, {nameof(cascade)}:{cascade}");
-            log.A("kill the very local temp cache");
+            l.A("kill the very local temp cache");
             _list = new ImmutableArray<IEntity>();
             _listLoaded = false;
-            log.A("kill in list-cache");
-            new ListCache(Source.Log).Remove(this);
+            l.A("kill in list-cache");
+            new ListCache(Log).Remove(this);
             if (cascade)
             {
-                log.A("tell upstream source to flush as well");
+                l.A("tell upstream source to flush as well");
                 Source.PurgeList(true);
             }
-            callLog.Done("ok");
-        }
+        });
 
         /// <inheritdoc />
         /// <summary>
         /// The source which holds this stream
         /// </summary>
-		public IDataSource Source { get; set; }
+		public IDataSource Source { get; }
 
         /// <inheritdoc />
         /// <summary>
@@ -210,5 +200,7 @@ namespace ToSic.Eav.DataSources
 
         IEnumerator IEnumerable.GetEnumerator() => List.GetEnumerator();
         #endregion Support for IEnumerable<IEntity>
+
+        public ILog Log => Source?.Log; // Note that it can be null, but most commands on Log are null-safe
     }
 }

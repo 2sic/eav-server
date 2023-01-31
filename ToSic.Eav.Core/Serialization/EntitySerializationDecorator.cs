@@ -15,6 +15,9 @@ namespace ToSic.Eav.Serialization
     {
         public bool? SerializeId { get; set; } = null;
 
+        public bool? SerializeAppId { get; set; } = null;
+        public bool? SerializeZoneId { get; set; } = null;
+
         public bool? SerializeGuid { get; set; } = null;
 
         public bool? SerializeTitle { get; set; } = null;

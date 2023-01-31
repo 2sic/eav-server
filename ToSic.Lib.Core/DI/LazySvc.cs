@@ -1,24 +1,36 @@
 ﻿using System;
-using ToSic.Lib.Helper;
+using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Lib.DI
 {
     /// <summary>
-    /// WIP - should help us create lazy objects which will auto-init if ever used
-    /// This should reduce the amount of plumbing in many code files
+    /// Helps us create lazy **Service** objects. It has some special features:
+    /// 
+    /// * It will automatically lazy-attach a logger when used correctly
+    /// * It can also be configured with a lazy init function to keep code clean.
+    /// 
+    /// This reduces the amount of plumbing in many code files.
+    ///
+    /// It will detect if the provided object/service supports these features.
+    /// So if it's used for anything that doesn't support logging it will just behave like `Lazy`.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class LazySvc<T>: ILazySvc<T> where T : class
+    /// <typeparam name="TService">Service type, ideally based on <see cref="ToSic.Lib.Services.ServiceBase"/></typeparam>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    public class LazySvc<TService>: ILazyLike<TService>, ILazyInitLog where TService : class
     {
-        public LazySvc(Lazy<T> valueLazy) => _valueLazy = valueLazy;
-        private readonly Lazy<T> _valueLazy;
+        /// <summary>
+        /// Constructor, should never be called as it's only meant to be used with Dependency Injection.
+        /// </summary>
+        public LazySvc(IServiceProvider sp) => _valueLazy = new Lazy<TService>(sp.Build<TService>);
+        private readonly Lazy<TService> _valueLazy;
 
         /// <summary>
         /// Set the init-command as needed
         /// </summary>
         /// <param name="newInitCall"></param>
-        public LazySvc<T> SetInit(Action<T> newInitCall)
+        public LazySvc<TService> SetInit(Action<TService> newInitCall)
         {
 #if DEBUG
             // Warn if we're accidentally replacing init-call, but only do this on debug
@@ -30,24 +42,21 @@ namespace ToSic.Lib.DI
             return this;
         }
 
-        public bool HasInitCall => _initCall != null;
-
-        public T Value => _valueGet.Get(() =>
+        public TService Value => _valueGet.Get(() =>
         {
             var value = _valueLazy.Value;
             _initCall?.Invoke(value);
             InitLogOrNull?.Invoke(value);
             return value;
         });
+        private readonly GetOnce<TService> _valueGet = new GetOnce<TService>();
 
         public bool IsValueCreated => _valueGet.IsValueCreated;
 
-        //private T _value;
-        private readonly GetOnce<T> _valueGet = new GetOnce<T>();
 
-        private Action<T> _initCall;
+        private Action<TService> _initCall;
 
-        protected Action<T> InitLogOrNull;
+        protected Action<TService> InitLogOrNull;
 
         void ILazyInitLog.SetLog(ILog parentLog) => InitLogOrNull = thingWithLog => (thingWithLog as IHasLog)?.LinkLog(parentLog);
     }

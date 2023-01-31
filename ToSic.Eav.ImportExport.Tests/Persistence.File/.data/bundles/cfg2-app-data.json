@@ -1,0 +1,3559 @@
+{
+  "Bundles": [
+    {
+      "Name": "default",
+      "ContentTypes": [
+        {
+          "ContentType": {
+            "Id": "3d5500b3-8d0c-4ff2-8114-fb839f4ec869",
+            "Name": "Author",
+            "Scope": "Default",
+            "Description": null,
+            "Attributes": [
+              {
+                "Name": "FullName",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": true,
+                "Metadata": [
+                  {
+                    "Id": 6411,
+                    "Version": 1,
+                    "Guid": "6c27965a-7d0b-4cff-9f0b-52b083631ec8",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Author's name"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6412,
+                    "Version": 1,
+                    "Guid": "40a20963-1428-45a5-8a24-4938f5d18730",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "Key",
+                "Type": "String",
+                "InputType": "string-url-path",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6413,
+                    "Version": 1,
+                    "Guid": "ac8b82b9-c592-4dc4-9e49-0bac5041f06b",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "string-url-path"
+                        },
+                        "Name": {
+                          "*": "Key for use in Links"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6414,
+                    "Version": 1,
+                    "Guid": "6b30acf7-96aa-4ca1-8748-bf27a15759f1",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6415,
+                    "Version": 1,
+                    "Guid": "74285907-126f-4a79-8c1b-1d9cae4695ed",
+                    "Type": {
+                      "Name": "@string-url-path",
+                      "Id": "@string-url-path"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "AutoGenerateMask": {
+                          "*": "[FullName]"
+                        }
+                      },
+                      "Boolean": {
+                        "AllowSlashes": {
+                          "*": false
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "Image",
+                "Type": "Hyperlink",
+                "InputType": "hyperlink-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6416,
+                    "Version": 1,
+                    "Guid": "231a98c1-c6e3-42fc-a8ed-c99b898d0d4f",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Picture"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6417,
+                    "Version": 1,
+                    "Guid": "0f4e7341-8e77-42e4-9db4-1c16c215da43",
+                    "Type": {
+                      "Name": "@Hyperlink",
+                      "Id": "@Hyperlink"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "Buttons": {
+                          "*": "adam,more"
+                        },
+                        "DefaultDialog": {
+                          "*": "ImageManager"
+                        },
+                        "FileFilter": {
+                          "*": ""
+                        },
+                        "Paths": {
+                          "*": "Blog/Authors"
+                        },
+                        "ServerResourceMapping": {
+                          "*": ""
+                        }
+                      },
+                      "Boolean": {
+                        "ShowAdam": {
+                          "*": true
+                        },
+                        "ShowFileManager": {
+                          "*": false
+                        },
+                        "ShowImageManager": {
+                          "*": true
+                        },
+                        "ShowPagePicker": {
+                          "*": false
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "ShortBio",
+                "Type": "String",
+                "InputType": "string-wysiwyg",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6418,
+                    "Version": 1,
+                    "Guid": "bc68aa4d-e32f-4c28-8aa1-ae0272715145",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Short biography"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6419,
+                    "Version": 1,
+                    "Guid": "5ede5e0d-1c36-4bd8-84e9-aaed5ab02569",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "wysiwyg"
+                        }
+                      },
+                      "Number": {
+                        "RowCount": {
+                          "*": 1.0
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              }
+            ],
+            "Metadata": [
+              {
+                "Id": 6646,
+                "Version": 1,
+                "Guid": "28f3a1c7-d5b8-4473-8ce0-2e67951564c0",
+                "Type": {
+                  "Name": "ContentType",
+                  "Id": "ContentType"
+                },
+                "Attributes": {
+                  "String": {
+                    "Description": {
+                      "*": "People writing blogs"
+                    },
+                    "DynamicChildrenField": {
+                      "*": ""
+                    },
+                    "EditInstructions": {
+                      "*": ""
+                    },
+                    "Label": {
+                      "*": "Author"
+                    },
+                    "ListInstructions": {
+                      "*": ""
+                    },
+                    "Notes": {
+                      "*": ""
+                    }
+                  },
+                  "Hyperlink": {
+                    "Icon": {
+                      "*": ""
+                    },
+                    "Link": {
+                      "*": ""
+                    }
+                  }
+                },
+                "Owner": "dnn:userid=1",
+                "For": {
+                  "Target": "ContentType",
+                  "TargetType": 5,
+                  "String": "3d5500b3-8d0c-4ff2-8114-fb839f4ec869"
+                }
+              },
+              {
+                "Id": 203789,
+                "Version": 1,
+                "Guid": "87a1bd39-7a1b-402e-9af1-36e7538cac45",
+                "Type": {
+                  "Name": "SystemExportDecorator",
+                  "Id": "32698880-1c2e-41ab-bcfc-420091d3263f"
+                },
+                "Attributes": {
+                  "Entity": {
+                    "Configuration": {
+                      "*": [
+                        "22db39d7-8a59-43be-be68-ea0f28880c10"
+                      ]
+                    }
+                  }
+                },
+                "Owner": "dnn:userid=1",
+                "For": {
+                  "Target": "ContentType",
+                  "TargetType": 5,
+                  "String": "3d5500b3-8d0c-4ff2-8114-fb839f4ec869"
+                }
+              }
+            ]
+          },
+          "Entities": []
+        },
+        {
+          "ContentType": {
+            "Id": "ed31a7c6-e76c-4874-958f-d67f33c02c34",
+            "Name": "BlogPost",
+            "Scope": "Default",
+            "Description": null,
+            "Attributes": [
+              {
+                "Name": "Title",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": true,
+                "Metadata": [
+                  {
+                    "Id": 6420,
+                    "Version": 1,
+                    "Guid": "7496b63d-21d7-496c-84f7-7d051c55359f",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "string-default"
+                        },
+                        "Name": {
+                          "*": "Title"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6421,
+                    "Version": 1,
+                    "Guid": "bddee681-4382-4de9-baa7-205a62ed6ce9",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6422,
+                    "Version": 1,
+                    "Guid": "f415cb43-0063-4e8e-a41b-28f237a20e04",
+                    "Type": {
+                      "Name": "@string-default",
+                      "Id": "@string-default"
+                    },
+                    "Attributes": {
+                      "Number": {
+                        "RowCount": {
+                          "*": 1.0
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "GroupSpecs",
+                "Type": "Empty",
+                "InputType": "empty-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6423,
+                    "Version": 1,
+                    "Guid": "cdca61fb-46aa-4742-bdcd-29c568d6c4f3",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "empty-default"
+                        },
+                        "Name": {
+                          "*": "Date / URL"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": [
+                            "b44723c2-dde9-4499-83f1-0dfa6da7e187",
+                            "98e8b1e8-bc4a-4e13-8604-3a356f9fefbb"
+                          ]
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6424,
+                    "Version": 1,
+                    "Guid": "e2c4526e-f0f1-4c8d-9048-af5a247ce05e",
+                    "Type": {
+                      "Name": "@empty-default",
+                      "Id": "@empty-default"
+                    },
+                    "Attributes": {
+                      "Boolean": {
+                        "DefaultCollapsed": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "UrlKey",
+                "Type": "String",
+                "InputType": "string-url-path",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6425,
+                    "Version": 1,
+                    "Guid": "093cdb85-3505-44d8-93da-e886ef7557c8",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "string-url-path"
+                        },
+                        "Name": {
+                          "*": "URL Key"
+                        },
+                        "Notes": {
+                          "*": "<p>Create a Google optimized chain of words in your URL. Usually you use the title and other keywords. The words are separated with - and are written in lowercase.</p>"
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6426,
+                    "Version": 1,
+                    "Guid": "790de917-c468-45e0-8c67-7200773af87d",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6427,
+                    "Version": 1,
+                    "Guid": "3063bcd4-40fb-41f3-8d11-3c1e8aa7a5fa",
+                    "Type": {
+                      "Name": "@string-url-path",
+                      "Id": "@string-url-path"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "AutoGenerateMask": {
+                          "*": "[Title]"
+                        }
+                      },
+                      "Boolean": {
+                        "AllowSlashes": {
+                          "*": false
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "PublicationMoment",
+                "Type": "DateTime",
+                "InputType": "datetime-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6428,
+                    "Version": 1,
+                    "Guid": "ffb5a832-ee2e-478c-969b-82be84600a3f",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "datetime-default"
+                        },
+                        "Name": {
+                          "*": "Date"
+                        },
+                        "Notes": {
+                          "*": "<p>This is the date on which the post is published. The post will not be displayed before this date. The date usually also influences the sorting.</p>"
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": [
+                            "6117d2cd-c691-4410-9a51-3de5e13bf0c3"
+                          ]
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6429,
+                    "Version": 1,
+                    "Guid": "18c32c3d-7c4b-47b4-ab77-b459ef2d994f",
+                    "Type": {
+                      "Name": "@DateTime",
+                      "Id": "@DateTime"
+                    },
+                    "Attributes": {
+                      "Boolean": {
+                        "UseTimePicker": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "GroupImage",
+                "Type": "Empty",
+                "InputType": "empty-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6430,
+                    "Version": 1,
+                    "Guid": "e24118cd-d774-4a9e-9f70-9009dc1caf89",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "empty-default"
+                        },
+                        "Name": {
+                          "*": "Image"
+                        },
+                        "Notes": {
+                          "*": "<p>This is the main picture shown in the list and in the details. Blog-Post images should be 2x wider than tall, since that's the common share-format. We recommend 2000x1000 pixels.</p>"
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": [
+                            "8dd5c426-d93e-43ef-9cc2-255286399adc",
+                            "f04181ac-af54-4a65-bb76-fdb67e5cf97a"
+                          ]
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6431,
+                    "Version": 1,
+                    "Guid": "17d9f53f-022f-435d-8611-d73131f007a0",
+                    "Type": {
+                      "Name": "@empty-default",
+                      "Id": "@empty-default"
+                    },
+                    "Attributes": {
+                      "Boolean": {
+                        "DefaultCollapsed": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "Image",
+                "Type": "Hyperlink",
+                "InputType": "hyperlink-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6432,
+                    "Version": 1,
+                    "Guid": "9e0b13c9-1505-444f-95fc-4142905e2642",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "hyperlink-default"
+                        },
+                        "Name": {
+                          "*": "Main image"
+                        },
+                        "Notes": {
+                          "*": "<p>This is the main image for this article.</p>"
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6433,
+                    "Version": 1,
+                    "Guid": "dc2eeeba-36c9-4252-82d5-fa8ed3d80127",
+                    "Type": {
+                      "Name": "@Hyperlink",
+                      "Id": "@Hyperlink"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "Buttons": {
+                          "*": "adam,more"
+                        },
+                        "DefaultDialog": {
+                          "*": "ImageManager"
+                        },
+                        "FileFilter": {
+                          "*": ""
+                        },
+                        "Paths": {
+                          "*": "Blog"
+                        },
+                        "ServerResourceMapping": {
+                          "*": ""
+                        }
+                      },
+                      "Boolean": {
+                        "ShowAdam": {
+                          "*": true
+                        },
+                        "ShowFileManager": {
+                          "*": false
+                        },
+                        "ShowImageManager": {
+                          "*": true
+                        },
+                        "ShowPagePicker": {
+                          "*": false
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "CropAnchor",
+                "Type": "String",
+                "InputType": "string-dropdown",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6434,
+                    "Version": 1,
+                    "Guid": "6c2ad574-77af-4b80-ae5a-2ae3d756a8a5",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": "middlecenter"
+                        },
+                        "InputType": {
+                          "*": "string-dropdown"
+                        },
+                        "Name": {
+                          "*": "Image Hotspot"
+                        },
+                        "Notes": {
+                          "*": "<p>Here you can define where the most important area of the image is located. If the image is cropped, this area is made sure to remain in the center and uncropped.</p>"
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6435,
+                    "Version": 1,
+                    "Guid": "fd785b51-129b-409b-984e-0dec9f5cacfb",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6436,
+                    "Version": 1,
+                    "Guid": "cffd8aca-30d7-4b8f-99f2-5a35e76a34ad",
+                    "Type": {
+                      "Name": "@string-dropdown",
+                      "Id": "@string-dropdown"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": "Top Left:topleft\nTop Center:topcenter\nTop Right:topright\nMiddle Left:middleleft\nCenter:middlecenter\nMiddle Right:middleright\nBottom Left:bottomleft\nBottom Center:bottomcenter\nBottom Right:bottomright"
+                        }
+                      },
+                      "Boolean": {
+                        "EnableTextEntry": {
+                          "*": false
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "GroupContent",
+                "Type": "Empty",
+                "InputType": "empty-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6437,
+                    "Version": 1,
+                    "Guid": "8a374759-e07a-4a37-846b-596dabd9803d",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "empty-default"
+                        },
+                        "Name": {
+                          "*": "Blog Post Contents"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": [
+                            "27c1dc6b-2e34-4245-9cc2-cf91c43e4b10"
+                          ]
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6438,
+                    "Version": 1,
+                    "Guid": "3af0cedd-96b4-4693-9347-0d7067c727a5",
+                    "Type": {
+                      "Name": "@empty-default",
+                      "Id": "@empty-default"
+                    },
+                    "Attributes": {
+                      "Boolean": {
+                        "DefaultCollapsed": {
+                          "*": false
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "Teaser",
+                "Type": "String",
+                "InputType": "string-wysiwyg",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6439,
+                    "Version": 1,
+                    "Guid": "2e86de81-9ceb-4b79-965e-c177f6f827d6",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "string-wysiwyg"
+                        },
+                        "Name": {
+                          "*": "Teaser"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6440,
+                    "Version": 1,
+                    "Guid": "4483c59d-648d-4fb3-9ce8-b2f9b50914e2",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "wysiwyg"
+                        }
+                      },
+                      "Number": {
+                        "RowCount": {
+                          "*": 4.0
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6441,
+                    "Version": 1,
+                    "Guid": "6e4f126c-3531-4445-b2fd-f5d701d462a7",
+                    "Type": {
+                      "Name": "@string-wysiwyg",
+                      "Id": "@string-wysiwyg"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "ButtonAdvanced": {
+                          "*": ""
+                        },
+                        "ButtonSource": {
+                          "*": ""
+                        },
+                        "Dialog": {
+                          "*": "inline"
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "Content",
+                "Type": "String",
+                "InputType": "string-wysiwyg",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6442,
+                    "Version": 1,
+                    "Guid": "cb718a1f-9af6-4c89-9f16-87e7f5ae357d",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "string-wysiwyg"
+                        },
+                        "Name": {
+                          "*": "Content of the post"
+                        },
+                        "Notes": {
+                          "*": "<p>This is the main content of the blog post.</p>"
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6443,
+                    "Version": 1,
+                    "Guid": "d4490fe6-b7e5-4fd7-b43c-527fdcafdc49",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "wysiwyg"
+                        }
+                      },
+                      "Number": {
+                        "RowCount": {
+                          "*": 1.0
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6444,
+                    "Version": 1,
+                    "Guid": "ff2b13c1-14f2-4ef9-8ab6-9111129d851b",
+                    "Type": {
+                      "Name": "@string-wysiwyg",
+                      "Id": "@string-wysiwyg"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "ButtonAdvanced": {
+                          "*": ""
+                        },
+                        "ButtonSource": {
+                          "*": ""
+                        },
+                        "Dialog": {
+                          "*": "dialog"
+                        }
+                      },
+                      "Hyperlink": {
+                        "ContentCss": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "InnerContent",
+                "Type": "Entity",
+                "InputType": "entity-content-blocks",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6445,
+                    "Version": 1,
+                    "Guid": "745c1023-2a8b-4562-b060-3f15e0c607dc",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "entity-content-blocks"
+                        },
+                        "Name": {
+                          "*": "InnerContent"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": false
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6446,
+                    "Version": 1,
+                    "Guid": "583f5f7a-fd66-442b-a849-ef3dbb7491e9",
+                    "Type": {
+                      "Name": "@Entity",
+                      "Id": "@Entity"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "EntityType": {
+                          "*": ""
+                        }
+                      },
+                      "Boolean": {
+                        "AllowMultiValue": {
+                          "*": false
+                        },
+                        "EnableAddExisting": {
+                          "*": true
+                        },
+                        "EnableCreate": {
+                          "*": true
+                        },
+                        "EnableDelete": {
+                          "*": false
+                        },
+                        "EnableEdit": {
+                          "*": true
+                        },
+                        "EnableRemove": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "GroupCategories",
+                "Type": "Empty",
+                "InputType": "empty-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6447,
+                    "Version": 1,
+                    "Guid": "12a75def-8cfb-4e35-8d51-8540911d3d55",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "empty-default"
+                        },
+                        "Name": {
+                          "*": "Category, Tags and Author"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": [
+                            "75d253f1-4112-4c99-861b-673cce26b19e",
+                            "93946094-9e49-4346-a3a0-5624ff02a64e"
+                          ]
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6448,
+                    "Version": 1,
+                    "Guid": "6f3ea11f-c166-436e-a426-ecf6c6c94198",
+                    "Type": {
+                      "Name": "@empty-default",
+                      "Id": "@empty-default"
+                    },
+                    "Attributes": {
+                      "Boolean": {
+                        "DefaultCollapsed": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "Categories",
+                "Type": "Entity",
+                "InputType": "entity-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6449,
+                    "Version": 1,
+                    "Guid": "fa224ea2-4fe6-449e-9fe1-34f69a2dd42c",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": "45435066-03bf-4c07-a701-15f5cc540c7e"
+                        },
+                        "InputType": {
+                          "*": "entity-default"
+                        },
+                        "Name": {
+                          "*": "Categories"
+                        },
+                        "Notes": {
+                          "*": "<p>A category of the post must be selected in each case. Since category names rarely change, new categories can only be added by the site administrator.</p>"
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6450,
+                    "Version": 1,
+                    "Guid": "ae15727e-fad5-4e87-ba5a-40f565737b03",
+                    "Type": {
+                      "Name": "@Entity",
+                      "Id": "@Entity"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "EntityType": {
+                          "*": "Category"
+                        },
+                        "Prefill": {
+                          "*": ""
+                        }
+                      },
+                      "Boolean": {
+                        "AllowMultiValue": {
+                          "*": true
+                        },
+                        "EnableAddExisting": {
+                          "*": true
+                        },
+                        "EnableCreate": {
+                          "*": true
+                        },
+                        "EnableDelete": {
+                          "*": false
+                        },
+                        "EnableEdit": {
+                          "*": true
+                        },
+                        "EnableRemove": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "Tags",
+                "Type": "Entity",
+                "InputType": "entity-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6451,
+                    "Version": 1,
+                    "Guid": "9526c663-c5fb-40c3-9b35-45cbe0ae5616",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "entity-default"
+                        },
+                        "Name": {
+                          "*": "Tags"
+                        },
+                        "Notes": {
+                          "*": "<p>Tags help to better classify the blog post and link different posts together.</p>"
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6452,
+                    "Version": 1,
+                    "Guid": "2b14db64-24e6-4126-aa03-9eecf8e18155",
+                    "Type": {
+                      "Name": "@Entity",
+                      "Id": "@Entity"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "EntityType": {
+                          "*": "Tag"
+                        }
+                      },
+                      "Boolean": {
+                        "AllowMultiValue": {
+                          "*": true
+                        },
+                        "EnableAddExisting": {
+                          "*": true
+                        },
+                        "EnableCreate": {
+                          "*": true
+                        },
+                        "EnableDelete": {
+                          "*": false
+                        },
+                        "EnableEdit": {
+                          "*": true
+                        },
+                        "EnableRemove": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "Author",
+                "Type": "Entity",
+                "InputType": "entity-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6453,
+                    "Version": 1,
+                    "Guid": "e0f4df0c-62b8-41fd-9189-ffe4693e07b9",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": "10cbff19-e313-4084-b569-4ded344111b2"
+                        },
+                        "InputType": {
+                          "*": "entity-default"
+                        },
+                        "Name": {
+                          "*": "Author"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6454,
+                    "Version": 1,
+                    "Guid": "06afe518-4a0a-41cb-80cf-ddd01010bf42",
+                    "Type": {
+                      "Name": "@Entity",
+                      "Id": "@Entity"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "EntityType": {
+                          "*": "Author"
+                        },
+                        "Prefill": {
+                          "*": ""
+                        }
+                      },
+                      "Boolean": {
+                        "AllowMultiValue": {
+                          "*": false
+                        },
+                        "EnableAddExisting": {
+                          "*": true
+                        },
+                        "EnableCreate": {
+                          "*": true
+                        },
+                        "EnableDelete": {
+                          "*": false
+                        },
+                        "EnableEdit": {
+                          "*": true
+                        },
+                        "EnableRemove": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "ShowOnStartPage",
+                "Type": "Boolean",
+                "InputType": "boolean-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6455,
+                    "Version": 1,
+                    "Guid": "713b0b32-2bb4-410d-bd7d-28a623f8eadd",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": "true"
+                        },
+                        "InputType": {
+                          "*": "boolean-default"
+                        },
+                        "Name": {
+                          "*": "Show on Start Page"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6456,
+                    "Version": 1,
+                    "Guid": "ec1eaf9c-e5cf-47c2-a21e-567fde488fbb",
+                    "Type": {
+                      "Name": "@Boolean",
+                      "Id": "@Boolean"
+                    },
+                    "Attributes": {},
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "GroupEnd",
+                "Type": "Empty",
+                "InputType": "empty-end",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6457,
+                    "Version": 1,
+                    "Guid": "d07518a9-2f08-4bb3-8963-6bbf630bfd68",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "InputType": {
+                          "*": "empty-end"
+                        },
+                        "Name": {
+                          "*": "GroupEnd"
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "VarAdvancedHeaders",
+                "Type": "Boolean",
+                "InputType": "boolean-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6458,
+                    "Version": 1,
+                    "Guid": "9ff56737-ed5f-44e8-babf-debae300b6f2",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": "false"
+                        },
+                        "InputType": {
+                          "*": "boolean-default"
+                        },
+                        "Name": {
+                          "*": "VarAdvancedHeaders"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": [
+                            "cf9fdf54-6eb0-486d-b707-57c99e8c0811",
+                            "bf31060b-fe9a-4201-95e0-26649144adb8"
+                          ]
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "IsEphemeral": {
+                          "*": true
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6459,
+                    "Version": 1,
+                    "Guid": "fda0aee1-820c-4077-a6dd-c944033f54bf",
+                    "Type": {
+                      "Name": "@Boolean",
+                      "Id": "@Boolean"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "TitleFalse": {
+                          "*": "Default SEO / Sharing"
+                        },
+                        "TitleIndeterminate": {
+                          "*": ""
+                        },
+                        "TitleTrue": {
+                          "*": "Customize SEO / Sharing"
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "GroupSEO",
+                "Type": "Empty",
+                "InputType": "empty-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6460,
+                    "Version": 1,
+                    "Guid": "401ef564-6e97-4dc2-b8c2-d0949210fd1c",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "empty-default"
+                        },
+                        "Name": {
+                          "*": "SEO (optional)"
+                        },
+                        "Notes": {
+                          "*": "<p>Optional content - if nothing is specified, title and teaser are used automatically</p>"
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": [
+                            "4429ea11-21af-4256-97f5-07dc58455af4",
+                            "b39b6af4-b67e-4f4a-8ccf-ef30370dae20"
+                          ]
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6461,
+                    "Version": 1,
+                    "Guid": "2c878e92-f418-4490-846d-09222ba4b71c",
+                    "Type": {
+                      "Name": "@empty-default",
+                      "Id": "@empty-default"
+                    },
+                    "Attributes": {
+                      "Boolean": {
+                        "DefaultCollapsed": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "MetaTitle",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6462,
+                    "Version": 1,
+                    "Guid": "29c8c57e-a306-4f86-b80b-f5fc88e99ff8",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "string-default"
+                        },
+                        "Name": {
+                          "*": "Meta Title"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6463,
+                    "Version": 1,
+                    "Guid": "ad8e2028-0a76-4135-908c-e58a735a90a9",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6464,
+                    "Version": 1,
+                    "Guid": "c839f819-de40-4559-bcdf-932d157ce766",
+                    "Type": {
+                      "Name": "@string-default",
+                      "Id": "@string-default"
+                    },
+                    "Attributes": {},
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "MetaDescription",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6465,
+                    "Version": 1,
+                    "Guid": "a7d9e414-10cf-4385-a03e-4f9878a8b09e",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "string-default"
+                        },
+                        "Name": {
+                          "*": "Meta Description"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6466,
+                    "Version": 1,
+                    "Guid": "5cffc8b1-bc7d-43c9-b347-6e2966759f6f",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6467,
+                    "Version": 1,
+                    "Guid": "519bf6fe-84f3-4eae-9ab2-f89c972488b3",
+                    "Type": {
+                      "Name": "@string-default",
+                      "Id": "@string-default"
+                    },
+                    "Attributes": {},
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "GroupSharing",
+                "Type": "Empty",
+                "InputType": "empty-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6468,
+                    "Version": 1,
+                    "Guid": "4c5e136c-ff6b-430b-9109-ed001fd1cf37",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "empty-default"
+                        },
+                        "Name": {
+                          "*": "Share on Facebook, Twitter, ... (optional)"
+                        },
+                        "Notes": {
+                          "*": "<p>The following information is required when the post is shared. If you want to know more, you can find more information here: <a href=\"http://ogp.me/\" target=\"_blank\" rel=\"noopener noreferrer\">Open Graph</a>. If these fields are empty, other fields (e.g. teaser) will be used automatically.</p>"
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": [
+                            "6b745ca6-2d86-44a1-8398-cec9f5a51130",
+                            "4bc74aa2-4933-4a7a-a3fa-7336f2112c30"
+                          ]
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6469,
+                    "Version": 1,
+                    "Guid": "0a445140-24f3-471b-89af-0e3121e7b7ee",
+                    "Type": {
+                      "Name": "@empty-default",
+                      "Id": "@empty-default"
+                    },
+                    "Attributes": {
+                      "Boolean": {
+                        "DefaultCollapsed": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "SharingDescription",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6470,
+                    "Version": 1,
+                    "Guid": "50d0c7b2-77bc-4334-902f-b69a9c556d2e",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "string-default"
+                        },
+                        "Name": {
+                          "*": "Sharing description"
+                        },
+                        "Notes": {
+                          "*": "<p>Max. 140 characters because Twitter would use this description.</p>"
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6471,
+                    "Version": 1,
+                    "Guid": "95ece516-c675-43c8-8b23-126bef42e070",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6472,
+                    "Version": 1,
+                    "Guid": "1181b3d4-9ae4-4721-b536-4d774f4d96da",
+                    "Type": {
+                      "Name": "@string-default",
+                      "Id": "@string-default"
+                    },
+                    "Attributes": {},
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              }
+            ],
+            "Metadata": [
+              {
+                "Id": 6644,
+                "Version": 1,
+                "Guid": "87b2cea0-74d6-4b39-b867-a449dc4ea86b",
+                "Type": {
+                  "Name": "ContentType",
+                  "Id": "ContentType"
+                },
+                "Attributes": {
+                  "String": {
+                    "Description": {
+                      "*": "A post for this blog"
+                    },
+                    "EditInstructions": {
+                      "*": ""
+                    },
+                    "Label": {
+                      "*": "Blog Post"
+                    },
+                    "ListInstructions": {
+                      "*": ""
+                    },
+                    "Notes": {
+                      "*": ""
+                    }
+                  },
+                  "Hyperlink": {
+                    "Icon": {
+                      "*": ""
+                    },
+                    "Link": {
+                      "*": ""
+                    }
+                  }
+                },
+                "Owner": "dnn:userid=1",
+                "For": {
+                  "Target": "ContentType",
+                  "TargetType": 5,
+                  "String": "ed31a7c6-e76c-4874-958f-d67f33c02c34"
+                }
+              },
+              {
+                "Id": 203793,
+                "Version": 1,
+                "Guid": "968a78ca-5dec-45ca-8fef-80e8821bf3ec",
+                "Type": {
+                  "Name": "SystemExportDecorator",
+                  "Id": "32698880-1c2e-41ab-bcfc-420091d3263f"
+                },
+                "Attributes": {
+                  "Entity": {
+                    "Configuration": {
+                      "*": [
+                        "22db39d7-8a59-43be-be68-ea0f28880c10"
+                      ]
+                    }
+                  }
+                },
+                "Owner": "dnn:userid=1",
+                "For": {
+                  "Target": "ContentType",
+                  "TargetType": 5,
+                  "String": "ed31a7c6-e76c-4874-958f-d67f33c02c34"
+                }
+              }
+            ]
+          },
+          "Entities": [
+            {
+              "Id": 6664,
+              "Version": 1,
+              "Guid": "b44723c2-dde9-4499-83f1-0dfa6da7e187",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) { return data.Title.length > 3; }"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Visible"
+                  },
+                  "Title": {
+                    "*": "Setting Visible"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6665,
+              "Version": 1,
+              "Guid": "98e8b1e8-bc4a-4e13-8604-3a356f9fefbb",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) {\n  var result = data.default + ' ' + new Date(data.PublicationMoment || null).toLocaleString();\n  if(data.UrlKey) result += ' .../' + data.UrlKey;\n  return result;\n}"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Name"
+                  },
+                  "Title": {
+                    "*": "Setting Name"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6663,
+              "Version": 1,
+              "Guid": "6117d2cd-c691-4410-9a51-3de5e13bf0c3",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) {\n  return data.value ? data.value : new Date();\n}"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Value"
+                  },
+                  "Title": {
+                    "*": "Value"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6661,
+              "Version": 1,
+              "Guid": "8dd5c426-d93e-43ef-9cc2-255286399adc",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) {\n  return data.default + (data.Image ? ' ✔️' : ' ⚠️');\n}"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Name"
+                  },
+                  "Title": {
+                    "*": "Setting Name"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6662,
+              "Version": 1,
+              "Guid": "f04181ac-af54-4a65-bb76-fdb67e5cf97a",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) { return data.Title.length > 3; }"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Visible"
+                  },
+                  "Title": {
+                    "*": "Setting Visible"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6666,
+              "Version": 1,
+              "Guid": "27c1dc6b-2e34-4245-9cc2-cf91c43e4b10",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) { return data.Title.length > 3; }"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Visible"
+                  },
+                  "Title": {
+                    "*": "Setting Visible"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6668,
+              "Version": 1,
+              "Guid": "75d253f1-4112-4c99-861b-673cce26b19e",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) { return data.Title.length > 3; }"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Visible"
+                  },
+                  "Title": {
+                    "*": "Setting Visible"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6673,
+              "Version": 1,
+              "Guid": "93946094-9e49-4346-a3a0-5624ff02a64e",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) {\n  const addOn = [];\n  addOn.push('\uD83C\uDFF7️ ' + data.Categories.length + '/' + data.Tags.length);\n  if(data.ShowOnStartPage) addOn.push('\uD83C\uDFE0');\n  return data.default + addOn.join(' ');\n}"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Name"
+                  },
+                  "Title": {
+                    "*": "Setting Name"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6671,
+              "Version": 1,
+              "Guid": "cf9fdf54-6eb0-486d-b707-57c99e8c0811",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) { return data.Title.length > 3 && !data.VarAdvancedHeaders; }"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Visible"
+                  },
+                  "Title": {
+                    "*": "Setting Visible"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6672,
+              "Version": 1,
+              "Guid": "bf31060b-fe9a-4201-95e0-26649144adb8",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) {\n  if(context.cache.secondRun) return data.value;\n  context.cache.secondRun = true;\n\n  return !!(data.MetaTitle || data.MetaDescription || data.SharingDescription);\n}"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Value"
+                  },
+                  "Title": {
+                    "*": "Value"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6669,
+              "Version": 1,
+              "Guid": "4429ea11-21af-4256-97f5-07dc58455af4",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) { return data.VarAdvancedHeaders; }"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Visible"
+                  },
+                  "Title": {
+                    "*": "Setting Visible"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6674,
+              "Version": 1,
+              "Guid": "b39b6af4-b67e-4f4a-8ccf-ef30370dae20",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) {\n  return data.default + (data.MetaTitle || data.MetaDescription ? ' ✔️' : '');\n}"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Name"
+                  },
+                  "Title": {
+                    "*": "Setting Name"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6670,
+              "Version": 1,
+              "Guid": "6b745ca6-2d86-44a1-8398-cec9f5a51130",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) { return data.VarAdvancedHeaders; }"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Visible"
+                  },
+                  "Title": {
+                    "*": "Setting Visible"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            },
+            {
+              "Id": 6675,
+              "Version": 1,
+              "Guid": "4bc74aa2-4933-4a7a-a3fa-7336f2112c30",
+              "Type": {
+                "Name": "UiFormula",
+                "Id": "772dfff1-b236-4aa9-8359-5f53c08ff7bf"
+              },
+              "Attributes": {
+                "String": {
+                  "Formula": {
+                    "*": "v1(data, context) {\n  return data.default + (data.SharingDescription ? ' ✔️' : '');\n}"
+                  },
+                  "Notes": {
+                    "*": ""
+                  },
+                  "Target": {
+                    "*": "Field.Settings.Name"
+                  },
+                  "Title": {
+                    "*": "Setting Name"
+                  }
+                },
+                "Boolean": {
+                  "Enabled": {
+                    "*": true
+                  }
+                }
+              },
+              "Owner": "dnn:userid=1"
+            }
+          ]
+        },
+        {
+          "ContentType": {
+            "Id": "64108884-5611-4edc-a766-269385b2ecd2",
+            "Name": "Tag",
+            "Scope": "Default",
+            "Description": null,
+            "Attributes": [
+              {
+                "Name": "Tag",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": true,
+                "Metadata": [
+                  {
+                    "Id": 6490,
+                    "Version": 1,
+                    "Guid": "c567cafa-7e49-403d-a681-1b39d20fa89a",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Tag"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6491,
+                    "Version": 1,
+                    "Guid": "d35a3443-81d2-4ce2-b127-66567d6012ed",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "Name",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6492,
+                    "Version": 1,
+                    "Guid": "8c471e88-d80e-4d21-b94b-7cf88299349f",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Name"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6493,
+                    "Version": 1,
+                    "Guid": "cee61942-2eb4-43fe-a801-a0a3a93005ed",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "ManualWeight",
+                "Type": "Number",
+                "InputType": "number-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6494,
+                    "Version": 1,
+                    "Guid": "79f30937-6cb4-4baa-8807-d5ce111719b0",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": "1"
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Manual weighting"
+                        },
+                        "Notes": {
+                          "*": "<p>Use this function to weight a tag higher, e.g. to display it larger in a tag cloud. 1 is less important than 10.</p>"
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6495,
+                    "Version": 1,
+                    "Guid": "074142f9-fd3b-4cf0-a1c5-dccc4f0649f3",
+                    "Type": {
+                      "Name": "@Number",
+                      "Id": "@Number"
+                    },
+                    "Attributes": {
+                      "Number": {
+                        "Decimals": {
+                          "*": 0.0
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              }
+            ],
+            "Metadata": [
+              {
+                "Id": 6647,
+                "Version": 1,
+                "Guid": "259b3d1c-ca83-4513-9f91-dc807b5ca8ff",
+                "Type": {
+                  "Name": "ContentType",
+                  "Id": "ContentType"
+                },
+                "Attributes": {
+                  "String": {
+                    "Description": {
+                      "*": "Tags for tagging everything"
+                    },
+                    "EditInstructions": {
+                      "*": ""
+                    },
+                    "Label": {
+                      "*": "Tag"
+                    },
+                    "ListInstructions": {
+                      "*": ""
+                    },
+                    "Notes": {
+                      "*": ""
+                    }
+                  },
+                  "Hyperlink": {
+                    "Icon": {
+                      "*": ""
+                    },
+                    "Link": {
+                      "*": ""
+                    }
+                  }
+                },
+                "Owner": "dnn:userid=1",
+                "For": {
+                  "Target": "ContentType",
+                  "TargetType": 5,
+                  "String": "64108884-5611-4edc-a766-269385b2ecd2"
+                }
+              },
+              {
+                "Id": 203794,
+                "Version": 1,
+                "Guid": "eeb88c5d-686c-441c-9d2c-b5edbdbe6806",
+                "Type": {
+                  "Name": "SystemExportDecorator",
+                  "Id": "32698880-1c2e-41ab-bcfc-420091d3263f"
+                },
+                "Attributes": {
+                  "Entity": {
+                    "Configuration": {
+                      "*": [
+                        "22db39d7-8a59-43be-be68-ea0f28880c10"
+                      ]
+                    }
+                  }
+                },
+                "Owner": "dnn:userid=1",
+                "For": {
+                  "Target": "ContentType",
+                  "TargetType": 5,
+                  "String": "64108884-5611-4edc-a766-269385b2ecd2"
+                }
+              }
+            ]
+          },
+          "Entities": []
+        }
+      ],
+      "Entities": [
+        {
+          "Id": 6639,
+          "Version": 1,
+          "Guid": "a055d378-af80-412d-8a64-cec559763260",
+          "Type": {
+            "Name": "Author",
+            "Id": "3d5500b3-8d0c-4ff2-8114-fb839f4ec869"
+          },
+          "Attributes": {
+            "String": {
+              "FullName": {
+                "*": "Daniel Metter"
+              },
+              "Key": {
+                "*": "daniel-metter"
+              },
+              "ShortBio": {
+                "*": "<p>Daniel Mettler grew up in the jungles of Indonesia and is founder and CEO of&nbsp;<a tabindex=\"0\" href=\"http://www.2sic.com/\" target=\"_blank\" rel=\"noopener noreferrer\">2sic internet solutions</a>&nbsp;in Switzerland and Liechtenstein, an 20-head web specialist with over 800 DNN projects since 1999. He is also chief architect of&nbsp;<a tabindex=\"0\" href=\"http://2sxc.org/\" target=\"_blank\" rel=\"noopener noreferrer\">2sxc</a>&nbsp;(see&nbsp;<a tabindex=\"0\" href=\"http://www.dnnsoftware.com/forge/2sxc-2sexycontent-create-amazing-content-and-apps/view/extensiondetail/project/sexycontent\" target=\"_blank\" rel=\"noopener noreferrer\">forge</a>), an open source module for creating attractive content and DNN Apps.</p>"
+              }
+            },
+            "Hyperlink": {
+              "Image": {
+                "*": "file:330"
+              }
+            }
+          },
+          "Owner": "dnn:userid=1"
+        },
+        {
+          "Id": 6651,
+          "Version": 1,
+          "Guid": "8d2d798f-d8c6-4a1e-8cf7-f72fd32c9bc9",
+          "Type": {
+            "Name": "Category",
+            "Id": "1ea28652-a051-4c80-acd7-4d2e3f288f9c"
+          },
+          "Attributes": {
+            "String": {
+              "Description": {
+                "*": ""
+              },
+              "Key": {
+                "*": "cooking"
+              },
+              "Name": {
+                "*": "Cooking"
+              }
+            }
+          },
+          "Owner": "dnn:userid=1"
+        },
+        {
+          "Id": 6640,
+          "Version": 2,
+          "Guid": "10cbff19-e313-4084-b569-4ded344111b2",
+          "Type": {
+            "Name": "Author",
+            "Id": "3d5500b3-8d0c-4ff2-8114-fb839f4ec869"
+          },
+          "Attributes": {
+            "String": {
+              "FullName": {
+                "*": "tvatavuk"
+              },
+              "Key": {
+                "*": "tvatavuk"
+              },
+              "ShortBio": {
+                "*": ""
+              }
+            },
+            "Hyperlink": {
+              "Image": {
+                "*": "file:1611"
+              }
+            }
+          },
+          "Owner": "dnn:userid=1"
+        }
+      ]
+    }
+  ],
+  "_": {
+    "V": 1
+  }
+}

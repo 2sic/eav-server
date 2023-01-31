@@ -27,6 +27,10 @@ namespace ToSic.Lib.Logging
                     if (Depth > MaxParentDepth)
                         throw new Exception(
                             $"LOG ERROR - Adding parent to logger but exceeded max depth of {MaxParentDepth}");
+
+                    // If we have any entries that were added before, add them to the parent now
+                    if (Entries.Any() && newParent is Log logParent)
+                        Entries.ForEach(e => logParent.AddEntry(e));
                 }
                 // show info if it the new parent is different from the old one
                 else if ((Parent as Log)?.FullIdentifier != (newParent as Log)?.FullIdentifier)

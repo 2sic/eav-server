@@ -4,7 +4,7 @@ namespace ToSic.Eav.Run.Unknown
 {
     public class PlatformUnknown: IPlatformInfo
     {
-        public PlatformUnknown(WarnUseOfUnknown<PlatformUnknown> warn)  { }
+        public PlatformUnknown(WarnUseOfUnknown<PlatformUnknown> _)  { }
 
         public string Name => "Unk";
 

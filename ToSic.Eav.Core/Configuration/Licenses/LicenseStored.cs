@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Plumbing;
+using static System.String;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
@@ -90,48 +91,42 @@ namespace ToSic.Eav.Configuration.Licenses
         /// Internal property to work with the data, shouldn't end up in the json
         /// </summary>
         [JsonIgnore]
-        public string[] LicensesArray => Licenses?.Select(l => l.Id).ToArray().TrimmedAndWithoutEmpty() ?? Array.Empty<string>();
-
-        /// <summary>
-        /// Internal property to work with the data, shouldn't end up in the json
-        /// </summary>
-        [JsonIgnore]
         public string[] FingerprintsArray => Fingerprints?.Select(fp => fp.Id).ToArray().TrimmedAndWithoutEmpty() ?? Array.Empty<string>();
 
         public string GenerateIdentity()
         {
-            var parts = new[]
-            {
-                "key: " + Key,
-                "licenses:" + string.Join(",", LicensesArray), // 2. Add all licenses
-                "fingerprints:" + string.Join(",", FingerprintsArray), // 3. Add all fingerprints
-                "versions:" + Versions,
-                "expires:" + Expires.ToString("yyyy-MM-dd"),
-                "generated:" + Generated.ToString("yyyy-MM-dd"),
-                "salt:" + GuidSalt
-            };
+            const string dateFormat = "yyyy-MM-dd";
 
-            var licenseString = string.Join(";", parts);
+            var licenseList = Licenses ?? new List<LicenseStoredDetails>();
+            var licenses = licenseList.Select(l => l.Id).ToArray().TrimmedAndWithoutEmpty();
+
+            // License expiry must be built in a way
+            // where it's an empty string (no additions)
+            // if none of the items expires
+            // This is to preserve compatibility with the generated Identity in v13/14
+            var licenseExpiry = licenseList
+                .Where(l => l.Expires != null && l.Expires != DateTime.MinValue)
+                .Select(l => l.Expires?.ToString(dateFormat))
+                .ToList();
+
+            var parts = new[]
+                {
+                    "key: " + Key,
+                    "licenses:" + Join(",", licenses), // 2. Add all licenses
+                    !licenseExpiry.Any() ? "" : "license-expiry:" + Join(",", licenseExpiry),
+                    "fingerprints:" + Join(",", FingerprintsArray), // 3. Add all fingerprints
+                    "versions:" + Versions,
+                    "expires:" + Expires.ToString(dateFormat),
+                    "generated:" + Generated.ToString(dateFormat),
+                    "salt:" + GuidSalt
+                }
+                // Remove blank entries (usually the license-expiry) to ensure it's identical w/v13/15
+                .Where(p => !IsNullOrEmpty(p))
+                .ToArray();
+
+            var licenseString = Join(";", parts);
             var licNoSpaces = Regex.Replace(licenseString, @"\s+", "");
             return licNoSpaces;
         }
-    }
-
-    public class LicenseStoredDetails
-    {
-        /// <summary>
-        /// A fingerprint / License
-        /// </summary>
-        public string Id { get; set; }
-
-        /// <summary>
-        /// Optional comments, like what system it's for
-        /// </summary>
-        public string Comments { get; set; }
-
-        /// <summary>
-        /// If parts of a license can expire, then it would be specified here.
-        /// </summary>
-        public DateTime Expires { get; set; }
     }
 }

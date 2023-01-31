@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data
     [PrivateApi("WIP v15")]
     public abstract class EntityBasedService<T>: EntityBasedWithLog where T : EntityBasedService<T>
     {
-        protected EntityBasedService(string logName) : base(null, null, logName ?? $"{LogNames.Eav}.EntSrv")
+        protected EntityBasedService(string logName) : base(null, null, logName ?? $"{EavLogs.Eav}.EntSrv")
         {
         }
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
@@ -43,9 +42,8 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Create a stream for each data-type
         /// </summary>
-        private void CreateAppOutWithAllStreams()
+        private void CreateAppOutWithAllStreams() => Log.Do(l =>
         {
-            var wrapLog = Log.Fn();
             IDataStream upstream;
             try
             {
@@ -78,7 +76,8 @@ namespace ToSic.Eav.DataSources
                 typeList += typeName + ",";
 
                 var deferredStream = new DataStreamWithCustomCaching(
-                    () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState, $"Name={typeName}&Drafts={showDrafts}"),
+                    () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState,
+                        $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
                     () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableArray(),
@@ -87,10 +86,8 @@ namespace ToSic.Eav.DataSources
                 _out.Add(typeName, deferredStream);
             }
 
-            Log.A($"Added with drafts:{showDrafts} streams: {typeList}");
-
-            wrapLog.Done();
-        }
+            l.A($"Added with drafts:{showDrafts} streams: {typeList}");
+        });
 
         /// <summary>
         /// Ask the current configuration system if the current user should see drafts
@@ -110,16 +107,15 @@ namespace ToSic.Eav.DataSources
         }
 
         /// <summary>
-		/// Build an EntityTypeFilter for this content-type to provide as a stream
-		/// </summary>
-        private EntityTypeFilter BuildTypeStream(IDataSource upstreamDataSource, string typeName)
+        /// Build an EntityTypeFilter for this content-type to provide as a stream
+        /// </summary>
+        private EntityTypeFilter BuildTypeStream(IDataSource upstreamDataSource, string typeName) => Log.Func($"..., ..., {typeName}", () =>
         {
-            var wrapLog = Log.Fn<EntityTypeFilter>($"..., ..., {typeName}");
             var ds = _deps.DataSourceFactory.Value.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,
                 Configuration.LookUpEngine);
             ds.TypeName = typeName;
             ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
-            return wrapLog.ReturnAsOk(ds);
-        }
+            return ds;
+        });
     }
 }

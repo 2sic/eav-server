@@ -67,13 +67,11 @@ namespace ToSic.Eav.DataSources
 
 
         /// <inheritdoc />
-        public virtual void PurgeList(bool cascade = false)
+        public virtual void PurgeList(bool cascade = false) => Log.Do($"{cascade} - on {GetType().Name}", l =>
         {
-            var callLog = Log.Fn($"{cascade}", $"on {GetType().Name}");
             foreach (var stream in In)
                 stream.Value.PurgeList(cascade);
-            if (!In.Any()) Log.A("No streams found to clear");
-            callLog.Done("ok");
-        }
+            if (!In.Any()) l.A("No streams found to clear");
+        });
     }
 }

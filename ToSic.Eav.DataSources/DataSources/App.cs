@@ -4,7 +4,7 @@ using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Helper;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 using static System.Int32;
 
@@ -65,12 +65,12 @@ namespace ToSic.Eav.DataSources
 
 		public new class Dependencies: ServiceDependencies<DataSource.Dependencies>
         {
-            public ILazySvc<DataSourceFactory> DataSourceFactory { get; }
+            public LazySvc<DataSourceFactory> DataSourceFactory { get; }
             public IAppStates AppStates { get; }
 
             public Dependencies(DataSource.Dependencies rootDependencies,
                 IAppStates appStates,
-				ILazySvc<DataSourceFactory> dataSourceFactory) : base(rootDependencies)
+				LazySvc<DataSourceFactory> dataSourceFactory) : base(rootDependencies)
             {
                 AddToLogQueue(
                     AppStates = appStates,

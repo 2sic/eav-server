@@ -13,12 +13,8 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="id"></param>
         /// <param name="values"></param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        public void UpdateParts(int id, UpdateList values, (bool published, bool branch)? draftAndBranch = null)
-        {
-            var wrapLog = Log.Fn($"id:{id}");
-            UpdatePartsFromValues(Parent.AppState.List.FindRepoId(id), values, draftAndBranch);
-            wrapLog.Done("ok");
-        }
+        public void UpdateParts(int id, UpdateList values, (bool published, bool branch)? draftAndBranch = null) => 
+            Log.Do($"id:{id}", () => UpdatePartsFromValues(Parent.AppState.List.FindRepoId(id), values, draftAndBranch));
 
         /// <summary>
         /// Update an entity
@@ -26,12 +22,8 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="id"></param>
         /// <param name="values"></param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        public void UpdateParts(int id, Entity values, (bool published, bool branch)? draftAndBranch = null)
-        {
-            var wrapLog = Log.Fn($"id:{id}");
-            UpdatePartFromEntity(Parent.AppState.List.FindRepoId(id), values, draftAndBranch);
-            wrapLog.Done("ok");
-        }
+        public void UpdateParts(int id, Entity values, (bool published, bool branch)? draftAndBranch = null) =>
+            Log.Do($"id:{id}", () => UpdatePartFromEntity(Parent.AppState.List.FindRepoId(id), values, draftAndBranch));
 
         /// <summary>
         /// Update an entity
@@ -39,14 +31,13 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="orig">Original entity to be updated</param>
         /// <param name="values">Dictionary of values to update</param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        private bool UpdatePartsFromValues(IEntity orig, UpdateList values, (bool published, bool branch)? draftAndBranch = null)
+        private bool UpdatePartsFromValues(IEntity orig, UpdateList values, (bool published, bool branch)? draftAndBranch = null) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<bool>();
             var tempEnt = CreatePartialEntityOld(orig, values);
-            if (tempEnt == null) return wrapLog.ReturnFalse("nothing to import");
+            if (tempEnt == null) return (false, "nothing to import");
             var result = UpdatePartFromEntity(orig, tempEnt, draftAndBranch);
-            return wrapLog.ReturnTrue($"{result}");
-        }
+            return (true, $"{result}");
+        });
 
         /// <summary>
         /// Update an entity
@@ -54,11 +45,10 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="orig">Original entity to be updated</param>
         /// <param name="partialEntity">Partial Entity to update</param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        private bool UpdatePartFromEntity(IEntity orig, Entity partialEntity, (bool published, bool branch)? draftAndBranch = null)
+        private bool UpdatePartFromEntity(IEntity orig, Entity partialEntity, (bool published, bool branch)? draftAndBranch = null) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<bool>();
             if (partialEntity == null)
-                return wrapLog.ReturnFalse("nothing to import");
+                return (false, "nothing to import");
 
             var saveOptions = _environmentLazy.Value.SaveOptions(Parent.ZoneId);
             saveOptions.PreserveUntouchedAttributes = true;
@@ -74,16 +64,15 @@ namespace ToSic.Eav.Apps.Parts
             }
 
             Save(saveEnt, saveOptions);
-            return wrapLog.ReturnTrue("ok");
-        }
+            return (true, "ok");
+        });
 
-        private Entity CreatePartialEntityOld(IEntity orig, UpdateList values)
+        private Entity CreatePartialEntityOld(IEntity orig, UpdateList values) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<Entity>();
             if (values == null || !values.Any())
-                return wrapLog.ReturnNull("nothing to save");
+                return (null as Entity, "nothing to save");
 
-            return wrapLog.ReturnAsOk(new Entity(Parent.AppId, 0, orig.Type, values));
-        }
+            return (new Entity(Parent.AppId, 0, orig.Type, values), "ok");
+        });
     }
 }

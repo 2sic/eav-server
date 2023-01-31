@@ -6,7 +6,6 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
@@ -173,12 +172,12 @@ namespace ToSic.Eav.DataSources.Queries
 	    /// <summary>
 		/// Init Stream Wirings between Query-Parts (Bottom-Up)
 		/// </summary>
-		private void InitWirings(QueryDefinition queryDef, IDictionary<string, IDataSource> dataSources)
+		private void InitWirings(QueryDefinition queryDef, IDictionary<string, IDataSource> dataSources
+        ) => Log.Do($"count⋮{queryDef.Connections?.Count}",l => 
 		{
 			// Init
             var wirings = queryDef.Connections;
 			var initializedWirings = new List<Connection>();
-		    var logWrap = Log.Fn($"count⋮{wirings.Count}");
 
 			// 1. wire Out-Streams of DataSources with no In-Streams
 			var dataSourcesWithNoInStreams = dataSources.Where(d => wirings.All(w => w.To != d.Key));
@@ -205,11 +204,10 @@ namespace ToSic.Eav.DataSources.Queries
 				var notInitialized = wirings.Where(w => !initializedWirings.Any(i => i.From == w.From && i.Out == w.Out && i.To == w.To && i.In == w.In));
 				var error = string.Join(", ", notInitialized);
 				var exception = new Exception("Some Stream-Wirings were not created: " + error);
-				Log.Ex(exception);
+				l.Ex(exception);
 				throw exception;
 			}
-		    logWrap.Done("ok");
-		}
+		});
 
 		/// <summary>
 		/// Wire all Out-Wirings on specified DataSources

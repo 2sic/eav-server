@@ -37,47 +37,37 @@ namespace ToSic.Eav.DataSources
 
         #endregion
         #region Configuration-properties
-        private const string IncludeIdKey = "IncludeId";
-        private const string IncludeGuidKey = "IncludeGuid";
-        private const string IncludeTitleKey = "IncludeTitle";
-        private const string IncludeCreatedKey = "IncludeCreated";
-        private const string IncludeModifiedKey = "IncludeModified";
-
-        private const string RmvNullValuesKey = "RemoveNullValues";
-        private const string RmvZeroValuesKey = "RemoveZeroValues";
         private const string RmvEmptyStringsKey = "RemoveEmptyStringValues";
         private const string RmvBooleanFalseKey = "RemoveFalseValues";
-
-        private const string IncludeMetadataForKey = "IncludeMetadataFor";
-        private const string IncludeMetadataForIdKey = "IncludeMetadataForId";
-        private const string IncludeMetadataForTypeKey = "IncludeMetadataForType";
-
-        private const string IncludeMetadataKey = "IncludeMetadata";
-        private const string IncludeMetadataIdKey = "IncludeMetadataId";
-        private const string IncludeMetadataGuidKey = "IncludeMetadataGuid";
-        private const string IncludeMetadataTitleKey = "IncludeMetadataTitle";
-
-        private const string IncludeRelationshipsKey = "IncludeRelationships";
-        private const string IncludeRelationshipIdKey = "IncludeRelationshipId";
-        private const string IncludeRelationshipGuidKey = "IncludeRelationshipGuid";
-        private const string IncludeRelationshipTitleKey = "IncludeRelationshipTitle";
 
         #region Basic Fields
 
         /// <summary>
         /// Should the ID be included in serialization
         /// </summary>
-        public string IncludeId { get => Configuration[IncludeIdKey]; set => Configuration[IncludeIdKey] = value; }
-        
+        public string IncludeId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+
+        /// <summary>
+        /// Should the AppId be included in serialization.
+        /// Especially for scenarios where data is retrieved from multiple Apps
+        /// </summary>
+        public string IncludeAppId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+
+        /// <summary>
+        /// Should the AppId be included in serialization.
+        /// Especially for scenarios where data is retrieved from multiple Apps
+        /// </summary>
+        public string IncludeZoneId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+
         /// <summary>
         /// Should the GUID be included in serialization
         /// </summary>
-        public string IncludeGuid { get => Configuration[IncludeGuidKey]; set => Configuration[IncludeGuidKey] = value; }
+        public string IncludeGuid { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
         
         /// <summary>
         /// Should the default Title be included as "Title" in serialization
         /// </summary>
-        public string IncludeTitle { get => Configuration[IncludeTitleKey]; set => Configuration[IncludeTitleKey] = value; }
+        public string IncludeTitle { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         #endregion
 
@@ -86,12 +76,12 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Should the Modified date be included in serialization
         /// </summary>
-        public string IncludeModified { get => Configuration[IncludeModifiedKey]; set => Configuration[IncludeModifiedKey] = value; }
-        
+        public string IncludeModified { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+
         /// <summary>
         /// Should the Created date be included in serialization
         /// </summary>
-        public string IncludeCreated { get => Configuration[IncludeCreatedKey]; set => Configuration[IncludeCreatedKey] = value; }
+        public string IncludeCreated { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         #endregion
 
@@ -100,12 +90,12 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// todo
         /// </summary>
-        public string RemoveNullValues { get => Configuration[RmvNullValuesKey]; set => Configuration[RmvNullValuesKey] = value; }
+        public string RemoveNullValues { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// todo
         /// </summary>
-        public string RemoveZeroValues { get => Configuration[RmvZeroValuesKey]; set => Configuration[RmvZeroValuesKey] = value; }
+        public string RemoveZeroValues { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// todo
@@ -124,17 +114,17 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Should the Metadata target/for information be included in serialization
         /// </summary>
-        public string IncludeMetadataFor { get => Configuration[IncludeMetadataForKey]; set => Configuration[IncludeMetadataForKey] = value; }
+        public string IncludeMetadataFor { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Metadata target/for information be included in serialization
         /// </summary>
-        public string IncludeMetadataForId { get => Configuration[IncludeMetadataForIdKey]; set => Configuration[IncludeMetadataForIdKey] = value; }
+        public string IncludeMetadataForId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Metadata target/for information be included in serialization
         /// </summary>
-        public string IncludeMetadataForType { get => Configuration[IncludeMetadataForTypeKey]; set => Configuration[IncludeMetadataForTypeKey] = value; }
+        public string IncludeMetadataForType { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
         #endregion
 
         #region Metadata
@@ -142,22 +132,22 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Should the Metadata ID be included in serialization
         /// </summary>
-        public string IncludeMetadata { get => Configuration[IncludeMetadataKey]; set => Configuration[IncludeMetadataKey] = value; }
+        public string IncludeMetadata { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Metadata ID be included in serialization
         /// </summary>
-        public string IncludeMetadataId { get => Configuration[IncludeMetadataIdKey]; set => Configuration[IncludeMetadataIdKey] = value; }
+        public string IncludeMetadataId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Metadata GUID be included in serialization
         /// </summary>
-        public string IncludeMetadataGuid { get => Configuration[IncludeMetadataGuidKey]; set => Configuration[IncludeMetadataGuidKey] = value; }
+        public string IncludeMetadataGuid { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the default Title of the Metadata be included as "Title" in serialization
         /// </summary>
-        public string IncludeMetadataTitle { get => Configuration[IncludeMetadataTitleKey]; set => Configuration[IncludeMetadataTitleKey] = value; }
+        public string IncludeMetadataTitle { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         #endregion
 
@@ -167,22 +157,22 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Should the Relationship ID be included in serialization
         /// </summary>
-        public string IncludeRelationships { get => Configuration[IncludeRelationshipsKey]; set => Configuration[IncludeRelationshipsKey] = value; }
+        public string IncludeRelationships { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Relationship ID be included in serialization
         /// </summary>
-        public string IncludeRelationshipId { get => Configuration[IncludeRelationshipIdKey]; set => Configuration[IncludeRelationshipIdKey] = value; }
+        public string IncludeRelationshipId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Relationship GUID be included in serialization
         /// </summary>
-        public string IncludeRelationshipGuid { get => Configuration[IncludeRelationshipGuidKey]; set => Configuration[IncludeRelationshipGuidKey] = value; }
+        public string IncludeRelationshipGuid { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the default Title of the Relationship be included as "Title" in serialization
         /// </summary>
-        public string IncludeRelationshipTitle { get => Configuration[IncludeRelationshipTitleKey]; set => Configuration[IncludeRelationshipTitleKey] = value; }
+        public string IncludeRelationshipTitle { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
         #endregion
 
 
@@ -197,67 +187,66 @@ namespace ToSic.Eav.DataSources
 		public SerializationConfiguration(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.SerCnf")
         {
             // Basic system properties
-            ConfigMask(IncludeIdKey, $"[Settings:{IncludeIdKey}]");
-            ConfigMask(IncludeGuidKey, $"[Settings:{IncludeGuidKey}]");
-            ConfigMask(IncludeTitleKey, $"[Settings:{IncludeTitleKey}]");
-            
+            ConfigMask(nameof(IncludeId));
+            ConfigMask(nameof(IncludeGuid));
+            ConfigMask(nameof(IncludeTitle));
+            ConfigMask(nameof(IncludeAppId));
+            ConfigMask(nameof(IncludeZoneId));
+
             // Dates
-            ConfigMask(IncludeCreatedKey, $"[Settings:{IncludeCreatedKey}]");
-            ConfigMask(IncludeModifiedKey, $"[Settings:{IncludeModifiedKey}]");
+            ConfigMask(nameof(IncludeCreated));
+            ConfigMask(nameof(IncludeModified));
             
             // Optimize output - enhanced in 12.05
-            ConfigMask(RmvNullValuesKey, $"[Settings:{RmvNullValuesKey}]");
-            ConfigMask(RmvZeroValuesKey, $"[Settings:{RmvZeroValuesKey}]");
-            ConfigMask(RmvEmptyStringsKey, $"[Settings:{RmvEmptyStringsKey}]");
-            ConfigMask(RmvBooleanFalseKey, $"[Settings:{RmvBooleanFalseKey}]");
+            ConfigMask(nameof(RemoveNullValues));
+            ConfigMask(nameof(RemoveZeroValues));
+            ConfigMask(RmvEmptyStringsKey);
+            ConfigMask(RmvBooleanFalseKey);
 
             // Metadata For - enhanced in 12.05
-            ConfigMask(IncludeMetadataForKey, $"[Settings:{IncludeMetadataForKey}]");
-            ConfigMask(IncludeMetadataForIdKey, $"[Settings:{IncludeMetadataForTypeKey}]");
-            ConfigMask(IncludeMetadataForTypeKey, $"[Settings:{IncludeMetadataForTypeKey}]");
+            ConfigMask(nameof(IncludeMetadataFor));
+            ConfigMask(nameof(IncludeMetadataForId));
+            ConfigMask(nameof(IncludeMetadataForType));
 
             // Metadata
-            ConfigMask(IncludeMetadataKey, $"[Settings:{IncludeMetadataKey}]");
-            ConfigMask(IncludeMetadataIdKey, $"[Settings:{IncludeMetadataIdKey}]");
-            ConfigMask(IncludeMetadataGuidKey, $"[Settings:{IncludeMetadataGuidKey}]");
-            ConfigMask(IncludeMetadataTitleKey, $"[Settings:{IncludeMetadataTitleKey}]");
+            ConfigMask(nameof(IncludeMetadata));
+            ConfigMask(nameof(IncludeMetadataId));
+            ConfigMask(nameof(IncludeMetadataGuid));
+            ConfigMask(nameof(IncludeMetadataTitle));
 
             // Relationships
-            ConfigMask(IncludeRelationshipsKey, $"[Settings:{IncludeRelationshipsKey}]");
-            ConfigMask(IncludeRelationshipIdKey, $"[Settings:{IncludeRelationshipIdKey}]");
-            ConfigMask(IncludeRelationshipGuidKey, $"[Settings:{IncludeRelationshipGuidKey}]");
-            ConfigMask(IncludeRelationshipTitleKey, $"[Settings:{IncludeRelationshipTitleKey}]");
+            ConfigMask(nameof(IncludeRelationships));
+            ConfigMask(nameof(IncludeRelationshipId));
+            ConfigMask(nameof(IncludeRelationshipGuid));
+            ConfigMask(nameof(IncludeRelationshipTitle));
         }
 
         /// <summary>
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-		private IImmutableList<IEntity> GetList(string inStreamName = Constants.DefaultStreamName)
+        private IImmutableList<IEntity> GetList(string inStreamName = Constants.DefaultStreamName) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
-
             var original = In[inStreamName].List.ToImmutableList();
-
             var enhanced = AddSerializationRules(original);
-            
-		    return wrapLog.Return(enhanced, $"{enhanced.Count}");
-		}
+            return (enhanced, $"{enhanced.Count}");
+        });
 
-        private IImmutableList<IEntity> AddSerializationRules(IImmutableList<IEntity> before)
+        private IImmutableList<IEntity> AddSerializationRules(IImmutableList<IEntity> before) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             // Skip if no rules defined
             var noRules = string.IsNullOrWhiteSpace(string.Join("", Configuration));
-            if(noRules) return wrapLog.Return(before, "no rules, unmodified");
+            if (noRules) return (before, "no rules, unmodified");
 
             var id = TryParseIncludeRule(IncludeId);
             var title = TryParseIncludeRule(IncludeTitle);
             var guid = TryParseIncludeRule(IncludeGuid);
             var created = TryParseIncludeRule(IncludeCreated);
             var modified = TryParseIncludeRule(IncludeModified);
-            
+            var appId = TryParseIncludeRule(IncludeAppId);
+            var zoneId = TryParseIncludeRule(IncludeZoneId);
+
             var dropNullValues = TryParseIncludeRule(RemoveNullValues) ?? false;
             var dropZeroValues = TryParseIncludeRule(RemoveZeroValues) ?? false;
             var dropEmptyStringValues = TryParseIncludeRule(RemoveEmptyStrings) ?? false;
@@ -303,6 +292,8 @@ namespace ToSic.Eav.DataSources
                 SerializeId = id,
                 SerializeTitle = title,
                 SerializeGuid = guid,
+                SerializeAppId = appId,
+                SerializeZoneId = zoneId,
 
                 // dates
                 SerializeCreated = created,
@@ -312,8 +303,8 @@ namespace ToSic.Eav.DataSources
             var result = before
                 .Select(e => (IEntity)new EntityDecorator12<EntitySerializationDecorator>(e, decorator));
 
-            return wrapLog.Return(result.ToImmutableList(), "modified");
-        }
+            return (result.ToImmutableList(), "modified");
+        });
         
         private bool? TryParseIncludeRule(string original)
             => bool.TryParse(original, out var include) ? (bool?)include : null;

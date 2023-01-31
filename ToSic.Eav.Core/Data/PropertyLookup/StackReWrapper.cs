@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.PropertyLookup
 {
     /// <summary>
     /// Code to re-wrap stuff inside a stack, so it could navigate through stacks again if necessary
     /// </summary>
-    internal class StackReWrapper: HasLog
+    internal class StackReWrapper: HelperBase
     {
-
-        public StackReWrapper(StackAddress stackAddress, ILog parentLog): base("Eav.StkWrp", parentLog) => StackAddress = stackAddress;
+        public StackReWrapper(StackAddress stackAddress, ILog parentLog): base(parentLog, "Eav.StkWrp") => StackAddress = stackAddress;
         public StackAddress StackAddress { get; }
 
         public PropReqResult ReWrapIfPossible(PropReqResult reqResult)

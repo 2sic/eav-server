@@ -24,29 +24,29 @@ namespace ToSic.Eav.Apps.Security
         private readonly IAppStates _appStates;
         private readonly EnvironmentPermission _environmentPermission;
 
-        public AppPermissionCheck ForItem(IContextOfSite ctx, IAppIdentity appIdentity, IEntity targetItem)
+        public AppPermissionCheck ForItem(IContextOfSite ctx, IAppIdentity appIdentity, IEntity targetItem) => Log.Func(() =>
         {
             Init(ctx, appIdentity, targetItem?.Type, targetItem);
-            return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
-        }
+            return this;
+        });
 
-        public AppPermissionCheck ForType(IContextOfSite ctx, IAppIdentity appIdentity, IContentType targetType)
+        public AppPermissionCheck ForType(IContextOfSite ctx, IAppIdentity appIdentity, IContentType targetType) => Log.Func(() =>
         {
             Init(ctx, appIdentity, targetType);
-            return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
-        }
+            return this;
+        });
 
-        public AppPermissionCheck ForAttribute(IContextOfSite ctx, IAppIdentity appIdentity, IContentTypeAttribute attribute)
+        public AppPermissionCheck ForAttribute(IContextOfSite ctx, IAppIdentity appIdentity, IContentTypeAttribute attribute) => Log.Func(() =>
         {
             Init(ctx, appIdentity, permissions: attribute.Permissions);
-            return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
-        }
+            return this;
+        });
 
-        public AppPermissionCheck ForCustom(IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<Permission> permissions)
+        public AppPermissionCheck ForCustom(IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<Permission> permissions) => Log.Func(() =>
         {
             Init(ctx, appIdentity, permissions: permissions);
-            return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
-        }
+            return this;
+        });
 
         /// <summary>
         /// Init the check for an app.
@@ -54,14 +54,12 @@ namespace ToSic.Eav.Apps.Security
         /// <param name="ctx"></param>
         /// <param name="appIdentity">The App - in some cases (if no app exists yet) it's null</param>
         /// <returns></returns>
-        public AppPermissionCheck ForAppInInstance(IContextOfSite ctx, IAppIdentity appIdentity)
+        public AppPermissionCheck ForAppInInstance(IContextOfSite ctx, IAppIdentity appIdentity) => Log.Func($"ctx, app: {appIdentity}", l =>
         {
             var permissions = FindPermissionsOfApp(appIdentity);
             Init(ctx, appIdentity, permissions: permissions);
-            var wrapLog = Log.Fn<AppPermissionCheck>($"ctx, app: {appIdentity}, log");
-            Log.A($"Permissions: {permissions?.Count}");
-            return wrapLog.ReturnAsOk(this);
-        }
+            return (this, $"Permissions: {permissions?.Count}");
+        });
 
         private List<Permission> FindPermissionsOfApp(IAppIdentity appIdentity)
         {
@@ -73,11 +71,11 @@ namespace ToSic.Eav.Apps.Security
             return permissions;
         }
 
-        public AppPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType targetType, IEntity targetItem)
+        public AppPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType targetType, IEntity targetItem) => Log.Func(() =>
         {
             Init(ctx, app, targetType, targetItem, FindPermissionsOfApp(app));
-            return Log.Fn<AppPermissionCheck>().ReturnAsOk(this);
-        }
+            return this;
+        });
 
 
         /// <summary>
@@ -93,10 +91,11 @@ namespace ToSic.Eav.Apps.Security
         {
             Init(targetType ?? targetItem?.Type, targetItem, permissions);
             _environmentPermission.Init(ctx, appIdentity);
-            var logWrap = Log.Fn($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
-            Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
-            AppIdentity = appIdentity;
-            logWrap.Done();
+            Log.Do($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ", () =>
+            {
+                Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
+                AppIdentity = appIdentity;
+            });
         }
 
         protected IContextOfSite Context { get; private set; }

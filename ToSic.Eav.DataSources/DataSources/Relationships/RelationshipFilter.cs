@@ -152,22 +152,18 @@ namespace ToSic.Eav.DataSources
             ConfigMask(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
         }
 
-        private IImmutableList<IEntity> GetRelationshipsOrFallback()
+        private IImmutableList<IEntity> GetRelationshipsOrFallback() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             var res = GetEntities();
             if (!res.Any() && In.HasStreamWithItems(Constants.FallbackStreamName))
-                return wrapLog.Return(In[Constants.FallbackStreamName].List.ToImmutableList(), "fallback");
+                return (In[Constants.FallbackStreamName].List.ToImmutableList(), "fallback");
 
-            return wrapLog.ReturnAsOk(res);
-        }
+            return (res, "ok");
+        });
 
-        private IImmutableList<IEntity> GetEntities()
+        private IImmutableList<IEntity> GetEntities() => Log.Func(() =>
         {
             // todo: maybe do something about languages on properties?
-
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
-
             Configuration.Parse();
 
             var relationship = Relationship;
@@ -177,16 +173,14 @@ namespace ToSic.Eav.DataSources
             var useNot = strMode.StartsWith(PrefixNot);
             if (useNot) strMode = strMode.Substring(PrefixNot.Length);
 
-            if (strMode == "default") strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
+            if (strMode == "default")
+                strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
             if (!Enum.TryParse<CompareModes>(strMode, true, out var mode))
-                return wrapLog.Return(SetError("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."),
-                    "error");
+                return (SetError("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."), "error");
 
             var childParent = ChildOrParent;
             if (!_directionPossibleValues.Contains(childParent, StringComparer.CurrentCultureIgnoreCase))
-                return wrapLog.Return(SetError("Can only compare Children",
-                        $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'"),
-                    "error");
+                return (SetError("Can only compare Children", $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'"), "error");
 
             //var lang = Languages.ToLowerInvariant();
             //if (lang != "default")
@@ -197,7 +191,7 @@ namespace ToSic.Eav.DataSources
             Log.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{mode}', child/parent:'{childParent}'");
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
+                return (originals, "error");
 
             var compType = lowAttribName == Attributes.EntityFieldAutoSelect
                 ? CompareType.Auto
@@ -213,7 +207,7 @@ namespace ToSic.Eav.DataSources
                 : CompareOne(GetFieldValue(compType, compAttr));
 
             if (comparisonOnRelatedItem == null)
-                return wrapLog.Return(ErrorStream, "error");
+                return (ErrorStream, "error");
 
             var filterList = Separator == DefaultSeparator
                 ? new[] { filter }
@@ -225,7 +219,7 @@ namespace ToSic.Eav.DataSources
             // pick the correct list-comparison - atm ca. 6 options
             var modeCompare = PickMode(mode, relationship, comparisonOnRelatedItem, filterList);
             if (modeCompare == null)
-                return wrapLog.Return(ErrorStream, "error");
+                return (ErrorStream, "error");
 
             var finalCompare = useNot
                 ? e => !modeCompare(e)
@@ -235,13 +229,14 @@ namespace ToSic.Eav.DataSources
             {
                 var results = originals.Where(finalCompare).ToImmutableArray();
 
-                return wrapLog.Return(results, $"{results.Length}");
+                return (results, $"{results.Length}");
             }
             catch (Exception ex)
             {
-                return wrapLog.Return(SetError("Error comparing Relationships", "Unknown error, check details in Insights logs", ex), "error");
+                return (SetError("Error comparing Relationships", "Unknown error, check details in Insights logs", ex),
+                    "error");
             }
-        }
+        });
 
 
         /// <summary>

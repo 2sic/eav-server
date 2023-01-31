@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSources.Sys
 
     public sealed class QueryInfo : DataSource
     {
-        private readonly ILazySvc<DataSourceFactory> _dataSourceFactory;
+        private readonly LazySvc<DataSourceFactory> _dataSourceFactory;
         public QueryBuilder QueryBuilder { get; }
         private readonly LazySvc<QueryManager> _queryManagerLazy;
         private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value);
@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-        public QueryInfo(Dependencies dependencies, ILazySvc<DataSourceFactory> dataSourceFactory, LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.EavQIn")
+        public QueryInfo(Dependencies dependencies, LazySvc<DataSourceFactory> dataSourceFactory, LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.EavQIn")
         {
             ConnectServices(
                 QueryBuilder = queryBuilder,
@@ -126,10 +126,8 @@ namespace ToSic.Eav.DataSources.Sys
         }
 
 
-        private void BuildQuery()
+        private void BuildQuery() => Log.Do(() =>
         {
-            var wrapLog = Log.Fn();
-
             var qName = QueryName;
             if (string.IsNullOrWhiteSpace(qName))
                 return;
@@ -139,13 +137,13 @@ namespace ToSic.Eav.DataSources.Sys
                 ? QueryManager.FindQuery(Constants.PresetIdentity, qName)
                 : QueryManager.FindQuery(this, qName);
 
-            if (found == null) throw new Exception($"Can't build information about query - couldn't find query '{qName}'");
+            if (found == null)
+                throw new Exception($"Can't build information about query - couldn't find query '{qName}'");
 
             var builtQuery = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log),
                 false, Configuration.LookUpEngine);
             _query = builtQuery.Item1;
-            wrapLog.Done();
-        }
+        });
 
         private IDataSource _query;
 

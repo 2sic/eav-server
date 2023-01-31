@@ -6,33 +6,34 @@ namespace ToSic.Lib.Logging
     {
         private const int MaxExceptionRecursion = 100;
 
-        internal static void ExceptionInternal(this ILog log, Exception ex, CodeRef codeRef)
+        internal static TException ExceptionInternal<TException>(this ILog log, TException ex, CodeRef codeRef) where TException : Exception
         {
             // Null-check
-            if (!(log.GetRealLog() is Log realLog)) return;
+            if (!(log.GetRealLog() is Log realLog)) return ex;
 
-            var wrapLog = realLog.Fn(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
+            var wrapLog = realLog.FnCode(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
             var recursion = 1;
+            Exception loopEx = ex;
             while (true)
             {
                 // avoid infinite loops
                 if (recursion >= MaxExceptionRecursion)
                 {
                     wrapLog.Done("max-depth reached");
-                    return;
+                    return ex;
                 }
                 
                 if (ex == null)
                 {
                     wrapLog.Done("Exception is null");
-                    return;
+                    return ex;
                 }
 
-                realLog.A($"Depth {recursion} in {ex.Source}: {ex}"); // use the default ToString of an exception
+                realLog.A($"Depth {recursion} in {loopEx.Source}: {loopEx}"); // use the default ToString of an exception
 
-                if (ex.InnerException != null)
+                if (loopEx.InnerException != null)
                 {
-                    ex = ex.InnerException;
+                    loopEx = loopEx.InnerException;
                     recursion++;
                     continue;
                 }
@@ -40,6 +41,7 @@ namespace ToSic.Lib.Logging
                 break;
             }
             wrapLog.Done();
+            return ex;
         }
     }
 }

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources.Debug
 {
-    public class QueryInfo: HasLog
+    public class QueryInfo: ServiceBase
     {
         /// <summary>
         /// DI Constructor
@@ -16,7 +17,7 @@ namespace ToSic.Eav.DataSources.Debug
         public QueryInfo BuildQueryInfo(QueryDefinition queryDef, IDataSource queryResult)
         {
             QueryDefinition = queryDef;
-            GetStreamInfosRecursive(queryResult as IDataTarget, ref Streams, ref Sources);
+            GetStreamInfosRecursive(queryResult as IDataTarget);
             return this;
         }
 
@@ -27,61 +28,57 @@ namespace ToSic.Eav.DataSources.Debug
         /// <summary>
         /// Provide an array of infos related to a stream and data source
         /// </summary>
-        private void GetStreamInfosRecursive(IDataTarget target, ref List<StreamInfo> streams, ref Dictionary<Guid, DataSourceInfo> sources)
+        private void GetStreamInfosRecursive(IDataTarget target) => Log.Do($"{target.Guid}[{target.In.Count}]", timer: true, action: l =>
         {
-            var wrapLog = Log.Fn($"{target.Guid}[{target.In.Count}]", startTimer: true);
-            
             foreach (var stream in target.In)
             {
                 // First get all the streams (do this first so they stay together)
                 try
                 {
                     var stmInfo = new StreamInfo(stream.Value, target, stream.Key);
-                    if (streams.Any(existing => existing.Equals(stmInfo)))
+                    if (Streams.Any(existing => existing.Equals(stmInfo)))
                         continue;
-                    streams.Add(stmInfo);
+                    Streams.Add(stmInfo);
                 }
                 catch
                 {
-                    Log.A("Error trying to build list of streams on DS");
+                    l.A("Error trying to build list of streams on DS");
                 }
 
                 // Try to add the target to Data-Source-Stats;
                 try
                 {
                     var di = new DataSourceInfo(target as IDataSource);
-                    if (!sources.ContainsKey(di.Guid))
-                        sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
+                    if (!Sources.ContainsKey(di.Guid))
+                        Sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
                 }
                 catch
                 {
-                    Log.A("Error adding target lists");
+                    l.A("Error adding target lists");
                 }
 
                 // Try to add the source to the data-source-stats
                 try
                 {
                     var di = new DataSourceInfo(stream.Value.Source);
-                    if (!sources.ContainsKey(di.Guid))
-                        sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
+                    if (!Sources.ContainsKey(di.Guid))
+                        Sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
                 }
                 catch
                 {
-                    Log.A("Error adding DataSourceInfo");
+                    l.A("Error adding DataSourceInfo");
                 }
 
                 // Get Sub-Streams recursive
                 try
                 {
-                    GetStreamInfosRecursive(stream.Value.Source as IDataTarget, ref streams, ref sources);
+                    GetStreamInfosRecursive(stream.Value.Source as IDataTarget);
                 }
                 catch
                 {
-                    Log.A("Error in recursion");
+                    l.A("Error in recursion");
                 }
             }
-
-            wrapLog.Done("ok");
-        }
+        });
     }
 }

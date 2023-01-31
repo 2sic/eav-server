@@ -39,6 +39,21 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
             VerifyNameAndEmpty($"{testName} rename", logRename, scope, name, nameId);
         }
 
+        [TestMethod]
+        public void AddThenLink()
+        {
+            var child = new Log("Tst.Child");
+            child.A("first message");
+            child.A("second message");
+            var parent = new Log("Tst.Parent");
+            parent.A("first parent message");
+            AreEqual(1, parent.Entries.Count);
+            AreEqual(2, child.Entries.Count);
+            child.LinkTo(parent);
+            AreEqual(3, parent.Entries.Count);
+            AreEqual(2, child.Entries.Count);
+        }
+
 
         private static void VerifyNameAndEmpty(string testName, Log log, string scope, string name, string nameId)
         {

@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
@@ -38,6 +40,10 @@ namespace ToSic.Eav.DataSources
 			get => Configuration[TypeNameKey];
 		    set => Configuration[TypeNameKey] = value;
 		}
+
+        // 2dm 2023-01-22 #maybeSupportIncludeParentApps
+        //[PrivateApi("very experimental v15, special edge case")]
+        //internal bool IncludeParentApps { get; set; }
         #endregion
 
         /// <inheritdoc />
@@ -54,35 +60,52 @@ namespace ToSic.Eav.DataSources
         }
         private readonly IAppStates _appStates;
 
-        
-        private IImmutableList<IEntity> GetList()
-	    {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
 
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
+        {
             Configuration.Parse();
-            Log.A($"get list with type:{TypeName}");
+            l.A($"get list with type:{TypeName}");
 
-	        try
+            // Get original from In-Stream
+            if (!GetRequiredInList(out var originals))
+                return (originals, "error");
+
+            try
             {
                 var appState = _appStates.Get(this);
-	            var foundType = appState?.GetContentType(TypeName);
-	            if (foundType != null) // maybe it doesn't find it!
+                var foundType = appState?.GetContentType(TypeName);
+                if (foundType != null) // maybe it doesn't find it!
                 {
-                    if (!GetRequiredInList(out var originals))
-                        return wrapLog.Return(originals, "error");
-
-                    return wrapLog.Return(originals.OfType(foundType).ToImmutableArray(), "fast");
+                    var result = originals.OfType(foundType).ToList();
+                    // 2dm 2023-01-22 #maybeSupportIncludeParentApps
+                    //if (IncludeParentApps)
+                    //{
+                    //    l.A($"Special internal case - {nameof(IncludeParentApps)}!");
+                    //    var parent = appState.ParentApp;
+                    //    while (parent?.AppState != null)
+                    //    {
+                    //        var additions = parent.AppState.List.OfType(foundType);
+                    //        result.AddRange(additions);
+                    //        parent = parent.AppState.ParentApp;
+                    //    }
+                    //}
+                    return (result.ToImmutableArray(), "fast");
                 }
-	        }
-	        catch { /* ignore */ }
+            }
+            catch (Exception ex)
+            {
+                l.Ex(ex);
+                /* ignore */
+            }
 
             // This is the fallback, probably slower. In this case, it tries to match the name instead of the real type
             // Reason is that many dynamically created content-types won't be known to the cache, so they cannot be found the previous way
-            if (!GetRequiredInList(out var originals2))
-                return wrapLog.Return(originals2, "error");
-            
-	        return wrapLog.Return(originals2.OfType(TypeName).ToImmutableArray(), "slower");
-	    }
 
-	}
+            //if (!GetRequiredInList(out var originals2))
+            //    return (originals2, "error");
+
+            return (originals.OfType(TypeName).ToImmutableArray(), "slower");
+        });
+
+    }
 }

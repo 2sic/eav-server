@@ -7,7 +7,7 @@ namespace ToSic.Eav.Context
 {
     public sealed class UserUnknown: IUser, IIsUnknown
     {
-        public UserUnknown(WarnUseOfUnknown<UserUnknown> warn) { }
+        public UserUnknown(WarnUseOfUnknown<UserUnknown> _) { }
 
         public string IdentityToken => "unknown(eav):0";
 

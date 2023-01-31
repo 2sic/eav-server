@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps.Paths
     {
         private const bool Debug = true;
 
-        public AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config) : base($"{LogNames.Eav}.AppPth")
+        public AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config) : base($"{EavLogs.Eav}.AppPth")
         {
             ConnectServices(
                 _serverPaths = serverPaths,
@@ -66,14 +66,12 @@ namespace ToSic.Eav.Apps.Paths
         /// We are having some difficulties that the App is caching the wrong path, so temporarily we'll log
         /// when we are actually picking up the value to put into the AppState
         /// </summary>
-        private void LogAppPathDetails(string property, string result)
+        private void LogAppPathDetails(string property, string result) => Log.Do(l =>
         {
-            var wrapLog = Log.Fn();
-            Log.A($"App State: {_appState.LogState()}");
-            Log.A($"Site: {_site.Id}; Zone: {_site.ZoneId};");
-            Log.A($"{property}: {result}");
-            wrapLog.Done();
-        }
+            l.A($"App State: {_appState.LogState()}");
+            l.A($"Site: {_site.Id}; Zone: {_site.ZoneId};");
+            l.A($"{property}: {result}");
+        });
 
         private string InterceptAndLog(string name, string result)
         {

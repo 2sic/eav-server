@@ -1,4 +1,5 @@
 ﻿using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Lib.Core.Tests.LoggingTests
 {
@@ -9,7 +10,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
     [TestClass]
     public class HasLogAdd: LogAdd
     {
-        protected class ThingWithLog: HasLog
+        protected class ThingWithLog: ServiceBase
         {
             public ThingWithLog() : base("") { }
         }

@@ -1,15 +1,16 @@
 ﻿using System;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Sys
 {
     // Release routes
 
-    public class LogControllerReal: HasLog
+    public class LogControllerReal: ServiceBase
     {
         public const string LogSuffix = "Log";
 
-        public LogControllerReal() : base($"{LogNames.WebApi}.{LogSuffix}Rl") { }
+        public LogControllerReal() : base($"{EavLogs.WebApi}.{LogSuffix}Rl") { }
 
         public string EnableDebug(Func<int, string> activateForDuration, int duration = 1)
         {

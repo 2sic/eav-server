@@ -14,7 +14,9 @@ namespace ToSic.Eav.Persistence.Efc
         public IDictionary<int, Zone> Zones()
         {
             var log = new Log("DB.EfLoad", null, "Zones()");
-            _logStore.Add(LogNames.LogHistoryGlobalZoneAppMap, log);
+            // Add to zone-loading log, as it could
+            _logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, log);
+            var l = log.Fn<IDictionary<int, Zone>>(timer: true);
 
             // Build the tree of zones incl. their default(Content) and Primary apps
             var zones = _dbContext.ToSicEavZones
@@ -38,34 +40,8 @@ namespace ToSic.Eav.Persistence.Efc
                                 .Where(d => d.ParentNavigation?.Key == Constants.CultureSystemKey)
                                 .Cast<DimensionDefinition>().ToList());
                     });
-            return zones;
+            return l.Return(zones, $"{zones.Count}");
         }
-
-        //private bool AddMissingPrimaryApps()
-        //{
-        //    var wrapLog = Log.Call<bool>();
-
-        //    var zonesWithoutPrimary = _dbContext.ToSicEavZones
-        //        .Include(z => z.ToSicEavApps)
-        //        .Include(z => z.ToSicEavDimensions)
-        //        // Skip "default" zone as that is a single purpose technical zone
-        //        .Where(z => z.ZoneId != Constants.DefaultZoneId)
-        //        .Where(z => z.ToSicEavApps.All(a => a.Name != Constants.PrimaryAppGuid))
-        //        .ToList();
-
-        //    if (!zonesWithoutPrimary.Any()) return wrapLog("no missing primary", false);
-
-        //    var newZones = zonesWithoutPrimary
-        //        .Select(zone => new ToSicEavApps
-        //        {
-        //            Name = Constants.PrimaryAppGuid, 
-        //            Zone = zone
-        //        }).ToList();
-
-        //    _dbContext.AddRange(newZones);
-        //    _dbContext.SaveChanges();
-
-        //    return wrapLog($"added {newZones.Count}", true);
-        //}
+        
     }
 }

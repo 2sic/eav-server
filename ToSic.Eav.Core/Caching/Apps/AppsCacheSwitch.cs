@@ -1,7 +1,8 @@
 ﻿using ToSic.Eav.Configuration;
+using ToSic.Lib;
 using ToSic.Lib.DI;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
-using ToSic.Lib.Helper;
 
 namespace ToSic.Eav.Caching
 {

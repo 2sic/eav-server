@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
+using ToSic.Eav.Configuration.Licenses;
 using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 using static ToSic.Eav.Configuration.RequirementCheckFeature;
@@ -23,8 +23,18 @@ namespace ToSic.Eav.Configuration
             Public = isPublic;
             Ui = ui;
             Description = description;
-            LicenseRules = licRules?.ToList() ?? new List<FeatureLicenseRule>(0);
             Condition = new Condition(ConditionIsFeature, nameId);
+            LicenseRules = CreateLicenseRules(licRules);    // must run at the end, as properties are needed
+        }
+
+        private IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule> licRules)
+        {
+            var newRules = licRules?.ToList() ?? new List<FeatureLicenseRule>(0);
+            // Create virtual license rule so it can be enabled by its own GUID
+            var ownLicenseDefinition = new LicenseDefinition(0, $"Feature: {NameId}", Guid, $"Feature {NameId} ({Guid})");
+            var ownRule = new FeatureLicenseRule(ownLicenseDefinition, true);
+            newRules.Add(ownRule);
+            return newRules.AsReadOnly();
         }
 
 
@@ -85,7 +95,7 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         public FeatureSecurity Security { get; }
 
-        internal List<FeatureLicenseRule> LicenseRules { get; }
+        internal IReadOnlyList<FeatureLicenseRule> LicenseRules { get; }
 
         public Condition Condition { get; }
     }

@@ -2,7 +2,6 @@
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence.Logging;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow
@@ -24,22 +23,16 @@ namespace ToSic.Eav.Apps.ImportExport
             int? parentAppId = null;
 
             if (!IsCompatible(doc))
-			{
-				Messages.Add(new Message(Log.AddAndReuse("The import file is not compatible with the installed version of 2sxc."), Message.MessageTypes.Error));
-				return false;
-			}
+                return wrapLog.ReturnFalse(LogError("The import file is not compatible with the installed version of 2sxc."));
 
-			// Get root node "SexyContent"
+            // Get root node "SexyContent"
 			var xmlSource = doc.Element(XmlConstants.RootNode);
 			var xApp = xmlSource?.Element(XmlConstants.Header)?.Element(XmlConstants.App);
 
 			var appGuid = xApp?.Attribute(XmlConstants.Guid)?.Value;
 
             if (appGuid == null)
-            {
-                Messages.Add(new Message(Log.AddAndReuse("Something is wrong in the xml structure, can't get an app-guid"), Message.MessageTypes.Error));
-                return false;
-            }
+                return wrapLog.ReturnFalse(LogError("Something is wrong in the xml structure, can't get an app-guid"));
 
             if (appGuid != XmlConstants.AppContentGuid)
             {
@@ -63,10 +56,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 appId = AppId;
 
             if (appId <= 0)
-			{
-				Messages.Add(new Message(Log.AddAndReuse("App was not created. Please try again or make sure the package you are importing is correct."), Message.MessageTypes.Error));
-				return false;
-			}
+			    return wrapLog.ReturnFalse(LogError("App was not created. Please try again or make sure the package you are importing is correct."));
 
             Log.A("Purging all Zones");
             Deps.SystemManager.PurgeZoneList();

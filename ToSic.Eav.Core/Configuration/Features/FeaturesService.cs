@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
+using static System.StringComparer;
 
 namespace ToSic.Eav.Configuration
 {
@@ -12,19 +14,19 @@ namespace ToSic.Eav.Configuration
         public FeaturesService(FeaturesCatalog featuresCatalog) => _featuresCatalog = featuresCatalog;
         private readonly FeaturesCatalog _featuresCatalog;
 
-        public IEnumerable<FeatureState> All => (_all ?? (_all = Merge(Stored, _featuresCatalog.List)));
+        public IEnumerable<FeatureState> All => _all ?? (_all = Merge(Stored, _featuresCatalog.List));
         private static List<FeatureState> _all;
 
         /// <summary>
         /// List of all enabled features with their guids and nameIds
         /// </summary>
-        public HashSet<string> EnabledFeatures => _enabledFeatures ?? (_enabledFeatures = new HashSet<string>(All
+        public HashSet<string> EnabledFeatures => _enabledFeatures.Get(() => new HashSet<string>(All
                 .Where(f => f.Enabled)
-                .SelectMany(f => new string[] { f.NameId, f.Guid.ToString() })
-                .Distinct(StringComparer.InvariantCultureIgnoreCase),
-                StringComparer.InvariantCultureIgnoreCase)
+                .SelectMany(f => new[] { f.NameId, f.Guid.ToString() })
+                .Distinct(InvariantCultureIgnoreCase),
+                InvariantCultureIgnoreCase)
             );
-        private HashSet<string> _enabledFeatures;
+        private readonly GetOnce<HashSet<string>> _enabledFeatures = new GetOnce<HashSet<string>>();
 
         public IEnumerable<FeatureState> UiFeaturesForEditors => All.Where(f => f.Enabled && f.ForEditUi);
 
@@ -81,7 +83,7 @@ namespace ToSic.Eav.Configuration
             {
                 _stored = value;
                 _all = null;
-                _enabledFeatures = null;
+                _enabledFeatures.Reset();
                 CacheTimestamp = DateTime.Now.Ticks;
             }
         }
@@ -104,7 +106,7 @@ namespace ToSic.Eav.Configuration
                 var enabledRule = f.LicenseRules.FirstOrDefault(lr => licService.IsEnabled(lr.LicenseDefinition));
                 if (enabledRule != null)
                 {
-                    licService.Enabled.TryGetValue(enabledRule.LicenseDefinition, out var licenseState);
+                    licService.Enabled.TryGetValue(enabledRule.LicenseDefinition.Guid, out var licenseState);
                     var specialExpiry = licenseState?.Expiration;
                     enabled = enabledRule.EnableFeatureByDefault;
                     licenseEnabled = true; // The license is active, so it's allowed to enable this

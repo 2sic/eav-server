@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
 
         private const string TestFileIdColumnName = "ID";
 
-        private const string TestFileTitleColumnName = "Title";
+        private const string TestFileTitleColumnName = Attributes.TitleNiceName;
 
         const string PathToCsvFiles = "Files/CsvDataSource";
 

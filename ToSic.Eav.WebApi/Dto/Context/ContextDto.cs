@@ -17,7 +17,6 @@ namespace ToSic.Eav.WebApi.Dto
         [JsonIgnore(Condition = WhenWritingNull)] public ContextEnableDto Enable { get; set; }
 
         [JsonIgnore(Condition = WhenWritingNull)] public IList<FeatureDto> Features { get; set; }
-        [JsonIgnore(Condition = WhenWritingNull)] public IList<ContextApiKeyDto> ApiKeys { get; set; }
     }
 
     public class WebResourceDto

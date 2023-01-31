@@ -57,13 +57,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
 #endregion
 
 
-        public void DoAndSaveHistoryQueue(Action action)
+        public void DoAndSaveHistoryQueue(Action action) => Log.Do(timer: true, action: () =>
         {
-            var callLog = Log.Fn(startTimer: true);
             action.Invoke();
             Save();
-            callLog.Done();
-        }
+        });
 
         /// <summary>
         /// Save an entity to versioning, which is already serialized
@@ -84,13 +82,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <summary>
         /// Persist items is queue
         /// </summary>
-        private void Save()
+        private void Save() => Log.Do(timer: true, action: () =>
         {
-            var callLog = Log.Fn(startTimer: true);
             DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue));
             _queue.Clear();
-            callLog.Done();
-        }
+        });
 
         private readonly List<ToSicEavDataTimeline> _queue = new List<ToSicEavDataTimeline>();
     }

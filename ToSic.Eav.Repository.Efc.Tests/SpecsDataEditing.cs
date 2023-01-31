@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public string ContentTypeName = "DataToModify";
 
-        public string TitleField = "Title";
+        public string TitleField = Attributes.TitleNiceName;
 
         public int ExistingItem = 20980;
 

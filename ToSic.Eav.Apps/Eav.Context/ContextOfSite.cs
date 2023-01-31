@@ -35,8 +35,15 @@ namespace ToSic.Eav.Context
                 );
             }
         }
+        /// <summary>
+        /// Constructor for DI
+        /// </summary>
+        /// <param name="dependencies"></param>
+        public ContextOfSite(Dependencies dependencies) : this(dependencies, null)
+        {
+        }
 
-        public ContextOfSite(Dependencies dependencies) : base("Eav.CtxSte")
+        protected ContextOfSite(Dependencies dependencies, string logName) : base(logName ?? "Eav.CtxSte")
         {
             SiteDeps = dependencies.SetLog(Log);
             Site = dependencies.Site;
@@ -53,7 +60,7 @@ namespace ToSic.Eav.Context
         public IUser User { get; }
 
         /// <inheritdoc />
-        public virtual bool UserMayEdit => Log.GetAndLog<bool>(_ =>
+        public virtual bool UserMayEdit => Log.Getter(() =>
         {
             var u = User;
             if (u == null) return false;
@@ -65,6 +72,6 @@ namespace ToSic.Eav.Context
         public Dependencies SiteDeps { get; }
 
         /// <inheritdoc />
-        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(SiteDeps).LinkLog(parentLog);
+        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(SiteDeps, Log.NameId).LinkLog(parentLog);
     }
 }

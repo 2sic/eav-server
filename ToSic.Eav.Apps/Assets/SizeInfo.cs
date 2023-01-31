@@ -1,7 +1,6 @@
 ﻿using System;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Helper;
+using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Apps.Assets
 {

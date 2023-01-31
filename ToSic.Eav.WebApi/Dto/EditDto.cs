@@ -60,7 +60,12 @@ namespace ToSic.Eav.WebApi.Dto
         /// WIP v15 - should contain additional settings such as default GPS coordinates
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public IDictionary<string, object> Settings { get; set; }
+        public EditSettingsDto Settings { get; set; }
     }
 
+    public class EditSettingsDto
+    {
+        public IDictionary<string, object> Values { get; set; }
+        public List<JsonEntity> Entities { get; set; }
+    }
 }

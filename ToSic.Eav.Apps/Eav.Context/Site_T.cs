@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Lib.Data;
+﻿using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -11,7 +11,7 @@ namespace ToSic.Eav.Context
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [PrivateApi]
-    public abstract class Site<T>: HasLog, ISite, IWrapper<T>
+    public abstract class Site<T>: ServiceBase, ISite, IWrapper<T>
     {
         protected Site(string logPrefix): base($"{logPrefix}.Site") { }
 

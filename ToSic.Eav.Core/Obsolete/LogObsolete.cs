@@ -4,20 +4,21 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Obsolete
 {
     /// <summary>
     /// Special logger to log obsolete messages
     /// </summary>
-    public class LogObsolete: HasLog
+    public class LogObsolete: ServiceBase
     {
-        public const string ObsoleteNameInHistory = LogConstants.HistoryWarningsPrefix + "obsolete";
+        public const string ObsoleteNameInHistory = LogConstants.StoreWarningsPrefix + "obsolete";
         public const int MaxGeneralToLog = 25;
         public const int MaxSpecificToLog = 1;
         private const string MainError = "error";
 
-        public LogObsolete(string obsoleteId, string caseIdentifier, string since, string till, string link, Action<ILog> addMore) : base(LogNames.Eav + ".Obsolt")
+        public LogObsolete(string obsoleteId, string caseIdentifier, string since, string till, string link, Action<ILog> addMore) : base(EavLogs.Eav + ".Obsolt")
         {
             try
             {

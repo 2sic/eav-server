@@ -3,12 +3,13 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public sealed class FileSystemLoaderUnknown: HasLog, IAppFileSystemLoader, IIsUnknown
+    public sealed class FileSystemLoaderUnknown: ServiceBase, IAppFileSystemLoader, IIsUnknown
     {
-        public FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> warn): base(LogConstants.FullNameUnknown)
+        public FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> _): base(LogConstants.FullNameUnknown)
         { }
 
         public IAppFileSystemLoader Init(AppState app)

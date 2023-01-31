@@ -99,6 +99,7 @@
     <Compile Include="Mocks\MockZoneMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyLookupAndStack\PropertyLookupTestBase.cs" />
+    <Compile Include="PropertyLookupAndStack\PropLookupStackBase.cs" />
     <Compile Include="PropertyLookupAndStack\TestData.cs" />
     <Compile Include="PropertyLookupAndStack\PropLookupDicTest.cs" />
     <Compile Include="PropertyLookupAndStack\PropLookupStackSimpleListTest.cs" />

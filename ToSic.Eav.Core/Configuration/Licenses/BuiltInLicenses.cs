@@ -100,5 +100,13 @@ namespace ToSic.Eav.Configuration.Licenses
             new Guid("a96277f0-df0e-4dc2-a9a6-4951fb43f26f"),
             "This enables beta features in 2sxc which are not yet final and may change at any time."
         );
+
+#if DEBUG
+        public static readonly LicenseDefinition CoreTesting = new LicenseDefinition(9999,
+            "Testing",
+            new Guid("5c7b019d-3289-4d6e-bda1-6c165d3fa1e0"),
+            "This is just for testing - it doesn't do anything."
+        );
+#endif
     }
 }

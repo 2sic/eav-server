@@ -59,28 +59,24 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private IImmutableList<IEntity> GetShuffle()
+        private IImmutableList<IEntity> GetShuffle() => Log.Func($"Take: {Take}", () =>
         {
             Configuration.Parse();
 
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>($"Take: {Take}");
-            
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
+                return (originals, "error");
 
-            return wrapLog.ReturnAsOk(ShuffleInternal(originals, Take, Log));
-	    }
+            return (ShuffleInternal(originals, Take), "ok");
+        });
 
         #region Shuffle based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
         static readonly Random Generator = new Random();
 
-        private static IImmutableList<T> ShuffleInternal<T>(IImmutableList<T> sequence, int take, ILog log)
+        private IImmutableList<T> ShuffleInternal<T>(IImmutableList<T> sequence, int take) => Log.Func(l =>
         {
-            var wrapLog = log.Fn<IImmutableList<T>>();
-            
             // check if there is actually any data
             if (!sequence.Any())
-                return wrapLog.Return(sequence, "0 items found to shuffle");
+                return (sequence, "0 items found to shuffle");
 
             var retArray = sequence.ToArray();
             var maxIndex = retArray.Length; // not Length -1, as the random-generator will always be below this
@@ -88,7 +84,7 @@ namespace ToSic.Eav.DataSources
 
             if (take > 0 && maxTake > take) maxTake = take;
 
-            log.A($"take:{take}, maxTake:{maxTake}");
+            l.A($"take:{take}, maxTake:{maxTake}");
             if (take > 0 && maxTake > take) maxTake = take;
             // changed this a bit because of #1815
             // var realTake = maxTake - 1; // either length of array, or take, but -1 as zero-based
@@ -97,7 +93,7 @@ namespace ToSic.Eav.DataSources
             {
                 var swapIndex = Generator.Next(i, maxIndex);   // get num between index and max
                 if (DebugShuffleDs)
-                    log.A($"i:{i}, maxI:{maxIndex}, maxT:{maxTake} swap:{swapIndex} - will put {swapIndex} on {i}");
+                    l.A($"i:{i}, maxI:{maxIndex}, maxT:{maxTake} swap:{swapIndex} - will put {swapIndex} on {i}");
                 var temp = retArray[i];                 // get item at index i...
                 retArray[i] = retArray[swapIndex];      // set index i to new item
                 retArray[swapIndex] = temp;             // place temp-item to swap-slot
@@ -106,8 +102,8 @@ namespace ToSic.Eav.DataSources
             var result = retArray
                 .Take(maxTake)
                 .ToImmutableArray(); // .ToList();
-            return wrapLog.Return(result, maxTake.ToString());
-        }
+            return (result, maxTake.ToString());
+        });
         #endregion
 
     }

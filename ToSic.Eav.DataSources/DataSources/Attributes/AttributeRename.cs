@@ -88,14 +88,13 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-		private IImmutableList<IEntity> GetList()
+        private IImmutableList<IEntity> GetList() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             var mapRaw = AttributeMap;
             var attrMapArray = mapRaw
-                .Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.RemoveEmptyEntries)
+                .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
                 .ToList();
             var attributeNames = attrMapArray
                 .Select(s =>
@@ -117,7 +116,8 @@ namespace ToSic.Eav.DataSources
                     .Select(a =>
                     {
                         // find in the map
-                        var fieldMap = attributeNames.FirstOrDefault(an => string.Equals(an.Old, a.Key, StringComparison.InvariantCultureIgnoreCase));
+                        var fieldMap = attributeNames.FirstOrDefault(an =>
+                            string.Equals(an.Old, a.Key, StringComparison.InvariantCultureIgnoreCase));
                         if (fieldMap != null)
                         {
                             // check if the name actually changed, if not, return original (faster)
@@ -126,8 +126,9 @@ namespace ToSic.Eav.DataSources
                             var renameAttribute = CloneAttributeAndRename(a.Value, fieldMap.New);
                             return new KeyValuePair<string, IAttribute>(fieldMap.New, renameAttribute);
                         }
-                        return preserveOthers 
-                            ? a 
+
+                        return preserveOthers
+                            ? a
                             : new KeyValuePair<string, IAttribute>(null, null);
                     })
                     .Where(set => set.Key != null)
@@ -143,7 +144,7 @@ namespace ToSic.Eav.DataSources
                 newType = new ContentTypeBuilder().Transient(AppId, typeName, typeName);
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
+                return (originals, "error");
 
             var result = originals
                 .Select(entity => _multiBuilder.Entity.Clone(entity,
@@ -154,9 +155,9 @@ namespace ToSic.Eav.DataSources
                 .Cast<IEntity>()
                 .ToImmutableArray();
 
-		    Log.A($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
-		    return wrapLog.ReturnAsOk(result);
-		}
+            Log.A($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
+            return (result, "ok");
+        });
 
 
 

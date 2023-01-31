@@ -5,6 +5,7 @@ using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Context;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.ImportExport
@@ -16,21 +17,16 @@ namespace ToSic.Eav.WebApi.ImportExport
 
         #region Constructor / DI
 
-        public ImportFromRemote(IEnvironmentLogger envLogger, ZipFromUrlImport zipImportFromUrl) : base("Bck.Export")
+        public ImportFromRemote(IEnvironmentLogger envLogger, ZipFromUrlImport zipImportFromUrl, IUser user) : base("Bck.Export")
         {
             ConnectServices(
                 _envLogger = envLogger,
                 _zipImportFromUrl = zipImportFromUrl
             );
-        }
-
-        private IUser _user;
-
-        public ImportFromRemote Init(IUser user)
-        {
             _user = user;
-            return this;
         }
+
+        private readonly IUser _user;
 
         #endregion
 

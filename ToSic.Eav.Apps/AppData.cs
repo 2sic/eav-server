@@ -5,7 +5,6 @@ using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Apps
@@ -38,20 +37,20 @@ namespace ToSic.Eav.Apps
 
         /// <inheritdoc />
         public IEntity Create(string contentTypeName,
-            Dictionary<string, object> values, 
+            Dictionary<string, object> values,
             string userName = null,
-            ITarget target = null)
+            ITarget target = null
+        ) => Log.Func(contentTypeName, () =>
         {
-            var wrapLog = Log.Fn<IEntity>(contentTypeName);
             if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
-            var ids = DataController.Value.Create(contentTypeName, new List<Dictionary<string, object>> {values}, target);
+            var ids = DataController.Value.Create(contentTypeName, new List<Dictionary<string, object>> { values }, target);
             var id = ids.FirstOrDefault();
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             // try to find it again (AppState.List contains also draft items)
             var created = AppState.List.One(id);
-            return wrapLog.Return(created);
-        }
+            return created;
+        });
 
         private static void ProvideOwnerInValues(Dictionary<string, object> values, string userIdentityToken)
         {
@@ -61,12 +60,11 @@ namespace ToSic.Eav.Apps
         }
 
         /// <inheritdoc />
-        public IEnumerable<IEntity> Create(string contentTypeName, 
-            IEnumerable<Dictionary<string, object>> multiValues, 
-            string userName = null)
+        public IEnumerable<IEntity> Create(string contentTypeName,
+            IEnumerable<Dictionary<string, object>> multiValues,
+            string userName = null
+        ) => Log.Func(message: $"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}", func: () =>
         {
-            var wrapLog = Log.Fn<IEnumerable<IEntity>>(null, $"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}");
-            
             if (!string.IsNullOrEmpty(userName))
                 foreach (var values in multiValues)
                     ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
@@ -75,31 +73,28 @@ namespace ToSic.Eav.Apps
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             var created = List.Where(e => ids.Contains(e.EntityId)).ToList();
-            return wrapLog.Return(created);
-        }
+            return created;
+        });
 
         /// <inheritdoc />
-        public void Update(int entityId, Dictionary<string, object> values, string userName = null)
+        public void Update(int entityId, Dictionary<string, object> values, string userName = null
+        ) => Log.Do($"app update i:{entityId}", () =>
         {
-            var wrapLog = Log.Fn($"app update i:{entityId}");
             // userName is not used (to change owner of updated entity).
             DataController.Value.Update(entityId, values);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
-            wrapLog.Done();
-        }
+        });
 
 
         /// <inheritdoc />
-        public void Delete(int entityId, string userName = null)
+        public void Delete(int entityId, string userName = null) => Log.Do($"app delete i:{entityId}", () =>
         {
-            var wrapLog = Log.Fn($"app delete i:{entityId}");
             // userName is not used (to change owner of deleted entity).
             DataController.Value.Delete(entityId);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
-            wrapLog.Done();
-        }
+        });
 
         /// <summary>
         /// All 2sxc data is always snapshot, so read will only run a query once and keep it till the objects are killed.

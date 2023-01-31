@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 using DicNameInt = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int?>>;
 using DicNameObj = System.Collections.Generic.Dictionary<string, object>;
 
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
     /// These are usually relationship-properties of an entity,
     /// like the Content items on a ContentBlock
     /// </summary>
-    public class CoupledIdLists: HasLog
+    public class CoupledIdLists: HelperBase
     {
         public DicNameInt Lists = new DicNameInt(StringComparer.InvariantCultureIgnoreCase);
 
@@ -20,9 +21,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// Constructor
         /// </summary>
         /// <param name="lists">Lists to use for working on</param>
-        /// <param name="parentLog">Logger</param>
-        public CoupledIdLists(DicNameInt lists, ILog parentLog)
-            : base("App.LstPai", parentLog)
+        public CoupledIdLists(DicNameInt lists, ILog parentLog) : base(parentLog, "App.LstPai")
         {
             foreach (var keyValuePair in lists) Lists.Add(keyValuePair.Key, keyValuePair.Value);
             SyncListLengths();
@@ -63,51 +62,47 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// Move an item in the coupled lists
         /// </summary>
         /// <returns></returns>
-        public DicNameObj Move(int sourceIndex, int targetIndex)
+        public DicNameObj Move(int sourceIndex, int targetIndex) => Log.Func($"reorder entities before:{sourceIndex} to after:{targetIndex}", () =>
         {
-            var wrapLog = Log.Fn<DicNameObj>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
             var hasChanges = Lists.Values
                 .Aggregate(false, (prev, l) => l.Move(sourceIndex, targetIndex) || prev);
             return hasChanges
-                ? wrapLog.ReturnAsOk(Lists.ToObject())
-                : wrapLog.ReturnNull("outside of range, no changes");
-        }
+                ? (Lists.ToObject(), "ok")
+                : (null, "outside of range, no changes");
+        });
 
         /// <summary>
         /// Reorder the pair of sequences
         /// </summary>
         /// <param name="newSequence">List of index-IDs how it should be sorted now</param>
         /// <returns></returns>
-        public DicNameObj Reorder(int[] newSequence)
+        public DicNameObj Reorder(int[] newSequence) => Log.Func($"seq:[{string.Join(",", newSequence)}]", l =>
         {
-            var wrapLog = Log.Fn<DicNameObj>($"seq:[{string.Join(",", newSequence)}]");
-
             // some error checks
             if (newSequence.Length != Lists.First().Value.Count)
             {
                 const string msg = "Error: Can't re-order - list length is different";
-                wrapLog.ReturnNull(msg);
-                throw new Exception(msg);
+                throw l.Ex(new Exception(msg));
             }
 
             const int usedMarker = int.MinValue;
-            Lists.ForEach(l =>
+            Lists.ForEach(lst =>
             {
-                var copy = l.ToList();
-                l.Clear();
+                var copy = lst.ToList();
+                lst.Clear();
                 foreach (var index in newSequence)
                 {
                     if (copy[index] == usedMarker)
                         throw new Exception($"Error: Cancelled re-order because index {index} was re-used");
                     var primaryId = copy[index];
                     copy[index] = usedMarker;
-                    l.Add(primaryId);
-                    Log.A($"Added at [{index}] value {primaryId}");
+                    lst.Add(primaryId);
+                    l.A($"Added at [{index}] value {primaryId}");
                 }
             });
 
-            return wrapLog.ReturnAsOk(Lists.ToObject());
-        }
+            return (Lists.ToObject(), "ok");
+        });
 
         /// <summary>
         /// Replace an item in the primary list, and optionally also in the coupled list. 
@@ -115,9 +110,8 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// <param name="index"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public DicNameObj Replace(int index, Tuple<bool, int?>[] values)
+        public DicNameObj Replace(int index, Tuple<bool, int?>[] values) => Log.Func($"index: {index}", () =>
         {
-            Log.Fn($"index: {index}").Done();
             if (index == -1)
                 throw new Exception("Sort order is never -1 any more; deprecated");
 
@@ -132,7 +126,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
             });
 
             return ok ? Lists.ToObject() : null;
-        }
+        });
 
         private static bool ReplaceItemAtIndexIfChanged(List<int?> listMain, int index, int? entityId)
         {
@@ -150,9 +144,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
         private void SyncListLengths()
         {
             var expectedLength = Lists.First().Value.Count;
-            var wrapLog = Log.Fn($"length: {expectedLength}");
-            Lists.Skip(1).ForEach(l => l.SetLength(expectedLength));
-            wrapLog.Done("ok");
+            Log.Do($"length: {expectedLength}", () => Lists.Skip(1).ForEach(l => l.SetLength(expectedLength)));
         }
     }
 }

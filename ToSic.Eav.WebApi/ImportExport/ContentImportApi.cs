@@ -67,10 +67,8 @@ namespace ToSic.Eav.WebApi.ImportExport
         }
 
         [HttpPost]
-        public ContentImportResultDto XmlImport(ContentImportArgsDto args)
+        public ContentImportResultDto XmlImport(ContentImportArgsDto args) => Log.Func(args.DebugInfo, () =>
         {
-            var wrapLog = Log.Fn<ContentImportResultDto>(args.DebugInfo);
-
             var import = GetXmlImport(args);
             if (!import.ErrorLog.HasErrors)
             {
@@ -78,13 +76,13 @@ namespace ToSic.Eav.WebApi.ImportExport
                 _systemManager.PurgeApp(args.AppId);
             }
 
-            return wrapLog.Return(new ContentImportResultDto(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);
-        }
+            return (new ContentImportResultDto(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);
+        });
 
         private ImportListXml GetXmlImport(ContentImportArgsDto args)
         {
             Log.A("get xml import " + args.DebugInfo);
-            var contextLanguages = _appStates.Languages(_appManager.ZoneId) /*_appManager.Read.Zone.Languages()*/.Select(l => l.EnvironmentKey).ToArray();
+            var contextLanguages = _appStates.Languages(_appManager.ZoneId).Select(l => l.EnvironmentKey).ToArray();
 
             using (var contentSteam = new MemoryStream(global::System.Convert.FromBase64String(args.ContentBase64)))
             {
@@ -95,17 +93,16 @@ namespace ToSic.Eav.WebApi.ImportExport
         }
 
         [HttpPost]
-        public bool Import(EntityImportDto args)
+        public bool Import(EntityImportDto args) => Log.Func(message: "import json item" + args.DebugInfo, func: () =>
         {
             try
             {
-                var callLog = Log.Fn<bool>(null, "import json item" + args.DebugInfo);
                 var deserializer = _jsonSerializerLazy.Value.SetApp(_appManager.AppState);
                 // Since we're importing directly into this app, we prefer local content-types
                 deserializer.PreferLocalAppTypes = true;
 
-                _appManager.Entities.Import(new List<IEntity> {deserializer.Deserialize(args.GetContentString()) });
-                return callLog.ReturnTrue("ok");
+                _appManager.Entities.Import(new List<IEntity> { deserializer.Deserialize(args.GetContentString()) });
+                return true;
             }
             catch (ArgumentException)
             {
@@ -115,7 +112,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             {
                 throw new Exception("Couldn't import - probably bad file format", ex);
             }
-        }
+        });
     }
 
 

@@ -14,6 +14,7 @@ using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
+using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
 
 namespace ToSic.Eav.StartUp
@@ -75,7 +76,12 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient<RequirementsService>();
             services.AddTransient<IRequirementCheck, RequirementCheckFeature>();
 
+            services.TryAddTransient<LicenseLoader>();
+
             services.TryAddTransient<Compressor>();
+
+            services.TryAddTransient<AesCryptographyService>();
+            services.TryAddTransient<Rfc2898Generator>();
 
             return services;
         }

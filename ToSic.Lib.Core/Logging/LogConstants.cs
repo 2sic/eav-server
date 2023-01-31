@@ -21,24 +21,20 @@ namespace ToSic.Lib.Logging
         // ReSharper disable once StringLiteralTypo
         public const string NameUnknown = "unknwn";
 
-        /// <summary>
-        /// Scope / prefix to use when the scope wasn't provided.
-        /// </summary>
-        public const string ScopeUnknown = "tdo";
 
-        public const string FullNameUnknown = ScopeUnknown + "." + NameUnknown;
+        public const string FullNameUnknown = LogScopes.Unknown + "." + NameUnknown;
 
         /// <summary>
         /// Special prefix in the log history to ensure warnings can be extracted easily to show in a consolidated way.
         /// </summary>
-        public const string HistoryWarningsPrefix = "warnings-";
+        public const string StoreWarningsPrefix = "warnings-";
 
         /// <summary>
         /// Size of a segment in the log history.
         /// </summary>
-        public const int LiveHistorySegmentSize = 100;
+        public const int LiveStoreSegmentSize = 100;
 
-        public const int LiveHistoryMaxItems = 500;
+        public const int LiveStoreMaxItems = 500;
 
         public const string WarningPrefix = "WARNING: ";
 

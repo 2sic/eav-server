@@ -33,61 +33,63 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Returns a list of entities, optionally filtered by contentType.
         /// </summary>
-        public IEnumerable<EntityForPickerDto> GetAvailableEntities(int appId, string[] items, string contentTypeName, bool withDrafts)
+        // 2dm 2023-01-22 #maybeSupportIncludeParentApps
+        public IEnumerable<EntityForPickerDto> GetForEntityPicker(int appId, string[] items, string contentTypeName, bool withDrafts/*, bool includeParentApps*/) => Log.Func(l =>
         {
-            Log.A($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
+            l.A($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
             AppRuntime.Init(appId, withDrafts);
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
             {
                 contentType = AppRuntime.AppState.GetContentType(contentTypeName);
-                Log.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
+                l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
                 if (contentType == null)
                 {
-                    Log.A("Since a type was specified and not found, will return empty list");
+                    l.A("A type was specified but not found, will return empty list");
                     return new List<EntityForPickerDto>();
                 }
             }
 
-            IEnumerable<IEntity> temp;
+            IEnumerable<IEntity> list;
 
             // optionally filter by type
             if (contentType != null)
             {
-                Log.A($"filter by type:{contentType.Name}");
-                temp = AppRuntime.Entities.Get(contentTypeName);
+                l.A($"filter by type:{contentType.Name}");
+                list = AppRuntime.Entities.Get(contentTypeName/*, includeParentApps*/);
             }
             else
             {
-                temp = AppRuntime.Entities.OnlyContent(_user.IsSystemAdmin); // only super user should also get Configuration
-                Log.A("won't filter by type because it's null");
+                l.A("won't filter by type because it's null");
+                l.A($"Will restrict by scope if user is not system admin: {_user.IsSystemAdmin}");
+                list = AppRuntime.Entities.OnlyContent(_user.IsSystemAdmin); // only super user should also get Configuration
             }
 
             // optionally filter by IDs
             if (items != null && items.Length > 0)
             {
-                Log.A("filter by ids");
+                l.A($"filter by {items.Length} ids");
                 var guids = items.Select(Guid.Parse);
-                temp = temp.Where(e => guids.Contains(e.EntityGuid));
+                list = list.Where(e => guids.Contains(e.EntityGuid));
             }
             else
-                Log.A("won't filter by IDs");
+                l.A("won't filter by IDs");
 
             var languagePriorities = _cultureResolver.SafeLanguagePriorityCodes();
 
-            var entities = temp.Select(l => new EntityForPickerDto
+            var entities = list.Select(e => new EntityForPickerDto
                 {
-                    Id = l.EntityId,
-                    Value = l.EntityGuid,
-                    Text = GetTitle(l, languagePriorities)
+                    Id = e.EntityId,
+                    Value = e.EntityGuid,
+                    Text = GetTitle(e, languagePriorities)
                 })
-                .OrderBy(l => l.Text.ToString())
+                .OrderBy(set => set.Text.ToString())
                 .ToList();
 
-            Log.A($"found⋮{entities.Count}");
+            l.A($"found⋮{entities.Count}");
             return entities;
-        }
+        });
 
         private static string GetTitle(IEntity l, string[] dimensions)
         {

@@ -84,54 +84,48 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public TreeModeler(MultiBuilder multiBuilder, AttributeBuilder attributeBuilder, EntityBuilder entityBuilder, Dependencies dependencies) 
-            : base(dependencies, $"{DataSourceConstants.LogPrefix}.Tree")
+        public TreeModeler(MultiBuilder multiBuilder, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Tree")
         {
-            _multiBuilder = multiBuilder;
-            _attributeBuilder = attributeBuilder;
-            _entityBuilder = entityBuilder;
+            ConnectServices(
+                _multiBuilder = multiBuilder
+            );
             // Specify what out-streams this data-source provides. Usually just one, called "Default"
             Provide(GetList);
 
-            ConfigMask(ParentIdentifierAttributeConfigKey, $"[Settings:{ParentIdentifierAttributeConfigKey}]");
-            ConfigMask(ChildParentAttributeConfigKey, $"[Settings:{ChildParentAttributeConfigKey}]");
-            ConfigMask(TargetChildrenAttributeConfigKey, $"[Settings:{TargetChildrenAttributeConfigKey}]");
-            ConfigMask(TargetParentAttributeConfigKey, $"[Settings:{TargetParentAttributeConfigKey}]");
+            ConfigMask(ParentIdentifierAttributeConfigKey);
+            ConfigMask(ChildParentAttributeConfigKey);
+            ConfigMask(TargetChildrenAttributeConfigKey);
+            ConfigMask(TargetParentAttributeConfigKey);
         }
 
         private readonly MultiBuilder _multiBuilder;
-        private readonly AttributeBuilder _attributeBuilder;
-        private readonly EntityBuilder _entityBuilder;
 
         /// <summary>
         /// Internal helper that returns the entities
         /// </summary>
         /// <returns></returns>
-        private IImmutableList<IEntity> GetList()
+        private IImmutableList<IEntity> GetList() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
+                return (originals, "error");
 
             ITreeMapper treeMapper;
             switch (Identifier)
             {
                 case "EntityGuid":
-                    treeMapper = new TreeMapper<Guid>(_multiBuilder);
+                    treeMapper = new TreeMapper<Guid>(_multiBuilder, Log);
                     break;
                 case "EntityId":
-                    treeMapper = new TreeMapper<int>(_multiBuilder);
+                    treeMapper = new TreeMapper<int>(_multiBuilder, Log);
                     break;
                 default:
-                    return wrapLog.Return(SetError("Invalid Identifier",
-                        "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute."),
-                        "error");
+                    return (SetError("Invalid Identifier", "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute."), "error");
             }
             var res = treeMapper.GetEntitiesWithRelationships(originals, Identifier, ParentReferenceField, NewChildrenField, NewParentField);
-            return wrapLog.Return(res, $"{res.Count}");
-        }
+            return (res, $"{res.Count}");
+        });
 
     }
 }

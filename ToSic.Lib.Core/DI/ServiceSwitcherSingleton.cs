@@ -14,7 +14,7 @@ namespace ToSic.Lib.DI
         public ServiceSwitcherSingleton(
             ILogStore logStore,
             LazySvc<ServiceSwitcher<T>> serviceSwitcher
-        ) : base($"{LogNames.Eav}.SrvSwS") =>
+        ) : base($"{LogScopes.Lib}.SrvSwS") =>
             ConnectServices(
                 _logStore = logStore,
                 _serviceSwitcher = serviceSwitcher
@@ -30,7 +30,7 @@ namespace ToSic.Lib.DI
             // Already loaded
             if (_preferredService != null) return _preferredService;
 
-            _logStore.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
+            _logStore.Add(LogNames.LogStoreStartUp, Log);
             var call = Log.Fn<T>(message: "re-check singleton service");
             _preferredService = _serviceSwitcher.Value.Value;
             return call.Return(_preferredService, $"found {_preferredService.NameId}");

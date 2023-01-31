@@ -5,7 +5,8 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Helper;
+using ToSic.Lib.Helpers;
+using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -60,13 +61,13 @@ namespace ToSic.Eav.DataSources.Queries
 
         /// <inheritdoc />
         [PrivateApi]
-        public Query(Dependencies dependencies, ILazySvc<QueryBuilder> queryBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Query")
+        public Query(Dependencies dependencies, LazySvc<QueryBuilder> queryBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Query")
         {
             ConnectServices(
                 _queryBuilderLazy = queryBuilder
             );
         }
-        private readonly ILazySvc<QueryBuilder> _queryBuilderLazy;
+        private readonly LazySvc<QueryBuilder> _queryBuilderLazy;
 
         /// <summary>
         /// Initialize a full query object. This is necessary for it to work
@@ -74,11 +75,10 @@ namespace ToSic.Eav.DataSources.Queries
         /// <returns></returns>
         [PrivateApi]
         // TODO: REMOVE LOG...
-		public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source, ILog parentLog)
+		public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
-            this.Init(parentLog);
             Definition = new QueryDefinition(queryDef, appId, Log);
             this.Init(config);
             _showDrafts = showDrafts;
@@ -91,25 +91,22 @@ namespace ToSic.Eav.DataSources.Queries
             return this;
         }
 
-		/// <summary>
-		/// Create a stream for each data-type
-		/// </summary>
-		private void CreateOutWithAllStreams()
+        /// <summary>
+        /// Create a stream for each data-type
+        /// </summary>
+        private void CreateOutWithAllStreams() => Log.Do(timer: true, message: $"Query: '{Definition.Entity.GetBestTitle()}'", action: () =>
         {
-            var wrapLog = Log.Fn(message:$"Query: '{Definition.Entity.GetBestTitle()}'", startTimer: true);
-
             // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
             // and the current In
             var resolvedParams = Configuration.LookUpEngine.LookUp(Definition.Params);
 
             // now provide an override source for this
             var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, resolvedParams);
-		    var queryInfos = QueryBuilder.BuildQuery(Definition, Configuration.LookUpEngine, 
-                new List<ILookUp> {paramsOverride}, _showDrafts);
+            var queryInfos = QueryBuilder.BuildQuery(Definition, Configuration.LookUpEngine,
+                new List<ILookUp> { paramsOverride }, _showDrafts);
             _source = queryInfos.Item1;
             _out = new StreamDictionary(this, _source.Out);
-            wrapLog.Done("ok");
-        }
+        });
 
         private QueryBuilder QueryBuilder => _queryBuilder.Get(() => _queryBuilderLazy.Value);
         private readonly GetOnce<QueryBuilder> _queryBuilder = new GetOnce<QueryBuilder>();
@@ -117,22 +114,24 @@ namespace ToSic.Eav.DataSources.Queries
 
 
         /// <inheritdoc />
-        public void Params(string key, string value)
+        public void Params(string key, string value) => Log.Do($"{key}, {value}", l =>
         {
-            var wrapLog = Log.Fn($"{key}, {value}");
+            if (IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
             // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
-            if(!_requiresRebuildOfOut)
+            if (!_requiresRebuildOfOut)
             {
-                Log.A("Can't set param - query already compiled");
-                wrapLog.Done("error");
+                l.A("Can't set param - query already compiled, error");
                 throw new Exception("Can't set param any more, the query has already been compiled. " +
                                     "Always set params before accessing the data. " +
                                     "To Re-Run the query with other params, call Reset() first.");
             }
 
             Definition.Params[key] = value;
-            wrapLog.Done();
-        }
+        });
+
+        /// <inheritdoc />
+        public void Params(string key, object value) => Params(key, value?.ToString());
 
 
         /// <inheritdoc />
@@ -160,23 +159,21 @@ namespace ToSic.Eav.DataSources.Queries
         /// Override PurgeList, because we don't really have In streams, unless we use parameters. 
         /// </summary>
         /// <param name="cascade"></param>
-        public override void PurgeList(bool cascade = false)
+        public override void PurgeList(bool cascade = false) => Log.Do($"{cascade} - on {GetType().Name}", l =>
         {
-            var callLog = Log.Fn($"{cascade}", $"on {GetType().Name}");
             // PurgeList on all In, as would usually happen
             // This will only purge query-in used for parameter
             base.PurgeList(cascade);
 
-            Log.A("Now purge the lists which the Query has on the Out");
+            l.A("Now purge the lists which the Query has on the Out");
             foreach (var stream in Source.Out)
                 stream.Value.PurgeList(cascade);
-            if (!Source.Out.Any()) Log.A("No streams on Source.Out found to clear");
+            if (!Source.Out.Any()) l.A("No streams on Source.Out found to clear");
 
-            Log.A("Update RequiresRebuildOfOut");
+            l.A("Update RequiresRebuildOfOut");
             _requiresRebuildOfOut = true;
-            callLog.Done("ok");
 
-        }
+        });
     }
 
 }

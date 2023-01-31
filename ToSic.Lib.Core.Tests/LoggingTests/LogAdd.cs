@@ -50,10 +50,10 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
         [DynamicData(nameof(SimpleMessages))]
         public void A_StringFunction(string testName, string expected, string message, string result, int depth)
         {
-            var log = LogFactory();
-            log.LogForAdd.A(() => message);
-            AssertDepthAndEntryCount(testName, log.RealLog, LogDepth, EntryCount);
-            AssertEntry(testName, log.RealLog.Entries[0], expected, result, depth);
+            var logFactory = LogFactory();
+            logFactory.LogForAdd.A(logFactory.LogForAdd.Try(() => message));
+            AssertDepthAndEntryCount(testName, logFactory.RealLog, LogDepth, EntryCount);
+            AssertEntry(testName, logFactory.RealLog.Entries[0], expected, result, depth);
         }
 
         [TestMethod]

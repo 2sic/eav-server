@@ -6,6 +6,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.App
 {
@@ -13,9 +14,9 @@ namespace ToSic.Eav.WebApi.App
     // - Probably move to EAV
     // - Probably use constants for the switch-cases
     // - probably rename to AppData
-    internal class AppContentEntityBuilder: HasLog
+    internal class AppContentEntityBuilder: HelperBase
     {
-        public AppContentEntityBuilder(ILog parentLog) : base("Api.Bldr", parentLog)
+        public AppContentEntityBuilder(ILog parentLog) : base(parentLog, "Api.Bldr")
         {
         }
 

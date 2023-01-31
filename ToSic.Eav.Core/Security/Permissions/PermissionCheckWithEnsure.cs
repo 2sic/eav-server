@@ -11,10 +11,11 @@ namespace ToSic.Eav.Security
         /// <returns></returns>
         public static bool Ensure(this IPermissionCheck permCheck, List<Grants> grants, out string error)
         {
-            var wrapLog = permCheck.Log.Fn<bool>(() => $"[{string.Join(",", grants)}]", () => "or throw");
+            var log = permCheck.Log;
+            var l = log.Fn<bool>(log.Try(() => $"[{string.Join(",", grants)}]"), log.Try(() => "or throw"));
             var ok = permCheck.UserMay(grants);
             error = ok ? null : "required permissions for this request are not given";
-            return wrapLog.Return(ok, ok ? "ok" : "permissions not ok");
+            return l.Return(ok, ok ? "ok" : "permissions not ok");
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -32,13 +33,13 @@ namespace ToSic.Eav.Apps.Parts
         /// WARNING: ATM it respects published/unpublished because it's using the Data.
         /// It's not clear if this is actually intended.
         /// </summary>
-        public IEnumerable<IEntity> OnlyContent(bool withConfiguration)
+        public IEnumerable<IEntity> OnlyContent(bool withConfiguration) => Log.Func(() =>
         {
-            var scopes = withConfiguration 
-                ? new [] { Scopes.Default, Scopes.SystemConfiguration } 
-                : new[] { Scopes.Default }; // Scopes.DefaultList;
+            var scopes = withConfiguration
+                ? new[] { Scopes.Default, Scopes.SystemConfiguration }
+                : new[] { Scopes.Default };
             return Parent.Data.List.Where(e => scopes.Contains(e.Type.Scope));
-        }
+        });
 
         /// <summary>
         /// Get this item or return null if not found
@@ -52,12 +53,24 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public IEntity Get(Guid entityGuid) => Parent.AppState.List.One(entityGuid);
 
-        public IEnumerable<IEntity> Get(string contentTypeName)
+        public IEnumerable<IEntity> Get(string contentTypeName
+        // 2dm 2023-01-22 #maybeSupportIncludeParentApps
+        // , bool includeParentApps = false
+        )
         {
             var typeFilter = _dataSourceFactory.Value.GetDataSource<EntityTypeFilter>(Parent.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
+            // 2dm 2023-01-22 #maybeSupportIncludeParentApps
+            //if (includeParentApps) typeFilter.IncludeParentApps = true;
             return typeFilter.List;
         }
+        public IEnumerable<IEntity> GetWithParentAppsExperimental(string contentTypeName) => Log.Func(() =>
+        {
+            var merged = _dataSourceFactory.Value.GetDataSource<AppWithParents>(Parent.Data);
+            var typeFilter = _dataSourceFactory.Value.GetDataSource<EntityTypeFilter>(merged);
+            typeFilter.TypeName = contentTypeName;
+            return typeFilter.List;
+        });
 
         #endregion
 

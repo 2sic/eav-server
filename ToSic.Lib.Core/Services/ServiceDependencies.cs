@@ -8,7 +8,7 @@ namespace ToSic.Lib.Services
     ///
     /// Can collect all objects which need the log and init that.
     /// </summary>
-    public class ServiceDependencies: ILazyInitLog
+    public abstract class ServiceDependencies: ILazyInitLog
     {
         /// <summary>
         /// Special helper to keep track of all dependencies which need a log, to init once SetLog is called
@@ -37,6 +37,7 @@ namespace ToSic.Lib.Services
         /// Auto-initialize the log on all dependencies.
         /// Special format to allow command chaining, so it returns itself.
         /// </summary>
+        // TODO: @2dm - rename to ConnectServices
         public static TDependencies SetLog<TDependencies>(this TDependencies parent, ILog log) where TDependencies : ServiceDependencies
         {
             (parent as ILazyInitLog).SetLog(log);

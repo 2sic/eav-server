@@ -110,10 +110,8 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// Save new features config in "features.json".
         /// </summary>
-        private bool SaveFeaturesNew(FeatureListStored features)
+        private bool SaveFeaturesNew(FeatureListStored features) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<bool>($"f:{features?.Features?.Count ?? -1}");
-
             try
             {
                 // when null, prepare empty features
@@ -132,43 +130,39 @@ namespace ToSic.Eav.Configuration
 
                 var filePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
 
-                return wrapLog.Return(SaveFile(filePath, fileContent), "features new saved");
+                return (SaveFile(filePath, fileContent), "features new saved");
             }
             catch (Exception e)
             {
-                Log.Ex(e);
-                return wrapLog.ReturnFalse("save features failed:" + e.Message);
+                l.Ex(e);
+                return (false, "save features failed:" + e.Message);
             }
-        }
+        });
 
 
         /// <summary>
         /// Update existing features config in "features.json". 
         /// </summary>
-        private bool SaveFile(string filePath, string fileContent)
+        private bool SaveFile(string filePath, string fileContent) => Log.Func($"fp={filePath}", l =>
         {
-            var wrapLog = Log.Fn<bool>($"fp={filePath}");
-
             try
             {
                 File.WriteAllText(filePath, fileContent);
-                return wrapLog.ReturnTrue("ok, file saved");
+                return (true, "ok, file saved");
             }
             catch (Exception e)
             {
-                Log.Ex(e);
-                return wrapLog.ReturnFalse("save file failed:" + e.Message);
+                l.Ex(e);
+                return (false, "save file failed:" + e.Message);
             }
-        }
+        });
 
 
         /// <summary>
         /// Update existing features config and save. 
         /// </summary>
-        internal bool SaveFeaturesUpdate(List<FeatureManagementChange> changes)
+        internal bool SaveFeaturesUpdate(List<FeatureManagementChange> changes) => Log.Func($"c:{changes?.Count ?? -1}", l =>
         {
-            var wrapLog = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
-
             try
             {
                 var (filePath, fileContent) = LoadFeaturesFile();
@@ -203,14 +197,14 @@ namespace ToSic.Eav.Configuration
                 // update to latest fingerprint
                 fileJson["fingerprint"] = _fingerprint.Value.GetFingerprint();
 
-                return wrapLog.Return(SaveFile(filePath, fileJson.ToString()), "features saved");
+                return (SaveFile(filePath, fileJson.ToString()), "features saved");
             }
             catch (Exception e)
             {
-                Log.Ex(e);
-                return wrapLog.ReturnFalse("save features failed:" + e.Message);
+                l.Ex(e);
+                return (false, "save features failed:" + e.Message);
             }
-        }
+        });
 
 
         internal static FeatureConfig FeatureConfigBuilder(FeatureState featureState) =>

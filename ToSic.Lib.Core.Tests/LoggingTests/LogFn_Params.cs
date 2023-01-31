@@ -17,7 +17,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
             return (fn, log);
         }
 
-        protected override string WrapperSignature => $"{nameof(LogFactory)}({FakeParameter}) ";
+        protected override string WrapperSignature => $"{nameof(LogFactory)}({FakeParameter})";
 
 
     }

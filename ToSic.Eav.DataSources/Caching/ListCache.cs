@@ -5,6 +5,7 @@ using System.Runtime.Caching;
 using ToSic.Eav.Caching;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Caching
@@ -13,7 +14,7 @@ namespace ToSic.Eav.DataSources.Caching
     /// Responsible for caching lists / streams. Usually used in queries or sources which have an intensive loading or querying time.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class ListCache: HasLog, IListCache
+    public class ListCache: HelperBase, IListCache
     {
         #region Static Caching and Lock Variables
         private static ObjectCache Cache => MemoryCache.Default;
@@ -26,7 +27,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// Constructor
         /// </summary>
         [PrivateApi]
-        public ListCache(ILog parentLog) : base("DS.LstCch", parentLog) { }
+        public ListCache(ILog parentLog = null) : base(parentLog, "DS.LstCch") { }
 
         #region Has in Cache
 
@@ -58,29 +59,27 @@ namespace ToSic.Eav.DataSources.Caching
         /// </summary>
         /// <param name="dataStream"></param>
         /// <returns></returns>
-        private ListCacheItem GetValidCacheItemOrNull(IDataStream dataStream)
+        private ListCacheItem GetValidCacheItemOrNull(IDataStream dataStream) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<ListCacheItem>();
             // Check if it's in the cache, and if it requires re-loading
             var key = CacheKey(dataStream);
             var itemInCache = Get(key);
             var found = itemInCache != null;
             var valid = found && (!dataStream.CacheRefreshOnSourceRefresh || !itemInCache.CacheChanged(dataStream.Caching.CacheTimestamp));
-            Log.A($"ListCache found:{found}; valid:{valid}; timestamp:{dataStream.Caching.CacheTimestamp} = {dataStream.Caching.CacheTimestamp.ToReadable()}");
-            Log.A($"ListCache key:'{key}'");
-            return wrapLog.Return(valid ? itemInCache : null, valid.ToString());
-        }
+            l.A($"ListCache found:{found}; valid:{valid}; timestamp:{dataStream.Caching.CacheTimestamp} = {dataStream.Caching.CacheTimestamp.ToReadable()}");
+            l.A($"ListCache key:'{key}'");
+            return (valid ? itemInCache : null, valid.ToString());
+        });
 
         /// <inheritdoc />
         public ListCacheItem GetOrBuild(IDataStream stream, Func<IImmutableList<IEntity>> builderFunc,
-            int durationInSeconds = 0)
+            int durationInSeconds = 0) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<ListCacheItem>();
             var key = CacheKey(stream);
 
             var cacheItem = GetValidCacheItemOrNull(stream);
             if (cacheItem != null)
-                return wrapLog.Return(cacheItem, "found, use cache");
+                return (cacheItem, "found, use cache");
 
             // If reloading is required, set a lock first
             // This is super important to prevent parallel loading of the same data
@@ -90,20 +89,20 @@ namespace ToSic.Eav.DataSources.Caching
             var lockKey = LoadLocks.GetOrAdd(key, new object());
             lock (lockKey)
             {
-                Log.A("came out of lock");
+                l.A("came out of lock");
                 // now that lock is free, it could have been initialized, so re-check
                 cacheItem = GetValidCacheItemOrNull(stream);
                 if (cacheItem != null)
-                    return wrapLog.Return(cacheItem,"still valid, use cache");
+                    return (cacheItem, "still valid, use cache");
 
-                Log.A($"Re-Building cache of data stream {stream.Name}");
+                l.A($"Re-Building cache of data stream {stream.Name}");
                 var entities = builderFunc();
                 var useSlidingExpiration = stream.CacheRefreshOnSourceRefresh;
                 Set(key, entities, stream.Caching.CacheTimestamp, durationInSeconds, useSlidingExpiration);
 
-                return wrapLog.Return(Get(key), "generated and placed in cache");
+                return (Get(key), "generated and placed in cache");
             }
-        }
+        });
 
         /// <inheritdoc />
         public ListCacheItem Get(string key) => Cache[key] as ListCacheItem;
@@ -117,9 +116,9 @@ namespace ToSic.Eav.DataSources.Caching
 
         /// <inheritdoc />
         public void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, int durationInSeconds = 0,
-            bool slidingExpiration = true)
+            bool slidingExpiration = true
+        ) => Log.Do($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}", () =>
         {
-            var callLog = Log.Fn($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
             var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
             var expiration = new TimeSpan(0, 0, duration);
             var policy = slidingExpiration
@@ -128,8 +127,7 @@ namespace ToSic.Eav.DataSources.Caching
 
             var cache = MemoryCache.Default;
             cache.Set(key, new ListCacheItem(list, sourceTimestamp), policy);
-            callLog.Done("ok");
-        }
+        });
         
 
         /// <inheritdoc />
@@ -140,13 +138,9 @@ namespace ToSic.Eav.DataSources.Caching
         #endregion
 
         #region Remove List
+
         /// <inheritdoc />
-        public void Remove(string key)
-        {
-            var callLog = Log.Fn(key);
-            MemoryCache.Default.Remove(key);
-            callLog.Done("ok");
-        }
+        public void Remove(string key) => Log.Do(() => MemoryCache.Default.Remove(key));
 
         /// <inheritdoc />
         public void Remove(IDataStream dataStream) => Remove(CacheKey(dataStream));

@@ -7,13 +7,14 @@ using ToSic.Eav.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Serialization;
+using ToSic.Lib.Services;
 using static System.IO.Path;
 
 namespace ToSic.Eav.ImportExport
 {
-    public class FileManager : HasLog
+    public class FileManager : ServiceBase
     {
-        public FileManager() : base(LogNames.Eav + ".FileMn") { }
+        public FileManager() : base(EavLogs.Eav + ".FileMn") { }
 
         //public FileManager(string sourceFolder) : base("FileMan")
         //{
@@ -38,9 +39,9 @@ namespace ToSic.Eav.ImportExport
         /// <param name="destinationFolder"></param>
         /// <param name="overwriteFiles"></param>
         /// <param name="messages"></param>
-        public void CopyAllFiles(string destinationFolder, bool overwriteFiles, List<Message> messages)
+        public void CopyAllFiles(string destinationFolder, bool overwriteFiles, List<Message> messages
+        ) => Log.Do($"dest:{destinationFolder}, overwrite:{overwriteFiles}", () =>
         {
-            var wrapLog = Log.Fn($"dest:{destinationFolder}, overwrite:{overwriteFiles}");
             var filteredFiles = AllTransferableFiles.ToList();
             Log.A($"copy files:{filteredFiles.Count}");
             foreach (var file in filteredFiles)
@@ -55,13 +56,13 @@ namespace ToSic.Eav.ImportExport
                     File.Copy(file, destinationFilePath, overwriteFiles);
                 else
                 {
-                    var alreadyExistsMsg = "File '" + GetFileName(destinationFilePath) + "' not copied because it already exists";
+                    var alreadyExistsMsg = "File '" + GetFileName(destinationFilePath) +
+                                           "' not copied because it already exists";
                     Log.A($"warning: {alreadyExistsMsg}");
                     messages.Add(new Message(alreadyExistsMsg, Message.MessageTypes.Warning));
                 }
             }
-            wrapLog.Done("ok");
-        }
+        });
 
         /// <summary>
         /// Gets all files from a folder and subfolder, which fit the import/export filter criteria

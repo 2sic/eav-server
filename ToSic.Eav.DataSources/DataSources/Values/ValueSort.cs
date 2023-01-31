@@ -89,10 +89,8 @@ namespace ToSic.Eav.DataSources
         private const char FieldCreate = 'c';
         private const char FieldNormal = 'x';
 
-		private IImmutableList<IEntity> GetValueSort()
-		{
-			var wrapLog = Log.Fn<IImmutableList<IEntity>>();
-
+		private IImmutableList<IEntity> GetValueSort() => Log.Func(() =>
+        {
 			// todo: maybe do something about languages?
 			// todo: test decimal / number types
 
@@ -104,14 +102,14 @@ namespace ToSic.Eav.DataSources
 			var descendingCodes = new[] { "desc","d","0",">" };
 
 			// Languages check - not fully implemented yet, only supports "default" / "current"
-            LanguageList = _valLanguages.PrepareLanguageList(Languages, Log);
+            LanguageList = _valLanguages.PrepareLanguageList(Languages);
 
             if (!GetRequiredInList(out var originals))
-                return wrapLog.Return(originals, "error");
+                return (originals, "error");
 
             // check if no list parameters specified
 		    if (sortAttributes.Length == 1 && string.IsNullOrWhiteSpace(sortAttributes[0]))
-		        return wrapLog.Return(originals, "no params");
+		        return (originals, "no params");
 
 			// 2022-03-09 2dm
 			// Previously we had some code which extracted "unsortable" items
@@ -135,7 +133,7 @@ namespace ToSic.Eav.DataSources
 
 			// if list is blank, then it didn't find the attribute to sort by - so just return unsorted
 			// note 2020-10-07 this may have been a bug previously, returning an empty list instead
-            if (!results.Any()) return wrapLog.Return(originals, "sort-attribute not found in data");
+            if (!results.Any()) return (originals, "sort-attribute not found in data");
 
             // Keep entities which cannot sort by the required values (removed previously from results)
             //var unsortable = originals.Where(e => !results.Contains(e)).ToImmutableArray();
@@ -172,12 +170,12 @@ namespace ToSic.Eav.DataSources
 			}
 			catch (Exception e)
             {
-				return SetError("Error sorting", "Sorting failed - see exception in insights", e);
+				return (SetError("Error sorting", "Sorting failed - see exception in insights", e), "error");
             }
 
-            final = final/*.AddRange(unsortable)*/.ToImmutableArray();
-			return wrapLog.ReturnAsOk(final);
-		}
+            //final = final/*.AddRange(unsortable)*/.ToImmutableArray(); 
+            return (final, "ok");
+		});
 
         private Func<IEntity, object> GetPropertyToSortFunc(char propertyCode, string fieldName, string[] languages)
         {

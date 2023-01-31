@@ -33,7 +33,7 @@ namespace ToSic.Eav.Caching
         protected IReadOnlyDictionary<int, Zone> LoadZones(IAppLoaderTools sp)
         {
             // Load from DB (this will also ensure that Primary Apps are created)
-            var realZones = sp.RepositoryLoader.Zones();
+            var realZones = sp.RepositoryLoader(null).Zones();
 
             // Add the Preset-Zone to the list - important, otherwise everything fails
             var presetZone = new Zone(Constants.PresetZoneId,
@@ -134,7 +134,7 @@ namespace ToSic.Eav.Caching
                 if (appState != null) return appState;
 
                 // Init EavSqlStore once
-                var loader = tools.RepositoryLoader;
+                var loader = tools.RepositoryLoader(null);
                 if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
                 appState = loader.AppState(appIdentity.AppId, true);
                 Set(cacheKey, appState);
@@ -167,15 +167,14 @@ namespace ToSic.Eav.Caching
         #region Update
 
         /// <inheritdoc />
-        public virtual AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
+        public virtual AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools) => log.Func(() =>
         {
-            var wrapLog = log.Fn<AppState>();
             // if it's not cached yet, ignore the request as partial update won't be necessary
-            if (!Has(app)) return wrapLog.ReturnNull("not cached, won't update");
+            if (!Has(app)) return (null, "not cached, won't update");
             var appState = Get(app, tools);
-            tools.RepositoryLoader.Init(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
-            return wrapLog.ReturnAsOk(appState);
-        }
+            tools.RepositoryLoader(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
+            return (appState, "ok");
+        });
 
         #endregion
 

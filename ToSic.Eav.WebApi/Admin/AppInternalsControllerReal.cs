@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Admin.Metadata;
 using ToSic.Eav.WebApi.Dto;
@@ -41,7 +39,7 @@ namespace ToSic.Eav.WebApi.Admin
         /// <inheritdoc/>
         public AppInternalsDto Get(int appId, int targetType, string keyType, string key)
         {
-            var systemConfiguration = TypeListInternal(appId, Scopes.SystemConfiguration);
+            var systemConfiguration = TypeListInternal(appId, Scopes.SystemConfiguration).ToList();
             var settingsCustomExists = systemConfiguration.Any(ct => ct.Name == "SettingsCustom");
             var resourcesCustomExists = systemConfiguration.Any(ct => ct.Name == "ResourcesCustom");
 

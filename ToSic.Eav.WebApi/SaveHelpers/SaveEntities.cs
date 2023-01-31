@@ -7,18 +7,20 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Formats;
+using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.SaveHelpers
 {
-    public class SaveEntities: HasLog
+    public class SaveEntities: HelperBase
     {
-        public SaveEntities(ILog parentLog) : base("Eav.SavHlp", parentLog) {}
+        public SaveEntities(ILog parentLog) : base(parentLog, "Eav.SavHlp") {}
 
 
-        public void UpdateGuidAndPublishedAndSaveMany(AppManager appMan, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
+        public void UpdateGuidAndPublishedAndSaveMany(AppManager appMan, List<BundleWithHeader<IEntity>> itemsToImport,
+            bool enforceDraft
+        ) => Log.Do(l =>
         {
-            var wrapLog = Log.Fn("");
             foreach (var bundle in itemsToImport)
             {
                 var curEntity = (Entity)bundle.Entity;
@@ -26,44 +28,37 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                 if (enforceDraft)
                     EnforceDraft(curEntity);
             }
-            
+
             var entitiesToImport = itemsToImport.Select(e => e.Entity).ToList();
 
-            Log.A("will save " + entitiesToImport.Count + " items");
+            l.A("will save " + entitiesToImport.Count + " items");
             appMan.Entities.Save(entitiesToImport);
-            wrapLog.Done();
-        }
+        });
 
-        private void EnforceDraft(Entity currEntity)
+        private void EnforceDraft(Entity currEntity) => Log.Do($"will set published/isbranch on {currEntity.EntityGuid}", () =>
         {
-            var wrapLog = Log.Fn($"will set published/isbranch on {currEntity.EntityGuid}");
             currEntity.IsPublished = false;
             currEntity.PlaceDraftInBranch = true;
-            wrapLog.Done();
-        }
+        });
 
         /// <summary>
         /// Generate pairs of guid/id of the newly added items
         /// </summary>
         /// <returns></returns>
-        public Dictionary<Guid, int> GenerateIdList(EntityRuntime appEntities, IEnumerable<BundleWithHeader> items)
+        public Dictionary<Guid, int> GenerateIdList(EntityRuntime appEntities, IEnumerable<BundleWithHeader> items) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<Dictionary<Guid, int>>();
             var idList = items.Select(e =>
                 {
                     var foundEntity = appEntities.Get(e.Header.Guid);
                     var state = foundEntity == null ? "not found" : foundEntity.IsPublished ? "published" : "draft";
                     var draft = foundEntity?.GetDraft();
-                    Log.A(
-                        $"draft check: entity {e.Header.Guid} ({state}) - additional draft: {draft != null} - will return the draft");
-                    return
-                        draft ??
-                        foundEntity; // return the draft (that would be the latest), or the found, or null if not found
+                    l.A($"draft check: entity {e.Header.Guid} ({state}) - additional draft: {draft != null} - will return the draft");
+                    return draft ?? foundEntity; // return the draft (that would be the latest), or the found, or null if not found
                 })
                 .Where(e => e != null)
                 .ToDictionary(f => f.EntityGuid, f => f.EntityId);
-            return wrapLog.Return(idList);
-        }
+            return idList;
+        });
 
     }
 }

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Environment
 {
     public sealed class EnvironmentLoggerUnknown: IEnvironmentLogger, IIsUnknown
     {
-        public EnvironmentLoggerUnknown(WarnUseOfUnknown<EnvironmentLoggerUnknown> warn) { }
+        public EnvironmentLoggerUnknown(WarnUseOfUnknown<EnvironmentLoggerUnknown> _) { }
 
         public void LogException(Exception ex)
         {

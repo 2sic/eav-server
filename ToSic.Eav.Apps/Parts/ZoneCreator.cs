@@ -22,14 +22,13 @@ namespace ToSic.Eav.Apps.Parts
 
 
         #endregion
-        
-        public int Create(string name)
+
+        public int Create(string name) => Log.Func($"create zone:{name}", () =>
         {
-            var wrapCall = Log.Fn<int>($"create zone:{name}");
             var zoneId = _db.Init(null, null).Zone.AddZone(name);
             SystemManager.PurgeZoneList();
-            return wrapCall.Return(zoneId, $"created zone {zoneId}");
-        }
+            return (zoneId, $"created zone {zoneId}");
+        });
 
     }
 }

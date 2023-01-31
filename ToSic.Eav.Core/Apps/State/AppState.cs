@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
     {
 
         [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-        public AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base($"App.St-{id.AppId}", new CodeRef())
+        public AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base($"App.St-{id.AppId}")
         {
             Log.A($"AppState for App {id.AppId}");
             this.LinkLog(parentLog, null, forceConnect: true);

@@ -1,14 +1,14 @@
 ﻿using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Errors;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Validation
 {
-    internal abstract class ValidatorBase: HasLog
+    internal abstract class ValidatorBase: HelperBase
     {
         public string Errors = string.Empty;
 
-        protected ValidatorBase(string logName, ILog parentLog, string initialMessage, string className) 
-            : base(logName, parentLog, initialMessage, className)
+        protected ValidatorBase(ILog parentLog, string logName) : base(parentLog, logName)
         {
         }
 

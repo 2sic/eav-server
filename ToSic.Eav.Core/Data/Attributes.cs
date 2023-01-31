@@ -28,6 +28,8 @@ namespace ToSic.Eav.Data
         /// </summary>
         public const string TitleNiceName = "Title";
 
+        public const string NameIdNiceName = "NameId";
+
         public const string ModifiedNiceName = "Modified";
         public const string CreatedNiceName = "Created";
 

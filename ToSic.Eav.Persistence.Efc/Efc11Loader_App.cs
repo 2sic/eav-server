@@ -29,7 +29,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <returns>An object with everything which an app has, usually for caching</returns>
         private AppState LoadBasicAppState(int appId)
         {
-            _logStore.Add(LogNames.LogHistoryGlobalAppStateLoader, Log);
+            _logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
 
             var wrapLog = Log.Fn<AppState>($"AppId: {appId}");
             var appIdentity =_appStates.IdentityOfApp(appId);
@@ -90,7 +90,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// <inheritdoc />
         public AppState AppState(int appId, bool ensureInitialized)
         {
-            var wrapLog = Log.Fn<AppState>($"{appId}, {ensureInitialized}", startTimer: true);
+            var wrapLog = Log.Fn<AppState>($"{appId}, {ensureInitialized}", timer: true);
 
             var appState = LoadBasicAppState(appId);
             if (!ensureInitialized) return wrapLog.Return(appState, "won't check initialized");
@@ -112,15 +112,14 @@ namespace ToSic.Eav.Persistence.Efc
         {
             var outerWrapLog = Log.Fn<AppState>(message: "What happens inside this is logged in the app-state loading log");
             
-            app.Load(() =>
+            var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
+            app.Load(() => Log.Do(timer: true, message: msg, action: l =>
             {
-                var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
-                var wrapLog = Log.Fn(message: msg, startTimer: true);
-
                 // prepare metadata lists & relationships etc.
                 if (startAt <= AppStateLoadSequence.MetadataInit)
                 {
-                    _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app, _dbContext));
+                    // #removeUnusedPreloadOfMetaTypes
+                    _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app));
                     // New in V11.01
                     var nameAndFolder = PreLoadAppPath(app.AppId);
                     app.Name = nameAndFolder?.Item1;
@@ -140,20 +139,19 @@ namespace ToSic.Eav.Persistence.Efc
                     dbTypes = LoadExtensionsTypesAndMerge(app, dbTypes);
                     app.InitContentTypes(dbTypes);
                     typeTimer.Stop();
-                    Log.A($"timers types:{typeTimer.Elapsed}");
+                    l.A($"timers types:{typeTimer.Elapsed}");
                 }
                 else
-                    Log.A("skipping content-type load");
+                    l.A("skipping content-type load");
 
                 // load data
                 if (startAt <= AppStateLoadSequence.ItemLoad)
                     LoadEntities(app, entityIds);
                 else
-                    Log.A("skipping items load");
+                    l.A("skipping items load");
 
-                Log.A($"timers sql:sqlAll:{_sqlTotalTime}");
-                wrapLog.Done("ok");
-            });
+                l.A($"timers sql:sqlAll:{_sqlTotalTime}");
+            }));
 
             return outerWrapLog.ReturnAsOk(app);
         }

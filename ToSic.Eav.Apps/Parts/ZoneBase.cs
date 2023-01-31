@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.Parts
 
     public static class ZoneBaseExtensions
     {
-        public static T SetId<T>(this T parent, int zoneId) where T : ZoneBase => parent.Log.WrpFn<T>(_ =>
+        public static T SetId<T>(this T parent, int zoneId) where T : ZoneBase => parent.Log.Func<T>(_ =>
         {
             parent.ZoneId = zoneId;
             return parent;

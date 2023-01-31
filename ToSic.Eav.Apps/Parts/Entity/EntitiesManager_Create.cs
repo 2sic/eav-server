@@ -10,15 +10,15 @@ namespace ToSic.Eav.Apps.Parts
 {
     public partial class EntitiesManager
     {
-        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null)
+        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null
+        ) => Log.Func($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}", () =>
         {
-            var wrapLog = Log.Fn<Tuple<int, Guid>>($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
             var newEnt = new Entity(Parent.AppId, Guid.NewGuid(), Parent.Read.ContentTypes.Get(typeName), values);
             if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
             var eid = Save(newEnt);
             var guid = Parent.DataController.Entities.TempLastSaveGuid;
-            return wrapLog.Return(new Tuple<int, Guid>(eid, guid), $"id:{eid}, guid:{guid}");
-        }
+            return (new Tuple<int, Guid>(eid, guid), $"id:{eid}, guid:{guid}");
+        });
 
         
         /// <summary>

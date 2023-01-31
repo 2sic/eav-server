@@ -138,7 +138,7 @@ namespace ToSic.Eav.Persistence.Efc
 
         private Dictionary<int, IEnumerable<TempRelationshipList>> GroupUniqueRelationships(IReadOnlyCollection<ToSicEavEntityRelationships> relationships)
         {
-            var callLog = Log.Fn<Dictionary<int, IEnumerable<TempRelationshipList>>>($"items: {relationships.Count}", startTimer: true);
+            var callLog = Log.Fn<Dictionary<int, IEnumerable<TempRelationshipList>>>($"items: {relationships.Count}", timer: true);
 
             Log.A("experiment!");
             var unique = relationships.Distinct(new RelationshipComparer()).ToList();

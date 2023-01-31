@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps
         public class AppDependencies: ServiceDependencies
         {
             public Generator<Query> QueryGenerator { get; }
-            public ILazySvc<QueryManager> QueryManager { get; }
+            public LazySvc<QueryManager> QueryManager { get; }
             internal readonly IZoneMapper ZoneMapper;
             internal readonly ISite Site;
             internal readonly IAppStates AppStates;
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps
                 ISite site,
                 IAppStates appStates,
                 DataSourceFactory dataSourceFactory,
-                ILazySvc<QueryManager> queryManager,
+                LazySvc<QueryManager> queryManager,
                 Generator<Query> queryGenerator)
             {
                 AddToLogQueue(
@@ -55,14 +55,14 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="dependencies">All the dependencies of this app, managed by this app</param>
         /// <param name="logName">must be null by default, because of DI</param>
-        public App(AppDependencies dependencies, string logName = null): base(logName ?? "Eav.App", new CodeRef())
+        public App(AppDependencies dependencies, string logName = null): base(logName ?? "Eav.App")
         {
-            _deps = dependencies.SetLog(Log);
+            Deps = dependencies.SetLog(Log);
             _dsFactory = dependencies.DataSourceFactory;
             
             Site = dependencies.Site;
         }
-        private readonly AppDependencies _deps;
+        private readonly AppDependencies Deps;
         private readonly DataSourceFactory _dsFactory;
 
 
@@ -94,7 +94,7 @@ namespace ToSic.Eav.Apps
             // in case the DI gave a bad tenant, try to look up
             if (Site.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
                 appIdentity.AppId != AppConstants.AppIdNotFound)
-                Site = _deps.ZoneMapper.SiteOfApp(appIdentity.AppId);
+                Site = Deps.ZoneMapper.SiteOfApp(appIdentity.AppId);
 
             // if zone is missing, try to find it - but always assume current context
             if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
@@ -106,7 +106,7 @@ namespace ToSic.Eav.Apps
             // Look up name in cache
             // 2020-11-25 changed to use State.Get. before it was this...
             //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
-            NameId = _deps.AppStates.Get(this).NameId;
+            NameId = Deps.AppStates.Get(this).NameId;
 
             InitializeResourcesSettingsAndMetadata();
 

@@ -8,6 +8,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Services;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight
@@ -16,19 +17,21 @@ namespace ToSic.Eav.DataFormats.EavLight
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PrivateApi("Hide Implementation")]
-    public partial class ConvertToEavLight : HasLog, IConvertToEavLight
+    public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependencies>, IConvertToEavLight
     {
         #region Constructor / DI
 
-        public class Dependencies
+        public class Dependencies: ServiceDependencies
         {
             public IValueConverter ValueConverter { get; }
             public IZoneCultureResolver ZoneCultureResolver { get; }
 
             public Dependencies(IValueConverter valueConverter, IZoneCultureResolver zoneCultureResolver)
             {
-                ValueConverter = valueConverter;
-                ZoneCultureResolver = zoneCultureResolver;
+                AddToLogQueue(
+                    ValueConverter = valueConverter,
+                    ZoneCultureResolver = zoneCultureResolver
+                );
             }
         }
 
@@ -40,12 +43,8 @@ namespace ToSic.Eav.DataFormats.EavLight
         /// <param name="dependencies"></param>
         public ConvertToEavLight(Dependencies dependencies) : this(dependencies, "Eav.CnvE2D") { }
 
-        private ConvertToEavLight(Dependencies dependencies, string logName) : base(logName)
-        {
-            Deps = dependencies;
-        }
+        private ConvertToEavLight(Dependencies dependencies, string logName) : base(dependencies, logName) { }
 
-        private Dependencies Deps { get; }
 
         #endregion
 
@@ -140,7 +139,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             // New 12.05 - drop null values
             if(rules != null) OptimizeRemoveEmptyValues(rules, entityValues);
 
-            AddIdAndGuid(entity, entityValues, rules);
+            AddAllIds(entity, entityValues, rules);
 
             if (WithPublishing) AddPublishingInformation(entity, entityValues);
 

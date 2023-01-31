@@ -23,6 +23,7 @@ namespace ToSic.Eav.DataSources
 
         public const string Description = "description";
         public const string Dns = "dns";
+        public const string Scopes = "workspaces";
 
         public const string DynamicForm = "dynamic_form";
         public const string EditAttributes = "edit_attributes";
@@ -68,6 +69,7 @@ namespace ToSic.Eav.DataSources
         public const string Tree = "account_tree";
 
         public const string Metadata = "loyalty";
+        public const string MetadataTargetTypes = "interests";
 
         public const string UserCircled = "account_circle";
 

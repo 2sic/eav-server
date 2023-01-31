@@ -1,10 +1,10 @@
-﻿using ToSic.Lib.Logging;
+﻿using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Repositories
 {
-    public abstract class RepositoryBase: HasLog
+    public abstract class RepositoryBase: ServiceBase
     {
-        protected RepositoryBase(bool global, bool readOnly, RepositoryTypes type, ILog parentLog) : base("RP.Info", parentLog)
+        protected RepositoryBase(bool global, bool readOnly, RepositoryTypes type) : base("RP.Info")
         {
             Global = global;
             ReadOnly = readOnly;

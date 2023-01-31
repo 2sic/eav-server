@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Helper;
+using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.DataSources
 {

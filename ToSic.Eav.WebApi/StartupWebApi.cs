@@ -10,6 +10,7 @@ using ToSic.Eav.WebApi.Cms;
 using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Eav.WebApi.Languages;
 using ToSic.Eav.WebApi.Plumbing;
+using ToSic.Eav.WebApi.Serialization;
 using ToSic.Eav.WebApi.Sys;
 using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Zone;
@@ -54,6 +55,10 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<ConvertToEavLight.Dependencies>();
             services.TryAddTransient<ConvertToEavLight, ConvertToEavLight>();
 
+            // json serialization converters eav related
+            services.TryAddTransient<EavJsonConverter>();
+            services.TryAddTransient<EavCollectionJsonConverter>();
+            services.TryAddTransient<EavJsonConverterFactory>();
 
 #if NETFRAMEWORK
             // ResponseMaker must be scoped, as the api-controller must init this for use in other parts

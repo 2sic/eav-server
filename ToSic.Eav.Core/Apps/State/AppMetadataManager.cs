@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps
 {
-    [PrivateApi("internal use only, don't publish this object")]
-    internal class AppMetadataManager: HasLog, IMetadataSource, IAppIdentity
+    [PrivateApi("internal use only")]
+    internal class AppMetadataManager: IMetadataSource
     {
         #region cache value objects: Types, _guid, _number, _string
-        /// <summary>
-        /// Type-map for id/name of types
-        /// </summary>
-        private ImmutableDictionary<int, string> Types { get; }
+        // #removeUnusedPreloadOfMetaTypes
+        ///// <summary>
+        ///// Type-map for id/name of types
+        ///// </summary>
+        //private ImmutableDictionary<int, string> Types { get; }
 
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyGuid
@@ -47,12 +46,12 @@ namespace ToSic.Eav.Apps
 
         #endregion
 
-        public AppMetadataManager(AppState app, ImmutableDictionary<int, string> metadataTypes, ILog parentLog) 
-            : base("App.MDMan", parentLog, "initialize")
+        // #removeUnusedPreloadOfMetaTypes
+        public AppMetadataManager(AppState app/*, ImmutableDictionary<int, string> metadataTypes*/) // : base("App.MDMan")
         {
             _app = app;
-
-            Types = metadataTypes;
+            // #removeUnusedPreloadOfMetaTypes
+            //Types = metadataTypes;
 
             // make sure the lists have a sub-list for each known relationship type
             Reset();
@@ -67,12 +66,14 @@ namespace ToSic.Eav.Apps
             _number = new Dictionary<int, Dictionary<int, List<IEntity>>>();
             _string = new Dictionary<int, Dictionary<string, List<IEntity>>>();
 
-            foreach (var mdt in Types)
-            {
-                _guid.Add(mdt.Key, new Dictionary<Guid, List<IEntity>>());
-                _number.Add(mdt.Key, new Dictionary<int, List<IEntity>>());
-                _string.Add(mdt.Key, new Dictionary<string, List<IEntity>>());
-            }
+            // #removeUnusedPreloadOfMetaTypes
+            // 2023-01-10 2dm - believe this isn't relevant, as each key will be re-added if missing later - try to disable
+            //foreach (var metaType in Types)
+            //{
+            //    _guid.Add(metaType.Key, new Dictionary<Guid, List<IEntity>>());
+            //    _number.Add(metaType.Key, new Dictionary<int, List<IEntity>>());
+            //    _string.Add(metaType.Key, new Dictionary<string, List<IEntity>>());
+            //}
         }
 
         #region Cache Timestamp & Invalidation
@@ -102,10 +103,16 @@ namespace ToSic.Eav.Apps
         }
 
         
-        private static void AddToMetaDic<T>(IReadOnlyDictionary<int, Dictionary<T, List<IEntity>>> metadataIndex, int mdTargetType, T mdValue, IEntity newEntity)
+        private static void AddToMetaDic<T>(IDictionary<int, Dictionary<T, List<IEntity>>> metadataIndex, int mdTargetType, T mdValue, IEntity newEntity)
         {
             // get the index of the target type (like 4 = Entity target)
-            var indexOfType = metadataIndex[mdTargetType];
+            // #removeUnusedPreloadOfMetaTypes
+            // var indexOfType = metadataIndex[mdTargetType];
+
+            // Get or create the metadata index on this targetType
+            if (!metadataIndex.TryGetValue(mdTargetType, out var indexOfType))
+                indexOfType = metadataIndex[mdTargetType] = new Dictionary<T, List<IEntity>>();
+
             // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) exists, otherwise create empty list
             var list = indexOfType.ContainsKey(mdValue) ? indexOfType[mdValue] : indexOfType[mdValue] = new List<IEntity>();
 

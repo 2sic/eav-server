@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.PropertyLookup;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -10,19 +11,23 @@ namespace ToSic.Eav.Data
     public partial class PropertyStack
     {
         public PropReqResult InternalGetPath(string path, ILog logOrNull = null)
-            => InternalGetPath(new PropReqSpecs(path, Array.Empty<string>(), logOrNull),
-                new PropertyLookupPath());
+            => InternalGetPath(new PropReqSpecs(path, Array.Empty<string>(), logOrNull), new PropertyLookupPath());
 
-        public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path) 
-            => TraversePath(specs, path.KeepOrNew(), this);
+        public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path)
+            => TraversePath(specs, path.KeepOrNew(), this, NameId);
 
         [PrivateApi]
-        public static PropReqResult TraversePath(PropReqSpecs specs, PropertyLookupPath path, IPropertyLookup initialSource)
+        public static PropReqResult TraversePath(PropReqSpecs specs, PropertyLookupPath path,
+            IPropertyLookup initialSource, string prefixToIgnore = null
+        ) => specs.LogOrNull.Func(specs.Field, l =>
         {
-            var l = specs.LogOrNull.Fn<PropReqResult>(specs.Field);
             var fields = specs.Field.Split('.');
+            if (prefixToIgnore != null && fields.Any() && prefixToIgnore.EqualsInsensitive(fields.First()))
+                fields = fields.Skip(1).ToArray();
+
             PropReqResult result = null;
             var currentSource = initialSource;
+
             for (var i = 0; i < fields.Length; i++)
             {
                 var field = fields[i];
@@ -30,11 +35,11 @@ namespace ToSic.Eav.Data
 
                 // If nothing found, stop here and return
                 if (result.Result == null)
-                    return l.Return(result.AsFinal(0), $"nothing found on {field}");
+                    return (result.AsFinal(0), $"nothing found on {field}");
 
                 var isLastKey = i == fields.Length - 1;
 
-                if (isLastKey) return l.Return(result, "last hit, found something");
+                if (isLastKey) return (result, "last hit, found something");
 
                 // If we got a sub-list and still have keys in the path to check, update the source
                 if (result.Result is IEnumerable<IPropertyLookup> resultToStartFrom)
@@ -45,17 +50,17 @@ namespace ToSic.Eav.Data
 
                     currentSource = resultToStartFrom.FirstOrDefault();
                     if (currentSource == null)
-                        return l.Return(PropReqResult.NullFinal(result.Path), "found EMPTY list of lookups; will stop");
+                        return (PropReqResult.NullFinal(result.Path), "found EMPTY list of lookups; will stop");
                     continue;
                 }
 
                 // If we got any other value, but would still have fields to check, we must stop now
                 // and report there was nothing to find
                 if (i < fields.Length - 1)
-                    return PropReqResult.NullFinal(result.Path);
+                    return (PropReqResult.NullFinal(result.Path), "stop, nothing to find");
             }
 
-            return result ?? PropReqResult.NullFinal(null);
-        }
+            return (result ?? PropReqResult.NullFinal(null), "stop");
+        });
     }
 }

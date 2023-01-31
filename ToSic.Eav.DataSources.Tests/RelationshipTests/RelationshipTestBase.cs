@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             string separator = null,
             string direction = null)
         {
-            var settings = new Dictionary<string, object> { { "Title", "..." } };
+            var settings = new Dictionary<string, object> { { Attributes.TitleNiceName, "..." } };
 
             void MaybeAddValue(RelationshipFilter.Settings key, string value) { if (value != null) settings.Add(key.ToString(), value); }
             MaybeAddValue(RelationshipFilter.Settings.Relationship, relationship);

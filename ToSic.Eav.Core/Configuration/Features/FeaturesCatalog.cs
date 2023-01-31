@@ -7,7 +7,7 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class FeaturesCatalog: GlobalCatalogBase<FeatureDefinition>
     {
-        public FeaturesCatalog(ILogStore logStore): base(logStore, LogNames.Eav + ".FeatCt", new CodeRef())
+        public FeaturesCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.FeatCt", new CodeRef())
         {
             Register(
                 // Released features since the dawn of features
@@ -29,13 +29,15 @@ namespace ToSic.Eav.Configuration
                 EditUiGpsCustomDefaults,    // new v15
 
                 // Features for Patrons Advanced CMS
-                EditUiTranslateWithGoogle, // WIP/Beta, v15
+                EditUiTranslateWithGoogle,  // v15
 
                 // Patron SuperAdmin
-                AppSyncWithSiteFiles,  // WIP/Beta
+                AppSyncWithSiteFiles,       // v15
+                AppAutoInstallerConfigurable,   // v15
+                DataExportImportBundles, // v15.01
 
                 // Patron Infrastructure
-                SqlCompressDataTimeline, // WIP / Beta v15
+                SqlCompressDataTimeline, // v15
 
                 // 2sxc 10.24+
                 WebFarmCache,
@@ -47,7 +49,13 @@ namespace ToSic.Eav.Configuration
                 EditUiDisableDraft,
 
                 // Beta features
-                BlockFileResolveOutsideOfEntityAdam
+                AdamRestrictLookupToEntity
+
+#if DEBUG
+                // Testing features to verify features
+                ,
+                TestingFeature001
+#endif
             );
         }
 

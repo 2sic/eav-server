@@ -6,7 +6,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Lib.Logging;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Query

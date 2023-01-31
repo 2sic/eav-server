@@ -53,59 +53,47 @@ namespace ToSic.Eav.DataSources
             Provide(XorStream, GetXor);
 		}
 
-        private ImmutableArray<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
             var streams = GetValidInStreams();
-
             var result = streams
                 .SelectMany(stm => stm)
                 .ToImmutableArray();
 
-            // 2021-11-09 2dm - old code, believe the new SelectMany is more efficient
-            //return streams
-            //    .Aggregate(new List<IEntity>() as IEnumerable<IEntity>, (current, stream) => current.Concat(stream))
-            //    .ToImmutableArray();
+            return (result, result.Length.ToString());
+        });
 
-            return wrapLog.Return(result, result.Length.ToString());
-        }
-
-        private List<IEnumerable<IEntity>> GetValidInStreams()
+        private List<IEnumerable<IEntity>> GetValidInStreams() => Log.Func(() =>
         {
-            if (_validInStreams != null) return _validInStreams;
+            if (_validInStreams != null) return (_validInStreams, "cached");
 
-            var wrapLog = Log.Fn<List<IEnumerable<IEntity>>>();
-            
             _validInStreams = In
                 .OrderBy(pair => pair.Key)
                 .Where(v => v.Value?.List != null)
                 .Select(v => v.Value.List)
                 .ToList();
 
-            return wrapLog.Return(_validInStreams, _validInStreams.Count.ToString());
-        }
+            return (_validInStreams, _validInStreams.Count.ToString());
+        });
         
         private List<IEnumerable<IEntity>> _validInStreams;
 
-        private ImmutableArray<IEntity> GetDistinct()
+        private ImmutableArray<IEntity> GetDistinct() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
             var result = List.Distinct().ToImmutableArray();
-            return wrapLog.Return(result, result.Length.ToString());
-        }
+            return (result, result.Length.ToString());
+        });
 
-        private ImmutableArray<IEntity> GetAnd()
+        private ImmutableArray<IEntity> GetAnd() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
-
             var streams = GetValidInStreams();
             var streamCount = streams.Count;
             var first = streams.FirstOrDefault();
             var firstList = first?.ToList(); // must be separate, because we 
             if (streamCount == 0 || firstList == null || !firstList.Any())
-                return wrapLog.Return(ImmutableArray.Create<IEntity>(), "no real In");
+                return (ImmutableArray.Create<IEntity>(), "no real In");
 
-            if (streamCount == 1) return wrapLog.Return(firstList.ToImmutableArray(), "Just 1 In");
+            if (streamCount == 1) return (firstList.ToImmutableArray(), "Just 1 In");
 
             var others = streams
                 .Skip(1)
@@ -117,21 +105,19 @@ namespace ToSic.Eav.DataSources
                 .Where(e => itemsInOthers.Contains(e))
                 .ToImmutableArray();
 
-            return wrapLog.Return(final, final.Length.ToString());
-        }
+            return (final, final.Length.ToString());
+        });
 
-        private ImmutableArray<IEntity> GetXor()
+        private ImmutableArray<IEntity> GetXor() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
-
             var result = List
                 .GroupBy(e => e)
                 .Where(g => g.Count() == 1)
                 .Select(g => g.First())
                 .ToImmutableArray();
 
-            return wrapLog.Return(result, result.Length.ToString());
-        }
+            return (result, result.Length.ToString());
+        });
 
     }
 }

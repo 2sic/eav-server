@@ -9,6 +9,7 @@ using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
+using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
@@ -24,7 +25,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
 
         #region Constructor
 
-        public MetadataControllerReal(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazySvc<MdRecommendations> mdRead) : base($"{LogNames.WebApi}.{LogSuffix}Rl")
+        public MetadataControllerReal(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazySvc<MdRecommendations> mdRead) : base($"{EavLogs.WebApi}.{LogSuffix}Rl")
         {
             ConnectServices(
                 _converter = converter,
@@ -45,25 +46,27 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null)
+        public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null
+        ) => Log.Func($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}", l =>
         {
-            var wrapLog = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
-
             var appState = _appStates.Get(appId);
 
             var (entityList, mdFor) = GetEntityListAndMd(targetType, keyType, key, contentType, appState);
 
             if(entityList == null)
             {
-                Log.A($"error: entityList is null");
-                throw new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel");
+                l.A("error: entityList is null");
+                throw l.Ex(new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel"));
             }
 
             _mdRead.Value.Init(appState);
 
             // When retrieving all items, make sure that permissions are _not_ included
-            if (string.IsNullOrEmpty(contentType))
-                entityList = entityList.Where(e => !Eav.Security.Permission.IsPermission(e));
+            if (IsNullOrEmpty(contentType))
+            {
+                entityList = entityList.Where(e => !Eav.Security.Permission.IsPermission(e)).ToList();
+                l.A($"Filtered for ContentType '{contentType}' - count: {entityList.Count}");
+            }
 
             IEnumerable<MetadataRecommendation> recommendations = null;
             try
@@ -72,20 +75,19 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
             }
             catch (Exception e)
             {
-                Log.A("Error getting recommendations");
-                Log.Ex(e);
+                l.A("Error getting recommendations");
+                l.Ex(e);
             }
 
             try
             {
-                var title = appState.FindTargetTitle(targetType, key);
-                mdFor.Title = title;
-                Log.A($"title:{title}");
+                mdFor.Title = appState.FindTargetTitle(targetType, key);
+                l.A($"title: '{mdFor.Title}'");
             }
             catch { /* experimental / ignore */ }
 
             _converter.WithGuid = true;
-            var result = new MetadataListDto()
+            var result = new MetadataListDto
             {
                 For = mdFor,
                 Items = _converter.Convert(entityList),
@@ -102,45 +104,46 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
                         item[Attributes.TitleNiceName] = typeDic.Name;
                 }
 
-
-            return wrapLog.ReturnAsOk(result);
-        }
+            return result;
+        });
 
         /// <summary>
         /// Get a stable Metadata-Header and the entities which are for this target
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private (IEnumerable<IEntity> entityList, JsonMetadataFor mdFor)
-            GetEntityListAndMd(int targetType, string keyType, string key, string contentType, IMetadataSource appState)
+        private (List<IEntity> entityList, JsonMetadataFor mdFor)
+            GetEntityListAndMd(int targetType, string keyType, string key, string contentType, IMetadataSource appState
+            ) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<(IEnumerable<IEntity>, JsonMetadataFor)>();
             var mdFor = new JsonMetadataFor
             {
                 // #TargetTypeIdInsteadOfTarget
                 Target = _metadataTargets.GetName(targetType),
                 TargetType = targetType,
             };
-            Log.A($"Target: {mdFor.Target} ({targetType})");
+            l.A($"Target: {mdFor.Target} ({targetType})");
 
             switch (keyType)
             {
                 case "guid":
-                    if (!Guid.TryParse(key, out var guidKey)) return wrapLog.Return((null, mdFor), $"error: invalid guid:{key}");
+                    if (!Guid.TryParse(key, out var guidKey)) return ((null, mdFor), $"error: invalid guid:{key}");
                     mdFor.Guid = guidKey;
-                    return wrapLog.Return((appState.GetMetadata(targetType, guidKey, contentType), mdFor), $"guid:{guidKey}");
+                    var md = appState.GetMetadata(targetType, guidKey, contentType).ToList();
+                    return ((md, mdFor), $"guid:{guidKey}; count:{md.Count}");
                 case "string":
                     mdFor.String = key;
-                    return wrapLog.Return((appState.GetMetadata(targetType, key, contentType), mdFor), "string:{key}");
+                    md = appState.GetMetadata(targetType, key, contentType).ToList();
+                    return ((md, mdFor), $"string:{key}; count:{md.Count}");
                 case "number":
-                    if (!int.TryParse(key, out var keyInt)) return wrapLog.Return((null, mdFor), $"error: invalid number:{key}");
+                    if (!int.TryParse(key, out var keyInt)) return ((null, mdFor), $"error: invalid number:{key}");
                     mdFor.Number = keyInt;
-                    return wrapLog.Return((appState.GetMetadata(targetType, keyInt, contentType), mdFor), $"number:{keyInt}");
+                    md = appState.GetMetadata(targetType, keyInt, contentType).ToList();
+                    return ((md, mdFor), $"number:{keyInt}; count:{md.Count}");
                 default:
-                    Log.A("error: key type unknown");
-                    throw new Exception("key type unknown:" + keyType);
+                    throw l.Ex(new Exception("key type unknown:" + keyType));
             }
-        }
-        
+        });
+
     }
 }

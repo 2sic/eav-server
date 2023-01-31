@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
@@ -64,15 +62,11 @@ namespace ToSic.Eav.Persistence.File
                         Log.A($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
                         Log.Ex(e);
                     }
-                Log.A(() => string.Join(",", _paths));
+                Log.A(Log.Try(() => string.Join(",", _paths)));
                 return wrapLog.Return(_paths, $"{_paths.Count} paths");
             }
         }
         private List<string> _paths;
-
-        
-
-
 
 
         internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths
@@ -82,32 +76,23 @@ namespace ToSic.Eav.Persistence.File
 
         public AppState LoadFullAppState()
         {
-            var outerWrapLog = Log.Fn<AppState>(startTimer: true);
+            var outerWrapLog = Log.Fn<AppState>(timer: true);
 
             var appState = new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);
+            var msg = $"get app data package for a#{appState.AppId}";
 
-            appState.Load(() =>
+            appState.Load(() => Log.Do(timer: true, message: msg, action: l =>
             {
-                var msg = $"get app data package for a#{appState.AppId}";
-                var wrapLog = Log.Fn(message: msg, startTimer: true);
-
                 // Prepare metadata lists & relationships etc.
-                appState.InitMetadata(new Dictionary<int, string>().ToImmutableDictionary());
+                // #removeUnusedPreloadOfMetaTypes
+                appState.InitMetadata(/*new Dictionary<int, string>().ToImmutableDictionary()*/);
                 appState.Name = Constants.PresetName;
                 appState.Folder = Constants.PresetName;
 
-                // prepare content-types
-                // Experimental new log wrapping...
 
-                //var wrapLoadTypes = Log.Fn(startTimer: true);
-                //// Just attach all global content-types to this app, as they belong here
-                //var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
-                //appState.InitContentTypes(types);
-                //wrapLoadTypes.Done($"types loaded");
-
-                Log.DoAndLog(startTimer: true, action: () =>
+                l.Do(timer: true, action: () =>
                 {
-                    var types = LoadGlobalContentTypes(FsDataConstants.GlobalContentTypeMin);
+                    var types = LoadGlobalContentTypes();
                     // Just attach all global content-types to this app, as they belong here
                     appState.InitContentTypes(types);
                     return "types loaded";
@@ -122,28 +107,23 @@ namespace ToSic.Eav.Persistence.File
                     // That's because it's loaded from the JSON, where the metadata is part of the json-file.
                     // This should probably not cause any problems, but it's important to know
                     // We may optimize / change this some day
-                    Log.A("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
+                    l.A("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
                     var appTypes = appState.ContentTypes.ToList();
-                    Loaders.ForEach(l => l.ResetSerializer(appTypes));
+                    Loaders.ForEach(ldr => ldr.ResetSerializer(appTypes));
 
-                    Log.A("Load items");
+                    l.A("Load items");
 
-                    var entitySets = LoadAndDeduplicateEntitySets();
-
-                    foreach (var eSet in entitySets)
-                    {
-                        Log.A($"Load {eSet.Folder} - {eSet.Entities.Count} items");
-                        foreach (var c in eSet.Entities) appState.Add(c as Entity, null, true);
-                    }
+                    var entities = LoadGlobalEntities(appState);
+                    l.A($"Load entity {entities.Count} items");
+                    foreach (var entity in entities) 
+                        appState.Add(entity as Entity, null, true);
                 }
                 catch (Exception ex)
                 {
-                    Log.A("Error: Failed adding Entities");
-                    Log.Ex(ex);
+                    l.A("Error: Failed adding Entities");
+                    l.Ex(ex);
                 }
-
-                wrapLog.Done("ok");
-            });
+            }));
 
             return outerWrapLog.ReturnAsOk(appState);
         }

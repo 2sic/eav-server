@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private bool RunDocumentValidityChecks()
         {
-            var wrapLog = Log.Fn<bool>(startTimer: true);
+            var wrapLog = Log.Fn<bool>(timer: true);
             // #1 Assure that each element has a GUID and language child element
             foreach (var element in DocumentElements)
             {
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private bool LoadStreamIntoDocumentElement(Stream dataStream)
         {
-            var wrapLog = Log.Fn<bool>(startTimer: true);
+            var wrapLog = Log.Fn<bool>(timer: true);
             Document = XDocument.Load(dataStream);
             dataStream.Position = 0;
             if (Document == null)
@@ -60,7 +60,11 @@ namespace ToSic.Eav.Apps.ImportExport
                 ?? Document.Element(XmlConstants.Root97);
 
             if (documentRoot == null)
-                throw new Exception(Log.AddAndReuse("can't import - document doesn't have a root element"));
+            {
+                const string msg = "can't import - document doesn't have a root element";
+                Log.A(msg);
+                throw new Exception(msg);
+            }
 
             // #2 make sure it has elements to import
             DocumentElements = documentRoot.Elements(XmlConstants.Entity).ToList();

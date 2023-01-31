@@ -1,12 +1,13 @@
 ﻿using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Configuration
 {
-    public class LoaderBase: HasLog
+    public class LoaderBase: ServiceBase
     {
-        public LoaderBase(ILogStore logStore, ILog parentLog, string logName, string initialMessage) : base(logName, parentLog, initialMessage)
+        public LoaderBase(ILogStore logStore, string logName) : base(logName)
         {
-            logStore.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
+            logStore.Add(LogNames.LogStoreStartUp, Log);
         }
     }
 }

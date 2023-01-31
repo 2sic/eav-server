@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
 
@@ -18,6 +19,12 @@ namespace ToSic.Eav.DataSources
         /// <param name="key">The property name/key, like CaseInsensitive or similar</param>
         /// <param name="value">A string based value</param>
         string this[string key] { get; set; }
+
+        [PrivateApi("Still WIP v15")]
+        string GetThis([CallerMemberName] string cName = default);
+
+        [PrivateApi("Still WIP v15")]
+        void SetThis(string value, [CallerMemberName] string cName = default);
 
         /// <summary>
         /// Tell us if the values have already been parsed or not.

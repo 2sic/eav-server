@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.Parts
 
     public static class ZonePartExtensions
     {
-        public static T ConnectTo<T>(this T parent, ZoneRuntime zoneRuntime) where T : ZonePartRuntimeBase => parent.Log.WrpFn<T>(_ =>
+        public static T ConnectTo<T>(this T parent, ZoneRuntime zoneRuntime) where T : ZonePartRuntimeBase => parent.Log.Func<T>(_ =>
         {
             parent.ZoneRuntime = zoneRuntime;
             return parent;

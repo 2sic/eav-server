@@ -20,7 +20,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             catch
             {
                 if (logDetails) Log.A("Error serializing - will repeat with detailed with logging");
-                Serializer.Init(Log);
+                Serializer.LinkLog(Log);
                 jsonExport = Serializer.Serialize(newEnt);
             }
 

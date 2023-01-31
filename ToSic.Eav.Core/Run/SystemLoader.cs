@@ -10,21 +10,22 @@ namespace ToSic.Eav.Run
     /// <summary>
     /// WIP - the main loader which will run pre-loaders first, then the main loader
     /// </summary>
-    public class SystemLoader: ServiceBase
+    public class SystemLoader : ServiceBase
     {
         public SystemLoader(
             ILogStore logStore,
             IEnumerable<IStartUpRegistrations> registrations,
             LazySvc<EavSystemLoader> systemLoaderLazy // This must be lazy, as some dependencies of it could change till it's needed
-        ) : base($"{LogNames.Eav}SysLdr")
+        ) : base($"{EavLogs.Eav}SysLdr")
         {
-            logStore.Add(LogNames.LogHistoryGlobalAndStartUp, Log);
+            logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, Log);
             Log.A("EAV System Loader");
             ConnectServices(
                 _registrations = registrations,
                 _systemLoaderLazy = systemLoaderLazy
             );
         }
+
         private readonly IEnumerable<IStartUpRegistrations> _registrations;
         private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
 
@@ -35,39 +36,33 @@ namespace ToSic.Eav.Run
             ? _systemLoaderLazy.Value
             : throw new Exception("Can't access this property unless StartUp has run first");
 
-        public void StartUp()
+        public void StartUp() => Log.Do(l =>
         {
-            var call = Log.Fn();
             DoRegistrations();
-            Log.A("Will now run StartUp on EAv SystemLoader - logs are tracked separately");
+            l.A("Will now run StartUp on EAv SystemLoader - logs are tracked separately");
             _systemLoaderLazy.Value.StartUp();
-            call.Done();
-        }
+        });
 
-        private void DoRegistrations()
+        private void DoRegistrations() => Log.Do(() =>
         {
-            var call = Log.Fn();
-            foreach (var registration in _registrations) 
+            foreach (var registration in _registrations)
                 DoRegistration(registration);
-            call.Done();
-        }
+        });
 
-        private void DoRegistration(IStartUpRegistrations registration)
+        private void DoRegistration(IStartUpRegistrations registration) => Log.Do(registration.NameId, l =>
         {
-            var callReg = Log.Fn(registration.NameId);
             try
             {
                 // TODO: to remove this init, we need to implement something in the ConnectService #dropLogInit
                 // which can handle DI-IEnumerables. To dev this we would need unit tests
-                registration.Init(Log);
+                registration.LinkLog(Log);
                 registration.Register();
             }
             catch (Exception ex)
             {
-                Log.A($"Error on registration of {registration.NameId}");
-                Log.Ex(ex);
+                l.A($"Error on registration of {registration.NameId}");
+                l.Ex(ex);
             }
-            callReg.Done();
-        }
-    }
+        });
+}
 }

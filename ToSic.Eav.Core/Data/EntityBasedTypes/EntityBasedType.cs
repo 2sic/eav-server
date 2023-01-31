@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
 
@@ -63,5 +64,15 @@ namespace ToSic.Eav.Data
             if (result == null) return fallback;
             return result;
         }
+
+        /// <summary>
+        /// Get a value from the underlying entity, whose name matches the property requesting this.
+        /// So if your C# property is called `Birthday` it will also get the field `Birthday` in the entity.
+        /// </summary>
+        /// <typeparam name="T">Optional type, usually auto-detected because of the `fallback` value</typeparam>
+        /// <param name="fallback">Value to provide if nothing was found - required</param>
+        /// <param name="propertyName">The property name - will be auto-filled by the compiler</param>
+        /// <returns>The typed value</returns>
+        protected T GetThis<T>(T fallback, [CallerMemberName] string propertyName = default) => Get(propertyName, fallback);
     }
 }

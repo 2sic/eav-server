@@ -18,18 +18,17 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="entityId"></param>
         /// <param name="draftToPublishForJson">Item to be published as the original, for serialization</param>
         /// <returns>The published Entity</returns>
-        internal void PublishDraftInDbEntity(int entityId, IEntity draftToPublishForJson)
+        internal void PublishDraftInDbEntity(int entityId, IEntity draftToPublishForJson) => Log.Do($"{nameof(entityId)}:{entityId}", l =>
         {
-            var wrapLog = Log.Fn($"{entityId}");
             var unpublishedEntity = DbContext.Entities.GetDbEntity(entityId);
             if (!unpublishedEntity.IsPublished)
-                Log.A("found item is draft, will use this to publish");
+                l.A("found item is draft, will use this to publish");
             else
             {
-                Log.A("found item is published - will try to find draft");
+                l.A("found item is published - will try to find draft");
                 // try to get the draft if it exists
                 var draftId = GetDraftBranchEntityId(entityId);
-                Log.A($"found draft: {draftId}");
+                l.A($"found draft: {draftId}");
                 if (!draftId.HasValue)
                     throw new EntityAlreadyPublishedException($"EntityId {entityId} is already published");
                 unpublishedEntity = DbContext.Entities.GetDbEntity(draftId.Value);
@@ -38,43 +37,45 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // Publish Draft-Entity
             if (!unpublishedEntity.PublishedEntityId.HasValue)
             {
-                Log.A("there was no published (not branched), so will just set this to published");
+                l.A("there was no published (not branched), so will just set this to published");
                 unpublishedEntity.IsPublished = true;
             }
             // Replace currently published Entity with draft Entity and delete the draft
             else
             {
                 var publishedId = unpublishedEntity.PublishedEntityId.Value;
-                Log.A("There is a published item, will update that with the draft-data and delete the draft afterwards");
+                l.A(
+                    "There is a published item, will update that with the draft-data and delete the draft afterwards");
                 var publishedEntity = DbContext.Entities.GetDbEntity(publishedId);
                 var json = unpublishedEntity.Json;
                 var isJson = !string.IsNullOrEmpty(json);
-                Log.A($"this is a json:{isJson}");
+                l.A($"this is a json:{isJson}");
 
                 if (isJson)
                 {
-                    Log.A($"Must convert back to entity, to then modify the EntityId. The json: {json}");
+                    l.A($"Must convert back to entity, to then modify the EntityId. The json: {json}");
                     // update the content-id
                     draftToPublishForJson.ResetEntityId(publishedId);
                     var serializer = DbContext.JsonSerializerGenerator.New();
                     json = serializer.Serialize(draftToPublishForJson);
 
-                    Log.A($"changed - final json: {json}");
+                    l.A($"changed - final json: {json}");
                 }
 
-                publishedEntity.Json = json;  // if it's using the new format
-                publishedEntity.ChangeLogModified = unpublishedEntity.ChangeLogModified; // transfer last-modified date (not to today, but to last edit)
-                DbContext.Values.CloneRelationshipsAndSave(unpublishedEntity, publishedEntity); // relationships need special treatment and intermediate save!
+                publishedEntity.Json = json; // if it's using the new format
+                publishedEntity.ChangeLogModified =
+                    unpublishedEntity.ChangeLogModified; // transfer last-modified date (not to today, but to last edit)
+                DbContext.Values.CloneRelationshipsAndSave(unpublishedEntity,
+                    publishedEntity); // relationships need special treatment and intermediate save!
                 DbContext.Values.CloneEntitySimpleValues(unpublishedEntity, publishedEntity);
 
                 // delete the Draft Entity
                 DbContext.Entities.DeleteEntity(unpublishedEntity.EntityId, false);
             }
 
-            Log.A("About to save...");
+            l.A("About to save...");
             DbContext.SqlDb.SaveChanges();
-            wrapLog.Done($"ok {entityId}");
-        }
+        });
 
         /// <summary>
         /// Should clean up branches of this item, and set the one and only as published
@@ -117,7 +118,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="entityIds">EntityId of the Published Entity</param>
         internal Dictionary<int, int?> GetDraftBranchMap(List<int> entityIds)
         {
-            var wrapLog = Log.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", startTimer: true);
+            var wrapLog = Log.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
             var nullList = entityIds.Cast<int?>().ToList();
             var ids = DbContext.SqlDb.ToSicEavEntities
                 .Where(e => nullList.Contains(e.PublishedEntityId) && !e.ChangeLogDeleted.HasValue)

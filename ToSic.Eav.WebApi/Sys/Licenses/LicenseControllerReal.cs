@@ -6,6 +6,7 @@ using System.Net;
 using System.Text.Json;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
@@ -22,12 +23,20 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         // auto-download license file
         private const string DefaultLicenseFileName = "default.license.json";
 
+        private readonly LazySvc<ILicenseService> _licenseServiceLazy;
+        private readonly LazySvc<IFeaturesInternal> _featuresLazy;
+        private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
+        private readonly LazySvc<LicenseCatalog> _licenseCatalog;
+        private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
+        private readonly SystemFingerprint _fingerprint;
+
         public LicenseControllerReal(
             LazySvc<ILicenseService> licenseServiceLazy, 
             LazySvc<IFeaturesInternal> featuresLazy,
             LazySvc<IGlobalConfiguration> globalConfiguration,
             LazySvc<EavSystemLoader> systemLoaderLazy,
-            LazySvc<LicenseCatalog> licenseCatalog
+            LazySvc<LicenseCatalog> licenseCatalog,
+            SystemFingerprint fingerprint
             ) : base("Bck.Lics")
         {
             ConnectServices(
@@ -35,14 +44,10 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                 _featuresLazy = featuresLazy,
                 _globalConfiguration = globalConfiguration,
                 _licenseCatalog = licenseCatalog,
-                _systemLoaderLazy = systemLoaderLazy
+                _systemLoaderLazy = systemLoaderLazy,
+                _fingerprint = fingerprint
             );
         }
-        private readonly LazySvc<ILicenseService> _licenseServiceLazy;
-        private readonly LazySvc<IFeaturesInternal> _featuresLazy;
-        private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
-        private readonly LazySvc<LicenseCatalog> _licenseCatalog;
-        private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
 
         private string ConfigurationsPath
         {
@@ -93,7 +98,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         /// <exception cref="NotImplementedException"></exception>
         [PrivateApi]
         public LicenseFileResultDto Upload() => throw new NotImplementedException();
-    
+
 
 
         /// <summary>
@@ -102,12 +107,11 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         /// <param name="uploadInfo"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public LicenseFileResultDto Upload(HttpUploadedFile uploadInfo)
+        public LicenseFileResultDto Upload(HttpUploadedFile uploadInfo) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<LicenseFileResultDto>();
-
             if (!uploadInfo.HasFiles())
-                return wrapLog.Return(new LicenseFileResultDto { Success = false, Message = "no file in upload" }, "no file in upload");
+                return (new LicenseFileResultDto { Success = false, Message = "no file in upload" },
+                    "no file in upload");
 
             var files = new List<FileUploadDto>();
             for (var i = 0; i < uploadInfo.Count; i++)
@@ -121,17 +125,15 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             // reload license and features
             _systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
-            return wrapLog.ReturnAsOk(new LicenseFileResultDto { Success = true, Message = "ok" });
-        }
+            return (new LicenseFileResultDto { Success = true, Message = "ok" }, "ok");
+        });
 
 
 
         /// <inheritdoc />
-        public LicenseFileResultDto Retrieve()
+        public LicenseFileResultDto Retrieve() => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<LicenseFileResultDto>();
-
-            var fingerprint = _systemLoaderLazy.Value.Fingerprint.GetFingerprint();
+            var fingerprint = _fingerprint.GetFingerprint();
             var url = $"https://patrons.2sxc.org/api/license/get?fingerprint={fingerprint}&version={EavSystemInfo.Version.Major}";
             Log.A($"retrieve license from url:{url}");
 
@@ -155,7 +157,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                     // check for error
                     var licenseFileResultDto = JsonSerializer.Deserialize<LicenseFileResultDto>(content, JsonOptions.UnsafeJsonWithoutEncodingHtml);
                     if (!licenseFileResultDto.Success) 
-                        return wrapLog.Return(licenseFileResultDto, licenseFileResultDto.Message);
+                        return (licenseFileResultDto, licenseFileResultDto.Message);
                 }
                 catch (WebException e)
                 {
@@ -173,15 +175,13 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             // reload license and features
             _systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
-            return wrapLog.ReturnAsOk(new LicenseFileResultDto { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."});
-        }
+            return (new LicenseFileResultDto { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."}, "ok");
+        });
 
         private bool SaveLicenseFile(FileUploadDto file) => SaveLicenseFile(file.Name, file.Contents);
 
-        private bool SaveLicenseFile(string fileName, string content)
+        private bool SaveLicenseFile(string fileName, string content) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<bool>();
-
             var filePath = Path.Combine(ConfigurationsPath, fileName);
 
             try
@@ -202,8 +202,8 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                 throw;
             }
 
-            return wrapLog.ReturnTrue($"ok, save license:{filePath}");
-        }
+            return (true, $"ok, save license:{filePath}");
+        });
 
         private static void RenameOldFile(string filePath)
         {

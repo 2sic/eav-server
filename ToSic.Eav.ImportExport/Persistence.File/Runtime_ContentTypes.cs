@@ -10,29 +10,23 @@ namespace ToSic.Eav.Persistence.File
 {
     public partial class Runtime
     {
-        public List<IContentType> LoadGlobalContentTypes(int typeIdSeed)
+        public List<IContentType> LoadGlobalContentTypes() => Log.Func(() =>
         {
-            Log.A("loading types");
+            // Set TypeID seed for loader so each loaded type has a unique ID
+            var loaderIndex = 1;
+            Loaders.ForEach(ldr => ldr.TypeIdSeed = FsDataConstants.GlobalContentTypeMin + FsDataConstants.GlobalContentTypeSourceSkip * loaderIndex++);
 
             // 3 - return content types
-            var types = new List<IContentType>();
-            Loaders.ForEach(l =>
-            {
-                l.IdSeed = typeIdSeed;
-                types.AddRange(l.ContentTypes());
-                typeIdSeed = (l.IdSeed / FsDataConstants.GlobalContentTypeSourceSkip + 1) * FsDataConstants.GlobalContentTypeSourceSkip;
-            });
+            var types = Loaders.SelectMany(ldr => ldr.ContentTypes()).ToList();
 
             types = SetInternalTypes(types);
 
-
-            Log.A($"found {types.Count} types");
-            return types;
-        }
+            return (types, $"found {types.Count} types");
+        });
 
         private List<IContentType> SetInternalTypes(List<IContentType> types)
         {
-            var wrapLog = Log.Fn<List<IContentType>>(startTimer: true);
+            var wrapLog = Log.Fn<List<IContentType>>(timer: true);
             var changeCount = 0;
             try
             {
@@ -75,7 +69,7 @@ namespace ToSic.Eav.Persistence.File
 
         private int UpdateTypes(string name, IEnumerable<IEntity> entitiesToRetype, IDictionary<string, IContentType> typeDic)
         {
-            var wrapLog = Log.Fn<int>(name, startTimer: true);
+            var wrapLog = Log.Fn<int>(name, timer: true);
             var changeCount = 0;
             foreach (var entity in entitiesToRetype)
                 if (entity.Type.IsDynamic)

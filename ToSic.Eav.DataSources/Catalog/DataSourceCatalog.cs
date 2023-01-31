@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources.Catalog
 {
     [PrivateApi]
-    public partial class DataSourceCatalog: HasLog
+    public partial class DataSourceCatalog: ServiceBase
     {
         public DataSourceCatalog(IServiceProvider serviceProvider) : base("DS.DsCat")
         {

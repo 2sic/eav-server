@@ -19,6 +19,12 @@ namespace ToSic.Lib.Logging
         /// Create a logger and optionally attach it to a parent logger
         /// </summary>
         /// <param name="name">name this logger should use</param>
+        public Log(string name) : this(name, null, CodeRef.Create("", "", default)) { }
+
+        /// <summary>
+        /// Create a logger and optionally attach it to a parent logger
+        /// </summary>
+        /// <param name="name">name this logger should use</param>
         /// <param name="parent">optional parent logger to attach to</param>
         /// <param name="message">optional initial message to log</param>
         /// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
@@ -61,7 +67,7 @@ namespace ToSic.Lib.Logging
         /// The topic this log belongs to, like Eav, Sxc, etc.
         /// Max length is 3 chars.
         /// </summary>
-        internal string Scope = LogConstants.ScopeUnknown;
+        internal string Scope = LogScopes.Unknown;
 
         /// <summary>
         /// The current logs name.

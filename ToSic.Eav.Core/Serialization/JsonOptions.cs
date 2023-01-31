@@ -1,4 +1,5 @@
-﻿using System.Text.Encodings.Web;
+﻿using System.Linq;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -50,6 +51,24 @@ namespace ToSic.Eav.Serialization
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
+
+        // used only for API calls
+        public static JsonSerializerOptions UnsafeJsonWithoutEncodingHtmlOptionsFactory(JsonConverter jc)
+        {
+            var op = new JsonSerializerOptions(DefaultOptions)
+            {
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+            if (jc == null) return op;
+            
+            foreach (var j in op.Converters.ToList().Where(j => j.GetType() == jc.GetType())) 
+                op.Converters.Remove(j);
+
+            op.Converters.Add(jc);
+
+            return op;
+        }
+
 
         /// <summary>
         /// When json is used in html attributes, everything except basic charters should be encoded:
@@ -108,9 +127,10 @@ namespace ToSic.Eav.Serialization
         public static void SetUnsafeJsonSerializerOptions(this JsonSerializerOptions value)
         {
             value.AllowTrailingCommas = true;
-            value.Converters.Add(new JsonDateTimeConverter()); 
-            value.Converters.Add(new JsonStringEnumConverter());
-            value.Converters.Add(new ObjectToInferredTypesConverter());
+            foreach (var converter in UnsafeJsonWithoutEncodingHtml.Converters)
+            {
+                value.Converters.Add(converter);
+            }
             //value.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
             value.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
             value.IncludeFields = true;

@@ -18,7 +18,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private List<DimensionDefinition> _zoneLangs;
 
 
-        
         private int SaveEntity(IEntity newEnt, SaveOptions so, bool logDetails)
         {
             var wrapLog = Log.Fn<int>($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{logDetails}");
@@ -42,7 +41,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             if (logDetails)
             {
                 Log.A($"lang checks - zone language⋮{_zoneLangs.Count}, usedLanguages⋮{usedLanguages.Count}");
-                Log.A(() => $"langs zone:[{string.Join(",", _zoneLangs.Select(z => z.EnvironmentKey))}] used:[{string.Join(",", usedLanguages.Select(u => u.Key))}]");
+                Log.A(Log.Try(() => $"langs zone:[{string.Join(",", _zoneLangs.Select(z => z.EnvironmentKey))}] used:[{string.Join(",", usedLanguages.Select(u => u.Key))}]"));
             }
 
 
@@ -50,7 +49,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             // check if saving should be with db-type or with the plain json
             var saveJson = UseJson(newEnt);
-            string jsonExport;
+            string jsonExport = null;
             if(logDetails) Log.A($"save json:{saveJson}");
             #endregion Step 1
 
@@ -80,37 +79,36 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             DbContext.DoInTransaction(() =>
             {
-
                 #region Step 3: either create a new entity, or if it's an update, do draft/published checks to ensure correct data
 
                 // is New
                 if (isNew)
-                {
-                    var logNew = Log.Fn("", message: "Create new...");
-
-                    if (newEnt.EntityGuid == Guid.Empty)
+                    Log.Do("Create new...", l =>
                     {
-                        if (logDetails) Log.A("New entity guid was null, will throw exception");
-                        throw new ArgumentException("can't create entity in DB with guid null - entities must be fully prepared before sending to save");
-                    }
+                        if (newEnt.EntityGuid == Guid.Empty)
+                        {
+                            if (logDetails) l.A("New entity guid was null, will throw exception");
+                            throw new ArgumentException(
+                                "can't create entity in DB with guid null - entities must be fully prepared before sending to save");
+                        }
 
-                    dbEnt = CreateDbRecord(newEnt, changeLogId, contentTypeId);
-                    // update the ID - for versioning and/or json persistence
-                    newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated
+                        dbEnt = CreateDbRecord(newEnt, changeLogId, contentTypeId);
+                        // update the ID - for versioning and/or json persistence
+                        newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated
 
-                    // prepare export for save json OR versioning later on
-                    jsonExport = GenerateJsonOrReportWhyNot(newEnt, logDetails);
+                        // prepare export for save json OR versioning later on
+                        jsonExport = GenerateJsonOrReportWhyNot(newEnt, logDetails);
 
-                    if (saveJson)
-                    {
-                        var wrapSaveJson = Log.Fn($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
-                        dbEnt.Json = jsonExport;
-                        dbEnt.ContentType = newEnt.Type.NameId;
-                        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(dbEnt), "update json");
-                        wrapSaveJson.Done("ok");
-                    }
-                    logNew.Done($"i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
-                }
+                        if (saveJson)
+                            l.Do($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}", () =>
+                            {
+                                dbEnt.Json = jsonExport;
+                                dbEnt.ContentType = newEnt.Type.NameId;
+                                DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(dbEnt),
+                                    "update json");
+                            });
+                        return $"i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}";
+                    });
                 // is Update
                 else
                 {
@@ -120,56 +118,62 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     dbEnt = DbContext.Entities.GetDbEntity(newEnt.EntityId); // get the published one (entityId is always the published id)
 
                     var stateChanged = dbEnt.IsPublished != newEnt.IsPublished;
-                    var logUpdate = Log.Fn("", message: $"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newstate:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}");
-
-                    #region If draft but should be published, correct what's necessary
-
-                    // Update as Published but Current Entity is a Draft-Entity
-                    // case 1: saved entity is a draft and save wants to publish
-                    // case 2: new data is set to not publish, but we don't want a branch
-                    if (stateChanged || hasAdditionalDraft)
+                    var paramsMsg = $"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newstate:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}";
+                    Log.Do(paramsMsg, () =>
                     {
-                        // now reset the branch/entity-state to properly set the state / purge the draft
-                        dbEnt = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, existingDraftId,
-                            newEnt.IsPublished);
 
-                        // update ID of the save-entity, as it's used again later on...
-                        newEnt.ResetEntityId(dbEnt.EntityId);
-                    }
+                        #region If draft but should be published, correct what's necessary
 
-                    #endregion
+                        // Update as Published but Current Entity is a Draft-Entity
+                        // case 1: saved entity is a draft and save wants to publish
+                        // case 2: new data is set to not publish, but we don't want a branch
+                        if (stateChanged || hasAdditionalDraft)
+                        {
+                            // now reset the branch/entity-state to properly set the state / purge the draft
+                            dbEnt = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt,
+                                existingDraftId,
+                                newEnt.IsPublished);
 
-                    // update changelog modified for the DB record
-                    dbEnt.ChangeLogModified = changeLogId;
-                    
-                    // increase version
-                    dbEnt.Version++;
-                    (newEnt as Entity)?.SetVersion(dbEnt.Version);
+                            // update ID of the save-entity, as it's used again later on...
+                            newEnt.ResetEntityId(dbEnt.EntityId);
+                        }
 
-                    // prepare export for save json OR versioning later on
-                    jsonExport = Serializer.Serialize(newEnt);
+                        #endregion
 
-                    if (saveJson)
-                    {
-                        dbEnt.Json = jsonExport;
-                        dbEnt.AttributeSetId = contentTypeId;       // in case the previous entity wasn't json stored yet
-                        dbEnt.ContentType = newEnt.Type.NameId; // in case the previous entity wasn't json stored yet
-                    }
-                    // super exotic case - maybe it was a json before, but isn't any more...
-                    // this probably only happens on the master system, where we maintain the 
-                    // core content-types like @All
-                    // In this case we must reset this, otherwise the next load will still prefer the json
-                    else 
-                    {
-                        if (dbEnt.AttributeSetId == RepoIdForJsonEntities) dbEnt.AttributeSetId = contentTypeId;
-                        if (dbEnt.Json != null) dbEnt.Json = null;
-                        if (dbEnt.ContentType != null) dbEnt.ContentType = null;
-                    }
+                        // update changelog modified for the DB record
+                        dbEnt.ChangeLogModified = changeLogId;
 
-                    // first, clean up all existing attributes / values (flush)
-                    // this is necessary after remove, because otherwise EF state tracking gets messed up
-                    DbContext.DoAndSave(() => dbEnt.ToSicEavValues.Clear(), "Flush values");
-                    logUpdate.Done("ok");
+                        // increase version
+                        dbEnt.Version++;
+                        (newEnt as Entity)?.SetVersion(dbEnt.Version);
+
+                        // prepare export for save json OR versioning later on
+                        jsonExport = Serializer.Serialize(newEnt);
+
+                        if (saveJson)
+                        {
+                            dbEnt.Json = jsonExport;
+                            dbEnt.AttributeSetId =
+                                contentTypeId; // in case the previous entity wasn't json stored yet
+                            dbEnt.ContentType =
+                                newEnt.Type.NameId; // in case the previous entity wasn't json stored yet
+                        }
+                        // super exotic case - maybe it was a json before, but isn't any more...
+                        // this probably only happens on the master system, where we maintain the 
+                        // core content-types like @All
+                        // In this case we must reset this, otherwise the next load will still prefer the json
+                        else
+                        {
+                            if (dbEnt.AttributeSetId == RepoIdForJsonEntities) dbEnt.AttributeSetId = contentTypeId;
+                            if (dbEnt.Json != null) dbEnt.Json = null;
+                            if (dbEnt.ContentType != null) dbEnt.ContentType = null;
+                        }
+
+                        // first, clean up all existing attributes / values (flush)
+                        // this is necessary after remove, because otherwise EF state tracking gets messed up
+                        DbContext.DoAndSave(() => dbEnt.ToSicEavValues.Clear(), "Flush values");
+                    });
+
                     #endregion Step 3b
                 }
 
@@ -180,8 +184,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 if (!saveJson)
                 {
                     // save all the values we just added
-                    //DbContext.DoAndSave(() => SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, changeLogId, logDetails), "save attributes EAV");
-                    SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, changeLogId, _zoneLangs, logDetails);
+                    SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, changeLogId, logDetails);
                     DbContext.Relationships.ChangeRelationships(newEnt, dbEnt, attributeDefs, so);
                 }
                 else if (isNew)
@@ -190,7 +193,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     DropEavAttributesForJsonItem(newEnt);
 
                 #endregion
-
 
 
                 #region Step 6: Ensure versioning
@@ -228,7 +230,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <returns></returns>
         private Tuple<int?, bool> GetDraftAndCorrectIdAndBranching(IEntity newEnt, bool logDetails)
         {
-            var wrapLog = Log.Fn<Tuple<int?, bool>>($"entity:{newEnt.EntityId}", startTimer: true);
+            var wrapLog = Log.Fn<Tuple<int?, bool>>($"entity:{newEnt.EntityId}", timer: true);
 
             // only do this, if we were given an EntityId, otherwise we assume new entity
             if (newEnt.EntityId <= 0)

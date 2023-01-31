@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ToSic.Eav.Core.Tests.Signature
+﻿namespace ToSic.Eav.Core.Tests.Signature
 {
     internal class KeyPairForTesting
     {

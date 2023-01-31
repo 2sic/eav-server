@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 
 namespace ToSic.Eav.WebApi.Helpers
@@ -21,7 +20,7 @@ namespace ToSic.Eav.WebApi.Helpers
         public Controller Parent { get; }
         public ILog LogOrNull { get; }
 
-        private LogCall _actionTimerWrap; // it is used across events to track action execution total time
+        private ILogCall _actionTimerWrap; // it is used across events to track action execution total time
 
         public IServiceProvider ServiceProvider => _serviceProvider ?? throw new Exception($"{nameof(ServiceProvider)} is only available after calling {nameof(OnActionExecuting)}");
         private IServiceProvider _serviceProvider;
@@ -30,7 +29,7 @@ namespace ToSic.Eav.WebApi.Helpers
         public void OnActionExecuting(ActionExecutingContext context, string historyLogGroup)
         {
             // Create a log entry with timing
-            _actionTimerWrap = LogOrNull.Fn($"action executing url: {context.HttpContext.Request.GetDisplayUrl()}", startTimer: true);
+            _actionTimerWrap = LogOrNull.Fn($"action executing url: {context.HttpContext.Request.GetDisplayUrl()}", timer: true);
 
             // Get the ServiceProvider of the current request
             _serviceProvider = context.HttpContext.RequestServices;
@@ -61,11 +60,12 @@ namespace ToSic.Eav.WebApi.Helpers
             _actionTimerWrap = null; // just to mark that Action Delegate is not in use any more, so GC can collect it
         }
 
-        public TService GetService<TService>() => ServiceProvider.Build<TService>();
+        public TService GetService<TService>() where TService : class =>
+            ServiceProvider?.Build<TService>(LogOrNull)
+            ?? throw new Exception($"Can't use {nameof(GetService)} before {nameof(OnActionExecuting)}");
 
         public TRealController Real<TRealController>() where TRealController : class, IHasLog
-            => ServiceProvider?.Build<TRealController>().Init(LogOrNull) ??
-               throw new Exception($"Can't use {nameof(Real)} before {nameof(OnActionExecuting)}");
+            => GetService<TRealController>();
     }
 }
 #endif 

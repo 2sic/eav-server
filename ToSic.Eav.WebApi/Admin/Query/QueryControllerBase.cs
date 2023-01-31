@@ -23,14 +23,12 @@ namespace ToSic.Eav.WebApi.Admin.Query
     /// <summary>
     /// Web API Controller for the Pipeline Designer UI
     /// </summary>
-    public abstract class QueryControllerBase<TImplementation> : ServiceBase where TImplementation : QueryControllerBase<TImplementation>
+    public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerDependencies> where TImplementation : QueryControllerBase<TImplementation>
     {
-        protected QueryControllerBase(QueryControllerDependencies dependencies, string logName) : base(logName)
+        protected QueryControllerBase(QueryControllerDependencies dependencies, string logName) : base(dependencies, logName)
         {
-            _deps = dependencies.SetLog(Log);
             QueryBuilder = dependencies.QueryBuilder;
         }
-        private readonly QueryControllerDependencies _deps;
         private AppManager _appManager;
         private QueryBuilder QueryBuilder { get; }
 
@@ -38,7 +36,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         public TImplementation Init(int appId)
         {
             if (appId != 0) // if 0, then no context is available or used
-                _appManager = _deps.AppManagerLazy.Value.Init(appId);
+                _appManager = Deps.AppManagerLazy.Value.Init(appId);
             return this as TImplementation;
         }
 
@@ -54,7 +52,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             if (!id.HasValue) return l.Return(query, "no id, empty");
 
-            var reader = _deps.AppReaderLazy.Value.Init(appId, false);
+            var reader = Deps.AppReaderLazy.Value.Init(appId, false);
             var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
@@ -62,7 +60,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             query.Pipeline = qDef.Entity.AsDictionary();
             query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
 
-            var converter = _deps.EntToDicLazy.Value;
+            var converter = Deps.EntToDicLazy.Value;
             converter.Type.Serialize = true;
             converter.Type.WithDescription = true;
             converter.WithGuid = true;
@@ -85,7 +83,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// </summary>
         public IEnumerable<DataSourceDto> DataSources()
         {
-            var dsCatalog = _deps.DataSourceCatalogLazy.Value;
+            var dsCatalog = Deps.DataSourceCatalogLazy.Value;
 
             var callLog = Log.Fn<IEnumerable<DataSourceDto>>();
             var installedDataSources = DataSourceCatalog.GetAll(true);
@@ -149,7 +147,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 var resultStream = source.Out[streamName];
                 
                 // Repackage as DataSource since that's expected / needed
-                var passThroughDs = _deps.PassThrough.New();
+                var passThroughDs = Deps.PassThrough.New();
                 passThroughDs.Attach(streamName, resultStream);
 
                 return passThroughDs;
@@ -166,20 +164,22 @@ namespace ToSic.Eav.WebApi.Admin.Query
 		    var qDef = QueryBuilder.GetQueryDefinition(appId, id);
 			var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, true, lookUps);
             var outSource = builtQuery.Item1;
-            
-            
-            var serializeWrap = Log.Fn("Serialize", startTimer: true);
+
+
             var timer = new Stopwatch();
             timer.Start();
-            var converter = _deps.EntToDicLazy.Value;
-            converter.WithGuid = true;//.EnableGuids();
-            converter.MaxItems = top;
-		    var results = converter.Convert(partLookup(builtQuery));
+            var results = Log.Func(message: "Serialize", timer: true, func: () =>
+            {
+                var converter = Deps.EntToDicLazy.Value;
+                converter.WithGuid = true;
+                converter.MaxItems = top;
+                var converted = converter.Convert(partLookup(builtQuery));
+                return (converted, "ok");
+            });
             timer.Stop();
-            serializeWrap.Done("ok");
 
             // Now get some more debug info
-            var debugInfo = _deps.QueryInfoLazy.Value.BuildQueryInfo(qDef, outSource);
+            var debugInfo = Deps.QueryInfoLazy.Value.BuildQueryInfo(qDef, outSource);
 
             // ...and return the results
 			return wrapLog.Return(new QueryRunDto
@@ -187,8 +187,8 @@ namespace ToSic.Eav.WebApi.Admin.Query
 				Query = results, 
 				Streams = debugInfo.Streams.Select(si =>
                 {
-                    if(si.ErrorData != null && si.ErrorData is IEntity errorEntity)
-                        si.ErrorData = _deps.EntToDicLazy.Value.Convert(errorEntity);
+                    if(si.ErrorData is IEntity errorEntity)
+                        si.ErrorData = Deps.EntToDicLazy.Value.Convert(errorEntity);
                     return si;
                 }).ToList(),
 				Sources = debugInfo.Sources,
@@ -218,7 +218,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             {
                 Log.A("import content" + args.DebugInfo);
 
-                var deser = _deps.JsonSerializer.New()/*.Init(Log)*/.SetApp(_appManager.AppState);
+                var deser = Deps.JsonSerializer.New()/*.Init(Log)*/.SetApp(_appManager.AppState);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents, args.AppId, Log);
                 _appManager.Queries.SaveCopy(qdef);

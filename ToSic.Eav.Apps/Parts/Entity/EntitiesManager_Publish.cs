@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         public void Publish(int[] entityIds)
         {
-            Log.A(() => "Publish(" + entityIds.Length + " items [" + string.Join(",", entityIds) + "])");
+            Log.A(Log.Try(() => "Publish(" + entityIds.Length + " items [" + string.Join(",", entityIds) + "])"));
             foreach (var eid in entityIds)
                 try
                 {

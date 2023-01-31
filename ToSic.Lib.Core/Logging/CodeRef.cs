@@ -5,7 +5,9 @@ namespace ToSic.Lib.Logging
 {
     /// <summary>
     /// Reference to source code.
-    /// It contains the path to the file, the method name and the line in the code. 
+    /// It contains the path to the file, the method name and the line in the code.
+    ///
+    /// This is used to track the exact location in the code where a log was added/created.
     /// </summary>
     /// <remarks>
     /// This is a very internal plumbing-object important for referencing code in log entries.

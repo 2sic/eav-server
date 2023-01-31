@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
@@ -7,7 +6,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.DI;
-using ToSic.Lib.Helper;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 using static ToSic.Eav.Configuration.ConfigurationConstants;
 
@@ -47,10 +46,17 @@ namespace ToSic.Eav.Context
             internal readonly Generator<IEnvironmentPermission> EnvironmentPermissions;
         }
 
-        public ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies) : base(siteCtxDeps)
+        /// <summary>
+        /// Constructor for DI
+        /// </summary>
+        /// <param name="siteCtxDeps"></param>
+        /// <param name="dependencies"></param>
+        public ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies) : this(siteCtxDeps, dependencies, "Sxc.CtxApp")
+        {
+        }
+        protected ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies, string logName) : base(siteCtxDeps, logName)
         {
             Deps = dependencies.SetLog(Log);
-            Log.Rename("Sxc.CtxApp");
         }
         protected readonly Dependencies Deps;
 
@@ -74,13 +80,12 @@ namespace ToSic.Eav.Context
                 _appSettingsStack.Reset();
                 _settings.Reset();
                 _resources.Reset();
-                //_userMayEdit = null;
                 _userMayEditGet.Reset();
             }
         }
         private IAppIdentity _appIdentity;
 
-        public override bool UserMayEdit => _userMayEditGet.Get(() => Log.GetAndLog<bool>(_ =>
+        public override bool UserMayEdit => _userMayEditGet.Get(() => Log.Getter(() =>
         {
             // Case 1: Superuser always may
             if (User.IsSystemAdmin) return (true, "super");

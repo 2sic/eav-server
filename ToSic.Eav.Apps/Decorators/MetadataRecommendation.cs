@@ -44,14 +44,20 @@ namespace ToSic.Eav.Apps.Decorators
         [JsonIgnore]
         public IContentType Type { get; }
 
-        public MetadataRecommendation(IContentType type, IEntity recommendation, int? count, string debugMessage, int priority)
+        [JsonIgnore]
+        internal bool PushToUi => Enabled || !string.IsNullOrWhiteSpace(MissingFeature);
+
+        public bool Enabled { get; set; }
+        public string MissingFeature { get; set; }
+
+        internal MetadataRecommendation(IContentType type, MetadataForDecorator recommendation, int? count, string debugMessage, int priority)
         {
             Type = type;
             Priority = priority;
             var typeDetails = type.Metadata.DetailsOrNull;
             Title = (typeDetails?.Title).UseFallbackIfNoValue(type.Name);
             Icon = typeDetails?.Icon;
-            var recDec = new ForDecorator(recommendation);
+            var recDec = recommendation ?? new MetadataForDecorator(null);
             Count = count ?? recDec.Amount;
             Debug = debugMessage;
             DeleteWarning = recDec.DeleteWarning;

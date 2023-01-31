@@ -11,7 +11,6 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Services;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -78,15 +77,14 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Import AttributeSets and Entities
         /// </summary>
-        public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities)
-        {
-            var callLog = Log.Fn($"types: {newTypes?.Count}; entities: {newEntities?.Count}", startTimer: true);
+        public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities
+        ) => Log.Do($"types: {newTypes?.Count}; entities: {newEntities?.Count}", timer: true, action: l =>
             Storage.DoWithDelayedCacheInvalidation(() =>
             {
                 #region import AttributeSets if any were included but rollback transaction if necessary
 
                 if (newTypes == null)
-                    Log.A("No types to import");
+                    l.A("No types to import");
                 else
                     Storage.DoInTransaction(() =>
                     {
@@ -94,32 +92,36 @@ namespace ToSic.Eav.Apps.ImportExport
                         // important: must always create a new loader, because it will cache content-types which hurts the import
                         Storage.DoWhileQueuingVersioning(() =>
                         {
-                            var logImpTypes = Log.Fn(message: "Import Types in Sys-Scope", startTimer: true);
-                            // load everything, as content-type metadata is normal entities
-                            // but disable initialized, as this could cause initialize stuff we're about to import
-                            var appStateTemp = Storage.Loader.AppState(AppId, false); 
-                            var newSetsList = newTypes.ToList();
-                            // first: import the attribute sets in the system scope, as they may be needed by others...
-                            // ...and would need a cache-refresh before 
-                            // 2020-07-10 2dm changed to use StartsWith, as we have more scopes now
-                            // before var sysAttributeSets = newSetsList.Where(a => a.Scope == Constants.ScopeSystem).ToList();
-                            // warning: this may not be enough, we may have to always import the fields-scope first...
-                            var sysAttributeSets = newSetsList
-                                .Where(a => a.Scope?.StartsWith(Scopes.System) ?? false).ToList();
-                            if (sysAttributeSets.Any())
-                                MergeAndSaveContentTypes(appStateTemp, sysAttributeSets);
-                            logImpTypes.Done();
+                            var nonSysTypes = Log.Func(message: "Import Types in Sys-Scope", timer: true, func: () =>
+                            {
+                                // load everything, as content-type metadata is normal entities
+                                // but disable initialized, as this could cause initialize stuff we're about to import
+                                var appStateTemp = Storage.Loader.AppState(AppId, false);
+                                var newTypeList = newTypes.ToList();
+                                // first: import the attribute sets in the system scope, as they may be needed by others...
+                                // ...and would need a cache-refresh before 
+                                // 2020-07-10 2dm changed to use StartsWith, as we have more scopes now
+                                // before var sysAttributeSets = newSetsList.Where(a => a.Scope == Constants.ScopeSystem).ToList();
+                                // warning: this may not be enough, we may have to always import the fields-scope first...
+                                var newSysTypes = newTypeList
+                                    .Where(a => a.Scope?.StartsWith(Scopes.System) ?? false).ToList();
+                                if (newSysTypes.Any())
+                                    MergeAndSaveContentTypes(appStateTemp, newSysTypes);
 
-                            logImpTypes = Log.Fn(message: "Import Types in non-Sys scopes", startTimer: true);
-                            // now reload the app state as it has new content-types
-                            // and it may need these to load the remaining attributes of the content-types
-                            appStateTemp = Storage.Loader.AppState(AppId, false);
+                                return newTypeList.Where(a => !newSysTypes.Contains(a)).ToList();
+                            });
 
-                            // now the remaining attributeSets
-                            var nonSysAttribSets = newSetsList.Where(a => !sysAttributeSets.Contains(a)).ToList();
-                            if (nonSysAttribSets.Any())
-                                MergeAndSaveContentTypes(appStateTemp, nonSysAttribSets);
-                            logImpTypes.Done();
+                            Log.Do(message: "Import Types in non-Sys scopes", timer: true, action: () =>
+                            {
+                                if (!nonSysTypes.Any()) return;
+
+                                // now reload the app state as it has new content-types
+                                // and it may need these to load the remaining attributes of the content-types
+                                var appStateTemp = Storage.Loader.AppState(AppId, false);
+
+                                // now the remaining attributeSets
+                                MergeAndSaveContentTypes(appStateTemp, nonSysTypes);
+                            });
                         });
                     });
 
@@ -128,14 +130,15 @@ namespace ToSic.Eav.Apps.ImportExport
                 #region import Entities, but rollback transaction if necessary
 
                 if (newEntities == null)
-                    Log.A("Not entities to import");
+                    l.A("Not entities to import");
                 else
                 {
-                    var logImpEnts = Log.Fn(message: "Pre-Import Entities merge", startTimer: true);
                     var appStateTemp = Storage.Loader.AppState(AppId, false); // load all entities
-                    newEntities = newEntities
+                    var newIEntitiesRaw = Log.Func(message: "Pre-Import Entities merge", timer: true, func: () => newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
-                        .Where(e => e != null).ToList();
+                        .Where(e => e != null)
+                        .Cast<IEntity>()
+                        .ToList());
 
                     // HACK 2022-05-05 2dm Import Problem
                     // If we use chunks of 500, then relationships are not imported
@@ -144,10 +147,12 @@ namespace ToSic.Eav.Apps.ImportExport
                     // For now the hack is to allow up to 2500 in one chunk, otherwise make them smaller
                     // this is not a good final solution
                     // In general we should improve the import to 
-                    var chunkSize = /*ChunkSizeAboveLimit;*/ newEntities.Count >= ChunkLimitToStartChunking ? ChunkSizeAboveLimit : ChunkLimitToStartChunking;
+                    var chunkSize = /*ChunkSizeAboveLimit;*/ newIEntitiesRaw.Count >= ChunkLimitToStartChunking
+                        ? ChunkSizeAboveLimit
+                        : ChunkLimitToStartChunking;
 
-                    var newIEntities = newEntities.Cast<IEntity>().ToList().ChunkBy(chunkSize);
-                    logImpEnts.Done();
+                    var newIEntities = newIEntitiesRaw.ChunkBy(chunkSize);
+
 
                     // Import in chunks
                     var cNum = 0;
@@ -161,7 +166,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     newIEntities.ForEach(chunk =>
                         {
                             cNum++;
-                            Log.A($"Importing Chunk {cNum} #{(cNum - 1) * chunkSize + 1} - #{cNum * chunkSize}");
+                            l.A($"Importing Chunk {cNum} #{(cNum - 1) * chunkSize + 1} - #{cNum * chunkSize}");
                             Storage.DoInTransaction(() => Storage.Save(chunk, SaveOptions));
                         })
                         //))
@@ -169,20 +174,17 @@ namespace ToSic.Eav.Apps.ImportExport
                 }
 
                 #endregion
-            });
-            callLog.Done("done");
-        }
+            })
+        );
 
-        private void MergeAndSaveContentTypes(AppState appState, List<IContentType> contentTypes)
+        private void MergeAndSaveContentTypes(AppState appState, List<IContentType> contentTypes) => Log.Do(timer: true, action: () =>
         {
-            var callLog = Log.Fn(startTimer: true);
             // Here's the problem! #badmergeofmetadata
             contentTypes.ForEach(type => MergeContentTypeUpdateWithExisting(appState, type));
             var so = _importExportEnvironment.SaveOptions(ZoneId);
             so.DiscardAttributesNotInType = true;
             Storage.Save(contentTypes.Cast<IContentType>().ToList(), so);
-            callLog.Done("done");
-        }
+        });
         
         
 

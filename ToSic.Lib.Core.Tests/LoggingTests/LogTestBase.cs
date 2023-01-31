@@ -3,7 +3,7 @@ using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace ToSic.Lib.Core.Tests.LoggingTests
 {
-    public class LogTestBase
+    public class LogTestBase: LibTestBase
     {
         public const int Depth0 = 0;
         public const string? ResultNone = null;

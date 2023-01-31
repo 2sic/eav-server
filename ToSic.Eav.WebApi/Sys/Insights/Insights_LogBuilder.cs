@@ -75,16 +75,17 @@ namespace ToSic.Eav.WebApi.Sys
                 Tbody(set
                     .Select(log =>
                     {
-                        var firstIfExists = (log as Log)?.Entries.FirstOrDefault();
+                        var realLog = log as Log;
+                        var firstIfExists = realLog?.Entries.FirstOrDefault();
                         return RowFields(
                             $"{++count}",
-                            (log as Log)?.Created.ToString("O"),
+                            realLog?.Created.ToUniversalTime().ToString("O"),
                             $"{key}",
-                            LinkTo((log as Log)?.FullIdentifier, nameof(Logs), key: key, more: $"position={count}"),
-                            $"{(log as Log)?.Entries.Count}",
+                            LinkTo(realLog?.FullIdentifier, nameof(Logs), key: key, more: $"position={count}"),
+                            $"{realLog?.Entries.Count}",
                             HtmlEncode((firstIfExists?.Message).NeverNull().Ellipsis(75, "…")),
                             HtmlEncode(firstIfExists?.Result),
-                            new InsightsTime().ShowTime(firstIfExists, default)
+                            new InsightsTime().ShowTime(realLog)
                         );
                     })
                     .ToArray<object>()));
@@ -100,7 +101,11 @@ namespace ToSic.Eav.WebApi.Sys
 
         internal static string DumpTree(string title, ILog log)
         {
-            var lg = new StringBuilder(H1($"{title}") + "\n\n");
+            var lg = new StringBuilder(
+                H1($"{title}") +
+                Div($"{(log as Log)?.Created.Dump()}") +
+                "\n\n"
+            );
             if ((log as Log)?.Entries.Count == 0) return "";
             lg.AppendLine("<ol>");
 
@@ -173,7 +178,7 @@ namespace ToSic.Eav.WebApi.Sys
                    + " - "
                    + HtmlEncode(e.Message)
                    + (e.Result != null
-                       ? $"{ResStart}{HtmlEncode(e.Result)}{ResEnd}"
+                       ? $" {ResStart}{HtmlEncode(e.Result)}{ResEnd}"
                        : string.Empty)
                    + time.ShowTime(e, parentTime)
                    + (e.Code != null
