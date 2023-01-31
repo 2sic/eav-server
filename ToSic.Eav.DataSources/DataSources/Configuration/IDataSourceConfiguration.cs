@@ -24,7 +24,13 @@ namespace ToSic.Eav.DataSources
         string GetThis([CallerMemberName] string cName = default);
 
         [PrivateApi("Still WIP v15")]
+        T GetThis<T>(T fallback, [CallerMemberName] string cName = default);
+
+        [PrivateApi("Still WIP v15")]
         void SetThis(string value, [CallerMemberName] string cName = default);
+
+        [PrivateApi("Still WIP v15")]
+        void SetThis<T>(T value, [CallerMemberName] string cName = default);
 
         /// <summary>
         /// Tell us if the values have already been parsed or not.
