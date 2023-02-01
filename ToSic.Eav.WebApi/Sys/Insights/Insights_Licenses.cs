@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ToSic.Razor.Markup;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
@@ -7,9 +8,28 @@ namespace ToSic.Eav.WebApi.Sys
     {
         private string Licenses()
         {
-            var intro = H1("Licenses and Features")
-                      + H2("Licenses")
-                      + P("These are the licenses as loaded by the system");
+            var intro = H1("Licenses and Features") as TagBase;
+
+            // Fingerprint
+            var fingerprintList = Ol(
+                Li("Built in Fingerprint: " + _fingerprint.Value.GetFingerprint())
+            );
+
+            foreach (var entFp in _fingerprint.Value.EnterpriseFingerprintsWIP)
+                fingerprintList.Add(Li(
+                    $"Enterprise: '{entFp.Title}' {EmojiTrueFalse(entFp.Valid)} - '{entFp.Fingerprint}', '{entFp.Guid}'")
+                );
+
+            intro = intro
+                      + H2("Fingerprints")
+                      + P("These are the fingerprints as loaded by the system")
+                      + fingerprintList;
+
+
+            // Licenses
+            intro = intro
+                    + H2("Licenses")
+                    + P("These are the licenses as loaded by the system");
 
             var rows = _licenseServiceLazy.Value.All
                 .ToList()

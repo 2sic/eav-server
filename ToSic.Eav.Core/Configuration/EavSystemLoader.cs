@@ -11,7 +11,6 @@ using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Data;
-using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Configuration
@@ -92,20 +91,17 @@ namespace ToSic.Eav.Configuration
                 .Select(e => new LicenseEntity(e))
                 .ToList();
 
-            // Only keep licenses which have a valid key
-            licEntities = licEntities.Where(lic =>
+            // Check all licenses and show extra message
+            var enterpriseLicenses = licEntities
+                .Select(lic =>
                 {
-                    var signatureOriginal = $"{lic.Guid};{lic.Title}";
-                    var expected = Sha256.Hash(signatureOriginal);
-                    var ok = expected == lic.Fingerprint;
-                    l.A($"License ${(ok ? "ok" : "not-ok")}; For: '{signatureOriginal}'");
-                    if (!ok) l.W($"Fingerprint Stored/Signed: '{lic.Fingerprint}'; Expected: '{expected}'");
-                    return ok;
+                    var entFp = lic.AsEnterprise();
+                    l.A(entFp.ValidityMessage);
+                    return entFp;
                 })
                 .ToList();
 
-
-            _licenseLoader.Init(licEntities).LoadLicenses();
+            _licenseLoader.Init(enterpriseLicenses).LoadLicenses();
 
             // Now do a normal reload of configuration and features
             ReloadFeatures();

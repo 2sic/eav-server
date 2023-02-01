@@ -3,6 +3,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
+using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Lib.DI;
@@ -13,6 +14,7 @@ namespace ToSic.Eav.WebApi.Sys
 {
     public partial class InsightsControllerReal: ServiceBase
     {
+        private readonly LazySvc<SystemFingerprint> _fingerprint;
         private readonly Generator<JsonSerializer> _jsonSerializer;
         private readonly Generator<AppRuntime> _appRuntimeGenerator;
         public const string LogSuffix = "Insight";
@@ -24,10 +26,11 @@ namespace ToSic.Eav.WebApi.Sys
             SystemManager systemManager,
             ILogStoreLive logStore, 
             LazySvc<ILicenseService> licenseServiceLazy, 
+            LazySvc<SystemFingerprint> fingerprint,
             IUser user, 
             LightSpeedStats lightSpeedStats,
             Generator<AppRuntime> appRuntimeGenerator,
-            Generator<Eav.ImportExport.Json.JsonSerializer> jsonSerializer)
+            Generator<JsonSerializer> jsonSerializer)
             : base("Api.SysIns")
         {
             ConnectServices(
@@ -35,6 +38,7 @@ namespace ToSic.Eav.WebApi.Sys
                 _appStates = appStates,
                 _logStore = logStore,
                 _licenseServiceLazy = licenseServiceLazy,
+                _fingerprint = fingerprint,
                 _user = user,
                 _lightSpeedStats = lightSpeedStats,
                 _appRuntimeGenerator = appRuntimeGenerator,
