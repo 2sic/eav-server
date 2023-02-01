@@ -87,7 +87,8 @@ namespace ToSic.Eav.DataSources.Sys
                         { "License", f.License },
                         { "LicenseEnabled", f.LicenseEnabled },
                         { "Link", f.Link },
-                        { "Security", f.Security },
+                        { "SecurityImpact", f.Security?.Impact },
+                        { "SecurityMessage", f.Security?.Message },
                         { "Public", f.Public }
                     }, 
                     guid: f.Guid, 
