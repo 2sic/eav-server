@@ -25,7 +25,7 @@ namespace ToSic.Eav.ImportExport.Json
             return entity;
         }
 
-        internal JsonFormat UnpackAndTestGenericJsonV1(string serialized) => Log.Func(l =>
+        public JsonFormat UnpackAndTestGenericJsonV1(string serialized) => Log.Func(l =>
         {
             JsonFormat jsonObj;
             try
