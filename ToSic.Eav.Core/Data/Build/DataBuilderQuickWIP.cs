@@ -30,6 +30,14 @@ namespace ToSic.Eav.Data
             _contentType = parentBuilder.Type(typeName ?? DataBuilder.DefaultTypeName);
         }
 
+        public IEntity Create(ICanBecomeEntity almostEntity) => Create(
+            almostEntity.DataForBuilder,
+            id: almostEntity.Id == 0 ? null : almostEntity.Id as int?,
+            guid: almostEntity.Guid,
+            created: almostEntity.Created,
+            modified: almostEntity.Modified
+        );
+
         public IEntity Create(Dictionary<string, object> values, int? id = default, Guid? guid = default, DateTime? created = default, DateTime? modified = default)
         {
             var ent = _parentBuilder.Entity(values,
