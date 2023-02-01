@@ -169,7 +169,7 @@ namespace ToSic.Eav.Configuration
             var updatedIds = changes.Select(f => f.FeatureGuid);
 
             var storedFeaturesButNotUpdated = Features.All
-                .Where(f => f.EnabledStored.HasValue && !updatedIds.Contains(f.Guid))
+                .Where(f => f.EnabledInConfiguration.HasValue && !updatedIds.Contains(f.Guid))
                 .Select(FeatureConfigManager.FeatureConfigBuilder).ToList();
             
             var updatedFeatures = changes

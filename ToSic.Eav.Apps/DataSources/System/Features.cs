@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
@@ -31,19 +29,6 @@ namespace ToSic.Eav.DataSources.Sys
     {
         #region Configuration-properties (no config)
 
-        private const string AppIdKey = "AppId";
-
-        /// <summary>
-        /// The app id
-        /// </summary>
-        [PrivateApi("As of now, switching apps is not a feature we want to provide")]
-        private int OfAppId
-        {
-            get => int.TryParse(Configuration[AppIdKey], out var aid) ? aid : AppId;
-            // ReSharper disable once UnusedMember.Local
-            set => Configuration[AppIdKey] = value.ToString();
-        }
-
         #endregion
 
         /// <inheritdoc />
@@ -57,44 +42,20 @@ namespace ToSic.Eav.DataSources.Sys
                 _featuresService = featuresService
             );
             Provide(GetList);
-            ConfigMask(AppIdKey);
         }
         private readonly IFeaturesInternal _featuresService;
 
 
         private ImmutableArray<IEntity> GetList() => Log.Func(l =>
         {
-            Configuration.Parse();
+            // Don't parse configuration as there is nothing to configure
+            // Configuration.Parse();
 
-            var appId = OfAppId;
-
-            var features = _featuresService.All;
-
-            var featureBuilder = new DataBuilderQuickWIP(DataBuilder, appId: appId, typeName: "Feature", titleField: Data.Attributes.TitleNiceName);
-            var list = features
-                .Select(f => featureBuilder.Create(new Dictionary<string, object>
-                    {
-                        { Data.Attributes.NameIdNiceName, f.NameId },
-                        { Data.Attributes.TitleNiceName, f.Name },
-                        { "Description", f.Description },
-                        { "Enabled", f.Enabled },
-                        { "EnabledByDefault", f.EnabledByDefault },
-                        { "EnabledReason", f.EnabledReason },
-                        { "EnabledReasonDetailed", f.EnabledReasonDetailed },
-                        { "EnabledStored", f.EnabledStored },
-                        { "Expires", f.Expires },
-                        { "ForEditUi", f.ForEditUi },
-                        { "License", f.License },
-                        { "LicenseEnabled", f.LicenseEnabled },
-                        { "Link", f.Link },
-                        { "SecurityImpact", f.Security?.Impact },
-                        { "SecurityMessage", f.Security?.Message },
-                        { "Public", f.Public }
-                    }, 
-                    guid: f.Guid, 
-                    created: DateTime.Now, 
-                    modified: DateTime.Now)
-                ).ToImmutableArray();
+            var featureBuilder = new DataBuilderQuickWIP(DataBuilder, appId: Constants.PresetAppId, typeName: "Feature", titleField: Data.Attributes.TitleNiceName);
+            var list = _featuresService.All
+                .OrderBy(f => f.NameId)
+                .Select(f => featureBuilder.Create(f))
+                .ToImmutableArray();
             
             return (list, $"{list.Length}");
         });

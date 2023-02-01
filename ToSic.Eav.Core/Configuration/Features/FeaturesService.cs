@@ -28,7 +28,7 @@ namespace ToSic.Eav.Configuration
             );
         private readonly GetOnce<HashSet<string>> _enabledFeatures = new GetOnce<HashSet<string>>();
 
-        public IEnumerable<FeatureState> UiFeaturesForEditors => All.Where(f => f.Enabled && f.ForEditUi);
+        public IEnumerable<FeatureState> UiFeaturesForEditors => All.Where(f => f.Enabled && f.IsForEditUi);
 
         public bool Enabled(Guid guid) => All.Any(f => f.Guid == guid && f.Enabled);
         
@@ -126,14 +126,14 @@ namespace ToSic.Eav.Configuration
                 }
 
                 return new FeatureState(f, expiry, enabled, msgShort, (enabled ? "Enabled" : "Disabled") + message,
-                    licenseEnabled, enabledByDefault: enabledRule?.EnableFeatureByDefault ?? false, enabledStored: inConfig?.Enabled);
+                    licenseEnabled, enabledByDefault: enabledRule?.EnableFeatureByDefault ?? false, enabledInConfiguration: inConfig?.Enabled);
             }).ToList();
 
             // Find additional, un matching features which are not known in the catalog
             var missingFeatures = config?.Features
                 .Where(f => featuresCat.All(fd => fd.Guid != f.Id))
                 .Select(f => new FeatureState(new FeatureDefinition(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually", 
-                    licenseEnabled: false, enabledByDefault: false,  enabledStored: f.Enabled));
+                    allowedByLicense: false, enabledByDefault: false,  enabledInConfiguration: f.Enabled));
 
             var final = (missingFeatures == null ? allFeats : allFeats.Union(missingFeatures)).ToList();
             return final;

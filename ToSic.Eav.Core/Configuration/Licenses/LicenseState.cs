@@ -75,6 +75,7 @@ namespace ToSic.Eav.Configuration.Licenses
             // Properties describing the License
             // { Attributes.NameIdNiceName, License.Name },
             { Attributes.TitleNiceName, License.Name },
+            { nameof(License.NameId), License.NameId },
             { nameof(LicenseKey), LicenseKey },
             { nameof(License.Description), License.Description },
             { nameof(License.AutoEnable), License.AutoEnable },
