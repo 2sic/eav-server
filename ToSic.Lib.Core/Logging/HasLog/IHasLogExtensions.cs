@@ -18,7 +18,7 @@ namespace ToSic.Lib.Logging
         /// <param name="forceConnect">Force connect the logs, even if it's an <see cref="ILogShouldNeverConnect"/></param>
         /// <returns>The same object as started this, to allow chaining</returns>
         [PrivateApi]
-        public static T LinkLog<T>(this T thingWithLog, ILog parentLog, /*string name,*/ bool forceConnect = false) where T: class, IHasLog
+        public static T LinkLog<T>(this T thingWithLog, ILog parentLog, bool forceConnect = false) where T: class, IHasLog
         {
             switch (thingWithLog)
             {
