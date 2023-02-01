@@ -15,10 +15,12 @@
  *
  */
 using System;
+using System.Collections.Generic;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    public class LicenseState
+    public class LicenseState: ICanBecomeEntity
     {
         public LicenseState() { }
 
@@ -29,25 +31,73 @@ namespace ToSic.Eav.Configuration.Licenses
 
         public LicenseDefinition License { get; internal set; }
 
-        public bool Enabled => EnabledState && Valid;
+        public bool Enabled => EnabledInConfiguration && Valid;
 
         /// <summary>
         /// The state as toggled in the settings - ATM always true, as we don't read the settings
         /// </summary>
-        public bool EnabledState { get; internal set; } = true;
+        public bool EnabledInConfiguration { get; internal set; } = true;
 
-        public bool Valid => ValidExpired && ValidSignature && ValidFingerprint && ValidVersion;
+        public bool Valid => ExpirationIsValid && SignatureIsValid && FingerprintIsValid && VersionIsValid;
 
         public DateTime Expiration { get; internal set; }
 
-        public bool ValidExpired { get; internal set; }
+        public bool ExpirationIsValid { get; internal set; }
 
-        public bool ValidSignature { get; internal set; }
+        public bool SignatureIsValid { get; internal set; }
 
-        public bool ValidFingerprint { get; internal set; }
+        public bool FingerprintIsValid { get; internal set; }
 
-        public bool ValidVersion { get; internal set; }
+        public bool VersionIsValid { get; internal set; }
         
         public string Owner { get; internal set; }
+
+        #region ICanBecomeEntity
+
+        int ICanBecomeEntity.Id => 0;
+
+        Guid ICanBecomeEntity.Guid => License.Guid;
+
+        private readonly DateTime _objectCreated = DateTime.Now;
+        DateTime ICanBecomeEntity.Created => _objectCreated;
+
+        DateTime ICanBecomeEntity.Modified => _objectCreated;
+
+        /// <summary>
+        /// Important: We are creating an object which is basically the License.
+        /// So even though we're creating an Entity from the LicenseState,
+        /// this is just because it knows more about the License than the
+        /// root definition does.
+        /// But basically it should be the License + State information.
+        /// </summary>
+        Dictionary<string, object> ICanBecomeEntity.DataForBuilder => new Dictionary<string, object>
+        {
+            // Properties describing the License
+            // { Attributes.NameIdNiceName, License.Name },
+            { Attributes.TitleNiceName, License.Name },
+            { nameof(LicenseKey), LicenseKey },
+            { nameof(License.Description), License.Description },
+            { nameof(License.AutoEnable), License.AutoEnable },
+            { nameof(License.Priority), License.Priority },
+            // The License Condition is an internal property
+            // Used when checking conditions on other objects - if this license is what is expected
+            //{ "LicenseConditionType", License.Condition.Type },
+            //{ "LicenseConditionNameId", License.Condition.NameId },
+            //{ "LicenseConditionIsEnabled", License.Condition.IsEnabled },
+
+            // Properties describing the state/enabled
+            { nameof(Enabled), Enabled },
+            { nameof(EnabledInConfiguration), EnabledInConfiguration },
+            { nameof(Valid), Valid },
+            { nameof(Expiration), Expiration },
+            { nameof(ExpirationIsValid), ExpirationIsValid },
+            { nameof(SignatureIsValid), SignatureIsValid },
+            { nameof(FingerprintIsValid), FingerprintIsValid },
+            { nameof(VersionIsValid), VersionIsValid },
+            { nameof(Owner), Owner }
+        };
+
+        #endregion
+
     }
 }

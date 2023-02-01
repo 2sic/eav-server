@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Data;
@@ -31,19 +29,6 @@ namespace ToSic.Eav.DataSources.Sys
     {
         #region Configuration-properties (no config)
 
-        private const string AppIdKey = "AppId";
-
-        /// <summary>
-        /// The app id
-        /// </summary>
-        [PrivateApi("As of now, switching apps is not a feature we want to provide")]
-        private int OfAppId
-        {
-            get => int.TryParse(Configuration[AppIdKey], out var aid) ? aid : AppId;
-            // ReSharper disable once UnusedMember.Local
-            set => Configuration[AppIdKey] = value.ToString();
-        }
-
         #endregion
 
         /// <inheritdoc />
@@ -57,46 +42,20 @@ namespace ToSic.Eav.DataSources.Sys
                 _licenseService = licenseService
             );
             Provide(GetList);
-            ConfigMask(AppIdKey);
         }
         private readonly ILicenseService _licenseService;
 
 
         private ImmutableArray<IEntity> GetList() => Log.Func(l =>
         {
-            Configuration.Parse();
+            // Don't parse configuration as there is nothing to configure
+            // Configuration.Parse();
 
-            var appId = OfAppId;
-
-            var licenses = _licenseService.All;
-
-            var licenseBuilder = new DataBuilderQuickWIP(DataBuilder, appId: appId, typeName: "License", titleField: Data.Attributes.TitleNiceName);
-            var list = licenses
-                .Select(lic => licenseBuilder.Create(new Dictionary<string, object>
-                    {
-                        { Data.Attributes.NameIdNiceName, lic.License.Name},
-                        { Data.Attributes.TitleNiceName, lic.Title },
-                        { "LicenseKey", lic.LicenseKey },
-                        { "LicenseDescription", lic.License.Description },
-                        { "LicenseAutoEnable", lic.License.AutoEnable },
-                        { "LicensePriority", lic.License.Priority },
-                        { "LicenseConditionType", lic.License.Condition.Type },
-                        { "LicenseConditionNameId", lic.License.Condition.NameId },
-                        { "LicenseConditionIsEnabled", lic.License.Condition.IsEnabled },
-                        { "Enabled", lic.Enabled },
-                        { "EnabledState", lic.EnabledState },
-                        { "Valid", lic.Valid },
-                        { "Expiration", lic.Expiration },
-                        { "ValidExpired", lic.ValidExpired },
-                        { "ValidSignature", lic.ValidSignature },
-                        { "ValidFingerprint", lic.ValidFingerprint },
-                        { "ValidVersion", lic.ValidVersion },
-                        { "Owner", lic.Owner }
-                    }, 
-                    guid: lic.License.Guid, 
-                    created: DateTime.Now, 
-                    modified: DateTime.Now)
-                ).ToImmutableArray();
+            var licenseBuilder = new DataBuilderQuickWIP(DataBuilder, appId: Constants.PresetAppId, typeName: "License", titleField: Data.Attributes.TitleNiceName);
+            var list = _licenseService.All
+                .OrderBy(lic => lic.License?.Priority ?? 0)
+                .Select(lic => licenseBuilder.Create(lic))
+                .ToImmutableArray();
             
             return (list, $"{list.Length}");
         });

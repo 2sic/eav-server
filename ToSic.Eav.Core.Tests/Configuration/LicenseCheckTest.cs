@@ -18,10 +18,10 @@ namespace ToSic.Eav.Core.Tests.Configuration
             var license = licenseService.All.FirstOrDefault(l => l.Title == "2sxc License Test License");
 
             Assert.IsNotNull(license);
-            Assert.IsTrue(license.ValidFingerprint);
-            Assert.IsTrue(license.ValidExpired);
-            Assert.IsTrue(license.ValidSignature);
-            Assert.IsTrue(license.ValidVersion);
+            Assert.IsTrue(license.FingerprintIsValid);
+            Assert.IsTrue(license.ExpirationIsValid);
+            Assert.IsTrue(license.SignatureIsValid);
+            Assert.IsTrue(license.VersionIsValid);
         }
     }
 }

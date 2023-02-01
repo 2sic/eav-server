@@ -152,18 +152,18 @@ namespace ToSic.Eav.Configuration.Licenses
             l.A($"Licenses: {licenses.Count}");
 
             var licenseStates = licenses
-                .Where(ls => !string.IsNullOrEmpty(ls.Id))
-                .Select(ls =>
+                .Where(storedDetails => !string.IsNullOrEmpty(storedDetails.Id))
+                .Select(storedDetails =>
                 {
-                    var licDef = _licenseCatalog.TryGet(ls.Id);
+                    var licDef = _licenseCatalog.TryGet(storedDetails.Id);
 
                     // If no real license found with this ID, it's probably a single-feature activation
                     // For this we must add a virtual license for this feature only
                     if (licDef == null)
                     {
-                        licDef = new LicenseDefinition(0, ls.Comments ?? "Feature (unknown)",
-                            Guid.TryParse(ls.Id, out var guidId) ? guidId : Guid.Empty,
-                            $"Feature: {ls.Comments} ({ls.Id})");
+                        licDef = new LicenseDefinition(0, storedDetails.Comments ?? "Feature (unknown)",
+                            Guid.TryParse(storedDetails.Id, out var guidId) ? guidId : Guid.Empty,
+                            $"Feature: {storedDetails.Comments} ({storedDetails.Id})");
                         l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId}");
                         _licenseCatalog.Register(licDef);
                     }
@@ -174,11 +174,11 @@ namespace ToSic.Eav.Configuration.Licenses
                         License = licDef,
                         EntityGuid = licenseStored.GuidSalt,
                         LicenseKey = licenseStored.Key,
-                        Expiration = ls.Expires ?? licenseStored.Expires,
-                        ValidExpired = validDate,
-                        ValidFingerprint = validFp,
-                        ValidSignature = validSig,
-                        ValidVersion = validVersion,
+                        Expiration = storedDetails.Expires ?? licenseStored.Expires,
+                        ExpirationIsValid = validDate,
+                        FingerprintIsValid = validFp,
+                        SignatureIsValid = validSig,
+                        VersionIsValid = validVersion,
                         Owner = licenseStored.Owner,
                     };
                 })
@@ -200,10 +200,10 @@ namespace ToSic.Eav.Configuration.Licenses
                     EntityGuid = Guid.Empty,
                     LicenseKey = "always enabled",
                     Expiration = BuiltInLicenses.UnlimitedExpiry,
-                    ValidExpired = true,
-                    ValidFingerprint = true,
-                    ValidSignature = true,
-                    ValidVersion = true,
+                    ExpirationIsValid = true,
+                    FingerprintIsValid = true,
+                    SignatureIsValid = true,
+                    VersionIsValid = true,
                 })
                 .ToList();
             return licenseStates;

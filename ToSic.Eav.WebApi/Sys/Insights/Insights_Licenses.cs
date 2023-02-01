@@ -40,10 +40,10 @@ namespace ToSic.Eav.WebApi.Sys
                         l.License?.Name,
                         l.License?.Guid,
                         EmojiTrueFalse(l.Valid),
-                        EmojiTrueFalse(l.ValidSignature),
-                        EmojiTrueFalse(l.ValidFingerprint),
-                        EmojiTrueFalse(l.ValidVersion),
-                        EmojiTrueFalse(l.ValidExpired),
+                        EmojiTrueFalse(l.SignatureIsValid),
+                        EmojiTrueFalse(l.FingerprintIsValid),
+                        EmojiTrueFalse(l.VersionIsValid),
+                        EmojiTrueFalse(l.ExpirationIsValid),
                         l.Expiration.ToString("yyyy-MM-dd")
                     ).ToString()
                 )
