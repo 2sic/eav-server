@@ -20,22 +20,23 @@ namespace ToSic.Lib.Logging
         [PrivateApi]
         public static T LinkLog<T>(this T thingWithLog, ILog parentLog, /*string name,*/ bool forceConnect = false) where T: class, IHasLog
         {
-            if (thingWithLog == null) return null;
-            if (thingWithLog is ILogShouldNeverConnect && !forceConnect)
-                return thingWithLog;
-
-            if (thingWithLog is ILazyInitLog logConnector)
-                logConnector.SetLog(parentLog);
-            else
+            switch (thingWithLog)
             {
-                // Connect if possible
-                (thingWithLog.Log as Log)?.LinkTo(parentLog/*, name*/);
+                case null:
+                    return null;
+                case ILogShouldNeverConnect _ when !forceConnect:
+                    return thingWithLog;
+                case ILazyInitLog logConnector:
+                    logConnector.SetLog(parentLog);
+                    return thingWithLog;
+                default:
+                    // Connect if possible
+                    (thingWithLog.Log as Log)?.LinkTo(parentLog/*, name*/);
 
-                // If the object needs a call back, give it...
-                (thingWithLog as ILogWasConnected)?.LogWasConnected();
+                    // If the object needs a call back, give it...
+                    (thingWithLog as ILogWasConnected)?.LogWasConnected();
+                    return thingWithLog;
             }
-
-            return thingWithLog;
         }
 
     }
