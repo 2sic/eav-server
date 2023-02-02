@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Data.Raw;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
@@ -30,12 +31,24 @@ namespace ToSic.Eav.Data
             _contentType = parentBuilder.Type(typeName ?? DataBuilder.DefaultTypeName);
         }
 
-        public IEntity Create(ICanBecomeEntity almostEntity) => Create(
-            almostEntity.DataForBuilder,
-            id: almostEntity.Id == 0 ? null : almostEntity.Id as int?,
-            guid: almostEntity.Guid,
-            created: almostEntity.Created,
-            modified: almostEntity.Modified
+        /// <summary>
+        /// For objects which delegate the IRawEntity to a property.
+        /// </summary>
+        /// <param name="withSource"></param>
+        /// <returns></returns>
+        public IEntity Create(IHasRawEntitySource withSource) => Create(withSource.Source);
+
+        /// <summary>
+        /// For objects which themselves are IRawEntity
+        /// </summary>
+        /// <param name="rawEntity"></param>
+        /// <returns></returns>
+        public IEntity Create(IRawEntity rawEntity) => Create(
+            rawEntity.RawProperties,
+            id: rawEntity.Id == 0 ? null : rawEntity.Id as int?,
+            guid: rawEntity.Guid,
+            created: rawEntity.Created,
+            modified: rawEntity.Modified
         );
 
         public IEntity Create(Dictionary<string, object> values, int? id = default, Guid? guid = default, DateTime? created = default, DateTime? modified = default)

@@ -17,10 +17,11 @@
 using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Raw;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    public class LicenseState: ICanBecomeEntity
+    public class LicenseState: IRawEntity
     {
         public LicenseState() { }
 
@@ -54,14 +55,14 @@ namespace ToSic.Eav.Configuration.Licenses
 
         #region ICanBecomeEntity
 
-        int ICanBecomeEntity.Id => 0;
+        int IRawEntity.Id => 0;
 
-        Guid ICanBecomeEntity.Guid => License.Guid;
+        Guid IRawEntity.Guid => License.Guid;
 
         private readonly DateTime _objectCreated = DateTime.Now;
-        DateTime ICanBecomeEntity.Created => _objectCreated;
+        DateTime IRawEntity.Created => _objectCreated;
 
-        DateTime ICanBecomeEntity.Modified => _objectCreated;
+        DateTime IRawEntity.Modified => _objectCreated;
 
         /// <summary>
         /// Important: We are creating an object which is basically the License.
@@ -70,7 +71,7 @@ namespace ToSic.Eav.Configuration.Licenses
         /// root definition does.
         /// But basically it should be the License + State information.
         /// </summary>
-        Dictionary<string, object> ICanBecomeEntity.DataForBuilder => new Dictionary<string, object>
+        Dictionary<string, object> IRawEntity.RawProperties => new Dictionary<string, object>
         {
             // Properties describing the License
             // { Attributes.NameIdNiceName, License.Name },

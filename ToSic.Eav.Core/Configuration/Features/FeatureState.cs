@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Raw;
 using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
@@ -14,7 +15,7 @@ namespace ToSic.Eav.Configuration
     /// Note that this is also used as a DTO for the edit-UI, so don't just rename fields or anything.
     /// </summary>
     [PrivateApi("no good reason to publish this")]
-    public class FeatureState: ICanBecomeEntity, IHasIdentityNameId
+    public class FeatureState: IRawEntity, IHasIdentityNameId
     {
         /// <summary>
         /// Feature Definition can be null, if a feature was activated with an unknown ID
@@ -104,13 +105,13 @@ namespace ToSic.Eav.Configuration
 
         #region ICanBecomeEntity
 
-        int ICanBecomeEntity.Id => 0;
+        int IRawEntity.Id => 0;
 
         private readonly DateTime _objectCreated = DateTime.Now;
-        DateTime ICanBecomeEntity.Created => _objectCreated;
-        DateTime ICanBecomeEntity.Modified => _objectCreated;
+        DateTime IRawEntity.Created => _objectCreated;
+        DateTime IRawEntity.Modified => _objectCreated;
 
-        Dictionary<string, object> ICanBecomeEntity.DataForBuilder => new Dictionary<string, object>
+        Dictionary<string, object> IRawEntity.RawProperties => new Dictionary<string, object>
         {
             { nameof(NameId), NameId },
             { Attributes.TitleNiceName, Name },
