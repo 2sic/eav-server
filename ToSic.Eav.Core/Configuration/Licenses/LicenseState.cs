@@ -55,7 +55,7 @@ namespace ToSic.Eav.Configuration.Licenses
 
         #region ICanBecomeEntity
 
-        int IRawEntity.Id => 0;
+        int IRawEntity.Id => int.MinValue; // 0 is valid Id for some DataSources, so using int.MinValue instead
 
         Guid IRawEntity.Guid => License.Guid;
 

@@ -45,7 +45,7 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         public IEntity Create(IRawEntity rawEntity) => Create(
             rawEntity.RawProperties,
-            id: rawEntity.Id == 0 ? null : rawEntity.Id as int?,
+            id: rawEntity.Id == int.MinValue/* 0*/ ? null : rawEntity.Id as int?, // 0 is valid Id for some DataSources, so using int.MinValue instead
             guid: rawEntity.Guid,
             created: rawEntity.Created,
             modified: rawEntity.Modified
