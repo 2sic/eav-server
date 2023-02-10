@@ -37,21 +37,15 @@ namespace ToSic.Eav.DataSources
         /// </remarks>
         public enum Settings
         {
-            Relationship,
+            //Relationship,
             Filter,
             AttributeOnRelationship,
             Comparison,
             Direction, // important: not surfaced yet to the outside world as not implemented
-            Separator
+            //Separator
         }
 
         private const string PrefixNot = "not-";
-        private const string RelationshipKey = "Relationship";
-        private const string FilterKey = "Filter";
-        private const string CompareAttributeKey = "CompareAttribute";
-        private const string CompareModeKey = "Mode";
-        private const string SeparatorKey = "Separator";
-        private const string ChildOrParentKey = "ChildOrParent";
         private const string DefaultDirection = "child";
         private const string DefaultSeparator = "ignore"; // by default, don't separate!
         private readonly string[] _directionPossibleValues = { DefaultDirection };
@@ -78,8 +72,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public string Relationship
         {
-            get => Configuration[RelationshipKey];
-            set => Configuration[RelationshipKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -87,8 +81,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public string Filter
         {
-            get => Configuration[FilterKey];
-            set => Configuration[FilterKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -96,8 +90,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public string CompareAttribute
         {
-            get => Configuration[CompareAttributeKey];
-            set => Configuration[CompareAttributeKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -107,8 +101,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public string CompareMode
         {
-            get => Configuration[CompareModeKey];
-            set => Configuration[CompareModeKey] = value.ToLowerInvariant();
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value.ToLowerInvariant());
         }
 
         /// <summary>
@@ -116,8 +110,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public string Separator
         {
-            get => Configuration[SeparatorKey];
-            set => Configuration[SeparatorKey] = value.ToLowerInvariant();
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value.ToLowerInvariant());
         }
 
         /// <summary>
@@ -125,13 +119,13 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public string ChildOrParent
         {
-            get => Configuration[ChildOrParentKey];
+            get => Configuration.GetThis();
             set
             {
-                if (_directionPossibleValues.Contains(value.ToLowerInvariant()))
-                    Configuration[ChildOrParentKey] = value.ToLowerInvariant();
-                else
+                var valLower = value.ToLowerInvariant();
+                if (!_directionPossibleValues.Contains(valLower))
                     throw new Exception("Value '" + value + "'not allowed for ChildOrParent");
+                Configuration.SetThis(valLower);
             }
         }
 
@@ -144,12 +138,13 @@ namespace ToSic.Eav.DataSources
         public RelationshipFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.Relfil")
         {
             Provide(GetRelationshipsOrFallback);
-            ConfigMask(RelationshipKey, $"[Settings:{Settings.Relationship}]");
-            ConfigMask(FilterKey, $"[Settings:{Settings.Filter}]");
-            ConfigMask(CompareAttributeKey, $"[Settings:{Settings.AttributeOnRelationship}||{Attributes.EntityFieldTitle}]");
-            ConfigMask(CompareModeKey, $"[Settings:{Settings.Comparison}||{CompareModes.contains}]");
-            ConfigMask(SeparatorKey, $"[Settings:{Settings.Separator}||{DefaultSeparator}]");
-            ConfigMask(ChildOrParentKey, $"[Settings:{Settings.Direction}||{DefaultDirection}]");
+            ConfigMask(nameof(Relationship));
+            ConfigMask(nameof(Filter));
+            ConfigMaskMyConfig(nameof(CompareAttribute), $"{Settings.AttributeOnRelationship}||{Attributes.EntityFieldTitle}");
+            ConfigMaskMyConfig(nameof(CompareMode), $"{Settings.Comparison}||{CompareModes.contains}");
+            ConfigMask($"{nameof(Separator)}||{DefaultSeparator}");
+            // todo: unclear if implemented...
+            ConfigMaskMyConfig(nameof(ChildOrParent), $"{Settings.Direction}||{DefaultDirection}");
         }
 
         private IImmutableList<IEntity> GetRelationshipsOrFallback() => Log.Func(() =>

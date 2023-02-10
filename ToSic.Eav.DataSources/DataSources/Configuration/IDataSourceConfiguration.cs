@@ -20,11 +20,11 @@ namespace ToSic.Eav.DataSources
         /// <param name="value">A string based value</param>
         string this[string key] { get; set; }
 
-        [PrivateApi("Still WIP v15")]
-        void Set<T>(string name, T value);
+        //[PrivateApi("Still WIP v15")]
+        //void Set<T>(string name, T value);
 
-        [PrivateApi("Still WIP v15")]
-        T Get<T>(string name, T fallback);
+        //[PrivateApi("Still WIP v15")]
+        //T Get<T>(string name, T fallback);
 
 
         [PrivateApi("Still WIP v15")]

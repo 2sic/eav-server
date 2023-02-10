@@ -35,8 +35,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public override string ContentTypeName
         {
-            get => Configuration[nameof(ContentTypeName)];
-            set => Configuration[nameof(ContentTypeName)] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -47,8 +47,8 @@ namespace ToSic.Eav.DataSources
         /// </remarks>
         public bool FilterDuplicates
         {
-            get => Configuration.GetBool(nameof(FilterDuplicates));
-            set => Configuration.SetBool(nameof(FilterDuplicates), value);
+            get => Configuration.GetThis(true);
+            set => Configuration.SetThis(value);
         }
         public MetadataTargets(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.MetaTg")
         {

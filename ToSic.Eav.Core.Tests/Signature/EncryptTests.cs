@@ -13,6 +13,7 @@ namespace ToSic.Eav.Core.Tests.Signature
         private const string TestMessage = "This is a test message";
         private const string DummyPassword = "dummy-password";
         private const string PreviousEncryptionSha256 = "L3pBTTJ9+Ow1aRRWX4Flykh3UEfO7/XffcEuJPVKABg=";
+
         [TestMethod]
         public void TestBasicAesCrypto()
         {

@@ -100,12 +100,12 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// todo
         /// </summary>
-        public string RemoveEmptyStrings { get => Configuration[RmvEmptyStringsKey]; set => Configuration[RmvEmptyStringsKey] = value; }
+        public string RemoveEmptyStrings { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// todo
         /// </summary>
-        public string DropFalseValues { get => Configuration[RmvBooleanFalseKey]; set => Configuration[RmvBooleanFalseKey] = value; }
+        public string DropFalseValues { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         #endregion
 
@@ -200,8 +200,8 @@ namespace ToSic.Eav.DataSources
             // Optimize output - enhanced in 12.05
             ConfigMask(nameof(RemoveNullValues));
             ConfigMask(nameof(RemoveZeroValues));
-            ConfigMask(RmvEmptyStringsKey);
-            ConfigMask(RmvBooleanFalseKey);
+            ConfigMaskMyConfig(nameof(RemoveEmptyStrings), RmvEmptyStringsKey);
+            ConfigMaskMyConfig(nameof(DropFalseValues), RmvBooleanFalseKey);
 
             // Metadata For - enhanced in 12.05
             ConfigMask(nameof(IncludeMetadataFor));

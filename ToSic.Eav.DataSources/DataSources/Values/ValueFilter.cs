@@ -30,18 +30,13 @@ namespace ToSic.Eav.DataSources
     {
         #region Configuration-properties Attribute, Value, Language, Operator
 
-        private const string AttrKey = "Attribute";
-        private const string ExpectedKey = "Value";
-        private const string OperatorKey = "Operator";
-        private const string TakeKey = "Take";
-
         /// <summary>
 		/// The attribute whose value will be scanned / filtered.
 		/// </summary>
 		public string Attribute
         {
-            get => Configuration[AttrKey];
-            set => Configuration[AttrKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -49,8 +44,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public string Value
         {
-            get => Configuration[ExpectedKey];
-            set => Configuration[ExpectedKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -58,8 +53,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public string Languages
         {
-            get => Configuration[ValueLanguages.LangKey];
-            set => Configuration[ValueLanguages.LangKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -68,8 +63,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public string Operator
         {
-            get => Configuration[OperatorKey];
-            set => Configuration[OperatorKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -77,8 +72,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public string Take
         {
-            get => Configuration[TakeKey];
-            set => Configuration[TakeKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
         #endregion
 
@@ -94,11 +89,11 @@ namespace ToSic.Eav.DataSources
             );
 
             Provide(GetValueFilterOrFallback);
-            ConfigMask(AttrKey, $"[Settings:{AttrKey}]");
-            ConfigMask(ExpectedKey, $"[Settings:{ExpectedKey}]");
-            ConfigMask(OperatorKey, $"[Settings:{OperatorKey}||==]");
-            ConfigMask(TakeKey, $"[Settings:{TakeKey}]");
-            ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
+            ConfigMask(nameof(Attribute));
+            ConfigMask(nameof(Value));
+            ConfigMask($"{nameof(Operator)}||=="); // todo: use constant
+            ConfigMask(nameof(Take));
+            ConfigMask(ValueLanguages.LanguageSettingsKeyAndToken);
         }
         private readonly ValueLanguages _valueLanguageService;
 

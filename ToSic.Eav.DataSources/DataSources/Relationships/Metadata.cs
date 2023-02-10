@@ -33,10 +33,10 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public override string ContentTypeName
         {
-            get => Configuration[nameof(ContentTypeName)];
-            set => Configuration[nameof(ContentTypeName)] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
-        public Metadata(Dependencies dependencies, string logName) : base(dependencies, $"{DataSourceConstants.LogPrefix}.MetaDt")
+        public Metadata(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.MetaDt")
         {
         }
 

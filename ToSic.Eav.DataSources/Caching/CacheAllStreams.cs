@@ -31,35 +31,32 @@ namespace ToSic.Eav.DataSources.Caching
 	public class CacheAllStreams : DataSource
     {
         #region Configuration-properties
-        private const string RefreshOnSourceRefreshKey = "RefreshOnSourceRefresh";
-        private const string CacheDurationInSecondsKey = "CacheDurationInSeconds";
-	    private const string ReturnCacheWhileRefreshingKey = "ReturnCacheWhileRefreshing";
 
 		/// <summary>
 		/// How long to keep these streams in the cache
 		/// </summary>
         public int CacheDurationInSeconds
 		{
-            get => int.Parse(Configuration[CacheDurationInSecondsKey]);
-		    set => Configuration[CacheDurationInSecondsKey] = value.ToString();
-		}
+            get => Configuration.GetThis(0); // int.Parse(Configuration[CacheDurationInSecondsKey]);
+            set => Configuration.SetThis(value);
+        }
 
         /// <summary>
         /// If a source-refresh should trigger a cache rebuild
         /// </summary>
         public bool RefreshOnSourceRefresh
-	    {
-            get => global::System.Convert.ToBoolean(Configuration[RefreshOnSourceRefreshKey]);
-            set => Configuration[RefreshOnSourceRefreshKey] = value.ToString();
+        {
+            get => Configuration.GetThis(true); // global::System.Convert.ToBoolean(Configuration[RefreshOnSourceRefreshKey]);
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// Perform a cache rebuild async. 
         /// </summary>
-        public bool ReturnCacheWhileRefreshing 
+        public bool ReturnCacheWhileRefreshing
         {
-            get => global::System.Convert.ToBoolean(Configuration[ReturnCacheWhileRefreshingKey]);
-            set => Configuration[ReturnCacheWhileRefreshingKey] = value.ToString();
+            get => Configuration.GetThis(false); // global::System.Convert.ToBoolean(Configuration[ReturnCacheWhileRefreshingKey]);
+            set => Configuration.SetThis(value);
         }
 
 
@@ -91,9 +88,9 @@ namespace ToSic.Eav.DataSources.Caching
             //OutIsDynamic = true;
 
 			// Set default switch-keys to 0 = no switch
-            Configuration.Values.Add(RefreshOnSourceRefreshKey, "[Settings:" + RefreshOnSourceRefreshKey + "||True]");
-			Configuration.Values.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||0]"); // 0 is default, meaning don't use custom value, use system value of 1 day
-		    Configuration.Values.Add(ReturnCacheWhileRefreshingKey, "False");
+            ConfigMask($"{nameof(RefreshOnSourceRefresh)}||True");
+			ConfigMask($"{nameof(CacheDurationInSeconds)}||0"); // 0 is default, meaning don't use custom value, use system value of 1 day
+		    ConfigMask($"{nameof(ReturnCacheWhileRefreshing)}||False");
         }
 
 		/// <summary>

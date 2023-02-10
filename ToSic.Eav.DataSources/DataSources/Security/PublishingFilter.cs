@@ -31,9 +31,9 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public bool ShowDrafts
 		{
-			get => bool.Parse(Configuration[QueryConstants.ParamsShowDraftKey]);
-		    set => Configuration[QueryConstants.ParamsShowDraftKey] = value.ToString();
-		}
+			get => Configuration.GetThis(QueryConstants.ShowDraftsDefault);
+            set => Configuration.SetThis(value);
+        }
 		#endregion
 
 		/// <inheritdoc />
@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources
 		public PublishingFilter(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Publsh")
         {
             Provide(PublishingFilterList);
-		    ConfigMask(QueryConstants.ParamsShowDraftKey, QueryConstants.ParamsShowDraftToken);
+		    ConfigMask(QueryConstants.ParamsShowDraftKeyAndToken);
        }
 
 

@@ -27,19 +27,15 @@ namespace ToSic.Eav.DataSources
 	{
         #region Configuration-properties (no config)
 
-        private const string TakeKey = "Take";
+        private const int DefaultTakeAll = 0;
 
         /// <summary>
-        /// Amount of items to take / return when shuffling. Defaults to 0.
+        /// Amount of items to take / return when shuffling. Defaults to 1.
         /// </summary>
 		public int Take
         {
-            get
-            {
-                int.TryParse(Configuration[TakeKey], out var tk);
-                return tk;
-            }
-            set => Configuration[TakeKey] = value.ToString();
+            get => Configuration.GetThis(DefaultTakeAll);
+            set => Configuration.SetThis(value);
         }
 
 
@@ -55,7 +51,7 @@ namespace ToSic.Eav.DataSources
         public Shuffle(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Shuffl")
         {
             Provide(GetShuffle);
-		    ConfigMask(TakeKey, "[Settings:Take||0]");
+		    ConfigMask($"{nameof(Take)}||{DefaultTakeAll}");
         }
 
 
@@ -85,7 +81,7 @@ namespace ToSic.Eav.DataSources
             if (take > 0 && maxTake > take) maxTake = take;
 
             l.A($"take:{take}, maxTake:{maxTake}");
-            if (take > 0 && maxTake > take) maxTake = take;
+            if (take > DefaultTakeAll && maxTake > take) maxTake = take;
             // changed this a bit because of #1815
             // var realTake = maxTake - 1; // either length of array, or take, but -1 as zero-based
             // go through array, shuffling the items - but only for as many times as we want to take
@@ -101,7 +97,7 @@ namespace ToSic.Eav.DataSources
 
             var result = retArray
                 .Take(maxTake)
-                .ToImmutableArray(); // .ToList();
+                .ToImmutableArray();
             return (result, maxTake.ToString());
         });
         #endregion

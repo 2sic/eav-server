@@ -41,8 +41,6 @@ namespace ToSic.Eav.DataSources.Sys
         #region Configuration-properties (no config)
 
         private const string AppIdKey = "AppId";
-        private const string ScopeKey = "Scope";
-	    //private const string TryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
 	    private const string ContentTypeTypeName = "EAV_ContentTypes";
 	    
 
@@ -51,20 +49,29 @@ namespace ToSic.Eav.DataSources.Sys
         /// </summary>
         public int OfAppId
         {
-            get => int.TryParse(Configuration[AppIdKey], out int aid) ? aid : AppId;
-            // ReSharper disable once UnusedMember.Global
-            set => Configuration.Set(AppIdKey, value);
+            get => Configuration.GetThis(AppId);
+            set => Configuration.SetThis(value);
         }
 
 	    /// <summary>
-	    /// The content-type name
+	    /// The scope to get the content types of - normally it's only the default scope
 	    /// </summary>
+	    /// <remarks>
+	    /// * Renamed to `Scope` in v15, previously was called `OfScope`
+	    /// </remarks>
+	    public string Scope
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
+        }
+
+        [PrivateApi]
+        [Obsolete("Do not use anymore, use Scope instead - only left in for compatibility. Probably remove v17 or something")]
 	    public string OfScope
-	    {
-	        get => Configuration[ScopeKey];
-            // ReSharper disable once UnusedMember.Global
-            set => Configuration[ScopeKey] = value;
-	    }
+        {
+            get => Scope;
+            set => Scope = value;
+        }
 
         #endregion
 
@@ -79,8 +86,8 @@ namespace ToSic.Eav.DataSources.Sys
                 _appStates = appStates
             );
             Provide(GetList);
-		    ConfigMask(AppIdKey);
-		    ConfigMask($"{ScopeKey}||Default");
+		    ConfigMaskMyConfig(nameof(OfAppId), AppIdKey);
+		    ConfigMask($"{nameof(Scope)}||Default");
 		}
         private readonly IAppStates _appStates;
 
@@ -92,7 +99,7 @@ namespace ToSic.Eav.DataSources.Sys
 
             var appId = OfAppId;
 
-	        var scp = OfScope;
+	        var scp = Scope;
             if (string.IsNullOrWhiteSpace(scp)) scp = Data.Scopes.Default;
 
             var types = _appStates.Get(appId).ContentTypes.OfScope(scp);

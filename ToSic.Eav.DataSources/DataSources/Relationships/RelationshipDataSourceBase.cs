@@ -27,8 +27,8 @@ namespace ToSic.Eav.DataSources
 
         public bool FilterDuplicates
         {
-            get => Configuration.GetBool(nameof(FilterDuplicates));
-            set => Configuration.SetBool(nameof(FilterDuplicates), value);
+            get => Configuration.GetThis(true);
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
             Provide(GetRelated);
             ConfigMask(nameof(FieldName));
             ConfigMask(nameof(ContentTypeName));
-            ConfigMask(nameof(FilterDuplicates) + "||true");
+            ConfigMask($"{nameof(FilterDuplicates)}||true");
         }
 
         private IImmutableList<IEntity> GetRelated() => Log.Func(() =>

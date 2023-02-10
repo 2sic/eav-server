@@ -6,6 +6,7 @@ namespace ToSic.Eav.DataSources
     {
         /// <summary>
         /// Correct prefix to use when retrieving a value from the current data sources configuration entity.
+        /// Always use this variable, don't ever write the name yourself, as it could change in future.
         /// </summary>
         public static string MyConfiguration = "Settings"; // WIP
 
@@ -33,6 +34,10 @@ namespace ToSic.Eav.DataSources
                 CacheRelevantConfigurations.Add(key);
         }
 
+        [PrivateApi("wip v15.03")]
+        protected void ConfigMaskMyConfig(string key, string partialToken, bool cacheRelevant = true) 
+            => ConfigMask(key, $"[{MyConfiguration}:{partialToken}]", cacheRelevant);
+
         /// <summary>
         /// Add a value to the configuration list for later resolving tokens and using in Cache-Keys.
         /// It will automatically generate a real token to retrieve the same named key from `MyConfiguration`
@@ -49,18 +54,15 @@ namespace ToSic.Eav.DataSources
         /// </param>
         /// <remarks>
         /// * Added in v12.10
-        /// * Publicly documented it v15.03
+        /// * Published / documented it v15.03
         /// </remarks>
         [PublicApi]
         protected void ConfigMask(string keyAndToken, bool cacheRelevant = true)
         {
-            // Generate a nice token based on what was given
-            var token = $"[{MyConfiguration}:{keyAndToken}]";
-
             // In case we have separators, then the internal lookup-key should only be the first part of this
             var separator = keyAndToken.IndexOfAny(new[] { '|' });
             var key = separator > 0 ? keyAndToken.Substring(0, separator) : keyAndToken;
-            ConfigMask(key, token, cacheRelevant);
+            ConfigMaskMyConfig(key, keyAndToken, cacheRelevant);
         }
     }
 }

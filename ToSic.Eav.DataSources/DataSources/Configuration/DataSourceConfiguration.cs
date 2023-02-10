@@ -55,11 +55,11 @@ namespace ToSic.Eav.DataSources
                 ? result.ConvertOrFallback(fallback)
                 : fallback;
 
-        public T Get<T>(string key, T fallback) => Values.TryGetValue(key, out var result)
-            ? result.ConvertOrFallback(fallback)
-            : fallback;
+        //public T Get<T>(string key, T fallback) => Values.TryGetValue(key, out var result)
+        //    ? result.ConvertOrFallback(fallback)
+        //    : fallback;
 
-        public void Set<T>(string key, T value) => this[key] = value.ToString();
+        //public void Set<T>(string key, T value) => this[key] = value.ToString();
 
         public void SetThis(string value, [CallerMemberName] string cName = default) => Values[cName] = value;
 

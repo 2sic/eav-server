@@ -26,37 +26,34 @@ namespace ToSic.Eav.DataSources
 
     public sealed class ValueSort : DataSource
 	{
-
         #region Configuration-properties
-        private const string AttrKey = "Attributes";
-		private const string DirectionKey = "Directions";
         
 		/// <summary>
 		/// The attribute whose value will be sorted by.
 		/// </summary>
 		public string Attributes
-		{
-			get => Configuration[AttrKey];
-		    set => Configuration[AttrKey] = value;
-		}
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
+        }
 
 		/// <summary>
 		/// The sorting direction like 'asc' or 'desc', can also be 0, 1
 		/// </summary>
 		public string Directions
-		{
-			get => Configuration[DirectionKey];
-		    set => Configuration[DirectionKey] = value;
-		}
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
+        }
 
 		/// <summary>
 		/// Language to filter for. At the moment it is not used, or it is trying to find "any"
 		/// </summary>
 		public string Languages
-		{
-			get => Configuration[ValueLanguages.LangKey];
-		    set => Configuration[ValueLanguages.LangKey] = value;
-		}
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
+        }
 		#endregion
 
 		/// <inheritdoc />
@@ -71,9 +68,9 @@ namespace ToSic.Eav.DataSources
             );
 
             Provide(GetValueSort);
-		    ConfigMask(AttrKey, $"[Settings:{AttrKey}]");
-		    ConfigMask(DirectionKey, $"[Settings:{DirectionKey}]");
-		    ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
+		    ConfigMask(nameof(Attributes));
+		    ConfigMask(nameof(Directions));
+		    ConfigMask(ValueLanguages.LanguageSettingsKeyAndToken);
         }
         private readonly ValueLanguages _valLanguages;
 

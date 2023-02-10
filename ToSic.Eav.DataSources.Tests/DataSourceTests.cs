@@ -8,11 +8,11 @@ namespace ToSic.Eav.DataSourceTests
     [TestClass]
     public class DataSourceTests: TestBaseDiEavFullAndDb
     {
-        public const int EavInstalledDsCount = 45;
+        public const int EavInstalledDsCount = 48;
         public const int TestingAddedDsCount = 1;
         public const int StandardInstalledDSCount = EavInstalledDsCount + TestingAddedDsCount;
 
-        public const int StandardInstalledPipeLineDS = 35;
+        public const int StandardInstalledPipeLineDS = 39;
         public const string SqlFullName = "ToSic.Eav.DataSources.Sql";
         public const string DeferredFullName = "ToSic.Eav.DataSources.DeferredPipelineQuery";
 
@@ -31,8 +31,6 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void AutoFindPipelineDataSources()
         {
-            var dsCatalog = Build<DataSourceCatalog>();
-
             var dsList = DataSourceCatalog.GetAll(true);
             Assert.AreEqual(StandardInstalledPipeLineDS, dsList.Count(), "expect a correct number of DSs");
 

@@ -33,8 +33,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public override string FieldName
         {
-            get => Configuration[nameof(FieldName)];
-            set => Configuration[nameof(FieldName)] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -45,8 +45,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public override string ContentTypeName
         {
-            get => Configuration[nameof(ContentTypeName)];
-            set => Configuration[nameof(ContentTypeName)] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         public Parents(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Parent")

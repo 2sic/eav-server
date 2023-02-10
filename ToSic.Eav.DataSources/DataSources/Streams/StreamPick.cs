@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
@@ -30,30 +29,29 @@ namespace ToSic.Eav.DataSources
     {
         #region Configuration-properties
 
-        private const string StreamNameKey = "StreamName";
-        private const string SearchInParentKey = "UseParentStreams";
 
         /// <summary>
         /// The stream name to lookup.
         /// </summary>
         public string StreamName
         {
-            get => Configuration[StreamNameKey];
-            set => Configuration[StreamNameKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
-        /// <summary>
-        /// The attribute whose value will be sorted by.
-        /// </summary>
-        /// <remarks>
-        /// This feature has not been fully implemented yet. The idea would be that it could access an "App" or similar and dynamically access streams from there
-        /// This may also have a security risk, so don't finish till this is clarified
-        /// </remarks>
-        public bool UseParentStreams
-        {
-            get => bool.TryParse(Configuration[SearchInParentKey], out var result) && result;
-            set => Configuration[SearchInParentKey] = value.ToString();
-        }
+        ///// <summary>
+        ///// The attribute whose value will be sorted by.
+        ///// </summary>
+        ///// <remarks>
+        ///// This feature has not been fully implemented yet. The idea would be that it could access an "App" or similar and dynamically access streams from there
+        ///// This may also have a security risk, so don't finish till this is clarified
+        ///// </remarks>
+        //public bool UseParentStreams
+        //{
+        //    get => bool.TryParse(Configuration[SearchInParentKey], out var result) && result;
+        //    set => Configuration.SetThis(value);
+        //}
+        //private const string SearchInParentKey = "UseParentStreams";
 
         #endregion
 
@@ -66,15 +64,15 @@ namespace ToSic.Eav.DataSources
         public StreamPick(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.StmPck")
         {
             Provide(StreamPickList);
-            ConfigMask(StreamNameKey, "[Settings:StreamName||Default]");
-            ConfigMask(SearchInParentKey, "[Settings:UseParent||False]");
+            ConfigMask($"{nameof(StreamName)}||Default");
+            //ConfigMask(SearchInParentKey, $"[{MyConfiguration}:UseParent||False]");
         }
 
-        private IImmutableList<IEntity> StreamPickList() => Log.Func(() =>
+        private IImmutableList<IEntity> StreamPickList() => Log.Func(l =>
         {
             Configuration.Parse();
             var name = StreamName;
-            Log.A($"StreamName to Look for: '{name}'");
+            l.A($"StreamName to Look for: '{name}'");
             if (string.IsNullOrWhiteSpace(StreamName))
                 return (ImmutableArray<IEntity>.Empty, "no name");
 
@@ -86,7 +84,7 @@ namespace ToSic.Eav.DataSources
 
             // Error not found
             var msg = $"StreamPick can't find stream by the name '{StreamName}'";
-            Log.A(msg);
+            l.A(msg);
             return (ErrorHandler.CreateErrorList(source: this, title: "Can't find Stream", message: $"Trying to pick the stream '{StreamName}' but it doesn't exist on the In."), "error");
 
         });

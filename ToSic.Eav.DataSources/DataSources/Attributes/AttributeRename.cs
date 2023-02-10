@@ -30,18 +30,15 @@ namespace ToSic.Eav.DataSources
     public class AttributeRename : DataSource
 	{
 		#region Configuration-properties
-		private const string AttributeMapKey = "AttributeMap";
-		private const string KeepOtherAttributesKey = "KeepOtherAttributes";
-        private const string TypeNameKey = "TypeName";
 
         /// <summary>
         /// A string containing one or more attribute maps.
         /// The syntax is "NewName=OldName" - one mapping per line
         /// </summary>
         public string AttributeMap
-		{
-		    get => Configuration[AttributeMapKey];
-            set => Configuration[AttributeMapKey] = value;
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -49,8 +46,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public bool KeepOtherAttributes
         {
-            get => DataSourceConfiguration.TryConvertToBool(Configuration[KeepOtherAttributesKey]);
-            set => Configuration[KeepOtherAttributesKey] = value.ToString();
+            get => Configuration.GetThis(true);
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -59,8 +56,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public string TypeName
         {
-            get => Configuration[TypeNameKey];
-            set => Configuration[TypeNameKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         #endregion
@@ -76,9 +73,9 @@ namespace ToSic.Eav.DataSources
             _multiBuilder = multiBuilder;
 
             Provide(GetList);
-			ConfigMask(AttributeMapKey, "[Settings:AttributeMap]");
-			ConfigMask(KeepOtherAttributesKey, $"[Settings:KeepOtherAttributes||True]");
-			ConfigMask(TypeNameKey, $"[Settings:TypeName]");
+			ConfigMask(nameof(AttributeMap));
+			ConfigMask($"{nameof(KeepOtherAttributes)}||True");
+            ConfigMask(nameof(TypeName));
         }
 
         private readonly MultiBuilder _multiBuilder;

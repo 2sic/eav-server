@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources
             ConnectServices(
                 _queryGenerator = queryGenerator
             );
-            ConfigMask(QueryConstants.ParamsShowDraftKey, QueryConstants.ParamsShowDraftToken);
+            ConfigMask(QueryConstants.ParamsShowDraftKeyAndToken);
         }
         #endregion
 

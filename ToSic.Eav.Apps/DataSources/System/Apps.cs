@@ -41,7 +41,6 @@ namespace ToSic.Eav.DataSources.Sys
 	{
         #region Configuration-properties (no config)
 
-        private const string ZoneKey = "Zone";
         private const string ZoneIdField = "ZoneId";
         private const string AppsContentTypeName = "EAV_Apps";
 
@@ -50,10 +49,9 @@ namespace ToSic.Eav.DataSources.Sys
 	    /// </summary>
 	    public int OfZoneId
 	    {
-	        get => int.TryParse(Configuration[ZoneKey], out int zid) ? zid : ZoneId;
-            // ReSharper disable once UnusedMember.Global
-            set => Configuration[ZoneKey] = value.ToString();
-	    }
+	        get => Configuration.GetThis(ZoneId);
+            set => Configuration.SetThis(value);
+        }
 
         #endregion
 
@@ -89,7 +87,7 @@ namespace ToSic.Eav.DataSources.Sys
             _appStates = dependencies.AppStates;
 
             Provide(GetList);
-            ConfigMask(ZoneKey, $"[Settings:{ZoneIdField}]");
+            ConfigMaskMyConfig(nameof(OfZoneId), ZoneIdField);
 		}
         private readonly Generator<Eav.Apps.App> _appGenerator;
         private readonly IAppStates _appStates;

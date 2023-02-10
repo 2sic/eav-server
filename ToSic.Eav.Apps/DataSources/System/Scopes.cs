@@ -31,19 +31,6 @@ namespace ToSic.Eav.DataSources.Sys
 
         #region Configuration-properties (no config)
 
-        private const string AppIdKey = "AppId";
-
-        /// <summary>
-        /// The app id
-        /// </summary>
-        [PrivateApi("As of now, switching apps is not a feature we want to provide")]
-        private int OfAppId
-        {
-            get => int.TryParse(Configuration[AppIdKey], out var aid) ? aid : AppId;
-            // ReSharper disable once UnusedMember.Local
-            set => Configuration[AppIdKey] = value.ToString();
-        }
-
         #endregion
 
         /// <inheritdoc />
@@ -57,7 +44,6 @@ namespace ToSic.Eav.DataSources.Sys
                 _appStates = appStates
             );
             Provide(GetList);
-            ConfigMask(AppIdKey);
         }
         private readonly IAppStates _appStates;
 
@@ -65,7 +51,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             Configuration.Parse();
 
-            var appId = OfAppId;
+            var appId = AppId;
 
             var scopes = _appStates.Get(appId).ContentTypes.GetAllScopesWithLabels();
 

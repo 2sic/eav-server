@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         private readonly QueryManager _queryManager;
 
 
-        private const int GlobalQueryCount = 9;
+        private const int GlobalQueryCount = 14; // count in v15.03
 
         [ClassInitialize]
         public static void Config(TestContext context)
@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         {
             var queries = _queryManager.AllQueryItems(Constants.PresetIdentity);
 
-            Assert.AreEqual(GlobalQueryCount, queries.Count(), $"should find {GlobalQueryCount} query definitions");
+            Assert.AreEqual(GlobalQueryCount, queries.Count, $"should find {GlobalQueryCount} query definitions");
         }
 
 

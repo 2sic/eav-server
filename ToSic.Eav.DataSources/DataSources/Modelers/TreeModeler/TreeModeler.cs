@@ -35,48 +35,46 @@ namespace ToSic.Eav.DataSources
     {
         #region Constants & Properties
 
-        private const string ParentIdentifierAttributeConfigKey = "ParentIdentifierAttribute";
-        private const string ChildParentAttributeConfigKey = "ChildParentAttribute";
-        private const string TargetChildrenAttributeConfigKey = "TargetChildrenAttribute";
-        private const string TargetParentAttributeConfigKey = "TargetParentAttribute";
-
-
         /// <summary>
         /// This determines what property is used as ID on the parent.
         /// Currently only allows "EntityId" and "EntityGuid"
         /// </summary>
         public string Identifier
         {
-            get => Configuration[ParentIdentifierAttributeConfigKey];
-            set => Configuration[ParentIdentifierAttributeConfigKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
+        private const string IdentifierEntityField = "ParentIdentifierAttribute";
 
         /// <summary>
         /// The property on a child which contains the parent ID
         /// </summary>
         public string ParentReferenceField
         {
-            get => Configuration[ChildParentAttributeConfigKey];
-            set => Configuration[ChildParentAttributeConfigKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
+        private const string ParentReferenceFieldConfigField = "ChildParentAttribute";
 
         /// <summary>
         /// The name of the new field on the parent, which will reference the children
         /// </summary>
         public string NewChildrenField
         {
-            get => Configuration[TargetChildrenAttributeConfigKey];
-            set => Configuration[TargetChildrenAttributeConfigKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
+        private const string NewChildrenFieldConfigField = "TargetChildrenAttribute";
 
         /// <summary>
         /// Name of the new field on a child, which will reference the parent. 
         /// </summary>
         public string NewParentField
         {
-            get => Configuration[TargetParentAttributeConfigKey];
-            set => Configuration[TargetParentAttributeConfigKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
+        private const string NewParentFieldConfigField = "TargetParentAttribute";
 
         #endregion
 
@@ -92,10 +90,10 @@ namespace ToSic.Eav.DataSources
             // Specify what out-streams this data-source provides. Usually just one, called "Default"
             Provide(GetList);
 
-            ConfigMask(ParentIdentifierAttributeConfigKey);
-            ConfigMask(ChildParentAttributeConfigKey);
-            ConfigMask(TargetChildrenAttributeConfigKey);
-            ConfigMask(TargetParentAttributeConfigKey);
+            ConfigMaskMyConfig(nameof(Identifier), IdentifierEntityField);
+            ConfigMaskMyConfig(nameof(ParentReferenceField), ParentReferenceFieldConfigField);
+            ConfigMaskMyConfig(nameof(NewChildrenField), NewChildrenFieldConfigField);
+            ConfigMaskMyConfig(nameof(NewParentField), NewParentFieldConfigField);
         }
 
         private readonly MultiBuilder _multiBuilder;

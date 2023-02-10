@@ -30,7 +30,8 @@ namespace ToSic.Eav.DataSources
         internal const string LanguageDefaultPlaceholder = "default";
         internal const string LanguageCurrentPlaceholder = "current";
 
-        internal static string LanguageSettingsPlaceholder = $"[Settings:{LangKey}||{LanguageDefaultPlaceholder}]";
+        //internal static string LanguageSettingsPlaceholder = $"[{DataSource.MyConfiguration}:{LangKey}||{LanguageDefaultPlaceholder}]";
+        internal static string LanguageSettingsKeyAndToken = $"{LangKey}||{LanguageDefaultPlaceholder}";
 
 
         /// <summary>

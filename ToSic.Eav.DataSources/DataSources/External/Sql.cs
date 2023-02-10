@@ -16,6 +16,7 @@ using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
+using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -47,22 +48,14 @@ namespace ToSic.Eav.DataSources
         public static Regex ForbiddenTermsInSelect = new Regex(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore|sp_executesql)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         #region Configuration-properties
-
-        [PrivateApi] protected const string TitleFieldKey = "TitleField";
-        [PrivateApi] protected const string EntityIdFieldKey = "EntityIdField";
-        [PrivateApi] protected const string ContentTypeKey = "ContentType";
-        [PrivateApi] protected const string SelectCommandKey = "SelectCommand";
-        [PrivateApi] protected const string ConnectionStringKey = "ConnectionString";
-        [PrivateApi] protected const string ConnectionStringNameKey = "ConnectionStringName";
-        [PrivateApi] protected const string ConnectionStringDefault = "[Settings:ConnectionString]";
-
+        
 		/// <summary>
 		/// Name of the ConnectionString in the Application.Config to use
 		/// </summary>
 		public string ConnectionStringName
 		{
-			get => Configuration[ConnectionStringNameKey];
-		    set => Configuration[ConnectionStringNameKey] = value;
+			get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
 		}
 
 		/// <summary>
@@ -70,8 +63,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string ConnectionString
 		{
-			get => Configuration[ConnectionStringKey];
-		    set => Configuration[ConnectionStringKey] = value;
+			get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
 		}
 
 		/// <summary>
@@ -79,8 +72,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string SelectCommand
 		{
-			get => Configuration[SelectCommandKey];
-		    set => Configuration[SelectCommandKey] = value;
+			get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
 		}
 
 		/// <summary>
@@ -88,27 +81,27 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string ContentType
 		{
-			get => Configuration[ContentTypeKey];
-		    set => Configuration[ContentTypeKey] = value;
+			get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
 		}
 
 		/// <summary>
 		/// Name of the Title Attribute of the Source DataTable
 		/// </summary>
 		public string TitleField
-		{
-			get => Configuration[TitleFieldKey];
-		    set => Configuration[TitleFieldKey] = value;
-		}
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
+        }
 
 		/// <summary>
 		/// Name of the Column used as EntityId
 		/// </summary>
 		public string EntityIdField
-		{
-			get => Configuration[EntityIdFieldKey];
-		    set => Configuration[EntityIdFieldKey] = value;
-		}
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
+        }
 
         #endregion
 
@@ -148,13 +141,13 @@ namespace ToSic.Eav.DataSources
         {
             SqlDeps = dependencies.SetLog(Log);
             Provide(GetList);
-		    ConfigMask(TitleFieldKey, $"[Settings:EntityTitleField||{Attributes.EntityFieldTitle}]");
-		    ConfigMask(EntityIdFieldKey, $"[Settings:EntityIdField||{Attributes.EntityFieldId}]");
+		    ConfigMaskMyConfig(nameof(TitleField), $"EntityTitleField||{Attributes.EntityFieldTitle}");
+		    ConfigMask($"{nameof(EntityIdField)}||{Attributes.EntityFieldId}");
 
-		    ConfigMask(ContentTypeKey, "[Settings:ContentType||SqlData]");
-		    ConfigMask(SelectCommandKey);
-		    ConfigMask(ConnectionStringKey);
-		    ConfigMask(ConnectionStringNameKey);
+		    ConfigMask($"{nameof(ContentType)}||SqlData");
+		    ConfigMask(nameof(SelectCommand));
+		    ConfigMask(nameof(ConnectionString));
+		    ConfigMask(nameof(ConnectionStringName));
         }
         [PrivateApi] protected readonly Dependencies SqlDeps;
 
@@ -199,7 +192,7 @@ namespace ToSic.Eav.DataSources
             var tokenizer = TokenReplace.Tokenizer;
 
             // Before we process the Select-Command, we must get it (by default it's just a token!)
-	        if (SelectCommand.StartsWith("[Settings"))
+	        if (SelectCommand.StartsWith("[" + MyConfiguration, InvariantCultureIgnoreCase))
 	        {
 	            var tempList = Configuration.LookUpEngine.LookUp(
                     new Dictionary<string, string> { { "one", SelectCommand } },
@@ -221,9 +214,9 @@ namespace ToSic.Eav.DataSources
                         result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
                     charProgress = curMatch.Index + curMatch.Length;
 
-                    var paramName = "@" + ExtractedParamPrefix + (paramNumber++);
+                    var paramName = $"@{ExtractedParamPrefix}{paramNumber++}";
                     result.Append(paramName);
-                    Configuration.Values.Add(paramName, curMatch.ToString());
+                    ConfigMask(paramName, curMatch.ToString());
 
                     // add name to list for caching-key
                     additionalParams.Add(paramName);
@@ -254,7 +247,7 @@ namespace ToSic.Eav.DataSources
 
 
             // Load ConnectionString by Name (if specified)
-			if (!string.IsNullOrEmpty(ConnectionStringName) && (string.IsNullOrEmpty(ConnectionString) || ConnectionString == ConnectionStringDefault))
+			if (!string.IsNullOrEmpty(ConnectionStringName) && string.IsNullOrEmpty(ConnectionString))
 			    try
                 {
                     var conStringName = string.IsNullOrWhiteSpace(ConnectionStringName) ||
@@ -317,13 +310,13 @@ namespace ToSic.Eav.DataSources
 			            // try alternate casing - will result in null if not found (handled later on)
 			            if (!columNames.Contains(casedEntityId))
 			                casedEntityId = columNames.FirstOrDefault(c =>
-			                    string.Equals(c, casedEntityId, StringComparison.InvariantCultureIgnoreCase));
+			                    string.Equals(c, casedEntityId, InvariantCultureIgnoreCase));
 			            Log.A($"will used '{casedEntityId}' as entity field (null if not found)");
 
 			            // try alternate casing - new: just take first column if the defined one isn't found - worst case it doesn't have a title
 			            if (!columNames.Contains(casedTitle))
 			                casedTitle = columNames.FirstOrDefault(c =>
-			                                 string.Equals(c, casedTitle, StringComparison.InvariantCultureIgnoreCase))
+			                                 string.Equals(c, casedTitle, InvariantCultureIgnoreCase))
 			                             ?? columNames.FirstOrDefault();
 			            Log.A($"will use '{casedTitle}' as title field");
 

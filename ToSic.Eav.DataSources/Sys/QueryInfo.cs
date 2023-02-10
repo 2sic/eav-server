@@ -39,11 +39,7 @@ namespace ToSic.Eav.DataSources.Sys
 
         #region Configuration-properties (no config)
 
-        private const string QueryKey = "Query";
-        private const string QueryNameField = "QueryName";
         private const string DefQuery = "not-configured"; // can't be blank, otherwise tokens fail
-        private const string StreamKey = "Stream";
-        private const string StreamField = "StreamName";
         private const string QueryStreamsContentType = "EAV_Query_Stream";
 
         /// <summary>
@@ -51,14 +47,14 @@ namespace ToSic.Eav.DataSources.Sys
         /// </summary>
         public string QueryName
         {
-            get => Configuration[QueryKey];
-            set => Configuration[QueryKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         public string StreamName
         {
-            get => Configuration[StreamKey];
-            set => Configuration[StreamKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
         #endregion
 
@@ -75,8 +71,8 @@ namespace ToSic.Eav.DataSources.Sys
             );
             Provide(GetStreams);
             Provide("Attributes", GetAttributes);
-            ConfigMask(QueryKey, $"[Settings:{QueryNameField}||{DefQuery}]");
-            ConfigMask(StreamKey, $"[Settings:{StreamField}||{Constants.DefaultStreamName}]");
+            ConfigMask($"{nameof(QueryName)}||{DefQuery}");
+            ConfigMask($"{nameof(StreamName)}||{Constants.DefaultStreamName}");
         }
 
         private ImmutableArray<IEntity> GetStreams()

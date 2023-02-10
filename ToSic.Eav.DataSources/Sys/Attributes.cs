@@ -30,8 +30,6 @@ namespace ToSic.Eav.DataSources.Sys
 
         #region Configuration-properties (no config)
 
-        private const string ContentTypeKey = "ContentType";
-        private const string ContentTypeField = "ContentTypeName";
 	    private const string TryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
 	    private const string AttribContentTypeName = "EAV_Attribute";
 	    
@@ -40,8 +38,8 @@ namespace ToSic.Eav.DataSources.Sys
         /// </summary>
         public string ContentTypeName
         {
-            get => Configuration[ContentTypeKey];
-            set => Configuration[ContentTypeKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
         
 		#endregion
@@ -54,7 +52,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             _appStates = appStates;
             Provide(GetList);
-		    ConfigMask(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
+		    ConfigMask($"{nameof(ContentTypeName)}||{TryToUseInStream}");
 		}
         private readonly IAppStates _appStates;
 
