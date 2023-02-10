@@ -30,16 +30,14 @@ namespace ToSic.Eav.DataSources
 	{
         #region Configuration-properties
 
-        private const string TypeNameKey = "TypeName";
-
 		/// <summary>
 		/// The name of the type to filter for. Either the normal name or the 'StaticName' which is usually a GUID.
 		/// </summary>
 		public string TypeName
-		{
-			get => Configuration[TypeNameKey];
-		    set => Configuration[TypeNameKey] = value;
-		}
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
+        }
 
         // 2dm 2023-01-22 #maybeSupportIncludeParentApps
         //[PrivateApi("very experimental v15, special edge case")]
@@ -56,7 +54,7 @@ namespace ToSic.Eav.DataSources
         {
             _appStates = appStates;
             Provide(GetList);
-		    ConfigMask(TypeNameKey, "[Settings:TypeName]");
+		    ConfigMask(nameof(TypeName));
         }
         private readonly IAppStates _appStates;
 

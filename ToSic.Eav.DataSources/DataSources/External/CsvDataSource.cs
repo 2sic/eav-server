@@ -37,15 +37,13 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-        private const string FilePathKey = "FilePath";
-
         /// <summary>
         /// Path to the CSV file, relative to the website root
         /// </summary>
         public string FilePath
         {
-            get => Configuration[FilePathKey];
-            set => Configuration[FilePathKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -76,10 +74,9 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public string Delimiter
         {
-            get => Configuration[DelimiterKey];
-            set => Configuration[DelimiterKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
-        private const string DelimiterKey = "Delimiter";
 
 
         /// <summary>
@@ -87,21 +84,18 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public string ContentType
         {
-            get => Configuration[ContentTypeKey];
-            set => Configuration[ContentTypeKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
-        private const string ContentTypeKey = "ContentType";
-
 
         /// <summary>
         /// Column in the CSV which contains the ID. 
         /// </summary>
         public string IdColumnName
         {
-            get => Configuration[IdColumnNameKey];
-            set => Configuration[IdColumnNameKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
-        private const string IdColumnNameKey = "IdColumnName";
 
 
         /// <summary>
@@ -109,10 +103,9 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public string TitleColumnName
         {
-            get => Configuration[TitleColumnNameKey];
-            set => Configuration[TitleColumnNameKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
-        private const string TitleColumnNameKey = "TitleColumnName";
 
 
         [PrivateApi]
@@ -122,11 +115,11 @@ namespace ToSic.Eav.DataSources
             _serverPaths = serverPaths;
             Provide(GetList);
 
-            ConfigMask(FilePathKey, "[Settings:FilePath]");
-            ConfigMask(DelimiterKey, "[Settings:Delimiter||\t]");
-            ConfigMask(ContentTypeKey, "[Settings:ContentType||Anonymous]");
-            ConfigMask(IdColumnNameKey, "[Settings:IdColumnName]", cacheRelevant: false);
-            ConfigMask(TitleColumnNameKey, "[Settings:TitleColumnName]", cacheRelevant: false);
+            ConfigMask(nameof(FilePath));
+            ConfigMask($"{nameof(Delimiter)}||\t");
+            ConfigMask($"{nameof(ContentType)}||Anonymous");
+            ConfigMask(nameof(IdColumnName), cacheRelevant: false);
+            ConfigMask(nameof(TitleColumnName), cacheRelevant: false);
         }
         private readonly IUser _user;
         private readonly IServerPaths _serverPaths;

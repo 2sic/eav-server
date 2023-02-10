@@ -6,7 +6,6 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
-using static System.Int32;
 
 namespace ToSic.Eav.DataSources
 {
@@ -29,17 +28,19 @@ namespace ToSic.Eav.DataSources
 	{
         #region Configuration-properties
 
+        private const int NotConfigured = 0;
+
 	    /// <summary>
         /// Use this to re-target the app-source to another app. <br/>
         /// Note that this can only be done before ever accessing the app - once the object has started reading data, switching has no more effect.
         /// </summary>
         public int AppSwitch
-		{
-			get => Parse(Configuration[nameof(AppSwitch)]);
-		    set
+        {
+            get => Configuration.GetThis(NotConfigured);
+            set
 			{
-				Configuration[nameof(AppSwitch)] = value.ToString();
-				AppId = value;
+                Configuration.SetThis(value);
+                AppId = value;
 				RequiresRebuildOfOut = true;
 			}
 		}
@@ -49,12 +50,12 @@ namespace ToSic.Eav.DataSources
         /// Note that this can only be done before ever accessing the app - once the object has started reading data, switching has no more effect.
         /// </summary>
 		public int ZoneSwitch
-		{
-			get => Parse(Configuration[nameof(ZoneSwitch)]);
-		    set
+        {
+            get => Configuration.GetThis(NotConfigured);
+            set
 			{
-				Configuration[nameof(ZoneSwitch)] = value.ToString();
-				ZoneId = value;
+                Configuration.SetThis(value);
+                ZoneId = value;
 				RequiresRebuildOfOut = true;
 			}
 		}
@@ -90,8 +91,8 @@ namespace ToSic.Eav.DataSources
             _out = new StreamDictionary(this, null);
 
 			// Set default switch-keys to 0 = no switch
-            ConfigMask(nameof(AppSwitch) + "||0");
-			ConfigMask(nameof(ZoneSwitch) + "||0");
+            ConfigMask($"{nameof(AppSwitch)}||{NotConfigured}");
+			ConfigMask($"{nameof(ZoneSwitch)}||{NotConfigured}");
         }
 
         private readonly Dependencies _deps;

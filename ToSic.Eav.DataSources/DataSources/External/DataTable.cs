@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -22,11 +23,6 @@ namespace ToSic.Eav.DataSources
 	{
         // help Link: https://r.2sxc.org/DsDataTable
 		#region Configuration-properties
-
-        private const string TitleFieldKey = "TitleField";
-		private const string EntityIdFieldKey = "EntityIdField";
-		private const string ContentTypeKey = "ContentType";
-	    private const string ModifiedFieldKey = "ModifiedField";
 
 		/// <summary>
 		/// Default Name of the EntityId Column
@@ -48,8 +44,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string ContentType
 		{
-			get => Configuration[ContentTypeKey];
-		    set => Configuration[ContentTypeKey] = value;
+			get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
 		}
 
 		/// <summary>
@@ -57,8 +53,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string TitleField
 		{
-			get => Configuration[TitleFieldKey];
-		    set => Configuration[TitleFieldKey] = value;
+			get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
 		}
 
 		/// <summary>
@@ -66,8 +62,8 @@ namespace ToSic.Eav.DataSources
 		/// </summary>
 		public string EntityIdField
 		{
-			get => Configuration[EntityIdFieldKey];
-		    set => Configuration[EntityIdFieldKey] = value;
+			get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
 		}
 
         /// <summary>
@@ -75,8 +71,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
 		public string ModifiedField
 		{
-			get => Configuration[ModifiedFieldKey];
-		    set => Configuration[ModifiedFieldKey] = value;
+			get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
 		}
         #endregion
 
@@ -89,10 +85,10 @@ namespace ToSic.Eav.DataSources
         public DataTable(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.ExtTbl")
         {
             Provide(GetEntities);
-		    ConfigMask(TitleFieldKey, EntityTitleDefaultColumnName);
-		    ConfigMask(EntityIdFieldKey, EntityIdDefaultColumnName);
-		    ConfigMask(ModifiedFieldKey, "");
-		    ConfigMask(ContentTypeKey);
+		    ConfigMask($"{nameof(TitleField)}||{EntityTitleDefaultColumnName}");
+		    ConfigMask($"{nameof(EntityIdField)}||{EntityIdDefaultColumnName}");
+		    ConfigMask(nameof(ModifiedField));
+		    ConfigMask(nameof(ContentType));
         }
 
         /// <summary>
@@ -111,11 +107,13 @@ namespace ToSic.Eav.DataSources
         public DataTable Setup(SqlDataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
         {
 			Source = source;
-			ContentType = contentType;
-			TitleField = titleField ?? Attributes.EntityFieldTitle;
-			EntityIdField = entityIdField ?? EntityIdDefaultColumnName;
-			TitleField = titleField ?? EntityTitleDefaultColumnName;
-		    ModifiedField = modifiedField ?? "";
+            // Only set the values if they were explicitly provided
+            // Otherwise leave as is, so they could come from MyConfiguration
+            if (contentType.HasValue()) ContentType = contentType;
+            if (titleField.HasValue()) TitleField = titleField;
+            if (entityIdField.HasValue()) EntityIdField = entityIdField;
+            if (titleField.HasValue()) TitleField = titleField;
+            if (modifiedField.HasValue()) ModifiedField = modifiedField;
 
             return this;
         }

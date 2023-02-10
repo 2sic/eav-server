@@ -16,30 +16,6 @@ namespace ToSic.Eav.DataSources
         [InternalApi_DoNotUse_MayChangeWithoutNotice]
         public List<string> CacheRelevantConfigurations { get; set; } = new List<string>();
 
-        /// <summary>
-        /// Add a value to the configuration list for later resolving tokens and using in Cache-Keys.
-        /// </summary>
-        /// <param name="key">The internal key to reference this value in the Configuration[Key] dictionary.</param>
-        /// <param name="mask">The string containing [Tokens](xref:Abyss.Parts.LookUp.Tokens) which will be parsed to find the final value.</param>
-        /// <param name="cacheRelevant">If this key should be part of the cache-key. Default is true. Set to false for parameters which don't affect the result or are confidential (like passwords)</param>
-        [PublicApi]
-        protected void ConfigMask(string key, string mask, bool cacheRelevant = true)
-        {
-            Configuration.Values.Add(key, mask);
-            if (cacheRelevant)
-                CacheRelevantConfigurations.Add(key);
-        }
-
-        [PrivateApi("WIP v12.10")]
-        protected void ConfigMask(string keyAndMask, bool cacheRelevant = true)
-        {
-            // Key - in future it should detect if the keyAndMask has more than just the key, and extract the key
-            var separator = keyAndMask.IndexOfAny(new[] { '|'}); //, '[' });
-            var key = separator > 0 ? keyAndMask.Substring(0, separator) : keyAndMask;
-            var mask = $"[Settings:{keyAndMask}]";
-            ConfigMask(key, mask, cacheRelevant);
-        }
-
 
         [PrivateApi]
         public ICacheKeyManager CacheKey => _cacheKey ?? (_cacheKey = new CacheKey(this));

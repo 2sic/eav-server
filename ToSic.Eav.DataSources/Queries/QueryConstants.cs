@@ -15,5 +15,7 @@
         public const string ParamsShowDraftKey = "ShowDrafts";
 
         public const string ParamsShowDraftToken = "[Settings:ShowDrafts||false]";
+
+        public const bool ShowDraftsDefault = false;
     }
 }

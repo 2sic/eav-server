@@ -30,9 +30,7 @@ namespace ToSic.Eav.DataSources
 	{
         #region Configuration-properties (no config)
 
-        private const string PageSizeKey = "PageSize";
 	    private const int DefPageSize = 10;
-        private const string PageNumberKey = "PageNumber";
 	    private const int DefPageNum = 1;
 
         /// <summary>
@@ -42,10 +40,10 @@ namespace ToSic.Eav.DataSources
         {
             get
             {
-                var ps = int.Parse(Configuration[PageSizeKey]);
+                var ps = Configuration.GetThis(0);
                 return ps > 0 ? ps : DefPageSize;
             }
-            set => Configuration[PageSizeKey] = value.ToString();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -55,10 +53,10 @@ namespace ToSic.Eav.DataSources
         {
             get
             {
-                var pn = int.Parse(Configuration[PageNumberKey]);
+                var pn = Configuration.GetThis(0);
                 return pn > 0 ? pn : DefPageNum;
             }
-            set => Configuration[PageNumberKey] = value.ToString();
+            set => Configuration.SetThis(value);
         }
 
 		#endregion
@@ -79,8 +77,8 @@ namespace ToSic.Eav.DataSources
         {
             Provide(GetList);
             Provide("Paging", GetPaging);
-		    ConfigMask(PageSizeKey, "[Settings:" + PageSizeKey + "||" + DefPageSize + "]");
-		    ConfigMask(PageNumberKey, "[Settings:" + PageNumberKey + "||" + DefPageNum + "]");
+		    ConfigMask($"{nameof(PageSize)}||{DefPageSize}");
+		    ConfigMask($"{nameof(PageNumber)}||{DefPageNum}");
 		}
 
 

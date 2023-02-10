@@ -37,25 +37,22 @@ namespace ToSic.Eav.DataSources
         
         #region Configuration-properties
         
-        private const string AttributeNamesKey = "AttributeNames";
-        private const string ModeKey = "Mode";
-
         /// <summary>
         /// A string containing one or more attribute names. like "FirstName" or "FirstName,LastName,Birthday"
         /// </summary>
         public string AttributeNames
 		{
-		    get => Configuration[AttributeNamesKey];
-            set => Configuration[AttributeNamesKey] = value;
+		    get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
         
         /// <summary>
         /// A string containing one or more attribute names. like "FirstName" or "FirstName,LastName,Birthday"
         /// </summary>
         public string Mode
-		{
-		    get => Configuration[ModeKey];
-            set => Configuration[ModeKey] = value;
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
       
 
@@ -70,8 +67,8 @@ namespace ToSic.Eav.DataSources
         {
             _entityBuilder = entityBuilder;
             Provide(GetList);
-			ConfigMask(AttributeNamesKey, $"[Settings:{AttributeNamesKey}]");
-            ConfigMask(ModeKey, $"[Settings:{ModeKey}||+]");
+			ConfigMask(nameof(AttributeNames));
+            ConfigMask($"{nameof(Mode)}||{ModeKeep}");
         }
 
         private readonly EntityBuilder _entityBuilder;

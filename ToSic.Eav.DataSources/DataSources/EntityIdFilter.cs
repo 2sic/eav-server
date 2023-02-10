@@ -31,19 +31,17 @@ namespace ToSic.Eav.DataSources
 	{
         #region Configuration-properties
 
-        private const string EntityIdKey = "EntityIds";
-
 		/// <summary>
 		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
 		/// </summary>
 		public string EntityIds
         {
-            get => Configuration[EntityIdKey];
+            get => Configuration.GetThis();
             set
             {
                 // kill any spaces in the string
                 var cleaned = Regex.Replace(value ?? "", @"\s+", "");
-                Configuration[EntityIdKey] = cleaned;
+                Configuration.SetThis(cleaned);
             }
         }
 
@@ -56,7 +54,7 @@ namespace ToSic.Eav.DataSources
 		public EntityIdFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.EntIdF")
         {
             Provide(GetList);
-		    ConfigMask(EntityIdKey, "[Settings:EntityIds]");
+		    ConfigMask(nameof(EntityIds));
 		}
 
         private IImmutableList<IEntity> GetList() => Log.Func(l =>

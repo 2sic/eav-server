@@ -115,13 +115,5 @@ namespace ToSic.Eav.DataSources
         private IDictionary<string, ILookUp> _overrideLookUps;
 
 
-        [PrivateApi]
-        public static bool TryConvertToBool(string value, bool? defaultValue = null)
-        {
-            var defValue = defaultValue ?? false;
-            if (string.IsNullOrWhiteSpace(value)) return defValue;
-            if (bool.TryParse(value, out var result)) return result;
-            return defValue;
-        }
     }
 }

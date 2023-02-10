@@ -41,9 +41,7 @@ namespace ToSic.Eav.DataSources.Sys
         #region Configuration-properties (no config)
 
         private const string AppIdKey = "AppId";
-        private const string AppIdField = "AppId";
         private const string ScopeKey = "Scope";
-        private const string ScopeField = "Scope";
 	    //private const string TryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
 	    private const string ContentTypeTypeName = "EAV_ContentTypes";
 	    
@@ -55,7 +53,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             get => int.TryParse(Configuration[AppIdKey], out int aid) ? aid : AppId;
             // ReSharper disable once UnusedMember.Global
-            set => Configuration[AppIdKey] = value.ToString();
+            set => Configuration.Set(AppIdKey, value);
         }
 
 	    /// <summary>
@@ -81,8 +79,8 @@ namespace ToSic.Eav.DataSources.Sys
                 _appStates = appStates
             );
             Provide(GetList);
-		    ConfigMask(AppIdKey, $"[Settings:{AppIdField}]");
-		    ConfigMask(ScopeKey, $"[Settings:{ScopeField}||Default]");
+		    ConfigMask(AppIdKey);
+		    ConfigMask($"{ScopeKey}||Default");
 		}
         private readonly IAppStates _appStates;
 

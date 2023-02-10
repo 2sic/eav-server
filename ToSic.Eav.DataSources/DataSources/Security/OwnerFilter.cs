@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources
 		public OwnerFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.OwnrFl")
         {
             Provide(GetList);
-		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
+		    ConfigMask(IdentityCode); 
         }
 
         private IImmutableList<IEntity> GetList() => Log.Func(() =>
