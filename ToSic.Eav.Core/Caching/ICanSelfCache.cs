@@ -2,13 +2,6 @@
 {
     public interface ICanSelfCache
     {
-        // 2020-04-27.01 2dm - disabled this - as of now, it's always true, so we'll probably remove it soon
-        ///// <summary>
-        ///// This one will return the original result if queried again - as long as this object exists
-        ///// </summary>
-        //bool ReuseInitialResults { get; set; }
-
-
         /// <summary>
         /// Place the stream in the cache if wanted, by default not
         /// </summary>
