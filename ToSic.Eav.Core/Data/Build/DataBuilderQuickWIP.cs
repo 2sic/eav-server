@@ -42,14 +42,22 @@ namespace ToSic.Eav.Data
         /// For objects which themselves are IRawEntity
         /// </summary>
         /// <param name="rawEntity"></param>
+        /// <param name="nullId">when 0 is valid Id for some DataSources, provide Eav.Constants.NullId instead</param>
         /// <returns></returns>
-        public IEntity Create(IRawEntity rawEntity) => Create(
+        public IEntity Create(IRawEntity rawEntity, int nullId = 0) => Create(
             rawEntity.RawProperties,
-            id: rawEntity.Id == int.MinValue/* 0*/ ? null : rawEntity.Id as int?, // 0 is valid Id for some DataSources, so using int.MinValue instead
+            id: rawEntity.Id == nullId ? null : rawEntity.Id as int?,
             guid: rawEntity.Guid,
             created: rawEntity.Created,
             modified: rawEntity.Modified
         );
+
+        /// <summary>
+        /// Use when 0, -1, -2, etc... is valid Id for DataSource
+        /// </summary>
+        /// <param name="rawEntity"></param>
+        /// <returns></returns>
+        public IEntity CreateWithEavNullId(IRawEntity rawEntity) => Create(rawEntity, Constants.NullId);
 
         public IEntity Create(Dictionary<string, object> values, int? id = default, Guid? guid = default, DateTime? created = default, DateTime? modified = default)
         {
