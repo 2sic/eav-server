@@ -1,4 +1,6 @@
-﻿using ToSic.Lib.Documentation;
+﻿using System;
+using ToSic.Lib.Documentation;
+using static System.StringComparison;
 
 namespace ToSic.Eav.DataSources
 {
@@ -8,9 +10,9 @@ namespace ToSic.Eav.DataSources
         /// Correct prefix to use when retrieving a value from the current data sources configuration entity.
         /// Always use this variable, don't ever write the name yourself, as it could change in future.
         /// </summary>
-        public static string MyConfiguration = "Settings"; // WIP
+        public static readonly string MyConfiguration = "MyConfiguration"; // WIP
 
-        private static string _myConfigOld = "Settings";
+        private static readonly string MyConfigOld = "Settings";
 
         /// <inheritdoc />
         public IDataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(Deps.ConfigDependencies, this));
@@ -29,6 +31,9 @@ namespace ToSic.Eav.DataSources
         [PublicApi]
         protected void ConfigMask(string key, string token, bool cacheRelevant = true)
         {
+            if (token.IndexOf($"{MyConfigOld}:", InvariantCultureIgnoreCase) > -1)
+                throw new ArgumentException($"Don't user the source {MyConfigOld} for retrieving DS configuration any more (breaking change in v15). " +
+                                            $"Instead, use the source name of the variable {nameof(MyConfiguration)}.");
             Configuration.Values.Add(key, token);
             if (cacheRelevant)
                 CacheRelevantConfigurations.Add(key);

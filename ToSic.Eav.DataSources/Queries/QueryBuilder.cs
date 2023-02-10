@@ -73,8 +73,13 @@ namespace ToSic.Eav.DataSources.Queries
 	        }
         }
 
-        public const string ConfigKeyPartSettings = "settings";
-	    public const string ConfigKeyPipelineSettings = "pipelinesettings";
+        // 2023-02-10 2dm removed/changed to MyConfig because it would conflict with the new Settings lookup
+        // https://github.com/2sic/2sxc/issues/3001
+        // Remove this comment 2023 Q2
+        //public const string ConfigKeyPartSettings = "settings";
+
+        // 2023-02-10 2dm - removing the #PipelineSettings
+        //public const string ConfigKeyPipelineSettings = "pipelinesettings";
 
 
 	    public Tuple<IDataSource, Dictionary<string, IDataSource>> BuildQuery(QueryDefinition queryDef,
@@ -91,8 +96,10 @@ namespace ToSic.Eav.DataSources.Queries
                 $"overrides: {overrideLookUps?.Count()}, " +
                 $"drafts:{showDrafts}");
 
+			// 2023-02-10 2dm - removing the #PipelineSettings
+			// I believe this was an old feature which was never used, and super-seeded by Params
 	        // the query settings which apply to the whole query
-	        var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity, _cultureResolver.SafeLanguagePriorityCodes());
+	        //var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity, _cultureResolver.SafeLanguagePriorityCodes());
 
             // centralizing building of the primary configuration template for each part
             var templateConfig = new LookUpEngine(lookUpEngineToClone, Log);
@@ -100,7 +107,8 @@ namespace ToSic.Eav.DataSources.Queries
             if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
                 paramsLookup.Properties[QueryConstants.ParamsShowDraftKey] = showDrafts.ToString();
 
-            templateConfig.Add(querySettingsLookUp);        // add [pipelinesettings:...]
+            // 2023-02-10 2dm - removing the #PipelineSettings
+            //templateConfig.Add(querySettingsLookUp);        // add [pipelinesettings:...]
             templateConfig.Add(queryDef.ParamsLookUp);      // Add [params:...]
             templateConfig.AddOverride(overrideLookUps);    // add override
 
@@ -136,10 +144,10 @@ namespace ToSic.Eav.DataSources.Queries
 
 	            var partConfig = new LookUpEngine(templateConfig, Log);
                 // add / set item part configuration
-	            partConfig.Add(new LookUpInMetadata(ConfigKeyPartSettings, dataQueryPart.Entity, _cultureResolver.SafeLanguagePriorityCodes()));
+	            partConfig.Add(new LookUpInMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, _cultureResolver.SafeLanguagePriorityCodes()));
 
 	            // if show-draft in overridden, add that to the settings
-	            partConfig.AddOverride(new LookUpInDictionary(ConfigKeyPartSettings, itemSettingsShowDrafts));
+	            partConfig.AddOverride(new LookUpInDictionary(DataSource.MyConfiguration, itemSettingsShowDrafts));
 
                 #endregion
 

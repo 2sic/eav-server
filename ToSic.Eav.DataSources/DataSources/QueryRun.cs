@@ -86,8 +86,7 @@ namespace ToSic.Eav.DataSources
 
             // go through the metadata-source to find it, since it's usually only used in LookUps
             var metadataLookUp =
-                (Configuration.LookUpEngine.FindSource(QueryBuilder
-                        .ConfigKeyPartSettings) // .Sources[QueryBuilder.ConfigKeyPartSettings] 
+                (Configuration.LookUpEngine.FindSource(MyConfiguration)
                     as LookUpInLookUps)
                 ?.Providers.FirstOrDefault(p => p is LookUpInMetadata) as LookUpInMetadata;
 
