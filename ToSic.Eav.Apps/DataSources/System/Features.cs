@@ -27,19 +27,24 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Features : DataSource
     {
+
         #region Configuration-properties (no config)
 
         #endregion
+
+
+        private readonly IDataBuilderPro _featuresDataBuilder;
 
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Features(Dependencies dependencies, IFeaturesInternal featuresService) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Features(Dependencies dependencies, IFeaturesInternal featuresService, IDataBuilderPro featuresDataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
-                _featuresService = featuresService
+                _featuresService = featuresService,
+                _featuresDataBuilder = featuresDataBuilder.Configure(appId: Constants.PresetAppId, typeName: "Feature", titleField: Data.Attributes.TitleNiceName)
             );
             Provide(GetList);
         }
@@ -51,7 +56,7 @@ namespace ToSic.Eav.DataSources.Sys
             // Don't parse configuration as there is nothing to configure
             // Configuration.Parse();
 
-            var featureBuilder = new DataBuilderQuickWIP(DataBuilder, appId: Constants.PresetAppId, typeName: "Feature", titleField: Data.Attributes.TitleNiceName);
+            var featureBuilder = _featuresDataBuilder; //new DataBuilderPro(DataBuilder).Configure(appId: Constants.PresetAppId, typeName: "Feature", titleField: Data.Attributes.TitleNiceName);
             var list = _featuresService.All
                 .OrderBy(f => f.NameId)
                 .Select(f => featureBuilder.Create(f))

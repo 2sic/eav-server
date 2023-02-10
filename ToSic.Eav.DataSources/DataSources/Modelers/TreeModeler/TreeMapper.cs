@@ -10,12 +10,23 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
-    public class TreeMapper<T> : HelperBase, ITreeMapper, ICanDebug where T : struct
+    public class TreeMapper : ServiceBase, ITreeMapper, ICanDebug
     {
+        public const string DefaultParentAttribute = "Parent";
+        public const string DefaultChildrenAttribute = "Children";
+
+        #region Constructor / DI
+
+
+
+        #endregion
         private readonly MultiBuilder _builder;
 
-        // TODO: PROBABLY make DI
-        public TreeMapper(MultiBuilder builder, ILog parentLog): base(parentLog, "Eav.TreeMp")
+        /// <summary>
+        /// Constructor for DI
+        /// </summary>
+        /// <param name="builder"></param>
+        public TreeMapper(MultiBuilder builder): base("DS.TreeMp")
         {
             _builder = builder;
             Debug = false;
@@ -23,13 +34,16 @@ namespace ToSic.Eav.DataSources
 
 
 
-        public IImmutableList<IEntity> GetEntitiesWithRelationships(
+        public IImmutableList<IEntity> AddRelationships<TRel>(
             IEnumerable<IEntity> originals,
             string parentIdentifierAttribute,
             string childParentAttribute,
-            string targetChildrenAttribute,
-            string targetParentAttribute) => Log.Func(l =>
+            string targetChildrenAttribute = default,
+            string targetParentAttribute = default) where TRel: struct => Log.Func(l =>
         {
+
+            targetParentAttribute = targetParentAttribute ?? DefaultParentAttribute;
+            targetChildrenAttribute = targetChildrenAttribute ?? DefaultChildrenAttribute;
 
             // Copy all entities to prevent modification of original
             var clones = originals.Select(e => _builder.Entity
@@ -41,9 +55,9 @@ namespace ToSic.Eav.DataSources
                 .ToList();
 
             // Convert list to lookup of "parent" guids
-            var childrenByParentIdentifier = clones.ToLookup(e => GetTypedValueOrNull(e, childParentAttribute), e => e);
+            var childrenByParentIdentifier = clones.ToLookup(e => GetTypedValueOrNull<TRel>(e, childParentAttribute), e => e);
 
-            var identifiers = clones.ToDictionary(e => GetTypedValueOrNull(e, parentIdentifierAttribute), e => e);
+            var identifiers = clones.ToDictionary(e => GetTypedValueOrNull<TRel>(e, parentIdentifierAttribute), e => e);
 
             // Assign children to parents
             var result = new List<IEntity>();
@@ -59,7 +73,7 @@ namespace ToSic.Eav.DataSources
                     new DirectEntitiesSource(children));
 
                 // Find and assign parent
-                var parentIdentifier = GetTypedValueOrNull(entity, childParentAttribute);
+                var parentIdentifier = GetTypedValueOrNull<TRel>(entity, childParentAttribute);
                 var parents = new List<IEntity>();
                 if (parentIdentifier.HasValue && identifiers.ContainsKey(parentIdentifier))
                     parents.Add(identifiers[parentIdentifier]);
@@ -76,7 +90,8 @@ namespace ToSic.Eav.DataSources
             return result.ToImmutableArray();
         });
 
-        private T? GetTypedValueOrNull(IEntity e, string attribute) => Log.Func<T?>(enabled: Debug, func: l =>
+        private TRelationshipKey? GetTypedValueOrNull<TRelationshipKey>(IEntity e, string attribute) where TRelationshipKey: struct 
+            => Log.Func<TRelationshipKey?>(enabled: Debug, func: l =>
         {
             try
             {
@@ -84,16 +99,16 @@ namespace ToSic.Eav.DataSources
                 
                 l.A(Debug, $"Entity: {e.EntityId}[{attribute}]={val} ({val.GetType().Name})");
 
-                if (val is T val1)
+                if (val is TRelationshipKey val1)
                     return val1;
-                if (typeof(T) == typeof(Guid) && Guid.TryParse(val.ToString(), out var guid)) 
-                    return (T)(object)guid;
+                if (typeof(TRelationshipKey) == typeof(Guid) && Guid.TryParse(val.ToString(), out var guid)) 
+                    return (TRelationshipKey)(object)guid;
 
-                if (typeof(T).IsNumeric() && val.IsNumeric())
-                    return val.TryConvert<T>(true).Value;
+                if (typeof(TRelationshipKey).IsNumeric() && val.IsNumeric())
+                    return val.TryConvert<TRelationshipKey>(true).Value;
 
                 // Fallback, hope for the best
-                return val.TryConvert<T>().Value;
+                return val.TryConvert<TRelationshipKey>().Value;
             }
             catch (Exception ex)
             {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -33,6 +32,8 @@ namespace ToSic.Eav.DataSources
     // ReSharper disable once UnusedMember.Global
     public sealed class TreeModeler : DataSource
     {
+        private readonly ITreeMapper _treeMapper;
+
         #region Constants & Properties
 
         /// <summary>
@@ -44,7 +45,6 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
         }
-        private const string IdentifierEntityField = "ParentIdentifierAttribute";
 
         /// <summary>
         /// The property on a child which contains the parent ID
@@ -54,7 +54,6 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
         }
-        private const string ParentReferenceFieldConfigField = "ChildParentAttribute";
 
         /// <summary>
         /// The name of the new field on the parent, which will reference the children
@@ -64,7 +63,6 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
         }
-        private const string NewChildrenFieldConfigField = "TargetChildrenAttribute";
 
         /// <summary>
         /// Name of the new field on a child, which will reference the parent. 
@@ -74,7 +72,6 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
         }
-        private const string NewParentFieldConfigField = "TargetParentAttribute";
 
         #endregion
 
@@ -82,21 +79,19 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public TreeModeler(MultiBuilder multiBuilder, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Tree")
+        public TreeModeler(Dependencies dependencies, ITreeMapper treeMapper) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Tree")
         {
             ConnectServices(
-                _multiBuilder = multiBuilder
+                _treeMapper = treeMapper
             );
             // Specify what out-streams this data-source provides. Usually just one, called "Default"
             Provide(GetList);
 
-            ConfigMaskMyConfig(nameof(Identifier), IdentifierEntityField);
-            ConfigMaskMyConfig(nameof(ParentReferenceField), ParentReferenceFieldConfigField);
-            ConfigMaskMyConfig(nameof(NewChildrenField), NewChildrenFieldConfigField);
-            ConfigMaskMyConfig(nameof(NewParentField), NewParentFieldConfigField);
+            ConfigMaskMyConfig(nameof(Identifier), "ParentIdentifierAttribute||EntityId");
+            ConfigMaskMyConfig(nameof(ParentReferenceField), "ChildParentAttribute||ParentId");
+            ConfigMaskMyConfig(nameof(NewChildrenField), "TargetChildrenAttribute||Children");
+            ConfigMaskMyConfig(nameof(NewParentField), "TargetParentAttribute||Parent");
         }
-
-        private readonly MultiBuilder _multiBuilder;
 
         /// <summary>
         /// Internal helper that returns the entities
@@ -109,20 +104,21 @@ namespace ToSic.Eav.DataSources
             if (!GetRequiredInList(out var originals))
                 return (originals, "error");
 
-            ITreeMapper treeMapper;
             switch (Identifier)
             {
                 case "EntityGuid":
-                    treeMapper = new TreeMapper<Guid>(_multiBuilder, Log);
-                    break;
+                    var resultGuid = _treeMapper.AddRelationships<Guid>(
+                        originals, Identifier, ParentReferenceField,
+                        NewChildrenField, NewParentField);
+                    return (resultGuid, $"Guid: {resultGuid.Count}");
                 case "EntityId":
-                    treeMapper = new TreeMapper<int>(_multiBuilder, Log);
-                    break;
+                    var resultInt = _treeMapper.AddRelationships<int>(
+                        originals, Identifier, ParentReferenceField,
+                        NewChildrenField, NewParentField);
+                    return (resultInt, $"int: {resultInt.Count}");
                 default:
                     return (SetError("Invalid Identifier", "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute."), "error");
             }
-            var res = treeMapper.GetEntitiesWithRelationships(originals, Identifier, ParentReferenceField, NewChildrenField, NewParentField);
-            return (res, $"{res.Count}");
         });
 
     }

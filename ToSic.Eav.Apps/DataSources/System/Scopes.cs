@@ -28,6 +28,7 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Scopes : DataSource
     {
+        private readonly IDataBuilderPro _scopesDataBuilder;
 
         #region Configuration-properties (no config)
 
@@ -38,10 +39,11 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Scopes(Dependencies dependencies, IAppStates appStates) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Scopes(Dependencies dependencies, IAppStates appStates, IDataBuilderPro scopesDataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
-                _appStates = appStates
+                _appStates = appStates,
+                _scopesDataBuilder = scopesDataBuilder.Configure(appId: AppId, typeName: "Scope", titleField: Data.Attributes.TitleNiceName)
             );
             Provide(GetList);
         }
@@ -55,7 +57,7 @@ namespace ToSic.Eav.DataSources.Sys
 
             var scopes = _appStates.Get(appId).ContentTypes.GetAllScopesWithLabels();
 
-            var scopeBuilder = new DataBuilderQuickWIP(DataBuilder, appId: appId, typeName: "Scope", titleField: Data.Attributes.TitleNiceName);
+            var scopeBuilder = _scopesDataBuilder; // new DataBuilderPro(DataBuilder).Configure(appId: appId, typeName: "Scope", titleField: Data.Attributes.TitleNiceName);
             var list = scopes
                 .Select(s => scopeBuilder.Create(new Dictionary<string, object>
                     {

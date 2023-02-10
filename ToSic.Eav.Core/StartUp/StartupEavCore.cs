@@ -25,6 +25,7 @@ namespace ToSic.Eav.StartUp
         {
             // Data Builder & Converters
             services.TryAddTransient<IDataBuilder, DataBuilder>();
+            services.TryAddTransient<IDataBuilderPro, DataBuilderPro>(); // v15.03
             services.TryAddTransient<MultiBuilder>();
             services.TryAddTransient<DimensionBuilder>();
             services.TryAddTransient<AttributeBuilder>();

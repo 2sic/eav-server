@@ -30,6 +30,8 @@ namespace ToSic.Eav.DataSources
 
             services.TryAddTransient<ValueLanguages>();
 
+            services.TryAddTransient<ITreeMapper, TreeMapper>();
+
             return services;
         }
     }
