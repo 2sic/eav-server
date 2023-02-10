@@ -105,7 +105,7 @@ namespace ToSic.Eav.Configuration
 
         #region ICanBecomeEntity
 
-        int IRawEntity.Id => int.MinValue; // 0 is valid Id for some DataSources, so using int.MinValue instead
+        int IRawEntity.Id => 0;
 
         private readonly DateTime _objectCreated = DateTime.Now;
         DateTime IRawEntity.Created => _objectCreated;
