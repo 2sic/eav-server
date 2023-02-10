@@ -1,7 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
-using ToSic.Eav.Apps;
+using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
+using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace ToSic.Eav.DataSourceTests.BaseClassTests
 {
@@ -12,34 +13,37 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         public void ConfigMaskClassic()
         {
             var ds = GetDs();
-            ds.ConfigMask("Something", "[Settings:Test]");
+            ds.ConfigMask("Something", $"[{DataSource.MyConfiguration}:Test]");
             var ccc = ds.CacheRelevantConfigurations.FirstOrDefault();
-            Assert.AreEqual("Something", ccc);
+            AreEqual("Something", ccc);
 
             var pair = ds.Configuration.Values.FirstOrDefault();
-            Assert.AreEqual("Something", pair.Key);
-            Assert.AreEqual("[Settings:Test]", pair.Value);
+            AreEqual("Something", pair.Key);
+            AreEqual($"[{DataSource.MyConfiguration}:Test]", pair.Value);
         }
 
-        [DataRow("Test", "Test", "[Settings:Test]")]
-        [DataRow("FirstName", "FirstName", "[Settings:FirstName]")]
-        [DataRow("Birthday|yyyy-MM-dd", "Birthday", "[Settings:Birthday|yyyy-MM-dd]")]
+        [DataRow("Test", "Test", "Test")]
+        [DataRow("FirstName", "FirstName", "FirstName")]
+        [DataRow("Birthday|yyyy-MM-dd", "Birthday", "Birthday|yyyy-MM-dd")]
         [DataTestMethod]
         public void ConfigMaskQuick(string keyAndMask, string key, string expected)
         {
             var ds = GetDs();
+
+            // change expected to match proper convention
+            expected = "[" + DataSource.MyConfiguration + ":" + expected + "]";
+
             ds.ConfigMask(keyAndMask);
             var ccc = ds.CacheRelevantConfigurations.FirstOrDefault();
-            Assert.AreEqual(key, ccc, $"Key in CCC should be '{key}' but was '{ccc}'");
+            AreEqual(key, ccc, $"Key in CCC should be '{key}' but was '{ccc}'");
 
             var pair = ds.Configuration.Values.FirstOrDefault();
-            Assert.AreEqual(key, pair.Key, $"Key in pair should be '{key}' but is '{pair.Key}'");
-            Assert.AreEqual(expected, pair.Value, $"Value in pair should be '{expected}' but is '{pair.Value}'");
+            AreEqual(key, pair.Key, $"Key in pair should be '{key}' but is '{pair.Key}'");
+            AreEqual(expected, pair.Value, $"Value in pair should be '{expected}' but is '{pair.Value}'");
         }
 
-        private TestDataSourceBase GetDs()
-        {
-            return DataSourceFactory.GetDataSource<TestDataSourceBase>(DataSourceFactory.GetPublishing(new AppIdentity(0, 0)));
-        }
+
+        private TestDataSourceBase GetDs() => this.GetTestDataSource<TestDataSourceBase>();
+
     }
 }
