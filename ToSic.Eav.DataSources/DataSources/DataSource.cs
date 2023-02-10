@@ -35,11 +35,6 @@ namespace ToSic.Eav.DataSources
         public Guid Guid { get; set; }
 
 
-        /// <inheritdoc />
-        public IDataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(Deps.ConfigDependencies, this));
-        private IDataSourceConfiguration _config;
-
-
         #region Properties which the Factory must add
 
         protected IDataBuilder DataBuilder => _dataBuilder.Get(() => Deps.DataBuilder.Value);
