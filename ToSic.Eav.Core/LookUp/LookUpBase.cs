@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Context;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.LookUp
@@ -56,7 +57,7 @@ namespace ToSic.Eav.LookUp
 
         #endregion
 
-        #region Helper functions
+        #region Helper functions to Format the result
         /// <summary>
         /// Returns a formatted String if a format is given, otherwise it returns the unchanged value.
         /// </summary>
@@ -77,6 +78,39 @@ namespace ToSic.Eav.LookUp
 
         public static string Format(DateTime value) => value.ToUniversalTime()
             .ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+
+                /// <summary>
+        /// Take a specific result object (usually from an IEntity property) and format as needed.
+        /// </summary>
+        /// <returns></returns>
+        protected string FormatValue(object valueObject, string format, string[] dimensions)
+        {
+            switch (Type.GetTypeCode(valueObject.GetType()))
+            {
+                case TypeCode.String:
+                    return FormatString((string)valueObject, format);
+                case TypeCode.Boolean:
+                    return Format((bool)valueObject);
+                case TypeCode.DateTime:
+                    // make sure datetime is converted as universal time with the correct format specifier if no format is given
+                    return !string.IsNullOrWhiteSpace(format)
+                        ? ((DateTime)valueObject).ToString(format, IZoneCultureResolverExtensions.SafeCultureInfo(dimensions))
+                        : Format((DateTime)valueObject);
+                case TypeCode.Double:
+                case TypeCode.Single:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.Decimal:
+                    // make sure it's converted to a neutral number format with "." notation if no format was given
+                    return !string.IsNullOrWhiteSpace(format)
+                        ? ((IFormattable)valueObject).ToString(format,
+                            IZoneCultureResolverExtensions.SafeCultureInfo(dimensions))
+                        : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture);
+                default:
+                    return FormatString(valueObject.ToString(), format);
+            }
+        }
 
         #endregion
     }

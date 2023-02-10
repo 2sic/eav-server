@@ -104,6 +104,7 @@
     <Compile Include="PropertyLookupAndStack\PropLookupDicTest.cs" />
     <Compile Include="PropertyLookupAndStack\PropLookupStackSimpleListTest.cs" />
     <Compile Include="PropertyLookupAndStack\TestPropLookupData.cs" />
+    <Compile Include="PropertyLookupAndStack\LookUpInStackTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj">

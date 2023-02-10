@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
+using static System.StringComparer;
 using DicString = System.Collections.Generic.IDictionary<string, string>;
 
 namespace ToSic.Eav.LookUp
@@ -23,8 +24,7 @@ namespace ToSic.Eav.LookUp
 
         // todo: probably change and not let the outside modify directly
         [PrivateApi]
-	    public Dictionary<string, ILookUp> Sources { get; }
-	        = new Dictionary<string, ILookUp>(StringComparer.InvariantCultureIgnoreCase);
+	    public Dictionary<string, ILookUp> Sources { get; } = new Dictionary<string, ILookUp>(InvariantCultureIgnoreCase);
 
         /// <summary>
         /// List of all Configurations for this DataSource
@@ -43,7 +43,7 @@ namespace ToSic.Eav.LookUp
         public LookUpEngine(ILookUpEngine original, ILog parentLog, bool makeOwnCopyOfSources = false): this(parentLog)
 		{
 		    if (original == null) return;
-            Log.Do(() =>
+            Log.Do(message: $"clone: {original.Log.NameId}; LogDetailed: {LogDetailed}", action: () =>
             {
                 if (makeOwnCopyOfSources)
                 {
@@ -55,13 +55,11 @@ namespace ToSic.Eav.LookUp
                     Link(original);
 
                 return $"cloned {original.Sources.Count}";
-            }, message: $"clone: {original.Log.NameId}; LogDetailed: {LogDetailed}");
+            });
         }
 
-        [PrivateApi("still wip")]
         public ILookUpEngine Downstream { get; private set; }
 
-        [PrivateApi("still wip")]
         public ILookUp FindSource(string name) => Sources.ContainsKey(name)
             ? Sources[name]
             : Downstream?.FindSource(name);
@@ -71,16 +69,13 @@ namespace ToSic.Eav.LookUp
 
         public void Link(ILookUpEngine downstream) => Downstream = downstream;
         
-        public DicString LookUp(DicString values, int depth = 4)
+        public DicString LookUp(DicString values, int depth = 4) => Log.Func($"values: {values.Count}, depth: {depth}", () =>
         {
-            var wrapLog = Log.Fn<DicString>($"values: {values.Count}, depth: {depth}");
             // start by creating a copy of the dictionary
-            values = new Dictionary<string, string>(values, StringComparer.InvariantCultureIgnoreCase);
+            values = new Dictionary<string, string>(values, InvariantCultureIgnoreCase);
 
             if (values.Count == 0)
-                return wrapLog.Return(values, "no values");
-
-            var instanceTokenReplace = _reusableTokenReplace;
+                return (values, "no values");
 
             #region Loop through all config-items and token-replace them
             foreach (var o in values.ToList())
@@ -92,33 +87,34 @@ namespace ToSic.Eav.LookUp
                     continue;
                 }
 
-                var result = instanceTokenReplace.ReplaceTokens(o.Value, depth); // with 2 further recurrences
+                var result = _reusableTokenReplace.ReplaceTokens(o.Value, depth); // with 2 further recurrences
                 if (LogDetailed) Log.A($"token '{o.Key}={o.Value}' is now '{result}'");
                 values[o.Key] = result;
             }
             #endregion
 
-            return wrapLog.ReturnAsOk(values);
-        }
+            return (values, "ok");
+        });
 
-        public DicString LookUp(DicString values, IDictionary<string, ILookUp> overrides, int depth = 4)
+        public DicString LookUp(DicString values, IDictionary<string, ILookUp> overrides, int depth = 4
+        ) => Log.Func($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}", l =>
         {
-            var wrapLog = Log.Fn<DicString>($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
-
             // start by creating a copy of the dictionary
-            values = new Dictionary<string, string>(values, StringComparer.InvariantCultureIgnoreCase);
+            values = new Dictionary<string, string>(values, InvariantCultureIgnoreCase);
 
-            if (values.Count == 0) return wrapLog.Return(values, "no values");
+            if (values.Count == 0)
+                return (values, "no values");
 
             // if there are instance-specific additional Property-Access objects, add them to the sources-list
             // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
-            if (overrides == null || overrides.Count <= 0) return wrapLog.ReturnAsOk(LookUp(values, depth));
+            if (overrides == null || overrides.Count <= 0)
+                return (LookUp(values, depth), "ok");
 
             var innerLookup = new LookUpEngine(this, Log);
             foreach (var pa in overrides)
                 innerLookup.Sources.Add(pa.Key, pa.Value);
-            return wrapLog.ReturnAsOk(innerLookup.LookUp(values, depth));
-        }
+            return (innerLookup.LookUp(values, depth), "ok");
+        });
 
 
         /// <inheritdoc />
@@ -144,8 +140,7 @@ namespace ToSic.Eav.LookUp
 	    {
 	        if (lookUps == null) return;
 	        foreach (var provider in lookUps)
-
-	            if (provider.Name == null)
+                if (provider.Name == null)
 	                throw new NullReferenceException("PropertyProvider must have a Name");
 	            else
 	                // check if it already has this provider. 

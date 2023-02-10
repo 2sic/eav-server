@@ -8,6 +8,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using static System.StringComparer;
 
 namespace ToSic.Eav.DataSources.Queries
 {
@@ -48,30 +49,28 @@ namespace ToSic.Eav.DataSources.Queries
 
         #endregion
 
-		/// <summary>
+        /// <summary>
         /// Build a query-definition object based on the entity-ID defining the query
         /// </summary>
         /// <returns></returns>
-        public QueryDefinition GetQueryDefinition(int appId, int queryEntityId)
-	    {
-            var wrapLog = Log.Fn<QueryDefinition>($"def#{queryEntityId} for a#{appId}");
-
-	        try
+        public QueryDefinition GetQueryDefinition(int appId, int queryEntityId) => Log.Func($"def#{queryEntityId} for a#{appId}", () =>
+        {
+            try
             {
                 var app = _appStates.IdentityOfApp(appId);
                 var source = _dataSourceFactory.GetPublishing(app);
                 var appEntities = source.List;
 
                 // use findRepo, as it uses the cache, which gives the list of all items
-	            var dataQuery = appEntities.FindRepoId(queryEntityId);
-	            var result = new QueryDefinition(dataQuery, appId, Log);
-                return wrapLog.Return(result);
+                var dataQuery = appEntities.FindRepoId(queryEntityId);
+                var result = new QueryDefinition(dataQuery, appId, Log);
+                return (result);
             }
-	        catch (KeyNotFoundException)
-	        {
-	            throw new Exception("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId);
-	        }
-        }
+            catch (KeyNotFoundException)
+            {
+                throw new Exception("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId);
+            }
+        });
 
         // 2023-02-10 2dm removed/changed to MyConfig because it would conflict with the new Settings lookup
         // https://github.com/2sic/2sxc/issues/3001
@@ -84,19 +83,13 @@ namespace ToSic.Eav.DataSources.Queries
 
 	    public Tuple<IDataSource, Dictionary<string, IDataSource>> BuildQuery(QueryDefinition queryDef,
             ILookUpEngine lookUpEngineToClone,
-            IEnumerable<ILookUp> overrideLookUps,
-            bool showDrafts)
+            List<ILookUp> overrideLookUps,
+            bool showDrafts
+        ) => Log.Func($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}, drafts:{showDrafts}", l =>
         {
 	        #region prepare shared / global value providers
             
-	        overrideLookUps = overrideLookUps?.ToList();
-            var wrapLog = Log.Fn<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
-                $"{queryDef.Title}({queryDef.Id}), " +
-                $"hasLookUp:{lookUpEngineToClone != null}, " +
-                $"overrides: {overrideLookUps?.Count()}, " +
-                $"drafts:{showDrafts}");
-
-			// 2023-02-10 2dm - removing the #PipelineSettings
+			// 2023-02-10 2dm - removing the #PipelineSettings - clean up 2023 Q2
 			// I believe this was an old feature which was never used, and super-seeded by Params
 	        // the query settings which apply to the whole query
 	        //var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity, _cultureResolver.SafeLanguagePriorityCodes());
@@ -114,10 +107,11 @@ namespace ToSic.Eav.DataSources.Queries
 
 
             // provide global settings for ShowDrafts, ATM just if showdrafts are to be used
-            var itemSettingsShowDrafts = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+            var itemSettingsShowDrafts = new Dictionary<string, string>(InvariantCultureIgnoreCase)
                 {{QueryConstants.ParamsShowDraftKey, showDrafts.ToString()}};
 
             #endregion
+
 			#region Load Query Entity and Query Parts
 
 			// tell the primary-out that it has this guid, for better debugging
@@ -130,13 +124,13 @@ namespace ToSic.Eav.DataSources.Queries
 
 	        #region init all DataQueryParts
 
-	        Log.A($"add parts to pipe#{queryDef.Entity.EntityId} ");
+	        l.A($"add parts to pipe#{queryDef.Entity.EntityId} ");
 	        var dataSources = new Dictionary<string, IDataSource>();
             var parts = queryDef.Parts;
-            Log.A($"parts:{parts.Count}");
+            l.A($"parts:{parts.Count}");
 			
             // More logging in unexpected case that we do not have parts.
-            if (parts.Count == 0) Log.A($"qd.Entity.Metadata:{queryDef.Entity.Metadata.Count()}");
+            if (parts.Count == 0) l.A($"qd.Entity.Metadata:{queryDef.Entity.Metadata.Count()}");
 
             foreach (var dataQueryPart in parts)
 	        {
@@ -164,9 +158,10 @@ namespace ToSic.Eav.DataSources.Queries
                     dataSource.Label = dataQueryPart.Entity.GetBestTitle();
                 } catch { /* ignore */ }
 
-	            Log.A($"add '{assemblyAndType}' as " +
-	                    $"part#{dataQueryPart.Id}({dataQueryPart.Guid.ToString().Substring(0, 6)}...)");
-	            dataSources.Add(dataQueryPart.Guid.ToString(), dataSource);
+                var partGuidStr = dataQueryPart.Guid.ToString();
+
+                l.A($"add '{assemblyAndType}' as part#{dataQueryPart.Id}({partGuidStr.Substring(0, 6)}...)");
+	            dataSources.Add(partGuidStr, dataSource);
 	        }
 	        dataSources.Add("Out", outTarget);
 
@@ -174,8 +169,8 @@ namespace ToSic.Eav.DataSources.Queries
 
 	        InitWirings(queryDef, dataSources);
 			var result = new Tuple<IDataSource, Dictionary<string, IDataSource>>(outTarget, dataSources);
-			return wrapLog.Return(result, $"parts:{parts.Count}");
-	    }
+			return (result, $"parts:{parts.Count}");
+	    });
 
 	    /// <summary>
 		/// Init Stream Wirings between Query-Parts (Bottom-Up)
@@ -201,10 +196,7 @@ namespace ToSic.Eav.DataSources.Queries
                     .Where(d => initializedWirings.Any(w => w.To == d.Key));
 
 				connectionsWereAdded = ConnectOutStreams(dataSourcesWithInitializedInStreams, dataSources, wirings, initializedWirings);
-
-				//if (!connectionsCreated)
-				//    break;
-			}
+            }
 
 			// 3. Test all Wirings were created
 			if (wirings.Count != initializedWirings.Count)
@@ -220,7 +212,11 @@ namespace ToSic.Eav.DataSources.Queries
 		/// <summary>
 		/// Wire all Out-Wirings on specified DataSources
 		/// </summary>
-		private static bool ConnectOutStreams(IEnumerable<KeyValuePair<string, IDataSource>> dataSourcesToInit, IDictionary<string, IDataSource> allDataSources, IList<Connection> allWirings, List<Connection> initializedWirings)
+		private static bool ConnectOutStreams(
+            IEnumerable<KeyValuePair<string, IDataSource>> dataSourcesToInit,
+            IDictionary<string, IDataSource> allDataSources,
+            IList<Connection> allWirings,
+            List<Connection> initializedWirings)
 		{
 			var connectionsWereAdded = false;
 
@@ -255,14 +251,16 @@ namespace ToSic.Eav.DataSources.Queries
 		}
 
 
-	    public Tuple<IDataSource, Dictionary<string, IDataSource>> GetDataSourceForTesting(QueryDefinition queryDef, bool showDrafts, ILookUpEngine configuration = null)
-	    {
-            var wrapLog = Log.Fn<Tuple<IDataSource, Dictionary<string, IDataSource>>>(
-                $"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}");
+        public Tuple<IDataSource, Dictionary<string, IDataSource>> GetDataSourceForTesting(
+            QueryDefinition queryDef,
+            bool showDrafts,
+            ILookUpEngine lookUps = null
+        ) => Log.Func($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}", () =>
+        {
             var testValueProviders = queryDef.TestParameterLookUps;
-            return wrapLog.Return(BuildQuery(queryDef, configuration, testValueProviders, showDrafts));
-        }
+            return BuildQuery(queryDef, lookUps, testValueProviders, showDrafts);
+        });
 
 
-	}
+    }
 }
