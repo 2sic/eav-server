@@ -16,14 +16,14 @@ namespace ToSic.Eav.Repository.Efc
 
             // transient lifetime is important, otherwise 2-3x slower!
             // note: https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext says we should use transient
-#if NETSTANDARD
+#if NETFRAMEWORK
+            //services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient);
+            services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Singleton);
+#else
             // DbContextOptions optionsLifetime is Singleton (in efcore 3.1+, aka oqtane) to fix issue
             // "Cannot resolve 'ToSic.Eav.Repositories.IRepositoryLoader' from root provider because it
             // requires scoped service 'Microsoft.EntityFrameworkCore.DbContextOptions`1[ToSic.Eav.Persistence.Efc.Models.EavDbContext]'"
             // Transient, or Scoped for optionsLifetime is not working.
-            services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Singleton);
-#else
-            //services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient);
             services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Singleton);
 #endif
 
