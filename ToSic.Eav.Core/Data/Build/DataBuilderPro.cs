@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data
     public class DataBuilderPro : ServiceBase, IDataBuilderPro
     {
         /// <inheritdoc />
-        public int AppId { get; private set; } = DataBuilder.DefaultAppId;
+        public int AppId { get; private set; } = DataBuilderInternal.DefaultAppId;
 
         /// <inheritdoc />
         public string TitleField { get; private set; } = Attributes.TitleNiceName;
@@ -34,13 +34,13 @@ namespace ToSic.Eav.Data
 
         #region Constructor / DI
 
-        private readonly IDataBuilder _parentBuilder;
+        private readonly IDataBuilderInternal _parentBuilder;
 
         /// <summary>
         /// Constructor for DI
         /// </summary>
         /// <param name="parentBuilder"></param>
-        public DataBuilderPro(IDataBuilder parentBuilder): base("Ds.DatBld")
+        public DataBuilderPro(IDataBuilderInternal parentBuilder): base("Ds.DatBld")
         {
             _parentBuilder = parentBuilder;
         }
@@ -71,7 +71,7 @@ namespace ToSic.Eav.Data
             AppId = appId;
             TitleField = titleField.UseFallbackIfNoValue(Attributes.TitleNiceName);
             IdCounter = idSeed;
-            ContentType = _parentBuilder.Type(typeName ?? DataBuilder.DefaultTypeName);
+            ContentType = _parentBuilder.Type(typeName ?? DataBuilderInternal.DefaultTypeName);
             IdAutoIncrementZero = idAutoIncrementZero;
             return this;
         }

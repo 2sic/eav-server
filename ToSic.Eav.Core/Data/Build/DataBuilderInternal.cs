@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data.Builder;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Data
     /// Get it using Dependency Injection
     /// </summary>
     [PrivateApi("Hide implementation")]
-    public partial class DataBuilder: ServiceBase, IDataBuilder
+    public class DataBuilderInternal: ServiceBase, IDataBuilderInternal
     {
 
         #region Constructor / DI
@@ -20,11 +21,14 @@ namespace ToSic.Eav.Data
         /// Primary constructor for DI.
         /// We recommend that you always call Init afterwards to supply the logger.
         /// </summary>
-        public DataBuilder(MultiBuilder builder) : base("Dta.Buildr")
+        public DataBuilderInternal(LazySvc<ContentTypeBuilder> contentTypeBuilder) : base("Dta.Buildr")
         {
-            _builder = builder;
+            ConnectServices(
+                _contentTypeBuilder = contentTypeBuilder
+            );
         }
-        private readonly MultiBuilder _builder;
+
+        private readonly LazySvc<ContentTypeBuilder> _contentTypeBuilder;
 
         #endregion
 
@@ -33,7 +37,7 @@ namespace ToSic.Eav.Data
         public const string DefaultTypeName = "unspecified";
 
         /// <inheritdoc />
-        public IContentType Type(string typeName) => _builder.ContentType.Transient(typeName);
+        public IContentType Type(string typeName) => _contentTypeBuilder.Value.Transient(typeName);
 
         /// <inheritdoc />
         [PublicApi]

@@ -9,14 +9,14 @@ namespace ToSic.Eav.DataSources
         public class Dependencies : ServiceDependencies
         {
             public DataSourceConfiguration.Dependencies ConfigDependencies { get; }
-            public LazySvc<IDataBuilder> DataBuilder { get; }
+            public LazySvc<IDataBuilderInternal> DataBuilder { get; }
             public LazySvc<DataSourceErrorHandling> ErrorHandler { get; }
 
             /// <summary>
             /// Note that we will use Generators for safety, because in rare cases the dependencies could be re-used to create a sub-data-source
             /// </summary>
             public Dependencies(
-                LazySvc<IDataBuilder> dataBuilder,
+                LazySvc<IDataBuilderInternal> dataBuilder,
                 LazySvc<DataSourceErrorHandling> errorHandler,
                 DataSourceConfiguration.Dependencies configDependencies
             )

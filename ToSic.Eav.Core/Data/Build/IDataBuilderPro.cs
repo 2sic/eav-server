@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
     /// A data builder which will generate items for a specific type.
     /// In many cases it will also take care of auto increasing the id and more.
     ///
-    /// This is more efficient than using the bare bones <see cref="IDataBuilder"/>
+    /// This is more efficient than using the bare bones <see cref="IDataBuilderInternal"/>
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("in development for v15")]
     public interface IDataBuilderPro

@@ -8,8 +8,9 @@ namespace ToSic.Eav.Data
     /// This is a Builder-Object which is used to create any kind of data.
     /// Get it using Dependency Injection
     /// </summary>
-    [PublicApi]
-    public interface IDataBuilder
+    //[PublicApi]
+    [PrivateApi("Made private in v15, as people should use the new one - used to be called IDataBuilder")]
+    public interface IDataBuilderInternal
     {
         /// <summary>
         /// Create an Entity using a dictionary of values.
@@ -33,7 +34,7 @@ namespace ToSic.Eav.Data
             int appId = 0,
             int id = 0,
             string titleField = null,
-            string typeName = DataBuilder.DefaultTypeName,
+            string typeName = DataBuilderInternal.DefaultTypeName,
             IContentType type = null,
             Guid? guid = null,
             DateTime? created = null,
