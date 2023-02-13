@@ -39,11 +39,12 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Scopes(Dependencies dependencies, IAppStates appStates, IDataBuilderPro scopesDataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Scopes(Dependencies dependencies, IAppStates appStates, IDataBuilderPro dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _appStates = appStates,
-                _scopesDataBuilder = scopesDataBuilder.Configure(appId: AppId, typeName: "Scope", titleField: Data.Attributes.TitleNiceName)
+                // Note: these are really the scopes of the current app, so we set the AppId
+                _scopesDataBuilder = dataBuilder.Configure(appId: AppId, typeName: "Scope")
             );
             Provide(GetList);
         }
@@ -57,7 +58,7 @@ namespace ToSic.Eav.DataSources.Sys
 
             var scopes = _appStates.Get(appId).ContentTypes.GetAllScopesWithLabels();
 
-            var scopeBuilder = _scopesDataBuilder; // new DataBuilderPro(DataBuilder).Configure(appId: appId, typeName: "Scope", titleField: Data.Attributes.TitleNiceName);
+            var scopeBuilder = _scopesDataBuilder;
             var list = scopes
                 .Select(s => scopeBuilder.Create(new Dictionary<string, object>
                     {

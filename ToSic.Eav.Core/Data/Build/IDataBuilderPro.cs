@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.Data.Raw;
 using ToSic.Lib.Documentation;
 
@@ -16,19 +17,27 @@ namespace ToSic.Eav.Data
     {
         /// <summary>
         /// The App-ID which will be assigned to the generated entities.
-        /// By default it will be the same App as this was created on.
+        /// By default it will be `0`
         /// </summary>
         int AppId { get; }
 
         /// <summary>
         /// The field in the data which is the default title.
+        /// Defaults to `Title` if not set.
         /// </summary>
         string TitleField { get; }
 
         /// <summary>
         /// A counter for the ID in case the data provided doesn't have an ID to use.
+        /// Default is `1`
         /// </summary>
         int IdCounter { get; }
+
+        /// <summary>
+        /// Determines if Zero IDs are auto-incremented - default is `true`.
+        /// </summary>
+        bool IdAutoIncrementZero { get; }
+
 
         /// <summary>
         /// The generated ContentType.
@@ -41,37 +50,42 @@ namespace ToSic.Eav.Data
         /// It must be called before building anything. 
         /// </summary>
         /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-        /// <param name="appId"></param>
-        /// <param name="typeName"></param>
-        /// <param name="titleField"></param>
-        /// <param name="idSeed"></param>
+        /// <param name="appId">The App this is virtually coming from, defaults to `0`</param>
+        /// <param name="typeName">The name of the virtual content-type, defaults to `unspecified`</param>
+        /// <param name="titleField">The field name to use as title, defaults to `Title`</param>
+        /// <param name="idSeed">Default is `1`</param>
+        /// <param name="idAutoIncrementZero">Default is `true`</param>
         /// <returns>Itself, to make call chaining easier</returns>
         IDataBuilderPro Configure(
             string noParamOrder = Parameters.Protector,
-            int appId = DataBuilder.DefaultAppId,
+            int appId = default,
             string typeName = default,
             string titleField = default,
-            int idSeed = DataBuilderPro.DefaultIdSeed
+            int idSeed = DataBuilderPro.DefaultIdSeed,
+            bool idAutoIncrementZero = true
         );
 
         /// <summary>
         /// For objects which delegate the IRawEntity to a property.
         /// </summary>
-        /// <param name="withSource"></param>
+        /// <param name="withRawEntity"></param>
         /// <returns></returns>
-        IEntity Create(IHasRawEntitySource withSource);
-
-        [PrivateApi("Todo - must find out what this is all about @STV?")] // TODO:
-        IEntity CreateWithEavNullId(IRawEntity rawEntity);
+        IEntity Create(IHasRawEntity withRawEntity);
 
         /// <summary>
         /// For objects which themselves are IRawEntity
         /// </summary>
         /// <param name="rawEntity"></param>
-        /// <param name="nullId">when 0 is valid Id for some DataSources, provide Eav.Constants.NullId instead</param>
         /// <returns></returns>
-        IEntity Create(IRawEntity rawEntity, int nullId = 0);
+        IEntity Create(IRawEntity rawEntity);
 
-        IEntity Create(Dictionary<string, object> values, int? id = default, Guid? guid = default, DateTime? created = default, DateTime? modified = default);
+        IEntity Create(
+            Dictionary<string, object> values,
+            int id = default,
+            Guid guid = default,
+            DateTime created = default,
+            DateTime modified = default);
+
+        IImmutableList<IEntity> CreateMany(IEnumerable<IRawEntity> rawEntities);
     }
 }

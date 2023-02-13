@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
@@ -52,23 +51,24 @@ namespace ToSic.Eav.Data
             ) 
             => new Entity(appId, id, type ?? Type(typeName), values, titleField, created: created, modified: modified, guid: guid);
 
-        /// <inheritdoc />
-        [PublicApi]
-        public IEnumerable<IEntity> Entities(IEnumerable<Dictionary<string, object>> itemValues,
-            string noParamOrder = Parameters.Protector,
-            int appId = 0,
-            string titleField = null,
-            string typeName = DefaultTypeName,
-            IContentType type = null
-            )
-        {
-            type = type ?? Type(typeName);
-            return itemValues.Select(values => Entity(values,
-                appId: appId,
-                titleField: titleField,
-                type: type)
-            );
-        }
+        // 2022-02-13 2dm - disabled, shouldn't be API any more
+        ///// <inheritdoc />
+        //[PublicApi]
+        //public IEnumerable<IEntity> Entities(IEnumerable<Dictionary<string, object>> itemValues,
+        //    string noParamOrder = Parameters.Protector,
+        //    int appId = 0,
+        //    string titleField = null,
+        //    string typeName = DefaultTypeName,
+        //    IContentType type = null
+        //    )
+        //{
+        //    type = type ?? Type(typeName);
+        //    return itemValues.Select(values => Entity(values,
+        //        appId: appId,
+        //        titleField: titleField,
+        //        type: type)
+        //    );
+        //}
 
         /// <inheritdoc />
         [PrivateApi]

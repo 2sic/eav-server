@@ -3,8 +3,8 @@
 namespace ToSic.Eav.Data.Raw
 {
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP for DataSources")]
-    public interface IHasRawEntitySource
+    public interface IHasRawEntity
     {
-        IRawEntity Source { get; }
+        IRawEntity RawEntity { get; }
     }
 }

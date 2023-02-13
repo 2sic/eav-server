@@ -40,29 +40,25 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Features(Dependencies dependencies, IFeaturesInternal featuresService, IDataBuilderPro featuresDataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Features(Dependencies dependencies, IFeaturesInternal featuresService, IDataBuilderPro dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _featuresService = featuresService,
-                _featuresDataBuilder = featuresDataBuilder.Configure(appId: Constants.PresetAppId, typeName: "Feature", titleField: Data.Attributes.TitleNiceName)
+                _featuresDataBuilder = dataBuilder.Configure(typeName: "Feature")
             );
             Provide(GetList);
         }
         private readonly IFeaturesInternal _featuresService;
 
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             // Don't parse configuration as there is nothing to configure
             // Configuration.Parse();
 
-            var featureBuilder = _featuresDataBuilder; //new DataBuilderPro(DataBuilder).Configure(appId: Constants.PresetAppId, typeName: "Feature", titleField: Data.Attributes.TitleNiceName);
-            var list = _featuresService.All
-                .OrderBy(f => f.NameId)
-                .Select(f => featureBuilder.Create(f))
-                .ToImmutableArray();
-            
-            return (list, $"{list.Length}");
+            var list = _featuresDataBuilder.CreateMany(_featuresService.All.OrderBy(f => f.NameId));
+
+            return (list, $"{list.Count}");
         });
     }
 }

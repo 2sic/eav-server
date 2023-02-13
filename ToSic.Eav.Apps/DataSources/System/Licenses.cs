@@ -38,29 +38,25 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Licenses(Dependencies dependencies, ILicenseService licenseService, IDataBuilderPro licensesDataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Licenses(Dependencies dependencies, ILicenseService licenseService, IDataBuilderPro dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _licenseService = licenseService,
-                _licensesDataBuilder = licensesDataBuilder.Configure(appId: Constants.PresetAppId, typeName: "License", titleField: Data.Attributes.TitleNiceName)
+                _licensesDataBuilder = dataBuilder.Configure(typeName: "License")
             );
             Provide(GetList);
         }
         private readonly ILicenseService _licenseService;
 
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() => Log.Func(() =>
         {
             // Don't parse configuration as there is nothing to configure
             // Configuration.Parse();
 
-            var licenseBuilder = _licensesDataBuilder; // new DataBuilderPro(DataBuilder).Configure(appId: Constants.PresetAppId, typeName: "License", titleField: Data.Attributes.TitleNiceName);
-            var list = _licenseService.All
-                .OrderBy(lic => lic.License?.Priority ?? 0)
-                .Select(lic => licenseBuilder.Create(lic))
-                .ToImmutableArray();
+            var list = _licensesDataBuilder.CreateMany(_licenseService.All.OrderBy(l => l.License?.Priority ?? 0));
             
-            return (list, $"{list.Length}");
+            return (list, $"{list.Count}");
         });
     }
 }

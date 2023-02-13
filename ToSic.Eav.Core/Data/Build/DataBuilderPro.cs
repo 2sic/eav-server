@@ -1,24 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data
 {
-    [PrivateApi("Still experimental")]
+    [PrivateApi("Still experimental/hide implementation")]
     public class DataBuilderPro : ServiceBase, IDataBuilderPro
     {
         /// <inheritdoc />
-        public int AppId { get; private set; }
+        public int AppId { get; private set; } = DataBuilder.DefaultAppId;
+
         /// <inheritdoc />
-        public string TitleField { get; private set; }
+        public string TitleField { get; private set; } = Attributes.TitleNiceName;
+
         /// <inheritdoc />
         public int IdCounter { get; private set; }
+
         /// <inheritdoc />
         public IContentType ContentType { get; private set; }
 
+        /// <inheritdoc />
+        public bool IdAutoIncrementZero { get; private set; }
+
         public const int DefaultIdSeed = 1;
+
+        public DateTime Created { get; } = DateTime.Now;
+        public DateTime Modified { get; } = DateTime.Now;
 
         #region Constructor / DI
 
@@ -35,76 +47,71 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        //public DataBuilderQuickWIP(IDataBuilder parentBuilder,
-        //    string noParamOrder = Parameters.Protector,
-        //    int appId = DataBuilder.DefaultAppId, 
-        //    string typeName = default,
-        //    string titleField = default,
-        //    int idSeed = DefaultIdSeed)
-        //{
-        //    Parameters.ProtectAgainstMissingParameterNames(noParamOrder);
-        //    _parentBuilder = parentBuilder;
-        //    AppId = appId;
-        //    TitleField = titleField;
-        //    IdCounter = idSeed;
-        //    ContentType = parentBuilder.Type(typeName ?? DataBuilder.DefaultTypeName);
-        //}
-
         /// <inheritdoc />
         public IDataBuilderPro Configure(
             string noParamOrder = Parameters.Protector,
-            int appId = DataBuilder.DefaultAppId,
+            int appId = default,
             string typeName = default,
             string titleField = default,
-            int idSeed = DefaultIdSeed
+            int idSeed = DefaultIdSeed,
+            bool idAutoIncrementZero = true
         )
         {
-            Parameters.ProtectAgainstMissingParameterNames(noParamOrder);
+            // Ensure parameters are named
+            Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(Configure));
+
+            // Prevent the developer from re-using the DataBuilder
+            if (_alreadyConfigured)
+                throw new Exception(
+                    $"{nameof(Configure)} was already called - you cannot call it twice. " +
+                    $"To get another {nameof(IDataBuilderPro)}, use Dependency Injection and/or a Generator<{nameof(IDataBuilderPro)}>.");
+            _alreadyConfigured = true;
+
+            // Store settings
             AppId = appId;
-            TitleField = titleField;
+            TitleField = titleField.UseFallbackIfNoValue(Attributes.TitleNiceName);
             IdCounter = idSeed;
             ContentType = _parentBuilder.Type(typeName ?? DataBuilder.DefaultTypeName);
+            IdAutoIncrementZero = idAutoIncrementZero;
             return this;
         }
+        private bool _alreadyConfigured;
 
-        /// <summary>
-        /// For objects which delegate the IRawEntity to a property.
-        /// </summary>
-        /// <param name="withSource"></param>
-        /// <returns></returns>
-        public IEntity Create(IHasRawEntitySource withSource) => Create(withSource.Source);
+        /// <inheritdoc />
+        public IEntity Create(IHasRawEntity withRawEntity) => Create(withRawEntity.RawEntity);
 
-        /// <summary>
-        /// For objects which themselves are IRawEntity
-        /// </summary>
-        /// <param name="rawEntity"></param>
-        /// <param name="nullId">when 0 is valid Id for some DataSources, provide Eav.Constants.NullId instead</param>
-        /// <returns></returns>
-        public IEntity Create(IRawEntity rawEntity, int nullId = 0) => Create(
+        /// <inheritdoc />
+        public IEntity Create(IRawEntity rawEntity) => Create(
             rawEntity.RawProperties,
-            id: rawEntity.Id == nullId ? null : rawEntity.Id as int?,
+            id: rawEntity.Id, 
             guid: rawEntity.Guid,
             created: rawEntity.Created,
             modified: rawEntity.Modified
         );
 
-        /// <summary>
-        /// Use when 0, -1, -2, etc... is valid Id for DataSource
-        /// </summary>
-        /// <param name="rawEntity"></param>
-        /// <returns></returns>
-        public IEntity CreateWithEavNullId(IRawEntity rawEntity) => Create(rawEntity, Constants.NullId);
+        public IImmutableList<IEntity> CreateMany(IEnumerable<IRawEntity> rawEntities)
+        {
+            var all = rawEntities.Select(Create).ToList();
+            return all.ToImmutableList();
+        }
 
-        public IEntity Create(Dictionary<string, object> values, int? id = default, Guid? guid = default, DateTime? created = default, DateTime? modified = default)
+        /// <inheritdoc />
+        public IEntity Create(
+            Dictionary<string, object> values,
+            int id = default,
+            Guid guid = default,
+            DateTime created = default,
+            DateTime modified = default
+            )
         {
             var ent = _parentBuilder.Entity(values,
                 appId: AppId,
-                id: id ?? IdCounter++,
+                id: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
                 type: ContentType,
                 titleField: TitleField,
-                guid: guid ?? Guid.Empty,
-                created: created,
-                modified: modified
+                guid: guid, 
+                created: created == default ? Created : created,
+                modified: modified == default ? Modified : modified
             );
             return ent;
         }
