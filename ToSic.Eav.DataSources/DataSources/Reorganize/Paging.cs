@@ -28,6 +28,8 @@ namespace ToSic.Eav.DataSources
 
     public sealed class Paging: DataSource
 	{
+        private readonly IDataBuilderPro _pagingBuilder;
+
         #region Configuration-properties (no config)
 
 	    private const int DefPageSize = 10;
@@ -72,9 +74,11 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public Paging(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.Page")
-
+		public Paging(Dependencies dependencies, IDataBuilderPro dataBuilder): base(dependencies, $"{DataSourceConstants.LogPrefix}.Paging")
         {
+            ConnectServices(
+                _pagingBuilder = dataBuilder.Configure(typeName: "Paging")
+            );
             Provide(GetList);
             Provide("Paging", GetPaging);
 		    ConfigMask($"{nameof(PageSize)}||{DefPageSize}");
@@ -82,7 +86,7 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-        private IImmutableList<IEntity> GetList() => Log.Func(() =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1) * PageSize;
@@ -94,7 +98,7 @@ namespace ToSic.Eav.DataSources
                 .Skip(itemsToSkip)
                 .Take(PageSize)
                 .ToImmutableArray();
-            Log.A($"get page:{PageNumber} with size{PageSize} found:{result.Length}");
+            l.A($"get page:{PageNumber} with size{PageSize} found:{result.Length}");
             return (result, "ok");
         });
 
@@ -113,14 +117,13 @@ namespace ToSic.Eav.DataSources
             var paging = new Dictionary<string, object>
             {
                 { Attributes.TitleNiceName, "Paging Information" },
-                { "PageSize", PageSize },
-                { "PageNumber", PageNumber },
+                { nameof(PageSize), PageSize },
+                { nameof(PageNumber), PageNumber },
                 { "ItemCount", itemCount },
                 { "PageCount", pageCount }
             };
 
-            var entity = new Data.Entity(Constants.TransientAppId, 0, DataBuilder.Type("Paging"), paging,
-                Attributes.TitleNiceName);
+            var entity = _pagingBuilder.Create(paging, id: PageNumber);
 
             // Assemble list of this for the stream
             var list = new List<IEntity> { entity };
