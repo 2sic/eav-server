@@ -33,14 +33,14 @@ namespace ToSic.Eav.DataSources.Sys
         #endregion
 
 
-        private readonly IDataBuilderPro _featuresDataBuilder;
+        private readonly IDataBuilder _featuresDataBuilder;
 
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Features(Dependencies dependencies, IFeaturesInternal featuresService, IDataBuilderPro dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Features(Dependencies dependencies, IFeaturesInternal featuresService, IDataBuilder dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _featuresService = featuresService,

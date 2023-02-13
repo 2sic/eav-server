@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Scopes : DataSource
     {
-        private readonly IDataBuilderPro _scopesDataBuilder;
+        private readonly IDataBuilder _scopesDataBuilder;
 
         #region Configuration-properties (no config)
 
@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Scopes(Dependencies dependencies, IAppStates appStates, IDataBuilderPro dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Scopes(Dependencies dependencies, IAppStates appStates, IDataBuilder dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _appStates = appStates,

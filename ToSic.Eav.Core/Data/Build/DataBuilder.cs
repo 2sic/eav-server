@@ -10,7 +10,7 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Data
 {
     [PrivateApi("Still experimental/hide implementation")]
-    public class DataBuilderPro : ServiceBase, IDataBuilderPro
+    public class DataBuilder : ServiceBase, IDataBuilder
     {
         /// <inheritdoc />
         public int AppId { get; private set; } = DataBuilderInternal.DefaultAppId;
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Data
         /// Constructor for DI
         /// </summary>
         /// <param name="parentBuilder"></param>
-        public DataBuilderPro(IDataBuilderInternal parentBuilder): base("Ds.DatBld")
+        public DataBuilder(IDataBuilderInternal parentBuilder): base("Ds.DatBld")
         {
             _parentBuilder = parentBuilder;
         }
@@ -48,7 +48,7 @@ namespace ToSic.Eav.Data
         #endregion
 
         /// <inheritdoc />
-        public IDataBuilderPro Configure(
+        public IDataBuilder Configure(
             string noParamOrder = Parameters.Protector,
             int appId = default,
             string typeName = default,
@@ -64,7 +64,7 @@ namespace ToSic.Eav.Data
             if (_alreadyConfigured)
                 throw new Exception(
                     $"{nameof(Configure)} was already called - you cannot call it twice. " +
-                    $"To get another {nameof(IDataBuilderPro)}, use Dependency Injection and/or a Generator<{nameof(IDataBuilderPro)}>.");
+                    $"To get another {nameof(IDataBuilder)}, use Dependency Injection and/or a Generator<{nameof(IDataBuilder)}>.");
             _alreadyConfigured = true;
 
             // Store settings

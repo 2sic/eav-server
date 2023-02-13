@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
 
     public sealed class Paging: DataSource
 	{
-        private readonly IDataBuilderPro _pagingBuilder;
+        private readonly IDataBuilder _pagingBuilder;
 
         #region Configuration-properties (no config)
 
@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public Paging(Dependencies dependencies, IDataBuilderPro dataBuilder): base(dependencies, $"{DataSourceConstants.LogPrefix}.Paging")
+		public Paging(Dependencies dependencies, IDataBuilder dataBuilder): base(dependencies, $"{DataSourceConstants.LogPrefix}.Paging")
         {
             ConnectServices(
                 _pagingBuilder = dataBuilder.Configure(typeName: "Paging")

@@ -12,8 +12,11 @@ namespace ToSic.Eav.Data
     ///
     /// This is more efficient than using the bare bones <see cref="IDataBuilderInternal"/>
     /// </summary>
+    /// <remarks>
+    /// * Added in v15 to replace the previous IDataBuilder which is now internal
+    /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("in development for v15")]
-    public interface IDataBuilderPro
+    public interface IDataBuilder
     {
         /// <summary>
         /// The App-ID which will be assigned to the generated entities.
@@ -56,12 +59,12 @@ namespace ToSic.Eav.Data
         /// <param name="idSeed">Default is `1`</param>
         /// <param name="idAutoIncrementZero">Default is `true`</param>
         /// <returns>Itself, to make call chaining easier</returns>
-        IDataBuilderPro Configure(
+        IDataBuilder Configure(
             string noParamOrder = Parameters.Protector,
             int appId = default,
             string typeName = default,
             string titleField = default,
-            int idSeed = DataBuilderPro.DefaultIdSeed,
+            int idSeed = DataBuilder.DefaultIdSeed,
             bool idAutoIncrementZero = true
         );
 

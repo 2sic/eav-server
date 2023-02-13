@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Licenses : DataSource
     {
-        private readonly IDataBuilderPro _licensesDataBuilder;
+        private readonly IDataBuilder _licensesDataBuilder;
 
         #region Configuration-properties (no config)
 
@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Licenses(Dependencies dependencies, ILicenseService licenseService, IDataBuilderPro dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Licenses(Dependencies dependencies, ILicenseService licenseService, IDataBuilder dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _licenseService = licenseService,
