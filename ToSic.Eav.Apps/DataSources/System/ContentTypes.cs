@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
@@ -37,6 +38,7 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class ContentTypes: DataSource
 	{
+        private readonly IDataBuilder _dataBuilder;
 
         #region Configuration-properties (no config)
 
@@ -82,51 +84,44 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new ContentTypes DS
         /// </summary>
         [PrivateApi]
-        public ContentTypes(Dependencies dependencies, IAppStates appStates): base(dependencies, $"{DataSourceConstants.LogPrefix}.CTypes")
+        public ContentTypes(Dependencies dependencies, IAppStates appStates, IDataBuilder dataBuilder): base(dependencies, $"{DataSourceConstants.LogPrefix}.CTypes")
         {
             ConnectServices(
-                _appStates = appStates
+                _appStates = appStates,
+                _dataBuilder = dataBuilder.Configure(appId: OfAppId, typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString())
             );
             Provide(GetList);
 		}
         private readonly IAppStates _appStates;
 
-	    private ImmutableArray<IEntity> GetList()
-	    {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
-            
+        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        {
             Configuration.Parse();
 
             var appId = OfAppId;
 
-	        var scp = Scope;
+            var scp = Scope;
             if (string.IsNullOrWhiteSpace(scp)) scp = Data.Scopes.Default;
 
             var types = _appStates.Get(appId).ContentTypes.OfScope(scp);
-            
-            var builder = DataBuilder;
-	        var list = types.OrderBy(t => t.Name).Select(t =>
-	        {
-	            Guid? guid = null;
-	            try
-	            {
-	                if (Guid.TryParse(t.NameId, out Guid g)) guid = g;
-	            }
-	            catch
-	            {
-	                /* ignore */
-	            }
 
-                return builder.Entity(ContentTypeUtil.BuildDictionary(t),
-                    appId:OfAppId, 
-                    id:t.Id, 
-                    titleField: ContentTypeType.Name.ToString(),
-                    typeName: ContentTypeTypeName,
-                    guid: guid);
-	        });
+            var list = types.OrderBy(t => t.Name).Select(t =>
+            {
+                Guid? guid = null;
+                try
+                {
+                    if (Guid.TryParse(t.NameId, out Guid g)) guid = g;
+                }
+                catch
+                {
+                    /* ignore */
+                }
 
-	        var result = list.ToImmutableArray();
-            return wrapLog.Return(result, $"{result.Length}");
-        }
+                return _dataBuilder.Create(ContentTypeUtil.BuildDictionary(t), id: t.Id, guid: guid ?? Guid.Empty);
+            });
+
+            var result = list.ToImmutableArray();
+            return (result, $"{result.Length}");
+        });
     }
 }
