@@ -40,10 +40,6 @@ namespace ToSic.Eav.DataSources
 
         #region Properties which the Factory must add
 
-        [Obsolete("WIP - @STV will remove all usages of it")]
-        protected IDataBuilderInternal DataBuilder => _dataBuilder.Get(() => Deps.DataBuilder.Value);
-        private readonly GetOnce<IDataBuilderInternal> _dataBuilder = new GetOnce<IDataBuilderInternal>();
-
         [PrivateApi]
         public DataSourceErrorHandling ErrorHandler => _errorHandler.Get(() => Deps.ErrorHandler.Value);
         private readonly GetOnce<DataSourceErrorHandling> _errorHandler = new GetOnce<DataSourceErrorHandling>();
