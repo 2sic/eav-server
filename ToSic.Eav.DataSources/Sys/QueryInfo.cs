@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.DI;
@@ -31,6 +32,7 @@ namespace ToSic.Eav.DataSources.Sys
 
     public sealed class QueryInfo : DataSource
     {
+        private readonly IDataBuilder _dataBuilder;
         private readonly LazySvc<DataSourceFactory> _dataSourceFactory;
         public QueryBuilder QueryBuilder { get; }
         private readonly LazySvc<QueryManager> _queryManagerLazy;
@@ -51,68 +53,68 @@ namespace ToSic.Eav.DataSources.Sys
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
         }
+
         [Configuration(Fallback = Constants.DefaultStreamName)]
         public string StreamName
         {
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
         }
+
         #endregion
 
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-        public QueryInfo(Dependencies dependencies, LazySvc<DataSourceFactory> dataSourceFactory, LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.EavQIn")
+        public QueryInfo(Dependencies dependencies, LazySvc<DataSourceFactory> dataSourceFactory,
+            LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, IDataBuilder dataBuilder) : base(
+            dependencies, $"{DataSourceConstants.LogPrefix}.EavQIn")
         {
             ConnectServices(
                 QueryBuilder = queryBuilder,
                 _queryManagerLazy = queryManagerLazy,
-                _dataSourceFactory = dataSourceFactory
+                _dataSourceFactory = dataSourceFactory,
+                _dataBuilder = dataBuilder.Configure(titleField: StreamsType.Name.ToString(),
+                    typeName: QueryStreamsContentType)
             );
             Provide(GetStreams);
             Provide("Attributes", GetAttributes);
         }
 
-        private ImmutableArray<IEntity> GetStreams()
+        private ImmutableArray<IEntity> GetStreams() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
-
             CustomConfigurationParse();
-            var builder = DataBuilder;
+
             var result = _query?.Out.OrderBy(stream => stream.Key).Select(stream
-                           => builder.Entity(new Dictionary<string, object>
-                               {
-                                   {StreamsType.Name.ToString(), stream.Key}
-                               },
-                               titleField: StreamsType.Name.ToString(),
-                               typeName: QueryStreamsContentType))
-                       .ToImmutableArray()
-                   ?? ImmutableArray<IEntity>.Empty;
-            return wrapLog.Return(result, $"{result.Length}");
-        }
+                                 => _dataBuilder.Create(new Dictionary<string, object>
+                                 {
+                                     {StreamsType.Name.ToString(), stream.Key}
+                                 }))
+                             .ToImmutableArray()
+                         ?? ImmutableArray<IEntity>.Empty;
+            return (result, $"{result.Length}");
+        });
 
-        private IImmutableList<IEntity> GetAttributes()
+        private IImmutableList<IEntity> GetAttributes() => Log.Func(l => 
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
-
             CustomConfigurationParse();
 
             // no query can happen if the name was blank
             if (_query == null)
-                return ImmutableArray<IEntity>.Empty;
+                return (new List<IEntity>().ToImmutableList(), "null");
 
             // check that _query has the stream name
             if (!_query.Out.ContainsKey(StreamName))
-                return ImmutableArray<IEntity>.Empty;
+                return (new List<IEntity>().ToImmutableList(), "can't find stream name in query");
 
             var attribInfo = _dataSourceFactory.Value.GetDataSource<Attributes>(_query);
             if (StreamName != Constants.DefaultStreamName)
                 attribInfo.Attach(Constants.DefaultStreamName, _query, StreamName);
 
             var results = attribInfo.List.ToImmutableList();
-            return wrapLog.Return(results, $"{results.Count}");
-        }
+            return (results, $"{results.Count}");
+        });
 
         private void CustomConfigurationParse()
         {
