@@ -118,14 +118,18 @@ namespace ToSic.Eav.DataSources
 
 
         [PrivateApi]
-        public CsvDataSource(IUser user, IServerPaths serverPaths, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Csv")
+        public CsvDataSource(Dependencies dependencies, IDataBuilder dataBuilder, IUser user, IServerPaths serverPaths) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Csv")
         {
-            _user = user;
-            _serverPaths = serverPaths;
+            ConnectServices(
+                _user = user,
+                _serverPaths = serverPaths,
+                _dataBuilder = dataBuilder.Configure(appId: Constants.TransientAppId, typeName: ContentType)
+            );
             Provide(GetList);
         }
         private readonly IUser _user;
         private readonly IServerPaths _serverPaths;
+        private readonly IDataBuilder _dataBuilder;
 
 
         private ImmutableArray<IEntity> GetList() => Log.Func(() =>
@@ -176,8 +180,6 @@ namespace ToSic.Eav.DataSources
                 var idColumnIndex = idColumnNotDetermined;
                 string titleColName = null;
 
-                // Content-Type name
-                var csvType = DataBuilder.Type(ContentType);
 
                 // Parse header - must happen after the first read
                 parser.Read();
@@ -234,7 +236,7 @@ namespace ToSic.Eav.DataSources
                     for (var i = 0; i < headers.Length; i++)
                         entityValues.Add(headers[i], (i < fields.Length) ? fields[i] : null);
 
-                    entityList.Add(new Entity(Constants.TransientAppId, entityId, csvType, entityValues, titleColName));
+                    entityList.Add(_dataBuilder.Create(values: entityValues, id: entityId, titleField: titleColName));
                 }
             }
 
