@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Documentation;
@@ -49,14 +50,18 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public Attributes(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Attrib")
+		public Attributes(IAppStates appStates, Dependencies dependencies, IDataBuilder dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Attrib")
         {
-            _appStates = appStates;
+            ConnectServices(
+                _appStates = appStates,
+                _dataBuilder = dataBuilder.Configure(titleField: AttributeType.Title.ToString(), typeName: AttribContentTypeName)
+            );
             Provide(GetList);
 		}
         private readonly IAppStates _appStates;
+        private readonly IDataBuilder _dataBuilder;
 
-	    private ImmutableArray<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList()
 	    {
             Configuration.Parse();
 
@@ -98,12 +103,7 @@ namespace ToSic.Eav.DataSources.Sys
                         list.Insert(0, AsDic(sysField.Key, sysField.Value, false, 0, true));
 
             // if it didn't work yet, maybe try from stream items
-            var builder = DataBuilder;
-            return list?.Select(attribData =>
-                           builder.Entity(attribData, titleField: AttributeType.Title.ToString(),
-                               typeName: AttribContentTypeName)
-                       )
-                       .ToImmutableArray()
+            return list?.Select(attribData => _dataBuilder.Create(attribData)).ToImmutableArray()
                    ?? ImmutableArray<IEntity>.Empty;
         }
 
