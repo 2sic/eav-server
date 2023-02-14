@@ -39,35 +39,5 @@ namespace ToSic.Eav.DataSources
                 CacheRelevantConfigurations.Add(key);
         }
 
-        [PrivateApi("wip v15.03")]
-        protected void ConfigMaskMyConfig(string key, string partialToken, bool cacheRelevant = true) 
-            => ConfigMask(key, $"[{MyConfiguration}:{partialToken}]", cacheRelevant);
-
-        /// <summary>
-        /// Add a value to the configuration list for later resolving tokens and using in Cache-Keys.
-        /// It will automatically generate a real token to retrieve the same named key from `MyConfiguration`
-        /// </summary>
-        /// <param name="keyAndToken">
-        /// One of two options
-        /// * Simple: just the name of the key which is the same as the token to retrieve, such as `MaxItems`
-        /// * Advanced: The key with fallback or formatting, such as `MaxItem||100`
-        /// </param>
-        /// <param name="cacheRelevant">
-        /// If this key should be part of the cache-key.
-        /// Default is `true`.
-        /// Set to `false` for parameters which don't affect the result or are very confidential (like passwords)
-        /// </param>
-        /// <remarks>
-        /// * Added in v12.10
-        /// * Published / documented it v15.03
-        /// </remarks>
-        [PublicApi]
-        protected void ConfigMask(string keyAndToken, bool cacheRelevant = true)
-        {
-            // In case we have separators, then the internal lookup-key should only be the first part of this
-            var separator = keyAndToken.IndexOfAny(new[] { '|' });
-            var key = separator > 0 ? keyAndToken.Substring(0, separator) : keyAndToken;
-            ConfigMaskMyConfig(key, keyAndToken, cacheRelevant);
-        }
     }
 }
