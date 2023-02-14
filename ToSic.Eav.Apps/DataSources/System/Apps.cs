@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Logging;
@@ -39,6 +41,8 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Apps: DataSource
 	{
+        private readonly IDataBuilder _dataBuilder;
+
         #region Configuration-properties (no config)
 
         private const string ZoneIdField = "ZoneId";
@@ -81,8 +85,12 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps(Dependencies dependencies): base(dependencies.RootDependencies, $"{DataSourceConstants.LogPrefix}.Apps")
+        public Apps(Dependencies dependencies, IDataBuilder dataBuilder) : base(dependencies.RootDependencies, $"{DataSourceConstants.LogPrefix}.Apps")
         {
+            ConnectServices(
+                _dataBuilder = dataBuilder.Configure(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
+            );
+            ;
             dependencies.SetLog(Log);
             _appGenerator = dependencies.AppGenerator;
             _appStates = dependencies.AppStates;
@@ -94,22 +102,21 @@ namespace ToSic.Eav.DataSources.Sys
 
         #endregion
 
-        private ImmutableArray<IEntity> GetList()
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
-            
             Configuration.Parse();
-            var builder = DataBuilder;
 
             // try to load the content-type - if it fails, return empty list
             var zones = _appStates.Zones;
-            if (!zones.ContainsKey(OfZoneId)) return ImmutableArray<IEntity>.Empty;
+            if (!zones.ContainsKey(OfZoneId)) 
+                return (new List<IEntity>().ToImmutableList(),"fails load content-type");
+            
             var zone = zones[OfZoneId];
 
-	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
-	        {
-	            Eav.Apps.App appObj = null;
-	            Guid? guid = null;
+            var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
+            {
+                Eav.Apps.App appObj = null;
+                Guid? guid = null;
                 string error = null;
                 try
                 {
@@ -117,36 +124,74 @@ namespace ToSic.Eav.DataSources.Sys
                     // this will get the guid, if the identity is not "default"
                     if (Guid.TryParse(appObj.NameId, out var g)) guid = g;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     error = "Error looking up App: " + ex.Message;
                 }
 
-	            // Assemble the entities
-	            var appEnt = new Dictionary<string, object>
-	            {
-	                {AppType.Id.ToString(), app.Key},
-	                {AppType.Name.ToString(), appObj?.Name ?? "error - can't lookup name"},
-                    {AppType.Folder.ToString(), appObj?.Folder ?? "" },
-                    {AppType.IsHidden.ToString(), appObj?.Hidden ?? false },
-	                {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
-	                {AppType.IsPrimary.ToString(), app.Key == zone.PrimaryAppId},
-	            };
-                if(error != null)
-                    appEnt["Error"] = error;
+                var appInfo = new AppInfo
+                {
+                    Id = app.Key,
+                    Guid = guid ?? Guid.Empty,
+                    Name = appObj?.Name ?? "error - can't lookup name",
+                    Folder = appObj?.Folder ?? "",
+                    IsHidden = appObj?.Hidden ?? false,
+                    IsDefault = app.Key == zone.DefaultAppId,
+                    IsPrimary = app.Key == zone.PrimaryAppId,
+                };
 
-                var result = builder.Entity(appEnt,
-                    appId: app.Key,
-                    id: app.Key,
-                    titleField: AppType.Name.ToString(),
-                    typeName: AppsContentTypeName, 
-                    guid: guid);
-                return result;
-            });
+                if (error != null) 
+                    appInfo.Error = error;
+                
+                return appInfo;
 
-            var final = list.ToImmutableArray();
-            return wrapLog.Return(final, $"{final.Length}");
-        }
+            }).ToList();
 
-	}
+            var final = _dataBuilder.CreateMany(list);
+            return (final, $"ok");
+        });
+
+    }
+
+    /// <summary>
+    /// Internal class to hold all the information about the page,
+    /// until it's converted to an IEntity in the <see cref="Apps"/> DataSource.
+    ///
+    /// Important: this is an internal object.
+    /// We're just including in in the docs to better understand where the properties come from.
+    /// We'll probably move it to another namespace some day.
+    /// </summary>
+    /// <remarks>
+    /// Make sure the property names never change, as they are critical for the created Entity.
+    /// </remarks>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    public class AppInfo : IRawEntity
+    {
+        public const string TypeName = "App";
+        public int Id { get; set; }
+        public Guid Guid { get; set; }
+        public string Name { get; set; }
+        public string Folder { get; set; }
+        public bool IsHidden { get; set; }
+        public bool IsDefault { get; set; }
+        public bool IsPrimary { get; set; }
+        public string Error { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Modified { get; set; }
+
+        /// <summary>
+        /// Data but without Id, Guid, Created, Modified
+        /// </summary>
+        [PrivateApi]
+        public Dictionary<string, object> RawProperties => new Dictionary<string, object>
+        {
+            { Data.Attributes.TitleNiceName, Name },
+            { nameof(Name), Name },
+            { nameof(Folder), Folder },
+            { nameof(IsHidden), IsHidden },
+            { nameof(IsDefault), IsDefault },
+            { nameof(IsPrimary), IsPrimary },
+            { nameof(Error), Error },
+        };
+    }
 }
