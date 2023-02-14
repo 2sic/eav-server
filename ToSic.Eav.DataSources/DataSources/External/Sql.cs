@@ -143,12 +143,16 @@ namespace ToSic.Eav.DataSources
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
 		[PrivateApi]
-		public Sql(Dependencies dependencies) : base(dependencies.RootDependencies, $"{DataSourceConstants.LogPrefix}.ExtSql")
+		public Sql(Dependencies dependencies, IDataBuilder dataBuilder) : base(dependencies.RootDependencies, $"{DataSourceConstants.LogPrefix}.ExtSql")
         {
+            ConnectServices(
+                _dataBuilder = dataBuilder.Configure(appId: Constants.TransientAppId)
+            );
             SqlDeps = dependencies.SetLog(Log);
             Provide(GetList);
         }
         [PrivateApi] protected readonly Dependencies SqlDeps;
+        private readonly IDataBuilder _dataBuilder;
 
         #endregion
 
@@ -268,9 +272,6 @@ namespace ToSic.Eav.DataSources
                 return ErrorHandler.CreateErrorList(source: this, title: "Connection Problem",
                     message: "The ConnectionString property is empty / has not been initialized");
 
-			// The content type returned in this query
-			var contentTypeToUse = DataBuilder.Type(ContentType);
-
 			var list = new List<IEntity>();
             using (var connection = new SqlConnection(ConnectionString))
 			{
@@ -334,7 +335,7 @@ namespace ToSic.Eav.DataSources
 								var value = reader[c];
                                 return Convert.IsDBNull(value) ? null : value;
                             });
-			                var entity = new Entity(Constants.TransientAppId, entityId, contentTypeToUse, values, casedTitle);
+			                var entity = _dataBuilder.Create(values, id: entityId, typeName: ContentType, titleField: casedTitle);
 			                list.Add(entity);
 			            }
 
