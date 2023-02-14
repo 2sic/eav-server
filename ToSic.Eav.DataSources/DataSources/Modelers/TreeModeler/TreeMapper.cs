@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
             string parentIdentifierAttribute,
             string childParentAttribute,
             string targetChildrenAttribute = default,
-            string targetParentAttribute = default) where TRel: struct => Log.Func(l =>
+            string targetParentAttribute = default) => Log.Func(l =>
         {
 
             targetParentAttribute = targetParentAttribute ?? DefaultParentAttribute;
@@ -75,7 +75,7 @@ namespace ToSic.Eav.DataSources
                 // Find and assign parent
                 var parentIdentifier = GetTypedValueOrNull<TRel>(entity, childParentAttribute);
                 var parents = new List<IEntity>();
-                if (parentIdentifier.HasValue && identifiers.ContainsKey(parentIdentifier))
+                if (!EqualityComparer<TRel>.Default.Equals(parentIdentifier, default) && identifiers.ContainsKey(parentIdentifier))
                     parents.Add(identifiers[parentIdentifier]);
                 _builder.Attribute.AddValue(entity.Attributes, targetParentAttribute,
                     parents.Select(e => e.EntityGuid).ToList(), "Entity",
@@ -90,8 +90,7 @@ namespace ToSic.Eav.DataSources
             return result.ToImmutableArray();
         });
 
-        private TRelationshipKey? GetTypedValueOrNull<TRelationshipKey>(IEntity e, string attribute) where TRelationshipKey: struct 
-            => Log.Func<TRelationshipKey?>(enabled: Debug, func: l =>
+        private TRelationshipKey GetTypedValueOrNull<TRelationshipKey>(IEntity e, string attribute) => Log.Func(enabled: Debug, func: l =>
         {
             try
             {
@@ -113,7 +112,7 @@ namespace ToSic.Eav.DataSources
             catch (Exception ex)
             {
                 l.Ex(ex);
-                return null;
+                return default;
             }
         });
 

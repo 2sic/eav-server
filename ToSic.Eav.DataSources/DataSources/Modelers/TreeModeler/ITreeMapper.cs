@@ -14,6 +14,6 @@ namespace ToSic.Eav.DataSources
             string childParentAttribute,
             string targetChildrenAttribute = default,
             string targetParentAttribute = default
-            ) where TRel: struct;
+        );
     }
 }

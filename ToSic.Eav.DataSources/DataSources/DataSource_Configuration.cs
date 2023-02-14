@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 using static System.StringComparison;
 
 namespace ToSic.Eav.DataSources
@@ -8,15 +9,15 @@ namespace ToSic.Eav.DataSources
     {
         /// <summary>
         /// Correct prefix to use when retrieving a value from the current data sources configuration entity.
-        /// Always use this variable, don't ever write the name yourself, as it could change in future.
+        /// Always use this variable, don't ever write the name as a string, as it could change in future.
         /// </summary>
-        public static readonly string MyConfiguration = "MyConfiguration"; // WIP
+        public static readonly string MyConfiguration = "MyConfiguration";
 
         private static readonly string MyConfigOld = "Settings";
 
         /// <inheritdoc />
-        public IDataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(Deps.ConfigDependencies, this));
-        private IDataSourceConfiguration _config;
+        public IDataSourceConfiguration Configuration => _config.Get(() => new DataSourceConfiguration(Deps.ConfigDependencies, this));
+        private readonly GetOnce<IDataSourceConfiguration> _config = new GetOnce<IDataSourceConfiguration>();
 
         /// <summary>
         /// Add a value to the configuration list for later resolving tokens and using in Cache-Keys.
