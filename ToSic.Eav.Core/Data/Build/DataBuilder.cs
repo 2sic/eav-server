@@ -96,19 +96,18 @@ namespace ToSic.Eav.Data
         }
 
         /// <inheritdoc />
-        public IEntity Create(
-            Dictionary<string, object> values,
+        public IEntity Create(Dictionary<string, object> values,
             int id = default,
             Guid guid = default,
             DateTime created = default,
             DateTime modified = default,
-            string titleField = default
-            )
+            string typeName = default,
+            string titleField = default)
         {
             var ent = _parentBuilder.Entity(values,
                 appId: AppId,
                 id: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
-                type: ContentType,
+                type: (typeName != null) ? _parentBuilder.Type(typeName) : ContentType,
                 titleField: titleField ?? TitleField,
                 guid: guid, 
                 created: created == default ? Created : created,

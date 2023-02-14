@@ -82,12 +82,12 @@ namespace ToSic.Eav.Data
         /// <returns></returns>
         IEntity Create(IRawEntity rawEntity);
 
-        IEntity Create(
-            Dictionary<string, object> values,
+        IEntity Create(Dictionary<string, object> values,
             int id = default,
             Guid guid = default,
             DateTime created = default,
             DateTime modified = default,
+            string typeName = default,
             string titleField = default);
 
         IImmutableList<IEntity> CreateMany(IEnumerable<IRawEntity> rawEntities);
