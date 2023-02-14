@@ -32,6 +32,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The identity of the user to filter by. Uses the Identity-token convention like dnn:1 is the user #1 in the DNN DB
         /// </summary>
+        [Configuration(Field = IdentityCodeField)]
         public string Identity
         {
             get => Configuration.GetThis();
@@ -47,7 +48,6 @@ namespace ToSic.Eav.DataSources
 		public OwnerFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.OwnrFl")
         {
             Provide(GetList);
-            ConfigMaskMyConfig(nameof(Identity), IdentityCodeField);
         }
 
         private IImmutableList<IEntity> GetList() => Log.Func(() =>

@@ -4,7 +4,11 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.DataSources
 {
     /// <summary>
-    /// TODO:
+    /// Marks an attribute of a DataSource as a `Configuration` attribute.
+    /// This means that the internal system which loads configurations from a config-entity will automatically retrieve the value
+    /// as specified.
+    ///
+    /// Note that 
     ///
     /// **Usage**
     ///
@@ -15,8 +19,11 @@ namespace ToSic.Eav.DataSources
     [AttributeUsage(validOn: AttributeTargets.Property)]
     public class ConfigurationAttribute: Attribute
     {
+        /// <summary>
+        /// Default, empty constructor.
+        /// All properties must be added in a named fashion to ensure long-term API consistency.
+        /// </summary>
         public ConfigurationAttribute() { }
-        public ConfigurationAttribute(string mask) { }
 
         /// <summary>
         /// The Token is the most complicated way to create a field mask.

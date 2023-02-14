@@ -48,11 +48,12 @@ namespace ToSic.Eav.DataSources
         public static Regex ForbiddenTermsInSelect = new Regex(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore|sp_executesql)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         #region Configuration-properties
-        
-		/// <summary>
-		/// Name of the ConnectionString in the Application.Config to use
-		/// </summary>
-		public string ConnectionStringName
+
+        /// <summary>
+        /// Name of the ConnectionString in the Application.Config to use
+        /// </summary>
+        [Configuration]
+        public string ConnectionStringName
 		{
 			get => Configuration.GetThis();
             set => Configuration.SetThis(value);
@@ -61,24 +62,27 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// ConnectionString to the DB
 		/// </summary>
+		[Configuration]
 		public string ConnectionString
 		{
 			get => Configuration.GetThis();
             set => Configuration.SetThis(value);
 		}
 
-		/// <summary>
-		/// SQL Command for selecting data.
-		/// </summary>
-		public string SelectCommand
+        /// <summary>
+        /// SQL Command for selecting data.
+        /// </summary>
+        [Configuration]
+        public string SelectCommand
 		{
 			get => Configuration.GetThis();
             set => Configuration.SetThis(value);
 		}
 
-		/// <summary>
-		/// Name of the ContentType which we'll pretend the items have.
-		/// </summary>
+        /// <summary>
+        /// Name of the ContentType which we'll pretend the items have.
+        /// </summary>
+        [Configuration(Fallback = "SqlData")]
 		public string ContentType
 		{
 			get => Configuration.GetThis();
@@ -88,6 +92,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Name of the Title Attribute of the Source DataTable
 		/// </summary>
+		[Configuration(Field = "EntityTitleField", Fallback = Attributes.EntityFieldTitle)]
 		public string TitleField
         {
             get => Configuration.GetThis();
@@ -97,6 +102,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Name of the Column used as EntityId
 		/// </summary>
+		[Configuration(Fallback = Attributes.EntityFieldId)]
 		public string EntityIdField
         {
             get => Configuration.GetThis();
@@ -141,13 +147,6 @@ namespace ToSic.Eav.DataSources
         {
             SqlDeps = dependencies.SetLog(Log);
             Provide(GetList);
-		    ConfigMaskMyConfig(nameof(TitleField), $"EntityTitleField||{Attributes.EntityFieldTitle}");
-		    ConfigMask($"{nameof(EntityIdField)}||{Attributes.EntityFieldId}");
-
-		    ConfigMask($"{nameof(ContentType)}||SqlData");
-		    ConfigMask(nameof(SelectCommand));
-		    ConfigMask(nameof(ConnectionString));
-		    ConfigMask(nameof(ConnectionStringName));
         }
         [PrivateApi] protected readonly Dependencies SqlDeps;
 

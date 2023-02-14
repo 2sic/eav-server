@@ -53,7 +53,6 @@ namespace ToSic.Eav.DataSources
         public Shuffle(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Shuffl")
         {
             Provide(GetShuffle);
-		    // ConfigMask($"{nameof(Take)}||{DefaultTakeAll}");
         }
 
 

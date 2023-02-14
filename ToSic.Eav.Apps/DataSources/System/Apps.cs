@@ -47,6 +47,7 @@ namespace ToSic.Eav.DataSources.Sys
 	    /// <summary>
 	    /// The attribute whose value will be filtered
 	    /// </summary>
+	    [Configuration(Field = ZoneIdField)]
 	    public int OfZoneId
 	    {
 	        get => Configuration.GetThis(ZoneId);
@@ -87,8 +88,7 @@ namespace ToSic.Eav.DataSources.Sys
             _appStates = dependencies.AppStates;
 
             Provide(GetList);
-            ConfigMaskMyConfig(nameof(OfZoneId), ZoneIdField);
-		}
+        }
         private readonly Generator<Eav.Apps.App> _appGenerator;
         private readonly IAppStates _appStates;
 

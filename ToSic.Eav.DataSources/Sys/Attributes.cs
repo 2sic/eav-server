@@ -36,6 +36,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// The content-type name
         /// </summary>
+        [Configuration(Fallback = TryToUseInStream)]
         public string ContentTypeName
         {
             get => Configuration.GetThis();
@@ -52,7 +53,6 @@ namespace ToSic.Eav.DataSources.Sys
         {
             _appStates = appStates;
             Provide(GetList);
-		    ConfigMask($"{nameof(ContentTypeName)}||{TryToUseInStream}");
 		}
         private readonly IAppStates _appStates;
 

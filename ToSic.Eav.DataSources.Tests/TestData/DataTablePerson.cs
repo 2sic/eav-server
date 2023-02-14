@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Core.Tests.LookUp;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
@@ -28,7 +29,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
             var dataTable = new System.Data.DataTable();
             dataTable.Columns.AddRange(new[]
             {
-                new DataColumn(DataTable.EntityIdDefaultColumnName, typeof (int)),
+                new DataColumn(Attributes.EntityFieldId, typeof (int)),
                 new DataColumn(PersonSpecs.FieldFullName),
                 new DataColumn(PersonSpecs.FieldFirstName),
                 new DataColumn(PersonSpecs.FieldLastName),

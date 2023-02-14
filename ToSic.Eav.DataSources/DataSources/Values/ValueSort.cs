@@ -31,24 +31,27 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// The attribute whose value will be sorted by.
 		/// </summary>
+		[Configuration]
 		public string Attributes
         {
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
         }
 
-		/// <summary>
-		/// The sorting direction like 'asc' or 'desc', can also be 0, 1
-		/// </summary>
+        /// <summary>
+        /// The sorting direction like 'asc' or 'desc', can also be 0, 1
+        /// </summary>
+        [Configuration]
 		public string Directions
         {
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
         }
 
-		/// <summary>
-		/// Language to filter for. At the moment it is not used, or it is trying to find "any"
-		/// </summary>
+        /// <summary>
+        /// Language to filter for. At the moment it is not used, or it is trying to find "any"
+        /// </summary>
+        [Configuration(Fallback = ValueLanguages.LanguageDefaultPlaceholder)]
 		public string Languages
         {
             get => Configuration.GetThis();
@@ -68,9 +71,6 @@ namespace ToSic.Eav.DataSources
             );
 
             Provide(GetValueSort);
-		    ConfigMask(nameof(Attributes));
-		    ConfigMask(nameof(Directions));
-		    ConfigMask(ValueLanguages.LanguageSettingsKeyAndToken);
         }
         private readonly ValueLanguages _valLanguages;
 

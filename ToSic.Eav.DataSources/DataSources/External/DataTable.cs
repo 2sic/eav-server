@@ -25,24 +25,18 @@ namespace ToSic.Eav.DataSources
 		#region Configuration-properties
 
 		/// <summary>
-		/// Default Name of the EntityId Column
-		/// </summary>
-		internal static readonly string EntityIdDefaultColumnName = "EntityId";
-
-	    /// <summary>
-	    /// Default Name of the EntityTitle Column
-	    /// </summary>
-	    internal static readonly string EntityTitleDefaultColumnName = Attributes.EntityFieldTitle; 
-
-		/// <summary>
 		/// Source DataTable
 		/// </summary>
         public SqlDataTable Source { get; set; }
 
-		/// <summary>
-		/// Name of the ContentType
-		/// </summary>
-		public string ContentType
+        /// <summary>
+        /// Name of the ContentType. Defaults to `Data`
+        /// </summary>
+        /// <remarks>
+        /// * in v15 changed default name to `Data`, previously was just empty.
+        /// </remarks>
+        [Configuration(Fallback = "Data")]
+        public string ContentType
 		{
 			get => Configuration.GetThis();
             set => Configuration.SetThis(value);
@@ -51,15 +45,17 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Name of the Title Attribute of the Source DataTable
 		/// </summary>
+		[Configuration(Fallback = Attributes.EntityFieldTitle)]
 		public string TitleField
 		{
-			get => Configuration.GetThis();
+			get => Configuration.GetThis(fallback: Attributes.EntityFieldTitle);
             set => Configuration.SetThis(value);
 		}
 
 		/// <summary>
 		/// Name of the Column used as EntityId
 		/// </summary>
+		[Configuration(Fallback = Attributes.EntityFieldId)]
 		public string EntityIdField
 		{
 			get => Configuration.GetThis();
@@ -69,6 +65,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Name of the field which would contain a modified timestamp (date/time)
         /// </summary>
+        [Configuration]
 		public string ModifiedField
 		{
 			get => Configuration.GetThis();
@@ -85,10 +82,6 @@ namespace ToSic.Eav.DataSources
         public DataTable(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.ExtTbl")
         {
             Provide(GetEntities);
-		    ConfigMask($"{nameof(TitleField)}||{EntityTitleDefaultColumnName}");
-		    ConfigMask($"{nameof(EntityIdField)}||{EntityIdDefaultColumnName}");
-		    ConfigMask(nameof(ModifiedField));
-		    ConfigMask(nameof(ContentType));
         }
 
         /// <summary>

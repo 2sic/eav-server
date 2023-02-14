@@ -47,6 +47,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// The app id
         /// </summary>
+        [Configuration(Field = AppIdKey)]
         public int OfAppId
         {
             get => Configuration.GetThis(AppId);
@@ -59,6 +60,7 @@ namespace ToSic.Eav.DataSources.Sys
 	    /// <remarks>
 	    /// * Renamed to `Scope` in v15, previously was called `OfScope`
 	    /// </remarks>
+	    [Configuration(Fallback = "Default")]
 	    public string Scope
         {
             get => Configuration.GetThis();
@@ -86,8 +88,6 @@ namespace ToSic.Eav.DataSources.Sys
                 _appStates = appStates
             );
             Provide(GetList);
-		    ConfigMaskMyConfig(nameof(OfAppId), AppIdKey);
-		    ConfigMask($"{nameof(Scope)}||Default");
 		}
         private readonly IAppStates _appStates;
 

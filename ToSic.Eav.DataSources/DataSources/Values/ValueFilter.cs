@@ -33,7 +33,8 @@ namespace ToSic.Eav.DataSources
         /// <summary>
 		/// The attribute whose value will be scanned / filtered.
 		/// </summary>
-		public string Attribute
+        [Configuration]
+        public string Attribute
         {
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
@@ -42,6 +43,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The filter that will be used - for example "Daniel" when looking for an entity w/the value Daniel
         /// </summary>
+        [Configuration]
         public string Value
         {
             get => Configuration.GetThis();
@@ -51,6 +53,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Language to filter for. At the moment it is not used, or it is trying to find "any"
         /// </summary>
+        [Configuration(Fallback = ValueLanguages.LanguageDefaultPlaceholder)]
         public string Languages
         {
             get => Configuration.GetThis();
@@ -61,7 +64,8 @@ namespace ToSic.Eav.DataSources
         /// The comparison operator, == by default, many possibilities exist
         /// depending on the original types we're comparing
         /// </summary>
-		public string Operator
+        [Configuration(Fallback = "==")]
+        public string Operator
         {
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
@@ -70,7 +74,8 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Amount of items to take - then stop filtering. For performance optimization.
         /// </summary>
-		public string Take
+        [Configuration]
+        public string Take
         {
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
@@ -89,11 +94,6 @@ namespace ToSic.Eav.DataSources
             );
 
             Provide(GetValueFilterOrFallback);
-            ConfigMask(nameof(Attribute));
-            ConfigMask(nameof(Value));
-            ConfigMask($"{nameof(Operator)}||=="); // todo: use constant
-            ConfigMask(nameof(Take));
-            ConfigMask(ValueLanguages.LanguageSettingsKeyAndToken);
         }
         private readonly ValueLanguages _valueLanguageService;
 

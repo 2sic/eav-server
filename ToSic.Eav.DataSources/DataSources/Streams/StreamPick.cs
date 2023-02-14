@@ -33,6 +33,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The stream name to lookup.
         /// </summary>
+        [Configuration(Fallback = Constants.DefaultStreamName)]
         public string StreamName
         {
             get => Configuration.GetThis();
@@ -64,8 +65,6 @@ namespace ToSic.Eav.DataSources
         public StreamPick(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.StmPck")
         {
             Provide(StreamPickList);
-            ConfigMask($"{nameof(StreamName)}||Default");
-            //ConfigMask(SearchInParentKey, $"[{MyConfiguration}:UseParent||False]");
         }
 
         private IImmutableList<IEntity> StreamPickList() => Log.Func(l =>

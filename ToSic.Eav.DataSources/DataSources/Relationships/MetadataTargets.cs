@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSources
     public class MetadataTargets: MetadataDataSourceBase
     {
         /// <summary>
-        /// TODO
+        /// TODO: I think this should be in the config???
         /// </summary>
         public override string ContentTypeName
         {
@@ -45,6 +45,7 @@ namespace ToSic.Eav.DataSources
         /// <remarks>
         /// Defaults to true
         /// </remarks>
+        [Configuration(Fallback = true)]
         public bool FilterDuplicates
         {
             get => Configuration.GetThis(true);
@@ -52,7 +53,6 @@ namespace ToSic.Eav.DataSources
         }
         public MetadataTargets(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.MetaTg")
         {
-            ConfigMask(nameof(FilterDuplicates) + "||true");
             _appStates = appStates;
         }
 

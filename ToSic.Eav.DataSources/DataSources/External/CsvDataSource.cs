@@ -40,6 +40,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Path to the CSV file, relative to the website root
         /// </summary>
+        [Configuration]
         public string FilePath
         {
             get => Configuration.GetThis();
@@ -72,6 +73,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Delimiter character in the CSV, usually a ',' or ';' but could also be a tab or something. Default is tab.
         /// </summary>
+        [Configuration(Fallback = "\t")]
         public string Delimiter
         {
             get => Configuration.GetThis();
@@ -80,8 +82,13 @@ namespace ToSic.Eav.DataSources
 
 
         /// <summary>
-        /// Name of the content type which the imported entities have. This is fake, but may be necessary for later filtering of the types. Defaults to "Anonymous"
+        /// Name of the content type which the imported entities have. This is fake, but may be necessary for later filtering of the types.
+        /// Defaults to "CSV"
         /// </summary>
+        /// <remarks>
+        /// * Before v15.03 it defaulted to "Anonymous"
+        /// </remarks>
+        [Configuration(Fallback = "CSV")]
         public string ContentType
         {
             get => Configuration.GetThis();
@@ -91,6 +98,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Column in the CSV which contains the ID. 
         /// </summary>
+        [Configuration]
         public string IdColumnName
         {
             get => Configuration.GetThis();
@@ -101,6 +109,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The CSV column containing the title of the item - for dropdowns etc. and the EntityTitle property. 
         /// </summary>
+        [Configuration]
         public string TitleColumnName
         {
             get => Configuration.GetThis();
@@ -114,12 +123,6 @@ namespace ToSic.Eav.DataSources
             _user = user;
             _serverPaths = serverPaths;
             Provide(GetList);
-
-            ConfigMask(nameof(FilePath));
-            ConfigMask($"{nameof(Delimiter)}||\t");
-            ConfigMask($"{nameof(ContentType)}||Anonymous");
-            ConfigMask(nameof(IdColumnName), cacheRelevant: false);
-            ConfigMask(nameof(TitleColumnName), cacheRelevant: false);
         }
         private readonly IUser _user;
         private readonly IServerPaths _serverPaths;

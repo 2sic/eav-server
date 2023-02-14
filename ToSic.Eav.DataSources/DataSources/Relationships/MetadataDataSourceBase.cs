@@ -16,6 +16,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
         /// </summary>
+        [Configuration]
         public abstract string ContentTypeName { get; set; }
 
 
@@ -25,7 +26,6 @@ namespace ToSic.Eav.DataSources
         protected MetadataDataSourceBase(Dependencies dependencies, string logName): base(dependencies, logName)
         {
             Provide(GetMetadata);
-            ConfigMask(nameof(ContentTypeName));
         }
 
         private IImmutableList<IEntity> GetMetadata() => Log.Func(l =>

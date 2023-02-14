@@ -40,6 +40,7 @@ namespace ToSic.Eav.DataSources
         /// This determines what property is used as ID on the parent.
         /// Currently only allows "EntityId" and "EntityGuid"
         /// </summary>
+        [Configuration(Field = "ParentIdentifierAttribute", Fallback = Attributes.EntityFieldId)]
         public string Identifier
         {
             get => Configuration.GetThis();
@@ -49,6 +50,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The property on a child which contains the parent ID
         /// </summary>
+        [Configuration(Field = "ChildParentAttribute", Fallback = "ParentId")]
         public string ParentReferenceField
         {
             get => Configuration.GetThis();
@@ -58,6 +60,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The name of the new field on the parent, which will reference the children
         /// </summary>
+        [Configuration(Field = "TargetChildrenAttribute", Fallback = "Children")]
         public string NewChildrenField
         {
             get => Configuration.GetThis();
@@ -67,6 +70,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Name of the new field on a child, which will reference the parent. 
         /// </summary>
+        [Configuration(Field = "TargetParentAttribute", Fallback = "Parent")]
         public string NewParentField
         {
             get => Configuration.GetThis();
@@ -86,11 +90,6 @@ namespace ToSic.Eav.DataSources
             );
             // Specify what out-streams this data-source provides. Usually just one, called "Default"
             Provide(GetList);
-
-            ConfigMaskMyConfig(nameof(Identifier), "ParentIdentifierAttribute||EntityId");
-            ConfigMaskMyConfig(nameof(ParentReferenceField), "ChildParentAttribute||ParentId");
-            ConfigMaskMyConfig(nameof(NewChildrenField), "TargetChildrenAttribute||Children");
-            ConfigMaskMyConfig(nameof(NewParentField), "TargetParentAttribute||Parent");
         }
 
         /// <summary>

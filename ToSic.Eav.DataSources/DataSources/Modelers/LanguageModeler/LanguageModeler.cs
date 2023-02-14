@@ -39,6 +39,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Contains the field map which configures how fields should be connected.
         /// </summary>
+        [Configuration]
         public string FieldMap
         {
             get => Configuration.GetThis();
@@ -52,12 +53,10 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public LanguageModeler(MultiBuilder multiBuilder, Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.LngMod")
         {
-            _multiBuilder = multiBuilder;
-            // Specify what out-streams this data-source provides. Usually just one, called "Default"
+            ConnectServices(
+                _multiBuilder = multiBuilder
+            );
             Provide(MapLanguagesIntoValues);
-
-            // Register the configurations we want as tokens, so that the values will be injected later on
-            ConfigMask(nameof(FieldMap));
         }
 
         private readonly MultiBuilder _multiBuilder;

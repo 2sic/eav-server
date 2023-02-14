@@ -45,12 +45,13 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// The content-type name
         /// </summary>
+        [Configuration(Fallback = DefQuery)]
         public string QueryName
         {
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
         }
-
+        [Configuration(Fallback = Constants.DefaultStreamName)]
         public string StreamName
         {
             get => Configuration.GetThis();
@@ -71,8 +72,6 @@ namespace ToSic.Eav.DataSources.Sys
             );
             Provide(GetStreams);
             Provide("Attributes", GetAttributes);
-            ConfigMask($"{nameof(QueryName)}||{DefQuery}");
-            ConfigMask($"{nameof(StreamName)}||{Constants.DefaultStreamName}");
         }
 
         private ImmutableArray<IEntity> GetStreams()
