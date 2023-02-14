@@ -17,6 +17,9 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         protected DataSource(Dependencies dependencies, string logName) : base(dependencies, logName)
         {
+            // Load all config masks which are defined on attributes
+            var configMasks = Deps.ConfigDataLoader.GetTokens(GetType());
+            configMasks.ForEach(cm => ConfigMask(cm.Key, cm.Token, cm.CacheRelevant));
         }
 
         /// <inheritdoc />

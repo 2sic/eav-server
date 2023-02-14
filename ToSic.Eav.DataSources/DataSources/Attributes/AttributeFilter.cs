@@ -30,8 +30,8 @@ namespace ToSic.Eav.DataSources
 	{
         #region Constants
 
-        public static string ModeKeep = "+";
-        public static string ModeRemove = "-";
+        [PrivateApi] public const string ModeKeep = "+";
+        [PrivateApi] public const string ModeRemove = "-";
 
         #endregion
         
@@ -40,6 +40,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// A string containing one or more attribute names. like "FirstName" or "FirstName,LastName,Birthday"
         /// </summary>
+        [Configuration]
         public string AttributeNames
 		{
 		    get => Configuration.GetThis();
@@ -49,6 +50,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// A string containing one or more attribute names. like "FirstName" or "FirstName,LastName,Birthday"
         /// </summary>
+        [Configuration(Fallback = ModeKeep)]
         public string Mode
         {
             get => Configuration.GetThis();
@@ -67,8 +69,6 @@ namespace ToSic.Eav.DataSources
         {
             _entityBuilder = entityBuilder;
             Provide(GetList);
-			ConfigMask(nameof(AttributeNames));
-            ConfigMask($"{nameof(Mode)}||{ModeKeep}");
         }
 
         private readonly EntityBuilder _entityBuilder;

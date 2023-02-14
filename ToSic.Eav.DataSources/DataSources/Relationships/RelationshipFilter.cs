@@ -29,47 +29,48 @@ namespace ToSic.Eav.DataSources
     {
         #region Configuration-properties
 
+        [PrivateApi] internal const string FieldAttributeOnRelationship = "AttributeOnRelationship";
+        [PrivateApi] internal const string FieldComparison = "Comparison";
+        [PrivateApi] internal const string FieldDirection = "Direction";
+
+        [PrivateApi] private const string PrefixNot = "not-";
+        [PrivateApi] internal const string DefaultDirection = "child";
+        [PrivateApi] private const string DefaultSeparator = "ignore"; // by default, don't separate!
+        [PrivateApi] private readonly string[] _directionPossibleValues = { DefaultDirection };
+
+
         /// <summary>
-        /// Settings-keys as they are used in the entity which provides settings
+        /// default case - must contain all provided filter-values
         /// </summary>
-        /// <remarks>
-        /// Don't change these terms, the spelling etc. must stay exactly like this
-        /// </remarks>
-        public enum Settings
-        {
-            //Relationship,
-            Filter,
-            AttributeOnRelationship,
-            Comparison,
-            Direction, // important: not surfaced yet to the outside world as not implemented
-            //Separator
-        }
+        [PrivateApi] internal const string CompareModeContains = "contains";
+        /// <summary>
+        /// must contain any of the provided filter-values
+        /// </summary>
+        [PrivateApi] internal const string CompareModeContainsAny = "containsany";
+        /// <summary>
+        /// must contain anything (not empty)
+        /// </summary>
+        [PrivateApi] internal const string CompareModeAny = "any";
+        /// <summary>
+        /// first item must match provided filter-values
+        /// </summary>
+        [PrivateApi] internal const string CompareModeFirst = "first";
+        /// <summary>
+        /// Count amount of items in the relationship
+        /// </summary>
+        [PrivateApi] internal const string CompareModeCount = "count";
+        /// <summary>
+        /// All valid compare modes
+        /// </summary>
+        [PrivateApi] internal string[] AllCompareModes = { CompareModeContains, CompareModeContainsAny, CompareModeAny, CompareModeFirst, CompareModeCount };
 
-        private const string PrefixNot = "not-";
-        private const string DefaultDirection = "child";
-        private const string DefaultSeparator = "ignore"; // by default, don't separate!
-        private readonly string[] _directionPossibleValues = { DefaultDirection };
-
-
-        // ReSharper disable InconsistentNaming
-        // ReSharper disable IdentifierTypo
-        // this must all be in lower-case, to make further case-changes irrelevant
-        public enum CompareModes
-        {
-            contains, // default case - must contain all provided filter-values
-            containsany, // must contain any of the provided filter-values
-            any, // must contain anything (not empty)
-            first, // first item must match provided filter-values
-            count
-        }
-        // ReSharper restore IdentifierTypo
-        // ReSharper restore InconsistentNaming
 
         private enum CompareType { Any, Id, Title, Auto }
 
         /// <summary>
         /// Relationship-attribute - in the example this would be 'Author' as we're checking values in related Author items. 
         /// </summary>
+        [Configuration]
         public string Relationship
         {
             get => Configuration.GetThis();
@@ -79,6 +80,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The filter-value that will be used - for example "Switzerland" when looking for authors from there
         /// </summary>
+        [Configuration]
         public string Filter
         {
             get => Configuration.GetThis();
@@ -88,6 +90,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The attribute we're looking into, in this case it would be 'Country' because we're checking what Authors are from Switzerland.
         /// </summary>
+        [Configuration(Field = FieldAttributeOnRelationship, Fallback = Attributes.EntityFieldTitle)]
 		public string CompareAttribute
         {
             get => Configuration.GetThis();
@@ -99,6 +102,7 @@ namespace ToSic.Eav.DataSources
         /// "default" and "contains" will check if such a relationship is available
         /// other modes like "equals" or "exclude" not implemented
         /// </summary>
+        [Configuration(Field = FieldComparison, Fallback = CompareModeContains)]
         public string CompareMode
         {
             get => Configuration.GetThis();
@@ -108,6 +112,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Separator value where we have multiple values / IDs to compare. Default is 'ignore' = no separator
         /// </summary>
+        [Configuration(Fallback = DefaultSeparator)]
 		public string Separator
         {
             get => Configuration.GetThis();
@@ -117,6 +122,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Determines if the relationship we're looking into is a 'child'-relationship (default) or 'parent' relationship.
         /// </summary>
+        [Configuration(Field = FieldDirection, Fallback = DefaultDirection)]
 		public string ChildOrParent
         {
             get => Configuration.GetThis();
@@ -138,13 +144,13 @@ namespace ToSic.Eav.DataSources
         public RelationshipFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.Relfil")
         {
             Provide(GetRelationshipsOrFallback);
-            ConfigMask(nameof(Relationship));
-            ConfigMask(nameof(Filter));
-            ConfigMaskMyConfig(nameof(CompareAttribute), $"{Settings.AttributeOnRelationship}||{Attributes.EntityFieldTitle}");
-            ConfigMaskMyConfig(nameof(CompareMode), $"{Settings.Comparison}||{CompareModes.contains}");
-            ConfigMask($"{nameof(Separator)}||{DefaultSeparator}");
+            //ConfigMask(nameof(Relationship));
+            //ConfigMask(nameof(Filter));
+            //ConfigMaskMyConfig(nameof(CompareAttribute), $"{Settings.AttributeOnRelationship}||{Attributes.EntityFieldTitle}");
+            //ConfigMaskMyConfig(nameof(CompareMode), $"{Settings.Comparison}||{CompareModes.contains}");
+            //ConfigMask($"{nameof(Separator)}||{DefaultSeparator}");
             // todo: unclear if implemented...
-            ConfigMaskMyConfig(nameof(ChildOrParent), $"{Settings.Direction}||{DefaultDirection}");
+            //ConfigMaskMyConfig(nameof(ChildOrParent), $"{Settings.Direction}||{DefaultDirection}");
         }
 
         private IImmutableList<IEntity> GetRelationshipsOrFallback() => Log.Func(() =>
@@ -170,8 +176,12 @@ namespace ToSic.Eav.DataSources
 
             if (strMode == "default")
                 strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
-            if (!Enum.TryParse<CompareModes>(strMode, true, out var mode))
+
+            if (!AllCompareModes.Contains(strMode))
                 return (SetError("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."), "error");
+
+            //if (!Enum.TryParse<CompareModes>(strMode, true, out var mode))
+            //    return (SetError("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."), "error");
 
             var childParent = ChildOrParent;
             if (!_directionPossibleValues.Contains(childParent, StringComparer.CurrentCultureIgnoreCase))
@@ -183,7 +193,7 @@ namespace ToSic.Eav.DataSources
             //if (lang == "default") lang = ""; // no language is automatically the default language
 
             var lowAttribName = compAttr.ToLowerInvariant();
-            Log.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{mode}', child/parent:'{childParent}'");
+            Log.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{strMode}', child/parent:'{childParent}'");
 
             if (!GetRequiredInList(out var originals))
                 return (originals, "error");
@@ -209,10 +219,10 @@ namespace ToSic.Eav.DataSources
                 : filter.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries);
 
 
-            Log.A($"will compare mode:{mode} on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
+            Log.A($"will compare mode:{strMode} on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
 
             // pick the correct list-comparison - atm ca. 6 options
-            var modeCompare = PickMode(mode, relationship, comparisonOnRelatedItem, filterList);
+            var modeCompare = PickMode(strMode, relationship, comparisonOnRelatedItem, filterList);
             if (modeCompare == null)
                 return (ErrorStream, "error");
 
@@ -242,51 +252,48 @@ namespace ToSic.Eav.DataSources
         /// <param name="internalCompare">internal compare method</param>
         /// <param name="valuesToFind">value-list to compare to</param>
         /// <returns></returns>
-	    private Func<IEntity, bool> PickMode(CompareModes modeToPick, string relationship, Func<IEntity, string, bool> internalCompare, string[] valuesToFind)
+        private Func<IEntity, bool> PickMode(string modeToPick, string relationship,
+            Func<IEntity, string, bool> internalCompare, string[] valuesToFind) => Log.Func<Func<IEntity, bool>>(l =>
         {
             switch (modeToPick)
             {
-                case CompareModes.contains:
-                    Log.A("will use contains one / all");
+                case CompareModeContains:
                     if (valuesToFind.Length > 1)
-                        return entity =>
+                        return (entity =>
                         {
                             var rels = entity.Relationships.Children[relationship];
                             return valuesToFind.All(v => rels.Any(r => internalCompare(r, v)));
-                        };
-                    else
-                        return entity => entity.Relationships.Children[relationship]
-                            .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? ""));
-                case CompareModes.containsany: // Condition that of the needed relationships, at least one must exist
-                    Log.A("will use contains any");
-                    return entity =>
+                        }, "contains all");
+                    return (entity => entity.Relationships.Children[relationship]
+                        .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? "")), "contains one");
+                case CompareModeContainsAny:
+                    // Condition that of the needed relationships, at least one must exist
+                    return (entity =>
                     {
                         var rels = entity.Relationships.Children[relationship];
                         return valuesToFind.Any(v => rels.Any(r => internalCompare(r, v)));
-                    };
-                case CompareModes.any:
-                    Log.A("will use has-any");
-                    return entity => entity.Relationships.Children[relationship].Any();
-                case CompareModes.first:
+                    }, "will use contains any");
+                case CompareModeAny:
+                    return (entity => entity.Relationships.Children[relationship].Any(), "will use any");
+                case CompareModeFirst:
                     // Condition that of the needed relationships, the first must be what we want
-                    Log.A("will use first is");
-                    return entity =>
+                    return (entity =>
                     {
                         var first = entity.Relationships.Children[relationship].FirstOrDefault();
                         return first != null && valuesToFind.Any(v => internalCompare(first, v));
-                    };
-                case CompareModes.count:
-                    Log.A("will use count");
-                    if (int.TryParse(valuesToFind.FirstOrDefault() ?? "0", out int count))
-                        return entity => entity.Relationships.Children[relationship].Count() == count;
+                    }, "will use first is");
+                case CompareModeCount:
+                    // Count relationships
+                    if (int.TryParse(valuesToFind.FirstOrDefault() ?? "0", out var count))
+                        return (entity => entity.Relationships.Children[relationship].Count() == count, "count");
 
-                    return entity => false;
+                    return (_ => false, "count");
 
                 default:
                     SetError("Mode unknown", $"The mode '{modeToPick}' is invalid");
-                    return null;
+                    return (null, "error, unknown compare mode");
             }
-        }
+        });
 
 
 

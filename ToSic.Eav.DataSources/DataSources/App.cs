@@ -30,10 +30,11 @@ namespace ToSic.Eav.DataSources
 
         private const int NotConfigured = 0;
 
-	    /// <summary>
+        /// <summary>
         /// Use this to re-target the app-source to another app. <br/>
         /// Note that this can only be done before ever accessing the app - once the object has started reading data, switching has no more effect.
         /// </summary>
+        [Configuration(Fallback = NotConfigured)]
         public int AppSwitch
         {
             get => Configuration.GetThis(NotConfigured);
@@ -49,6 +50,7 @@ namespace ToSic.Eav.DataSources
         /// Use this to re-target the app-source to another zone. <br/>
         /// Note that this can only be done before ever accessing the app - once the object has started reading data, switching has no more effect.
         /// </summary>
+        [Configuration(Fallback = NotConfigured)]
 		public int ZoneSwitch
         {
             get => Configuration.GetThis(NotConfigured);
@@ -89,10 +91,6 @@ namespace ToSic.Eav.DataSources
             _deps = dependencies.SetLog(Log);
             // this one is unusual, so don't pre-attach a default data stream to out
             _out = new StreamDictionary(this, null);
-
-			// Set default switch-keys to 0 = no switch
-            ConfigMask($"{nameof(AppSwitch)}||{NotConfigured}");
-			ConfigMask($"{nameof(ZoneSwitch)}||{NotConfigured}");
         }
 
         private readonly Dependencies _deps;

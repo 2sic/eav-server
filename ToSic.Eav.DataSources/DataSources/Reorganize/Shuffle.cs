@@ -30,8 +30,10 @@ namespace ToSic.Eav.DataSources
         private const int DefaultTakeAll = 0;
 
         /// <summary>
-        /// Amount of items to take / return when shuffling. Defaults to 1.
+        /// Amount of items to take / return when shuffling.
+        /// Defaults to `0` meaning take-all.
         /// </summary>
+        [Configuration(Fallback = DefaultTakeAll)]
 		public int Take
         {
             get => Configuration.GetThis(DefaultTakeAll);
@@ -51,7 +53,7 @@ namespace ToSic.Eav.DataSources
         public Shuffle(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Shuffl")
         {
             Provide(GetShuffle);
-		    ConfigMask($"{nameof(Take)}||{DefaultTakeAll}");
+		    // ConfigMask($"{nameof(Take)}||{DefaultTakeAll}");
         }
 
 

@@ -31,9 +31,10 @@ namespace ToSic.Eav.DataSources
 	{
         #region Configuration-properties
 
-		/// <summary>
-		/// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
-		/// </summary>
+        /// <summary>
+        /// A string containing one or more entity-ids. like "27" or "27,40,3063,30306"
+        /// </summary>
+        [Configuration]
 		public string EntityIds
         {
             get => Configuration.GetThis();
@@ -54,7 +55,6 @@ namespace ToSic.Eav.DataSources
 		public EntityIdFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.EntIdF")
         {
             Provide(GetList);
-		    ConfigMask(nameof(EntityIds));
 		}
 
         private IImmutableList<IEntity> GetList() => Log.Func(l =>

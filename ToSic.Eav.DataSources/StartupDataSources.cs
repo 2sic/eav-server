@@ -32,6 +32,8 @@ namespace ToSic.Eav.DataSources
 
             services.TryAddTransient<ITreeMapper, TreeMapper>();
 
+            services.TryAddTransient<ConfigurationDataLoader>();
+
             return services;
         }
     }

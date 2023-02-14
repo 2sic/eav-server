@@ -38,11 +38,12 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The Page size in the paging. Defaults to 10.
         /// </summary>
+        [Configuration(Fallback = DefPageSize)]
         public int PageSize
         {
             get
             {
-                var ps = Configuration.GetThis(0);
+                var ps = Configuration.GetThis(DefPageSize);
                 return ps > 0 ? ps : DefPageSize;
             }
             set => Configuration.SetThis(value);
@@ -51,11 +52,12 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The Page number to show - defaults to 1
         /// </summary>
+        [Configuration(Fallback = DefPageNum)]
         public int PageNumber
         {
             get
             {
-                var pn = Configuration.GetThis(0);
+                var pn = Configuration.GetThis(DefPageNum);
                 return pn > 0 ? pn : DefPageNum;
             }
             set => Configuration.SetThis(value);
@@ -81,8 +83,6 @@ namespace ToSic.Eav.DataSources
             );
             Provide(GetList);
             Provide("Paging", GetPaging);
-		    ConfigMask($"{nameof(PageSize)}||{DefPageSize}");
-		    ConfigMask($"{nameof(PageNumber)}||{DefPageNum}");
 		}
 
 

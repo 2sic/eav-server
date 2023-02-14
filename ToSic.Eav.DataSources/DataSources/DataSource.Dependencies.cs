@@ -8,6 +8,7 @@ namespace ToSic.Eav.DataSources
     {
         public class Dependencies : ServiceDependencies
         {
+            public ConfigurationDataLoader ConfigDataLoader { get; }
             public DataSourceConfiguration.Dependencies ConfigDependencies { get; }
             public LazySvc<IDataBuilderInternal> DataBuilder { get; }
             public LazySvc<DataSourceErrorHandling> ErrorHandler { get; }
@@ -18,13 +19,15 @@ namespace ToSic.Eav.DataSources
             public Dependencies(
                 LazySvc<IDataBuilderInternal> dataBuilder,
                 LazySvc<DataSourceErrorHandling> errorHandler,
-                DataSourceConfiguration.Dependencies configDependencies
+                DataSourceConfiguration.Dependencies configDependencies,
+                ConfigurationDataLoader configDataLoader
             )
             {
                 AddToLogQueue(
                     DataBuilder = dataBuilder,
                     ErrorHandler = errorHandler,
-                    ConfigDependencies = configDependencies
+                    ConfigDependencies = configDependencies,
+                    ConfigDataLoader = configDataLoader
                 );
             }
         }

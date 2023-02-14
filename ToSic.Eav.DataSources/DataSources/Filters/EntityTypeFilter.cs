@@ -33,6 +33,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// The name of the type to filter for. Either the normal name or the 'StaticName' which is usually a GUID.
 		/// </summary>
+		[Configuration]
 		public string TypeName
         {
             get => Configuration.GetThis();
@@ -54,7 +55,6 @@ namespace ToSic.Eav.DataSources
         {
             _appStates = appStates;
             Provide(GetList);
-		    ConfigMask(nameof(TypeName));
         }
         private readonly IAppStates _appStates;
 

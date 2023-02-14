@@ -72,14 +72,13 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         {
             var settings = new Dictionary<string, object> { { Attributes.TitleNiceName, "..." } };
 
-            void MaybeAddValue(RelationshipFilter.Settings key, string value) { if (value != null) settings.Add(key.ToString(), value); }
-            void MaybeAddValueStr(string key, string value) { if (value != null) settings.Add(key.ToString(), value); }
+            void MaybeAddValueStr(string key, string value) { if (value != null) settings.Add(key, value); }
             MaybeAddValueStr(nameof(RelationshipFilter.Relationship), relationship);
-            MaybeAddValue(RelationshipFilter.Settings.Filter, filter);
-            MaybeAddValue(RelationshipFilter.Settings.AttributeOnRelationship, relAttrib);
-            MaybeAddValue(RelationshipFilter.Settings.Comparison, compareMode);
+            MaybeAddValueStr(nameof(RelationshipFilter.Filter), filter);
+            MaybeAddValueStr(RelationshipFilter.FieldAttributeOnRelationship, relAttrib);
+            MaybeAddValueStr(RelationshipFilter.FieldComparison, compareMode);
             MaybeAddValueStr(nameof(RelationshipFilter.Separator), separator);
-            MaybeAddValue(RelationshipFilter.Settings.Direction, direction);
+            MaybeAddValueStr(RelationshipFilter.FieldDirection, direction);
 
             var config = BuildConfigurationProvider(settings);
             return BuildRelationshipFilter(RelationshipTestSpecs.Company, config);
@@ -117,7 +116,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         protected static LookUpEngine BuildConfigurationProvider(Dictionary<string, object> vals)
         {
             var vc = LookUpTestData.AppSetAndRes();
-            vc.Add(LookUpTestData.BuildLookUpEntity("Settings", vals));
+            vc.Add(LookUpTestData.BuildLookUpEntity(DataSource.MyConfiguration, vals));
             return vc;
         }
 

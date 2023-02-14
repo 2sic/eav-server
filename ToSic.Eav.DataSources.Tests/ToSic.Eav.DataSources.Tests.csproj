@@ -114,6 +114,7 @@
     <Compile Include="Attributes\AttributeRenameTests_Mapped.cs" />
     <Compile Include="Attributes\AttributeRenameTests_NoChanges.cs" />
     <Compile Include="Attributes\AttributeRenameTests.cs" />
+    <Compile Include="BaseClassTests\ConfigMaskAuto.cs" />
     <Compile Include="BaseClassTests\GetThisTests.cs" />
     <Compile Include="BaseClassTests\ConfigMaskTests.cs" />
     <Compile Include="BaseClassTests\TestDsGetThis.cs" />

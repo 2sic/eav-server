@@ -39,7 +39,8 @@ namespace ToSic.Eav.DataSources
         /// Indicates whether to show drafts or only Published Entities. 
         /// </summary>
         [PrivateApi("not sure if this should be public, probably not")]
-        private bool ShowDrafts => Configuration.GetThis(QueryConstants.ShowDraftsDefault); // bool.Parse(Configuration[QueryConstants.ParamsShowDraftKey]);
+        [Configuration(Fallback = false)]
+        private bool ShowDrafts => Configuration.GetThis(QueryConstants.ShowDraftsDefault);
 
         #endregion
 
@@ -55,7 +56,6 @@ namespace ToSic.Eav.DataSources
             ConnectServices(
                 _queryGenerator = queryGenerator
             );
-            ConfigMask(QueryConstants.ParamsShowDraftKeyAndToken);
         }
         #endregion
 

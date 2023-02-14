@@ -35,6 +35,7 @@ namespace ToSic.Eav.DataSources
         /// A string containing one or more attribute maps.
         /// The syntax is "NewName=OldName" - one mapping per line
         /// </summary>
+        [Configuration]
         public string AttributeMap
         {
             get => Configuration.GetThis();
@@ -44,6 +45,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// True/false if attributes not renamed should be preserved.
         /// </summary>
+        [Configuration(Fallback = true)]
         public bool KeepOtherAttributes
         {
             get => Configuration.GetThis(true);
@@ -54,6 +56,7 @@ namespace ToSic.Eav.DataSources
         /// A string containing one or more attribute maps.
         /// The syntax is "NewName=OldName" - one mapping per line
         /// </summary>
+        [Configuration]
         public string TypeName
         {
             get => Configuration.GetThis();
@@ -68,14 +71,11 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         [PrivateApi]
 		public AttributeRename(MultiBuilder multiBuilder, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.AtrRen")
-
         {
-            _multiBuilder = multiBuilder;
-
+            ConnectServices(
+                _multiBuilder = multiBuilder
+            );
             Provide(GetList);
-			ConfigMask(nameof(AttributeMap));
-			ConfigMask($"{nameof(KeepOtherAttributes)}||True");
-            ConfigMask(nameof(TypeName));
         }
 
         private readonly MultiBuilder _multiBuilder;
