@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
         private static readonly string MyConfigOld = "Settings";
 
         /// <inheritdoc />
-        public IDataSourceConfiguration Configuration => _config.Get(() => new DataSourceConfiguration(Deps.ConfigDependencies, this));
+        public IDataSourceConfiguration Configuration => _config.Get(() => Deps.Configuration.Attach(this));
         private readonly GetOnce<IDataSourceConfiguration> _config = new GetOnce<IDataSourceConfiguration>();
 
         /// <summary>

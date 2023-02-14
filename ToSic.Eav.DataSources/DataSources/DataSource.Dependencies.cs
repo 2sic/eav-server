@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Lib.DI;
+﻿using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
@@ -8,25 +7,22 @@ namespace ToSic.Eav.DataSources
     {
         public class Dependencies : ServiceDependencies
         {
+            public DataSourceConfiguration Configuration { get; }
             public ConfigurationDataLoader ConfigDataLoader { get; }
-            public DataSourceConfiguration.Dependencies ConfigDependencies { get; }
-            public LazySvc<IDataBuilderInternal> DataBuilder { get; }
             public LazySvc<DataSourceErrorHandling> ErrorHandler { get; }
 
             /// <summary>
             /// Note that we will use Generators for safety, because in rare cases the dependencies could be re-used to create a sub-data-source
             /// </summary>
             public Dependencies(
-                LazySvc<IDataBuilderInternal> dataBuilder,
+                DataSourceConfiguration configuration,
                 LazySvc<DataSourceErrorHandling> errorHandler,
-                DataSourceConfiguration.Dependencies configDependencies,
                 ConfigurationDataLoader configDataLoader
             )
             {
                 AddToLogQueue(
-                    DataBuilder = dataBuilder,
+                    Configuration = configuration,
                     ErrorHandler = errorHandler,
-                    ConfigDependencies = configDependencies,
                     ConfigDataLoader = configDataLoader
                 );
             }

@@ -12,6 +12,7 @@ namespace ToSic.Eav.DataSources
             // Dependencies, new in v15
             services.TryAddTransient<DataSource.Dependencies>();
             services.TryAddTransient<App.Dependencies>();
+            services.TryAddTransient<DataSourceConfiguration>();
             services.TryAddTransient<DataSourceConfiguration.Dependencies>();
 
             services.TryAddTransient<DataSourceCatalog>();

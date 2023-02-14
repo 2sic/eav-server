@@ -6,7 +6,9 @@ using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
+using static System.StringComparer;
 
 namespace ToSic.Eav.DataSources
 {
@@ -30,20 +32,29 @@ namespace ToSic.Eav.DataSources
 
         #region Constructor (non DI)
 
-        [PrivateApi] public DataSourceConfiguration(Dependencies dependencies, DataSource ds) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Config")
+        [PrivateApi]
+        public DataSourceConfiguration(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Config")
         {
-            DataSource = ds;
         }
 
-        [PrivateApi] internal DataSource DataSource;
+        internal DataSourceConfiguration Attach(DataSource ds)
+        {
+            DataSourceForIn = ds;
+            return this;
+        }
+
+
+        [PrivateApi] internal DataSource DataSourceForIn;
 
         #endregion
 
-        public string this[string key]
-        {
-            get => Values[key];
-            set => Values[key] = value;
-        }
+        // 2022-02-14 2dm disabled, as all DataSources will need recompiling - Remove 2023 Q2
+
+        //public string this[string key]
+        //{
+        //    get => Values[key];
+        //    set => Values[key] = value;
+        //}
 
 
         public string GetThis([CallerMemberName] string cName = default) => Values.TryGetValue(cName, out var result) 
@@ -65,12 +76,13 @@ namespace ToSic.Eav.DataSources
 
         public void SetThis<T>(T value, [CallerMemberName] string cName = default) => Values[cName] = value?.ToString();
 
-        [PrivateApi("just included for compatibility, as previous public examples used Add")]
-        [Obsolete("please use the indexer instead - Configuration[key] = value")]
-        public void Add(string key, string value) => this[key] = value;
+        // 2022-02-14 2dm disabled, as all DataSources will need recompiling - Remove 2023 Q2
+        //[PrivateApi("just included for compatibility, as previous public examples used Add")]
+        //[Obsolete("please use the indexer instead - Configuration[key] = value")]
+        //public void Add(string key, string value) => this[key] = value;
 
         [PrivateApi]
-        public IDictionary<string, string> Values { get; internal set; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        public IDictionary<string, string> Values { get; internal set; } = new Dictionary<string, string>(InvariantCultureIgnoreCase);
 
 
         public ILookUpEngine LookUpEngine { get; protected internal set; }
@@ -110,9 +122,11 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         [PrivateApi]
         private IDictionary<string, ILookUp> OverrideLookUps 
-            => _overrideLookUps 
-               ?? (_overrideLookUps = new Dictionary<string, ILookUp> { { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSource, Deps.ZoneCultureResolverLazy.Value) } });
-        private IDictionary<string, ILookUp> _overrideLookUps;
+            => _overrideLookUps.Get(() => new Dictionary<string, ILookUp>
+            {
+                { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSourceForIn, Deps.ZoneCultureResolverLazy.Value) }
+            });
+        private readonly GetOnce<IDictionary<string, ILookUp>> _overrideLookUps = new GetOnce<IDictionary<string, ILookUp>>();
 
 
     }
