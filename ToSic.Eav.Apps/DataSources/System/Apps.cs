@@ -4,12 +4,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
-using ToSic.Lib.Logging;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -129,69 +128,25 @@ namespace ToSic.Eav.DataSources.Sys
                     error = "Error looking up App: " + ex.Message;
                 }
 
-                var appInfo = new AppInfo
+                // Assemble the entities
+                var appEnt = new Dictionary<string, object>
                 {
-                    Id = app.Key,
-                    Guid = guid ?? Guid.Empty,
-                    Name = appObj?.Name ?? "error - can't lookup name",
-                    Folder = appObj?.Folder ?? "",
-                    IsHidden = appObj?.Hidden ?? false,
-                    IsDefault = app.Key == zone.DefaultAppId,
-                    IsPrimary = app.Key == zone.PrimaryAppId,
+                    {AppType.Id.ToString(), app.Key},
+                    {AppType.Name.ToString(), appObj?.Name ?? "error - can't lookup name"},
+                    {AppType.Folder.ToString(), appObj?.Folder ?? "" },
+                    {AppType.IsHidden.ToString(), appObj?.Hidden ?? false },
+                    {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
+                    {AppType.IsPrimary.ToString(), app.Key == zone.PrimaryAppId},
                 };
+                if (error != null)
+                    appEnt["Error"] = error;
 
-                if (error != null) 
-                    appInfo.Error = error;
-                
-                return appInfo;
+                var result = _dataBuilder.Create(appEnt, appId: app.Key, id: app.Key, guid: guid ?? Guid.Empty);
+                return result;
 
-            }).ToList();
+            }).ToImmutableList();
 
-            var final = _dataBuilder.CreateMany(list);
-            return (final, $"ok");
+            return (list, $"ok");
         });
-
-    }
-
-    /// <summary>
-    /// Internal class to hold all the information about the page,
-    /// until it's converted to an IEntity in the <see cref="Apps"/> DataSource.
-    ///
-    /// Important: this is an internal object.
-    /// We're just including in in the docs to better understand where the properties come from.
-    /// We'll probably move it to another namespace some day.
-    /// </summary>
-    /// <remarks>
-    /// Make sure the property names never change, as they are critical for the created Entity.
-    /// </remarks>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public class AppInfo : IRawEntity
-    {
-        public const string TypeName = "App";
-        public int Id { get; set; }
-        public Guid Guid { get; set; }
-        public string Name { get; set; }
-        public string Folder { get; set; }
-        public bool IsHidden { get; set; }
-        public bool IsDefault { get; set; }
-        public bool IsPrimary { get; set; }
-        public string Error { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Modified { get; set; }
-
-        /// <summary>
-        /// Data but without Id, Guid, Created, Modified
-        /// </summary>
-        [PrivateApi]
-        public Dictionary<string, object> RawProperties => new Dictionary<string, object>
-        {
-            { Data.Attributes.TitleNiceName, Name },
-            { nameof(Name), Name },
-            { nameof(Folder), Folder },
-            { nameof(IsHidden), IsHidden },
-            { nameof(IsDefault), IsDefault },
-            { nameof(IsPrimary), IsPrimary },
-            { nameof(Error), Error },
-        };
     }
 }

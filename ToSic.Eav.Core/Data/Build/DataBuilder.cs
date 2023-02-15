@@ -101,14 +101,15 @@ namespace ToSic.Eav.Data
             Guid guid = default,
             DateTime created = default,
             DateTime modified = default,
+            int appId = default,
             string typeName = default,
             string titleField = default)
         {
             var ent = _parentBuilder.Entity(values,
-                appId: AppId,
+                appId: appId == default ? AppId : appId,
                 id: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
-                type: (typeName != null) ? _parentBuilder.Type(typeName) : ContentType,
-                titleField: titleField ?? TitleField,
+                type: typeName == default ? ContentType : _parentBuilder.Type(typeName),
+                titleField: titleField == default ? TitleField : titleField,
                 guid: guid, 
                 created: created == default ? Created : created,
                 modified: modified == default ? Modified : modified

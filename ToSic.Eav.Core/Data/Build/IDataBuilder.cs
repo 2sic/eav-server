@@ -87,6 +87,7 @@ namespace ToSic.Eav.Data
             Guid guid = default,
             DateTime created = default,
             DateTime modified = default,
+            int appId = default,
             string typeName = default,
             string titleField = default);
 
