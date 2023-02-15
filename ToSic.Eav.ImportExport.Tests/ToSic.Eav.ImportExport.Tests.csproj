@@ -91,8 +91,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FeatureTests\FeatureTestsBase.cs" />
-    <Compile Include="FeatureTests\FeaturesStaticTests.cs" />
     <Compile Include="FeatureTests\IFeaturesTests.cs" />
     <Compile Include="FeatureTests\IFeaturesInternalTests.cs" />
     <Compile Include="ImportExport\BundleLoaderTest.cs" />

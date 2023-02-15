@@ -12,9 +12,10 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
     // ReSharper disable once InconsistentNaming
     public class IFeaturesTests: TestBaseDiEavFullAndDb
     {
-        protected override IServiceCollection SetupServices(IServiceCollection services)
+        protected override void SetupServices(IServiceCollection services)
         {
-            return base.SetupServices(services).AddTransient<IPlatformInfo, TestPlatformPatronPerfectionist>();
+            base.SetupServices(services);
+            services.AddTransient<IPlatformInfo, TestPlatformPatronPerfectionist>();
         }
 
         public IFeaturesTests() => Features = Build<IFeaturesService>();

@@ -63,8 +63,7 @@ namespace ToSic.Eav.DataSourceTests
             var ds = CreateFilterForTesting(100, itemToFilter);
 
             Assert.AreEqual("EntityIdFilter:NoGuid&EntityIds=1023", ds.CachePartialKey);
-            Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
-                            ">EntityIdFilter:NoGuid&EntityIds=1023", ds.CacheFullKey);
+            Assert.AreEqual("DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName>EntityIdFilter:NoGuid&EntityIds=1023", ds.CacheFullKey);
             var lastRefresh = ds.CacheTimestamp; // get this before comparison, because sometimes slow execution will get strange results
             Assert.IsTrue(DateTime.Now.Ticks >= lastRefresh, "Date-check of cache refresh");
 
@@ -77,16 +76,14 @@ namespace ToSic.Eav.DataSourceTests
             var ds = CreateFilterForTesting(100, itemToFilter);
 
             Assert.AreEqual("EntityIdFilter:NoGuid&EntityIds=1011,1023,1050,1003", ds.CachePartialKey);
-            Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
-                            ">EntityIdFilter:NoGuid&EntityIds=1011,1023,1050,1003", ds.CacheFullKey);
+            Assert.AreEqual("DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName>EntityIdFilter:NoGuid&EntityIds=1011,1023,1050,1003", ds.CacheFullKey);
 
             // Multi-value scenario, special spaces and trailing comma etc.
             itemToFilter = "1011, 1023  ,   1050,    1003,";
             var partialKey = "EntityIdFilter:NoGuid&EntityIds=1011,1023,1050,1003,";
             ds = CreateFilterForTesting(100, itemToFilter);
             Assert.AreEqual(partialKey, ds.CachePartialKey);
-            Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
-                            ">" + partialKey, ds.CacheFullKey);
+            Assert.AreEqual("DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName>" + partialKey, ds.CacheFullKey);
 
         }
 

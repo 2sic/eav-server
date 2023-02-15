@@ -25,9 +25,10 @@ namespace ToSic.Testing.Shared
             Build<SystemLoader>().StartUp();
         }
 
-        protected override IServiceCollection SetupServices(IServiceCollection services)
+        protected override void SetupServices(IServiceCollection services)
         {
-            return base.SetupServices(services)
+            base.SetupServices(services);
+            services
                 .AddEav();
         }
 

@@ -26,13 +26,14 @@ namespace ToSic.Testing.Shared
             SetupServices(ServiceCollection);
         }
 
-        protected virtual IServiceCollection SetupServices(IServiceCollection services)
+        /// <summary>
+        /// Setup services which are expected to be used.
+        /// Override in your classes and remember to call the base.SetupServices
+        /// </summary>
+        /// <param name="services"></param>
+        protected virtual void SetupServices(IServiceCollection services)
         {
-            AddServices(services);
-            return services;
         }
-
-        protected virtual void AddServices(IServiceCollection services) { }
 
         #endregion
 

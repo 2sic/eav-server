@@ -24,8 +24,9 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         string unchanged = "some test string which shouldn't change in a resolve as it's not a link or reference";
 
-        protected override void AddServices(IServiceCollection services)
+        protected override void SetupServices(IServiceCollection services)
         {
+            base.SetupServices(services);
             services.AddTransient<ExportImportValueConversion>();
             services.AddTransient<IValueConverter, MockValueConverter>();
 
@@ -34,8 +35,8 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             // or we need other test base di
             services.AddTransient<IGlobalConfiguration, GlobalConfiguration>();
             services.AddTransient<IDbConfiguration, DbConfiguration>();
-        }
 
+        }
 
         #region test basic ResolveHyperlink and ResolveValue
         [TestMethod]

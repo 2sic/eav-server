@@ -27,8 +27,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
             _zoneManager = Build<ZoneManager>();
         }
 
-        protected override void AddServices(IServiceCollection services)
+        protected override void SetupServices(IServiceCollection services)
         {
+            base.SetupServices(services);
             services.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
             services.AddTransient<XmlImportWithFiles, XmlImportFull>();
         }
