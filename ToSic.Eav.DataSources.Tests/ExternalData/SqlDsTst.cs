@@ -10,7 +10,6 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
     public class SqlDsTst: TestBaseDiEavFullAndDb
     {
         private const string ConnectionDummy = "";
-        private const string ConnectionName = TestConstants.ConStr;// "Data Source=.\\SQLExpress;Initial Catalog=2flex 2Sexy Content;Integrated Security=True";
         private const string ContentTypeName = "SqlData";
 
         [TestMethod]
@@ -122,7 +121,7 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
             var select = "SELECT [PortalID] as entityId, HomeDirectory As entityTitle, " +
                          "[AdministratorId],[GUID],[HomeDirectory],[PortalGroupID] " +
                          "FROM [Portals]";
-            var sql = GenerateSqlDataSource(ConnectionName, select, ContentTypeName);
+            var sql = GenerateSqlDataSource(TestConfiguration.ConStr, select, ContentTypeName);
             var list = sql.ListForTests();
             Assert.IsTrue(list.Any(), "found some");
         }

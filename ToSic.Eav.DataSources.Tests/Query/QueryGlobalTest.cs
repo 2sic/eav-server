@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSourceTests.Query
 {
     [TestClass]
     [DeploymentItem("..\\..\\" + TestConfig.GlobalQueriesData, TestConfig.TestingPath)]
-    public class QueryGlobalTest: TestBaseDiEavFull
+    public class QueryGlobalTest: TestBaseEav
     {
         public QueryGlobalTest()
         {

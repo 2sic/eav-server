@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Testing.Shared;
@@ -11,8 +10,19 @@ using ToSic.Testing.Shared.Mocks;
 namespace ToSic.Eav.Apps.Tests.ImportExport
 {
     [TestClass]
-    public class ValueConversionTests: TestBaseDiEmpty
+    public class ValueConversionTests: TestBaseForIoC
     {
+        #region Initialize Test
+
+        protected override void SetupServices(IServiceCollection services)
+        {
+            base.SetupServices(services);
+            services.AddTransient<ExportImportValueConversion>();
+            services.AddTransient<IValueConverter, MockValueConverter>();
+        }
+
+        #endregion
+
         private int AppId = 78;
         public Guid ItemGuid = new Guid("cdf540dd-d012-4e7e-b828-7aa0efc5d81f");
 
@@ -24,19 +34,6 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         string unchanged = "some test string which shouldn't change in a resolve as it's not a link or reference";
 
-        protected override void SetupServices(IServiceCollection services)
-        {
-            base.SetupServices(services);
-            services.AddTransient<ExportImportValueConversion>();
-            services.AddTransient<IValueConverter, MockValueConverter>();
-
-            // added to just to fix this tests, because ths are deps of TestBaseDiEmpty
-            // but it looks that this deps are not yet required for this tests
-            // or we need other test base di
-            services.AddTransient<IGlobalConfiguration, GlobalConfiguration>();
-            services.AddTransient<IDbConfiguration, DbConfiguration>();
-
-        }
 
         #region test basic ResolveHyperlink and ResolveValue
         [TestMethod]

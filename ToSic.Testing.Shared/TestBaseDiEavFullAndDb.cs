@@ -1,22 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Run;
-using ToSic.Eav.StartUp;
+using ToSic.Lib.Helpers;
 
 namespace ToSic.Testing.Shared
 {
     /// <summary>
     /// Base class for tests providing all the Eav dependencies (Apps, etc.)
     /// </summary>
-    public abstract class TestBaseDiEavFullAndDb: TestBaseDiEmpty
+    public abstract class TestBaseDiEavFullAndDb: TestBaseEav
     {
-        //protected TestBaseDiEavFullAndDb()
-        //{
-        //    ServiceCollection.AddEav();
-        //}
-
         protected override void Configure()
         {
             base.Configure();
@@ -25,16 +19,8 @@ namespace ToSic.Testing.Shared
             Build<SystemLoader>().StartUp();
         }
 
-        protected override void SetupServices(IServiceCollection services)
-        {
-            base.SetupServices(services);
-            services
-                .AddEav();
-        }
-
-        public DataSourceFactory DataSourceFactory =>
-            _dataSourceFactory ?? (_dataSourceFactory = Build<DataSourceFactory>());
-        private DataSourceFactory _dataSourceFactory;
+        public DataSourceFactory DataSourceFactory => _dataSourceFactory.Get(Build<DataSourceFactory>);
+        private readonly GetOnce<DataSourceFactory> _dataSourceFactory = new GetOnce<DataSourceFactory>();
 
 
 
