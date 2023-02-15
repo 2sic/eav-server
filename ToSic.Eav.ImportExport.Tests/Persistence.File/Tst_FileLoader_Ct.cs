@@ -17,8 +17,9 @@ namespace ToSic.Eav.Persistence.File.Tests
         [TestMethod]
         public void FLoader_LoadAllAndCount()
         {
+            var expected = 8;
             var cts = LoadAllTypes();
-            Assert.AreEqual(3, cts.Count, "test case has 3 content-types to deserialize");
+            Assert.AreEqual(8, cts.Count, $"test case has {expected} content-types to deserialize, found {cts.Count}");
             var sqlType = cts.FirstOrDefault(ct => ct.NameId.Contains("Sql"));
             Assert.IsNotNull(sqlType, "should find the sql type");
             Assert.AreEqual("System", sqlType.Scope, "scope should be system");

@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
@@ -12,6 +14,10 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         [TestMethod]
         public void EnsureNoCacheAtFirstAndCacheLater()
         {
+            // Make sure it's reset
+            ConfigurationDataLoader.Cache = new Dictionary<Type, List<ConfigMaskInfo>>();
+
+            // should be false at first
             IsFalse(ConfigurationDataLoader.Cache.ContainsKey(typeof(Shuffle)));
             var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(Shuffle));

@@ -45,11 +45,11 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
             var lookUpEngine = LookUpTestData.AppSetAndRes();
 
             var baseDs = DataSourceFactory.GetPublishing(AppIdentity, configProvider: lookUpEngine);
-            var appDs = DataSourceFactory.GetDataSource<App>(baseDs);
+            var appDs = CreateDataSource<App>(baseDs);
 
             var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));
 
-            var childDs = DataSourceFactory.GetDataSource<MetadataTargets>(inStream);
+            var childDs = CreateDataSource<MetadataTargets>(inStream);
             if (typeName != null)
                 childDs.ContentTypeName = typeName;
 

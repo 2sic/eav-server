@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSources
         [PublicApi]
         protected void ConfigMask(string key, string token, bool cacheRelevant = true)
         {
-            if (token.IndexOf($"{MyConfigOld}:", InvariantCultureIgnoreCase) > -1)
+            if (token.IndexOf($"[{MyConfigOld}:", InvariantCultureIgnoreCase) > -1)
                 throw new ArgumentException($"Don't user the source {MyConfigOld} for retrieving DS configuration any more (breaking change in v15). " +
                                             $"Instead, use the source name of the variable {nameof(MyConfiguration)}.");
             Configuration.Values.Add(key, token);

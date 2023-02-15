@@ -81,7 +81,7 @@ namespace ToSic.Eav.DataSourceTests
         public DataSources.Paging CreatePagingForTesting(int testItemsInRootSource)
         {
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, seedId);
-            return DataSourceFactory.GetDataSource<DataSources.Paging>(ds);
+            return /*DataSourceFactory.*/CreateDataSource<DataSources.Paging>(ds);
             //return filtered;
         }
 

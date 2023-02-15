@@ -19,7 +19,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         public void FLoader_LoadQueriesAndCount()
         {
             var cts = LoadAllQueries();
-            Assert.AreEqual(2, cts.Count, "test case has 3 content-types to deserialize");
+            Assert.AreEqual(3, cts.Count, "test case has 3 content-types to deserialize");
         }
        
         

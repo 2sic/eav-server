@@ -95,6 +95,7 @@
     <Compile Include="Platforms\TestPlatformPatronPerfectionist.cs" />
     <Compile Include="SqlTracing.cs" />
     <Compile Include="TestBaseDiEavFullAndDb.cs" />
+    <Compile Include="TestBaseEavDataSources.cs" />
     <Compile Include="TestBaseEavCore.cs" />
     <Compile Include="TestBaseForIoC.cs" />
     <Compile Include="Mocks\MockValueConverter.cs" />
@@ -118,6 +119,10 @@
     <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj">
       <Project>{daae8e21-ca5f-400b-9f5a-5e4e1196b21b}</Project>
       <Name>ToSic.Eav.DataSources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj">
+      <Project>{1253087A-070D-4BF7-B3C2-841537489910}</Project>
+      <Name>ToSic.Eav.ImportExport</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj">
       <Project>{b45f98a5-bba9-4418-a5a1-7ca747e1698b}</Project>

@@ -23,8 +23,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
             var listCache = QuickCachesTest.GetTestListCache();
 
-            Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
-                            ">EntityIdFilter:NoGuid&EntityIds=1067", filtered.CacheFullKey);
+            Assert.AreEqual("DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName>EntityIdFilter:NoGuid&EntityIds=1067", filtered.CacheFullKey);
 
             // check if in cache - shouldn't be yet
             Assert.IsFalse(listCache.Has(cacher.Out[Constants.DefaultStreamName]),
@@ -88,9 +87,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             var cacher = CreateCacheDS(secondFilter);
             var listCache = QuickCachesTest.GetTestListCache();
 
-            Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
-                            ">EntityIdFilter:NoGuid&EntityIds=1067" +
-                            ">EntityTypeFilter:NoGuid&TypeName=Person", secondFilter.CacheFullKey);
+            Assert.AreEqual("DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName>EntityIdFilter:NoGuid&EntityIds=1067>EntityTypeFilter:NoGuid&TypeName=Person", secondFilter.CacheFullKey);
 
             Assert.IsFalse(listCache.Has(secondFilter.Out[Constants.DefaultStreamName]),
                 "Should not be in because the previous test added a shorter key");

@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSourceTests
         private DataSources.Shuffle GenerateShuffleDS(int desiredFinds)
         {
             var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
-            var sf = DataSourceFactory.GetDataSource<Shuffle>(new AppIdentity(0, 0), ds);
+            var sf = CreateDataSource<Shuffle>(ds);// DataSourceFactory.GetDataSource<Shuffle>(new AppIdentity(0, 0), ds);
             return sf;
         }
 

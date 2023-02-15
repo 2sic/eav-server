@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void DefaultConfiguration()
         {
-            var attrRename = DataSourceFactory.GetDataSource<AttributeRename>(new AppIdentity(1, 1), null, LookUpTestData.EmptyLookupEngine);
+            var attrRename = CreateDataSource<AttributeRename>(); // DataSourceFactory.GetDataSource<AttributeRename>(new AppIdentity(1, 1), null, LookUpTestData.EmptyLookupEngine);
             attrRename.Configuration.Parse();
             Assert.AreEqual(true, attrRename.KeepOtherAttributes);
             Assert.AreEqual("", attrRename.AttributeMap);

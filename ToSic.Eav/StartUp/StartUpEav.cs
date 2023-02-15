@@ -25,18 +25,18 @@ namespace ToSic.Eav.StartUp
             // not sure where to put it, interface is in Core but the implementation in Web, also used by DataSources for json errors
             services.TryAddTransient<IConvertToEavLight, ConvertToEavLight>();
 
-            // todo: wip moving DataSource stuff into that DLL
             services
+                // WebAPI
+                .AddEavWebApi()
                 // Apps
                 .AddEavApps()
                 .AddFallbackAppServices()
-                // Import/Export
-                .AddImportExport()
+                // SQL Server
                 .AddRepositoryAndEfc()
+                // Import/Export as well as File Based Json loading
+                .AddImportExport()
                 // DataSources
                 .AddDataSources()
-                // WebAPI
-                .AddEavWebApi()
                 // EAV Core
                 .AddEavCore()
                 .AddEavCoreFallbackServices()

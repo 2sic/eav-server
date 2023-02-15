@@ -19,9 +19,6 @@ namespace ToSic.Testing.Shared
             GetService<SystemLoader>().StartUp();
         }
 
-        public DataSourceFactory DataSourceFactory => _dataSourceFactory.Get(GetService<DataSourceFactory>);
-        private readonly GetOnce<DataSourceFactory> _dataSourceFactory = new GetOnce<DataSourceFactory>();
-
 
 
         /// <summary>
@@ -36,7 +33,7 @@ namespace ToSic.Testing.Shared
         {
             if (ids != null && ids.Any())
             {
-                var entityFilterDs = DataSourceFactory.GetDataSource<EntityIdFilter>(inStream);
+                var entityFilterDs = CreateDataSource<EntityIdFilter>(inStream);
                 entityFilterDs.EntityIds = string.Join(",", ids);
                 inStream = entityFilterDs.GetStream();
             }

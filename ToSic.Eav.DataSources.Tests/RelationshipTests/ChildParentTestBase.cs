@@ -16,11 +16,11 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
             if (lookUpEngine == null) lookUpEngine = LookUpTestData.AppSetAndRes();
 
             var baseDs = DataSourceFactory.GetPublishing(AppIdentity, configProvider: lookUpEngine);
-            var appDs = DataSourceFactory.GetDataSource<App>(baseDs);
+            var appDs = CreateDataSource<App>(baseDs);
             var inStream = appDs.GetStream(appType);
             inStream = FilterStreamByIds(ids, inStream);
 
-            var childDs = DataSourceFactory.GetDataSource<T>(inStream);
+            var childDs = CreateDataSource<T>(inStream);
 
             if (fieldName != null) childDs.FieldName = fieldName;
             return childDs;
