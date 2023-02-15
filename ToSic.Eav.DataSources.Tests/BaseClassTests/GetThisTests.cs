@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
 
         private TestDsGetThis GetPropsDs()
         {
-            var ds = this.GetTestDataSource<TestDsGetThis>(LookUpTestData.EmptyLookupEngine);
+            var ds = CreateDataSource<TestDsGetThis>();
             ds.Configuration.Parse();
             return ds;
         }

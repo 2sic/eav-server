@@ -8,7 +8,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
-    public class EntityIdFilterTest: TestBaseDiEavFullAndDb
+    public class EntityIdFilterTest: TestBaseEavDataSource
     {
         [TestMethod]
         public void EntityIdFilter_SingleItem()
@@ -90,8 +90,7 @@ namespace ToSic.Eav.DataSourceTests
         public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
         {
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
-            var filtered = GetService<EntityIdFilter>()
-                .Init(ds.Configuration.LookUpEngine);
+            var filtered = CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
             filtered.AttachForTests(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;

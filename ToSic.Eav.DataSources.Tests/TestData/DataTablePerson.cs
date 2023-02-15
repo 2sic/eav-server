@@ -12,12 +12,15 @@ namespace ToSic.Eav.DataSourceTests.TestData
 {
     public class DataTablePerson: TestServiceBase
     {
-        public DataTablePerson(IServiceBuilder serviceProvider) : base(serviceProvider)
+        private readonly TestBaseEavDataSource _parent;
+
+        public DataTablePerson(TestBaseEavDataSource parent) : base(parent)
         {
+            _parent = parent;
             _multiBuilder = GetService<MultiBuilder>();
         }
 
-        private MultiBuilder _multiBuilder;
+        private readonly MultiBuilder _multiBuilder;
 
         private static readonly Dictionary<int, DataTable> CachedDs = new Dictionary<int, DataTable>();
 
@@ -55,7 +58,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                     person.CityOrNull,
                     person.Modified));
 
-            var source = this.GetTestDataSource<DataTable>(LookUpTestData.AppSetAndRes())
+            var source = _parent.CreateDataSource<DataTable>(LookUpTestData.AppSetAndRes())
                 .Setup(dataTable, PersonSpecs.PersonTypeName, 
                     titleField: PersonSpecs.FieldFullName, 
                     modifiedField: PersonSpecs.FieldModifiedInternal)

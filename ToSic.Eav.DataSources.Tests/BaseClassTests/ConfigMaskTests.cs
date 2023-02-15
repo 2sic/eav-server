@@ -7,7 +7,7 @@ using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 namespace ToSic.Eav.DataSourceTests.BaseClassTests
 {
     [TestClass]
-    public class ConfigMaskTests: TestBaseDiEavFullAndDb
+    public class ConfigMaskTests: TestBaseEavDataSource
     {
         [TestMethod]
         public void ConfigMaskClassic()
@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
 
 
 
-        private TestDataSourceBase GetDs() => this.GetTestDataSource<TestDataSourceBase>();
+        private TestDataSourceBase GetDs() => CreateDataSource<TestDataSourceBase>();
 
     }
 }

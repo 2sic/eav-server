@@ -11,8 +11,11 @@ namespace ToSic.Eav.DataSourceTests.TestData
 {
     public class DataTableTrivial: TestServiceBase
     {
-        public DataTableTrivial(IServiceBuilder serviceProvider) : base(serviceProvider)
+        private readonly TestBaseEavDataSource _parent;
+
+        public DataTableTrivial(TestBaseEavDataSource parent) : base(parent)
         {
+            _parent = parent;
         }
 
         private static readonly Dictionary<int, DataTable> CachedDs = new Dictionary<int, DataTable>();
@@ -31,7 +34,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
             });
             AddSemirandomTrivial(dataTable, itemsToGenerate, firstId);
 
-            var source = this.GetTestDataSource<DataTable>(LookUpTestData.AppSetAndRes())
+            var source = _parent.CreateDataSource<DataTable>(LookUpTestData.AppSetAndRes())
                 .Setup(dataTable, "Person", modifiedField: PersonSpecs.FieldModifiedInternal)
                 //.Init(LookUpTestData.AppSetAndRes())
                 ;

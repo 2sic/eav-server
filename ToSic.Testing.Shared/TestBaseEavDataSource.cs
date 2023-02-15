@@ -6,9 +6,9 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Testing.Shared
 {
-    public abstract class TestBaseEavDataSources: TestBaseEavCore
+    public abstract class TestBaseEavDataSource: TestBaseEavCore
     {
-        protected TestBaseEavDataSources(TestConfiguration testConfiguration = default) : base(testConfiguration)
+        protected TestBaseEavDataSource(TestConfiguration testConfiguration = default) : base(testConfiguration)
         {
         }
 

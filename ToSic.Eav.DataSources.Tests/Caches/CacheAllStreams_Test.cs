@@ -9,7 +9,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.Caches
 {
     [TestClass]
-    public class CacheAllStreamsTest: TestBaseDiEavFullAndDb
+    public class CacheAllStreamsTest: TestBaseEavDataSource
     {
         const string FilterIdForManyTests = "1067";
         const string AlternateIdForAlternateTests = "1069";
@@ -69,9 +69,8 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
         private CacheAllStreams CreateCacheDS(IDataSource filtered)
         {
-            var cacher = GetService<CacheAllStreams>();
+            var cacher = CreateDataSource<CacheAllStreams>(filtered.Configuration.LookUpEngine);
             cacher.AttachForTests(filtered);
-            cacher.Init(filtered.Configuration.LookUpEngine);
             return cacher;
         }
 
@@ -79,10 +78,9 @@ namespace ToSic.Eav.DataSourceTests.Caches
         public void CacheAllStreams_CheckInWithLongerChain()
         {
             var filtered = CreateFilterForTesting(100, FilterIdForManyTests);
-            var secondFilter = GetService<EntityTypeFilter>();
+            var secondFilter = CreateDataSource<EntityTypeFilter>(filtered.Configuration.LookUpEngine);
             secondFilter.AttachForTests(filtered);
             secondFilter.TypeName = "Person";
-            secondFilter.Init(filtered.Configuration.LookUpEngine);
 
             var cacher = CreateCacheDS(secondFilter);
             var listCache = QuickCachesTest.GetTestListCache();
@@ -177,8 +175,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
         public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue, bool useCacheForSpeed = true)
         {
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001, useCacheForSpeed);
-            var filtered = GetService<EntityIdFilter>()
-                .Init(ds.Configuration.LookUpEngine);
+            var filtered = CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
             filtered.AttachForTests(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;

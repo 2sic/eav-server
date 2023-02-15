@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class PassThrough_Cache: TestBaseEav
+    public class PassThrough_Cache: TestBaseEavDataSource
     {
 
         #region bool tests
@@ -19,8 +19,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void PassThrough_CacheKey()
         {
-            var outSource = GetService<DataSources.PassThrough>();
-            outSource.Init(LookUpTestData.EmptyLookupEngine);
+            var outSource = CreateDataSource<PassThrough>();
             var partialKey = outSource.CachePartialKey;
             var fullKey = outSource.CacheFullKey;
             Trace.WriteLine("Partial Key:" + partialKey);

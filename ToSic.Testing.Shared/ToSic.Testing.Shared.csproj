@@ -95,7 +95,7 @@
     <Compile Include="Platforms\TestPlatformPatronPerfectionist.cs" />
     <Compile Include="SqlTracing.cs" />
     <Compile Include="TestBaseDiEavFullAndDb.cs" />
-    <Compile Include="TestBaseEavDataSources.cs" />
+    <Compile Include="TestBaseEavDataSource.cs" />
     <Compile Include="TestBaseEavCore.cs" />
     <Compile Include="TestBaseForIoC.cs" />
     <Compile Include="Mocks\MockValueConverter.cs" />

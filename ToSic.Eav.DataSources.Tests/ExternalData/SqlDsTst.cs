@@ -7,7 +7,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
-    public class SqlDsTst: TestBaseDiEavFullAndDb
+    public class SqlDsTst: TestBaseEavDataSource
     {
         private const string ConnectionDummy = "";
         private const string ContentTypeName = "SqlData";
@@ -130,12 +130,8 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
 
         public Sql GenerateSqlDataSource(string connection, string query, string typeName)
         {
-            var source = this.GetTestDataSource<Sql>(LookUpTestData.AppSetAndRes())
+            return CreateDataSource<Sql>(LookUpTestData.AppSetAndRes())
                 .Setup(connection, query, typeName);
-            //source.Init(LookUpTestData.AppSetAndRes());
-            //source.ConfigurationProvider = DemoConfigs.AppSetAndRes();
-
-            return source;
         }
     }
 }

@@ -9,7 +9,7 @@ using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 namespace ToSic.Eav.DataSourceTests.BaseClassTests
 {
     [TestClass]
-    public class ConfigMaskAuto: TestBaseDiEavFullAndDb
+    public class ConfigMaskAuto: TestBaseEavDataSource
     {
         [TestMethod]
         public void EnsureNoCacheAtFirstAndCacheLater()
@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         [TestMethod]
         public void ShuffleShouldHave1Mask()
         {
-            var shuffle = this.GetTestDataSource<Shuffle>();
+            var shuffle = CreateDataSource<Shuffle>();
 
             AreEqual(1, shuffle.Configuration.Values.Count);
         }

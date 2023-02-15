@@ -6,7 +6,7 @@ using ToSic.Eav.StartUp;
 
 namespace ToSic.Testing.Shared
 {
-    public abstract class TestBaseEav : TestBaseEavDataSources
+    public abstract class TestBaseEav : TestBaseEavDataSource
     {
         protected override void SetupServices(IServiceCollection services)
         {

@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSourceTests
 
         public AttributeRename CreateRenamer(int testItemsInRootSource)
         {
-            var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
+            var ds = new DataTablePerson(Parent).Generate(testItemsInRootSource, 1001);
             var filtered = (Parent as TestBaseDiEavFullAndDb).CreateDataSource<AttributeRename>(ds);
             return filtered;
         }
