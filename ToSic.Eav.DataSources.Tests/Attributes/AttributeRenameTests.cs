@@ -8,7 +8,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
-    public partial class AttributeRenameTests: TestBaseDiEavFullAndDb
+    public partial class AttributeRenameTests: TestBaseEavDataSource
     {
         
         private static void AssertHasFields(IEntity item, IEnumerable<string> fieldsExpected)

@@ -1,12 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Testing.Shared;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace ToSic.Eav.DataSourceTests.BaseClassTests
 {
     [TestClass]
-    public class GetThisTests: TestBaseDiEavFullAndDb
+    public class GetThisTests: TestBaseEavDataSource
     {
         [TestMethod] public void GetThisString() => AreEqual(TestDsGetThis.ExpectedGetThisString, GetPropsDs().GetThisString);
 

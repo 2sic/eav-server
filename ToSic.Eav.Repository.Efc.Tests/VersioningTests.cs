@@ -7,7 +7,6 @@ using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Versions;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 using ToSic.Testing.Shared;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {

@@ -7,7 +7,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class StreamFallbackTst: TestBaseDiEavFullAndDb
+    public class StreamFallbackTst: TestBaseEavDataSource
     {
         [TestMethod]
         public void StreamWhereDefaultIsReturned()

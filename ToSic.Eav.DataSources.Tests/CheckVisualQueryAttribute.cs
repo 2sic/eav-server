@@ -7,7 +7,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
-    public class CheckVisualQueryAttribute: TestBaseDiEavFullAndDb
+    public class CheckVisualQueryAttribute: TestBaseEavDataSource
     {
         [TestMethod]
         public void CheckGlobalNames()
@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSourceTests
 
             allDS.ForEach(ds =>
             {
-                var dsInfo = ds.VisualQuery;//.GetCustomAttributes(typeof(VisualQueryAttribute), true).FirstOrDefault() as VisualQueryAttribute;
+                var dsInfo = ds.VisualQuery;
                 // check GlobalName
 
                 // 2018-01-20 2dm disabled this - it fails, but I'm not ever sure if this is relevant any more

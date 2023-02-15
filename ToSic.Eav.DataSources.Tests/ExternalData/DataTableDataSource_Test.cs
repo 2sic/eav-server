@@ -7,7 +7,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
-    public class DataTableTst: TestBaseDiEavFullAndDb
+    public class DataTableTst: TestBaseEavDataSource
     {
 
         [TestMethod]

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
@@ -11,7 +10,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ShuffleTest: TestBaseDiEavFullAndDb
+    public class ShuffleTest: TestBaseEavDataSource
     {
         //private const int TestVolume = 10000;
         //private ValueFilter _testDataGeneratedOutsideTimer;

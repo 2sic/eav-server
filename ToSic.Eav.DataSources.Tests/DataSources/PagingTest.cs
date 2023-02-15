@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class PagingTest: TestBaseDiEavFullAndDb
+    public class PagingTest: TestBaseEavDataSource
     {
         private readonly int seedId = 1001;
 

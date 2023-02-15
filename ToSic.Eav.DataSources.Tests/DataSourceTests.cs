@@ -6,7 +6,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
-    public class DataSourceTests: TestBaseDiEavFullAndDb
+    public class DataSourceTests: TestBaseEavDataSource
     {
         public const int EavInstalledDsCount = 48;
         public const int TestingAddedDsCount = 1;

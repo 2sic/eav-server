@@ -11,7 +11,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class StreamPickTst: TestBaseDiEavFullAndDb
+    public class StreamPickTst: TestBaseEavDataSource
     {
         private const int DefaultStreamSize = 10;
         private const int MoreStreamSize = 27;

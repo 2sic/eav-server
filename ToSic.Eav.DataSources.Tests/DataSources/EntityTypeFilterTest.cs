@@ -7,7 +7,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
-    public class EntityTypeFilterTest: TestBaseDiEavFullAndDb
+    public class EntityTypeFilterTest: TestBaseEavDataSource
     {
         [TestMethod]
         public void EntityTypeFilter_FindAllIfAllApply()
