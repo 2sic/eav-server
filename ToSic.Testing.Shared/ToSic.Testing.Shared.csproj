@@ -98,8 +98,6 @@
     <Compile Include="TestBaseDiEavFullAndDb.cs" />
     <Compile Include="TestBaseDiEavFull.cs" />
     <Compile Include="TestBaseDiRaw.cs" />
-    <Compile Include="TestBaseDiPlumbing.cs" />
-    <Compile Include="EavTestBase.cs" />
     <Compile Include="Mocks\MockValueConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestBaseDiEmpty.cs" />

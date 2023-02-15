@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Run;
 using ToSic.Eav.StartUp;
@@ -13,6 +12,11 @@ namespace ToSic.Testing.Shared
     /// </summary>
     public abstract class TestBaseDiEavFullAndDb: TestBaseDiEmpty
     {
+        //protected TestBaseDiEavFullAndDb()
+        //{
+        //    ServiceCollection.AddEav();
+        //}
+
         protected override void Configure()
         {
             base.Configure();

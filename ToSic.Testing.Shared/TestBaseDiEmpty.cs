@@ -6,12 +6,8 @@ namespace ToSic.Testing.Shared
 {
     public abstract class TestBaseDiEmpty : TestBaseDiRaw
     {
-        protected TestBaseDiEmpty() : this(null) {}
-
-        protected TestBaseDiEmpty(string logName) : base("Tst." + (logName ?? "BaseDI"))
+        protected TestBaseDiEmpty(string logName = null) : base(logName)
         {
-            // ReSharper disable once VirtualMemberCallInConstructor
-            //ServiceProvider = SetupServices(new ServiceCollection()).BuildServiceProvider();
             // ReSharper disable once VirtualMemberCallInConstructor
             Configure();
         }

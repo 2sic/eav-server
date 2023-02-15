@@ -4,8 +4,23 @@ using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests
 {
-    public class VerifySwitchableServiceBase : TestBaseDiRaw
+    public abstract class VerifySwitchableServiceBase : TestBaseDiRaw
     {
+        //protected VerifySwitchableServiceBase()
+        //{
+        //    SetupServices(ServiceCollection);
+        //}
+
+        //protected void SetupServices(IServiceCollection services)
+        //{
+        //    // base.SetupServices(services);
+        //    services.AddTransient<ITestSwitchableService, TestSwitchableFallback>();
+        //    services.AddTransient<ITestSwitchableService, TestSwitchableKeep>();
+        //    services.AddTransient<ITestSwitchableService, TestSwitchableSkip>();
+        //    services
+        //        .AddLibCore();
+        //}
+
         protected override IServiceCollection SetupServices(IServiceCollection services)
         {
             base.SetupServices(services);
@@ -16,6 +31,6 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests
                 .AddLibCore();
             return services;
         }
-        
+
     }
 }
