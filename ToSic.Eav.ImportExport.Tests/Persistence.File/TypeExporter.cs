@@ -19,13 +19,13 @@ namespace ToSic.Eav.Persistence.File.Tests
         {
             var test = new SpecsTestExportSerialize();
 
-            var loader = Build<IRepositoryLoader>();
+            var loader = GetService<IRepositoryLoader>();
             var app = loader.AppState(test.AppId, false);
 
 
             var cts = app.ContentTypes;
             var sharedCts = cts.Where(ct => ct.AlwaysShareConfiguration).ToList();
-            var fileSysLoader = Build<FileSystemLoader>().Init(Constants.PresetAppId, ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null);
+            var fileSysLoader = GetService<FileSystemLoader>().Init(Constants.PresetAppId, ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null);
 
             var time = Stopwatch.StartNew();
             sharedCts.ForEach(ct => fileSysLoader.SaveContentType(ct));

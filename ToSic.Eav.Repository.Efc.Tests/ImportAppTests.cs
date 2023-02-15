@@ -22,9 +22,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public ImportAppTests()
         {
-            _zipImport = Build<ZipImport>();
-            _dbData = Build<DbDataController>();
-            _zoneManager = Build<ZoneManager>();
+            _zipImport = GetService<ZipImport>();
+            _dbData = GetService<DbDataController>();
+            _zoneManager = GetService<ZoneManager>();
         }
 
         protected override void SetupServices(IServiceCollection services)
@@ -74,7 +74,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // to be sure, clean up first
             DeleteAnApp(Apps[name].Guid);
 
-            var helper = (ImportExportEnvironmentMock)Build<IImportExportEnvironment>();
+            var helper = (ImportExportEnvironmentMock)GetService<IImportExportEnvironment>();
             var baseTestPath = helper.BasePath;
             var testFileName = baseTestPath + @"Import-Packages\" + Apps[name].Zip;
 

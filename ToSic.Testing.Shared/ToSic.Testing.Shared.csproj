@@ -95,10 +95,12 @@
     <Compile Include="Platforms\TestPlatformPatronPerfectionist.cs" />
     <Compile Include="SqlTracing.cs" />
     <Compile Include="TestBaseDiEavFullAndDb.cs" />
+    <Compile Include="TestBaseEavCore.cs" />
     <Compile Include="TestBaseForIoC.cs" />
     <Compile Include="Mocks\MockValueConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestBaseEav.cs" />
+    <Compile Include="TestBaseLib.cs" />
     <Compile Include="TestConfiguration.cs" />
     <Compile Include="TestHelpers.cs" />
     <Compile Include="TestServiceBase.cs" />

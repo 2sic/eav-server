@@ -35,7 +35,7 @@ namespace ToSic.Eav.Core.Tests.Configuration
 
         private void TestWebResourcesExistsOnceAndMayHaveValue(Guid guid, bool expected)
         {
-            var appStates = Build<IAppStates>();
+            var appStates = GetService<IAppStates>();
             var primaryApp = appStates.GetPresetApp();
 
             // Verify there is only one with this guid

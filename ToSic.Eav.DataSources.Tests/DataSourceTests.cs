@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void AutoFindAllDataSources()
         {
-            var dsCatalog = Build<DataSourceCatalog>();
+            var dsCatalog = GetService<DataSourceCatalog>();
             var dsList = DataSourceCatalog.GetAll(false);
             Assert.AreEqual(StandardInstalledDSCount, dsList.Count(), "expect a correct number of DSs");
 

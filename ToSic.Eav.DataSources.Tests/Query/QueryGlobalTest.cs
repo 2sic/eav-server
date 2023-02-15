@@ -12,8 +12,8 @@ namespace ToSic.Eav.DataSourceTests.Query
     {
         public QueryGlobalTest()
         {
-            _queryBuilder = Build<QueryBuilder>();
-            _queryManager = Build<QueryManager>();
+            _queryBuilder = GetService<QueryBuilder>();
+            _queryManager = GetService<QueryManager>();
         }
 
         private readonly QueryBuilder _queryBuilder;

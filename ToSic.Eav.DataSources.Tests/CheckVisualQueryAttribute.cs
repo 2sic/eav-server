@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void CheckGlobalNames()
         {
-            var dsCatalog = Build<DataSourceCatalog>();
+            var dsCatalog = GetService<DataSourceCatalog>();
 
             var allDS = DataSourceCatalog.GetAll(true).ToList();
 

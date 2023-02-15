@@ -9,12 +9,12 @@ namespace ToSic.Eav.Core.Tests.Configuration
     [TestClass]
     public class LicenseCheckTest: TestBaseDiEavFullAndDb
     {
-        public LicenseCheckTest() => Build<EavSystemLoader>().LoadLicenseAndFeatures();
+        public LicenseCheckTest() => GetService<EavSystemLoader>().LoadLicenseAndFeatures();
 
         [TestMethod]
         public void StoreLicense()
         {
-            var licenseService = Build<ILicenseService>();
+            var licenseService = GetService<ILicenseService>();
             var license = licenseService.All.FirstOrDefault(l => l.Title == "2sxc License Test License");
 
             Assert.IsNotNull(license);

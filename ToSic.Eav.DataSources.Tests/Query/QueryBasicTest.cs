@@ -19,9 +19,9 @@ namespace ToSic.Eav.DataSourceTests.Query
 
         public QueryBasicTest()
         {
-            _jsonSerializer = Build<JsonSerializer>();
-            _queryManager = Build<QueryManager>();
-            _queryBuilder = Build<QueryBuilder>();
+            _jsonSerializer = GetService<JsonSerializer>();
+            _queryManager = GetService<QueryManager>();
+            _queryBuilder = GetService<QueryBuilder>();
         }
 
         private const int basicId = 765;
@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSourceTests.Query
 
         private QueryDefinition LoadQueryDef(int appId, int queryId)
         {
-            var appState = Build<IAppStates>().Get(appId);
+            var appState = GetService<IAppStates>().Get(appId);
             var pipelineEntity = _queryManager.GetQueryEntity(queryId, appState);
             return new QueryDefinition(pipelineEntity, appId, null);
         }

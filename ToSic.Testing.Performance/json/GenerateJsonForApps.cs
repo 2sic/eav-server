@@ -43,7 +43,7 @@ namespace ToSic.Testing.Performance.json
         public int SerializeAll(int repeat)
         {
             var count = 0;
-            var ser = Build<JsonSerializer>().SetApp(Package);
+            var ser = GetService<JsonSerializer>().SetApp(Package);
             for (var i = 0; i < repeat; i++)
             {
                 var ents = ser.Deserialize(EntitiesAsJson);
@@ -61,7 +61,7 @@ namespace ToSic.Testing.Performance.json
         private void GenerateJsonForAllEntitiesOfApp(int appid)
         {
             var package = Loader.AppState(appid, false);
-            var ser = Build<JsonSerializer>().SetApp(package);
+            var ser = GetService<JsonSerializer>().SetApp(package);
             var upd = package.List.ToDictionary(e => e.EntityId, e => ser.Serialize(e));
 
             var dbEnts = Db.ToSicEavEntities.Where(e => e.AttributeSet.AppId == appid).ToList();

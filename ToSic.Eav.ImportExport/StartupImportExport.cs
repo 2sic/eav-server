@@ -4,6 +4,7 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Persistence.Xml;
+using ToSic.Eav.Run;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.ImportExport
@@ -12,6 +13,9 @@ namespace ToSic.Eav.ImportExport
     {
         public static IServiceCollection AddImportExport(this IServiceCollection services)
         {
+            // core things - usually not replaced
+            services.TryAddTransient<IRuntime, Runtime>();
+
             services.TryAddTransient<IDataSerializer, JsonSerializer>();
             services.TryAddTransient<IDataDeserializer, JsonSerializer>();
 

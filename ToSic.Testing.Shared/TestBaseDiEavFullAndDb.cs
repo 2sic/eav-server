@@ -16,10 +16,10 @@ namespace ToSic.Testing.Shared
             base.Configure();
 
             // Make sure global data is loaded
-            Build<SystemLoader>().StartUp();
+            GetService<SystemLoader>().StartUp();
         }
 
-        public DataSourceFactory DataSourceFactory => _dataSourceFactory.Get(Build<DataSourceFactory>);
+        public DataSourceFactory DataSourceFactory => _dataSourceFactory.Get(GetService<DataSourceFactory>);
         private readonly GetOnce<DataSourceFactory> _dataSourceFactory = new GetOnce<DataSourceFactory>();
 
 

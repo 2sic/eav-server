@@ -28,10 +28,10 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         private ExportListXml BuildExporter(int appId, string ctName)
         {
-            var loader = Build<IRepositoryLoader>();
+            var loader = GetService<IRepositoryLoader>();
             var appPackage = loader.AppState(appId, false);
             var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
-            return Build<ExportListXml>().Init(appPackage, type);
+            return GetService<ExportListXml>().Init(appPackage, type);
         }
     }
 }

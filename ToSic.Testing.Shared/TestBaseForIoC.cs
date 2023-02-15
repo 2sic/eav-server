@@ -70,7 +70,7 @@ namespace ToSic.Testing.Shared
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T Build<T>() => ServiceProvider.Build<T>(Log);
+        public T GetService<T>() => ServiceProvider.Build<T>(Log);
 
         #endregion
 

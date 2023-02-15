@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSourceTests
         private readonly DataSourceFactory _dataSourceFactory;
         public ValueFilterMaker(IServiceBuilder parent): base(parent)
         {
-            _dataSourceFactory = Build<DataSourceFactory>();
+            _dataSourceFactory = GetService<DataSourceFactory>();
         }
 
         public ValueFilter CreateValueFilterForTesting(int itemsToGenerate, bool useDataTable, bool multiLanguage = false)

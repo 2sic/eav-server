@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         public void EnsureNoCacheAtFirstAndCacheLater()
         {
             IsFalse(ConfigurationDataLoader.Cache.ContainsKey(typeof(Shuffle)));
-            var findConfigs = Build<ConfigurationDataLoader>();
+            var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(Shuffle));
             IsTrue(ConfigurationDataLoader.Cache.ContainsKey(typeof(Shuffle)));
         }
@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         [TestMethod]
         public void GetMasksForShuffle()
         {
-            var findConfigs = Build<ConfigurationDataLoader>();
+            var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(Shuffle));
             AreEqual(1, masks.Count);
             AreEqual($"[{DataSource.MyConfiguration}:Take||0]", masks.First().Token);
@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         [TestMethod]
         public void GetMasksForInheritedDataSource()
         {
-            var findConfigs = Build<ConfigurationDataLoader>();
+            var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(Children));
             AreEqual(3, masks.Count);
             AreEqual($"[{DataSource.MyConfiguration}:{nameof(Children.FieldName)}]", masks.Skip(1).First().Token);
@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         [TestMethod]
         public void GetMasksWithOtherFieldName()
         {
-            var findConfigs = Build<ConfigurationDataLoader>();
+            var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(RelationshipFilter));
             AreEqual(6, masks.Count);
             AreEqual($"[{DataSource.MyConfiguration}:Direction||{RelationshipFilter.DefaultDirection}]", masks.First(m => m.Key == nameof(RelationshipFilter.ChildOrParent)).Token);
@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         [TestMethod]
         public void GetMasksWithEnumDefault()
         {
-            var findConfigs = Build<ConfigurationDataLoader>();
+            var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(RelationshipFilter));
             AreEqual(6, masks.Count);
             AreEqual($"[{DataSource.MyConfiguration}:Comparison||contains]", masks.First(m => m.Key == nameof(RelationshipFilter.CompareMode)).Token);

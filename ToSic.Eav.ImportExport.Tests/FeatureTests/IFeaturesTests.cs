@@ -18,7 +18,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
             services.AddTransient<IPlatformInfo, TestPlatformPatronPerfectionist>();
         }
 
-        public IFeaturesTests() => Features = Build<IFeaturesService>();
+        public IFeaturesTests() => Features = GetService<IFeaturesService>();
         internal readonly IFeaturesService Features;
 
 

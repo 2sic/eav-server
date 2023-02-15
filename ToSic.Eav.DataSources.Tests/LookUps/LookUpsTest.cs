@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSourceTests.LookUps
             const int ItemsToGenerate = 499;
             const string ItemToFilter = "1023";
             var ds = new DataTablePerson(this).Generate(ItemsToGenerate, 1001);
-            var myConfDs = Build<EntityIdFilter>()
+            var myConfDs = GetService<EntityIdFilter>()
                 .Init(ds.Configuration.LookUpEngine);
             //myConfDs.ConfigurationProvider = ds.ConfigurationProvider;
             myConfDs.AttachForTests(ds);

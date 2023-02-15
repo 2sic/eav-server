@@ -39,7 +39,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
         [TestMethod]
         public void ValueConversion_ResolveHyperlink()
         {
-            var exportListXml = Build<ExportImportValueConversion>();
+            var exportListXml = GetService<ExportImportValueConversion>();
 
             // test the Resolve Hyperlink
             string link = "";
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             TestResolvesWithNonLinkType(DataTypes.Hyperlink, false);
 
             var attrType = DataTypes.Hyperlink;
-            var ExportListXml = Build<ExportImportValueConversion>();
+            var ExportListXml = GetService<ExportImportValueConversion>();
 
             // test resolves on any value, just certainly not a link, with "no-resolve"
             Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, true), "test null resolve");
@@ -85,7 +85,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         private void TestResolvesWithNonLinkType(string attrType, bool tryResolve)
         {
-            var ExportListXml = Build<ExportImportValueConversion>();
+            var ExportListXml = GetService<ExportImportValueConversion>();
 
             Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, tryResolve), "test null resolve");
             Assert.AreEqual(XmlConstants.Empty, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, "", tryResolve), "test empty resolve");

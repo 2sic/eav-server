@@ -17,11 +17,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
     {
         public SaveDataToDbTests()
         {
-            _dbData = Build<DbDataController>();
-            _loader1 = Build<Efc11Loader>();
-            _loader2 = Build<Efc11Loader>();
-            _environment = Build<IImportExportEnvironment>();
-            _entitySaver = Build<EntitySaver>();
+            _dbData = GetService<DbDataController>();
+            _loader1 = GetService<Efc11Loader>();
+            _loader2 = GetService<Efc11Loader>();
+            _environment = GetService<IImportExportEnvironment>();
+            _entitySaver = GetService<EntitySaver>();
         }
         private readonly DbDataController _dbData;
         private readonly Efc11Loader _loader1;

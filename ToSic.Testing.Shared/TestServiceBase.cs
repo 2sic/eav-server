@@ -9,7 +9,7 @@
             Parent = serviceProvider;
         }
 
-        public T Build<T>() => Parent.Build<T>();
+        public T GetService<T>() => Parent.GetService<T>();
 
     }
 }

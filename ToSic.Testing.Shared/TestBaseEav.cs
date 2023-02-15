@@ -6,18 +6,13 @@ using ToSic.Eav.StartUp;
 
 namespace ToSic.Testing.Shared
 {
-    public abstract class TestBaseEav : TestBaseForIoC
+    public abstract class TestBaseEav : TestBaseLib
     {
-        protected TestBaseEav(TestConfiguration testConfiguration = default) : base(testConfiguration)
-        {
-        }
-
         protected override void SetupServices(IServiceCollection services)
         {
             base.SetupServices(services);
-            if (TestConfiguration.AddAllEavServices)
-                services
-                    .AddEav();
+            services
+                .AddEav();
         }
 
         /// <summary>
@@ -28,7 +23,7 @@ namespace ToSic.Testing.Shared
             base.Configure();
 
             // this will run after the base constructor, which configures DI
-            var dbConfiguration = Build<IDbConfiguration>();
+            var dbConfiguration = GetService<IDbConfiguration>();
             dbConfiguration.ConnectionString = TestConfiguration.ConStr;
 
             StartupGlobalFoldersAndFingerprint();
@@ -37,11 +32,11 @@ namespace ToSic.Testing.Shared
 
         protected void StartupGlobalFoldersAndFingerprint()
         {
-            var globalConfig = Build<IGlobalConfiguration>();
-            globalConfig.GlobalFolder = TestConfiguration.GlobalFolder; // "c:\\Projects\\2sxc\\2sxc\\Src\\Data\\";
+            var globalConfig = GetService<IGlobalConfiguration>();
+            globalConfig.GlobalFolder = TestConfiguration.GlobalFolder;
             if (Directory.Exists(TestConfiguration.GlobalDataCustomFolder)) 
-                globalConfig.DataCustomFolder = TestConfiguration.GlobalDataCustomFolder; // "C:\\Projects\\2sxc\\2sxc-dev-materials\\App_Data\\system-custom\\";
-            
+                globalConfig.DataCustomFolder = TestConfiguration.GlobalDataCustomFolder;
+
             // Try to reset some special static variables which may cary over through many tests
             SystemFingerprint.ResetForTest();
         }

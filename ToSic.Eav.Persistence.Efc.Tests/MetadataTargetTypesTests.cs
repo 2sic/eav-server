@@ -10,7 +10,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         private readonly ITargetTypes _targetTypes;
         public MetadataTargetTypesTests()
         {
-            _targetTypes = Build<ITargetTypes>();
+            _targetTypes = GetService<ITargetTypes>();
         }
         
         [TestMethod]

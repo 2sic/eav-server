@@ -15,8 +15,8 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
     {
         public RuntimeLoaderTest()
         {
-            _runtime = Build<IRuntime>();
-            _globalAppState = Build<IAppStates>().GetPresetApp();
+            _runtime = GetService<IRuntime>();
+            _globalAppState = GetService<IAppStates>().GetPresetApp();
         }
         private readonly IRuntime _runtime;
         private readonly AppState _globalAppState;

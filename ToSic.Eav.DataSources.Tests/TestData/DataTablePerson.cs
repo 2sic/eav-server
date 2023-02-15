@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
     {
         public DataTablePerson(IServiceBuilder serviceProvider) : base(serviceProvider)
         {
-            _multiBuilder = Build<MultiBuilder>();
+            _multiBuilder = GetService<MultiBuilder>();
         }
 
         private MultiBuilder _multiBuilder;

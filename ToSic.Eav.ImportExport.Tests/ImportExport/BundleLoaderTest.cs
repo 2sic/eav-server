@@ -48,7 +48,7 @@ namespace ToSic.Eav.Persistence.File.Tests
 
         private IList<IContentType> LoadAllTypesInBundles()
         {
-            var loader = Build<FileSystemLoader>()
+            var loader = GetService<FileSystemLoader>()
                 .Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
             IList<IContentType> cts;
             try
@@ -65,7 +65,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         private List<IEntity> LoadAllEntitiesInBundles()
         {
             Trace.WriteLine($"path:'{TestStorageRoot}'");
-            var loader = Build<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+            var loader = GetService<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
             var relationshipsSource = new DirectEntitiesSource(new List<IEntity>());
             IList<Entity> entities;
             try
@@ -82,7 +82,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         private IList<IEntity> LoadAllEntities()
         {
             Trace.WriteLine($"path:'{TestStorageRoot}'");
-            var loader = Build<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+            var loader = GetService<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
             IList<IEntity> entities;
             try
             {

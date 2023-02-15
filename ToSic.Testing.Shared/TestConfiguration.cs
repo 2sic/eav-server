@@ -20,8 +20,5 @@
         public string GlobalDataFolder = "c:\\Projects\\2sxc\\2sxc\\Src\\Data\\App_Data\\system\\";
         public string GlobalDataCustomFolder = "C:\\Projects\\2sxc\\2sxc-dev-materials\\App_Data\\system-custom\\";
 
-
-        public bool AddAllEavServices = true;
-
     }
 }

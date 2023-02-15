@@ -15,8 +15,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public ExportImportDataTest()
         {
-            _appRuntime = Build<AppRuntime>();
-            _xmlExporter = Build<XmlExporter>();
+            _appRuntime = GetService<AppRuntime>();
+            _xmlExporter = GetService<XmlExporter>();
         }
         [TestMethod]
         [Ignore] // ignore for now, reason is that we don't have a mock-portal-settings provider

@@ -96,7 +96,7 @@ namespace ToSic.Eav.Persistence.File.Tests
 
         private IList<IContentType> LoadAllTypes()
         {
-            var loader = Build<FileSystemLoader>()
+            var loader = GetService<FileSystemLoader>()
                 .Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
             IList<IContentType> cts;
             try
