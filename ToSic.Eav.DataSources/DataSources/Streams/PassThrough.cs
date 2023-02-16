@@ -26,12 +26,12 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new PassThrough DataSources
         /// </summary>
         [PrivateApi]
-        public PassThrough(Dependencies dependencies) : this(dependencies, $"{DataSourceConstants.LogPrefix}.PasThr")
+        public PassThrough(Dependencies services) : this(services, $"{DataSourceConstants.LogPrefix}.PasThr")
         {
         }
 
         [PrivateApi]
-        protected PassThrough(Dependencies dependencies, string logName) : base(dependencies, logName)
+        protected PassThrough(Dependencies services, string logName) : base(services, logName)
         {
             Out = In;
         }

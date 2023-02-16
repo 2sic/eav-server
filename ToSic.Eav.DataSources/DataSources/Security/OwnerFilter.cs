@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new PublishingFilter
 		/// </summary>
 		[PrivateApi]
-		public OwnerFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.OwnrFl")
+		public OwnerFilter(Dependencies services): base(services, $"{DataSourceConstants.LogPrefix}.OwnrFl")
         {
             Provide(GetList);
         }

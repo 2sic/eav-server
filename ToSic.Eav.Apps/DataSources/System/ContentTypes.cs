@@ -84,7 +84,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new ContentTypes DS
         /// </summary>
         [PrivateApi]
-        public ContentTypes(Dependencies dependencies, IAppStates appStates, IDataBuilder dataBuilder): base(dependencies, $"{DataSourceConstants.LogPrefix}.CTypes")
+        public ContentTypes(Dependencies services, IAppStates appStates, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
         {
             ConnectServices(
                 _appStates = appStates,

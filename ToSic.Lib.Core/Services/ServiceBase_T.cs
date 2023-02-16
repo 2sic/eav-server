@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Logging;
-
-namespace ToSic.Lib.Services
+﻿namespace ToSic.Lib.Services
 {
     /// <summary>
     /// Base class for any service which expects a Dependencies class
@@ -8,11 +6,11 @@ namespace ToSic.Lib.Services
     /// <typeparam name="TDeps"></typeparam>
     public abstract class ServiceBase<TDeps>: ServiceBase where TDeps : ServiceDependencies
     {
-        protected ServiceBase(TDeps dependencies, string logName) : base(logName)
+        protected ServiceBase(TDeps services, string logName) : base(logName)
         {
-            Deps = dependencies.SetLog(Log);
+            Services = services.SetLog(Log);
         }
 
-        protected readonly TDeps Deps;
+        protected readonly TDeps Services;
     }
 }

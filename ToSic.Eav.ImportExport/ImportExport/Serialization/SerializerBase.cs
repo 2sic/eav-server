@@ -32,10 +32,10 @@ namespace ToSic.Eav.Serialization
         /// <summary>
         /// Constructor for inheriting classes
         /// </summary>
-        protected SerializerBase(Dependencies dependencies, string logName): base(dependencies, logName)
+        protected SerializerBase(Dependencies services, string logName): base(services, logName)
         {
-            MetadataTargets = dependencies.MetadataTargets;
-            GlobalApp = dependencies.AppStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
+            MetadataTargets = services.MetadataTargets;
+            GlobalApp = services.AppStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
         }
 
         private readonly AppState GlobalApp;

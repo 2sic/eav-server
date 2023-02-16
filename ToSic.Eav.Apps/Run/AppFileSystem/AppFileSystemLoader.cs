@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps.Run
         public IAppFileSystemLoader Init(AppState app) => Log.Func($"{app.AppId}, {app.Folder}, ...", () =>
         {
             _appState = app;
-            _appPaths = Deps.AppPathsLazy.Value?.Init(Site, app);
+            _appPaths = Services.AppPathsLazy.Value?.Init(Site, app);
             InitPathAfterAppId();
             return this;
         });
@@ -124,7 +124,7 @@ namespace ToSic.Eav.Apps.Run
 
         private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource) => Log.Func(extensionPath, () =>
         {
-            var fsLoader = Deps.FslGenerator.New().Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
+            var fsLoader = Services.FslGenerator.New().Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
             var types = fsLoader.ContentTypes();
             return types;
         });

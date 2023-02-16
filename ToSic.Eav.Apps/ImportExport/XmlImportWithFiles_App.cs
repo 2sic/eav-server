@@ -41,7 +41,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     appGuid = Guid.NewGuid().ToString();
 
                 // Adding app to EAV
-                var eavDc = Deps._dbDataForNewApp.Value.Init(zoneId, null);
+                var eavDc = Services._dbDataForNewApp.Value.Init(zoneId, null);
 
                 // ParentApp
                 parentAppId = GetParentAppId(xmlSource, eavDc);
@@ -59,7 +59,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			    return wrapLog.ReturnFalse(LogError("App was not created. Please try again or make sure the package you are importing is correct."));
 
             Log.A("Purging all Zones");
-            Deps.SystemManager.PurgeZoneList();
+            Services.SystemManager.PurgeZoneList();
             return wrapLog.Return(ImportXml(zoneId, appId, doc), "done");
 		}
 

@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Initializes an DataSource which will usually provide/generate external data.
         /// </summary>
-        /// <param name="dependencies">Dependencies needed by this data source and/or the parent</param>
+        /// <param name="services">Dependencies needed by this data source and/or the parent</param>
         /// <param name="logName">
         /// The log name/identifier for insights logging.
         /// Optional, but makes debugging a bit easier when provided.
@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources
         /// but renew when it is updates
         /// </remarks>
         [PrivateApi]
-        protected ExternalData(Dependencies dependencies, string logName = null) : base(dependencies, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
+        protected ExternalData(Dependencies services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
         {
             CacheTimestamp = DateTime.Now.Ticks;
         }

@@ -80,7 +80,7 @@ namespace ToSic.Eav.DataSources
         /// Initializes a new instance of the DataTableDataSource class
         /// </summary>
         [PrivateApi]
-        public DataTable(Dependencies dependencies, IDataBuilder dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.ExtTbl")
+        public DataTable(Dependencies services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.ExtTbl")
         {
             ConnectServices(
                 _dataBuilder = dataBuilder.Configure(appId: Constants.TransientAppId)

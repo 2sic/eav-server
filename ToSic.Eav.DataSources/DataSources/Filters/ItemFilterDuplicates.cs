@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public ItemFilterDuplicates(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.Duplic")
+		public ItemFilterDuplicates(Dependencies services): base(services, $"{DataSourceConstants.LogPrefix}.Duplic")
         {
             Provide(GetUnique);
             Provide(DuplicatesStreamName, GetDuplicates);

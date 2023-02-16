@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public Attributes(IAppStates appStates, Dependencies dependencies, IDataBuilder dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Attrib")
+		public Attributes(IAppStates appStates, Dependencies services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Attrib")
         {
             ConnectServices(
                 _appStates = appStates,

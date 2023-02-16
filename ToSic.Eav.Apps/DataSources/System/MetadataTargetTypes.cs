@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSources.Sys
     {
         private readonly IDataBuilder _dataBuilder;
 
-        public MetadataTargetTypes(Dependencies dependencies, IDataBuilder dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.MetaTg")
+        public MetadataTargetTypes(Dependencies services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
         {
             ConnectServices(
                 _dataBuilder = dataBuilder.Configure(appId: 0, titleField: Data.Attributes.TitleNiceName, typeName: "MetadataTargetTypes")

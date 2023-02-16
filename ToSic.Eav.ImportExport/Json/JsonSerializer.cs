@@ -35,15 +35,15 @@ namespace ToSic.Eav.ImportExport.Json
         /// <summary>
         /// Constructor for DI
         /// </summary>
-        public JsonSerializer(Dependencies dependencies) : this(dependencies, "Jsn.Serlzr") {}
+        public JsonSerializer(Dependencies services) : this(services, "Jsn.Serlzr") {}
         
 
         /// <summary>
         /// Initialize with the correct logger name
         /// </summary>
-        protected JsonSerializer(Dependencies dependencies, string logName): base(dependencies, logName)
+        protected JsonSerializer(Dependencies services, string logName): base(services, logName)
         {
-            MultiBuilder = dependencies.MultiBuilder;
+            MultiBuilder = services.MultiBuilder;
         }
         [PrivateApi]
         protected MultiBuilder MultiBuilder { get; }

@@ -15,10 +15,10 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constructor - must be without parameters, otherwise the DI can't construct it.
         /// </summary>
-        protected DataSource(Dependencies dependencies, string logName) : base(dependencies, logName)
+        protected DataSource(Dependencies services, string logName) : base(services, logName)
         {
             // Load all config masks which are defined on attributes
-            var configMasks = Deps.ConfigDataLoader.GetTokens(GetType());
+            var configMasks = Services.ConfigDataLoader.GetTokens(GetType());
             configMasks.ForEach(cm => ConfigMask(cm.Key, cm.Token, cm.CacheRelevant));
         }
 
@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
         #region Properties which the Factory must add
 
         [PrivateApi]
-        public DataSourceErrorHandling ErrorHandler => _errorHandler.Get(() => Deps.ErrorHandler.Value);
+        public DataSourceErrorHandling ErrorHandler => _errorHandler.Get(() => Services.ErrorHandler.Value);
         private readonly GetOnce<DataSourceErrorHandling> _errorHandler = new GetOnce<DataSourceErrorHandling>();
 
         #endregion

@@ -64,7 +64,7 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new ValueSort
 		/// </summary>
 		[PrivateApi]
-		public ValueSort(ValueLanguages valLanguages, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.ValSrt")
+		public ValueSort(ValueLanguages valLanguages, Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.ValSrt")
         {
             ConnectServices(
                 _valLanguages = valLanguages

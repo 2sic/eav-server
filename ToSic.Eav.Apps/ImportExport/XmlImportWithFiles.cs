@@ -71,7 +71,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// constructor, not DI
         /// </summary>
-        protected XmlImportWithFiles(Dependencies dependencies, string logName = null) : base(dependencies, logName ?? "Xml.ImpFil")
+        protected XmlImportWithFiles(Dependencies services, string logName = null) : base(services, logName ?? "Xml.ImpFil")
         {
         }
 
@@ -85,7 +85,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             // Prepare
             Messages = new List<Message>();
-            DefaultLanguage = (defaultLanguage ?? Deps._environment.DefaultLanguage).ToLowerInvariant();
+            DefaultLanguage = (defaultLanguage ?? Services._environment.DefaultLanguage).ToLowerInvariant();
             AllowUpdateOnSharedTypes = allowUpdateOnSharedTypes;
             return this;
         }

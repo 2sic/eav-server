@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetThis(true);
             set => Configuration.SetThis(value);
         }
-        public MetadataTargets(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.MetaTg")
+        public MetadataTargets(IAppStates appStates, Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
         {
             _appStates = appStates;
         }

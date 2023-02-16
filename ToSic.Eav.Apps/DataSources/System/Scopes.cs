@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Scopes(Dependencies dependencies, IAppStates appStates, IDataBuilder dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Scopes(Dependencies services, IAppStates appStates, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _appStates = appStates,

@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-        public Shuffle(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Shuffl")
+        public Shuffle(Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.Shuffl")
         {
             Provide(GetShuffle);
         }

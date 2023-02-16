@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources
         private readonly IAppStates _appStates;
         private readonly DataSourceFactory _dataSourceFactory;
 
-        public AppWithParents(Dependencies dependencies, DataSourceFactory dataSourceFactory, IAppStates appStates) : base(dependencies, $"{DataSourceConstants.LogPrefix}.ApWPar")
+        public AppWithParents(Dependencies services, DataSourceFactory dataSourceFactory, IAppStates appStates) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
         {
             ConnectServices(
                 _dataSourceFactory = dataSourceFactory,

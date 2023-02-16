@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public StreamFallback(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.FallBk")
+		public StreamFallback(Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.FallBk")
 		{
 			Provide(GetStreamFallback);
 		}

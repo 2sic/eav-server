@@ -83,7 +83,7 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public TreeModeler(Dependencies dependencies, ITreeMapper treeMapper) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Tree")
+        public TreeModeler(Dependencies services, ITreeMapper treeMapper) : base(services, $"{DataSourceConstants.LogPrefix}.Tree")
         {
             ConnectServices(
                 _treeMapper = treeMapper

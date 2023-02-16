@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Features(Dependencies dependencies, IFeaturesInternal featuresService, IDataBuilder dataBuilder) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Features(Dependencies services, IFeaturesInternal featuresService, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _featuresService = featuresService,

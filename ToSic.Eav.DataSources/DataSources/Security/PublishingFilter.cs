@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new PublishingFilter
 		/// </summary>
 		[PrivateApi]
-		public PublishingFilter(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Publsh")
+		public PublishingFilter(Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.Publsh")
         {
             Provide(PublishingFilterList);
        }

@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-        public StreamPick(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.StmPck")
+        public StreamPick(Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.StmPck")
         {
             Provide(StreamPickList);
         }

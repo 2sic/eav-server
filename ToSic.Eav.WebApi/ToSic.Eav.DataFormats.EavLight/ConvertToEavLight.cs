@@ -40,10 +40,10 @@ namespace ToSic.Eav.DataFormats.EavLight
         /// but also in EAV-code which uses only this object (so no inherited)
         /// This is why it must be public, because otherwise it can't be constructed from eav?
         /// </summary>
-        /// <param name="dependencies"></param>
-        public ConvertToEavLight(Dependencies dependencies) : this(dependencies, "Eav.CnvE2D") { }
+        /// <param name="services"></param>
+        public ConvertToEavLight(Dependencies services) : this(services, "Eav.CnvE2D") { }
 
-        private ConvertToEavLight(Dependencies dependencies, string logName) : base(dependencies, logName) { }
+        private ConvertToEavLight(Dependencies services, string logName) : base(services, logName) { }
 
 
         #endregion
@@ -80,7 +80,7 @@ namespace ToSic.Eav.DataFormats.EavLight
 
         public string[] Languages
         {
-            get => _languages ?? (_languages = Deps.ZoneCultureResolver.SafeLanguagePriorityCodes());
+            get => _languages ?? (_languages = Services.ZoneCultureResolver.SafeLanguagePriorityCodes());
             set => _languages = value;
         }
 
@@ -124,7 +124,7 @@ namespace ToSic.Eav.DataFormats.EavLight
                     // Special Case 1: Hyperlink Field which must be resolved
                     if (attribute.Type == DataTypes.Hyperlink && value is string stringValue &&
                         ValueConverterBase.CouldBeReference(stringValue))
-                        return Deps.ValueConverter.ToValue(stringValue, entity.EntityGuid);
+                        return Services.ValueConverter.ToValue(stringValue, entity.EntityGuid);
 
                     // Special Case 2: Entity-List
                     if (attribute.Type == DataTypes.Entity && value is IEnumerable<IEntity> entities)

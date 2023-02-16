@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new QueryRun
         /// </summary>
         [PrivateApi]
-		public QueryRun(Dependencies dependencies, Generator<Query> queryGenerator) : base(dependencies, $"{DataSourceConstants.LogPrefix}.QryRun")
+		public QueryRun(Dependencies services, Generator<Query> queryGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.QryRun")
         {
             ConnectServices(
                 _queryGenerator = queryGenerator

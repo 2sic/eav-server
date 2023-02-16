@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constructor
         /// </summary>
-        protected MetadataDataSourceBase(Dependencies dependencies, string logName): base(dependencies, logName)
+        protected MetadataDataSourceBase(Dependencies services, string logName): base(services, logName)
         {
             Provide(GetMetadata);
         }

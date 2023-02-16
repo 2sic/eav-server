@@ -206,7 +206,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public SerializationConfiguration(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.SerCnf")
+		public SerializationConfiguration(Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.SerCnf")
         {
         }
 

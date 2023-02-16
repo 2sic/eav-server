@@ -67,9 +67,9 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-        public QueryInfo(Dependencies dependencies, LazySvc<DataSourceFactory> dataSourceFactory,
+        public QueryInfo(Dependencies services, LazySvc<DataSourceFactory> dataSourceFactory,
             LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, IDataBuilder dataBuilder) : base(
-            dependencies, $"{DataSourceConstants.LogPrefix}.EavQIn")
+            services, $"{DataSourceConstants.LogPrefix}.EavQIn")
         {
             ConnectServices(
                 QueryBuilder = queryBuilder,

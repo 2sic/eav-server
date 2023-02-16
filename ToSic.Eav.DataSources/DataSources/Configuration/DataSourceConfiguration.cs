@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources
         #region Constructor (non DI)
 
         [PrivateApi]
-        public DataSourceConfiguration(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Config")
+        public DataSourceConfiguration(Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.Config")
         {
         }
 
@@ -124,7 +124,7 @@ namespace ToSic.Eav.DataSources
         private IDictionary<string, ILookUp> OverrideLookUps 
             => _overrideLookUps.Get(() => new Dictionary<string, ILookUp>
             {
-                { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSourceForIn, Deps.ZoneCultureResolverLazy.Value) }
+                { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSourceForIn, Services.ZoneCultureResolverLazy.Value) }
             });
         private readonly GetOnce<IDictionary<string, ILookUp>> _overrideLookUps = new GetOnce<IDictionary<string, ILookUp>>();
 

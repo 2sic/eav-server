@@ -50,9 +50,9 @@ namespace ToSic.Eav.Apps.ImportExport
             }
         }
 
-        public ZipImport(Dependencies dependencies, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) : base(dependencies, "Zip.Imp")
+        public ZipImport(Dependencies services, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) : base(services, "Zip.Imp")
         {
-            Env = Deps.Environment;
+            Env = Services.Environment;
             ConnectServices(
                 _xmlImpExpFiles = xmlImpExpFiles,
                 _appStates = appStates,
@@ -282,7 +282,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var templateRoot = Env.TemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForAppStuff);
             if (Directory.Exists(appTemplateRoot))
-                Deps.FileManagerGenerator.New().SetFolder(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
+                Services.FileManagerGenerator.New().SetFolder(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
         });
 
         /// <summary>
@@ -306,7 +306,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     TryToDeleteDirectory(globalTemplatesRoot, Log);
 
                 Log.A("copy all files to app global template folder");
-                Deps.FileManagerGenerator.New()
+                Services.FileManagerGenerator.New()
                     .CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
             }
         });

@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityTypeFilter
         /// </summary>
         [PrivateApi]
-        public EntityTypeFilter(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.TypeF")
+        public EntityTypeFilter(IAppStates appStates, Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.TypeF")
 
         {
             _appStates = appStates;

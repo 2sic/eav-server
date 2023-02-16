@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources
         /// Constructor to tell the system what out-streams we have.
         /// In this case it's just the "Default" containing a fake exception.
         /// </summary>
-        public Error(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Error")
+        public Error(Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.Error")
             => Provide(GenerateExceptionStream);
 
         private ImmutableArray<IEntity> GenerateExceptionStream() => Log.Func(l =>

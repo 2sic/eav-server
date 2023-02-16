@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeRename(MultiBuilder multiBuilder, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.AtrRen")
+		public AttributeRename(MultiBuilder multiBuilder, Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.AtrRen")
         {
             ConnectServices(
                 _multiBuilder = multiBuilder
