@@ -17,10 +17,23 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         protected DataSource(MyServices services, string logName) : base(services, logName)
         {
+            AutoLoadAllConfigMasks();
+        }
+        protected DataSource(MyServicesBase<MyServices> extendedServices, string logName) : base(extendedServices, logName)
+        {
+            AutoLoadAllConfigMasks();
+        }
+
+        /// <summary>
+        /// Load all [Configuration] attributes and ensure we have the config masks.
+        /// </summary>
+        private void AutoLoadAllConfigMasks()
+        {
             // Load all config masks which are defined on attributes
-            var configMasks = base.Services.ConfigDataLoader.GetTokens(GetType());
+            var configMasks = Services.ConfigDataLoader.GetTokens(GetType());
             configMasks.ForEach(cm => ConfigMask(cm.Key, cm.Token, cm.CacheRelevant));
         }
+
 
         /// <inheritdoc />
         public string Name => GetType().Name;

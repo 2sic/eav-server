@@ -84,13 +84,12 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps(MyServices services, IDataBuilder dataBuilder) : base(services.RootServices, $"{DataSourceConstants.LogPrefix}.Apps")
+        public Apps(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Apps")
         {
             ConnectServices(
                 _dataBuilder = dataBuilder.Configure(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
             );
-            ;
-            services.SetLog(Log);
+
             _appGenerator = services.AppGenerator;
             _appStates = services.AppStates;
 

@@ -15,7 +15,7 @@ namespace ToSic.Eav.Serialization
     {
         #region Constructor / DI
 
-        public new class MyServices: MyServicesBase
+        public class MyServices: MyServicesBase
         {
             public MyServices(ITargetTypes metadataTargets, IAppStates appStates)
             {

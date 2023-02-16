@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
@@ -31,10 +32,12 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         protected ExternalData(MyServices services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
         {
-            CacheTimestamp = DateTime.Now.Ticks;
+        }
+        protected ExternalData(MyServicesBase<MyServices> services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
+        {
         }
 
         /// <inheritdoc />
-        public override long CacheTimestamp { get; }
+        public override long CacheTimestamp { get; } = DateTime.Now.Ticks;  // Initialize with moment the object was created
     }
 }

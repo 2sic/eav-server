@@ -1,24 +1,28 @@
 ﻿using ToSic.Eav.DataSources;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
     /// <summary>
     /// Root class for app runtime objects
     /// </summary>
-    public abstract class AppRuntimeBase : AppBase
+    public abstract class AppRuntimeBase : AppBase<AppRuntimeServices>
     {
 
         #region Constructor / DI
 
         public bool ShowDrafts { get; private set; }
 
-        protected AppRuntimeBase(AppRuntimeServices services, string logName): base(logName)
+        protected AppRuntimeBase(AppRuntimeServices services, string logName): base(services, logName)
         {
-            ConnectServices(
-                Deps = services
-            );
+            //ConnectServices(
+            //    Deps = services
+            //);
         }
-        protected readonly AppRuntimeServices Deps;
+        //protected readonly AppRuntimeServices Deps;
+        protected AppRuntimeBase(MyServicesBase<AppRuntimeServices> services, string logName): base(services, logName)
+        {
+        }
 
         internal void InitInternal(IAppIdentity app, bool showDrafts)
         {
@@ -34,7 +38,7 @@ namespace ToSic.Eav.Apps.Parts
 
         #region Data & Cache
 
-        public IDataSource Data => _data ?? (_data = Deps.DataSourceFactory.GetPublishing(this, showDrafts: ShowDrafts));
+        public IDataSource Data => _data ?? (_data = Services.DataSourceFactory.GetPublishing(this, showDrafts: ShowDrafts));
         private IDataSource _data;
         
 
@@ -43,7 +47,7 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         public AppState AppState
         {
-            get => _appState ?? (_appState = Deps.AppStates.Get(this));
+            get => _appState ?? (_appState = Services.AppStates.Get(this));
             protected set => _appState = value;
         }
 

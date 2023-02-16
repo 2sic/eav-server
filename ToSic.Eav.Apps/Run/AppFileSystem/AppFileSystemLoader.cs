@@ -43,17 +43,17 @@ namespace ToSic.Eav.Apps.Run
         /// <summary>
         /// DI Constructor
         /// </summary>
-        /// <param name="deps"></param>
-        public AppFileSystemLoader(MyServices deps) : this(deps, EavLogs.Eav + ".AppFSL") { }
+        /// <param name="services"></param>
+        public AppFileSystemLoader(MyServices services) : this(services, EavLogs.Eav + ".AppFSL") { }
 
         /// <summary>
         /// Inheritance constructor
         /// </summary>
-        /// <param name="deps"></param>
+        /// <param name="services"></param>
         /// <param name="logName"></param>
-        protected AppFileSystemLoader(MyServices deps, string logName) : base(deps, logName)
+        protected AppFileSystemLoader(MyServices services, string logName) : base(services, logName)
         {
-            Site = deps.Site;
+            Site = services.Site;
         }
 
         #endregion

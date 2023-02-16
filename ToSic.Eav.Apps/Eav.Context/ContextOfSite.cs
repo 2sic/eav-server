@@ -12,7 +12,7 @@ namespace ToSic.Eav.Context
     /// All these objects should normally be injectable
     /// In rare cases you may want to replace them, which is why Site/User have Set Accessors
     /// </summary>
-    public class ContextOfSite: ServiceBase, IContextOfSite
+    public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSite
     {
         #region Constructor / DI
 
@@ -39,15 +39,15 @@ namespace ToSic.Eav.Context
         /// Constructor for DI
         /// </summary>
         /// <param name="services"></param>
-        public ContextOfSite(MyServices services) : this(services, null)
-        {
-        }
+        public ContextOfSite(MyServices services) : this(services, null) { }
 
-        protected ContextOfSite(MyServices services, string logName) : base(logName ?? "Eav.CtxSte")
+        protected ContextOfSite(MyServices services, string logName) : base(services, logName ?? "Eav.CtxSte")
         {
-            SiteDeps = services.SetLog(Log);
-            Site = services.Site;
-            User = services.User;
+            Site = Services.Site;
+        }
+        protected ContextOfSite(MyServicesBase<MyServices> services, string logName) : base(services, logName ?? "Eav.CtxSte")
+        {
+            Site = Services.Site;
         }
 
         #endregion
@@ -57,7 +57,7 @@ namespace ToSic.Eav.Context
         public ISite Site { get; set; }
 
         /// <inheritdoc />
-        public IUser User { get; }
+        public IUser User => Services.User;
 
         /// <inheritdoc />
         public virtual bool UserMayEdit => Log.Getter(() =>
@@ -68,10 +68,6 @@ namespace ToSic.Eav.Context
         });
 
         /// <inheritdoc />
-        [PrivateApi]
-        public MyServices SiteDeps { get; }
-
-        /// <inheritdoc />
-        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(SiteDeps, Log.NameId).LinkLog(parentLog);
+        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(Services, Log.NameId).LinkLog(parentLog);
     }
 }

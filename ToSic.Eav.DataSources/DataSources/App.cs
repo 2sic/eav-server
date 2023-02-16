@@ -86,14 +86,14 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new App DataSource
 		/// </summary>
 		[PrivateApi]
-		public App(MyServices services): base(services.RootServices, $"{DataSourceConstants.LogPrefix}.EavApp")
+		public App(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.EavApp")
         {
-            _deps = services.SetLog(Log);
+            _services = services;
             // this one is unusual, so don't pre-attach a default data stream to out
             _out = new StreamDictionary(this, null);
         }
 
-        private readonly MyServices _deps;
+        private readonly MyServices _services;
 
         #endregion
 
@@ -110,7 +110,7 @@ namespace ToSic.Eav.DataSources
 		    if (AppSwitch != 0)
 				AppId = AppSwitch;
 
-		    var newDs = _deps.DataSourceFactory.Value.GetPublishing(this, configProvider: Configuration.LookUpEngine, showDrafts:GetShowDraftStatus());
+		    var newDs = _services.DataSourceFactory.Value.GetPublishing(this, configProvider: Configuration.LookUpEngine, showDrafts:GetShowDraftStatus());
             Attach(Constants.DefaultStreamName, newDs);
 		}
 
@@ -119,7 +119,7 @@ namespace ToSic.Eav.DataSources
 		// TODO: cause obsolete warning when used! #Deprecated
         public IMetadataSource Metadata => AppState;
 
-		protected AppState AppState => _appState.Get(() => _deps.AppStates.Get(this));
+		protected AppState AppState => _appState.Get(() => _services.AppStates.Get(this));
         private readonly GetOnce<AppState> _appState = new GetOnce<AppState>();
     }
 

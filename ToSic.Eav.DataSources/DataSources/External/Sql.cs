@@ -143,15 +143,15 @@ namespace ToSic.Eav.DataSources
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
 		[PrivateApi]
-		public Sql(MyServices services, IDataBuilder dataBuilder) : base(services.RootServices, $"{DataSourceConstants.LogPrefix}.ExtSql")
+		public Sql(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.ExtSql")
         {
             ConnectServices(
                 _dataBuilder = dataBuilder.Configure(appId: Constants.TransientAppId)
             );
-            SqlDeps = services.SetLog(Log);
+            SqlServices = services;
             Provide(GetList);
         }
-        [PrivateApi] protected readonly MyServices SqlDeps;
+        [PrivateApi] protected readonly MyServices SqlServices;
         private readonly IDataBuilder _dataBuilder;
 
         #endregion
@@ -255,10 +255,10 @@ namespace ToSic.Eav.DataSources
                 {
                     var conStringName = string.IsNullOrWhiteSpace(ConnectionStringName) ||
                                         ConnectionStringName.EqualsInsensitive(SqlPlatformInfo.DefaultConnectionPlaceholder)
-                        ? SqlDeps.SqlPlatformInfo.DefaultConnectionStringName
+                        ? SqlServices.SqlPlatformInfo.DefaultConnectionStringName
                         : ConnectionStringName;
 
-                    ConnectionString = SqlDeps.SqlPlatformInfo.FindConnectionString(conStringName);
+                    ConnectionString = SqlServices.SqlPlatformInfo.FindConnectionString(conStringName);
                 }
 			    catch(Exception ex)
                 {

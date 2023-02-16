@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
     /// name, folder, data, metadata etc.
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public partial class App: AppBase, IApp
+    public partial class App: AppBase<App.AppServices>, IApp
     {
         #region Constructor / DI
 
@@ -55,14 +55,14 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="services">All the dependencies of this app, managed by this app</param>
         /// <param name="logName">must be null by default, because of DI</param>
-        public App(AppServices services, string logName = null): base(logName ?? "Eav.App")
+        public App(AppServices services, string logName = null): base(services, logName ?? "Eav.App")
         {
-            Deps = services.SetLog(Log);
+            //Deps = services.SetLog(Log);
             _dsFactory = services.DataSourceFactory;
             
             Site = services.Site;
         }
-        private readonly AppServices Deps;
+        //private readonly AppServices Deps;
         private readonly DataSourceFactory _dsFactory;
 
 
@@ -94,7 +94,7 @@ namespace ToSic.Eav.Apps
             // in case the DI gave a bad tenant, try to look up
             if (Site.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
                 appIdentity.AppId != AppConstants.AppIdNotFound)
-                Site = Deps.ZoneMapper.SiteOfApp(appIdentity.AppId);
+                Site = Services.ZoneMapper.SiteOfApp(appIdentity.AppId);
 
             // if zone is missing, try to find it - but always assume current context
             if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
@@ -106,7 +106,7 @@ namespace ToSic.Eav.Apps
             // Look up name in cache
             // 2020-11-25 changed to use State.Get. before it was this...
             //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
-            NameId = Deps.AppStates.Get(this).NameId;
+            NameId = Services.AppStates.Get(this).NameId;
 
             InitializeResourcesSettingsAndMetadata();
 

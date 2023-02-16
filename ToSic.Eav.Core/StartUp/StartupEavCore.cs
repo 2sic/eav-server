@@ -61,7 +61,7 @@ namespace ToSic.Eav.StartUp
             services.AddTransient<AppsCacheSwitch>();   // Transient should work... wip
             
             // Permissions helper
-            services.TryAddTransient<PermissionCheckBase.Dependencies>();
+            services.TryAddTransient<PermissionCheckBase.MyServices>();
 
             services.TryAddTransient<ILicenseService, LicenseService>();
 

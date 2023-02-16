@@ -9,7 +9,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security
 {
-    public abstract partial class PermissionCheckBase : ServiceBase, IPermissionCheck
+    public abstract partial class PermissionCheckBase : ServiceBase<PermissionCheckBase.MyServices>, IPermissionCheck
     {
 
         #region Permission Targets and resulting list of metadata to control
@@ -52,25 +52,27 @@ namespace ToSic.Eav.Security
 
         #region constructors
 
-        public class Dependencies
+        public class MyServices: MyServicesBase
         {
             public IFeaturesService Features { get; }
             public IEnvironmentPermission EnvironmentPermission { get; }
 
-            public Dependencies(IFeaturesService features, IEnvironmentPermission environmentPermission)
+            public MyServices(IFeaturesService features, IEnvironmentPermission environmentPermission)
             {
-                Features = features;
-                EnvironmentPermission = environmentPermission;
+                ConnectServices(
+                    Features = features,
+                    EnvironmentPermission = environmentPermission
+                );
             }
         }
 
         /// <summary>
         /// Basic constructor, you must always call Init afterwards
         /// </summary>
-        protected PermissionCheckBase(Dependencies dependencies, string logName): base(logName)
+        protected PermissionCheckBase(MyServices services, string logName): base(services, logName)
         {
-            _features = dependencies.Features;
-            _environmentPermission = dependencies.EnvironmentPermission;
+            _features = services.Features;
+            _environmentPermission = services.EnvironmentPermission;
         }
         private readonly IFeaturesService _features;
         private readonly IEnvironmentPermission _environmentPermission;

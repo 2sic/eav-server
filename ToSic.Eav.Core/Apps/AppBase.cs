@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps
     /// Base object for things that have a full app-identity (app-id and zone-id) and can also log their state.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public abstract class AppBase: ServiceBase, IAppIdentity
+    public abstract class AppBase<TServices>: ServiceBase<TServices>, IAppIdentity where TServices: MyServicesBase
     {
         /// <inheritdoc />
         public int ZoneId { get; private set; }
@@ -19,13 +19,14 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// DI Constructor - always run Init afterwards
         /// </summary>
-        protected AppBase(string logName): base(logName ?? "App.Base") { }
+        protected AppBase(TServices services, string logName): base(services, logName ?? "App.Base") { }
+        protected AppBase(MyServicesBase<TServices> services, string logName): base(services, logName ?? "App.Base") { }
 
         /// <summary>
         /// App identity containing zone/app combination
         /// </summary>
         /// <param name="app">the identity</param>
-        protected AppBase Init(IAppIdentity app) => Log.Func(() =>
+        protected AppBase<TServices> Init(IAppIdentity app) => Log.Func(() =>
         {
             ZoneId = app.ZoneId;
             AppId = app.AppId;
