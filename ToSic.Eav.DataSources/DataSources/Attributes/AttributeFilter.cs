@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeFilter(EntityBuilder entityBuilder, Dependencies services): base(services, $"{DataSourceConstants.LogPrefix}.AtribF")
+		public AttributeFilter(EntityBuilder entityBuilder, MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.AtribF")
         {
             _entityBuilder = entityBuilder;
             Provide(GetList);

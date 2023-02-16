@@ -12,17 +12,17 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.DataSources
 {
-    public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.Dependencies>, IDataSourceConfiguration
+    public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.MyServices>, IDataSourceConfiguration
     {
         #region Dependencies - Must be in DI
 
-        public class Dependencies: ServiceDependencies
+        public class MyServices: MyServicesBase
         {
             public LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy { get; }
 
-            public Dependencies(LazySvc<IZoneCultureResolver> zoneCultureResolverLazy)
+            public MyServices(LazySvc<IZoneCultureResolver> zoneCultureResolverLazy)
             {
-                AddToLogQueue(
+                ConnectServices(
                     ZoneCultureResolverLazy = zoneCultureResolverLazy
                 );
             }
@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources
         #region Constructor (non DI)
 
         [PrivateApi]
-        public DataSourceConfiguration(Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.Config")
+        public DataSourceConfiguration(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Config")
         {
         }
 
@@ -124,7 +124,7 @@ namespace ToSic.Eav.DataSources
         private IDictionary<string, ILookUp> OverrideLookUps 
             => _overrideLookUps.Get(() => new Dictionary<string, ILookUp>
             {
-                { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSourceForIn, Services.ZoneCultureResolverLazy.Value) }
+                { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSourceForIn, base.Services.ZoneCultureResolverLazy.Value) }
             });
         private readonly GetOnce<IDictionary<string, ILookUp>> _overrideLookUps = new GetOnce<IDictionary<string, ILookUp>>();
 

@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSources.Queries
 
         /// <inheritdoc />
         [PrivateApi]
-        public Query(Dependencies services, LazySvc<QueryBuilder> queryBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Query")
+        public Query(MyServices services, LazySvc<QueryBuilder> queryBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Query")
         {
             ConnectServices(
                 _queryBuilderLazy = queryBuilder

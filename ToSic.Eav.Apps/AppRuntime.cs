@@ -17,12 +17,12 @@ namespace ToSic.Eav.Apps
         private readonly LazySvc<ContentTypeRuntime> _contentTypeRuntime;
         private readonly LazySvc<QueryRuntime> _queryRuntime;
 
-        public AppRuntime(AppRuntimeDependencies dependencies,
+        public AppRuntime(AppRuntimeServices services,
             LazySvc<EntityRuntime> entityRuntime,
             LazySvc<MetadataRuntime> metadataRuntime,
             LazySvc<ContentTypeRuntime> contentTypeRuntime,
             LazySvc<QueryRuntime> queryRuntime,
-            string logName = null) : base(dependencies,
+            string logName = null) : base(services,
             logName ?? "Eav.AppRt")
         {
             ConnectServices(

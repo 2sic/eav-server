@@ -15,7 +15,7 @@ namespace ToSic.Eav.Persistence.Xml
     {
         private Dictionary<string, int> _dimensions;
 
-        public XmlSerializer(Dependencies services): base(services, "IEx.XmlSer") { }
+        public XmlSerializer(MyServices services): base(services, "IEx.XmlSer") { }
 
         public XmlSerializer Init(Dictionary<string, int> dimensionMapping, AppState appState)
         {

@@ -76,7 +76,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public Paging(Dependencies services, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.Paging")
+		public Paging(MyServices services, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.Paging")
         {
             ConnectServices(
                 _pagingBuilder = dataBuilder.Configure(typeName: "Paging")

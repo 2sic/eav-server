@@ -10,15 +10,15 @@ namespace ToSic.Eav.DataSources
     /// The base class, which should always be inherited. Already implements things like Get One / Get many, Caching and a lot more.
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public abstract partial class DataSource : ServiceBase<DataSource.Dependencies>, IDataSource, IDataTarget
+    public abstract partial class DataSource : ServiceBase<DataSource.MyServices>, IDataSource, IDataTarget
     {
         /// <summary>
         /// Constructor - must be without parameters, otherwise the DI can't construct it.
         /// </summary>
-        protected DataSource(Dependencies services, string logName) : base(services, logName)
+        protected DataSource(MyServices services, string logName) : base(services, logName)
         {
             // Load all config masks which are defined on attributes
-            var configMasks = Services.ConfigDataLoader.GetTokens(GetType());
+            var configMasks = base.Services.ConfigDataLoader.GetTokens(GetType());
             configMasks.ForEach(cm => ConfigMask(cm.Key, cm.Token, cm.CacheRelevant));
         }
 
@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
         #region Properties which the Factory must add
 
         [PrivateApi]
-        public DataSourceErrorHandling ErrorHandler => _errorHandler.Get(() => Services.ErrorHandler.Value);
+        public DataSourceErrorHandling ErrorHandler => _errorHandler.Get(() => base.Services.ErrorHandler.Value);
         private readonly GetOnce<DataSourceErrorHandling> _errorHandler = new GetOnce<DataSourceErrorHandling>();
 
         #endregion

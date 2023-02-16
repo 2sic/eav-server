@@ -126,12 +126,12 @@ namespace ToSic.Eav.DataSources
         #region Constructor
 
         [PrivateApi]
-		public new class Dependencies: ServiceDependencies<DataSource.Dependencies>
+		public new class MyServices: MyServicesBase<DataSource.MyServices>
         {
             public SqlPlatformInfo SqlPlatformInfo { get; }
-            public Dependencies(SqlPlatformInfo sqlPlatformInfo, DataSource.Dependencies rootDependencies): base(rootDependencies)
+            public MyServices(SqlPlatformInfo sqlPlatformInfo, DataSource.MyServices rootServices): base(rootServices)
             {
-                AddToLogQueue(
+                ConnectServices(
                     SqlPlatformInfo = sqlPlatformInfo
                 );
             }
@@ -143,15 +143,15 @@ namespace ToSic.Eav.DataSources
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
 		[PrivateApi]
-		public Sql(Dependencies dependencies, IDataBuilder dataBuilder) : base(dependencies.RootDependencies, $"{DataSourceConstants.LogPrefix}.ExtSql")
+		public Sql(MyServices services, IDataBuilder dataBuilder) : base(services.RootServices, $"{DataSourceConstants.LogPrefix}.ExtSql")
         {
             ConnectServices(
                 _dataBuilder = dataBuilder.Configure(appId: Constants.TransientAppId)
             );
-            SqlDeps = dependencies.SetLog(Log);
+            SqlDeps = services.SetLog(Log);
             Provide(GetList);
         }
-        [PrivateApi] protected readonly Dependencies SqlDeps;
+        [PrivateApi] protected readonly MyServices SqlDeps;
         private readonly IDataBuilder _dataBuilder;
 
         #endregion

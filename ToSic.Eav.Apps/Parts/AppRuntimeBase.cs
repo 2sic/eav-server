@@ -12,13 +12,13 @@ namespace ToSic.Eav.Apps.Parts
 
         public bool ShowDrafts { get; private set; }
 
-        protected AppRuntimeBase(AppRuntimeDependencies dependencies, string logName): base(logName)
+        protected AppRuntimeBase(AppRuntimeServices services, string logName): base(logName)
         {
             ConnectServices(
-                Deps = dependencies
+                Deps = services
             );
         }
-        protected readonly AppRuntimeDependencies Deps;
+        protected readonly AppRuntimeServices Deps;
 
         internal void InitInternal(IAppIdentity app, bool showDrafts)
         {

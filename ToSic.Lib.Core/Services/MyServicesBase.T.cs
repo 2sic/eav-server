@@ -5,13 +5,13 @@
     /// They must then still have the original Dependencies to get them.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ServiceDependencies<T>: ServiceDependencies
+    public class MyServicesBase<T>: MyServicesBase
     {
-        public T RootDependencies { get; }
-        public ServiceDependencies(T rootDependencies)
+        public T RootServices { get; }
+        public MyServicesBase(T rootServices)
         {
             // Note: don't add these to log queue, as they will be handled by the base class which needs these dependencies
-            RootDependencies = rootDependencies;
+            RootServices = rootServices;
         }
     }
 }

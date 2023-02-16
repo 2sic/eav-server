@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps
     {
         #region Constructor stuff
 
-        public AppData(Dependencies dependencies, LazySvc<SimpleDataController> dataController): base(dependencies)
+        public AppData(MyServices services, LazySvc<SimpleDataController> dataController): base(services)
         {
             ConnectServices(
                 DataController = dataController.SetInit(dc => dc.Init(ZoneId, AppId, false))

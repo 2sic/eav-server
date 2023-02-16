@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Security
     {
         #region Constructors and DI / Init
 
-        public MultiPermissionsItems(Dependencies dependencies): base(dependencies, "Sec.MpItms") { }
+        public MultiPermissionsItems(MyServices services): base(services, "Sec.MpItms") { }
 
         public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item)
         {

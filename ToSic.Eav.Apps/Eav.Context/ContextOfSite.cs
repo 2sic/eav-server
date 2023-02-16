@@ -16,19 +16,19 @@ namespace ToSic.Eav.Context
     {
         #region Constructor / DI
 
-        public class Dependencies: ServiceDependencies
+        public class MyServices: MyServicesBase
         {
             public ISite Site { get; }
             public IUser User { get; }
             public Generator<AppPermissionCheck> AppPermissionCheck { get; }
 
-            public Dependencies(
+            public MyServices(
                 ISite site,
                 IUser user,
                 Generator<AppPermissionCheck> appPermissionCheck
             )
             {
-                AddToLogQueue(
+                ConnectServices(
                     Site = site,
                     User = user,
                     AppPermissionCheck = appPermissionCheck
@@ -38,16 +38,16 @@ namespace ToSic.Eav.Context
         /// <summary>
         /// Constructor for DI
         /// </summary>
-        /// <param name="dependencies"></param>
-        public ContextOfSite(Dependencies dependencies) : this(dependencies, null)
+        /// <param name="services"></param>
+        public ContextOfSite(MyServices services) : this(services, null)
         {
         }
 
-        protected ContextOfSite(Dependencies dependencies, string logName) : base(logName ?? "Eav.CtxSte")
+        protected ContextOfSite(MyServices services, string logName) : base(logName ?? "Eav.CtxSte")
         {
-            SiteDeps = dependencies.SetLog(Log);
-            Site = dependencies.Site;
-            User = dependencies.User;
+            SiteDeps = services.SetLog(Log);
+            Site = services.Site;
+            User = services.User;
         }
 
         #endregion
@@ -69,7 +69,7 @@ namespace ToSic.Eav.Context
 
         /// <inheritdoc />
         [PrivateApi]
-        public Dependencies SiteDeps { get; }
+        public MyServices SiteDeps { get; }
 
         /// <inheritdoc />
         public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(SiteDeps, Log.NameId).LinkLog(parentLog);

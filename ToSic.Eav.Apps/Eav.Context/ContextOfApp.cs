@@ -23,15 +23,15 @@ namespace ToSic.Eav.Context
         /// These dependencies are a bit special, because they can be re-used for child context-of...
         /// This is why we gave them a much clearer name, not just the normal "Dependencies"
         /// </summary>
-        public new class Dependencies: ServiceDependencies
+        public new class MyServices: MyServicesBase
         {
-            public Dependencies(
+            public MyServices(
                 IAppStates appStates,
                 LazySvc<IFeaturesInternal> features,
                 LazySvc<AppUserLanguageCheck> langChecks,
                 Generator<IEnvironmentPermission> environmentPermissions,
                 LazySvc<AppSettingsStack> settingsStack
-            ) => AddToLogQueue(
+            ) => ConnectServices(
                 EnvironmentPermissions = environmentPermissions,
                 AppStates = appStates,
                 Features = features,
@@ -50,15 +50,15 @@ namespace ToSic.Eav.Context
         /// Constructor for DI
         /// </summary>
         /// <param name="siteCtxDeps"></param>
-        /// <param name="dependencies"></param>
-        public ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies) : this(siteCtxDeps, dependencies, "Sxc.CtxApp")
+        /// <param name="services"></param>
+        public ContextOfApp(ContextOfSite.MyServices siteCtxDeps, MyServices services) : this(siteCtxDeps, services, "Sxc.CtxApp")
         {
         }
-        protected ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies, string logName) : base(siteCtxDeps, logName)
+        protected ContextOfApp(ContextOfSite.MyServices siteCtxDeps, MyServices services, string logName) : base(siteCtxDeps, logName)
         {
-            Deps = dependencies.SetLog(Log);
+            Deps = services.SetLog(Log);
         }
-        protected readonly Dependencies Deps;
+        protected readonly MyServices Deps;
 
         #endregion
 

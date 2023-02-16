@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new EntityIdFilter
 		/// </summary>
 		[PrivateApi]
-		public EntityIdFilter(Dependencies services): base(services, $"{DataSourceConstants.LogPrefix}.EntIdF")
+		public EntityIdFilter(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.EntIdF")
         {
             Provide(GetList);
 		}

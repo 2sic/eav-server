@@ -109,7 +109,7 @@ namespace ToSic.Eav.Data
                 appId: appId == default ? AppId : appId,
                 id: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
                 type: typeName == default ? ContentType : _parentBuilder.Type(typeName),
-                titleField: titleField == default ? TitleField : titleField,
+                titleField: titleField ?? TitleField,
                 guid: guid, 
                 created: created == default ? Created : created,
                 modified: modified == default ? Modified : modified

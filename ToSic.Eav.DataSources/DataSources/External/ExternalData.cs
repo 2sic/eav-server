@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources
         /// but renew when it is updates
         /// </remarks>
         [PrivateApi]
-        protected ExternalData(Dependencies services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
+        protected ExternalData(MyServices services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
         {
             CacheTimestamp = DateTime.Now.Ticks;
         }

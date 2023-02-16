@@ -26,10 +26,10 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ContextOfSite>();
 
             // Runtimes and Managers
-            services.TryAddTransient<AppRuntimeDependencies>();
+            services.TryAddTransient<AppRuntimeServices>();
             services.TryAddTransient<AppRuntime>();
             services.TryAddTransient<AppManager>();
-            services.TryAddTransient<AppManager.Dependencies>();
+            services.TryAddTransient<AppManager.MyServices>();
             services.TryAddTransient<ZoneRuntime>();
             services.TryAddTransient<ZoneManager>();
             services.TryAddTransient<QueryManager>();
@@ -49,22 +49,22 @@ namespace ToSic.Eav.Apps
 
             services.TryAddTransient<ZipExport>();
             services.TryAddTransient<ZipImport>();
-            services.TryAddTransient<ZipImport.Dependencies>();
+            services.TryAddTransient<ZipImport.MyServices>();
             services.TryAddTransient<ZipFromUrlImport>();
 
             // App Dependencies
-            services.TryAddTransient<App.AppDependencies>();
+            services.TryAddTransient<App.AppServices>();
 
             // Context
             services.TryAddTransient<IContextOfApp, ContextOfApp>();
-            services.TryAddTransient<ContextOfApp.Dependencies>();
-            services.TryAddTransient<ContextOfSite.Dependencies>();
+            services.TryAddTransient<ContextOfApp.MyServices>();
+            services.TryAddTransient<ContextOfSite.MyServices>();
 
 
             // File System Loaders (note: Dnn will introduce it's own to work around a DI issue)
             services.TryAddTransient<IAppFileSystemLoader, AppFileSystemLoader>();
             services.TryAddTransient<IAppRepositoryLoader, AppFileSystemLoader>();
-            services.TryAddTransient<AppFileSystemLoader.Dependencies>();
+            services.TryAddTransient<AppFileSystemLoader.MyServices>();
 
             // Helpers to build stuff
             services.TryAddTransient<AppCreator>();
@@ -78,7 +78,7 @@ namespace ToSic.Eav.Apps
             services.TryAddScoped<ExportListXml>();
             services.TryAddScoped<ImportListXml>();
             services.TryAddTransient<ExportImportValueConversion>();
-            services.TryAddTransient<XmlImportWithFiles.Dependencies>();
+            services.TryAddTransient<XmlImportWithFiles.MyServices>();
 
             // Simple DataController - registration was missing
             services.TryAddTransient<SimpleDataController>();
@@ -87,13 +87,13 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppPermissionCheck>();
             services.TryAddTransient<MultiPermissionsTypes>();
             services.TryAddTransient<MultiPermissionsApp>();
-            services.TryAddTransient<MultiPermissionsApp.Dependencies>();
+            services.TryAddTransient<MultiPermissionsApp.MyServices>();
 
             // V13 Language Checks
             services.TryAddTransient<AppUserLanguageCheck>();
 
             // V15 Data Sources
-            services.TryAddTransient<DataSources.Sys.Apps.Dependencies>();
+            services.TryAddTransient<DataSources.Sys.Apps.MyServices>();
 
 
             return services;

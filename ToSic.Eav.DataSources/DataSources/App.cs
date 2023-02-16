@@ -66,16 +66,16 @@ namespace ToSic.Eav.DataSources
         #region Constructor / DI
 
 
-		public new class Dependencies: ServiceDependencies<DataSource.Dependencies>
+		public new class MyServices: MyServicesBase<DataSource.MyServices>
         {
             public LazySvc<DataSourceFactory> DataSourceFactory { get; }
             public IAppStates AppStates { get; }
 
-            public Dependencies(DataSource.Dependencies rootDependencies,
+            public MyServices(DataSource.MyServices rootServices,
                 IAppStates appStates,
-				LazySvc<DataSourceFactory> dataSourceFactory) : base(rootDependencies)
+				LazySvc<DataSourceFactory> dataSourceFactory) : base(rootServices)
             {
-                AddToLogQueue(
+                ConnectServices(
                     AppStates = appStates,
                     DataSourceFactory = dataSourceFactory
                 );
@@ -86,14 +86,14 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new App DataSource
 		/// </summary>
 		[PrivateApi]
-		public App(Dependencies dependencies): base(dependencies.RootDependencies, $"{DataSourceConstants.LogPrefix}.EavApp")
+		public App(MyServices services): base(services.RootServices, $"{DataSourceConstants.LogPrefix}.EavApp")
         {
-            _deps = dependencies.SetLog(Log);
+            _deps = services.SetLog(Log);
             // this one is unusual, so don't pre-attach a default data stream to out
             _out = new StreamDictionary(this, null);
         }
 
-        private readonly Dependencies _deps;
+        private readonly MyServices _deps;
 
         #endregion
 

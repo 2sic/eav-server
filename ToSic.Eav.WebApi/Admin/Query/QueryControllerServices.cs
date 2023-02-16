@@ -11,7 +11,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Admin.Query
 {
-    public class QueryControllerDependencies: ServiceDependencies
+    public class QueryControllerServices: MyServicesBase
     {
         public LazySvc<AppManager> AppManagerLazy { get; }
         /// <summary>
@@ -26,7 +26,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         public Generator<JsonSerializer> JsonSerializer { get; }
         public Generator<PassThrough> PassThrough { get; }
 
-        public QueryControllerDependencies(LazySvc<AppManager> appManagerLazy,
+        public QueryControllerServices(LazySvc<AppManager> appManagerLazy,
             LazySvc<AppRuntime> appReaderLazy,
             QueryBuilder queryBuilder,
             LazySvc<ConvertToEavLight> entToDicLazy,
@@ -35,7 +35,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             Generator<JsonSerializer> jsonSerializer,
             Generator<PassThrough> passThrough)
         {
-            AddToLogQueue(
+            ConnectServices(
                 AppManagerLazy = appManagerLazy,
                 AppReaderLazy = appReaderLazy,
                 QueryBuilder = queryBuilder,

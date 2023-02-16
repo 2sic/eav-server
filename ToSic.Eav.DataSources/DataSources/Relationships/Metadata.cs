@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetThis();
             set => Configuration.SetThis(value);
         }
-        public Metadata(Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.MetaDt")
+        public Metadata(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.MetaDt")
         {
         }
 

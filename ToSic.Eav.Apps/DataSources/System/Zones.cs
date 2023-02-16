@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Zones DS
         /// </summary>
         [PrivateApi]
-		public Zones(Dependencies services, IZoneMapper zoneMapper, IAppStates appStates, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.Zones")
+		public Zones(MyServices services, IZoneMapper zoneMapper, IAppStates appStates, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.Zones")
         {
             ConnectServices(
                 _zoneMapper = zoneMapper,

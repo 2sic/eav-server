@@ -18,11 +18,11 @@ namespace ToSic.Eav.Apps.Security
     {
         #region Constructors and DI
 
-        public class Dependencies: ServiceDependencies
+        public class MyServices: MyServicesBase
         {
-            public Dependencies(LazySvc<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator, Generator<IFeaturesInternal> featIntGen)
+            public MyServices(LazySvc<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator, Generator<IFeaturesInternal> featIntGen)
             {
-                AddToLogQueue(
+                ConnectServices(
                     ZoneMapper = zoneMapper,
                     AppPermCheckGenerator = appPermCheckGenerator,
                     FeatIntGen = featIntGen
@@ -37,11 +37,11 @@ namespace ToSic.Eav.Apps.Security
         /// <summary>
         /// Constructor for DI
         /// </summary>
-        public MultiPermissionsApp(Dependencies dependencies) : this(dependencies, "Api.Perms") { }
+        public MultiPermissionsApp(MyServices services) : this(services, "Api.Perms") { }
 
-        protected MultiPermissionsApp(Dependencies dependencies, string logName) : base(logName) 
-            => _deps = dependencies.SetLog(Log);
-        private readonly Dependencies _deps;
+        protected MultiPermissionsApp(MyServices services, string logName) : base(logName) 
+            => _deps = services.SetLog(Log);
+        private readonly MyServices _deps;
 
         public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app)
         {

@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSources
             set => Configuration.SetThis(value);
         }
 
-        public Parents(Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.Parent")
+        public Parents(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Parent")
         {
         }
 

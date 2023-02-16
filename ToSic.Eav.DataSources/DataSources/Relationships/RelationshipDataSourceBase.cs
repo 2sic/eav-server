@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constructor
         /// </summary>
-        protected RelationshipDataSourceBase(Dependencies services, string logName): base(services, logName)
+        protected RelationshipDataSourceBase(MyServices services, string logName): base(services, logName)
         {
             Provide(GetRelated);
         }

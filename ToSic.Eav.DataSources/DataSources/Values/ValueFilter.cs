@@ -87,7 +87,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new ValueFilter
         /// </summary>
         [PrivateApi]
-        public ValueFilter(ValueLanguages valLanguages, Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.ValFil")
+        public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.ValFil")
         {
             ConnectServices(
                 _valueLanguageService = valLanguages

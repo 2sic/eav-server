@@ -118,7 +118,7 @@ namespace ToSic.Eav.DataSources
 
 
         [PrivateApi]
-        public CsvDataSource(Dependencies services, IDataBuilder dataBuilder, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv")
+        public CsvDataSource(MyServices services, IDataBuilder dataBuilder, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv")
         {
             ConnectServices(
                 _user = user,

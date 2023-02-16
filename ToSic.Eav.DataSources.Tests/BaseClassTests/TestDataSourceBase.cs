@@ -6,7 +6,7 @@
         // make public for testing, otherwise protected...
         public void ConfigMask(string key, string mask) => base.ConfigMask(key, mask);
 
-        public TestDataSourceBase(Dependencies dependencies) : base(dependencies, "Tst.Test")
+        public TestDataSourceBase(MyServices services) : base(services, "Tst.Test")
         {
         }
         

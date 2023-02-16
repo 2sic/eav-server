@@ -61,18 +61,18 @@ namespace ToSic.Eav.DataSources.Sys
 
         #region Constructor
 
-        public new class Dependencies: ServiceDependencies<DataSource.Dependencies>
+        public new class MyServices: MyServicesBase<DataSource.MyServices>
         {
             public Generator<Eav.Apps.App> AppGenerator { get; }
             public IAppStates AppStates { get; }
 
-            public Dependencies(
-                DataSource.Dependencies rootDependencies,
+            public MyServices(
+                DataSource.MyServices rootServices,
                 Generator<Eav.Apps.App> appGenerator,
                 IAppStates appStates
-                ) : base(rootDependencies)
+                ) : base(rootServices)
             {
-                AddToLogQueue(
+                ConnectServices(
                     AppGenerator = appGenerator,
                     AppStates = appStates
                 );
@@ -84,15 +84,15 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps(Dependencies dependencies, IDataBuilder dataBuilder) : base(dependencies.RootDependencies, $"{DataSourceConstants.LogPrefix}.Apps")
+        public Apps(MyServices services, IDataBuilder dataBuilder) : base(services.RootServices, $"{DataSourceConstants.LogPrefix}.Apps")
         {
             ConnectServices(
                 _dataBuilder = dataBuilder.Configure(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
             );
             ;
-            dependencies.SetLog(Log);
-            _appGenerator = dependencies.AppGenerator;
-            _appStates = dependencies.AppStates;
+            services.SetLog(Log);
+            _appGenerator = services.AppGenerator;
+            _appStates = services.AppStates;
 
             Provide(GetList);
         }

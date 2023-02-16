@@ -86,7 +86,7 @@ namespace ToSic.Eav.DataSources.Caching
 		/// Constructs a new App DataSource
 		/// </summary>
 		[PrivateApi]
-		public CacheAllStreams(Dependencies services): base(services, $"{DataSourceConstants.LogPrefix}.CachAl")
+		public CacheAllStreams(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.CachAl")
 		{
 			// this one is unusual, so don't pre-attach a default data stream
             //OutIsDynamic = true;

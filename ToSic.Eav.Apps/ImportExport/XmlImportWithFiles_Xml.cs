@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps.ImportExport
 		public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
         {
             var wrapLog = Log.Fn<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
-		    _eavContext = Services._dbDataForAppImport.Value.Init(zoneId, appId);
+		    _eavContext = base.Services.DbDataForAppImport.Value.Init(zoneId, appId);
             
 			AppId = appId;
 			ZoneId = zoneId;
@@ -49,9 +49,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
 		    Log.A($"source def dim:{sourceDefaultDimensionId}");
 
-            _targetDimensions = Services.AppStates.Languages(zoneId, true);
+            _targetDimensions = base.Services.AppStates.Languages(zoneId, true);
 
-            _xmlBuilder = Services._xmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
+            _xmlBuilder = base.Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
             #endregion
 
             var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);
@@ -61,12 +61,12 @@ namespace ToSic.Eav.Apps.ImportExport
 		    var importEntities = BuildEntities(entNodes, (int)TargetTypes.None);
 
 
-			var import = Services._importerLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true);
+			var import = base.Services.ImporterLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true);
 
 			import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
 
             Log.A($"Purging {ZoneId}/{AppId}");
-            Services.SystemManager.Purge(ZoneId, AppId);
+            base.Services.SystemManager.Purge(ZoneId, AppId);
 
 			Messages.AddRange(GetExportImportMessagesFromImportLog(import.Storage.ImportLogToBeRefactored));
 

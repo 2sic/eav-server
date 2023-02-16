@@ -5,17 +5,17 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Apps.Parts
 {
     [PrivateApi]
-    public class AppRuntimeDependencies: ServiceDependencies
+    public class AppRuntimeServices: MyServicesBase
     {
         public DataSourceFactory DataSourceFactory { get; }
         public IAppStates AppStates { get; }
         public ZoneRuntime ZoneRuntime { get; }
 
-        public AppRuntimeDependencies(
+        public AppRuntimeServices(
             DataSourceFactory dataSourceFactory,
             IAppStates appStates,
             ZoneRuntime zoneRuntime
-        ) => AddToLogQueue(
+        ) => ConnectServices(
             DataSourceFactory = dataSourceFactory,
             AppStates = appStates,
             ZoneRuntime = zoneRuntime

@@ -15,12 +15,12 @@ namespace ToSic.Eav.ImportExport.Json
 
         #region Serializer Dependencies
 
-        public new class Dependencies: SerializerBase.Dependencies
+        public new class MyServices: SerializerBase.MyServices
         {
-            public Dependencies(ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder, LazySvc<IValueConverter> valueConverter)
+            public MyServices(ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder, LazySvc<IValueConverter> valueConverter)
                 : base(metadataTargets, appStates)
             {
-                AddToLogQueue(
+                ConnectServices(
                     MultiBuilder = multiBuilder,
                     ValueConverter = valueConverter
                 );
@@ -35,13 +35,13 @@ namespace ToSic.Eav.ImportExport.Json
         /// <summary>
         /// Constructor for DI
         /// </summary>
-        public JsonSerializer(Dependencies services) : this(services, "Jsn.Serlzr") {}
+        public JsonSerializer(MyServices services) : this(services, "Jsn.Serlzr") {}
         
 
         /// <summary>
         /// Initialize with the correct logger name
         /// </summary>
-        protected JsonSerializer(Dependencies services, string logName): base(services, logName)
+        protected JsonSerializer(MyServices services, string logName): base(services, logName)
         {
             MultiBuilder = services.MultiBuilder;
         }

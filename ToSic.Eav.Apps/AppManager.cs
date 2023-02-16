@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps
     {
         #region Constructors
 
-        public class Dependencies: ServiceDependencies<AppRuntimeDependencies>
+        public class MyServices: MyServicesBase<AppRuntimeServices>
         {
             public LazySvc<AppRuntime> AppRuntime { get; }
             public LazySvc<DbDataController> DbDataController { get; }
@@ -22,15 +22,15 @@ namespace ToSic.Eav.Apps
             public LazySvc<QueryManager> QueryManager { get; }
             public LazySvc<ContentTypeManager> ContentTypeManager { get; }
 
-            public Dependencies(AppRuntimeDependencies rootDependencies,
+            public MyServices(AppRuntimeServices rootServices,
                 LazySvc<AppRuntime> appRuntime,
                 LazySvc<DbDataController> dbDataController,
                 LazySvc<EntitiesManager> entitiesManager,
                 LazySvc<QueryManager> queryManager,
                 LazySvc<ContentTypeManager> contentTypeManager
-            ) : base(rootDependencies)
+            ) : base(rootServices)
             {
-                AddToLogQueue(
+                ConnectServices(
                     AppRuntime = appRuntime,
                     DbDataController = dbDataController,
                     EntitiesManager = entitiesManager,
@@ -40,9 +40,9 @@ namespace ToSic.Eav.Apps
             }
         }
 
-        protected AppManager(Dependencies dependencies, string logName) : base(dependencies.RootDependencies, logName)
+        protected AppManager(MyServices services, string logName) : base(services.RootServices, logName)
         {
-            _deps = dependencies.SetLog(Log);
+            _deps = services.SetLog(Log);
             _deps.AppRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts));
             _deps.DbDataController.SetInit(c =>
             {
@@ -57,9 +57,9 @@ namespace ToSic.Eav.Apps
             _deps.QueryManager.SetInit(m => m.ConnectTo(this));
             _deps.ContentTypeManager.SetInit(ct => ct.ConnectTo(this));
         }
-        private readonly Dependencies _deps;
+        private readonly MyServices _deps;
 
-        public AppManager(Dependencies dependencies) : this(dependencies, "Eav.AppMan")
+        public AppManager(MyServices services) : this(services, "Eav.AppMan")
         { }
 
         public new AppManager Init(IAppIdentity app) => this.InitQ(app, true);

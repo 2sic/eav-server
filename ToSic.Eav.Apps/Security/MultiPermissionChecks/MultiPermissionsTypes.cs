@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps.Security
         private const string LogName = "Sec.MPTyps";
         protected IEnumerable<string> ContentTypes;
 
-        public MultiPermissionsTypes(Dependencies dependencies, LazySvc<IAppStates> appStates): base(dependencies, LogName)
+        public MultiPermissionsTypes(MyServices services, LazySvc<IAppStates> appStates): base(services, LogName)
         {
             ConnectServices(
                 _appStates = appStates

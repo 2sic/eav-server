@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public StreamMerge(Dependencies services) : base(services, $"{DataSourceConstants.LogPrefix}.StMrge")
+		public StreamMerge(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.StMrge")
 		{
             Provide(GetList);
             Provide(DistinctStream, GetDistinct);

@@ -23,9 +23,9 @@ namespace ToSic.Eav.WebApi.Admin.Query
     /// <summary>
     /// Web API Controller for the Pipeline Designer UI
     /// </summary>
-    public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerDependencies> where TImplementation : QueryControllerBase<TImplementation>
+    public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerServices> where TImplementation : QueryControllerBase<TImplementation>
     {
-        protected QueryControllerBase(QueryControllerDependencies services, string logName) : base(services, logName)
+        protected QueryControllerBase(QueryControllerServices services, string logName) : base(services, logName)
         {
             QueryBuilder = services.QueryBuilder;
         }

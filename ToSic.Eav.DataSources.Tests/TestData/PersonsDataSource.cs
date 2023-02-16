@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
 {
     public class PersonsDataSource: DataSources.DataSource
     {
-        public PersonsDataSource(Dependencies dependencies, MultiBuilder multiBuilder): base(dependencies, "TST.Person")
+        public PersonsDataSource(MyServices services, MultiBuilder multiBuilder): base(services, "TST.Person")
         {
             _multiBuilder = multiBuilder;
             Provide(GetPersons);

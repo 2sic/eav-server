@@ -14,7 +14,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.Dependencies>, IAppFileSystemLoader, IAppRepositoryLoader
+    public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, IAppFileSystemLoader, IAppRepositoryLoader
     {
         #region Constants
 
@@ -25,11 +25,11 @@ namespace ToSic.Eav.Apps.Run
 
         #region Dependencies and Constructor
 
-        public class Dependencies: ServiceDependencies
+        public class MyServices: MyServicesBase
         {
-            public Dependencies(ISite site, Generator<FileSystemLoader> fslGenerator, LazySvc<AppPaths> appPathsLazy)
+            public MyServices(ISite site, Generator<FileSystemLoader> fslGenerator, LazySvc<AppPaths> appPathsLazy)
             {
-                AddToLogQueue(
+                ConnectServices(
                     Site = site,
                     FslGenerator = fslGenerator,
                     AppPathsLazy = appPathsLazy
@@ -44,14 +44,14 @@ namespace ToSic.Eav.Apps.Run
         /// DI Constructor
         /// </summary>
         /// <param name="deps"></param>
-        public AppFileSystemLoader(Dependencies deps) : this(deps, EavLogs.Eav + ".AppFSL") { }
+        public AppFileSystemLoader(MyServices deps) : this(deps, EavLogs.Eav + ".AppFSL") { }
 
         /// <summary>
         /// Inheritance constructor
         /// </summary>
         /// <param name="deps"></param>
         /// <param name="logName"></param>
-        protected AppFileSystemLoader(Dependencies deps, string logName) : base(deps, logName)
+        protected AppFileSystemLoader(MyServices deps, string logName) : base(deps, logName)
         {
             Site = deps.Site;
         }
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps.Run
         public IAppFileSystemLoader Init(AppState app) => Log.Func($"{app.AppId}, {app.Folder}, ...", () =>
         {
             _appState = app;
-            _appPaths = Services.AppPathsLazy.Value?.Init(Site, app);
+            _appPaths = base.Services.AppPathsLazy.Value?.Init(Site, app);
             InitPathAfterAppId();
             return this;
         });
@@ -124,7 +124,7 @@ namespace ToSic.Eav.Apps.Run
 
         private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource) => Log.Func(extensionPath, () =>
         {
-            var fsLoader = Services.FslGenerator.New().Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
+            var fsLoader = base.Services.FslGenerator.New().Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
             var types = fsLoader.ContentTypes();
             return types;
         });

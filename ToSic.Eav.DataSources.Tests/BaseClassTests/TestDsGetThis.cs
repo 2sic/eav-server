@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
     {
         public const string ExpectedGetThisString = "ok";
 
-        public TestDsGetThis(Dependencies dependencies) : base(dependencies)
+        public TestDsGetThis(MyServices services) : base(services)
         {
         }
         [Configuration(Fallback = ExpectedGetThisString)]

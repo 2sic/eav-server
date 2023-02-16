@@ -141,7 +141,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new RelationshipFilter
         /// </summary>
         [PrivateApi]
-        public RelationshipFilter(Dependencies services): base(services, $"{DataSourceConstants.LogPrefix}.Relfil")
+        public RelationshipFilter(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.Relfil")
         {
             Provide(GetRelationshipsOrFallback);
             //ConfigMask(nameof(Relationship));

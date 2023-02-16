@@ -17,18 +17,18 @@ namespace ToSic.Eav.DataFormats.EavLight
     /// A helper to serialize various combinations of entities, lists of entities etc
     /// </summary>
     [PrivateApi("Hide Implementation")]
-    public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependencies>, IConvertToEavLight
+    public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyServices>, IConvertToEavLight
     {
         #region Constructor / DI
 
-        public class Dependencies: ServiceDependencies
+        public class MyServices: MyServicesBase
         {
             public IValueConverter ValueConverter { get; }
             public IZoneCultureResolver ZoneCultureResolver { get; }
 
-            public Dependencies(IValueConverter valueConverter, IZoneCultureResolver zoneCultureResolver)
+            public MyServices(IValueConverter valueConverter, IZoneCultureResolver zoneCultureResolver)
             {
-                AddToLogQueue(
+                ConnectServices(
                     ValueConverter = valueConverter,
                     ZoneCultureResolver = zoneCultureResolver
                 );
@@ -41,9 +41,9 @@ namespace ToSic.Eav.DataFormats.EavLight
         /// This is why it must be public, because otherwise it can't be constructed from eav?
         /// </summary>
         /// <param name="services"></param>
-        public ConvertToEavLight(Dependencies services) : this(services, "Eav.CnvE2D") { }
+        public ConvertToEavLight(MyServices services) : this(services, "Eav.CnvE2D") { }
 
-        private ConvertToEavLight(Dependencies services, string logName) : base(services, logName) { }
+        private ConvertToEavLight(MyServices services, string logName) : base(services, logName) { }
 
 
         #endregion
@@ -80,7 +80,7 @@ namespace ToSic.Eav.DataFormats.EavLight
 
         public string[] Languages
         {
-            get => _languages ?? (_languages = Services.ZoneCultureResolver.SafeLanguagePriorityCodes());
+            get => _languages ?? (_languages = base.Services.ZoneCultureResolver.SafeLanguagePriorityCodes());
             set => _languages = value;
         }
 
@@ -124,7 +124,7 @@ namespace ToSic.Eav.DataFormats.EavLight
                     // Special Case 1: Hyperlink Field which must be resolved
                     if (attribute.Type == DataTypes.Hyperlink && value is string stringValue &&
                         ValueConverterBase.CouldBeReference(stringValue))
-                        return Services.ValueConverter.ToValue(stringValue, entity.EntityGuid);
+                        return base.Services.ValueConverter.ToValue(stringValue, entity.EntityGuid);
 
                     // Special Case 2: Entity-List
                     if (attribute.Type == DataTypes.Entity && value is IEnumerable<IEntity> entities)

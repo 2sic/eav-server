@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public LanguageModeler(MultiBuilder multiBuilder, Dependencies services): base(services, $"{DataSourceConstants.LogPrefix}.LngMod")
+        public LanguageModeler(MultiBuilder multiBuilder, MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.LngMod")
         {
             ConnectServices(
                 _multiBuilder = multiBuilder
