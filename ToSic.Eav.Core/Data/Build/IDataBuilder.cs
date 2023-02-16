@@ -86,10 +86,7 @@ namespace ToSic.Eav.Data
             int id = default,
             Guid guid = default,
             DateTime created = default,
-            DateTime modified = default,
-            int appId = default,
-            string typeName = default,
-            string titleField = default);
+            DateTime modified = default);
 
         IImmutableList<IEntity> CreateMany(IEnumerable<IRawEntity> rawEntities);
     }

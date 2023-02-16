@@ -140,7 +140,7 @@ namespace ToSic.Eav.DataSources.Sys
                 if (error != null)
                     appEnt["Error"] = error;
 
-                var result = _dataBuilder.Create(appEnt, appId: app.Key, id: app.Key, guid: guid ?? Guid.Empty);
+                var result = _dataBuilder.Create(appEnt, id: app.Key, guid: guid ?? Guid.Empty);
                 return result;
 
             }).ToImmutableList();

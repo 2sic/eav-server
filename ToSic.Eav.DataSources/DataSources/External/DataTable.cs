@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
+using System.Net.Mime;
 using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
@@ -83,7 +84,7 @@ namespace ToSic.Eav.DataSources
         public DataTable(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.ExtTbl")
         {
             ConnectServices(
-                _dataBuilder = dataBuilder.Configure(appId: Constants.TransientAppId)
+                _dataBuilder = dataBuilder
             );
             Provide(GetEntities);
         }
@@ -136,6 +137,8 @@ namespace ToSic.Eav.DataSources
             if (!source.Columns.Contains(titleField))
                 throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
+            _dataBuilder.Configure(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField);
+            
             // Populate a new Dictionary with EntityModels
             var result = new List<IEntity>();
 
@@ -147,7 +150,8 @@ namespace ToSic.Eav.DataSources
                 values = new Dictionary<string, object>(values,
                     StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
                 var mod = (string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?) ?? DateTime.MinValue;
-                var entity = _dataBuilder.Create(values, id: entityId, modified: mod, typeName: contentType, titleField: titleField);
+
+                var entity = _dataBuilder.Create(values, id: entityId, modified: mod);
                 result.Add(entity);
             }
 

@@ -146,7 +146,7 @@ namespace ToSic.Eav.DataSources
 		public Sql(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.ExtSql")
         {
             ConnectServices(
-                _dataBuilder = dataBuilder.Configure(appId: Constants.TransientAppId)
+                _dataBuilder = dataBuilder
             );
             SqlServices = services;
             Provide(GetList);
@@ -297,7 +297,7 @@ namespace ToSic.Eav.DataSources
                             message: "Something failed trying to read from the Database.");
                     }
 
-					var casedTitle = TitleField;
+                    var casedTitle = TitleField;
 			        var casedEntityId = EntityIdField;
 			        try
 			        {
@@ -320,9 +320,11 @@ namespace ToSic.Eav.DataSources
 			                             ?? columNames.FirstOrDefault();
 			            Log.A($"will use '{casedTitle}' as title field");
 
-#endregion
+                        _dataBuilder.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle);
 
-#region Read all Rows from SQL Server
+                        #endregion
+
+                        #region Read all Rows from SQL Server
 
                         // apparently SQL could return the same column name - which would cause problems - so distinct them first
                         var columnsToUse = columNames.Where(c => c != casedEntityId).Distinct().ToList();
@@ -335,7 +337,7 @@ namespace ToSic.Eav.DataSources
 								var value = reader[c];
                                 return Convert.IsDBNull(value) ? null : value;
                             });
-			                var entity = _dataBuilder.Create(values, id: entityId, typeName: ContentType, titleField: casedTitle);
+                            var entity = _dataBuilder.Create(values, id: entityId);
 			                list.Add(entity);
 			            }
 
