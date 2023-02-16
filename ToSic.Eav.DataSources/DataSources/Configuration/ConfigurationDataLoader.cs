@@ -28,8 +28,9 @@ namespace ToSic.Eav.DataSources
             if (Cache.ContainsKey(type))
                 return (Cache[type], "cached");
 
-            Cache[type] = GenerateTokens(type);
-            return (Cache[type], "generated");
+            var generateTokens = GenerateTokens(type);
+            Cache[type] = generateTokens; // use indirection to make sure it's thread-safe, because Cache[type] could throw exception 'The given key was not present in dictionary'
+            return (generateTokens, "generated");
         });
 
         #endregion
