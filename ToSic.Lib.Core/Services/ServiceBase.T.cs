@@ -21,7 +21,7 @@
         /// </summary>
         /// <param name="extendedServices"></param>
         /// <param name="logName"></param>
-        protected ServiceBase(MyServicesBase<TMyServices> extendedServices, string logName) : this(extendedServices.RootServices, logName)
+        protected ServiceBase(MyServicesBase<TMyServices> extendedServices, string logName) : this(extendedServices.ParentServices, logName)
         {
             // Ensure the extended copy also has SetLog run
             extendedServices.SetLog(Log);

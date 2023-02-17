@@ -22,13 +22,13 @@ namespace ToSic.Eav.Apps
             public LazySvc<QueryManager> QueryManager { get; }
             public LazySvc<ContentTypeManager> ContentTypeManager { get; }
 
-            public MyServices(AppRuntimeServices rootServices,
+            public MyServices(AppRuntimeServices parentServices,
                 LazySvc<AppRuntime> appRuntime,
                 LazySvc<DbDataController> dbDataController,
                 LazySvc<EntitiesManager> entitiesManager,
                 LazySvc<QueryManager> queryManager,
                 LazySvc<ContentTypeManager> contentTypeManager
-            ) : base(rootServices)
+            ) : base(parentServices)
             {
                 ConnectServices(
                     AppRuntime = appRuntime,

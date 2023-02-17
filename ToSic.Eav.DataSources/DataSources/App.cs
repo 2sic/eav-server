@@ -71,9 +71,9 @@ namespace ToSic.Eav.DataSources
             public LazySvc<DataSourceFactory> DataSourceFactory { get; }
             public IAppStates AppStates { get; }
 
-            public MyServices(DataSource.MyServices rootServices,
+            public MyServices(DataSource.MyServices parentServices,
                 IAppStates appStates,
-				LazySvc<DataSourceFactory> dataSourceFactory) : base(rootServices)
+				LazySvc<DataSourceFactory> dataSourceFactory) : base(parentServices)
             {
                 ConnectServices(
                     AppStates = appStates,

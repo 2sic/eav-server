@@ -129,7 +129,7 @@ namespace ToSic.Eav.DataSources
 		public new class MyServices: MyServicesBase<DataSource.MyServices>
         {
             public SqlPlatformInfo SqlPlatformInfo { get; }
-            public MyServices(SqlPlatformInfo sqlPlatformInfo, DataSource.MyServices rootServices): base(rootServices)
+            public MyServices(SqlPlatformInfo sqlPlatformInfo, DataSource.MyServices parentServices): base(parentServices)
             {
                 ConnectServices(
                     SqlPlatformInfo = sqlPlatformInfo

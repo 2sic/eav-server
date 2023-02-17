@@ -67,10 +67,10 @@ namespace ToSic.Eav.DataSources.Sys
             public IAppStates AppStates { get; }
 
             public MyServices(
-                DataSource.MyServices rootServices,
+                DataSource.MyServices parentServices,
                 Generator<Eav.Apps.App> appGenerator,
                 IAppStates appStates
-                ) : base(rootServices)
+                ) : base(parentServices)
             {
                 ConnectServices(
                     AppGenerator = appGenerator,
