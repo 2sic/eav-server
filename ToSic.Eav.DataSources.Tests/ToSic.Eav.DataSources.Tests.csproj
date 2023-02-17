@@ -130,7 +130,6 @@
     <Compile Include="ExternalData\SqlDsTst.cs" />
     <Compile Include="ImportExport %28disabled, refactoring%29\XmlExport_Test.cs" />
     <Compile Include="ImportExport %28disabled, refactoring%29\XmlImport_Test.cs" />
-    <Compile Include="IServiceBuilderExtensions.cs" />
     <Compile Include="DataSources\ItemFilterDuplicatesTest.cs" />
     <Compile Include="LookUps\LookUpsTest.cs" />
     <Compile Include="DataSources\PagingTest.cs" />

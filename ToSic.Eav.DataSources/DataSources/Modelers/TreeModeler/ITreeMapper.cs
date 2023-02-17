@@ -10,10 +10,10 @@ namespace ToSic.Eav.DataSources
     {
         IImmutableList<IEntity> AddRelationships<TRel>(
             IEnumerable<IEntity> originals,
-            string parentIdentifierAttribute,
-            string childParentAttribute,
-            string targetChildrenAttribute = default,
-            string targetParentAttribute = default
+            string parentIdField,
+            string childToParentRefField,
+            string newChildrenField = default,
+            string newParentField = default
         );
     }
 }
