@@ -32,78 +32,80 @@ namespace ToSic.Eav.DataSources
             Debug = false;
         }
 
+        public List<IEntity> AddSomeRelationshipsWIP<TKey>(
+            string fieldName,
+            List<(IEntity Entity, List<TKey> Ids)> needs,
+            List<(IEntity Entity, TKey Id)> lookup
+            //bool cloneFirst = false
+        )
+        {
+            return AddRelationshipField(fieldName, needs, lookup.ToLookup(i => i.Id, i => i.Entity))
+                .Cast<IEntity>()
+                .ToList();
+        }
 
-
-        public IImmutableList<IEntity> AddRelationships<TRel>(
+        public IImmutableList<IEntity> AddRelationships<TKey>(
             IEnumerable<IEntity> originals,
             string parentIdField,
             string childToParentRefField,
             string newChildrenField = default,
             string newParentField = default) => Log.Func(l =>
         {
-            // Make sure we have field names in case they were not provided
+            // Make sure we have field names in case they were not provided & full-clone entities/relationships
             newParentField = newParentField ?? DefaultParentFieldName;
             newChildrenField = newChildrenField ?? DefaultChildrenFieldName;
-
-            // Copy all entities to prevent modification of original
-            var clones = originals
-                .Select(e => _builder.Entity.Clone(e,
-                    _builder.Attribute.Clone(e.Attributes),
-                    ((RelationshipManager)e.Relationships).AllRelationships)
-                )
-                .ToList();
+            var clones = originals.Select(e => _builder.FullClone(e)).ToList();
 
             // Prepare - figure out the parent IDs and Reference to Parent ID
-            var entitiesWithKeys = clones
+            var withKeys = clones
                 .Select(e => new
                 {
-                    Entity = e,
-                    OwnId = GetTypedKeyOrDefault<TRel>(e, parentIdField),
-                    ParentId = GetTypedKeyOrDefault<TRel>(e, childToParentRefField),
+                    Entity = e as IEntity,
+                    OwnId = GetTypedKeyOrDefault<TKey>(e, parentIdField),
+                    RelatedId = GetTypedKeyOrDefault<TKey>(e, childToParentRefField),
                 })
                 .ToList();
 
-            // Convert list to lookup of "parent" guids/ids
-            var childrenLookup = entitiesWithKeys.ToLookup(set => set.ParentId, set => set.Entity);
+            // Assign parents to children
+            AddRelationshipField(newParentField, 
+                withKeys.Select(set => (set.Entity, new List<TKey> { set.RelatedId })).ToList(), 
+                withKeys.ToLookup(s => s.OwnId,  s => s.Entity as IEntity));
 
-            var parentLookup = entitiesWithKeys.ToLookup(set => set.OwnId, set => set.Entity);
+            AddRelationshipField(newChildrenField, 
+                withKeys.Select(set => (set.Entity, new List<TKey> { set.OwnId })).ToList(),
+                withKeys.ToLookup(s => s.RelatedId, s => s.Entity as IEntity));
 
 
-            // Assign children to parents
-            var result = new List<IEntity>();
-            foreach (var item in entitiesWithKeys)
-            {
-                var entity = item.Entity;
-
-                // When Entity is Parent: Find and assign all children
-                var children = AddRelationship(entity, item.OwnId, childrenLookup, newChildrenField);
-
-                var parents = AddRelationship(entity, item.ParentId, parentLookup, newParentField);
-
-                l.A($"Adding to Entity {entity.EntityId}/{entity.EntityGuid}: Children {children.Count}; Parent: {parents.Count}; OwnId: {item.OwnId}; ParentRef: {item.ParentId}");
-
-                result.Add(entity);
-            }
+            var result = withKeys.Select(set => set.Entity).Cast<IEntity>();
             
             return result.ToImmutableArray();
         });
+        
 
-        private List<Entity> AddRelationship<TKey>(Entity parent, TKey lookupId, ILookup<TKey, Entity> lookup, string newFieldName)
+        private List<IEntity> AddRelationshipField<TKey>(string newField, List<(IEntity Entity, List<TKey> NeedsIds)> list, ILookup<TKey, IEntity> lookup = null)
+        {
+            foreach (var item in list)
+                AddRelationships(item.Entity, newField, lookup, item.NeedsIds);
+            return list.Select(i => i.Entity).ToList();
+        }
+
+        private void AddRelationships<TKey>(IEntity target, string newFieldName, ILookup<TKey, IEntity> lookup, List<TKey> lookupIds
+        ) => Log.Do($"Entity: {target.EntityId}/{target.EntityGuid} {newFieldName} pointing to {lookupIds}", () =>
         {
             // Find referencing entities (children or parents) - but only if we have a valid reference
-            var related = !EqualityComparer<TKey>.Default.Equals(lookupId, default)
-                ? lookup[lookupId].ToList()
-                : new List<Entity>();
+            var related = lookupIds.SelectMany(lookupId => lookup[lookupId]).ToList();
 
             // Create Guid List of children (note 2dm - not sure why..., as the guids may be Guid.Empty)
             // but changing it if numeric actually fails, maybe a guid is numeric?
             var childGuids = // typeof(TKey).IsNumeric()
                 //? related.Select(e => e.EntityId)
                 /*:*/ related.Select(e => e.EntityGuid).ToList() as object;
-            _builder.Attribute.AddValue(parent.Attributes, newFieldName, childGuids, DataTypes.Entity,
+            _builder.Attribute.AddValue(target.Attributes, newFieldName, childGuids, DataTypes.Entity,
                 null, false, false, new DirectEntitiesSource(related));
-            return related; // for tracing/debug on caller
-        }
+
+            // Log
+            return $"added {related.Count} items";
+        });
 
         private TRelationshipKey GetTypedKeyOrDefault<TRelationshipKey>(IEntity e, string attribute) => Log.Func(enabled: Debug, func: l =>
         {

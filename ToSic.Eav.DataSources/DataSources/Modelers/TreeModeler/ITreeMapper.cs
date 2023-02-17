@@ -8,12 +8,19 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public interface ITreeMapper
     {
-        IImmutableList<IEntity> AddRelationships<TRel>(
+        IImmutableList<IEntity> AddRelationships<TKey>(
             IEnumerable<IEntity> originals,
             string parentIdField,
             string childToParentRefField,
             string newChildrenField = default,
             string newParentField = default
+        );
+
+        List<IEntity> AddSomeRelationshipsWIP<TKey>(
+            string fieldName,
+            List<(IEntity Entity, List<TKey> Ids)> needs,
+            List<(IEntity Entity, TKey Id)> lookup
+            //bool cloneFirst = false
         );
     }
 }
