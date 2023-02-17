@@ -13,7 +13,7 @@
         /// <param name="logName"></param>
         protected ServiceBase(TMyServices services, string logName) : base(logName)
         {
-            Services = services.SetLog(Log);
+            Services = services.ConnectServices(Log);
         }
 
         /// <summary>
@@ -24,7 +24,7 @@
         protected ServiceBase(MyServicesBase<TMyServices> extendedServices, string logName) : this(extendedServices.ParentServices, logName)
         {
             // Ensure the extended copy also has SetLog run
-            extendedServices.SetLog(Log);
+            extendedServices.ConnectServices(Log);
         }
 
         protected readonly TMyServices Services;
