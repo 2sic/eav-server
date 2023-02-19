@@ -30,10 +30,11 @@ namespace ToSic.Eav.Data
         internal string TitleFieldName;
 
         /// <summary>
-        /// List of all attributes
+        /// List of all attributes in light-mode - single language, simple.
+        /// Internal use only!
         /// </summary>
-        [PrivateApi]
-		protected Dictionary<string, object> LightAttributesForInternalUseOnlyForNow { get; }
+        [PrivateApi("Internal use only!")]
+		public Dictionary<string, object> AttributesLight { get; }
 
         /// <inheritdoc />
 		public IContentType Type { get; internal set; }
@@ -59,7 +60,7 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public object this[string attributeName]
-            => LightAttributesForInternalUseOnlyForNow.TryGetValue(attributeName, out var result)
+            => AttributesLight.TryGetValue(attributeName, out var result)
                 ? result
                 : null;
         #endregion
@@ -83,7 +84,7 @@ namespace ToSic.Eav.Data
             EntityId = entityId;
             if(guid != null) EntityGuid = guid.Value;
             Type = contentType;
-            LightAttributesForInternalUseOnlyForNow = values;
+            AttributesLight = values;
             try
             {
                 if (titleAttribute != null) TitleFieldName = titleAttribute;
@@ -108,7 +109,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public object GetBestValue(string attributeName) 
         {
-            if (!LightAttributesForInternalUseOnlyForNow.TryGetValue(attributeName, out var result))
+            if (!AttributesLight.TryGetValue(attributeName, out var result))
             {
                 var attributeNameLower = attributeName.ToLowerInvariant();
                 if (attributeNameLower == Attributes.EntityFieldTitle)

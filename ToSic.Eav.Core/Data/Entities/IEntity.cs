@@ -155,5 +155,11 @@ namespace ToSic.Eav.Data
 
         #endregion
 
+        #region Internal for Immutable / Light processing
+
+        [PrivateApi("internal use only, can change any time")]
+        bool IsLight { get; }
+
+        #endregion
     }
 }

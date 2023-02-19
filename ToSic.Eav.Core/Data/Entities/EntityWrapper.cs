@@ -120,6 +120,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public IEnumerable<Permission> Permissions => Entity.Permissions;
 
+        public bool IsLight => Entity.IsLight;
         #endregion
 
         #region support for LINQ enhancements

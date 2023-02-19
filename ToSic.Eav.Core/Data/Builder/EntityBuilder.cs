@@ -64,7 +64,7 @@ namespace ToSic.Eav.Data.Builder
             DateTime created,
             DateTime modified, string owner, int version, 
             Dictionary<string, IAttribute> attribs = null)
-            => new Entity
+            => new Entity(attribs)
             {
                 AppId = appId,
                 EntityId = entityId,
@@ -76,7 +76,7 @@ namespace ToSic.Eav.Data.Builder
                 Created = created,
                 Modified = modified,
                 Owner = owner,
-                Attributes = attribs
+                // Attributes = attribs
             };
 
         /// <summary>
