@@ -35,13 +35,18 @@ namespace ToSic.Eav.DataSources
         public List<IEntity> AddSomeRelationshipsWIP<TKey>(
             string fieldName,
             List<(IEntity Entity, List<TKey> Ids)> needs,
-            List<(IEntity Entity, TKey Id)> lookup
-            //bool cloneFirst = false
+            List<(IEntity Entity, TKey Id)> lookup,
+            bool cloneFirst = true
         )
         {
-            return AddRelationshipField(fieldName, needs, lookup.ToLookup(i => i.Id, i => i.Entity))
-                .Cast<IEntity>()
-                .ToList();
+            // WIP - for now the clone is very important, because it changes the attribute-model on generated entities from light to not-light
+            // otherwise adding relationship attributes fails for now
+            if (cloneFirst)
+                needs = needs.Select(n => (_builder.FullClone(n.Entity) as IEntity, n.Ids)).ToList();
+            
+            var properLookup = lookup.ToLookup(i => i.Id, i => i.Entity);
+
+            return AddRelationshipField(fieldName, needs, properLookup).ToList();
         }
 
         public IImmutableList<IEntity> AddRelationships<TKey>(
@@ -84,12 +89,13 @@ namespace ToSic.Eav.DataSources
 
         private List<IEntity> AddRelationshipField<TKey>(string newField, List<(IEntity Entity, List<TKey> NeedsIds)> list, ILookup<TKey, IEntity> lookup = null)
         {
+            var useNumber = typeof(TKey).IsNumeric();
             foreach (var item in list)
-                AddRelationships(item.Entity, newField, lookup, item.NeedsIds);
+                AddRelationships(item.Entity, newField, lookup, item.NeedsIds, useNumber);
             return list.Select(i => i.Entity).ToList();
         }
 
-        private void AddRelationships<TKey>(IEntity target, string newFieldName, ILookup<TKey, IEntity> lookup, List<TKey> lookupIds
+        private void AddRelationships<TKey>(IEntity target, string newFieldName, ILookup<TKey, IEntity> lookup, List<TKey> lookupIds, bool keyIsNumeric
         ) => Log.Do($"Entity: {target.EntityId}/{target.EntityGuid} {newFieldName} pointing to {lookupIds}", () =>
         {
             // Find referencing entities (children or parents) - but only if we have a valid reference
@@ -97,9 +103,9 @@ namespace ToSic.Eav.DataSources
 
             // Create Guid List of children (note 2dm - not sure why..., as the guids may be Guid.Empty)
             // but changing it if numeric actually fails, maybe a guid is numeric?
-            var childGuids = // typeof(TKey).IsNumeric()
-                //? related.Select(e => e.EntityId)
-                /*:*/ related.Select(e => e.EntityGuid).ToList() as object;
+            var childGuids = keyIsNumeric // typeof(TKey).IsNumeric()
+                ? related.Select(e => e.EntityId).ToList() as object
+                : related.Select(e => e.EntityGuid).ToList();
             _builder.Attribute.AddValue(target.Attributes, newFieldName, childGuids, DataTypes.Entity,
                 null, false, false, new DirectEntitiesSource(related));
 

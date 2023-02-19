@@ -19,8 +19,8 @@ namespace ToSic.Eav.DataSources
         List<IEntity> AddSomeRelationshipsWIP<TKey>(
             string fieldName,
             List<(IEntity Entity, List<TKey> Ids)> needs,
-            List<(IEntity Entity, TKey Id)> lookup
-            //bool cloneFirst = false
+            List<(IEntity Entity, TKey Id)> lookup,
+            bool cloneFirst = true
         );
     }
 }
