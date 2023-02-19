@@ -157,6 +157,9 @@ namespace ToSic.Eav.Data
 
         #region Internal for Immutable / Light processing
 
+        /// <summary>
+        /// This determines if the access to the properties will use light-objects, or IAttributes containing multi-language objects
+        /// </summary>
         [PrivateApi("internal use only, can change any time")]
         bool IsLight { get; }
 
