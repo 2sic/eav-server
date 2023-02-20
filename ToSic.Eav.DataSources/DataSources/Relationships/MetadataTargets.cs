@@ -6,6 +6,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
@@ -31,8 +32,9 @@ namespace ToSic.Eav.DataSources
     public class MetadataTargets: MetadataDataSourceBase
     {
         /// <summary>
-        /// TODO: I think this should be in the config???
+        /// Optional TypeName restrictions to only get **Targets** of this Content Type.
         /// </summary>
+        [Configuration]
         public override string ContentTypeName
         {
             get => Configuration.GetThis();
@@ -55,16 +57,17 @@ namespace ToSic.Eav.DataSources
         {
             _appStates = appStates;
         }
+        private readonly IAppStates _appStates;
 
         protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName)
         {
-            var find = InnerGet();
+            var getTargetFunc = GetTargetsFunctionGenerator();
 
-            var relationships = originals.SelectMany(o => find(o));
+            var relationships = originals.SelectMany(getTargetFunc);
 
             if (FilterDuplicates) relationships = relationships.Distinct();
 
-            if (!string.IsNullOrWhiteSpace(typeName))
+            if (typeName.HasValue())
                 relationships = relationships.OfType(typeName);
 
             return relationships;
@@ -73,12 +76,11 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Construct function for the get of the related items
         /// </summary>
-        /// <param name="fieldName"></param>
-        /// <param name="typeName"></param>
         /// <returns></returns>
         [PrivateApi]
-        private Func<IEntity, IEnumerable<IEntity>> InnerGet()
+        private Func<IEntity, IEnumerable<IEntity>> GetTargetsFunctionGenerator()
         {
+            var appState = _appStates.Get(this);
             return o =>
             {
                 var mdFor = o.MetadataFor;
@@ -86,16 +88,12 @@ namespace ToSic.Eav.DataSources
                 // The next block could maybe be re-used elsewhere...
                 if (!mdFor.IsMetadata || mdFor.TargetType != (int)TargetTypes.Entity) return Enumerable.Empty<IEntity>();
                 
-                if (mdFor.KeyGuid != null) return new[] { AppState.List.One(mdFor.KeyGuid.Value) };
-                if (mdFor.KeyNumber != null) return new[] { AppState.List.One(mdFor.KeyNumber.Value) };
+                if (mdFor.KeyGuid != null) return new[] { appState.List.One(mdFor.KeyGuid.Value) };
+                if (mdFor.KeyNumber != null) return new[] { appState.List.One(mdFor.KeyNumber.Value) };
 
                 return Enumerable.Empty<IEntity>();
             };
         }
-
-        private AppState AppState => _appState ?? (_appState = _appStates.Get(this));
-        public AppState _appState;
-        private readonly IAppStates _appStates;
 
         //[PrivateApi]
         //protected override IEnumerable<IEntity> Postprocess(IEnumerable<IEntity> results) 
