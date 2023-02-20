@@ -64,7 +64,7 @@ namespace ToSic.Eav.Context
         {
             var u = User;
             if (u == null) return false;
-            return u.IsSystemAdmin || u.IsSiteAdmin || u.IsDesigner;
+            return u.IsSystemAdmin || u.IsSiteAdmin || u.IsSiteDeveloper;
         });
 
         /// <inheritdoc />

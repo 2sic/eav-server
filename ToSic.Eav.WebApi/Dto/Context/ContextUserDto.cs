@@ -8,7 +8,7 @@ namespace ToSic.Eav.WebApi.Dto
     public class ContextUserDto
     {
         public string Email { get; set; }
-        public Guid? Guid { get; set; }
+        public Guid Guid { get; set; }
         public int Id { get; set; }
         public bool IsAnonymous { get; set; }
         public bool IsSystemAdmin { get; set; }
