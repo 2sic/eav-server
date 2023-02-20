@@ -105,11 +105,12 @@ namespace ToSic.Eav.ImportExport
         }));
         private readonly GetOnce<List<string>> _excludeSearchPatterns = new GetOnce<List<string>>();
 
+
         /// <summary>
         /// Gets all files from a folder and subfolder, which fit the import/export filter criteria
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<string> GetAllTransferableFiles(string searchPattern = "*.*") => _allTransferableFiles.Get(() => Log.Func(l =>
+        public IEnumerable<string> GetAllTransferableFiles(string searchPattern = "*.*") => Log.Func(l =>
         {
             var pathToDotAppJson = GetPathToDotAppJson(_sourceFolder);
             if (File.Exists(pathToDotAppJson))
@@ -132,14 +133,14 @@ namespace ToSic.Eav.ImportExport
                 .Where(f => !excFolders.Any(ex => f.ToLowerInvariant().Contains(ex.ToLowerInvariant())))
                 .ToList(), "ok, exclude files on old way");
 
-        }));
-        private readonly GetOnce<IEnumerable<string>> _allTransferableFiles = new GetOnce<IEnumerable<string>>();
+        });
+
 
         /// <summary>
         /// Gets all folders from a folder and subfolder, which fit the import/export filter criteria
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<string> GetAllTransferableFolders(string searchPattern = "*.*") => _allTransferableFolders.Get(() => Log.Func(l =>
+        public IEnumerable<string> GetAllTransferableFolders(string searchPattern = "*.*") => Log.Func(l =>
         {
             var pathToDotAppJson = GetPathToDotAppJson(_sourceFolder);
             if (File.Exists(pathToDotAppJson)) // exclude files based on app.json from v14.08
@@ -159,30 +160,28 @@ namespace ToSic.Eav.ImportExport
             return (AllFolders(searchPattern)
                 .Where(f => !excFolders.Any(ex => f.ToLowerInvariant().Contains(ex.ToLowerInvariant())))
                 .ToList(),$"ok, exclude folders on old way");
-        }));
-        private readonly GetOnce<IEnumerable<string>> _allTransferableFolders = new GetOnce<IEnumerable<string>>();
+        });
+
 
         /// <summary>
         /// Get all files from a folder, not caring if it will be exported or not
         /// </summary>
         /// <returns></returns>
         public IEnumerable<string> AllFiles(string searchPattern = "*.*") =>
-            _allFiles ??
-            (_allFiles = Directory.Exists(_root)
-                ? _allFiles = searchPattern.Split(Separator).SelectMany(s => Directory.EnumerateFiles(_root, s, SearchOption.AllDirectories)).ToList()
-                : new List<string>());
-        private IEnumerable<string> _allFiles;
+            Directory.Exists(_root)
+                ? searchPattern.Split(Separator).SelectMany(s => Directory.EnumerateFiles(_root, s, SearchOption.AllDirectories)).ToList()
+                : new List<string>();
+
 
         /// <summary>
         /// Get all folders from a folder, not caring if it will be exported or not
         /// </summary>
         /// <returns></returns>
         public IEnumerable<string> AllFolders(string searchPattern = "*.*") =>
-            _allFolders ??
-            (_allFolders = Directory.Exists(_root)
-                ? _allFolders = searchPattern.Split(Separator).SelectMany(s => Directory.EnumerateDirectories(_root, s, SearchOption.AllDirectories)).ToList()
-                : new List<string>());
-        private IEnumerable<string> _allFolders;
+            Directory.Exists(_root)
+                ? searchPattern.Split(Separator).SelectMany(s => Directory.EnumerateDirectories(_root, s, SearchOption.AllDirectories)).ToList()
+                : new List<string>();
+
 
         /// <summary>
         /// Exclude files based on 2sxc special exclude array in app.json
