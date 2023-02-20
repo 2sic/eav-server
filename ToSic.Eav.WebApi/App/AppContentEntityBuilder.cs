@@ -33,7 +33,7 @@ namespace ToSic.Eav.WebApi.App
             var listOfTypes = appState.GetContentType(contentType);
             var attribs = listOfTypes.Attributes;
 
-            var cleanedNewItem = new Dictionary<string, object>();
+            var cleanedNewItem = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
             foreach (var attrDef in attribs)
             {
                 var attrName = attrDef.Name;
