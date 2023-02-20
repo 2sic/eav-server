@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources.Sys
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
         DynamicOut = false,
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         ExpectsDataOfType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
         PreviousNames = new []
             {

@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Technical DataSource, doesn't do anything",
         Icon = Icons.CopyAll,
         Type = DataSourceType.Source, 
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
         DynamicOut = true,
         DynamicIn = true)]

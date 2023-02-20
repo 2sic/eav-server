@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Sys
         Icon = Icons.Scopes,
         Type = DataSourceType.System,
         GlobalName = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global

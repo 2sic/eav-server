@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Generate an error - primarily for debugging",
         Icon = Icons.Warning,
         Type = DataSourceType.Debug,
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         GlobalName = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a"   // namespace or guid
     )]
     [PublicApi]

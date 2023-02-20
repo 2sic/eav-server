@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources.Sys
         Icon = Icons.ArrowUpBoxed,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
         HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.System.QueryInfo.html")]

@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources.Sys
         Icon = Icons.Dns,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
         PreviousNames = new []

@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -10,7 +11,7 @@ namespace ToSic.Eav.DataSources.Queries
     ///
     /// Read more here: [](xref:NetCode.DataSources.Custom.VisualQueryAttribute)
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
+    [PublicApi]
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
 	public class VisualQueryAttribute : Attribute
@@ -19,10 +20,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// Empty constructor - necessary, so DocFx includes this attribute in documentation.
         /// </summary>
         [PrivateApi]
-        public VisualQueryAttribute()
-        {
-
-        }
+        public VisualQueryAttribute() { }
 
 	    /// <summary>
 	    /// A primary type of this source, which determines a default icon + some standard help-text
@@ -58,7 +56,8 @@ namespace ToSic.Eav.DataSources.Queries
         /// Is automatically true if ExpectsDataOfType is set.
         /// </summary>
         /// <returns>True if we have a known configuration content-type</returns>
-	    public bool EnableConfig => !string.IsNullOrWhiteSpace(ExpectsDataOfType);
+        [PrivateApi("not important to the public")]
+	    public bool EnableConfig => ExpectsDataOfType.HasValue();
 
         /// <summary>
         /// Name of the content-type used to configure this data-source in the visual-query designer. <br/>
@@ -98,10 +97,14 @@ namespace ToSic.Eav.DataSources.Queries
 	    public string[] PreviousNames { get; set; } = Array.Empty<string>();
 
         /// <summary>
-        /// This is still an experiment, but the goal is to hide complex sources from "normal" users
+        /// This marks the audience of a DataSource.
+        /// Specifically it allows hiding advanced DataSources from users who don't need them.
         /// </summary>
-        [PrivateApi]
-	    public DifficultyBeta Difficulty { get; set; } = DifficultyBeta.Default;
+        /// <remarks>
+        /// Previously hidden/unofficial and called `Difficulty`.
+        /// Made public and renamed to `Audience` in v15.03
+        /// </remarks>
+        public Audience Audience { get; set; } = Audience.Default;
 
 	}
 }

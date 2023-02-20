@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources.Sys
         Icon = Icons.TableChart,
         Type = DataSourceType.System,
         GlobalName = "398d0b9f-044f-48f7-83ef-307872f7ed93",
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global

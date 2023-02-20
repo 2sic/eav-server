@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources.Sys
         Icon = Icons.MetadataTargetTypes,
         Type = DataSourceType.System,
         GlobalName = "fba0d40d-f6af-4593-9ccb-54cfd73d8217", // new generated
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         DynamicOut = false
     )]
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]

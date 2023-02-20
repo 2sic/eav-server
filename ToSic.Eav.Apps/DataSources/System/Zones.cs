@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources.Sys
         Icon = Icons.BorderOuter,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         DynamicOut = false,
         PreviousNames = new []
             {
