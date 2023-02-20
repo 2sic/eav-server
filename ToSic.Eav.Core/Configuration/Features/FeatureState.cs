@@ -126,7 +126,7 @@ namespace ToSic.Eav.Configuration
             { nameof(EnabledInConfiguration), EnabledInConfiguration },
             { nameof(Expiration), Expiration },
             { nameof(IsForEditUi), IsForEditUi },
-            { $"{nameof(License)}{nameof(License.Name)}", License?.Name ?? "unknown" },
+            { $"{nameof(License)}{nameof(License.Name)}", License?.Name ?? Constants.NullNameId },
             { $"{nameof(License)}{nameof(License.Guid)}", License?.Guid ?? Guid.Empty },
             { nameof(AllowedByLicense), AllowedByLicense },
             { nameof(Link), Link },
