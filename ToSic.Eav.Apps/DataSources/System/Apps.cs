@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
-using ToSic.Lib.Logging;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -26,7 +27,7 @@ namespace ToSic.Eav.DataSources.Sys
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
         DynamicOut = false,
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         ExpectsDataOfType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
         PreviousNames = new []
             {
@@ -39,38 +40,39 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Apps: DataSource
 	{
+        private readonly IDataBuilder _dataBuilder;
+
         #region Configuration-properties (no config)
 
-        private const string ZoneKey = "Zone";
         private const string ZoneIdField = "ZoneId";
         private const string AppsContentTypeName = "EAV_Apps";
 
 	    /// <summary>
 	    /// The attribute whose value will be filtered
 	    /// </summary>
+	    [Configuration(Field = ZoneIdField)]
 	    public int OfZoneId
 	    {
-	        get => int.TryParse(Configuration[ZoneKey], out int zid) ? zid : ZoneId;
-            // ReSharper disable once UnusedMember.Global
-            set => Configuration[ZoneKey] = value.ToString();
-	    }
+	        get => Configuration.GetThis(ZoneId);
+            set => Configuration.SetThis(value);
+        }
 
         #endregion
 
         #region Constructor
 
-        public new class Dependencies: ServiceDependencies<DataSource.Dependencies>
+        public new class MyServices: MyServicesBase<DataSource.MyServices>
         {
             public Generator<Eav.Apps.App> AppGenerator { get; }
             public IAppStates AppStates { get; }
 
-            public Dependencies(
-                DataSource.Dependencies rootDependencies,
+            public MyServices(
+                DataSource.MyServices parentServices,
                 Generator<Eav.Apps.App> appGenerator,
                 IAppStates appStates
-                ) : base(rootDependencies)
+                ) : base(parentServices)
             {
-                AddToLogQueue(
+                ConnectServices(
                     AppGenerator = appGenerator,
                     AppStates = appStates
                 );
@@ -82,36 +84,37 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps(Dependencies dependencies): base(dependencies.RootDependencies, $"{DataSourceConstants.LogPrefix}.Apps")
+        public Apps(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Apps")
         {
-            dependencies.SetLog(Log);
-            _appGenerator = dependencies.AppGenerator;
-            _appStates = dependencies.AppStates;
+            ConnectServices(
+                _dataBuilder = dataBuilder.Configure(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
+            );
+
+            _appGenerator = services.AppGenerator;
+            _appStates = services.AppStates;
 
             Provide(GetList);
-            ConfigMask(ZoneKey, $"[Settings:{ZoneIdField}]");
-		}
+        }
         private readonly Generator<Eav.Apps.App> _appGenerator;
         private readonly IAppStates _appStates;
 
         #endregion
 
-        private ImmutableArray<IEntity> GetList()
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
-            
             Configuration.Parse();
-            var builder = DataBuilder;
 
             // try to load the content-type - if it fails, return empty list
             var zones = _appStates.Zones;
-            if (!zones.ContainsKey(OfZoneId)) return ImmutableArray<IEntity>.Empty;
+            if (!zones.ContainsKey(OfZoneId)) 
+                return (new List<IEntity>().ToImmutableList(),"fails load content-type");
+            
             var zone = zones[OfZoneId];
 
-	        var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
-	        {
-	            Eav.Apps.App appObj = null;
-	            Guid? guid = null;
+            var list = zone.Apps.OrderBy(a => a.Key).Select(app =>
+            {
+                Eav.Apps.App appObj = null;
+                Guid? guid = null;
                 string error = null;
                 try
                 {
@@ -119,36 +122,30 @@ namespace ToSic.Eav.DataSources.Sys
                     // this will get the guid, if the identity is not "default"
                     if (Guid.TryParse(appObj.NameId, out var g)) guid = g;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     error = "Error looking up App: " + ex.Message;
                 }
 
-	            // Assemble the entities
-	            var appEnt = new Dictionary<string, object>
-	            {
-	                {AppType.Id.ToString(), app.Key},
-	                {AppType.Name.ToString(), appObj?.Name ?? "error - can't lookup name"},
+                // Assemble the entities
+                var appEnt = new Dictionary<string, object>
+                {
+                    {AppType.Id.ToString(), app.Key},
+                    {AppType.Name.ToString(), appObj?.Name ?? "error - can't lookup name"},
                     {AppType.Folder.ToString(), appObj?.Folder ?? "" },
                     {AppType.IsHidden.ToString(), appObj?.Hidden ?? false },
-	                {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
-	                {AppType.IsPrimary.ToString(), app.Key == zone.PrimaryAppId},
-	            };
-                if(error != null)
+                    {AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId},
+                    {AppType.IsPrimary.ToString(), app.Key == zone.PrimaryAppId},
+                };
+                if (error != null)
                     appEnt["Error"] = error;
 
-                var result = builder.Entity(appEnt,
-                    appId: app.Key,
-                    id: app.Key,
-                    titleField: AppType.Name.ToString(),
-                    typeName: AppsContentTypeName, 
-                    guid: guid);
+                var result = _dataBuilder.Create(appEnt, id: app.Key, guid: guid ?? Guid.Empty);
                 return result;
-            });
 
-            var final = list.ToImmutableArray();
-            return wrapLog.Return(final, $"{final.Length}");
-        }
+            }).ToImmutableList();
 
-	}
+            return (list, $"ok");
+        });
+    }
 }

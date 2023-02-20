@@ -23,7 +23,10 @@ namespace ToSic.Eav.DataSources.Catalog
         public bool EnableConfig { get; set; }
         public string Name { get; set; }
         public string UiHint { get; set; }
+
+        // todo: deprecated, but probably still in use in Visual Query - should be replaced by Audience
         public int Difficulty { get; set; }
+        public int Audience { get; set; }
 
         public DataSourceDto(string fallbackName, VisualQueryAttribute dsInfo)
         {
@@ -40,7 +43,8 @@ namespace ToSic.Eav.DataSources.Catalog
             ContentType = dsInfo.ExpectsDataOfType;
             if (!string.IsNullOrEmpty(dsInfo.NiceName))
                 Name = dsInfo.NiceName;
-            Difficulty = (int)dsInfo.Difficulty;
+            Difficulty = (int)dsInfo.Audience;
+            Audience = (int)dsInfo.Audience;
         }
     }
 }

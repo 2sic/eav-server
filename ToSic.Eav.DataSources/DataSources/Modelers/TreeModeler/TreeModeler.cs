@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -33,49 +32,49 @@ namespace ToSic.Eav.DataSources
     // ReSharper disable once UnusedMember.Global
     public sealed class TreeModeler : DataSource
     {
+        private readonly ITreeMapper _treeMapper;
+
         #region Constants & Properties
-
-        private const string ParentIdentifierAttributeConfigKey = "ParentIdentifierAttribute";
-        private const string ChildParentAttributeConfigKey = "ChildParentAttribute";
-        private const string TargetChildrenAttributeConfigKey = "TargetChildrenAttribute";
-        private const string TargetParentAttributeConfigKey = "TargetParentAttribute";
-
 
         /// <summary>
         /// This determines what property is used as ID on the parent.
         /// Currently only allows "EntityId" and "EntityGuid"
         /// </summary>
+        [Configuration(Field = "ParentIdentifierAttribute", Fallback = Attributes.EntityFieldId)]
         public string Identifier
         {
-            get => Configuration[ParentIdentifierAttributeConfigKey];
-            set => Configuration[ParentIdentifierAttributeConfigKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// The property on a child which contains the parent ID
         /// </summary>
+        [Configuration(Field = "ChildParentAttribute", Fallback = "ParentId")]
         public string ParentReferenceField
         {
-            get => Configuration[ChildParentAttributeConfigKey];
-            set => Configuration[ChildParentAttributeConfigKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// The name of the new field on the parent, which will reference the children
         /// </summary>
+        [Configuration(Field = "TargetChildrenAttribute", Fallback = "Children")]
         public string NewChildrenField
         {
-            get => Configuration[TargetChildrenAttributeConfigKey];
-            set => Configuration[TargetChildrenAttributeConfigKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// Name of the new field on a child, which will reference the parent. 
         /// </summary>
+        [Configuration(Field = "TargetParentAttribute", Fallback = "Parent")]
         public string NewParentField
         {
-            get => Configuration[TargetParentAttributeConfigKey];
-            set => Configuration[TargetParentAttributeConfigKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         #endregion
@@ -84,21 +83,14 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public TreeModeler(MultiBuilder multiBuilder, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Tree")
+        public TreeModeler(MyServices services, ITreeMapper treeMapper) : base(services, $"{DataSourceConstants.LogPrefix}.Tree")
         {
             ConnectServices(
-                _multiBuilder = multiBuilder
+                _treeMapper = treeMapper
             );
             // Specify what out-streams this data-source provides. Usually just one, called "Default"
             Provide(GetList);
-
-            ConfigMask(ParentIdentifierAttributeConfigKey);
-            ConfigMask(ChildParentAttributeConfigKey);
-            ConfigMask(TargetChildrenAttributeConfigKey);
-            ConfigMask(TargetParentAttributeConfigKey);
         }
-
-        private readonly MultiBuilder _multiBuilder;
 
         /// <summary>
         /// Internal helper that returns the entities
@@ -111,20 +103,21 @@ namespace ToSic.Eav.DataSources
             if (!GetRequiredInList(out var originals))
                 return (originals, "error");
 
-            ITreeMapper treeMapper;
             switch (Identifier)
             {
                 case "EntityGuid":
-                    treeMapper = new TreeMapper<Guid>(_multiBuilder, Log);
-                    break;
+                    var resultGuid = _treeMapper.AddRelationships<Guid>(
+                        originals, Identifier, ParentReferenceField,
+                        NewChildrenField, NewParentField);
+                    return (resultGuid, $"Guid: {resultGuid.Count}");
                 case "EntityId":
-                    treeMapper = new TreeMapper<int>(_multiBuilder, Log);
-                    break;
+                    var resultInt = _treeMapper.AddRelationships<int>(
+                        originals, Identifier, ParentReferenceField,
+                        NewChildrenField, NewParentField);
+                    return (resultInt, $"int: {resultInt.Count}");
                 default:
                     return (SetError("Invalid Identifier", "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute."), "error");
             }
-            var res = treeMapper.GetEntitiesWithRelationships(originals, Identifier, ParentReferenceField, NewChildrenField, NewParentField);
-            return (res, $"{res.Count}");
         });
 
     }

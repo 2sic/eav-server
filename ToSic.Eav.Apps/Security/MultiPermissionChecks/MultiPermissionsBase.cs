@@ -10,11 +10,11 @@ namespace ToSic.Eav.Apps.Security
     /// A permission checker which is initialized with various items which must be checked
     /// Calling Ensure or similar will verify that all permission checks succeed
     /// </summary>
-    public abstract class MultiPermissionsBase: ServiceBase, IMultiPermissionCheck
+    public abstract class MultiPermissionsBase<TServices>: ServiceBase<TServices>, IMultiPermissionCheck where TServices: MyServicesBase
     {
         #region Constructor / Init stuff
 
-        protected MultiPermissionsBase(string logName) : base(logName) { }
+        protected MultiPermissionsBase(TServices services, string logName) : base(services, logName) { }
 
         #endregion
 

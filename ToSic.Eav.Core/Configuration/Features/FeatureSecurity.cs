@@ -2,7 +2,7 @@
 {
     public class FeatureSecurity
     {
-        public int Impact { get; }= 0;
+        public int Impact { get; }
 
         public string Message { get; }
 
@@ -11,5 +11,10 @@
             Impact = impact;
             Message = message;
         }
+
+        /// <summary>
+        /// For fallback in null-cases, probably not used ATM
+        /// </summary>
+        public static FeatureSecurity Unknown = new FeatureSecurity(0, Constants.NullNameId);
     }
 }

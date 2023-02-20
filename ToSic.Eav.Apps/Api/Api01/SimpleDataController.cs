@@ -7,8 +7,10 @@ using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Permissions;
@@ -121,22 +123,22 @@ namespace ToSic.Eav.Api.Api01
 
         private (IEntity Entity, (bool Draft, bool Branch)? DraftAndBranch) BuildEntity(
             IContentType type, Dictionary<string, object> values, ITarget target, bool? existingIsPublished
-        ) => Log.Func($"{type.Name}, {values?.Count}, target: {target != null}", () =>
+        ) => Log.Func($"{type.Name}, {values?.Count}, target: {target != null}", l =>
         {
             // ensure it's case insensitive...
-            values = new Dictionary<string, object>(values, StringComparer.InvariantCultureIgnoreCase);
+            values = values.ToInvariant();
 
-            if (values.All(v => v.Key.ToLowerInvariant() != Attributes.EntityFieldGuid))
+            if (!values.ContainsKey(Attributes.EntityFieldGuid))
             {
-                Log.A("Add new generated guid, as none was provided.");
+                l.A("Add new generated guid, as none was provided.");
                 values.Add(Attributes.EntityFieldGuid, Guid.NewGuid());
             }
 
             // Get owner form value dictionary (and remove it from values) because we need to provided it in entity constructor.
             string owner = null;
-            if (values.Any(v => v.Key.ToLowerInvariant() == Attributes.EntityFieldOwner))
+            if (values.ContainsKey(Attributes.EntityFieldOwner))
             {
-                Log.A("Get owner, when is provided.");
+                l.A("Get owner, when is provided.");
                 owner = values[Attributes.EntityFieldOwner].ToString();
                 values.Remove(Attributes.EntityFieldOwner);
             }
@@ -145,7 +147,7 @@ namespace ToSic.Eav.Api.Api01
             var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>(), owner);
             if (target != null)
             {
-                Log.A("Set metadata target which was provided.");
+                l.A("Set metadata target which was provided.");
                 importEntity.SetMetadata(target);
             }
 

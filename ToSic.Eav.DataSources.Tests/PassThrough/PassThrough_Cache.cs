@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
 
@@ -10,7 +9,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class PassThrough_Cache: TestBaseDiEavFull
+    public class PassThrough_Cache: TestBaseEavDataSource
     {
 
         #region bool tests
@@ -19,8 +18,7 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void PassThrough_CacheKey()
         {
-            var outSource = Build<DataSources.PassThrough>();
-            outSource.Init(LookUpTestData.EmptyLookupEngine);
+            var outSource = CreateDataSource<PassThrough>();
             var partialKey = outSource.CachePartialKey;
             var fullKey = outSource.CacheFullKey;
             Trace.WriteLine("Partial Key:" + partialKey);

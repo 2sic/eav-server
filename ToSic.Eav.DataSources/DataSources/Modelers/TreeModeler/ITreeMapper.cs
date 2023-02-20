@@ -1,11 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
-    internal interface ITreeMapper
+    [PrivateApi]
+    public interface ITreeMapper
     {
-        IImmutableList<IEntity> GetEntitiesWithRelationships(IEnumerable<IEntity> originals, string parentIdentifierAttribute, string childParentAttribute, string targetChildrenAttribute, string targetParentAttribute);
+        IImmutableList<IEntity> AddRelationships<TKey>(
+            IEnumerable<IEntity> originals,
+            string parentIdField,
+            string childToParentRefField,
+            string newChildrenField = default,
+            string newParentField = default
+        );
+
+        List<IEntity> AddSomeRelationshipsWIP<TKey>(
+            string fieldName,
+            List<(IEntity Entity, List<TKey> Ids)> needs,
+            List<(IEntity Entity, TKey Id)> lookup,
+            bool cloneFirst = true
+        );
     }
 }

@@ -29,7 +29,7 @@ namespace ToSic.Eav.WebApi.Sys
                         SpecialField.Right(md.Key),
                         appState.Name,
                         SpecialField.Right(md.Value),
-                        SpecialField.Right(sizeStats.TryGetValue(md.Key, out var size) ? ByteToKByte(size) : "unknown"),
+                        SpecialField.Right(sizeStats.TryGetValue(md.Key, out var size) ? ByteToKByte(size) : Constants.NullNameId),
                         appState.NameId
                     );
                     totalItems += md.Value;

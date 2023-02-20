@@ -83,8 +83,9 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                     AutoEnable = l.AutoEnable,
                     IsEnabled = licSer.IsEnabled(l),
                     Features = features
-                        .Where(f => f.License == l.Name)
+                        .Where(f => f.License?.Name == l.Name)
                         .OrderBy(f => f.NameId)
+                        .ToList()
                 });
         }
 

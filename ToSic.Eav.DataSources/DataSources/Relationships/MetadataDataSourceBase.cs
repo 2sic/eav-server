@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 
@@ -13,19 +11,18 @@ namespace ToSic.Eav.DataSources
 
     public abstract class MetadataDataSourceBase : DataSource
     {
-        /// <summary>
+        /// <remarks>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
-        /// </summary>
+        /// </remarks>
         public abstract string ContentTypeName { get; set; }
 
 
         /// <summary>
         /// Constructor
         /// </summary>
-        protected MetadataDataSourceBase(Dependencies dependencies, string logName): base(dependencies, logName)
+        protected MetadataDataSourceBase(MyServices services, string logName): base(services, logName)
         {
             Provide(GetMetadata);
-            ConfigMask(nameof(ContentTypeName));
         }
 
         private IImmutableList<IEntity> GetMetadata() => Log.Func(l =>
@@ -40,7 +37,7 @@ namespace ToSic.Eav.DataSources
             if (string.IsNullOrWhiteSpace(typeName)) typeName = null;
             l.A($"Content Type Name: {typeName}");
 
-            IEnumerable<IEntity> relationships = SpecificGet(originals, typeName);
+            var relationships = SpecificGet(originals, typeName);
 
             return (relationships.ToImmutableList(), "ok");
         });

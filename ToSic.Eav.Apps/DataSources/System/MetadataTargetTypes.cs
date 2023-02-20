@@ -23,15 +23,20 @@ namespace ToSic.Eav.DataSources.Sys
         Icon = Icons.MetadataTargetTypes,
         Type = DataSourceType.System,
         GlobalName = "fba0d40d-f6af-4593-9ccb-54cfd73d8217", // new generated
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         DynamicOut = false
     )]
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
     public class MetadataTargetTypes : DataSource
     {
-        public MetadataTargetTypes(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.MetaTg")
+        private readonly IDataBuilder _dataBuilder;
+
+        public MetadataTargetTypes(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
         {
+            ConnectServices(
+                _dataBuilder = dataBuilder.Configure(appId: 0, titleField: Data.Attributes.TitleNiceName, typeName: "MetadataTargetTypes")
+            );
             Provide(GetList);
         }
 
@@ -60,16 +65,14 @@ namespace ToSic.Eav.DataSources.Sys
                 .ToList();
 
             var list = publicTargetTypes
-                .Select(set => DataBuilder.Entity(
+                .Select(set => _dataBuilder.Create(
                     new Dictionary<string, object>
                     {
                         { Data.Attributes.TitleNiceName, set.Title },
                         { Data.Attributes.NameIdNiceName, set.TargetType.ToString() }
                     },
-                    appId: 0,
-                    id: (int)set.TargetType,
-                    titleField: Data.Attributes.TitleNiceName,
-                    typeName: "MetadataTargetTypes")
+                    id: (int)set.TargetType
+                    )
                 ).ToImmutableArray();
             
             return (list, $"{list.Length} items");

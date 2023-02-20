@@ -94,6 +94,9 @@ namespace ToSic.Eav.Data
         public string Owner => Entity.Owner;
 
         /// <inheritdoc />
+        public int OwnerId => Entity.OwnerId;
+
+        /// <inheritdoc />
         public object GetBestValue(string attributeName, string[] languages) => Entity.GetBestValue(attributeName, languages);
 
         /// <inheritdoc />
@@ -120,6 +123,7 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public IEnumerable<Permission> Permissions => Entity.Permissions;
 
+        public bool IsLight => Entity.IsLight;
         #endregion
 
         #region support for LINQ enhancements

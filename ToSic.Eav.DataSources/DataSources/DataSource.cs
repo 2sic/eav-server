@@ -10,14 +10,30 @@ namespace ToSic.Eav.DataSources
     /// The base class, which should always be inherited. Already implements things like Get One / Get many, Caching and a lot more.
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public abstract partial class DataSource : ServiceBase<DataSource.Dependencies>, IDataSource, IDataTarget
+    public abstract partial class DataSource : ServiceBase<DataSource.MyServices>, IDataSource, IDataTarget
     {
         /// <summary>
         /// Constructor - must be without parameters, otherwise the DI can't construct it.
         /// </summary>
-        protected DataSource(Dependencies dependencies, string logName) : base(dependencies, logName)
+        protected DataSource(MyServices services, string logName) : base(services, logName)
         {
+            AutoLoadAllConfigMasks();
         }
+        protected DataSource(MyServicesBase<MyServices> extendedServices, string logName) : base(extendedServices, logName)
+        {
+            AutoLoadAllConfigMasks();
+        }
+
+        /// <summary>
+        /// Load all [Configuration] attributes and ensure we have the config masks.
+        /// </summary>
+        private void AutoLoadAllConfigMasks()
+        {
+            // Load all config masks which are defined on attributes
+            var configMasks = Services.ConfigDataLoader.GetTokens(GetType());
+            configMasks.ForEach(cm => ConfigMask(cm.Key, cm.Token, cm.CacheRelevant));
+        }
+
 
         /// <inheritdoc />
         public string Name => GetType().Name;
@@ -35,18 +51,10 @@ namespace ToSic.Eav.DataSources
         public Guid Guid { get; set; }
 
 
-        /// <inheritdoc />
-        public IDataSourceConfiguration Configuration => _config ?? (_config = new DataSourceConfiguration(Deps.ConfigDependencies, this));
-        private IDataSourceConfiguration _config;
-
-
         #region Properties which the Factory must add
 
-        protected IDataBuilder DataBuilder => _dataBuilder.Get(() => Deps.DataBuilder.Value);
-        private readonly GetOnce<IDataBuilder> _dataBuilder = new GetOnce<IDataBuilder>();
-
         [PrivateApi]
-        public DataSourceErrorHandling ErrorHandler => _errorHandler.Get(() => Deps.ErrorHandler.Value);
+        public DataSourceErrorHandling ErrorHandler => _errorHandler.Get(() => base.Services.ErrorHandler.Value);
         private readonly GetOnce<DataSourceErrorHandling> _errorHandler = new GetOnce<DataSourceErrorHandling>();
 
         #endregion

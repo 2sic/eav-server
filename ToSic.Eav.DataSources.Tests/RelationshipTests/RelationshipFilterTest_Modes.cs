@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         [TestMethod]
         public void CompanyCategory_Contains_Explicit() 
             => new RelationshipTestCase("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb, 
-                compareMode: RelationshipFilter.CompareModes.contains.ToString()).Run(true);
+                compareMode: RelationshipFilter.CompareModeContains).Run(true);
 
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
                 + (repeat2 ? $"{DefSeparator}{CatMny2}" : "") // optionally repeat the second value (shouldn't affect result)
                 + (useThree ? $"{DefSeparator}{CatMny3}" : ""), // optionally add a third category (for other tests)
                 separator: DefSeparator,
-                compareMode: RelationshipFilter.CompareModes.contains.ToString());
+                compareMode: RelationshipFilter.CompareModeContains);
 
 
 
@@ -126,16 +126,17 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         public void CompanyCategory_ContainsAllBadSeparator() 
             => new RelationshipTestCase("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, 
                 $"{CatWeb}{AltSeparator}{CatGreen}", 
-                compareMode:RelationshipFilter.CompareModes.contains.ToString()
+                compareMode:RelationshipFilter.CompareModeContains
                 )
             .Run(false); // since the separator won't separate, it will not find anything
 
          [TestMethod]
         public void CompanyCategory_ContainsAllAltSeparator()
          {
-             new RelationshipTestCase("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat,
+             new RelationshipTestCase("basic-cat-having-title",
+                     RelationshipTestSpecs.Company, CompCat,
                      $"{CatWeb}{AltSeparator}{CatGreen}",
-                     compareMode: RelationshipFilter.CompareModes.contains.ToString(),
+                     compareMode: RelationshipFilter.CompareModeContains,
                      separator: AltSeparator)
                  .Run(true);
          }
@@ -143,9 +144,10 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
          [TestMethod]
         public void CompanyCategory_Contains2AndCommaCase()
          {
-             new RelationshipTestCase("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat,
+             new RelationshipTestCase("basic-cat-having-title",
+                     RelationshipTestSpecs.Company, CompCat,
                      $"{CatMny1}{AltSeparator}{CatMny2}{AltSeparator}{CatWithComma}",
-                     compareMode: RelationshipFilter.CompareModes.contains.ToString(),
+                     compareMode: RelationshipFilter.CompareModeContains,
                      separator: AltSeparator)
                  .Run(true, exactCount: CompsWithCat12Comma);
          }
@@ -153,9 +155,10 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
          [TestMethod]
         public void CompanyCategory_Contains3AndCommaCase()
          {
-             new RelationshipTestCase("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat,
+             new RelationshipTestCase("basic-cat-having-title",
+                     RelationshipTestSpecs.Company, CompCat,
                      $"{CatMny1}{AltSeparator}{CatMny2}{AltSeparator}{CatMny3}{AltSeparator}{CatWithComma}",
-                     compareMode: RelationshipFilter.CompareModes.contains.ToString(),
+                     compareMode: RelationshipFilter.CompareModeContains,
                      separator: AltSeparator)
                  .Run(true, exactCount: CompsWithCat123Comma);
          }
@@ -169,11 +172,12 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         /// </summary>
         /// <returns></returns>
         private static RelationshipTestCase BuildContainsAny(bool useThree = false)
-            => new RelationshipTestCase("basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
+            => new RelationshipTestCase("basic-cat-contains-any",
+                RelationshipTestSpecs.Company, CompCat,
                 $"{CatMny1}{DefSeparator}{CatMny2}"
                 + (useThree ? $"{DefSeparator}{CatMny3}" : ""), // optionally add a third category (for other tests)
                 separator: DefSeparator,
-                compareMode: RelationshipFilter.CompareModes.containsany.ToString());
+                compareMode: RelationshipFilter.CompareModeContainsAny);
 
 
         [TestMethod]
@@ -200,7 +204,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             => new RelationshipTestCase("basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
                 $"{CatMny1}{DefSeparator}{CatMny2}", // doesn't really matter hat's here, as we only want the none
                 separator: DefSeparator,
-                compareMode: RelationshipFilter.CompareModes.any.ToString());
+                compareMode: RelationshipFilter.CompareModeAny);
 
         [TestMethod]
         public void CompanyCategory_ContainsAny_FindLots()
@@ -218,7 +222,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             => new RelationshipTestCase("basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
                 $"{CatMny1}{DefSeparator}{CatMny2}", // doesn't really matter hat's here, as we only want the none
                 separator: DefSeparator,
-                compareMode: "not-" + RelationshipFilter.CompareModes.any);
+                compareMode: "not-" + RelationshipFilter.CompareModeAny);
 
 
         [TestMethod]
@@ -234,7 +238,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         private static RelationshipTestCase BuildCount(bool useNot, string amount)
             => new RelationshipTestCase("basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
                 $"{amount}", // doesn't really matter hat's here, as we only want the none
-                compareMode: (useNot ? "not-" : "") + RelationshipFilter.CompareModes.count);
+                compareMode: (useNot ? "not-" : "") + RelationshipFilter.CompareModeCount);
 
 
         [TestMethod]
@@ -275,7 +279,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
                 $"{CatMny2}"
                 + (includeTheAny ? $"{DefSeparator}{CatForAnyTest3}":""),
                 separator: DefSeparator,
-                compareMode: RelationshipFilter.CompareModes.first.ToString());
+                compareMode: RelationshipFilter.CompareModeFirst);
 
 
         [TestMethod]

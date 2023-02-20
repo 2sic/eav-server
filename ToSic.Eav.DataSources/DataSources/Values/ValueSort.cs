@@ -26,37 +26,37 @@ namespace ToSic.Eav.DataSources
 
     public sealed class ValueSort : DataSource
 	{
-
         #region Configuration-properties
-        private const string AttrKey = "Attributes";
-		private const string DirectionKey = "Directions";
         
 		/// <summary>
 		/// The attribute whose value will be sorted by.
 		/// </summary>
+		[Configuration]
 		public string Attributes
-		{
-			get => Configuration[AttrKey];
-		    set => Configuration[AttrKey] = value;
-		}
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
+        }
 
-		/// <summary>
-		/// The sorting direction like 'asc' or 'desc', can also be 0, 1
-		/// </summary>
+        /// <summary>
+        /// The sorting direction like 'asc' or 'desc', can also be 0, 1
+        /// </summary>
+        [Configuration]
 		public string Directions
-		{
-			get => Configuration[DirectionKey];
-		    set => Configuration[DirectionKey] = value;
-		}
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
+        }
 
-		/// <summary>
-		/// Language to filter for. At the moment it is not used, or it is trying to find "any"
-		/// </summary>
+        /// <summary>
+        /// Language to filter for. At the moment it is not used, or it is trying to find "any"
+        /// </summary>
+        [Configuration(Fallback = ValueLanguages.LanguageDefaultPlaceholder)]
 		public string Languages
-		{
-			get => Configuration[ValueLanguages.LangKey];
-		    set => Configuration[ValueLanguages.LangKey] = value;
-		}
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
+        }
 		#endregion
 
 		/// <inheritdoc />
@@ -64,16 +64,13 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new ValueSort
 		/// </summary>
 		[PrivateApi]
-		public ValueSort(ValueLanguages valLanguages, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.ValSrt")
+		public ValueSort(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.ValSrt")
         {
             ConnectServices(
                 _valLanguages = valLanguages
             );
 
             Provide(GetValueSort);
-		    ConfigMask(AttrKey, $"[Settings:{AttrKey}]");
-		    ConfigMask(DirectionKey, $"[Settings:{DirectionKey}]");
-		    ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
         }
         private readonly ValueLanguages _valLanguages;
 

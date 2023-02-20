@@ -10,10 +10,10 @@ namespace ToSic.Eav.Core.Tests.Configuration
         [TestMethod]
         public void FingerprintExistsAndStaysTheSame()
         {
-            var fingerprint = Build<SystemFingerprint>().GetFingerprint();
+            var fingerprint = GetService<SystemFingerprint>().GetFingerprint();
             Assert.IsNotNull(fingerprint);
             Assert.IsTrue(fingerprint.Length > 10);
-            var fingerprint2 = Build<SystemFingerprint>().GetFingerprint();
+            var fingerprint2 = GetService<SystemFingerprint>().GetFingerprint();
 
             Assert.AreEqual(fingerprint, fingerprint2, "the fingerprint should stay the same");
         }

@@ -17,7 +17,7 @@ namespace ToSic.Eav.ImportExport.Tests
         private readonly XmlSerializer _xmlSerializer;
         public XmlSerializationTests()
         {
-            _xmlSerializer = Build<XmlSerializer>();
+            _xmlSerializer = GetService<XmlSerializer>();
         }
 
         //private int AppId = 2;
@@ -27,9 +27,9 @@ namespace ToSic.Eav.ImportExport.Tests
         public void Xml_SerializeItemOnHome()
         {
             var test = new SpecsTestExportSerialize();
-            var app = Build<IRepositoryLoader>().AppState(test.AppId, false);
+            var app = GetService<IRepositoryLoader>().AppState(test.AppId, false);
             //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
-            var languageMap = Build<IAppStates>().Languages(test.ZoneId)
+            var languageMap = GetService<IAppStates>().Languages(test.ZoneId)
                 .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app);
             var xmlEnt = exBuilder.Serialize(test.TestItemToSerialize);
@@ -44,8 +44,8 @@ namespace ToSic.Eav.ImportExport.Tests
         {
             var test = new SpecsTestExportSerialize();
             var appId = test.AppId;
-            var app = Build<IRepositoryLoader>().AppState(appId, false);
-            var languageMap = Build<IAppStates>().Languages(test.ZoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
+            var app = GetService<IRepositoryLoader>().AppState(appId, false);
+            var languageMap = GetService<IAppStates>().Languages(test.ZoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app);
 
             var maxCount = 500;

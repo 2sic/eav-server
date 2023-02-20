@@ -30,37 +30,37 @@ namespace ToSic.Eav.DataSources
     public class AttributeRename : DataSource
 	{
 		#region Configuration-properties
-		private const string AttributeMapKey = "AttributeMap";
-		private const string KeepOtherAttributesKey = "KeepOtherAttributes";
-        private const string TypeNameKey = "TypeName";
 
         /// <summary>
         /// A string containing one or more attribute maps.
         /// The syntax is "NewName=OldName" - one mapping per line
         /// </summary>
+        [Configuration]
         public string AttributeMap
-		{
-		    get => Configuration[AttributeMapKey];
-            set => Configuration[AttributeMapKey] = value;
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// True/false if attributes not renamed should be preserved.
         /// </summary>
+        [Configuration(Fallback = true)]
         public bool KeepOtherAttributes
         {
-            get => DataSourceConfiguration.TryConvertToBool(Configuration[KeepOtherAttributesKey]);
-            set => Configuration[KeepOtherAttributesKey] = value.ToString();
+            get => Configuration.GetThis(true);
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// A string containing one or more attribute maps.
         /// The syntax is "NewName=OldName" - one mapping per line
         /// </summary>
+        [Configuration]
         public string TypeName
         {
-            get => Configuration[TypeNameKey];
-            set => Configuration[TypeNameKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         #endregion
@@ -70,15 +70,12 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeRename(MultiBuilder multiBuilder, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.AtrRen")
-
+		public AttributeRename(MultiBuilder multiBuilder, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.AtrRen")
         {
-            _multiBuilder = multiBuilder;
-
+            ConnectServices(
+                _multiBuilder = multiBuilder
+            );
             Provide(GetList);
-			ConfigMask(AttributeMapKey, "[Settings:AttributeMap]");
-			ConfigMask(KeepOtherAttributesKey, $"[Settings:KeepOtherAttributes||True]");
-			ConfigMask(TypeNameKey, $"[Settings:TypeName]");
         }
 
         private readonly MultiBuilder _multiBuilder;

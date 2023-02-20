@@ -30,5 +30,19 @@ namespace ToSic.Eav.Data.Builder
         public ValueBuilder Value => _valueBuilder.Value;
 
         public ContentTypeBuilder ContentType => _contentTypeBuilder.Value;
+
+        /// <summary>
+        /// Does a full-clone while also cloning (separating) attributes and relationships...?
+        /// Note that relationships are not 100% clear if it's a full clone
+        /// ATM only used by the tree builder which generate ephemeral data
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public Entity FullClone(IEntity entity)
+        {
+            return Entity.Clone(entity,
+                Attribute.Clone(entity.Attributes),
+                ((RelationshipManager)entity.Relationships).AllRelationships);
+        }
     }
 }

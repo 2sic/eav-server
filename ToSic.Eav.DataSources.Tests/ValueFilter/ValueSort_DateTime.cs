@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with Modified!
 
     [TestClass]
-    public class ValueSort_DateTime: TestBaseDiEavFullAndDb
+    public class ValueSort_DateTime: TestBaseEavDataSource
     {
         private const int TestVolume = 30;
         private const string Birthdate = PersonSpecs.FieldBirthday;

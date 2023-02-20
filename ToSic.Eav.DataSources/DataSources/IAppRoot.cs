@@ -13,6 +13,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "All App data from the Cache",
         Icon = Icons.TableChart,
         Type = DataSourceType.Source,
+        Audience = Audience.Advanced,
         GlobalName = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",
         PreviousNames = new []
             {

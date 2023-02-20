@@ -36,15 +36,14 @@ namespace ToSic.Eav.DataSources
 
         #region Constants / Properties
 
-        private const string FieldMapConfigKey = "FieldMap";
-
         /// <summary>
         /// Contains the field map which configures how fields should be connected.
         /// </summary>
+        [Configuration]
         public string FieldMap
         {
-            get => Configuration[FieldMapConfigKey];
-            set => Configuration[FieldMapConfigKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
         #endregion
 
@@ -52,14 +51,12 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public LanguageModeler(MultiBuilder multiBuilder, Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.LngMod")
+        public LanguageModeler(MultiBuilder multiBuilder, MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.LngMod")
         {
-            _multiBuilder = multiBuilder;
-            // Specify what out-streams this data-source provides. Usually just one, called "Default"
+            ConnectServices(
+                _multiBuilder = multiBuilder
+            );
             Provide(MapLanguagesIntoValues);
-
-            // Register the configurations we want as tokens, so that the values will be injected later on
-            ConfigMask(FieldMapConfigKey, $"[Settings:{FieldMapConfigKey}]");
         }
 
         private readonly MultiBuilder _multiBuilder;

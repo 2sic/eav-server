@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
         public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks)
         {
-            if (_useLightModel)
+            if (IsLight)
                 return base.GetBestValue(attributeName);
 
             var set = FindPropertyInternal(new PropReqSpecs(attributeName, languages), null);

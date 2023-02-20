@@ -7,10 +7,9 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
-    public class SqlDsTst: TestBaseDiEavFullAndDb
+    public class SqlDsTst: TestBaseEavDataSource
     {
         private const string ConnectionDummy = "";
-        private const string ConnectionName = TestConstants.ConStr;// "Data Source=.\\SQLExpress;Initial Catalog=2flex 2Sexy Content;Integrated Security=True";
         private const string ContentTypeName = "SqlData";
 
         [TestMethod]
@@ -122,7 +121,7 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
             var select = "SELECT [PortalID] as entityId, HomeDirectory As entityTitle, " +
                          "[AdministratorId],[GUID],[HomeDirectory],[PortalGroupID] " +
                          "FROM [Portals]";
-            var sql = GenerateSqlDataSource(ConnectionName, select, ContentTypeName);
+            var sql = GenerateSqlDataSource(TestConfiguration.ConStr, select, ContentTypeName);
             var list = sql.ListForTests();
             Assert.IsTrue(list.Any(), "found some");
         }
@@ -131,12 +130,8 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
 
         public Sql GenerateSqlDataSource(string connection, string query, string typeName)
         {
-            var source = this.GetTestDataSource<Sql>(LookUpTestData.AppSetAndRes())
+            return CreateDataSource<Sql>(LookUpTestData.AppSetAndRes())
                 .Setup(connection, query, typeName);
-            //source.Init(LookUpTestData.AppSetAndRes());
-            //source.ConfigurationProvider = DemoConfigs.AppSetAndRes();
-
-            return source;
         }
     }
 }

@@ -8,6 +8,8 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
+using ToSic.Eav.Data;
+using System.Security.Policy;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys
@@ -23,7 +25,7 @@ namespace ToSic.Eav.DataSources.Sys
         Icon = Icons.BorderOuter,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         DynamicOut = false,
         PreviousNames = new []
             {
@@ -36,6 +38,8 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Zones: DataSource
 	{
+        private readonly IDataBuilder _dataBuilder;
+
         #region Configuration-properties (no config)
 
 	    private const string ZoneContentTypeName = "EAV_Zones";
@@ -47,11 +51,12 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Zones DS
         /// </summary>
         [PrivateApi]
-		public Zones(Dependencies dependencies, IZoneMapper zoneMapper, IAppStates appStates): base(dependencies, $"{DataSourceConstants.LogPrefix}.Zones")
+		public Zones(MyServices services, IZoneMapper zoneMapper, IAppStates appStates, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.Zones")
         {
             ConnectServices(
                 _zoneMapper = zoneMapper,
-                _appStates = appStates
+                _appStates = appStates,
+                _dataBuilder = dataBuilder.Configure(appId: 0, titleField: ZoneType.Name.ToString(), typeName: ZoneContentTypeName)
             );
             Provide(GetList);
         }
@@ -59,39 +64,32 @@ namespace ToSic.Eav.DataSources.Sys
         private readonly IAppStates _appStates;
 
 
-        private ImmutableArray<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
-            
             // Get cache, which manages a list of zones
             var zones = _appStates.Zones;
-            var builder = DataBuilder;
             var list = zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
-	        {
-	            var site = _zoneMapper.SiteOfZone(zone.ZoneId);
+            {
+                var site = _zoneMapper.SiteOfZone(zone.ZoneId);
 
-	            // Assemble the entities
-	            var znData = new Dictionary<string, object>
-	            {
+                // Assemble the entities
+                var znData = new Dictionary<string, object>
+                {
                     {ZoneType.Id.ToString(), zone.ZoneId},
-                    {ZoneType.Name.ToString(), $"Zone {zone.ZoneId}" },
-	                {ZoneType.TenantId.ToString(), site?.Id},
-	                {ZoneType.TenantName.ToString(), site?.Name},
-                    {ZoneType.DefaultAppId.ToString(), zone.DefaultAppId },
-                    {ZoneType.PrimaryAppId.ToString(), zone.PrimaryAppId },
-                    {ZoneType.IsCurrent.ToString(), zone.ZoneId == ZoneId },
-                    {ZoneType.AppCount.ToString(), zone.Apps.Count }
-	            };
+                    {ZoneType.Name.ToString(), $"Zone {zone.ZoneId}"},
+                    {ZoneType.TenantId.ToString(), site?.Id},
+                    {ZoneType.TenantName.ToString(), site?.Name},
+                    {ZoneType.DefaultAppId.ToString(), zone.DefaultAppId},
+                    {ZoneType.PrimaryAppId.ToString(), zone.PrimaryAppId},
+                    {ZoneType.IsCurrent.ToString(), zone.ZoneId == ZoneId},
+                    {ZoneType.AppCount.ToString(), zone.Apps.Count}
+                };
 
-                return builder.Entity(znData,
-                    appId: 0, 
-                    id:zone.ZoneId, 
-                    titleField: ZoneType.Name.ToString(), 
-                    typeName: ZoneContentTypeName);
+                return _dataBuilder.Create(znData, id: zone.ZoneId);
             });
             var results = list.ToImmutableArray();
-            return wrapLog.Return(results, $"{results.Length}");
-        }
+            return (results, $"{results.Length}");
+        });
 
-	}
+    }
 }

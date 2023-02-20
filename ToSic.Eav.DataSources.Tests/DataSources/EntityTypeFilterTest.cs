@@ -7,7 +7,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests
 {
     [TestClass]
-    public class EntityTypeFilterTest: TestBaseDiEavFullAndDb
+    public class EntityTypeFilterTest: TestBaseEavDataSource
     {
         [TestMethod]
         public void EntityTypeFilter_FindAllIfAllApply()
@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSourceTests
         public EntityTypeFilter CreateEntityTypeFilterForTesting(int testItemsInRootSource)
         {
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
-            var filtered = DataSourceFactory.GetDataSource<EntityTypeFilter>(ds);
+            var filtered = CreateDataSource<EntityTypeFilter>(ds);// DataSourceFactory.GetDataSource<EntityTypeFilter>(ds);
             return filtered;
         }
     }

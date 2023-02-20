@@ -23,11 +23,11 @@ namespace ToSic.Eav.WebApi.Admin.Query
     /// <summary>
     /// Web API Controller for the Pipeline Designer UI
     /// </summary>
-    public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerDependencies> where TImplementation : QueryControllerBase<TImplementation>
+    public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerServices> where TImplementation : QueryControllerBase<TImplementation>
     {
-        protected QueryControllerBase(QueryControllerDependencies dependencies, string logName) : base(dependencies, logName)
+        protected QueryControllerBase(QueryControllerServices services, string logName) : base(services, logName)
         {
-            QueryBuilder = dependencies.QueryBuilder;
+            QueryBuilder = services.QueryBuilder;
         }
         private AppManager _appManager;
         private QueryBuilder QueryBuilder { get; }
@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         public TImplementation Init(int appId)
         {
             if (appId != 0) // if 0, then no context is available or used
-                _appManager = Deps.AppManagerLazy.Value.Init(appId);
+                _appManager = Services.AppManagerLazy.Value.Init(appId);
             return this as TImplementation;
         }
 
@@ -45,14 +45,13 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// <summary>
         /// Get a Pipeline with DataSources
         /// </summary>
-		public QueryDefinitionDto Get(int appId, int? id = null)
+        public QueryDefinitionDto Get(int appId, int? id = null) => Log.Func($"a#{appId}, id:{id}", l2 =>
         {
-            var l = Log.Fn<QueryDefinitionDto>($"a#{appId}, id:{id}");
             var query = new QueryDefinitionDto();
 
-            if (!id.HasValue) return l.Return(query, "no id, empty");
+            if (!id.HasValue) return (query, "no id, empty");
 
-            var reader = Deps.AppReaderLazy.Value.Init(appId, false);
+            var reader = Services.AppReaderLazy.Value.Init(appId, false);
             var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
@@ -60,7 +59,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             query.Pipeline = qDef.Entity.AsDictionary();
             query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
 
-            var converter = Deps.EntToDicLazy.Value;
+            var converter = Services.EntToDicLazy.Value;
             converter.Type.Serialize = true;
             converter.Type.WithDescription = true;
             converter.WithGuid = true;
@@ -75,17 +74,15 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             #endregion
 
-            return l.Return(query, "ok");
-        }
+            return (query, "ok");
+        });
 
         /// <summary>
         /// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
         /// </summary>
-        public IEnumerable<DataSourceDto> DataSources()
+        public IEnumerable<DataSourceDto> DataSources() => Log.Func(() =>
         {
-            var dsCatalog = Deps.DataSourceCatalogLazy.Value;
-
-            var callLog = Log.Fn<IEnumerable<DataSourceDto>>();
+            var dsCatalog = Services.DataSourceCatalogLazy.Value;
             var installedDataSources = DataSourceCatalog.GetAll(true);
 
             var result = installedDataSources
@@ -98,9 +95,9 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 })
                 .ToList();
 
-            return callLog.Return(result, result.Count.ToString());
+            return (result, result.Count.ToString());
 
-        }
+        });
 
         /// <summary>
         /// Save Pipeline
@@ -108,10 +105,8 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
         /// <param name="appId">AppId this Pipeline belongs to</param>
         /// <param name="id">PipelineEntityId</param>
-        public QueryDefinitionDto Save(QueryDefinitionDto data, int appId, int id)
-		{
-		    Log.A($"save pipe: a#{appId}, id#{id}");
-
+        public QueryDefinitionDto Save(QueryDefinitionDto data, int appId, int id) => Log.Func($"save pipe: a#{appId}, id#{id}", l =>
+        {
             // assemble list of all new data-source guids, for later re-mapping when saving
             var newDsGuids = data.DataSources.Where(d => d.ContainsKey("EntityGuid"))
                 .Select(d => d["EntityGuid"].ToString())
@@ -121,13 +116,14 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             // Update Pipeline Entity with new Wirings etc.
             var wiringString = data.Pipeline[Constants.QueryStreamWiringAttributeName]?.ToString() ?? "";
-            var wirings = JsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
+            var wirings =
+                JsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
                 ?? new List<Connection>();
 
             _appManager.Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
-		    return Get(appId, id);
-		}
+            return Get(appId, id);
+        });
 
         /// <summary>
         /// Query the Result of a Pipeline using Test-Parameters
@@ -147,7 +143,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 var resultStream = source.Out[streamName];
                 
                 // Repackage as DataSource since that's expected / needed
-                var passThroughDs = Deps.PassThrough.New();
+                var passThroughDs = Services.PassThrough.New();
                 passThroughDs.Attach(streamName, resultStream);
 
                 return passThroughDs;
@@ -156,13 +152,13 @@ namespace ToSic.Eav.WebApi.Admin.Query
             return RunDevInternal(appId, id, lookUps, top, GetSubStream);
         }
 
-        protected QueryRunDto RunDevInternal(int appId, int id, LookUpEngine lookUps, int top, Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup)
-		{
-            var wrapLog = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
-
+        protected QueryRunDto RunDevInternal(int appId, int id, LookUpEngine lookUps, int top,
+            Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup
+        ) => Log.Func($"a#{appId}, {nameof(id)}:{id}, top: {top}", () =>
+        {
             // Get the query, run it and track how much time this took
-		    var qDef = QueryBuilder.GetQueryDefinition(appId, id);
-			var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, true, lookUps);
+            var qDef = QueryBuilder.GetQueryDefinition(appId, id);
+            var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, true, lookUps);
             var outSource = builtQuery.Item1;
 
 
@@ -170,7 +166,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             timer.Start();
             var results = Log.Func(message: "Serialize", timer: true, func: () =>
             {
-                var converter = Deps.EntToDicLazy.Value;
+                var converter = Services.EntToDicLazy.Value;
                 converter.WithGuid = true;
                 converter.MaxItems = top;
                 var converted = converter.Convert(partLookup(builtQuery));
@@ -179,25 +175,29 @@ namespace ToSic.Eav.WebApi.Admin.Query
             timer.Stop();
 
             // Now get some more debug info
-            var debugInfo = Deps.QueryInfoLazy.Value.BuildQueryInfo(qDef, outSource);
+            var debugInfo = Services.QueryInfoLazy.Value.BuildQueryInfo(qDef, outSource);
 
             // ...and return the results
-			return wrapLog.Return(new QueryRunDto
-			{
-				Query = results, 
-				Streams = debugInfo.Streams.Select(si =>
+            var result = new QueryRunDto
+            {
+                Query = results,
+                Streams = debugInfo.Streams
+                    .Select(si =>
+                    {
+                        if (si.ErrorData is IEntity errorEntity)
+                            si.ErrorData = Services.EntToDicLazy.Value.Convert(errorEntity);
+                        return si;
+                    })
+                    .ToList(),
+                Sources = debugInfo.Sources,
+                QueryTimer = new QueryTimerDto
                 {
-                    if(si.ErrorData is IEntity errorEntity)
-                        si.ErrorData = Deps.EntToDicLazy.Value.Convert(errorEntity);
-                    return si;
-                }).ToList(),
-				Sources = debugInfo.Sources,
-                QueryTimer = new QueryTimerDto { 
                     Milliseconds = timer.ElapsedMilliseconds,
                     Ticks = timer.ElapsedTicks
                 }
-			});
-		}
+            };
+            return (result, "ok");
+        });
 
 
         /// <summary>
@@ -212,13 +212,11 @@ namespace ToSic.Eav.WebApi.Admin.Query
 		public bool Delete(int id) => _appManager.Queries.Delete(id);
 
 
-        public bool Import(EntityImportDto args)
+        public bool Import(EntityImportDto args) => Log.Func(args.DebugInfo, l =>
         {
             try
             {
-                Log.A("import content" + args.DebugInfo);
-
-                var deser = Deps.JsonSerializer.New()/*.Init(Log)*/.SetApp(_appManager.AppState);
+                var deser = Services.JsonSerializer.New().SetApp(_appManager.AppState);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = new QueryDefinition(ents, args.AppId, Log);
                 _appManager.Queries.SaveCopy(qdef);
@@ -227,9 +225,10 @@ namespace ToSic.Eav.WebApi.Admin.Query
             }
             catch (Exception ex)
             {
+                l.Ex(ex);
                 throw new Exception($"Couldn't import - {ex?.Message ?? "probably bad file format"}.", ex);
             }
-        }
+        });
 
     }
 }

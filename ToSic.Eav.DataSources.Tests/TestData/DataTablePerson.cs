@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Core.Tests.LookUp;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
@@ -11,12 +12,15 @@ namespace ToSic.Eav.DataSourceTests.TestData
 {
     public class DataTablePerson: TestServiceBase
     {
-        public DataTablePerson(IServiceBuilder serviceProvider) : base(serviceProvider)
+        private readonly TestBaseEavDataSource _parent;
+
+        public DataTablePerson(TestBaseEavDataSource parent) : base(parent)
         {
-            _multiBuilder = Build<MultiBuilder>();
+            _parent = parent;
+            _multiBuilder = GetService<MultiBuilder>();
         }
 
-        private MultiBuilder _multiBuilder;
+        private readonly MultiBuilder _multiBuilder;
 
         private static readonly Dictionary<int, DataTable> CachedDs = new Dictionary<int, DataTable>();
 
@@ -28,7 +32,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
             var dataTable = new System.Data.DataTable();
             dataTable.Columns.AddRange(new[]
             {
-                new DataColumn(DataTable.EntityIdDefaultColumnName, typeof (int)),
+                new DataColumn(Attributes.EntityFieldId, typeof (int)),
                 new DataColumn(PersonSpecs.FieldFullName),
                 new DataColumn(PersonSpecs.FieldFirstName),
                 new DataColumn(PersonSpecs.FieldLastName),
@@ -54,7 +58,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                     person.CityOrNull,
                     person.Modified));
 
-            var source = this.GetTestDataSource<DataTable>(LookUpTestData.AppSetAndRes())
+            var source = _parent.CreateDataSource<DataTable>(LookUpTestData.AppSetAndRes())
                 .Setup(dataTable, PersonSpecs.PersonTypeName, 
                     titleField: PersonSpecs.FieldFullName, 
                     modifiedField: PersonSpecs.FieldModifiedInternal)

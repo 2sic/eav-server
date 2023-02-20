@@ -66,6 +66,7 @@ namespace ToSic.Eav.Data
         public const string EntityFieldCreated = "created";
         public const string EntityFieldModified = "modified";
         public const string EntityFieldOwner = "owner";
+        public const string EntityFieldOwnerId = "ownerid";
         public const string EntityFieldCreatorWIP = "creator";  // this is not in use yet, but probably will be soon
 
         #endregion
@@ -97,10 +98,11 @@ namespace ToSic.Eav.Data
             { EntityFieldCreated, "This is an internal field which tells us when the entity was created."},
             { EntityFieldModified, "This is an internal field which tells us when the entity was last modified."},
             { EntityFieldOwner, "This is used for the property of the owner of the Entity "},
+            { EntityFieldOwnerId, "This is used for the property of the owner of the Entity "},
             { EntityFieldCreatorWIP, "This is used for the property of the creator of the Entity "},
             { "for", "This is an internal information which tells us if the entity is metadata for something."},
             { "metadata", "This is usually a property on the entity which tells us about additional metadata of this entity."},
-            { "toolbar", "This is used as a property in DNN only to also generate a toolbar" },
+            { "toolbar", "This is used as a property to generate a toolbar (in DNN only)" },
 
             { "count", "This is a real property on IDynamicObject so you shouldn't use it" },
             { "entity", "This is a very common term in 2sxc, and would confuse users. " },

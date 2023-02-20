@@ -1,30 +1,29 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Lib.DI;
+﻿using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
     public abstract partial class DataSource
     {
-        public class Dependencies : ServiceDependencies
+        public class MyServices : MyServicesBase
         {
-            public DataSourceConfiguration.Dependencies ConfigDependencies { get; }
-            public LazySvc<IDataBuilder> DataBuilder { get; }
+            public DataSourceConfiguration Configuration { get; }
+            public ConfigurationDataLoader ConfigDataLoader { get; }
             public LazySvc<DataSourceErrorHandling> ErrorHandler { get; }
 
             /// <summary>
             /// Note that we will use Generators for safety, because in rare cases the dependencies could be re-used to create a sub-data-source
             /// </summary>
-            public Dependencies(
-                LazySvc<IDataBuilder> dataBuilder,
+            public MyServices(
+                DataSourceConfiguration configuration,
                 LazySvc<DataSourceErrorHandling> errorHandler,
-                DataSourceConfiguration.Dependencies configDependencies
+                ConfigurationDataLoader configDataLoader
             )
             {
-                AddToLogQueue(
-                    DataBuilder = dataBuilder,
+                ConnectServices(
+                    Configuration = configuration,
                     ErrorHandler = errorHandler,
-                    ConfigDependencies = configDependencies
+                    ConfigDataLoader = configDataLoader
                 );
             }
         }

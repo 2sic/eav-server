@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Core.Tests.LookUp;
+﻿using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
@@ -8,19 +7,17 @@ namespace ToSic.Eav.DataSourceTests
 {
     public class ValueFilterMaker: TestServiceBase
     {
-        private readonly DataSourceFactory _dataSourceFactory;
-        public ValueFilterMaker(IServiceBuilder parent): base(parent)
+        public ValueFilterMaker(TestBaseEavDataSource parent) : base(parent)
         {
-            _dataSourceFactory = Build<DataSourceFactory>();
         }
 
         public ValueFilter CreateValueFilterForTesting(int itemsToGenerate, bool useDataTable, bool multiLanguage = false)
         {
             var ds = useDataTable
-                ? new DataTablePerson(this).Generate(itemsToGenerate) as IDataSource
-                : _dataSourceFactory.GetDataSource<PersonsDataSource>(new AppIdentity(1, 1), null, LookUpTestData.EmptyLookupEngine)
-                    .Init(itemsToGenerate, multiLanguage: multiLanguage).Init(LookUpTestData.AppSetAndRes());
-            var filtered = _dataSourceFactory.GetDataSource<ValueFilter>(new AppIdentity(1, 1), ds);
+                ? new DataTablePerson(Parent).Generate(itemsToGenerate) as IDataSource
+                : Parent.CreateDataSource<PersonsDataSource>(LookUpTestData.AppSetAndRes())
+                    .Init(itemsToGenerate, multiLanguage: multiLanguage);
+            var filtered = Parent.CreateDataSource<ValueFilter>(ds);
             return filtered;
         }
 
@@ -28,10 +25,10 @@ namespace ToSic.Eav.DataSourceTests
         public ValueSort GeneratePersonSourceWithDemoData(int itemsToGenerate, bool useDataTable = true, bool multiLanguage = false)
         {
             var ds = useDataTable
-                ? new DataTablePerson(this).Generate(itemsToGenerate) as IDataSource
-                : _dataSourceFactory.GetDataSource<PersonsDataSource>(new AppIdentity(1, 1), null, LookUpTestData.EmptyLookupEngine)
-                    .Init(itemsToGenerate, multiLanguage: multiLanguage).Init(LookUpTestData.AppSetAndRes());
-            var filtered = _dataSourceFactory.GetDataSource<ValueSort>(ds, ds);
+                ? new DataTablePerson(Parent).Generate(itemsToGenerate) as IDataSource
+                : Parent.CreateDataSource<PersonsDataSource>(LookUpTestData.AppSetAndRes())
+                    .Init(itemsToGenerate, multiLanguage: multiLanguage);
+            var filtered = Parent.DataSourceFactory.GetDataSource<ValueSort>(ds);
             return filtered;
         }
 

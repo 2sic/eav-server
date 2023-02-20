@@ -1,24 +1,18 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Generics;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
 {
     public partial class Entity
     {
         /// <inheritdoc />
-        public Dictionary<string, IAttribute> Attributes
-        {
-            get => _attributes ?? (_attributes = AttribBuilder.GetStatic().ConvertToInvariantDic(LightAttributesForInternalUseOnlyForNow));
-            internal set => _attributes = (value ?? new Dictionary<string, IAttribute>()).ToInvariant();
-        }
-
-        private Dictionary<string, IAttribute> _attributes;
+        public Dictionary<string, IAttribute> Attributes { get; }
 
         /// <summary>
         /// This determines if the access to the properties will use light-objects, or IAttributes containing multi-language objects
         /// </summary>
-        private bool _useLightModel;
+        [PrivateApi("internal use only, can change any time")]
+        public bool IsLight { get; }
 
 
         /// <inheritdoc />

@@ -11,7 +11,7 @@ namespace ToSic.Eav.Context
 
         public string IdentityToken => "unknown(eav):0";
 
-        public Guid? Guid => System.Guid.Empty;
+        public Guid Guid => System.Guid.Empty;
 
         public List<int> Roles => new List<int>();
 
@@ -27,11 +27,11 @@ namespace ToSic.Eav.Context
 
         public bool IsContentAdmin => false;
 
-        public bool IsDesigner => false;
+        public bool IsSiteDeveloper => false;
 
         public int Id => 0;
 
-        public string Username => "unknown";
+        public string Username => Constants.NullNameId;
 
         public string Name => Username;
 

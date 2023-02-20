@@ -2,9 +2,11 @@
 using System.Linq;
 using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Data;
+using ToSic.Eav.Generics;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Apps
@@ -20,7 +22,7 @@ namespace ToSic.Eav.Apps
     {
         #region Constructor stuff
 
-        public AppData(Dependencies dependencies, LazySvc<SimpleDataController> dataController): base(dependencies)
+        public AppData(MyServices services, LazySvc<SimpleDataController> dataController): base(services)
         {
             ConnectServices(
                 DataController = dataController.SetInit(dc => dc.Init(ZoneId, AppId, false))
@@ -42,6 +44,9 @@ namespace ToSic.Eav.Apps
             ITarget target = null
         ) => Log.Func(contentTypeName, () =>
         {
+            // Ensure case insensitive
+            values = values.ToInvariant();
+
             if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
             var ids = DataController.Value.Create(contentTypeName, new List<Dictionary<string, object>> { values }, target);
             var id = ids.FirstOrDefault();
@@ -55,7 +60,7 @@ namespace ToSic.Eav.Apps
         private static void ProvideOwnerInValues(Dictionary<string, object> values, string userIdentityToken)
         {
             // userIdentityToken is not simple 'userName' string, but 2sxc user IdentityToken structure (eg 'dnn:user=N')
-            if (values.Any(v => v.Key.ToLowerInvariant() == Attributes.EntityFieldOwner)) return;
+            if (values.ContainsKey(Attributes.EntityFieldOwner)) return;
             values.Add(Attributes.EntityFieldOwner, userIdentityToken);
         }
 
@@ -65,6 +70,9 @@ namespace ToSic.Eav.Apps
             string userName = null
         ) => Log.Func(message: $"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}", func: () =>
         {
+            // ensure case insensitive
+            multiValues = multiValues.Select(mv => mv.ToInvariant()).ToList();
+
             if (!string.IsNullOrEmpty(userName))
                 foreach (var values in multiValues)
                     ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')

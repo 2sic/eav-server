@@ -14,20 +14,21 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
     {
         public IFeaturesInternalTests()
         {
-            FeaturesInternal = Build<IFeaturesInternal>();
+            FeaturesInternal = GetService<IFeaturesInternal>();
         }
         internal IFeaturesInternal FeaturesInternal;
 
-        protected override IServiceCollection SetupServices(IServiceCollection services)
+        protected override void SetupServices(IServiceCollection services)
         {
-            return base.SetupServices(services).AddTransient<IPlatformInfo, TestPlatformPatronPerfectionist>();
+            base.SetupServices(services);
+            services.AddTransient<IPlatformInfo, TestPlatformPatronPerfectionist>();
         }
 
 
         [TestMethod]
         public void EnsureIFeaturesAndIFeaturesInternalAreSameSingleton()
         {
-            var featuresNonInternal = Build<IFeaturesService>();
+            var featuresNonInternal = GetService<IFeaturesService>();
             Assert.AreEqual(FeaturesInternal, featuresNonInternal, "They must be the identical object");
         }
 

@@ -23,17 +23,17 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         public void Init()
         {
             Trace.Write("initializing DB & loader");
-            Db = Build<EavDbContext>();
+            Db = GetService<EavDbContext>();
             Loader = NewLoader();
         }
 
-        public Efc11Loader NewLoader() => Build<Efc11Loader>().UseExistingDb(Db);
+        public Efc11Loader NewLoader() => GetService<Efc11Loader>().UseExistingDb(Db);
 
 
         protected JsonSerializer SerializerOfApp(int appId)
         {
             var app = Loader.AppState(appId, false);
-            return Build<JsonSerializer>().SetApp(app);
+            return GetService<JsonSerializer>().SetApp(app);
         }
 
         #endregion

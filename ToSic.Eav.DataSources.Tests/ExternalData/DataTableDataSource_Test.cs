@@ -7,7 +7,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
-    public class DataTableTst: TestBaseDiEavFullAndDb
+    public class DataTableTst: TestBaseEavDataSource
     {
 
         [TestMethod]
@@ -35,8 +35,8 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             const int itemsToGenerate = 499;
             var ds = new DataTablePerson(this).Generate(itemsToGenerate);
 
-            var expKey =
-                "DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person";
+            //var expKey = "DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person";
+            var expKey = "DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName";
             Assert.AreEqual(expKey, ds.CachePartialKey);
             Assert.AreEqual(expKey, ds.CacheFullKey);
             var lastRefresh = ds.CacheTimestamp; // get this before comparison, because sometimes slow execution will get strange results

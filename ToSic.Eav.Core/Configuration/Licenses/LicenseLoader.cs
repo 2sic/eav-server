@@ -53,16 +53,15 @@ namespace ToSic.Eav.Configuration.Licenses
             );
         }
 
-        internal LicenseLoader Init(List<LicenseEntity> licenseData)
+        internal LicenseLoader Init(List<EnterpriseFingerprint> entFingerprints)
         {
-            _licenseData = licenseData;
+            _fingerprint.LoadEnterpriseFingerprintsWIP(entFingerprints);
             return this;
         }
 
         private readonly LicenseCatalog _licenseCatalog;
         private readonly SystemFingerprint _fingerprint;
         private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
-        private List<LicenseEntity> _licenseData;
 
         /// <summary>
         /// Pre-Load enabled / disabled global features
@@ -71,11 +70,14 @@ namespace ToSic.Eav.Configuration.Licenses
         internal void LoadLicenses() => Log.Do(timer: true, action: l=>
         {
             var fingerprint = _fingerprint.GetFingerprint();
+            var validEntFps = _fingerprint.EnterpriseFingerprintsWIP
+                .Where(e => e.Valid)
+                .ToList();
             try
             {
-                var licensesStored = LicensesStoredInConfigFolder();
+                var licensesStored = LoadLicensesInConfigFolder();
                 l.A($"Found {licensesStored.Count} licenseStored in files");
-                var licenses = licensesStored.SelectMany(ls => LicensesStateBuilder(ls, fingerprint)).ToList();
+                var licenses = licensesStored.SelectMany(ls => LicensesStateBuilder(ls, fingerprint, validEntFps)).ToList();
                 var autoEnabled = AutoEnabledLicenses();
                 LicenseService.Update(autoEnabled.Union(licenses).ToList());
                 l.A($"Found {licenses.Count} licenses");
@@ -89,7 +91,11 @@ namespace ToSic.Eav.Configuration.Licenses
             }
         });
 
-        private List<LicenseStored> LicensesStoredInConfigFolder() => Log.Func(l =>
+        /// <summary>
+        /// Load the license JSON files
+        /// </summary>
+        /// <returns></returns>
+        private List<LicenseStored> LoadLicensesInConfigFolder() => Log.Func(l =>
         {
             // ensure that path to store files already exits
             var configFolder = _globalConfiguration.Value.ConfigFolder;
@@ -105,7 +111,8 @@ namespace ToSic.Eav.Configuration.Licenses
             return licensesStored;
         });
         
-        private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored, string fingerprint) => Log.Func(l =>
+        private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored, string fingerprint,
+            List<EnterpriseFingerprint> validEntFps) => Log.Func(l =>
         {
             if (licenseStored == null) return (new List<LicenseState>(), "null");
 
@@ -127,7 +134,7 @@ namespace ToSic.Eav.Configuration.Licenses
 
             // Check fingerprints
             var fps = licenseStored.FingerprintsArray;
-            var validFp = fps.Any(fingerprint.Equals) || _licenseData.Any(ld => fps.Any(ld.Fingerprint.Equals));
+            var validFp = fps.Any(fingerprint.Equals) || validEntFps.Any(ld => fps.Any(ld.Fingerprint.Equals));
             l.A($"Fingerprint: {validFp}");
 
             var validVersion = licenseStored.Versions?
@@ -145,18 +152,18 @@ namespace ToSic.Eav.Configuration.Licenses
             l.A($"Licenses: {licenses.Count}");
 
             var licenseStates = licenses
-                .Where(ls => !string.IsNullOrEmpty(ls.Id))
-                .Select(ls =>
+                .Where(storedDetails => !string.IsNullOrEmpty(storedDetails.Id))
+                .Select(storedDetails =>
                 {
-                    var licDef = _licenseCatalog.TryGet(ls.Id);
+                    var licDef = _licenseCatalog.TryGet(storedDetails.Id);
 
                     // If no real license found with this ID, it's probably a single-feature activation
                     // For this we must add a virtual license for this feature only
                     if (licDef == null)
                     {
-                        licDef = new LicenseDefinition(0, ls.Comments ?? "Feature (unknown)",
-                            Guid.TryParse(ls.Id, out var guidId) ? guidId : Guid.Empty,
-                            $"Feature: {ls.Comments} ({ls.Id})");
+                        licDef = new LicenseDefinition(0, storedDetails.Comments ?? "Feature (unknown)",
+                            Guid.TryParse(storedDetails.Id, out var guidId) ? guidId : Guid.Empty,
+                            $"Feature: {storedDetails.Comments} ({storedDetails.Id})");
                         l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId}");
                         _licenseCatalog.Register(licDef);
                     }
@@ -167,11 +174,11 @@ namespace ToSic.Eav.Configuration.Licenses
                         License = licDef,
                         EntityGuid = licenseStored.GuidSalt,
                         LicenseKey = licenseStored.Key,
-                        Expiration = ls.Expires ?? licenseStored.Expires,
-                        ValidExpired = validDate,
-                        ValidFingerprint = validFp,
-                        ValidSignature = validSig,
-                        ValidVersion = validVersion,
+                        Expiration = storedDetails.Expires ?? licenseStored.Expires,
+                        ExpirationIsValid = validDate,
+                        FingerprintIsValid = validFp,
+                        SignatureIsValid = validSig,
+                        VersionIsValid = validVersion,
                         Owner = licenseStored.Owner,
                     };
                 })
@@ -180,7 +187,10 @@ namespace ToSic.Eav.Configuration.Licenses
             return (licenseStates, licenseStates.Count.ToString());
         });
         
-
+        /// <summary>
+        /// Get list of licenses which are always auto-enabled
+        /// </summary>
+        /// <returns></returns>
         private List<LicenseState> AutoEnabledLicenses()
         {
             var licenseStates = _licenseCatalog.List.Where(l => l.AutoEnable).Select(l => new LicenseState
@@ -190,10 +200,10 @@ namespace ToSic.Eav.Configuration.Licenses
                     EntityGuid = Guid.Empty,
                     LicenseKey = "always enabled",
                     Expiration = BuiltInLicenses.UnlimitedExpiry,
-                    ValidExpired = true,
-                    ValidFingerprint = true,
-                    ValidSignature = true,
-                    ValidVersion = true,
+                    ExpirationIsValid = true,
+                    FingerprintIsValid = true,
+                    SignatureIsValid = true,
+                    VersionIsValid = true,
                 })
                 .ToList();
             return licenseStates;

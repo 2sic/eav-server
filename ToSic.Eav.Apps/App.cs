@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
     /// name, folder, data, metadata etc.
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public partial class App: AppBase, IApp
+    public partial class App: AppBase<App.AppServices>, IApp
     {
         #region Constructor / DI
 
@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps
         /// Helper class, so inheriting stuff doesn't need to update the constructor all the time
         /// </summary>
         [PrivateApi]
-        public class AppDependencies: ServiceDependencies
+        public class AppServices: MyServicesBase
         {
             public Generator<Query> QueryGenerator { get; }
             public LazySvc<QueryManager> QueryManager { get; }
@@ -32,14 +32,14 @@ namespace ToSic.Eav.Apps
             internal readonly IAppStates AppStates;
             internal readonly DataSourceFactory DataSourceFactory;
 
-            public AppDependencies(IZoneMapper zoneMapper,
+            public AppServices(IZoneMapper zoneMapper,
                 ISite site,
                 IAppStates appStates,
                 DataSourceFactory dataSourceFactory,
                 LazySvc<QueryManager> queryManager,
                 Generator<Query> queryGenerator)
             {
-                AddToLogQueue(
+                ConnectServices(
                     ZoneMapper = zoneMapper,
                     Site = site,
                     AppStates = appStates,
@@ -53,16 +53,16 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="dependencies">All the dependencies of this app, managed by this app</param>
+        /// <param name="services">All the dependencies of this app, managed by this app</param>
         /// <param name="logName">must be null by default, because of DI</param>
-        public App(AppDependencies dependencies, string logName = null): base(logName ?? "Eav.App")
+        public App(AppServices services, string logName = null): base(services, logName ?? "Eav.App")
         {
-            Deps = dependencies.SetLog(Log);
-            _dsFactory = dependencies.DataSourceFactory;
+            //Deps = services.SetLog(Log);
+            _dsFactory = services.DataSourceFactory;
             
-            Site = dependencies.Site;
+            Site = services.Site;
         }
-        private readonly AppDependencies Deps;
+        //private readonly AppServices Deps;
         private readonly DataSourceFactory _dsFactory;
 
 
@@ -94,7 +94,7 @@ namespace ToSic.Eav.Apps
             // in case the DI gave a bad tenant, try to look up
             if (Site.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
                 appIdentity.AppId != AppConstants.AppIdNotFound)
-                Site = Deps.ZoneMapper.SiteOfApp(appIdentity.AppId);
+                Site = Services.ZoneMapper.SiteOfApp(appIdentity.AppId);
 
             // if zone is missing, try to find it - but always assume current context
             if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
@@ -106,7 +106,7 @@ namespace ToSic.Eav.Apps
             // Look up name in cache
             // 2020-11-25 changed to use State.Get. before it was this...
             //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
-            NameId = Deps.AppStates.Get(this).NameId;
+            NameId = Services.AppStates.Get(this).NameId;
 
             InitializeResourcesSettingsAndMetadata();
 

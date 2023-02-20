@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources.Queries
         public string TestParameters => Get<string>(FieldTestParams, null);
 
         [PrivateApi]
-        public IEnumerable<ILookUp> TestParameterLookUps => GenerateTestValueLookUps();
+        public List<ILookUp> TestParameterLookUps => GenerateTestValueLookUps();
 
         /// <summary>
         /// Retrieve test values to test a specific query. 
@@ -32,13 +32,13 @@ namespace ToSic.Eav.DataSources.Queries
         /// They are in the format [source:key]=value
         /// </summary>
         /// <returns></returns>
-        private IEnumerable<ILookUp> GenerateTestValueLookUps()
+        private List<ILookUp> GenerateTestValueLookUps() => Log.Func($"{Entity.EntityId}", l =>
         {
-            var wrapLog = Log.Fn<IEnumerable<ILookUp>>($"{Entity.EntityId}");
             // Parse Test-Parameters in Format [Token:Property]=Value
             var testParameters = TestParameters;
             if (testParameters == null)
-                return wrapLog.ReturnNull();
+                return (new List<ILookUp>(), "no test params");
+
             // extract the lines which look like [source:property]=value
             var testValueTokens = TestParamRegex.Matches(testParameters);
 
@@ -58,8 +58,9 @@ namespace ToSic.Eav.DataSources.Queries
                 // Add the static value
                 currentLookUp.Properties.Add(testParam.Groups[KeyProperty].Value, testParam.Groups[KeyValue].Value);
             }
-            return wrapLog.ReturnAsOk(result);
-        }
+
+            return (result, "ok");
+        });
 
     }
 }

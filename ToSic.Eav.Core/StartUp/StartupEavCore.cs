@@ -24,7 +24,8 @@ namespace ToSic.Eav.StartUp
         public static IServiceCollection AddEavCore(this IServiceCollection services)
         {
             // Data Builder & Converters
-            services.TryAddTransient<IDataBuilder, DataBuilder>();
+            services.TryAddTransient<IDataBuilderInternal, DataBuilderInternal>();
+            services.TryAddTransient<IDataBuilder, DataBuilder>(); // v15.03
             services.TryAddTransient<MultiBuilder>();
             services.TryAddTransient<DimensionBuilder>();
             services.TryAddTransient<AttributeBuilder>();
@@ -60,7 +61,7 @@ namespace ToSic.Eav.StartUp
             services.AddTransient<AppsCacheSwitch>();   // Transient should work... wip
             
             // Permissions helper
-            services.TryAddTransient<PermissionCheckBase.Dependencies>();
+            services.TryAddTransient<PermissionCheckBase.MyServices>();
 
             services.TryAddTransient<ILicenseService, LicenseService>();
 

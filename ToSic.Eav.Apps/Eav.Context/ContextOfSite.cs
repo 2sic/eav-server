@@ -12,23 +12,23 @@ namespace ToSic.Eav.Context
     /// All these objects should normally be injectable
     /// In rare cases you may want to replace them, which is why Site/User have Set Accessors
     /// </summary>
-    public class ContextOfSite: ServiceBase, IContextOfSite
+    public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSite
     {
         #region Constructor / DI
 
-        public class Dependencies: ServiceDependencies
+        public class MyServices: MyServicesBase
         {
             public ISite Site { get; }
             public IUser User { get; }
             public Generator<AppPermissionCheck> AppPermissionCheck { get; }
 
-            public Dependencies(
+            public MyServices(
                 ISite site,
                 IUser user,
                 Generator<AppPermissionCheck> appPermissionCheck
             )
             {
-                AddToLogQueue(
+                ConnectServices(
                     Site = site,
                     User = user,
                     AppPermissionCheck = appPermissionCheck
@@ -38,16 +38,16 @@ namespace ToSic.Eav.Context
         /// <summary>
         /// Constructor for DI
         /// </summary>
-        /// <param name="dependencies"></param>
-        public ContextOfSite(Dependencies dependencies) : this(dependencies, null)
-        {
-        }
+        /// <param name="services"></param>
+        public ContextOfSite(MyServices services) : this(services, null) { }
 
-        protected ContextOfSite(Dependencies dependencies, string logName) : base(logName ?? "Eav.CtxSte")
+        protected ContextOfSite(MyServices services, string logName) : base(services, logName ?? "Eav.CtxSte")
         {
-            SiteDeps = dependencies.SetLog(Log);
-            Site = dependencies.Site;
-            User = dependencies.User;
+            Site = Services.Site;
+        }
+        protected ContextOfSite(MyServicesBase<MyServices> services, string logName) : base(services, logName ?? "Eav.CtxSte")
+        {
+            Site = Services.Site;
         }
 
         #endregion
@@ -57,21 +57,17 @@ namespace ToSic.Eav.Context
         public ISite Site { get; set; }
 
         /// <inheritdoc />
-        public IUser User { get; }
+        public IUser User => Services.User;
 
         /// <inheritdoc />
         public virtual bool UserMayEdit => Log.Getter(() =>
         {
             var u = User;
             if (u == null) return false;
-            return u.IsSystemAdmin || u.IsSiteAdmin || u.IsDesigner;
+            return u.IsSystemAdmin || u.IsSiteAdmin || u.IsSiteDeveloper;
         });
 
         /// <inheritdoc />
-        [PrivateApi]
-        public Dependencies SiteDeps { get; }
-
-        /// <inheritdoc />
-        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(SiteDeps, Log.NameId).LinkLog(parentLog);
+        public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(Services, Log.NameId).LinkLog(parentLog);
     }
 }

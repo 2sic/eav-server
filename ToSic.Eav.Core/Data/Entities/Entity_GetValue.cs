@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data
         // ReSharper disable once InheritdocInvalidUsage
         /// <inheritdoc />
         public object GetBestValue(string attributeName, string[] languages)
-            => _useLightModel
+            => IsLight
                 ? base.GetBestValue(attributeName)
                 : FindPropertyInternal(new PropReqSpecs(attributeName, languages), null).Result;
 

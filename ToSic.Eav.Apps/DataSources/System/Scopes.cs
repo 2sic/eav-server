@@ -22,27 +22,15 @@ namespace ToSic.Eav.DataSources.Sys
         Icon = Icons.Scopes,
         Type = DataSourceType.System,
         GlobalName = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global
     public sealed class Scopes : DataSource
     {
+        private readonly IDataBuilder _scopesDataBuilder;
 
         #region Configuration-properties (no config)
-
-        private const string AppIdKey = "AppId";
-
-        /// <summary>
-        /// The app id
-        /// </summary>
-        [PrivateApi("As of now, switching apps is not a feature we want to provide")]
-        private int OfAppId
-        {
-            get => int.TryParse(Configuration[AppIdKey], out var aid) ? aid : AppId;
-            // ReSharper disable once UnusedMember.Local
-            set => Configuration[AppIdKey] = value.ToString();
-        }
 
         #endregion
 
@@ -51,13 +39,14 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Scopes(Dependencies dependencies, IAppStates appStates) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Scopes(MyServices services, IAppStates appStates, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
-                _appStates = appStates
+                _appStates = appStates,
+                // Note: these are really the scopes of the current app, so we set the AppId
+                _scopesDataBuilder = dataBuilder.Configure(appId: AppId, typeName: "Scope")
             );
             Provide(GetList);
-            ConfigMask(AppIdKey);
         }
         private readonly IAppStates _appStates;
 
@@ -65,11 +54,11 @@ namespace ToSic.Eav.DataSources.Sys
         {
             Configuration.Parse();
 
-            var appId = OfAppId;
+            var appId = AppId;
 
             var scopes = _appStates.Get(appId).ContentTypes.GetAllScopesWithLabels();
 
-            var scopeBuilder = new DataBuilderQuickWIP(DataBuilder, appId: appId, typeName: "Scope", titleField: Data.Attributes.TitleNiceName);
+            var scopeBuilder = _scopesDataBuilder;
             var list = scopes
                 .Select(s => scopeBuilder.Create(new Dictionary<string, object>
                     {

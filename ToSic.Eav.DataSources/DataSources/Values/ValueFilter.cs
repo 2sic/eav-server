@@ -30,55 +30,55 @@ namespace ToSic.Eav.DataSources
     {
         #region Configuration-properties Attribute, Value, Language, Operator
 
-        private const string AttrKey = "Attribute";
-        private const string ExpectedKey = "Value";
-        private const string OperatorKey = "Operator";
-        private const string TakeKey = "Take";
-
         /// <summary>
 		/// The attribute whose value will be scanned / filtered.
 		/// </summary>
-		public string Attribute
+        [Configuration]
+        public string Attribute
         {
-            get => Configuration[AttrKey];
-            set => Configuration[AttrKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// The filter that will be used - for example "Daniel" when looking for an entity w/the value Daniel
         /// </summary>
+        [Configuration]
         public string Value
         {
-            get => Configuration[ExpectedKey];
-            set => Configuration[ExpectedKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// Language to filter for. At the moment it is not used, or it is trying to find "any"
         /// </summary>
+        [Configuration(Fallback = ValueLanguages.LanguageDefaultPlaceholder)]
         public string Languages
         {
-            get => Configuration[ValueLanguages.LangKey];
-            set => Configuration[ValueLanguages.LangKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// The comparison operator, == by default, many possibilities exist
         /// depending on the original types we're comparing
         /// </summary>
-		public string Operator
+        [Configuration(Fallback = "==")]
+        public string Operator
         {
-            get => Configuration[OperatorKey];
-            set => Configuration[OperatorKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// Amount of items to take - then stop filtering. For performance optimization.
         /// </summary>
-		public string Take
+        [Configuration]
+        public string Take
         {
-            get => Configuration[TakeKey];
-            set => Configuration[TakeKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
         #endregion
 
@@ -87,18 +87,13 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new ValueFilter
         /// </summary>
         [PrivateApi]
-        public ValueFilter(ValueLanguages valLanguages, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.ValFil")
+        public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.ValFil")
         {
             ConnectServices(
                 _valueLanguageService = valLanguages
             );
 
             Provide(GetValueFilterOrFallback);
-            ConfigMask(AttrKey, $"[Settings:{AttrKey}]");
-            ConfigMask(ExpectedKey, $"[Settings:{ExpectedKey}]");
-            ConfigMask(OperatorKey, $"[Settings:{OperatorKey}||==]");
-            ConfigMask(TakeKey, $"[Settings:{TakeKey}]");
-            ConfigMask(ValueLanguages.LangKey, ValueLanguages.LanguageSettingsPlaceholder);
         }
         private readonly ValueLanguages _valueLanguageService;
 

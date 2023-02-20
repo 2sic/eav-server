@@ -14,6 +14,6 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         public bool AutoEnable { get; set; }
         public bool IsEnabled { get; set; }
 
-        public IEnumerable<FeatureState> Features { get; set; }
+        public List<FeatureState> Features { get; set; }
     }
 }

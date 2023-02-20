@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Lib.Documentation;
@@ -41,46 +39,22 @@ namespace ToSic.Eav.LookUp
             if (Data == null)
                 return string.Empty;
 
-            // bool notFound;
+            // Try to just find, and format the result if all is ok
             var valueObject = Data.GetBestValue(key, _dimensions);
-            var notFound = valueObject == null; // this is used multiple times
-
-            if (!notFound)
-            {
-                switch (Type.GetTypeCode(valueObject.GetType()))
-                {
-                    case TypeCode.String:
-                        return FormatString((string)valueObject, format);
-                    case TypeCode.Boolean:
-                        return Format((bool) valueObject);
-                    case TypeCode.DateTime:
-                        // make sure datetime is converted as universal time with the correct format specifier if no format is given
-                        return !string.IsNullOrWhiteSpace(format)
-                            ? ((DateTime) valueObject).ToString(format, IZoneCultureResolverExtensions.SafeCultureInfo(_dimensions))
-                            : Format((DateTime) valueObject);
-                    case TypeCode.Double:
-                    case TypeCode.Single:
-                    case TypeCode.Int16:
-                    case TypeCode.Int32:
-                    case TypeCode.Int64:
-                    case TypeCode.Decimal:
-                        // make sure it's converted to a neutral number format with "." notation if no format was given
-                        return !string.IsNullOrWhiteSpace(format)
-                            ? ((IFormattable) valueObject).ToString(format, IZoneCultureResolverExtensions.SafeCultureInfo(_dimensions))
-                            : ((IFormattable) valueObject).ToString("G", CultureInfo.InvariantCulture);
-                    default:
-                        return FormatString(valueObject.ToString(), format);
-                }
-            }
+            if (valueObject != null)
+                return FormatValue(valueObject, format, _dimensions);
 
             // Not found yet, so check for Navigation-Property (e.g. Manager:Name)
             var subTokens = CheckAndGetSubToken(key);
-            if (!subTokens.HasSubtoken) return string.Empty;
+            if (!subTokens.HasSubtoken)
+                return string.Empty;
             valueObject = Data.GetBestValue(subTokens.Source, _dimensions);
-            if (valueObject == null) return string.Empty;
+            if (valueObject == null)
+                return string.Empty;
 
             // Finally: Handle child-Entity-Field (sorted list of related entities)
-            if (!(valueObject is IEnumerable<IEntity> relationshipList)) return string.Empty;
+            if (!(valueObject is IEnumerable<IEntity> relationshipList))
+                return string.Empty;
             var first = relationshipList.FirstOrDefault();
             return first == null
                 ? string.Empty

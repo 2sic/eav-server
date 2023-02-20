@@ -14,11 +14,11 @@ namespace ToSic.Eav.Apps.Security
     public class AppPermissionCheck: PermissionCheckBase
     {
         #region Constructor & DI
-        public AppPermissionCheck(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{AppConstants.LogName}.PrmChk")
+        public AppPermissionCheck(IAppStates appStates, MyServices services) : base(services, $"{AppConstants.LogName}.PrmChk")
         {
             ConnectServices(
                 _appStates = appStates,
-                _environmentPermission = (EnvironmentPermission)dependencies.EnvironmentPermission
+                _environmentPermission = (EnvironmentPermission)services.EnvironmentPermission
             );
         }
         private readonly IAppStates _appStates;

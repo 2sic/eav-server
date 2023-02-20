@@ -8,7 +8,6 @@ using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
-using ToSic.Lib.Logging;
 using ToSic.Sxc.Apps.ImportExport;
 using ToSic.Testing.Shared;
 
@@ -23,13 +22,14 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public ImportAppTests()
         {
-            _zipImport = Build<ZipImport>();
-            _dbData = Build<DbDataController>();
-            _zoneManager = Build<ZoneManager>();
+            _zipImport = GetService<ZipImport>();
+            _dbData = GetService<DbDataController>();
+            _zoneManager = GetService<ZoneManager>();
         }
 
-        protected override void AddServices(IServiceCollection services)
+        protected override void SetupServices(IServiceCollection services)
         {
+            base.SetupServices(services);
             services.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
             services.AddTransient<XmlImportWithFiles, XmlImportFull>();
         }
@@ -74,7 +74,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             // to be sure, clean up first
             DeleteAnApp(Apps[name].Guid);
 
-            var helper = (ImportExportEnvironmentMock)Build<IImportExportEnvironment>();
+            var helper = (ImportExportEnvironmentMock)GetService<IImportExportEnvironment>();
             var baseTestPath = helper.BasePath;
             var testFileName = baseTestPath + @"Import-Packages\" + Apps[name].Zip;
 

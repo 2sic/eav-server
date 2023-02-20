@@ -15,9 +15,10 @@
  *
  */
 
-using System;
+using System.Collections.Generic;
 using System.Reflection;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
@@ -56,15 +57,15 @@ namespace ToSic.Eav.Security.Fingerprint
             var dbConnection = GetDbName().ToLowerInvariant();      // Database name
             var versionEav = Assembly.GetExecutingAssembly().GetName().Version;
 
-            fingerprintKey = $"guid={systemGuid}&platform={nameId}&sys={sysVersion.Major}&eav={versionEav.Major}&db={dbConnection}";
-            return _fingerprintCache = Sha256.Hash(fingerprintKey);
+            _fingerprintKey = $"guid={systemGuid}&platform={nameId}&sys={sysVersion.Major}&eav={versionEav.Major}&db={dbConnection}";
+            return _fingerprintCache = Sha256.Hash(_fingerprintKey);
         }
         private static string _fingerprintCache;
 
         /// <summary>
         /// Remember the key for debugging purposes to compare what was used to generate the fingerprint
         /// </summary>
-        private static string fingerprintKey;
+        private static string _fingerprintKey;
 
         private string GetDbName()
         {
@@ -75,5 +76,11 @@ namespace ToSic.Eav.Security.Fingerprint
         }
 
         internal static void ResetForTest() => _fingerprintCache = null;
+
+        public List<EnterpriseFingerprint> EnterpriseFingerprintsWIP => _enterpriseFingerprints;
+        private static List<EnterpriseFingerprint> _enterpriseFingerprints = new List<EnterpriseFingerprint>();
+
+        internal void LoadEnterpriseFingerprintsWIP(List<EnterpriseFingerprint> enterpriseFingerprints) 
+            => _enterpriseFingerprints = enterpriseFingerprints;
     }
 }

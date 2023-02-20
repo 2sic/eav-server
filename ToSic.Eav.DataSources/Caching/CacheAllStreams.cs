@@ -31,35 +31,36 @@ namespace ToSic.Eav.DataSources.Caching
 	public class CacheAllStreams : DataSource
     {
         #region Configuration-properties
-        private const string RefreshOnSourceRefreshKey = "RefreshOnSourceRefresh";
-        private const string CacheDurationInSecondsKey = "CacheDurationInSeconds";
-	    private const string ReturnCacheWhileRefreshingKey = "ReturnCacheWhileRefreshing";
 
 		/// <summary>
-		/// How long to keep these streams in the cache
+		/// How long to keep these streams in the cache.
+		/// Default is `0` - meaning fall back to 1 day
 		/// </summary>
+		[Configuration(Fallback = 0)]
         public int CacheDurationInSeconds
 		{
-            get => int.Parse(Configuration[CacheDurationInSecondsKey]);
-		    set => Configuration[CacheDurationInSecondsKey] = value.ToString();
-		}
+            get => Configuration.GetThis(0);
+            set => Configuration.SetThis(value);
+        }
 
         /// <summary>
         /// If a source-refresh should trigger a cache rebuild
         /// </summary>
+        [Configuration(Fallback = true)]
         public bool RefreshOnSourceRefresh
-	    {
-            get => global::System.Convert.ToBoolean(Configuration[RefreshOnSourceRefreshKey]);
-            set => Configuration[RefreshOnSourceRefreshKey] = value.ToString();
+        {
+            get => Configuration.GetThis(true);
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// Perform a cache rebuild async. 
         /// </summary>
-        public bool ReturnCacheWhileRefreshing 
+        [Configuration(Fallback = false)]
+        public bool ReturnCacheWhileRefreshing
         {
-            get => global::System.Convert.ToBoolean(Configuration[ReturnCacheWhileRefreshingKey]);
-            set => Configuration[ReturnCacheWhileRefreshingKey] = value.ToString();
+            get => Configuration.GetThis(false);
+            set => Configuration.SetThis(value);
         }
 
 
@@ -85,15 +86,10 @@ namespace ToSic.Eav.DataSources.Caching
 		/// Constructs a new App DataSource
 		/// </summary>
 		[PrivateApi]
-		public CacheAllStreams(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.CachAl")
+		public CacheAllStreams(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.CachAl")
 		{
 			// this one is unusual, so don't pre-attach a default data stream
             //OutIsDynamic = true;
-
-			// Set default switch-keys to 0 = no switch
-            Configuration.Values.Add(RefreshOnSourceRefreshKey, "[Settings:" + RefreshOnSourceRefreshKey + "||True]");
-			Configuration.Values.Add(CacheDurationInSecondsKey, "[Settings:" + CacheDurationInSecondsKey + "||0]"); // 0 is default, meaning don't use custom value, use system value of 1 day
-		    Configuration.Values.Add(ReturnCacheWhileRefreshingKey, "False");
         }
 
 		/// <summary>

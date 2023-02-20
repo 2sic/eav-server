@@ -29,22 +29,23 @@ namespace ToSic.Eav.DataSources
     public class Metadata : MetadataDataSourceBase
     {
         /// <summary>
-        /// TODO
+        /// Optional Type Name restriction to only get **Metadata** of this Content Type.
         /// </summary>
+        [Configuration]
         public override string ContentTypeName
         {
-            get => Configuration[nameof(ContentTypeName)];
-            set => Configuration[nameof(ContentTypeName)] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
-        public Metadata(Dependencies dependencies, string logName) : base(dependencies, $"{DataSourceConstants.LogPrefix}.MetaDt")
+        public Metadata(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.MetaDt")
         {
         }
 
         protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName)
         {
-            var find = InnerGet(typeName);
+            var getMdFunc = GetMetadataFunctionGenerator(typeName);
 
-            return originals.SelectMany(o => find(o));
+            return originals.SelectMany(getMdFunc);
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="typeName"></param>
         /// <returns></returns>
         [PrivateApi]
-        private Func<IEntity, IEnumerable<IEntity>> InnerGet(string typeName)
+        private Func<IEntity, IEnumerable<IEntity>> GetMetadataFunctionGenerator(string typeName)
         {
             if (string.IsNullOrEmpty(typeName)) return o => o.Metadata;
 

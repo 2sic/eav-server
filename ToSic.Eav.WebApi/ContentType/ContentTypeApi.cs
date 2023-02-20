@@ -263,7 +263,7 @@ namespace ToSic.Eav.WebApi
             var inputType = attribute.Metadata.GetBestValue<string>(AttributeMetadata.GeneralFieldInputType, AttributeMetadata.TypeGeneral);
 
             // unknown will let the UI fallback on other mechanisms
-            return string.IsNullOrEmpty(inputType) ? "unknown" : inputType;
+            return string.IsNullOrEmpty(inputType) ? Constants.NullNameId : inputType;
         }
 
         private bool HasCalculations(IContentTypeAttribute attribute)

@@ -8,7 +8,7 @@ namespace ToSic.Lib.DI
     /// Lazy generator to create multiple new services/objects of a specific type.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public class Generator<T>: IHasLog, ILazyInitLog
+    public class Generator<TService>: IHasLog, ILazyInitLog
     {
         /// <summary>
         /// Constructor should only be used in DI context and never be called directly.
@@ -21,7 +21,12 @@ namespace ToSic.Lib.DI
         /// Factory method to generate a new service
         /// </summary>
         /// <returns></returns>
-        public T New() => _sp.Build<T>(Log);
+        public TService New()
+        {
+            var service = _sp.Build<TService>(Log);
+            _initCall?.Invoke(service);
+            return service;
+        }
 
         /// <summary>
         /// Initializer to attach the log to the generator.
@@ -35,6 +40,24 @@ namespace ToSic.Lib.DI
         /// _if_ they support logging.
         /// </summary>
         public ILog Log { get; private set; }
+
+        /// <summary>
+        /// Set the init-command as needed
+        /// </summary>
+        /// <param name="newInitCall"></param>
+        public Generator<TService> SetInit(Action<TService> newInitCall)
+        {
+#if DEBUG
+            // Warn if we're accidentally replacing init-call, but only do this on debug
+            // In most cases it has no consequences, but we should write code that avoids this
+            if (_initCall != null)
+                throw new Exception($"You tried to call {nameof(SetInit)} twice. This should never happen");
+#endif
+            _initCall = newInitCall;
+            return this;
+        }
+        private Action<TService> _initCall;
+
 
     }
 }

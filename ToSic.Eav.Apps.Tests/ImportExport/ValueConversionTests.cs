@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Testing.Shared;
@@ -11,8 +10,19 @@ using ToSic.Testing.Shared.Mocks;
 namespace ToSic.Eav.Apps.Tests.ImportExport
 {
     [TestClass]
-    public class ValueConversionTests: TestBaseDiEmpty
+    public class ValueConversionTests: TestBaseForIoC
     {
+        #region Initialize Test
+
+        protected override void SetupServices(IServiceCollection services)
+        {
+            base.SetupServices(services);
+            services.AddTransient<ExportImportValueConversion>();
+            services.AddTransient<IValueConverter, MockValueConverter>();
+        }
+
+        #endregion
+
         private int AppId = 78;
         public Guid ItemGuid = new Guid("cdf540dd-d012-4e7e-b828-7aa0efc5d81f");
 
@@ -24,24 +34,12 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         string unchanged = "some test string which shouldn't change in a resolve as it's not a link or reference";
 
-        protected override void AddServices(IServiceCollection services)
-        {
-            services.AddTransient<ExportImportValueConversion>();
-            services.AddTransient<IValueConverter, MockValueConverter>();
-
-            // added to just to fix this tests, because ths are deps of TestBaseDiEmpty
-            // but it looks that this deps are not yet required for this tests
-            // or we need other test base di
-            services.AddTransient<IGlobalConfiguration, GlobalConfiguration>();
-            services.AddTransient<IDbConfiguration, DbConfiguration>();
-        }
-
 
         #region test basic ResolveHyperlink and ResolveValue
         [TestMethod]
         public void ValueConversion_ResolveHyperlink()
         {
-            var exportListXml = Build<ExportImportValueConversion>();
+            var exportListXml = GetService<ExportImportValueConversion>();
 
             // test the Resolve Hyperlink
             string link = "";
@@ -72,7 +70,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             TestResolvesWithNonLinkType(DataTypes.Hyperlink, false);
 
             var attrType = DataTypes.Hyperlink;
-            var ExportListXml = Build<ExportImportValueConversion>();
+            var ExportListXml = GetService<ExportImportValueConversion>();
 
             // test resolves on any value, just certainly not a link, with "no-resolve"
             Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, true), "test null resolve");
@@ -87,7 +85,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         private void TestResolvesWithNonLinkType(string attrType, bool tryResolve)
         {
-            var ExportListXml = Build<ExportImportValueConversion>();
+            var ExportListXml = GetService<ExportImportValueConversion>();
 
             Assert.AreEqual(XmlConstants.Null, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, null, tryResolve), "test null resolve");
             Assert.AreEqual(XmlConstants.Empty, ExportListXml.ResolveValue(AppId, ItemGuid, attrType, "", tryResolve), "test empty resolve");

@@ -41,7 +41,7 @@ namespace ToSic.Eav.WebApi
             // APIs
             services.TryAddTransient<EntityPickerApi>();
             services.TryAddTransient<ContentTypeApi>();
-            services.TryAddTransient<QueryControllerDependencies>();
+            services.TryAddTransient<QueryControllerServices>();
             services.TryAddTransient(typeof(ContentExportApi<>));
             services.TryAddTransient<ContentImportApi>();
 
@@ -52,7 +52,7 @@ namespace ToSic.Eav.WebApi
             // WIP Converter clean-up v12.05
             // This is still needed on one EAV WebApi for DataSource to JsonBasic conversion
             // Here we only register the dependencies, as the final converter must be registered elsewhere
-            services.TryAddTransient<ConvertToEavLight.Dependencies>();
+            services.TryAddTransient<ConvertToEavLight.MyServices>();
             services.TryAddTransient<ConvertToEavLight, ConvertToEavLight>();
 
             // json serialization converters eav related

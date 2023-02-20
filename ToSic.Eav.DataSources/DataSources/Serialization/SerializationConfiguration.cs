@@ -45,28 +45,33 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Should the ID be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the AppId be included in serialization.
         /// Especially for scenarios where data is retrieved from multiple Apps
         /// </summary>
+        [Configuration]
         public string IncludeAppId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the AppId be included in serialization.
         /// Especially for scenarios where data is retrieved from multiple Apps
         /// </summary>
+        [Configuration]
         public string IncludeZoneId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the GUID be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeGuid { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
-        
+
         /// <summary>
         /// Should the default Title be included as "Title" in serialization
         /// </summary>
+        [Configuration]
         public string IncludeTitle { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         #endregion
@@ -76,11 +81,13 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Should the Modified date be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeModified { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Created date be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeCreated { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         #endregion
@@ -90,22 +97,26 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// todo
         /// </summary>
+        [Configuration]
         public string RemoveNullValues { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// todo
         /// </summary>
+        [Configuration]
         public string RemoveZeroValues { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// todo
         /// </summary>
-        public string RemoveEmptyStrings { get => Configuration[RmvEmptyStringsKey]; set => Configuration[RmvEmptyStringsKey] = value; }
+        [Configuration(Field = RmvEmptyStringsKey)]
+        public string RemoveEmptyStrings { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// todo
         /// </summary>
-        public string DropFalseValues { get => Configuration[RmvBooleanFalseKey]; set => Configuration[RmvBooleanFalseKey] = value; }
+        [Configuration(Field = RmvBooleanFalseKey)]
+        public string DropFalseValues { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         #endregion
 
@@ -114,16 +125,19 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Should the Metadata target/for information be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeMetadataFor { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Metadata target/for information be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeMetadataForId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Metadata target/for information be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeMetadataForType { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
         #endregion
 
@@ -132,21 +146,25 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Should the Metadata ID be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeMetadata { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Metadata ID be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeMetadataId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Metadata GUID be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeMetadataGuid { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the default Title of the Metadata be included as "Title" in serialization
         /// </summary>
+        [Configuration]
         public string IncludeMetadataTitle { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         #endregion
@@ -155,23 +173,35 @@ namespace ToSic.Eav.DataSources
 
 
         /// <summary>
-        /// Should the Relationship ID be included in serialization
+        /// Should the Relationships be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeRelationships { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+
+        /// <summary>
+        /// Should the Relationships be included as CSV like "42,27,999".
+        /// Default is `false` in which case they are sub-objects.
+        /// </summary>
+        /// <remarks>WIP / adding in v15.03</remarks>
+        [Configuration(Fallback = false)]
+        public string IncludeRelationshipsAsCsv { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Relationship ID be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeRelationshipId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Relationship GUID be included in serialization
         /// </summary>
+        [Configuration]
         public string IncludeRelationshipGuid { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the default Title of the Relationship be included as "Title" in serialization
         /// </summary>
+        [Configuration]
         public string IncludeRelationshipTitle { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
         #endregion
 
@@ -184,41 +214,8 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public SerializationConfiguration(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.SerCnf")
+		public SerializationConfiguration(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.SerCnf")
         {
-            // Basic system properties
-            ConfigMask(nameof(IncludeId));
-            ConfigMask(nameof(IncludeGuid));
-            ConfigMask(nameof(IncludeTitle));
-            ConfigMask(nameof(IncludeAppId));
-            ConfigMask(nameof(IncludeZoneId));
-
-            // Dates
-            ConfigMask(nameof(IncludeCreated));
-            ConfigMask(nameof(IncludeModified));
-            
-            // Optimize output - enhanced in 12.05
-            ConfigMask(nameof(RemoveNullValues));
-            ConfigMask(nameof(RemoveZeroValues));
-            ConfigMask(RmvEmptyStringsKey);
-            ConfigMask(RmvBooleanFalseKey);
-
-            // Metadata For - enhanced in 12.05
-            ConfigMask(nameof(IncludeMetadataFor));
-            ConfigMask(nameof(IncludeMetadataForId));
-            ConfigMask(nameof(IncludeMetadataForType));
-
-            // Metadata
-            ConfigMask(nameof(IncludeMetadata));
-            ConfigMask(nameof(IncludeMetadataId));
-            ConfigMask(nameof(IncludeMetadataGuid));
-            ConfigMask(nameof(IncludeMetadataTitle));
-
-            // Relationships
-            ConfigMask(nameof(IncludeRelationships));
-            ConfigMask(nameof(IncludeRelationshipId));
-            ConfigMask(nameof(IncludeRelationshipGuid));
-            ConfigMask(nameof(IncludeRelationshipTitle));
         }
 
         /// <summary>
@@ -271,6 +268,7 @@ namespace ToSic.Eav.DataSources
             var relSer = new SubEntitySerialization
             {
                 Serialize = TryParseIncludeRule(IncludeRelationships),
+                SerializesAsCsv = TryParseIncludeRule(IncludeRelationshipsAsCsv),
                 SerializeId = TryParseIncludeRule(IncludeRelationshipId),
                 SerializeGuid = TryParseIncludeRule(IncludeRelationshipGuid),
                 SerializeTitle = TryParseIncludeRule(IncludeRelationshipTitle)

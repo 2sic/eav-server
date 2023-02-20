@@ -12,21 +12,21 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public abstract partial class XmlImportWithFiles: ServiceBase<XmlImportWithFiles.Dependencies>
+    public abstract partial class XmlImportWithFiles: ServiceBase<XmlImportWithFiles.MyServices>
 	{
-        public class Dependencies: ServiceDependencies
+        public class MyServices: MyServicesBase
         {
             public LazySvc<ContentTypeAttributeBuilder> CtAttribBuilder { get; }
-            internal readonly LazySvc<Import> _importerLazy;
-            internal readonly LazySvc<DbDataController> _dbDataForNewApp;
-            internal readonly LazySvc<DbDataController> _dbDataForAppImport;
-            internal readonly IImportExportEnvironment _environment;
-            internal readonly ITargetTypes _metaTargetTypes;
+            internal readonly LazySvc<Import> ImporterLazy;
+            internal readonly LazySvc<DbDataController> DbDataForNewApp;
+            internal readonly LazySvc<DbDataController> DbDataForAppImport;
+            internal readonly IImportExportEnvironment Environment;
+            internal readonly ITargetTypes MetaTargetTypes;
             internal readonly IAppStates AppStates;
-            internal readonly LazySvc<XmlToEntity> _xmlToEntity;
+            internal readonly LazySvc<XmlToEntity> XmlToEntity;
             internal readonly SystemManager SystemManager;
 
-            public Dependencies(
+            public MyServices(
                 LazySvc<Import> importerLazy,
                 LazySvc<DbDataController> dbDataForNewApp,
                 LazySvc<DbDataController> dbDataForAppImport,
@@ -38,15 +38,15 @@ namespace ToSic.Eav.Apps.ImportExport
                 LazySvc<ContentTypeAttributeBuilder> ctAttribBuilder
                     )
             {
-                AddToLogQueue(
+                ConnectServices(
                     CtAttribBuilder = ctAttribBuilder,
-                    _importerLazy = importerLazy,
-                    _dbDataForNewApp = dbDataForNewApp,
-                    _dbDataForAppImport = dbDataForAppImport,
-                    _environment = importExportEnvironment,
-                    _metaTargetTypes = metaTargetTypes,
+                    ImporterLazy = importerLazy,
+                    DbDataForNewApp = dbDataForNewApp,
+                    DbDataForAppImport = dbDataForAppImport,
+                    Environment = importExportEnvironment,
+                    MetaTargetTypes = metaTargetTypes,
                     AppStates = appStates,
-                    _xmlToEntity = xmlToEntity,
+                    XmlToEntity = xmlToEntity,
                     SystemManager = systemManager
                 );
             }
@@ -71,7 +71,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// constructor, not DI
         /// </summary>
-        protected XmlImportWithFiles(Dependencies dependencies, string logName = null) : base(dependencies, logName ?? "Xml.ImpFil")
+        protected XmlImportWithFiles(MyServices services, string logName = null) : base(services, logName ?? "Xml.ImpFil")
         {
         }
 
@@ -85,7 +85,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             // Prepare
             Messages = new List<Message>();
-            DefaultLanguage = (defaultLanguage ?? Deps._environment.DefaultLanguage).ToLowerInvariant();
+            DefaultLanguage = (defaultLanguage ?? base.Services.Environment.DefaultLanguage).ToLowerInvariant();
             AllowUpdateOnSharedTypes = allowUpdateOnSharedTypes;
             return this;
         }

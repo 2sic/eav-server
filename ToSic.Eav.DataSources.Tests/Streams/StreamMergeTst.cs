@@ -1,16 +1,14 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
-using ToSic.Eav.Core.Tests.LookUp;
 
 namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class StreamMergeTst: TestBaseDiEavFullAndDb
+    public class StreamMergeTst: TestBaseEavDataSource
     {
         const int ItemsToGenerate = 100;
         private const int FirstId = 1001;
@@ -18,7 +16,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         [TestMethod]
         public void StreamMerge_In0()
         {
-            var sf = DataSourceFactory.GetDataSource<StreamMerge>(new AppIdentity(0, 0), null, LookUpTestData.EmptyLookupEngine);
+            var sf = CreateDataSource<StreamMerge>();
             VerifyStreams(sf, 0, 0, 0, 0);
         }
 
@@ -100,7 +98,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
 
         private ValueFilter GenerateSecondStreamWithSomeResults(StreamMerge sf, int itemsInSecondStream)
         {
-            var secondSf = DataSourceFactory.GetDataSource<ValueFilter>(sf.InForTests().First().Value);
+            var secondSf = CreateDataSource<ValueFilter>(sf.InForTests().First().Value);
             secondSf.Attribute = "EntityId";
             secondSf.Operator = "<";
             secondSf.Value = (FirstId + itemsInSecondStream).ToString();
@@ -126,7 +124,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var ds = new DataTablePerson(this).Generate(desiredFinds, FirstId, 
                 false // important: don't cache, because we do duplicate checking in these tests
                 );
-            var sf = DataSourceFactory.GetDataSource<StreamMerge>(new AppIdentity(0, 0), ds);
+            var sf = CreateDataSource<StreamMerge>(ds);
             return sf;
         }
     }

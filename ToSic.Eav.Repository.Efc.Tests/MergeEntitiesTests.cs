@@ -4,10 +4,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Testing.Shared;
-using static ToSic.Testing.Shared.ValueBuilderTestExtensions;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc.Tests
@@ -17,8 +15,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
     {
         public MergeEntitiesTests()
         {
-            _entitySaver = Build<EntitySaver>();
-            BuildData = Build<MultiBuilder>();
+            _entitySaver = GetService<EntitySaver>();
+            BuildData = GetService<MultiBuilder>();
         }
         private readonly EntitySaver _entitySaver;
         private readonly MultiBuilder BuildData;

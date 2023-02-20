@@ -21,7 +21,7 @@ namespace ToSic.Eav.ImportExport.Json
                 WriteIndented = indentation != 0
             });
 
-        internal List<IContentType> GetContentTypesFromBundles(JsonFormat package) => Log.Func(l =>
+        public List<IContentType> GetContentTypesFromBundles(JsonFormat package) => Log.Func(l =>
         {
             if (package.Bundles?.Any() != true) return (new List<IContentType>(), "none found");
 
@@ -41,7 +41,7 @@ namespace ToSic.Eav.ImportExport.Json
             return (result, $"{result.Count}");
         });
 
-        internal List<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null) => Log.Func(l =>
+        public List<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null) => Log.Func(l =>
         {
             if (package.Bundles?.Any() != true) return (new List<IEntity>(), "none found");
 

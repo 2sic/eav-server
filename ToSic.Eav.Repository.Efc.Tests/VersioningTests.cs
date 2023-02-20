@@ -7,7 +7,6 @@ using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Versions;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 using ToSic.Testing.Shared;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Tests
 {
@@ -33,7 +32,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         public VersioningTests()
         {
-            Environment = Build<ImportExportEnvironmentMock>();
+            Environment = GetService<ImportExportEnvironmentMock>();
         }
 
         // todo: move tests to tests of ToSic.Eav.Apps
@@ -42,8 +41,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = ItemToRestoreToV2;
             var version = 2;
-            var appManager = Build<AppManager>().Init(Specs);
-            var dc = Build<DbDataController>().Init(Specs.ZoneId, Specs.AppId);
+            var appManager = GetService<AppManager>().Init(Specs);
+            var dc = GetService<DbDataController>().Init(Specs.ZoneId, Specs.AppId);
             var all = appManager.Entities.VersionHistory(id);  dc.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
 
@@ -61,7 +60,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var id = TestItemWithCa20Changes;
             var version = 6;
-            var _dbData = Build<DbDataController>().Init(Specs.ZoneId, null);
+            var _dbData = GetService<DbDataController>().Init(Specs.ZoneId, null);
             var all = _dbData.Versioning.GetHistoryList(id, false);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
             var vItem = _dbData.Versioning.GetItem(id, vId);
@@ -73,7 +72,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private List<ItemHistory> GetHistoryTest(int entityId, int expectedCount)
         {
-            var _dbData = Build<DbDataController>().Init(Specs.ZoneId, null);
+            var _dbData = GetService<DbDataController>().Init(Specs.ZoneId, null);
             var history = _dbData.Versioning.GetHistoryList(entityId, true);
             Assert.AreEqual(expectedCount, history.Count, $"should have {expectedCount} items in history for this one");
             return history;

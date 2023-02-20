@@ -14,15 +14,15 @@ namespace ToSic.Eav.Apps.Security
     /// <summary>
     /// Do consolidated permission checks on a set of permissions
     /// </summary>
-    public class MultiPermissionsApp: MultiPermissionsBase
+    public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MyServices>
     {
         #region Constructors and DI
 
-        public class Dependencies: ServiceDependencies
+        public class MyServices: MyServicesBase
         {
-            public Dependencies(LazySvc<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator, Generator<IFeaturesInternal> featIntGen)
+            public MyServices(LazySvc<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator, Generator<IFeaturesInternal> featIntGen)
             {
-                AddToLogQueue(
+                ConnectServices(
                     ZoneMapper = zoneMapper,
                     AppPermCheckGenerator = appPermCheckGenerator,
                     FeatIntGen = featIntGen
@@ -37,11 +37,9 @@ namespace ToSic.Eav.Apps.Security
         /// <summary>
         /// Constructor for DI
         /// </summary>
-        public MultiPermissionsApp(Dependencies dependencies) : this(dependencies, "Api.Perms") { }
+        public MultiPermissionsApp(MyServices services) : this(services, "Api.Perms") { }
 
-        protected MultiPermissionsApp(Dependencies dependencies, string logName) : base(logName) 
-            => _deps = dependencies.SetLog(Log);
-        private readonly Dependencies _deps;
+        protected MultiPermissionsApp(MyServices services, string logName) : base(services, logName) {}
 
         public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app)
         {
@@ -54,7 +52,7 @@ namespace ToSic.Eav.Apps.Security
                 ? context.Site 
                 // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
                 // todo: probably enhance with a Site.IsMultiZone check
-                : _deps.ZoneMapper.Value.SiteOfZone(App.ZoneId) ?? context.Site;
+                : Services.ZoneMapper.Value.SiteOfZone(App.ZoneId) ?? context.Site;
             return wrapLog.Return(this, $"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
         }
         /// <summary>
@@ -64,7 +62,7 @@ namespace ToSic.Eav.Apps.Security
         public IContextOfSite Context { get; private set; }
         protected ISite SiteForSecurityCheck { get; private set; }
         protected bool SamePortal { get; private set; }
-        public IFeaturesInternal FeaturesInternal => _deps.FeatIntGen.New();
+        public IFeaturesInternal FeaturesInternal => Services.FeatIntGen.New();
 
         #endregion
 
@@ -94,7 +92,7 @@ namespace ToSic.Eav.Apps.Security
             // user has edit permissions on this app, and it's the same app as the user is coming from
             var modifiedContext = Context.Clone(Log);
             modifiedContext.Site = SiteForSecurityCheck;
-            return _deps.AppPermCheckGenerator.New().ForParts(modifiedContext, App, type, item);
+            return Services.AppPermCheckGenerator.New().ForParts(modifiedContext, App, type, item);
         }
 
     }

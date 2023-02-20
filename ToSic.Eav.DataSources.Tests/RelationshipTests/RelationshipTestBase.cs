@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
@@ -72,13 +71,13 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         {
             var settings = new Dictionary<string, object> { { Attributes.TitleNiceName, "..." } };
 
-            void MaybeAddValue(RelationshipFilter.Settings key, string value) { if (value != null) settings.Add(key.ToString(), value); }
-            MaybeAddValue(RelationshipFilter.Settings.Relationship, relationship);
-            MaybeAddValue(RelationshipFilter.Settings.Filter, filter);
-            MaybeAddValue(RelationshipFilter.Settings.AttributeOnRelationship, relAttrib);
-            MaybeAddValue(RelationshipFilter.Settings.Comparison, compareMode);
-            MaybeAddValue(RelationshipFilter.Settings.Separator, separator);
-            MaybeAddValue(RelationshipFilter.Settings.Direction, direction);
+            void MaybeAddValueStr(string key, string value) { if (value != null) settings.Add(key, value); }
+            MaybeAddValueStr(nameof(RelationshipFilter.Relationship), relationship);
+            MaybeAddValueStr(nameof(RelationshipFilter.Filter), filter);
+            MaybeAddValueStr(RelationshipFilter.FieldAttributeOnRelationship, relAttrib);
+            MaybeAddValueStr(RelationshipFilter.FieldComparison, compareMode);
+            MaybeAddValueStr(nameof(RelationshipFilter.Separator), separator);
+            MaybeAddValueStr(RelationshipFilter.FieldDirection, direction);
 
             var config = BuildConfigurationProvider(settings);
             return BuildRelationshipFilter(RelationshipTestSpecs.Company, config);
@@ -90,7 +89,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         protected RelationshipFilter BuildRelationshipFilter(string primaryType, ILookUpEngine config = null)
         {
             var baseDs = DataSourceFactory.GetPublishing(RelationshipTestSpecs.AppIdentity, configProvider: config);
-            var appDs = DataSourceFactory.GetDataSource<App>(baseDs);
+            var appDs = CreateDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.
             Assert.IsTrue(appDs.ListForTests().Count() > 20, "appDs.List.Count() > 20");
@@ -106,8 +105,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
             Assert.IsTrue(stream.ListForTests().Any(), "stream.List.Count() > 0");
 
-            var relFilt = DataSourceFactory.GetDataSource<RelationshipFilter>(new AppIdentity(0, 0), null, 
-                appDs.Configuration.LookUpEngine);
+            var relFilt = CreateDataSource<RelationshipFilter>(appDs.Configuration.LookUpEngine);
             relFilt.AttachForTests(Constants.DefaultStreamName, stream);
             return relFilt;
         }
@@ -116,7 +114,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         protected static LookUpEngine BuildConfigurationProvider(Dictionary<string, object> vals)
         {
             var vc = LookUpTestData.AppSetAndRes();
-            vc.Add(LookUpTestData.BuildLookUpEntity("Settings", vals));
+            vc.Add(LookUpTestData.BuildLookUpEntity(DataSource.MyConfiguration, vals));
             return vc;
         }
 

@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
 {
     [TestClass]
     // ReSharper disable once InconsistentNaming
-    public class CsvDsTst_RerunIfFailed: TestBaseDiEavFull
+    public class CsvDsTst_RerunIfFailed: TestBaseEavDataSource
     {
         private const int TestFileRowCount = 40;
 
@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
         [TestMethod]
         public void CsvDataSource_ParseSemicolonDelimitedFile()
         {
-            var source = CreateDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Semicolon Delimited.csv"),
+            var source = CreateCsvDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Semicolon Delimited.csv"),
                 ";", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
         [TestMethod]
         public void CsvDataSource_ParseSemicolonDelimitedUTF8File()
         {
-            var source = CreateDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Semicolon Delimited UTF8.csv"), 
+            var source = CreateCsvDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Semicolon Delimited UTF8.csv"), 
                 ";", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
         [TestMethod]
         public void CsvDataSource_ParseTabDelimitedFile()
         {
-            var source = CreateDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Tab Delimited.csv"), 
+            var source = CreateCsvDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Tab Delimited.csv"), 
                 "\t", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
         [Description("Parses a file where texts are enquoted, for example 'Hello 2sic'.")]
         public void CsvDataSource_ParseFileWithQuotedText()
         {
-            var source = CreateDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Quoted Text.csv"),
+            var source = CreateCsvDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Quoted Text.csv"),
                 ";", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
         [Description("Parses a file and the name of the ID column is not defined - IDs should be taken from row numbers.")]
         public void CsvDataSource_ParseFileWithUndefinedIdColumnName()
         {
-            var source = CreateDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Semicolon Delimited.csv"),
+            var source = CreateCsvDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Semicolon Delimited.csv"),
                 ";", "Anonymous", null, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
         [TestMethod]
         public void CsvDataSource_ParseFileWithIdColumnThatCannotBeParsed()
         {
-            var source = CreateDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Semicolon Delimited.csv"),
+            var source = CreateCsvDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Semicolon Delimited.csv"),
                 ";", "Anonymous", TestFileTitleColumnName /* String cannot be parsed to Int */, TestFileTitleColumnName);
             // ReSharper disable once UnusedVariable
             var sourceList = source.ListForTests();
@@ -84,7 +84,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
         [Description("Parses a file where one row has not values for all columns - Test should succeed anyway.")]
         public void CsvDataSource_ParseFileWithInvalidRow()
         {
-            var source = CreateDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Invalid Row.csv"),
+            var source = CreateCsvDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Invalid Row.csv"),
                 ";", "Anonymous", TestFileIdColumnName, TestFileTitleColumnName);
             AssertIsSourceListValid(source);
         }
@@ -122,19 +122,17 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             return entity.Value(entity.Attributes[name].Name);
         }
 
-        public CsvDataSource CreateDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
+        public CsvDataSource CreateCsvDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
         {
-            var source = this.GetTestDataSource<CsvDataSource>(); // EavTestBase.Resolve<CsvDataSource>();
+            var source = CreateDataSource<CsvDataSource>(LookUpTestData.AppSetAndRes());
 
             source.FilePath = filePath;
             source.Delimiter = delimiter;
             source.ContentType = contentType;
             source.IdColumnName = idColumnName;
             source.TitleColumnName = titleColumnName;
-            //source.ConfigurationProvider = DemoConfigs.AppSetAndRes()
 
-
-            return source.Init(LookUpTestData.AppSetAndRes());
+            return source;
         }
     }
 }

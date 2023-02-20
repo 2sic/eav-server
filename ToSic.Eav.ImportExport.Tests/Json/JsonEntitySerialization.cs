@@ -19,8 +19,8 @@ namespace ToSic.Eav.ImportExport.Tests.json
 
         public JsonEntitySerialization()
         {
-            _jsonSerializer = Build<JsonSerializer>();
-            _loader = Build<IRepositoryLoader>();
+            _jsonSerializer = GetService<JsonSerializer>();
+            _loader = GetService<IRepositoryLoader>();
         }
 
         [TestMethod]

@@ -13,18 +13,34 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode] 
     public partial interface IDataSourceConfiguration
     {
-        /// <summary>
-        /// Quick read / add for values which the DataSource will use. 
-        /// </summary>
-        /// <param name="key">The property name/key, like CaseInsensitive or similar</param>
-        /// <param name="value">A string based value</param>
-        string this[string key] { get; set; }
+        // 2022-02-14 2dm disabled, as all DataSources will need recompiling - Remove 2023 Q2
+
+        ///// <summary>
+        ///// Quick read / add for values which the DataSource will use. 
+        ///// </summary>
+        ///// <param name="key">The property name/key, like CaseInsensitive or similar</param>
+        ///// <param name="value">A string based value</param>
+        //string this[string key] { get; set; }
+
+        //[PrivateApi("Still WIP v15")]
+        //void Set<T>(string name, T value);
+
+        //[PrivateApi("Still WIP v15")]
+        //T Get<T>(string name, T fallback);
+
 
         [PrivateApi("Still WIP v15")]
         string GetThis([CallerMemberName] string cName = default);
 
         [PrivateApi("Still WIP v15")]
+        T GetThis<T>(T fallback, [CallerMemberName] string cName = default);
+
+        [PrivateApi("Still WIP v15")]
         void SetThis(string value, [CallerMemberName] string cName = default);
+
+        [PrivateApi("Still WIP v15")]
+        void SetThis<T>(T value, [CallerMemberName] string cName = default);
+
 
         /// <summary>
         /// Tell us if the values have already been parsed or not.

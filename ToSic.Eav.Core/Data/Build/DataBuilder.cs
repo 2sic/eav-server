@@ -1,82 +1,126 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data
 {
-    /// <summary>
-    /// This is a Builder-Object which is used to create any kind of data.
-    /// Get it using Dependency Injection
-    /// </summary>
-    [PrivateApi("Hide implementation")]
-    public partial class DataBuilder: ServiceBase, IDataBuilder
+    [PrivateApi("Still experimental/hide implementation")]
+    public class DataBuilder : ServiceBase, IDataBuilder
     {
+        #region Properties to configure Builder / Defaults
 
-        #region Constructor / DI
+        /// <inheritdoc />
+        public int AppId { get; private set; } = DataBuilderInternal.DefaultAppId;
 
-        /// <summary>
-        /// Primary constructor for DI.
-        /// We recommend that you always call Init afterwards to supply the logger.
-        /// </summary>
-        public DataBuilder(MultiBuilder builder) : base("Dta.Buildr")
-        {
-            _builder = builder;
-        }
-        private readonly MultiBuilder _builder;
+        /// <inheritdoc />
+        public string TitleField { get; private set; } = Attributes.TitleNiceName;
+
+        /// <inheritdoc />
+        public int IdCounter { get; private set; }
+
+        /// <inheritdoc />
+        public IContentType ContentType { get; private set; }
+
+        /// <inheritdoc />
+        public bool IdAutoIncrementZero { get; private set; }
+
+        public const int DefaultIdSeed = 1;
+
+        public DateTime Created { get; } = DateTime.Now;
+        public DateTime Modified { get; } = DateTime.Now;
+
+        private CreateRawOptions CreateRawOptions { get; set; }
 
         #endregion
 
-        public const int DefaultAppId = 0;
-        public const int DefaultEntityId = 0;
-        public const string DefaultTypeName = "unspecified";
+        #region Constructor / DI
 
-        /// <inheritdoc />
-        public IContentType Type(string typeName) => _builder.ContentType.Transient(typeName);
+        private readonly IDataBuilderInternal _parentBuilder;
 
-        /// <inheritdoc />
-        [PublicApi]
-        public IEntity Entity(
-            Dictionary<string, object> values = null,
-            string noParamOrder = Parameters.Protector,
-            int appId = DefaultAppId,
-            int id = DefaultEntityId,
-            string titleField = null,
-            string typeName = DefaultTypeName,
-            IContentType type = null,
-            Guid? guid = null,
-            DateTime? created = null,
-            DateTime? modified = null
-            ) 
-            => new Entity(appId, id, type ?? Type(typeName), values, titleField, created: created, modified: modified, guid: guid);
-
-        /// <inheritdoc />
-        [PublicApi]
-        public IEnumerable<IEntity> Entities(IEnumerable<Dictionary<string, object>> itemValues,
-            string noParamOrder = Parameters.Protector,
-            int appId = 0,
-            string titleField = null,
-            string typeName = DefaultTypeName,
-            IContentType type = null
-            )
+        /// <summary>
+        /// Constructor for DI
+        /// </summary>
+        /// <param name="parentBuilder"></param>
+        public DataBuilder(IDataBuilderInternal parentBuilder): base("Ds.DatBld")
         {
-            type = type ?? Type(typeName);
-            return itemValues.Select(values => Entity(values,
-                appId: appId,
-                titleField: titleField,
-                type: type)
-            );
+            _parentBuilder = parentBuilder;
+        }
+
+        #endregion
+
+        /// <inheritdoc />
+        public IDataBuilder Configure(
+            string noParamOrder = Parameters.Protector,
+            int appId = default,
+            string typeName = default,
+            string titleField = default,
+            int idSeed = DefaultIdSeed,
+            bool idAutoIncrementZero = true,
+            CreateRawOptions createRawOptions = default
+        )
+        {
+            // Ensure parameters are named
+            Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(Configure));
+
+            // Prevent the developer from re-using the DataBuilder
+            if (_alreadyConfigured)
+                throw new Exception(
+                    $"{nameof(Configure)} was already called - you cannot call it twice. " +
+                    $"To get another {nameof(IDataBuilder)}, use Dependency Injection and/or a Generator<{nameof(IDataBuilder)}>.");
+            _alreadyConfigured = true;
+
+            // Store settings
+            AppId = appId;
+            TitleField = titleField.UseFallbackIfNoValue(Attributes.TitleNiceName);
+            IdCounter = idSeed;
+            ContentType = _parentBuilder.Type(typeName ?? DataBuilderInternal.DefaultTypeName);
+            IdAutoIncrementZero = idAutoIncrementZero;
+
+            CreateRawOptions = createRawOptions ?? new CreateRawOptions();
+            return this;
+        }
+        private bool _alreadyConfigured;
+
+        /// <inheritdoc />
+        public IEntity Create(IHasRawEntity withRawEntity) => Create(withRawEntity.RawEntity);
+
+        /// <inheritdoc />
+        public IEntity Create(IRawEntity rawEntity) => Create(
+            rawEntity.GetProperties(CreateRawOptions),
+            id: rawEntity.Id, 
+            guid: rawEntity.Guid,
+            created: rawEntity.Created,
+            modified: rawEntity.Modified
+        );
+
+        public IImmutableList<IEntity> CreateMany(IEnumerable<IRawEntity> rawEntities)
+        {
+            var all = rawEntities.Select(Create).ToList();
+            return all.ToImmutableList();
         }
 
         /// <inheritdoc />
-        [PrivateApi]
-        public IEntity FakeEntity(int appId)
-            => Entity(new Dictionary<string, object> { { Attributes.TitleNiceName, "" } },
-                appId: appId,
-                typeName: "FakeEntity",
-                titleField: Attributes.TitleNiceName
+        public IEntity Create(Dictionary<string, object> values,
+            int id = default,
+            Guid guid = default,
+            DateTime created = default,
+            DateTime modified = default)
+        {
+            var ent = _parentBuilder.Entity(values,
+                appId: AppId,
+                id: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
+                type: ContentType,
+                titleField: TitleField,
+                guid: guid, 
+                created: created == default ? Created : created,
+                modified: modified == default ? Modified : modified
             );
+            return ent;
+        }
     }
 }

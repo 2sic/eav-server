@@ -16,7 +16,7 @@ namespace ToSic.Eav.LookUp
         /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
         /// </summary>
         /// <returns><see cref="Dictionary{TKey,TValue}"/> of <see cref="ILookUp"/> items.</returns>
-        [PrivateApi("prone to change")]
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         Dictionary<string, ILookUp> Sources { get; }
 
         /// <summary>
@@ -49,13 +49,13 @@ namespace ToSic.Eav.LookUp
 	    void AddOverride(IEnumerable<ILookUp> lookUps);
 
 
-        [PrivateApi("still wip")]
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         ILookUpEngine Downstream { get; }
 
-        [PrivateApi("still wip")]
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         ILookUp FindSource(string name);
 
-        [PrivateApi("still wip")]
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         bool HasSource(string name);
     }
 }

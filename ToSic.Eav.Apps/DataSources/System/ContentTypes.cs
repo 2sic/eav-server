@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
@@ -23,7 +24,7 @@ namespace ToSic.Eav.DataSources.Sys
         Icon = Icons.Dns,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
         PreviousNames = new []
@@ -37,36 +38,44 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class ContentTypes: DataSource
 	{
+        private readonly IDataBuilder _dataBuilder;
 
         #region Configuration-properties (no config)
 
         private const string AppIdKey = "AppId";
-        private const string AppIdField = "AppId";
-        private const string ScopeKey = "Scope";
-        private const string ScopeField = "Scope";
-	    //private const string TryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
 	    private const string ContentTypeTypeName = "EAV_ContentTypes";
 	    
 
         /// <summary>
         /// The app id
         /// </summary>
+        [Configuration(Field = AppIdKey)]
         public int OfAppId
         {
-            get => int.TryParse(Configuration[AppIdKey], out int aid) ? aid : AppId;
-            // ReSharper disable once UnusedMember.Global
-            set => Configuration[AppIdKey] = value.ToString();
+            get => Configuration.GetThis(AppId);
+            set => Configuration.SetThis(value);
         }
 
 	    /// <summary>
-	    /// The content-type name
+	    /// The scope to get the content types of - normally it's only the default scope
 	    /// </summary>
+	    /// <remarks>
+	    /// * Renamed to `Scope` in v15, previously was called `OfScope`
+	    /// </remarks>
+	    [Configuration(Fallback = "Default")]
+	    public string Scope
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
+        }
+
+        [PrivateApi]
+        [Obsolete("Do not use anymore, use Scope instead - only left in for compatibility. Probably remove v17 or something")]
 	    public string OfScope
-	    {
-	        get => Configuration[ScopeKey];
-            // ReSharper disable once UnusedMember.Global
-            set => Configuration[ScopeKey] = value;
-	    }
+        {
+            get => Scope;
+            set => Scope = value;
+        }
 
         #endregion
 
@@ -75,53 +84,44 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new ContentTypes DS
         /// </summary>
         [PrivateApi]
-        public ContentTypes(Dependencies dependencies, IAppStates appStates): base(dependencies, $"{DataSourceConstants.LogPrefix}.CTypes")
+        public ContentTypes(MyServices services, IAppStates appStates, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
         {
             ConnectServices(
-                _appStates = appStates
+                _appStates = appStates,
+                _dataBuilder = dataBuilder.Configure(appId: OfAppId, typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString())
             );
             Provide(GetList);
-		    ConfigMask(AppIdKey, $"[Settings:{AppIdField}]");
-		    ConfigMask(ScopeKey, $"[Settings:{ScopeField}||Default]");
 		}
         private readonly IAppStates _appStates;
 
-	    private ImmutableArray<IEntity> GetList()
-	    {
-            var wrapLog = Log.Fn<ImmutableArray<IEntity>>();
-            
+        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        {
             Configuration.Parse();
 
             var appId = OfAppId;
 
-	        var scp = OfScope;
+            var scp = Scope;
             if (string.IsNullOrWhiteSpace(scp)) scp = Data.Scopes.Default;
 
             var types = _appStates.Get(appId).ContentTypes.OfScope(scp);
-            
-            var builder = DataBuilder;
-	        var list = types.OrderBy(t => t.Name).Select(t =>
-	        {
-	            Guid? guid = null;
-	            try
-	            {
-	                if (Guid.TryParse(t.NameId, out Guid g)) guid = g;
-	            }
-	            catch
-	            {
-	                /* ignore */
-	            }
 
-                return builder.Entity(ContentTypeUtil.BuildDictionary(t),
-                    appId:OfAppId, 
-                    id:t.Id, 
-                    titleField: ContentTypeType.Name.ToString(),
-                    typeName: ContentTypeTypeName,
-                    guid: guid);
-	        });
+            var list = types.OrderBy(t => t.Name).Select(t =>
+            {
+                Guid? guid = null;
+                try
+                {
+                    if (Guid.TryParse(t.NameId, out Guid g)) guid = g;
+                }
+                catch
+                {
+                    /* ignore */
+                }
 
-	        var result = list.ToImmutableArray();
-            return wrapLog.Return(result, $"{result.Length}");
-        }
+                return _dataBuilder.Create(ContentTypeUtil.BuildDictionary(t), id: t.Id, guid: guid ?? Guid.Empty);
+            });
+
+            var result = list.ToImmutableArray();
+            return (result, $"{result.Length}");
+        });
     }
 }

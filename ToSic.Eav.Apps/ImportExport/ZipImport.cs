@@ -12,7 +12,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
-    public class ZipImport : ServiceBase<ZipImport.Dependencies>
+    public class ZipImport : ServiceBase<ZipImport.MyServices>
     {
         private readonly Generator<XmlImportWithFiles> _xmlImpExpFiles;
         private readonly IAppStates _appStates;
@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public bool AllowCodeImport;
 
-        public class Dependencies: ServiceDependencies
+        public class MyServices: MyServicesBase
         {
             public Generator<FileManager> FileManagerGenerator { get; }
             public IImportExportEnvironment Environment { get; }
@@ -33,14 +33,14 @@ namespace ToSic.Eav.Apps.ImportExport
             public SystemManager SystemManager { get; }
             public IAppStates AppStates { get; }
 
-            public Dependencies(Generator<FileManager> fileManagerGenerator,
+            public MyServices(Generator<FileManager> fileManagerGenerator,
                 IImportExportEnvironment environment,
                 Generator<XmlImportWithFiles> xmlImpExpFiles,
                 SystemManager systemManager,
                 IAppStates appStates
             )
             {
-                AddToLogQueue(
+                ConnectServices(
                     FileManagerGenerator = fileManagerGenerator,
                     Environment = environment,
                     XmlImpExpFiles = xmlImpExpFiles,
@@ -50,9 +50,9 @@ namespace ToSic.Eav.Apps.ImportExport
             }
         }
 
-        public ZipImport(Dependencies dependencies, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) : base(dependencies, "Zip.Imp")
+        public ZipImport(MyServices services, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) : base(services, "Zip.Imp")
         {
-            Env = Deps.Environment;
+            Env = base.Services.Environment;
             ConnectServices(
                 _xmlImpExpFiles = xmlImpExpFiles,
                 _appStates = appStates,
@@ -282,7 +282,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var templateRoot = Env.TemplatesRoot(_zoneId, appId);
             var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForAppStuff);
             if (Directory.Exists(appTemplateRoot))
-                Deps.FileManagerGenerator.New().SetFolder(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
+                base.Services.FileManagerGenerator.New().SetFolder(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
         });
 
         /// <summary>
@@ -306,7 +306,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     TryToDeleteDirectory(globalTemplatesRoot, Log);
 
                 Log.A("copy all files to app global template folder");
-                Deps.FileManagerGenerator.New()
+                base.Services.FileManagerGenerator.New()
                     .CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
             }
         });

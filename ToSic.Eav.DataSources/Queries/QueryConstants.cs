@@ -6,7 +6,7 @@
 
         public const string Identifier = "Identifier";
 
-        public const string TypeNameForUi = "TypeNameForUi";
+        //public const string TypeNameForUi = "TypeNameForUi";
 
         public const string VisualDesignerData = "VisualDesignerData";
 
@@ -14,6 +14,8 @@
 
         public const string ParamsShowDraftKey = "ShowDrafts";
 
-        public const string ParamsShowDraftToken = "[Settings:ShowDrafts||false]";
+        //public const string ParamsShowDraftKeyAndToken = "ShowDrafts||false";
+
+        public const bool ShowDraftsDefault = false;
     }
 }

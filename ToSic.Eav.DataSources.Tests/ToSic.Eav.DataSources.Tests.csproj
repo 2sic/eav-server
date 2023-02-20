@@ -114,7 +114,10 @@
     <Compile Include="Attributes\AttributeRenameTests_Mapped.cs" />
     <Compile Include="Attributes\AttributeRenameTests_NoChanges.cs" />
     <Compile Include="Attributes\AttributeRenameTests.cs" />
+    <Compile Include="BaseClassTests\ConfigMaskAuto.cs" />
+    <Compile Include="BaseClassTests\GetThisTests.cs" />
     <Compile Include="BaseClassTests\ConfigMaskTests.cs" />
+    <Compile Include="BaseClassTests\TestDsGetThis.cs" />
     <Compile Include="BaseClassTests\TestDataSourceBase.cs" />
     <Compile Include="Caches\CacheAllStreams_Test.cs" />
     <Compile Include="Caches\QuickCaches_Test.cs" />
@@ -127,7 +130,6 @@
     <Compile Include="ExternalData\SqlDsTst.cs" />
     <Compile Include="ImportExport %28disabled, refactoring%29\XmlExport_Test.cs" />
     <Compile Include="ImportExport %28disabled, refactoring%29\XmlImport_Test.cs" />
-    <Compile Include="IServiceBuilderExtensions.cs" />
     <Compile Include="DataSources\ItemFilterDuplicatesTest.cs" />
     <Compile Include="LookUps\LookUpsTest.cs" />
     <Compile Include="DataSources\PagingTest.cs" />
@@ -146,6 +148,8 @@
     <Compile Include="TestData\PersonsDataSource.cs" />
     <Compile Include="TestData\PersonSpecs.cs" />
     <Compile Include="TestData\RandomData.cs" />
+    <Compile Include="TreeMapperTests\RawItemWithOneParentAndManyChildren.cs" />
+    <Compile Include="TreeMapperTests\TreeMapperTest.cs" />
     <Compile Include="ValueFilter\ValueFilterMaker.cs" />
     <Compile Include="Query\QueryBasicTest.cs" />
     <Compile Include="Query\QueryGlobalTest.cs" />
@@ -251,6 +255,7 @@
       <Version>4.3.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

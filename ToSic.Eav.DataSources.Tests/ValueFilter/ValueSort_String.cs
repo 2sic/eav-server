@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSourceTests
     
 
     [TestClass]
-    public class ValueSort_String: TestBaseDiEavFullAndDb
+    public class ValueSort_String: TestBaseEavDataSource
     {
         private const int TestVolume = 30;
         private readonly ValueSort _testDataGeneratedOutsideTimer;

@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Documentation;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.DataSources.Sys
         Icon = Icons.Dns,
         Type = DataSourceType.System,
         GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         DynamicOut = false,
         ExpectsDataOfType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes")]
@@ -30,18 +31,17 @@ namespace ToSic.Eav.DataSources.Sys
 
         #region Configuration-properties (no config)
 
-        private const string ContentTypeKey = "ContentType";
-        private const string ContentTypeField = "ContentTypeName";
 	    private const string TryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
 	    private const string AttribContentTypeName = "EAV_Attribute";
 	    
         /// <summary>
         /// The content-type name
         /// </summary>
+        [Configuration(Fallback = TryToUseInStream)]
         public string ContentTypeName
         {
-            get => Configuration[ContentTypeKey];
-            set => Configuration[ContentTypeKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
         
 		#endregion
@@ -50,15 +50,18 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public Attributes(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Attrib")
+		public Attributes(IAppStates appStates, MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Attrib")
         {
-            _appStates = appStates;
+            ConnectServices(
+                _appStates = appStates,
+                _dataBuilder = dataBuilder.Configure(titleField: AttributeType.Title.ToString(), typeName: AttribContentTypeName)
+            );
             Provide(GetList);
-		    ConfigMask(ContentTypeKey, $"[Settings:{ContentTypeField}||{TryToUseInStream}]");
 		}
         private readonly IAppStates _appStates;
+        private readonly IDataBuilder _dataBuilder;
 
-	    private ImmutableArray<IEntity> GetList()
+        private ImmutableArray<IEntity> GetList()
 	    {
             Configuration.Parse();
 
@@ -100,12 +103,7 @@ namespace ToSic.Eav.DataSources.Sys
                         list.Insert(0, AsDic(sysField.Key, sysField.Value, false, 0, true));
 
             // if it didn't work yet, maybe try from stream items
-            var builder = DataBuilder;
-            return list?.Select(attribData =>
-                           builder.Entity(attribData, titleField: AttributeType.Title.ToString(),
-                               typeName: AttribContentTypeName)
-                       )
-                       .ToImmutableArray()
+            return list?.Select(attribData => _dataBuilder.Create(attribData)).ToImmutableArray()
                    ?? ImmutableArray<IEntity>.Empty;
         }
 

@@ -20,18 +20,10 @@ namespace ToSic.Eav.DataSources
         #endregion
 
         /// <summary>
-        /// Key to be used in settings etc.
-        /// </summary>
-        internal const string LangKey = "Languages";
-
-        /// <summary>
         /// Constants for certain resolution modes
         /// </summary>
         internal const string LanguageDefaultPlaceholder = "default";
         internal const string LanguageCurrentPlaceholder = "current";
-
-        internal static string LanguageSettingsPlaceholder = $"[Settings:{LangKey}||{LanguageDefaultPlaceholder}]";
-
 
         /// <summary>
         /// Prepare language list to use in lookup

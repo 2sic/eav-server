@@ -25,7 +25,7 @@ namespace ToSic.Eav.ImportExport.Json
             return entity;
         }
 
-        internal JsonFormat UnpackAndTestGenericJsonV1(string serialized) => Log.Func(l =>
+        public JsonFormat UnpackAndTestGenericJsonV1(string serialized) => Log.Func(l =>
         {
             JsonFormat jsonObj;
             try
@@ -201,7 +201,7 @@ namespace ToSic.Eav.ImportExport.Json
         {
             try
             {
-                var converter = ((Dependencies)Deps).ValueConverter.Value;
+                var converter = ((MyServices)Services).ValueConverter.Value;
                 var converted = links.ToDictionary(
                     pair => pair.Key,
                     pair => pair.Value.ToDictionary(

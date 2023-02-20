@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
+using System.Net.Mime;
 using ToSic.Eav.Data;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -12,71 +14,64 @@ using SqlDataTable = System.Data.DataTable;
 
 namespace ToSic.Eav.DataSources
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// Provide Entities from a System.Data.DataTable. <br/>
-	/// This is not meant for VisualQuery, but for code which pre-processes data in a DataTable and then wants to provide it as entities. 
-	/// </summary>
-	[PublicApi_Stable_ForUseInYourCode]
+    /// <inheritdoc />
+    /// <summary>
+    /// Provide Entities from a System.Data.DataTable. <br/>
+    /// This is not meant for VisualQuery, but for code which pre-processes data in a DataTable and then wants to provide it as entities. 
+    /// </summary>
+    [PublicApi_Stable_ForUseInYourCode]
 	public class DataTable : ExternalData
 	{
+        private readonly IDataBuilder _dataBuilder;
         // help Link: https://r.2sxc.org/DsDataTable
 		#region Configuration-properties
-
-        private const string TitleFieldKey = "TitleField";
-		private const string EntityIdFieldKey = "EntityIdField";
-		private const string ContentTypeKey = "ContentType";
-	    private const string ModifiedFieldKey = "ModifiedField";
-
-		/// <summary>
-		/// Default Name of the EntityId Column
-		/// </summary>
-		internal static readonly string EntityIdDefaultColumnName = "EntityId";
-
-	    /// <summary>
-	    /// Default Name of the EntityTitle Column
-	    /// </summary>
-	    internal static readonly string EntityTitleDefaultColumnName = Attributes.EntityFieldTitle; 
 
 		/// <summary>
 		/// Source DataTable
 		/// </summary>
         public SqlDataTable Source { get; set; }
 
-		/// <summary>
-		/// Name of the ContentType
-		/// </summary>
-		public string ContentType
+        /// <summary>
+        /// Name of the ContentType. Defaults to `Data`
+        /// </summary>
+        /// <remarks>
+        /// * in v15 changed default name to `Data`, previously was just empty.
+        /// </remarks>
+        [Configuration(Fallback = "Data")]
+        public string ContentType
 		{
-			get => Configuration[ContentTypeKey];
-		    set => Configuration[ContentTypeKey] = value;
+			get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
 		}
 
 		/// <summary>
 		/// Name of the Title Attribute of the Source DataTable
 		/// </summary>
+		[Configuration(Fallback = Attributes.EntityFieldTitle)]
 		public string TitleField
 		{
-			get => Configuration[TitleFieldKey];
-		    set => Configuration[TitleFieldKey] = value;
+			get => Configuration.GetThis(fallback: Attributes.EntityFieldTitle);
+            set => Configuration.SetThis(value);
 		}
 
 		/// <summary>
 		/// Name of the Column used as EntityId
 		/// </summary>
+		[Configuration(Fallback = Attributes.EntityFieldId)]
 		public string EntityIdField
 		{
-			get => Configuration[EntityIdFieldKey];
-		    set => Configuration[EntityIdFieldKey] = value;
+			get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
 		}
 
         /// <summary>
         /// Name of the field which would contain a modified timestamp (date/time)
         /// </summary>
+        [Configuration]
 		public string ModifiedField
 		{
-			get => Configuration[ModifiedFieldKey];
-		    set => Configuration[ModifiedFieldKey] = value;
+			get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
 		}
         #endregion
 
@@ -86,13 +81,12 @@ namespace ToSic.Eav.DataSources
         /// Initializes a new instance of the DataTableDataSource class
         /// </summary>
         [PrivateApi]
-        public DataTable(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.ExtTbl")
+        public DataTable(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.ExtTbl")
         {
+            ConnectServices(
+                _dataBuilder = dataBuilder
+            );
             Provide(GetEntities);
-		    ConfigMask(TitleFieldKey, EntityTitleDefaultColumnName);
-		    ConfigMask(EntityIdFieldKey, EntityIdDefaultColumnName);
-		    ConfigMask(ModifiedFieldKey, "");
-		    ConfigMask(ContentTypeKey);
         }
 
         /// <summary>
@@ -111,23 +105,25 @@ namespace ToSic.Eav.DataSources
         public DataTable Setup(SqlDataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
         {
 			Source = source;
-			ContentType = contentType;
-			TitleField = titleField ?? Attributes.EntityFieldTitle;
-			EntityIdField = entityIdField ?? EntityIdDefaultColumnName;
-			TitleField = titleField ?? EntityTitleDefaultColumnName;
-		    ModifiedField = modifiedField ?? "";
+            // Only set the values if they were explicitly provided
+            // Otherwise leave as is, so they could come from MyConfiguration
+            if (contentType.HasValue()) ContentType = contentType;
+            if (titleField.HasValue()) TitleField = titleField;
+            if (entityIdField.HasValue()) EntityIdField = entityIdField;
+            if (titleField.HasValue()) TitleField = titleField;
+            if (modifiedField.HasValue()) ModifiedField = modifiedField;
 
             return this;
         }
 
-		private ImmutableArray<IEntity> GetEntities()
-		{
+        private ImmutableArray<IEntity> GetEntities() => Log.Func(l =>
+        {
             Configuration.Parse();
 
-            Log.A($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
+            l.A($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
             var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
-		    return result;
-		}
+            return (result, $"ok: {result.Length}");
+        });
 
         /// <summary>
         /// Convert a DataTable to a Dictionary of EntityModels
@@ -141,9 +137,11 @@ namespace ToSic.Eav.DataSources
             if (!source.Columns.Contains(titleField))
                 throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
+            _dataBuilder.Configure(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField);
+            
             // Populate a new Dictionary with EntityModels
             var result = new List<IEntity>();
-            var builder = DataBuilder;
+
             foreach (DataRow row in source.Rows)
             {
                 var entityId = global::System.Convert.ToInt32(row[entityIdField]);
@@ -151,13 +149,9 @@ namespace ToSic.Eav.DataSources
                     .ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
                 values = new Dictionary<string, object>(values,
                     StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
-                var mod = string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?;
-                var entity = builder.Entity(values,
-                    titleField: titleField,
-                    typeName: contentType,
-                    id: entityId,
-                    modified: mod,
-                    appId: Constants.TransientAppId);
+                var mod = (string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?) ?? DateTime.MinValue;
+
+                var entity = _dataBuilder.Create(values, id: entityId, modified: mod);
                 result.Add(entity);
             }
 

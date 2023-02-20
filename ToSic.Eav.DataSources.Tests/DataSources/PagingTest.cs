@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class PagingTest: TestBaseDiEavFullAndDb
+    public class PagingTest: TestBaseEavDataSource
     {
         private readonly int seedId = 1001;
 
@@ -67,9 +67,10 @@ namespace ToSic.Eav.DataSourceTests
         public void Paging_CacheKeySimple()
         {
             var ds = CreatePagingForTesting(45);
-            Assert.AreEqual("Paging:NoGuid&PageSize=10&PageNumber=1", ds.CachePartialKey);
-            Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
-                            ">Paging:NoGuid&PageSize=10&PageNumber=1", ds.CacheFullKey);
+            var expectedPartialKey = "Paging:NoGuid&PageNumber=1&PageSize=10";
+            Assert.AreEqual(expectedPartialKey, ds.CachePartialKey);
+            Assert.AreEqual("DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName" +
+                            ">" + expectedPartialKey, ds.CacheFullKey);
             var lastRefresh = ds.CacheTimestamp; // get this before comparison, because sometimes slow execution will get strange results
             Assert.IsTrue(DateTime.Now.Ticks >= lastRefresh, "Date-check of cache refresh");
         }
@@ -80,7 +81,7 @@ namespace ToSic.Eav.DataSourceTests
         public DataSources.Paging CreatePagingForTesting(int testItemsInRootSource)
         {
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, seedId);
-            return DataSourceFactory.GetDataSource<DataSources.Paging>(ds);
+            return /*DataSourceFactory.*/CreateDataSource<DataSources.Paging>(ds);
             //return filtered;
         }
 

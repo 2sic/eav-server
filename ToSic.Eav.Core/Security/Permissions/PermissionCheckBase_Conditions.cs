@@ -24,7 +24,7 @@ namespace ToSic.Eav.Security
                 Log.A($"condition:{condition}, identity:{identity}");
 
                 // check custom permission based on the user Guid or owner
-                if (User.Guid != null)
+                if (User.Guid != default)
                 {
                     // check owner conditions (only possible on target entities, not content-types)
                     if (VerifyUserIsItemOwner(condition, TargetItem, User))

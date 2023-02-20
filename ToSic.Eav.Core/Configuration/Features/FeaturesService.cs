@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Helpers;
 using static System.StringComparer;
+// ReSharper disable ConvertToNullCoalescingCompoundAssignment
 
 namespace ToSic.Eav.Configuration
 {
@@ -20,15 +20,14 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// List of all enabled features with their guids and nameIds
         /// </summary>
-        public HashSet<string> EnabledFeatures => _enabledFeatures.Get(() => new HashSet<string>(All
+        public HashSet<string> EnabledFeatures => _enabledFeatures ?? (_enabledFeatures  = new HashSet<string>(All
                 .Where(f => f.Enabled)
                 .SelectMany(f => new[] { f.NameId, f.Guid.ToString() })
                 .Distinct(InvariantCultureIgnoreCase),
-                InvariantCultureIgnoreCase)
-            );
-        private readonly GetOnce<HashSet<string>> _enabledFeatures = new GetOnce<HashSet<string>>();
+            InvariantCultureIgnoreCase));
+        private HashSet<string> _enabledFeatures; // had to step back from GetOnce, because of "Error Unable to marshal host object to interpreter space"
 
-        public IEnumerable<FeatureState> UiFeaturesForEditors => All.Where(f => f.Enabled && f.ForEditUi);
+        public IEnumerable<FeatureState> UiFeaturesForEditors => All.Where(f => f.Enabled && f.IsForEditUi);
 
         public bool Enabled(Guid guid) => All.Any(f => f.Guid == guid && f.Enabled);
         
@@ -83,7 +82,7 @@ namespace ToSic.Eav.Configuration
             {
                 _stored = value;
                 _all = null;
-                _enabledFeatures.Reset();
+                _enabledFeatures = null;
                 CacheTimestamp = DateTime.Now.Ticks;
             }
         }
@@ -126,14 +125,14 @@ namespace ToSic.Eav.Configuration
                 }
 
                 return new FeatureState(f, expiry, enabled, msgShort, (enabled ? "Enabled" : "Disabled") + message,
-                    licenseEnabled, enabledByDefault: enabledRule?.EnableFeatureByDefault ?? false, enabledStored: inConfig?.Enabled);
+                    licenseEnabled, enabledByDefault: enabledRule?.EnableFeatureByDefault ?? false, enabledInConfiguration: inConfig?.Enabled);
             }).ToList();
 
             // Find additional, un matching features which are not known in the catalog
             var missingFeatures = config?.Features
                 .Where(f => featuresCat.All(fd => fd.Guid != f.Id))
                 .Select(f => new FeatureState(new FeatureDefinition(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually", 
-                    licenseEnabled: false, enabledByDefault: false,  enabledStored: f.Enabled));
+                    allowedByLicense: false, enabledByDefault: false,  enabledInConfiguration: f.Enabled));
 
             var final = (missingFeatures == null ? allFeats : allFeats.Union(missingFeatures)).ToList();
             return final;

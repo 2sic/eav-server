@@ -27,15 +27,16 @@ namespace ToSic.Eav.DataSources
 	{
         #region Configuration-properties
 
-        private const string IdentityCode = "IdentityCode";
+        private const string IdentityCodeField = "IdentityCode";
 
         /// <summary>
         /// The identity of the user to filter by. Uses the Identity-token convention like dnn:1 is the user #1 in the DNN DB
         /// </summary>
+        [Configuration(Field = IdentityCodeField)]
         public string Identity
-		{
-			get => Configuration[IdentityCode];
-            set => Configuration[IdentityCode] = value;
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 		#endregion
 
@@ -44,17 +45,15 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new PublishingFilter
 		/// </summary>
 		[PrivateApi]
-		public OwnerFilter(Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.OwnrFl")
+		public OwnerFilter(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.OwnrFl")
         {
             Provide(GetList);
-		    ConfigMask(IdentityCode, "[Settings:" + IdentityCode + "]"); 
         }
 
-        private IImmutableList<IEntity> GetList() => Log.Func(() =>
+        private IImmutableList<IEntity> GetList() => Log.Func($"get for identity:{Identity}", () =>
         {
             Configuration.Parse();
 
-            Log.A($"get for identity:{Identity}");
             if (string.IsNullOrWhiteSpace(Identity))
                 return (ImmutableArray<IEntity>.Empty, "no identity");
 

@@ -23,21 +23,25 @@ namespace ToSic.Eav.Context
         /// These dependencies are a bit special, because they can be re-used for child context-of...
         /// This is why we gave them a much clearer name, not just the normal "Dependencies"
         /// </summary>
-        public new class Dependencies: ServiceDependencies
+        public new class MyServices: MyServicesBase<ContextOfSite.MyServices>
         {
-            public Dependencies(
+            public MyServices(
+                ContextOfSite.MyServices siteServices,
                 IAppStates appStates,
                 LazySvc<IFeaturesInternal> features,
                 LazySvc<AppUserLanguageCheck> langChecks,
                 Generator<IEnvironmentPermission> environmentPermissions,
                 LazySvc<AppSettingsStack> settingsStack
-            ) => AddToLogQueue(
-                EnvironmentPermissions = environmentPermissions,
-                AppStates = appStates,
-                Features = features,
-                LangChecks = langChecks,
-                SettingsStack = settingsStack
-            );
+            ): base(siteServices)
+            {
+                ConnectServices(
+                    EnvironmentPermissions = environmentPermissions,
+                    AppStates = appStates,
+                    Features = features,
+                    LangChecks = langChecks,
+                    SettingsStack = settingsStack
+                );
+            }
 
             public IAppStates AppStates { get; }
             public LazySvc<IFeaturesInternal> Features { get; }
@@ -49,16 +53,15 @@ namespace ToSic.Eav.Context
         /// <summary>
         /// Constructor for DI
         /// </summary>
-        /// <param name="siteCtxDeps"></param>
-        /// <param name="dependencies"></param>
-        public ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies) : this(siteCtxDeps, dependencies, "Sxc.CtxApp")
+        /// <param name="services"></param>
+        public ContextOfApp(MyServices services) : this(services, "Sxc.CtxApp")
         {
         }
-        protected ContextOfApp(ContextOfSite.Dependencies siteCtxDeps, Dependencies dependencies, string logName) : base(siteCtxDeps, logName)
+        protected ContextOfApp(MyServices services, string logName) : base(services, logName)
         {
-            Deps = dependencies.SetLog(Log);
+            AppServices = services;
         }
-        protected readonly Dependencies Deps;
+        protected readonly MyServices AppServices;
 
         #endregion
 
@@ -68,7 +71,7 @@ namespace ToSic.Eav.Context
                 AppIdentity = appIdentity;
         });
 
-        public void ResetApp(int appId) => ResetApp(Deps.AppStates.IdentityOfApp(appId));
+        public void ResetApp(int appId) => ResetApp(AppServices.AppStates.IdentityOfApp(appId));
 
         protected virtual IAppIdentity AppIdentity
         {
@@ -96,7 +99,7 @@ namespace ToSic.Eav.Context
                 if (base.UserMayEdit) return (true, "no app, use default checks");
 
                 // If user isn't allowed yet, it may be that the environment allows it
-                var fromEnv = Deps.EnvironmentPermissions.New()
+                var fromEnv = AppServices.EnvironmentPermissions.New()
                     .Init(this as IContextOfSite, null)
                     .EnvironmentAllows(GrantSets.WriteSomething);
 
@@ -104,24 +107,24 @@ namespace ToSic.Eav.Context
             }
 
             // Case 3: From App
-            var fromApp = SiteDeps.AppPermissionCheck.New()
+            var fromApp = Services.AppPermissionCheck.New()
                 .ForAppInInstance(this, AppState)
                 .UserMay(GrantSets.WriteSomething);
 
             // Check if language permissions may alter / remove edit permissions
-            if (fromApp && Deps.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
-                fromApp = Deps.LangChecks.Value.UserRestrictedByLanguagePermissions(AppState) ?? true;
+            if (fromApp && AppServices.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
+                fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppState) ?? true;
 
             return (fromApp, $"{fromApp}");
         }));
         private readonly GetOnce<bool> _userMayEditGet = new GetOnce<bool>();
 
-        public AppState AppState => _appState.Get(() => AppIdentity == null ? null : Deps.AppStates.Get(AppIdentity));
+        public AppState AppState => _appState.Get(() => AppIdentity == null ? null : AppServices.AppStates.Get(AppIdentity));
         private readonly GetOnce<AppState> _appState = new GetOnce<AppState>();
 
         #region Settings and Resources
 
-        private AppSettingsStack AppSettingsStack => _appSettingsStack.Get(() => Deps.SettingsStack.Value.Init(AppState));
+        private AppSettingsStack AppSettingsStack => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppState));
         private readonly GetOnce<AppSettingsStack> _appSettingsStack = new GetOnce<AppSettingsStack>();
 
         public PropertyStack AppSettings => _settings.Get(() => AppSettingsStack.GetStack(RootNameSettings));

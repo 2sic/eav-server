@@ -2,14 +2,14 @@
 {
     public abstract class TestServiceBase: IServiceBuilder
     {
-        protected readonly IServiceBuilder Parent;
+        protected readonly TestBaseEavDataSource Parent;
 
-        protected TestServiceBase(IServiceBuilder serviceProvider)
+        protected TestServiceBase(TestBaseEavDataSource serviceProvider)
         {
             Parent = serviceProvider;
         }
 
-        public T Build<T>() => Parent.Build<T>();
+        public T GetService<T>() => Parent.GetService<T>();
 
     }
 }

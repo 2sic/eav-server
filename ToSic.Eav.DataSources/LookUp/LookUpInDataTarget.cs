@@ -35,8 +35,7 @@ namespace ToSic.Eav.LookUp
             Name = InStreamName;
 		}
 
-        private string[] Dimensions => _dimensions ?? (_dimensions = _cultureResolver
-            /*(_dataTarget as DataSources.DataSource)?.DataSourceFactory.ZoneCultureResolver*/.SafeLanguagePriorityCodes());
+        private string[] Dimensions => _dimensions ?? (_dimensions = _cultureResolver.SafeLanguagePriorityCodes());
 
         private string[] _dimensions;
 

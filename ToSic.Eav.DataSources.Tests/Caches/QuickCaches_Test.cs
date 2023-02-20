@@ -10,7 +10,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.Caches
 {
     [TestClass]
-    public class QuickCachesTest: TestBaseDiEavFullAndDb
+    public class QuickCachesTest: TestBaseEavDataSource
     {
         public static ListCache GetTestListCache() => new ListCache();
 
@@ -77,9 +77,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
         public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
         {
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
-            var filtered = Build<EntityIdFilter>()
-                .Init(ds.Configuration.LookUpEngine);
-            //filtered.ConfigurationProvider = ds.ConfigurationProvider;
+            var filtered = CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
             filtered.AttachForTests(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;

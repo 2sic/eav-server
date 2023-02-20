@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSourceTests
     // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
     [TestClass]
-    public class ValueFilterBoolean: TestBaseDiEavFullAndDb
+    public class ValueFilterBoolean: TestBaseEavDataSource
     {
         private readonly ValueFilterMaker _valueFilterMaker;
 

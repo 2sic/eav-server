@@ -29,11 +29,12 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Indicates whether to show drafts or only Published Entities. 
 		/// </summary>
+		[Configuration(Fallback = false)]
 		public bool ShowDrafts
 		{
-			get => bool.Parse(Configuration[QueryConstants.ParamsShowDraftKey]);
-		    set => Configuration[QueryConstants.ParamsShowDraftKey] = value.ToString();
-		}
+			get => Configuration.GetThis(QueryConstants.ShowDraftsDefault);
+            set => Configuration.SetThis(value);
+        }
 		#endregion
 
 		/// <inheritdoc />
@@ -41,10 +42,9 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new PublishingFilter
 		/// </summary>
 		[PrivateApi]
-		public PublishingFilter(Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Publsh")
+		public PublishingFilter(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Publsh")
         {
             Provide(PublishingFilterList);
-		    ConfigMask(QueryConstants.ParamsShowDraftKey, QueryConstants.ParamsShowDraftToken);
        }
 
 

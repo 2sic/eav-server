@@ -17,29 +17,31 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
         /// </summary>
+        [Configuration]
         public abstract string FieldName { get; set; }
 
         /// <summary>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
         /// </summary>
+        [Configuration]
         public abstract string ContentTypeName { get; set; }
 
-
+        /// <summary>
+        /// Will filter duplicate hits from the result.
+        /// </summary>
+        [Configuration(Fallback = true)]
         public bool FilterDuplicates
         {
-            get => Configuration.GetBool(nameof(FilterDuplicates));
-            set => Configuration.SetBool(nameof(FilterDuplicates), value);
+            get => Configuration.GetThis(true);
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        protected RelationshipDataSourceBase(Dependencies dependencies, string logName): base(dependencies, logName)
+        protected RelationshipDataSourceBase(MyServices services, string logName): base(services, logName)
         {
             Provide(GetRelated);
-            ConfigMask(nameof(FieldName));
-            ConfigMask(nameof(ContentTypeName));
-            ConfigMask(nameof(FilterDuplicates) + "||true");
         }
 
         private IImmutableList<IEntity> GetRelated() => Log.Func(() =>

@@ -11,15 +11,15 @@ using IEntity = ToSic.Eav.Data.IEntity;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Serialization
 {
-    public abstract class SerializerBase: ServiceBase<SerializerBase.Dependencies>, IDataSerializer
+    public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, IDataSerializer
     {
         #region Constructor / DI
 
-        public class Dependencies: ServiceDependencies
+        public class MyServices: MyServicesBase
         {
-            public Dependencies(ITargetTypes metadataTargets, IAppStates appStates)
+            public MyServices(ITargetTypes metadataTargets, IAppStates appStates)
             {
-                AddToLogQueue(
+                ConnectServices(
                     MetadataTargets = metadataTargets,
                     AppStates = appStates
                 );
@@ -32,10 +32,10 @@ namespace ToSic.Eav.Serialization
         /// <summary>
         /// Constructor for inheriting classes
         /// </summary>
-        protected SerializerBase(Dependencies dependencies, string logName): base(dependencies, logName)
+        protected SerializerBase(MyServices services, string logName): base(services, logName)
         {
-            MetadataTargets = dependencies.MetadataTargets;
-            GlobalApp = dependencies.AppStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
+            MetadataTargets = services.MetadataTargets;
+            GlobalApp = services.AppStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
         }
 
         private readonly AppState GlobalApp;

@@ -7,7 +7,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.Streams
 {
     [TestClass]
-    public class StreamFallbackTst: TestBaseDiEavFullAndDb
+    public class StreamFallbackTst: TestBaseEavDataSource
     {
         [TestMethod]
         public void StreamWhereDefaultIsReturned()
@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         public StreamFallback AssembleTestFallbackStream()
         {
             var emptyDs = new DataTablePerson(this).Generate(0, 1001);
-            var streams = DataSourceFactory.GetDataSource<StreamFallback>(emptyDs);
+            var streams = CreateDataSource<StreamFallback>(emptyDs);
 
             var dsWith1 = new DataTablePerson(this).Generate(1, 2000);
             var dsWithmany = new DataTablePerson(this).Generate(45, 4000);

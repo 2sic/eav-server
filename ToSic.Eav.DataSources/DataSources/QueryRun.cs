@@ -39,7 +39,8 @@ namespace ToSic.Eav.DataSources
         /// Indicates whether to show drafts or only Published Entities. 
         /// </summary>
         [PrivateApi("not sure if this should be public, probably not")]
-        private bool ShowDrafts => bool.Parse(Configuration[QueryConstants.ParamsShowDraftKey]);
+        [Configuration(Fallback = false)]
+        private bool ShowDrafts => Configuration.GetThis(QueryConstants.ShowDraftsDefault);
 
         #endregion
 
@@ -50,12 +51,11 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new QueryRun
         /// </summary>
         [PrivateApi]
-		public QueryRun(Dependencies dependencies, Generator<Query> queryGenerator) : base(dependencies, $"{DataSourceConstants.LogPrefix}.QryRun")
+		public QueryRun(MyServices services, Generator<Query> queryGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.QryRun")
         {
             ConnectServices(
                 _queryGenerator = queryGenerator
             );
-            ConfigMask(QueryConstants.ParamsShowDraftKey, QueryConstants.ParamsShowDraftToken);
         }
         #endregion
 
@@ -86,8 +86,7 @@ namespace ToSic.Eav.DataSources
 
             // go through the metadata-source to find it, since it's usually only used in LookUps
             var metadataLookUp =
-                (Configuration.LookUpEngine.FindSource(QueryBuilder
-                        .ConfigKeyPartSettings) // .Sources[QueryBuilder.ConfigKeyPartSettings] 
+                (Configuration.LookUpEngine.FindSource(MyConfiguration)
                     as LookUpInLookUps)
                 ?.Providers.FirstOrDefault(p => p is LookUpInMetadata) as LookUpInMetadata;
 

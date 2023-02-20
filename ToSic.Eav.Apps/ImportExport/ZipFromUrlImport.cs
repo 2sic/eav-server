@@ -13,9 +13,9 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         #region DI Constructor
 
-        public ZipFromUrlImport(Dependencies dependencies, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, 
+        public ZipFromUrlImport(MyServices services, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, 
             IGlobalConfiguration globalConfiguration, SystemManager systemManager, IAppStates appStates)
-            : base(dependencies, environment, xmlImpExpFiles, systemManager, appStates)
+            : base(services, environment, xmlImpExpFiles, systemManager, appStates)
         {
             ConnectServices(
                 _globalConfiguration = globalConfiguration

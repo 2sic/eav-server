@@ -19,7 +19,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         public void FLoader_LoadQueriesAndCount()
         {
             var cts = LoadAllQueries();
-            Assert.AreEqual(2, cts.Count, "test case has 3 content-types to deserialize");
+            Assert.AreEqual(3, cts.Count, "test case has 3 content-types to deserialize");
         }
        
         
@@ -28,7 +28,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         private IList<IEntity> LoadAllQueries()
         {
             Trace.WriteLine($"path:'{TestStorageRoot}'");
-            var loader = Build<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+            var loader = GetService<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
             IList<IEntity> cts;
             try
             {

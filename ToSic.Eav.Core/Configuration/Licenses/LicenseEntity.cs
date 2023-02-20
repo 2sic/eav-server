@@ -15,5 +15,13 @@ namespace ToSic.Eav.Configuration.Licenses
         }
 
         public string Fingerprint => GetThis("");
+
+        public EnterpriseFingerprint AsEnterprise() => new EnterpriseFingerprint
+        {
+            Id = Id,
+            Guid = Guid,
+            Title = Title,
+            Fingerprint = Fingerprint
+        };
     }
 }

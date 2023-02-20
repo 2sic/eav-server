@@ -1,6 +1,7 @@
 ﻿using System;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps
 {
@@ -11,14 +12,14 @@ namespace ToSic.Eav.Apps
     /// It also manages and caches relationships between entities of the same app.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public partial class AppState: AppBase, ILogShouldNeverConnect
+    public partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
     {
 
         [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-        public AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base($"App.St-{id.AppId}")
+        public AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base(new MyServicesEmpty(), $"App.St-{id.AppId}")
         {
             Log.A($"AppState for App {id.AppId}");
-            this.LinkLog(parentLog, null, forceConnect: true);
+            this.LinkLog(parentLog, forceConnect: true);
             Init(id);
 
             ParentApp = parentApp;

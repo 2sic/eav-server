@@ -1,108 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using ToSic.Eav.Data.Raw;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// This is a Builder-Object which is used to create any kind of data.
-    /// Get it using Dependency Injection
+    /// A data builder which will generate items for a specific type.
+    /// In many cases it will also take care of auto increasing the id and more.
+    ///
+    /// This is more efficient than using the bare bones <see cref="IDataBuilderInternal"/>
     /// </summary>
-    [PublicApi]
+    /// <remarks>
+    /// * Added in v15 to replace the previous IDataBuilder which is now internal
+    /// </remarks>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("in development for v15")]
     public interface IDataBuilder
     {
         /// <summary>
-        /// Create an Entity using a dictionary of values.
-        /// 
-        /// Read more about [](xref:NetCode.DataSources.Custom.DataBuilder)
+        /// The App-ID which will be assigned to the generated entities.
+        /// By default it will be `0`
+        /// </summary>
+        int AppId { get; }
+
+        /// <summary>
+        /// The field in the data which is the default title.
+        /// Defaults to `Title` if not set.
+        /// </summary>
+        string TitleField { get; }
+
+        /// <summary>
+        /// A counter for the ID in case the data provided doesn't have an ID to use.
+        /// Default is `1`
+        /// </summary>
+        int IdCounter { get; }
+
+        /// <summary>
+        /// Determines if Zero IDs are auto-incremented - default is `true`.
+        /// </summary>
+        bool IdAutoIncrementZero { get; }
+
+
+        /// <summary>
+        /// The generated ContentType.
+        /// This will only be generated once, for better performance.
+        /// </summary>
+        IContentType ContentType { get; }
+
+        /// <summary>
+        /// Initial configuration call to setup all the parameters for this builder.
+        /// It must be called before building anything. 
         /// </summary>
         /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-        /// <param name="appId">optional app id for this item, defaults to the current app</param>
-        /// <param name="id">an optional id for this item, defaults to 0</param>
-        /// <param name="values">dictionary of values</param>
-        /// <param name="titleField">which field should be access if every something wants to know the title of this item</param>
-        /// <param name="typeName">an optional type-name - usually not needed, defaults to "unspecified"; alternatively you can specify the type directly</param>
-        /// <param name="type">an optional type object - use this OR the typename to specify a type</param>
-        /// <param name="guid">an optional guid for this item, defaults to empty guid</param>
-        /// <param name="created">creation timestamp</param>
-        /// <param name="modified">modified timestamp</param>
-        /// <returns></returns>
-        IEntity Entity(
-            Dictionary<string, object> values = null,
+        /// <param name="appId">The App this is virtually coming from, defaults to `0`</param>
+        /// <param name="typeName">The name of the virtual content-type, defaults to `unspecified`</param>
+        /// <param name="titleField">The field name to use as title, defaults to `Title`</param>
+        /// <param name="idSeed">Default is `1`</param>
+        /// <param name="idAutoIncrementZero">Default is `true`</param>
+        /// <param name="createRawOptions">Optional special options which create-raw might use</param>
+        /// <returns>Itself, to make call chaining easier</returns>
+        IDataBuilder Configure(
             string noParamOrder = Parameters.Protector,
-            int appId = 0,
-            int id = 0,
-            string titleField = null,
-            string typeName = DataBuilder.DefaultTypeName,
-            IContentType type = null,
-            Guid? guid = null,
-            DateTime? created = null,
-            DateTime? modified = null
+            int appId = default,
+            string typeName = default,
+            string titleField = default,
+            int idSeed = DataBuilder.DefaultIdSeed,
+            bool idAutoIncrementZero = true,
+            CreateRawOptions createRawOptions = default
         );
 
         /// <summary>
-        /// Convert a list of value-dictionaries dictionary into a list of entities
-        /// this assumes that the entities don't have an own id or guid, 
-        /// otherwise you should use the single-item command.
-        ///
-        /// Read more about [](xref:NetCode.DataSources.Custom.DataBuilder)
+        /// For objects which delegate the IRawEntity to a property.
         /// </summary>
-        /// <param name="itemValues">list of value-dictionaries</param>
-        /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-        /// <param name="titleField">which field should be access if every something wants to know the title of this item</param>
-        /// <param name="typeName">an optional type-name - usually not needed, defaults to "unspecified"; alternatively you can specify the type directly</param>
-        /// <param name="type">an optional type object - use this OR the typename to specify a type</param>
-        /// <param name="appId">optional app id for this item, defaults to the current app</param>
+        /// <param name="withRawEntity"></param>
         /// <returns></returns>
-        IEnumerable<IEntity> Entities(IEnumerable<Dictionary<string, object>> itemValues,
-            string noParamOrder = Parameters.Protector,
-            int appId = 0,
-            string titleField = null,
-            string typeName = DataBuilder.DefaultTypeName,
-            IContentType type = null
-        );
+        IEntity Create(IHasRawEntity withRawEntity);
 
         /// <summary>
-        /// Create a dummy fake entity. It's just used in scenarios where code must have an entity but the
-        /// internals are not relevant. Examples are dummy Metadata or dummy Content-Data.
+        /// For objects which themselves are IRawEntity
         /// </summary>
-        /// <param name="appId"></param>
+        /// <param name="rawEntity"></param>
         /// <returns></returns>
-        [PrivateApi]
-        IEntity FakeEntity(int appId);
+        IEntity Create(IRawEntity rawEntity);
 
+        IEntity Create(Dictionary<string, object> values,
+            int id = default,
+            Guid guid = default,
+            DateTime created = default,
+            DateTime modified = default);
 
-
-
-        #region Attributes
-
-        /// <summary>
-        /// Create a new attribute for adding to an Entity.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-        /// <param name="typeName">optional type name as string, like "String" or "Entity" - note that type OR typeName must be provided</param>
-        /// <param name="type">optional type code - note that type OR typeName must be provided</param>
-        /// <param name="values">list of values to add to this attribute</param>
-        /// <returns></returns>
-        IAttribute Attribute(string name,
-            string noParamOrder = Parameters.Protector,
-            string typeName = null,
-            ValueTypes type = ValueTypes.Undefined,
-            IList<IValue> values = null);
-
-        #endregion
-
-        #region Content-Type
-
-        /// <summary>
-        /// Create a fake content-type using the specified name. 
-        /// </summary>
-        /// <param name="typeName">Name to use for this content-type</param>
-        /// <returns></returns>
-        IContentType Type(string typeName);
-
-        #endregion
-
+        IImmutableList<IEntity> CreateMany(IEnumerable<IRawEntity> rawEntities);
     }
 }

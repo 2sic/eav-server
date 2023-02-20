@@ -17,12 +17,12 @@ namespace ToSic.Eav.Apps
         private readonly LazySvc<ContentTypeRuntime> _contentTypeRuntime;
         private readonly LazySvc<QueryRuntime> _queryRuntime;
 
-        public AppRuntime(AppRuntimeDependencies dependencies,
+        public AppRuntime(AppRuntimeServices services,
             LazySvc<EntityRuntime> entityRuntime,
             LazySvc<MetadataRuntime> metadataRuntime,
             LazySvc<ContentTypeRuntime> contentTypeRuntime,
             LazySvc<QueryRuntime> queryRuntime,
-            string logName = null) : base(dependencies,
+            string logName = null) : base(services,
             logName ?? "Eav.AppRt")
         {
             ConnectServices(
@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps
         /// Simple Override - to track if the init is being called everywhere
         /// </summary>
         public AppRuntime Init(int appId, bool showDrafts) 
-            => this.InitQ(Deps.AppStates.IdentityOfApp(appId), showDrafts);
+            => this.InitQ(Services.AppStates.IdentityOfApp(appId), showDrafts);
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.

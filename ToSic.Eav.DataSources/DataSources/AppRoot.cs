@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
     public class AppRoot : DataSource, IAppRoot
     {
         [PrivateApi]
-        public AppRoot(IAppStates appStates, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Root")
+        public AppRoot(IAppStates appStates, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Root")
         {
             _appStates = appStates;
             Provide(() => AppState.List);

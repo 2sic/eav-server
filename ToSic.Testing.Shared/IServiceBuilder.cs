@@ -2,6 +2,6 @@
 {
     public interface IServiceBuilder
     {
-        T Build<T>();
+        T GetService<T>();
     }
 }

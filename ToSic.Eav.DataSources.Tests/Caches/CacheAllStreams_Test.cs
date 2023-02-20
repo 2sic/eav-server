@@ -9,7 +9,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.Caches
 {
     [TestClass]
-    public class CacheAllStreamsTest: TestBaseDiEavFullAndDb
+    public class CacheAllStreamsTest: TestBaseEavDataSource
     {
         const string FilterIdForManyTests = "1067";
         const string AlternateIdForAlternateTests = "1069";
@@ -23,8 +23,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
             var listCache = QuickCachesTest.GetTestListCache();
 
-            Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
-                            ">EntityIdFilter:NoGuid&EntityIds=1067", filtered.CacheFullKey);
+            Assert.AreEqual("DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName>EntityIdFilter:NoGuid&EntityIds=1067", filtered.CacheFullKey);
 
             // check if in cache - shouldn't be yet
             Assert.IsFalse(listCache.Has(cacher.Out[Constants.DefaultStreamName]),
@@ -70,9 +69,8 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
         private CacheAllStreams CreateCacheDS(IDataSource filtered)
         {
-            var cacher = Build<CacheAllStreams>();
+            var cacher = CreateDataSource<CacheAllStreams>(filtered.Configuration.LookUpEngine);
             cacher.AttachForTests(filtered);
-            cacher.Init(filtered.Configuration.LookUpEngine);
             return cacher;
         }
 
@@ -80,17 +78,14 @@ namespace ToSic.Eav.DataSourceTests.Caches
         public void CacheAllStreams_CheckInWithLongerChain()
         {
             var filtered = CreateFilterForTesting(100, FilterIdForManyTests);
-            var secondFilter = Build<EntityTypeFilter>();
+            var secondFilter = CreateDataSource<EntityTypeFilter>(filtered.Configuration.LookUpEngine);
             secondFilter.AttachForTests(filtered);
             secondFilter.TypeName = "Person";
-            secondFilter.Init(filtered.Configuration.LookUpEngine);
 
             var cacher = CreateCacheDS(secondFilter);
             var listCache = QuickCachesTest.GetTestListCache();
 
-            Assert.AreEqual("DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person" +
-                            ">EntityIdFilter:NoGuid&EntityIds=1067" +
-                            ">EntityTypeFilter:NoGuid&TypeName=Person", secondFilter.CacheFullKey);
+            Assert.AreEqual("DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName>EntityIdFilter:NoGuid&EntityIds=1067>EntityTypeFilter:NoGuid&TypeName=Person", secondFilter.CacheFullKey);
 
             Assert.IsFalse(listCache.Has(secondFilter.Out[Constants.DefaultStreamName]),
                 "Should not be in because the previous test added a shorter key");
@@ -180,8 +175,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
         public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue, bool useCacheForSpeed = true)
         {
             var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001, useCacheForSpeed);
-            var filtered = Build<EntityIdFilter>()
-                .Init(ds.Configuration.LookUpEngine);
+            var filtered = CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
             filtered.AttachForTests(ds);
             filtered.EntityIds = entityIdsValue;
             return filtered;

@@ -30,32 +30,31 @@ namespace ToSic.Eav.DataSources
 	{
         #region Constants
 
-        public static string ModeKeep = "+";
-        public static string ModeRemove = "-";
+        [PrivateApi] public const string ModeKeep = "+";
+        [PrivateApi] public const string ModeRemove = "-";
 
         #endregion
         
         #region Configuration-properties
         
-        private const string AttributeNamesKey = "AttributeNames";
-        private const string ModeKey = "Mode";
-
         /// <summary>
         /// A string containing one or more attribute names. like "FirstName" or "FirstName,LastName,Birthday"
         /// </summary>
+        [Configuration]
         public string AttributeNames
 		{
-		    get => Configuration[AttributeNamesKey];
-            set => Configuration[AttributeNamesKey] = value;
+		    get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
         
         /// <summary>
         /// A string containing one or more attribute names. like "FirstName" or "FirstName,LastName,Birthday"
         /// </summary>
+        [Configuration(Fallback = ModeKeep)]
         public string Mode
-		{
-		    get => Configuration[ModeKey];
-            set => Configuration[ModeKey] = value;
+        {
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
       
 
@@ -66,12 +65,10 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeFilter(EntityBuilder entityBuilder, Dependencies dependencies): base(dependencies, $"{DataSourceConstants.LogPrefix}.AtribF")
+		public AttributeFilter(EntityBuilder entityBuilder, MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.AtribF")
         {
             _entityBuilder = entityBuilder;
             Provide(GetList);
-			ConfigMask(AttributeNamesKey, $"[Settings:{AttributeNamesKey}]");
-            ConfigMask(ModeKey, $"[Settings:{ModeKey}||+]");
         }
 
         private readonly EntityBuilder _entityBuilder;

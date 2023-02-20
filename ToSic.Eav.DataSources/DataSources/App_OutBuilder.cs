@@ -111,7 +111,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         private EntityTypeFilter BuildTypeStream(IDataSource upstreamDataSource, string typeName) => Log.Func($"..., ..., {typeName}", () =>
         {
-            var ds = _deps.DataSourceFactory.Value.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,
+            var ds = _services.DataSourceFactory.Value.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,
                 Configuration.LookUpEngine);
             ds.TypeName = typeName;
             ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source

@@ -6,7 +6,6 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
-using static System.Int32;
 
 namespace ToSic.Eav.DataSources
 {
@@ -29,17 +28,20 @@ namespace ToSic.Eav.DataSources
 	{
         #region Configuration-properties
 
-	    /// <summary>
+        private const int NotConfigured = 0;
+
+        /// <summary>
         /// Use this to re-target the app-source to another app. <br/>
         /// Note that this can only be done before ever accessing the app - once the object has started reading data, switching has no more effect.
         /// </summary>
+        [Configuration(Fallback = NotConfigured)]
         public int AppSwitch
-		{
-			get => Parse(Configuration[nameof(AppSwitch)]);
-		    set
+        {
+            get => Configuration.GetThis(NotConfigured);
+            set
 			{
-				Configuration[nameof(AppSwitch)] = value.ToString();
-				AppId = value;
+                Configuration.SetThis(value);
+                AppId = value;
 				RequiresRebuildOfOut = true;
 			}
 		}
@@ -48,13 +50,14 @@ namespace ToSic.Eav.DataSources
         /// Use this to re-target the app-source to another zone. <br/>
         /// Note that this can only be done before ever accessing the app - once the object has started reading data, switching has no more effect.
         /// </summary>
+        [Configuration(Fallback = NotConfigured)]
 		public int ZoneSwitch
-		{
-			get => Parse(Configuration[nameof(ZoneSwitch)]);
-		    set
+        {
+            get => Configuration.GetThis(NotConfigured);
+            set
 			{
-				Configuration[nameof(ZoneSwitch)] = value.ToString();
-				ZoneId = value;
+                Configuration.SetThis(value);
+                ZoneId = value;
 				RequiresRebuildOfOut = true;
 			}
 		}
@@ -63,16 +66,16 @@ namespace ToSic.Eav.DataSources
         #region Constructor / DI
 
 
-		public new class Dependencies: ServiceDependencies<DataSource.Dependencies>
+		public new class MyServices: MyServicesBase<DataSource.MyServices>
         {
             public LazySvc<DataSourceFactory> DataSourceFactory { get; }
             public IAppStates AppStates { get; }
 
-            public Dependencies(DataSource.Dependencies rootDependencies,
+            public MyServices(DataSource.MyServices parentServices,
                 IAppStates appStates,
-				LazySvc<DataSourceFactory> dataSourceFactory) : base(rootDependencies)
+				LazySvc<DataSourceFactory> dataSourceFactory) : base(parentServices)
             {
-                AddToLogQueue(
+                ConnectServices(
                     AppStates = appStates,
                     DataSourceFactory = dataSourceFactory
                 );
@@ -83,18 +86,14 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new App DataSource
 		/// </summary>
 		[PrivateApi]
-		public App(Dependencies dependencies): base(dependencies.RootDependencies, $"{DataSourceConstants.LogPrefix}.EavApp")
+		public App(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.EavApp")
         {
-            _deps = dependencies.SetLog(Log);
+            _services = services;
             // this one is unusual, so don't pre-attach a default data stream to out
             _out = new StreamDictionary(this, null);
-
-			// Set default switch-keys to 0 = no switch
-            ConfigMask(nameof(AppSwitch) + "||0");
-			ConfigMask(nameof(ZoneSwitch) + "||0");
         }
 
-        private readonly Dependencies _deps;
+        private readonly MyServices _services;
 
         #endregion
 
@@ -111,7 +110,7 @@ namespace ToSic.Eav.DataSources
 		    if (AppSwitch != 0)
 				AppId = AppSwitch;
 
-		    var newDs = _deps.DataSourceFactory.Value.GetPublishing(this, configProvider: Configuration.LookUpEngine, showDrafts:GetShowDraftStatus());
+		    var newDs = _services.DataSourceFactory.Value.GetPublishing(this, configProvider: Configuration.LookUpEngine, showDrafts:GetShowDraftStatus());
             Attach(Constants.DefaultStreamName, newDs);
 		}
 
@@ -120,7 +119,7 @@ namespace ToSic.Eav.DataSources
 		// TODO: cause obsolete warning when used! #Deprecated
         public IMetadataSource Metadata => AppState;
 
-		protected AppState AppState => _appState.Get(() => _deps.AppStates.Get(this));
+		protected AppState AppState => _appState.Get(() => _services.AppStates.Get(this));
         private readonly GetOnce<AppState> _appState = new GetOnce<AppState>();
     }
 

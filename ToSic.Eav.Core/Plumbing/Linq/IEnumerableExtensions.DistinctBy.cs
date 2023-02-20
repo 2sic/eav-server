@@ -8,6 +8,8 @@ namespace ToSic.Eav.Plumbing.Linq
     /// </summary>
     public static partial class IEnumerableExtensions
     {
+        // Note: seems .net 6 already has this
+#if !NET6_0_OR_GREATER
 
         /// <summary>
         /// Returns all distinct elements of the given source, where "distinctness"
@@ -30,7 +32,7 @@ namespace ToSic.Eav.Plumbing.Linq
         {
             return source.DistinctBy(keySelector, null);
         }
-
+#endif
         /// <summary>
         /// Returns all distinct elements of the given source, where "distinctness"
         /// is determined via a projection and the specified comparer for the projected type.

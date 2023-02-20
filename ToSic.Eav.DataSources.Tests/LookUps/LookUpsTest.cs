@@ -7,20 +7,19 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSourceTests.LookUps
 {
     [TestClass]
-    public class LookUpsTest: TestBaseDiEavFullAndDb
+    public class LookUpsTest: TestBaseEavDataSource
     {
         [TestMethod]
         public void DataTargetValueProvider_General()
         {
-            var testSource = this.GetTestDataSource<EntityIdFilter>(); 
-            testSource.EntityIds = "1001";  // needed to ensure 
             // Assemble a simple source-stream with demo data
             const int ItemsToGenerate = 499;
             const string ItemToFilter = "1023";
             var ds = new DataTablePerson(this).Generate(ItemsToGenerate, 1001);
-            var myConfDs = Build<EntityIdFilter>()
-                .Init(ds.Configuration.LookUpEngine);
-            //myConfDs.ConfigurationProvider = ds.ConfigurationProvider;
+
+            var testSource = CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine); 
+            testSource.EntityIds = "1001";  // needed to ensure 
+            var myConfDs = CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
             myConfDs.AttachForTests(ds);
             myConfDs.EntityIds = ItemToFilter;
 
@@ -34,7 +33,7 @@ namespace ToSic.Eav.DataSourceTests.LookUps
             testSource.Configuration.Values.Add("TestMyConfFirstName", "[In:MyConf:FirstName]");
             testSource.AttachForTests(ds);
             testSource.AttachForTests("MyConf", myConfDs);
-            testSource.Init(ds.Configuration.LookUpEngine);//.ConfigTemp.ConfigurationProvider = ds.ConfigurationProvider;
+
             var y = testSource.ListForTests(); // must access something to provoke configuration resolving
 
             Assert.AreEqual("First Name 1001", testSource.Configuration.Values["InTestFirstName"], "Tested in:Default:EntityTitle");

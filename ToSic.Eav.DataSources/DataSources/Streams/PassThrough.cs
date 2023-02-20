@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Technical DataSource, doesn't do anything",
         Icon = Icons.CopyAll,
         Type = DataSourceType.Source, 
-        Difficulty = DifficultyBeta.Advanced,
+        Audience = Audience.Advanced,
         GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
         DynamicOut = true,
         DynamicIn = true)]
@@ -26,12 +26,12 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new PassThrough DataSources
         /// </summary>
         [PrivateApi]
-        public PassThrough(Dependencies dependencies) : this(dependencies, $"{DataSourceConstants.LogPrefix}.PasThr")
+        public PassThrough(MyServices services) : this(services, $"{DataSourceConstants.LogPrefix}.PasThr")
         {
         }
 
         [PrivateApi]
-        protected PassThrough(Dependencies dependencies, string logName) : base(dependencies, logName)
+        protected PassThrough(MyServices services, string logName) : base(services, logName)
         {
             Out = In;
         }

@@ -37,15 +37,14 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-        private const string FilePathKey = "FilePath";
-
         /// <summary>
         /// Path to the CSV file, relative to the website root
         /// </summary>
+        [Configuration]
         public string FilePath
         {
-            get => Configuration[FilePathKey];
-            set => Configuration[FilePathKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
 
         /// <summary>
@@ -74,62 +73,63 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Delimiter character in the CSV, usually a ',' or ';' but could also be a tab or something. Default is tab.
         /// </summary>
+        [Configuration(Fallback = "\t")]
         public string Delimiter
         {
-            get => Configuration[DelimiterKey];
-            set => Configuration[DelimiterKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
-        private const string DelimiterKey = "Delimiter";
 
 
         /// <summary>
-        /// Name of the content type which the imported entities have. This is fake, but may be necessary for later filtering of the types. Defaults to "Anonymous"
+        /// Name of the content type which the imported entities have. This is fake, but may be necessary for later filtering of the types.
+        /// Defaults to "CSV"
         /// </summary>
+        /// <remarks>
+        /// * Before v15.03 it defaulted to "Anonymous"
+        /// </remarks>
+        [Configuration(Fallback = "CSV")]
         public string ContentType
         {
-            get => Configuration[ContentTypeKey];
-            set => Configuration[ContentTypeKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
-        private const string ContentTypeKey = "ContentType";
-
 
         /// <summary>
         /// Column in the CSV which contains the ID. 
         /// </summary>
+        [Configuration]
         public string IdColumnName
         {
-            get => Configuration[IdColumnNameKey];
-            set => Configuration[IdColumnNameKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
-        private const string IdColumnNameKey = "IdColumnName";
 
 
         /// <summary>
         /// The CSV column containing the title of the item - for dropdowns etc. and the EntityTitle property. 
         /// </summary>
+        [Configuration]
         public string TitleColumnName
         {
-            get => Configuration[TitleColumnNameKey];
-            set => Configuration[TitleColumnNameKey] = value;
+            get => Configuration.GetThis();
+            set => Configuration.SetThis(value);
         }
-        private const string TitleColumnNameKey = "TitleColumnName";
 
 
         [PrivateApi]
-        public CsvDataSource(IUser user, IServerPaths serverPaths, Dependencies dependencies) : base(dependencies, $"{DataSourceConstants.LogPrefix}.Csv")
+        public CsvDataSource(MyServices services, IDataBuilder dataBuilder, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv")
         {
-            _user = user;
-            _serverPaths = serverPaths;
+            ConnectServices(
+                _user = user,
+                _serverPaths = serverPaths,
+                _dataBuilder = dataBuilder
+            );
             Provide(GetList);
-
-            ConfigMask(FilePathKey, "[Settings:FilePath]");
-            ConfigMask(DelimiterKey, "[Settings:Delimiter||\t]");
-            ConfigMask(ContentTypeKey, "[Settings:ContentType||Anonymous]");
-            ConfigMask(IdColumnNameKey, "[Settings:IdColumnName]", cacheRelevant: false);
-            ConfigMask(TitleColumnNameKey, "[Settings:TitleColumnName]", cacheRelevant: false);
         }
         private readonly IUser _user;
         private readonly IServerPaths _serverPaths;
+        private readonly IDataBuilder _dataBuilder;
 
 
         private ImmutableArray<IEntity> GetList() => Log.Func(() =>
@@ -180,8 +180,6 @@ namespace ToSic.Eav.DataSources
                 var idColumnIndex = idColumnNotDetermined;
                 string titleColName = null;
 
-                // Content-Type name
-                var csvType = DataBuilder.Type(ContentType);
 
                 // Parse header - must happen after the first read
                 parser.Read();
@@ -218,6 +216,8 @@ namespace ToSic.Eav.DataSources
                             $"{commonErrorsIdTitle}"), "err");
                 }
 
+                _dataBuilder.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName);
+
                 // Parse data
                 while (parser.Read())
                 {
@@ -238,7 +238,7 @@ namespace ToSic.Eav.DataSources
                     for (var i = 0; i < headers.Length; i++)
                         entityValues.Add(headers[i], (i < fields.Length) ? fields[i] : null);
 
-                    entityList.Add(new Entity(Constants.TransientAppId, entityId, csvType, entityValues, titleColName));
+                    entityList.Add(_dataBuilder.Create(values: entityValues, id: entityId));
                 }
             }
 

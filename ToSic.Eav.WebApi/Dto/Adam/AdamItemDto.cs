@@ -66,7 +66,7 @@ namespace ToSic.Eav.WebApi.Dto
         {
             IsFolder = isFolder;
             // note that the type will be set by other code later on if it's a file
-            Type = isFolder ? "folder" : "unknown";
+            Type = isFolder ? "folder" : Constants.NullNameId;
             Name = name;
             Size = size;
             Created = created;

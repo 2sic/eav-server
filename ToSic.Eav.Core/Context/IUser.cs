@@ -22,9 +22,9 @@ namespace ToSic.Eav.Context
 
         /// <summary>
         /// An optional user GUID.
-        /// Can be null on systems which don't give the user a unique guid.
+        /// On systems which don't give the user a unique guid, it will be `Guid.Empty`.
         /// </summary>
-        Guid? Guid { get; }
+        Guid Guid { get; }
 
         string Username { get; }
 
@@ -42,23 +42,10 @@ namespace ToSic.Eav.Context
         /// <summary>
         /// Information if the user has super-user rights. This kind of user can do everything, incl. create apps. 
         /// </summary>
-        [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
-        bool IsSuperUser { get; }
-
-        /// <summary>
-        /// Information if the user has super-user rights. This kind of user can do everything, incl. create apps. 
-        /// </summary>
         /// <remarks>
         /// Renamed in v14.09 from IsSuperUser to this to be consistent with other APIs.
         /// </remarks>
         bool IsSystemAdmin { get; }
-
-
-        /// <summary>
-        /// Information if the user is admin - allowing full content-management. 
-        /// </summary>
-        [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
-        bool IsAdmin { get; }
 
 
         /// <summary>
@@ -78,11 +65,30 @@ namespace ToSic.Eav.Context
         /// <summary>
         /// Returns true if a user is in the SexyContent Designers group. Such a person can actually do a lot more, like access the advanced toolbars. 
         /// </summary>
-        bool IsDesigner { get; }
+        /// <remarks>
+        /// Used to be called IsDesigner up until v15.03, but probably never used outside of core code
+        /// </remarks>
+        bool IsSiteDeveloper { get; }
 
         /// <summary>
         /// Info if the user is anonymous / not logged in. 
         /// </summary>
         bool IsAnonymous { get; }
+
+        #region Removed in v15.03 2023-02-20 - already deprecated in v14.09 and probably never used outside of core code
+
+        ///// <summary>
+        ///// Information if the user has super-user rights. This kind of user can do everything, incl. create apps. 
+        ///// </summary>
+        //[Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
+        //bool IsSuperUser { get; }
+
+        ///// <summary>
+        ///// Information if the user is admin - allowing full content-management. 
+        ///// </summary>
+        //[Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
+        //bool IsAdmin { get; }
+
+        #endregion
     }
 }
