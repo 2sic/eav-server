@@ -111,7 +111,7 @@ namespace ToSic.Eav.DataFormats.EavLight
             // Get serialization rules if some exist - new in 11.13
             // var rules = entity as IEntitySerialization;
             var rules = entity.GetDecorator<EntitySerializationDecorator>();
-            var serRels = SubEntitySerialization.Stabilize(rules?.SerializeRelationships, true, true, false, true);
+            var serRels = SubEntitySerialization.Stabilize(rules?.SerializeRelationships, true, false, true, false, true);
 
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
@@ -124,11 +124,11 @@ namespace ToSic.Eav.DataFormats.EavLight
                     // Special Case 1: Hyperlink Field which must be resolved
                     if (attribute.Type == DataTypes.Hyperlink && value is string stringValue &&
                         ValueConverterBase.CouldBeReference(stringValue))
-                        return base.Services.ValueConverter.ToValue(stringValue, entity.EntityGuid);
+                        return Services.ValueConverter.ToValue(stringValue, entity.EntityGuid);
 
                     // Special Case 2: Entity-List
                     if (attribute.Type == DataTypes.Entity && value is IEnumerable<IEntity> entities)
-                        return serRels.Serialize == true ? CreateListOfSubEntities(entities, serRels) : null;
+                        return serRels.Serialize == true ? CreateListOrCsvOfSubEntities(entities, serRels) : null;
 
                     // Default: Normal Value
                     return value;

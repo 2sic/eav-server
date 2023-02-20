@@ -173,10 +173,18 @@ namespace ToSic.Eav.DataSources
 
 
         /// <summary>
-        /// Should the Relationship ID be included in serialization
+        /// Should the Relationships be included in serialization
         /// </summary>
         [Configuration]
         public string IncludeRelationships { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+
+        /// <summary>
+        /// Should the Relationships be included as CSV like "42,27,999".
+        /// Default is `false` in which case they are sub-objects.
+        /// </summary>
+        /// <remarks>WIP / adding in v15.03</remarks>
+        [Configuration(Fallback = false)]
+        public string IncludeRelationshipsAsCsv { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
 
         /// <summary>
         /// Should the Relationship ID be included in serialization
@@ -260,6 +268,7 @@ namespace ToSic.Eav.DataSources
             var relSer = new SubEntitySerialization
             {
                 Serialize = TryParseIncludeRule(IncludeRelationships),
+                SerializesAsCsv = TryParseIncludeRule(IncludeRelationshipsAsCsv),
                 SerializeId = TryParseIncludeRule(IncludeRelationshipId),
                 SerializeGuid = TryParseIncludeRule(IncludeRelationshipGuid),
                 SerializeTitle = TryParseIncludeRule(IncludeRelationshipTitle)
