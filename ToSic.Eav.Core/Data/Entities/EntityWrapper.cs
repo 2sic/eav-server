@@ -94,6 +94,9 @@ namespace ToSic.Eav.Data
         public string Owner => Entity.Owner;
 
         /// <inheritdoc />
+        public int OwnerId => Entity.OwnerId;
+
+        /// <inheritdoc />
         public object GetBestValue(string attributeName, string[] languages) => Entity.GetBestValue(attributeName, languages);
 
         /// <inheritdoc />

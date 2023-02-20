@@ -88,5 +88,17 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <returns>A string identifying the owner. Uses special encoding to work with various user-ID providers.</returns>
         string Owner { get; }
+
+        /// <summary>
+        /// Owner of this entity - as an int-ID
+        /// </summary>
+        /// <returns>
+        /// This is based on the <see cref="Owner"/> but will only return the ID
+        /// </returns>
+        /// <remarks>
+        /// Added in v15.03
+        /// </remarks>
+        int OwnerId { get; }
+
 	}
 }

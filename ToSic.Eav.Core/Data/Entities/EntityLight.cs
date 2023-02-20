@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data
 {
@@ -54,6 +55,9 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public string Owner { get; internal set; }
+
+        public int OwnerId => _ownerId.Get(() => int.TryParse(Owner.After("="), out var o) ? o : -1);
+        private readonly GetOnce<int> _ownerId = new GetOnce<int>();
         #endregion
 
         #region direct attribute accessor using this[...]
@@ -162,6 +166,8 @@ namespace ToSic.Eav.Data
                     return Created;
                 case Attributes.EntityFieldOwner:   // added in v15, was missing before
                     return Owner;
+                case Attributes.EntityFieldOwnerId: // new v15.03
+                    return OwnerId;
                 case Attributes.EntityFieldModified:
                     return Modified;
                 default:

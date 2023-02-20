@@ -50,11 +50,10 @@ namespace ToSic.Eav.DataSources
             Provide(GetList);
         }
 
-        private IImmutableList<IEntity> GetList() => Log.Func(() =>
+        private IImmutableList<IEntity> GetList() => Log.Func($"get for identity:{Identity}", () =>
         {
             Configuration.Parse();
 
-            Log.A($"get for identity:{Identity}");
             if (string.IsNullOrWhiteSpace(Identity))
                 return (ImmutableArray<IEntity>.Empty, "no identity");
 
