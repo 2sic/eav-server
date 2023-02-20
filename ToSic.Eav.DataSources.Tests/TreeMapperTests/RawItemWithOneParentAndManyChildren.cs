@@ -27,9 +27,10 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
 
         public List<int> ChildrenIds { get; }
 
-        public Dictionary<string, object> RawProperties => new Dictionary<string, object>()
+        public Dictionary<string, object> GetProperties(CreateRawOptions options) => new Dictionary<string, object>()
         {
             { nameof(Title), Title }
         };
+
     }
 }

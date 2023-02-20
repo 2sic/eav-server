@@ -58,6 +58,7 @@ namespace ToSic.Eav.Data
         /// <param name="titleField">The field name to use as title, defaults to `Title`</param>
         /// <param name="idSeed">Default is `1`</param>
         /// <param name="idAutoIncrementZero">Default is `true`</param>
+        /// <param name="createRawOptions">Optional special options which create-raw might use</param>
         /// <returns>Itself, to make call chaining easier</returns>
         IDataBuilder Configure(
             string noParamOrder = Parameters.Protector,
@@ -65,7 +66,8 @@ namespace ToSic.Eav.Data
             string typeName = default,
             string titleField = default,
             int idSeed = DataBuilder.DefaultIdSeed,
-            bool idAutoIncrementZero = true
+            bool idAutoIncrementZero = true,
+            CreateRawOptions createRawOptions = default
         );
 
         /// <summary>

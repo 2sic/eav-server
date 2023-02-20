@@ -12,6 +12,8 @@ namespace ToSic.Eav.Data
     [PrivateApi("Still experimental/hide implementation")]
     public class DataBuilder : ServiceBase, IDataBuilder
     {
+        #region Properties to configure Builder / Defaults
+
         /// <inheritdoc />
         public int AppId { get; private set; } = DataBuilderInternal.DefaultAppId;
 
@@ -31,6 +33,10 @@ namespace ToSic.Eav.Data
 
         public DateTime Created { get; } = DateTime.Now;
         public DateTime Modified { get; } = DateTime.Now;
+
+        private CreateRawOptions CreateRawOptions { get; set; }
+
+        #endregion
 
         #region Constructor / DI
 
@@ -54,7 +60,8 @@ namespace ToSic.Eav.Data
             string typeName = default,
             string titleField = default,
             int idSeed = DefaultIdSeed,
-            bool idAutoIncrementZero = true
+            bool idAutoIncrementZero = true,
+            CreateRawOptions createRawOptions = default
         )
         {
             // Ensure parameters are named
@@ -73,6 +80,8 @@ namespace ToSic.Eav.Data
             IdCounter = idSeed;
             ContentType = _parentBuilder.Type(typeName ?? DataBuilderInternal.DefaultTypeName);
             IdAutoIncrementZero = idAutoIncrementZero;
+
+            CreateRawOptions = createRawOptions ?? new CreateRawOptions();
             return this;
         }
         private bool _alreadyConfigured;
@@ -82,7 +91,7 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public IEntity Create(IRawEntity rawEntity) => Create(
-            rawEntity.RawProperties,
+            rawEntity.GetProperties(CreateRawOptions),
             id: rawEntity.Id, 
             guid: rawEntity.Guid,
             created: rawEntity.Created,

@@ -111,7 +111,7 @@ namespace ToSic.Eav.Configuration
         DateTime IRawEntity.Created => _objectCreated;
         DateTime IRawEntity.Modified => _objectCreated;
 
-        Dictionary<string, object> IRawEntity.RawProperties => new Dictionary<string, object>
+        public Dictionary<string, object> GetProperties(CreateRawOptions options) => new Dictionary<string, object>
         {
             { nameof(NameId), NameId },
             { Attributes.TitleNiceName, Name },
@@ -132,7 +132,6 @@ namespace ToSic.Eav.Configuration
             { nameof(Link), Link },
             { nameof(IsPublic), IsPublic },
         };
-
 
         #endregion
     }

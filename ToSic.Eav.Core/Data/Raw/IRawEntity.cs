@@ -42,6 +42,6 @@ namespace ToSic.Eav.Data.Raw
         /// * Please ensure it doesn't have duplicate keys. Also not keys which are only different in casing.
         /// * Also ensure you don't use spaces, dots or special characters in keys
         /// </remarks>
-        Dictionary<string, object> RawProperties { get; }
+        Dictionary<string, object> GetProperties(CreateRawOptions options);
     }
 }

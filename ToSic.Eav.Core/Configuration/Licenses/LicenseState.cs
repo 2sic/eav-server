@@ -71,7 +71,7 @@ namespace ToSic.Eav.Configuration.Licenses
         /// root definition does.
         /// But basically it should be the License + State information.
         /// </summary>
-        Dictionary<string, object> IRawEntity.RawProperties => new Dictionary<string, object>
+        public Dictionary<string, object> GetProperties(CreateRawOptions options) => new Dictionary<string, object>
         {
             // Properties describing the License
             // { Attributes.NameIdNiceName, License.Name },
