@@ -6,7 +6,7 @@
     public class SaveApiAttributes
     {
         /// <summary>
-        /// Used to set the parent relationship on create item
+        /// Used to set the parent relationship on create item - so what to link it to after storing
         /// </summary>
         /// <remarks>New in 13.02</remarks>
         public const string ParentRelationship = "ParentRelationship";
@@ -14,9 +14,7 @@
         public const string ParentRelField = "Field";
         public const string ParentRelIndex = "Index";
 
-        // TODO:
-        // Should become "PublishState"
-        public const string SavePublishingState = "PublishState"; //  Attributes.EntityFieldIsPublished; // "ispublished";
+        public const string SavePublishingState = "PublishState";
 
         public const string PublishModeNull = "null";
         public const string PublishModeDraft = "draft";
