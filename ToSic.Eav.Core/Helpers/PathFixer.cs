@@ -53,7 +53,7 @@ namespace ToSic.Eav.Helpers
                 throw new ArgumentException("Path to clean cannot have ':' characters", nameof(path));
             // remove base character which often has a ~ to mark site root
             path = path.TrimStart('~');
-            return path.ForwardSlash().PrefixSlash().FlattenMultipleForwardSlashes(); // .SuffixSlash();
+            return path.ForwardSlash().PrefixSlash().FlattenMultipleForwardSlashes();
         }
     }
 }

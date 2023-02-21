@@ -54,8 +54,7 @@ namespace ToSic.Eav.Data
             if (values.All(x => x.Value is IAttribute))
             {
                 var extendedAttribs = values
-                    .ToDictionary(x => x.Key, x => x.Value as IAttribute)
-                    .ToInvariant();
+                    .ToDictionary(x => x.Key, x => x.Value as IAttribute, InvariantCultureIgnoreCase);
                 return (false, extendedAttribs);
             }
 
