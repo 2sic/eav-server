@@ -91,5 +91,17 @@ namespace ToSic.Eav.Data
             DateTime modified = default);
 
         IImmutableList<IEntity> CreateMany(IEnumerable<IRawEntity> rawEntities);
+
+        /// <summary>
+        /// This will create IEntity but return it in a dictionary mapped to the original.
+        /// This is useful when you intend to do further processing and need to know which original matches the generated entity.
+        ///
+        /// IMPORTANT: WIP
+        /// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
+        /// </summary>
+        /// <typeparam name="TRaw"></typeparam>
+        /// <param name="rawEntities"></param>
+        /// <returns></returns>
+        IDictionary<TRaw, IEntity> Prepare<TRaw>(IEnumerable<TRaw> rawEntities) where TRaw: IRawEntity;
     }
 }

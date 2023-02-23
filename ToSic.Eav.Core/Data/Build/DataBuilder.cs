@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
@@ -41,14 +42,17 @@ namespace ToSic.Eav.Data
         #region Constructor / DI
 
         private readonly IDataBuilderInternal _parentBuilder;
+        private readonly MultiBuilder _multiBuilder;
 
         /// <summary>
         /// Constructor for DI
         /// </summary>
-        /// <param name="parentBuilder"></param>
-        public DataBuilder(IDataBuilderInternal parentBuilder): base("Ds.DatBld")
+        public DataBuilder(IDataBuilderInternal parentBuilder, MultiBuilder multiBuilder): base("Ds.DatBld")
         {
-            _parentBuilder = parentBuilder;
+            ConnectServices(
+                _parentBuilder = parentBuilder,
+                _multiBuilder = multiBuilder
+            );
         }
 
         #endregion
@@ -102,6 +106,27 @@ namespace ToSic.Eav.Data
         {
             var all = rawEntities.Select(Create).ToList();
             return all.ToImmutableList();
+        }
+
+        public IDictionary<TRaw, IEntity> Prepare<TRaw>(IEnumerable<TRaw> rawEntities) where TRaw : IRawEntity
+        {
+            var all = rawEntities.ToDictionary(r => r, r =>
+            {
+                
+                // Todo: improve this, so if anything fails, we have a clear info which item failed
+                try
+                {
+                    // WIP - this isn't nice ATM, but it's important
+                    // so the resulting object has Multi-language attributes
+                    // Should be improved ASAP
+                    return _multiBuilder.FullClone(Create(r)) as IEntity;
+                }
+                catch
+                {
+                    return null;
+                }
+            });
+            return all;
         }
 
         /// <inheritdoc />
