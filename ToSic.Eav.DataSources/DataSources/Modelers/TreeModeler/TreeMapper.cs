@@ -49,6 +49,23 @@ namespace ToSic.Eav.DataSources
             return AddRelationshipField(fieldName, needs, properLookup).ToList();
         }
 
+        public IDictionary<TRaw, IEntity> AddOneRelationship<TRaw, TKey>(
+            string fieldName,
+            List<(TRaw Raw, IEntity Entity, List<TKey> Ids)> needs,
+            List<(IEntity Entity, TKey Id)> lookup,
+            bool cloneFirst = true
+        )
+        {
+            // WIP - for now the clone is very important, because it changes the attribute-model on generated entities from light to not-light
+            // otherwise adding relationship attributes fails for now
+            if (cloneFirst)
+                needs = needs.Select(n => (n.Raw, _builder.FullClone(n.Entity) as IEntity, n.Ids)).ToList();
+            
+            var properLookup = lookup.ToLookup(i => i.Id, i => i.Entity);
+
+            return AddRelationshipField(fieldName, needs, properLookup);
+        }
+
         public IImmutableList<IEntity> AddRelationships<TKey>(
             IEnumerable<IEntity> originals,
             string parentIdField,
@@ -81,7 +98,7 @@ namespace ToSic.Eav.DataSources
                 withKeys.ToLookup(s => s.RelatedId, s => s.Entity as IEntity));
 
 
-            var result = withKeys.Select(set => set.Entity).Cast<IEntity>();
+            var result = withKeys.Select(set => set.Entity);
             
             return result.ToImmutableArray();
         });
@@ -93,6 +110,13 @@ namespace ToSic.Eav.DataSources
             foreach (var item in list)
                 AddRelationships(item.Entity, newField, lookup, item.NeedsIds, useNumber);
             return list.Select(i => i.Entity).ToList();
+        }
+        private IDictionary<TRaw, IEntity> AddRelationshipField<TRaw, TKey>(string newField, List<(TRaw Raw, IEntity Entity, List<TKey> NeedsIds)> list, ILookup<TKey, IEntity> lookup = null)
+        {
+            var useNumber = typeof(TKey).IsNumeric();
+            foreach (var item in list)
+                AddRelationships(item.Entity, newField, lookup, item.NeedsIds, useNumber);
+            return list.ToDictionary(i => i.Raw, i => i.Entity);
         }
 
         private void AddRelationships<TKey>(IEntity target, string newFieldName, ILookup<TKey, IEntity> lookup, List<TKey> lookupIds, bool keyIsNumeric

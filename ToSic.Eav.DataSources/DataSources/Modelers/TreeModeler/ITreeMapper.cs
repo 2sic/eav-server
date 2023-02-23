@@ -22,5 +22,12 @@ namespace ToSic.Eav.DataSources
             List<(IEntity Entity, TKey Id)> lookup,
             bool cloneFirst = true
         );
+
+        IDictionary<TRaw, IEntity> AddOneRelationship<TRaw, TKey>(
+            string fieldName,
+            List<(TRaw Raw, IEntity Entity, List<TKey> Ids)> needs,
+            List<(IEntity Entity, TKey Id)> lookup,
+            bool cloneFirst = true
+        );
     }
 }
