@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
@@ -12,6 +13,11 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
     public abstract partial class DataSource : ServiceBase<DataSource.MyServices>, IDataSource, IDataTarget
     {
+        /// <summary>
+        /// Constant empty list of entities - for common scenarios where we just need to return no hits.
+        /// </summary>
+        protected static IImmutableList<IEntity> EmptyList = new ImmutableArray<IEntity>();
+
         /// <summary>
         /// Constructor - must be without parameters, otherwise the DI can't construct it.
         /// </summary>

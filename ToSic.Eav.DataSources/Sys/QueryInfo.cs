@@ -102,11 +102,11 @@ namespace ToSic.Eav.DataSources.Sys
 
             // no query can happen if the name was blank
             if (_query == null)
-                return (new List<IEntity>().ToImmutableList(), "null");
+                return (EmptyList, "null");
 
             // check that _query has the stream name
             if (!_query.Out.ContainsKey(StreamName))
-                return (new List<IEntity>().ToImmutableList(), "can't find stream name in query");
+                return (EmptyList, "can't find stream name in query");
 
             var attribInfo = _dataSourceFactory.Value.GetDataSource<Attributes>(_query);
             if (StreamName != Constants.DefaultStreamName)

@@ -107,7 +107,7 @@ namespace ToSic.Eav.DataSources.Sys
             // try to load the content-type - if it fails, return empty list
             var zones = _appStates.Zones;
             if (!zones.ContainsKey(OfZoneId)) 
-                return (new List<IEntity>().ToImmutableList(),"fails load content-type");
+                return (EmptyList,"fails load content-type");
             
             var zone = zones[OfZoneId];
 
