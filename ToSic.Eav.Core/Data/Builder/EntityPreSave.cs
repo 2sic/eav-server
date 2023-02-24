@@ -57,7 +57,7 @@ namespace ToSic.Eav.Data.Builder
             .SelectMany(vl => vl.Languages)
             .GroupBy(l => l.Key)
             .Select(g => g.First())
-            .ToList() ?? new List<ILanguage>();
+            .ToList() ?? DimensionBuilder.NoLanguages.ToList();
 
     }
 }

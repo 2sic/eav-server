@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
@@ -38,7 +39,10 @@ namespace ToSic.Eav.Data.Builder
             if (string.IsNullOrWhiteSpace(language)) language = null;
 
             var valueWithLanguages = ValueBuilder.Build(valueType, value, language == null
-                ? null : new List<ILanguage> { new Language { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
+                ? null
+                // 2023-02-24 2dm #immutable
+                //: new List<ILanguage> { new Language { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
+                : new List<ILanguage> { new Language(language, languageReadOnly) }.ToImmutableList(), allEntitiesForRelationships);
 
 
             // add or replace to the collection

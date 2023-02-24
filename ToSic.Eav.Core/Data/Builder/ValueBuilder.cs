@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data.Builder
 {
+    [PrivateApi]
     public class ValueBuilder
     {
         // WIP - constructor should never be called because we should use DI
@@ -13,18 +16,21 @@ namespace ToSic.Eav.Data.Builder
         {
             LanguageBuilder = dimensionBuilder;
         }
-
-        public IValue Clone(IValue original, string type) => Build(type, original.ObjectContents,
-            LanguageBuilder.Clone(original.Languages), null);
-
         private DimensionBuilder LanguageBuilder { get; }
+
+        public IValue Clone(IValue original, string type, IImmutableList<ILanguage> languages = null) 
+            => Build(
+                type, original.ObjectContents,
+                // 2023-02-24 2dm #immutable - don't need to clone if it's immutable
+                languages ?? /*LanguageBuilder.Clone(*/original.Languages /*)*/, null);
+
 
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        public IValue Build(string attributeType, object value, IList<ILanguage> languages,
+        public IValue Build(string attributeType, object value, IImmutableList<ILanguage> languages,
             IEntitiesSource fullEntityListForLookup = null)
-            => Build((ValueTypes)Enum.Parse(typeof(ValueTypes), attributeType), value, languages, fullEntityListForLookup);
+            => Build((ValueTypes)Enum.Parse(typeof(ValueTypes), attributeType), value, languages?.ToImmutableList(), fullEntityListForLookup);
 
 
         /// <summary>
@@ -33,26 +39,23 @@ namespace ToSic.Eav.Data.Builder
         /// <returns>
         /// An IValue, which is actually an IValue<string>, IValue<decimal>, IValue<IEnumerable<IEntity>> etc.
         /// </returns>
-        public IValue Build(ValueTypes type, object value, IList<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
+        public IValue Build(ValueTypes type, object value, IImmutableList<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
         {
-            if (languages == null) languages = new List<ILanguage>();
-            IValue typedModel;
+            var langs = languages ?? DimensionBuilder.NoLanguages;
             var stringValue = value as string;
             try
             {
                 switch (type)
                 {
                     case ValueTypes.Boolean:
-                        typedModel = new Value<bool?>(value as bool? ?? (bool.TryParse(stringValue, out var typedBoolean)
+                        return new Value<bool?>(value as bool? ?? (bool.TryParse(stringValue, out var typedBoolean)
                             ? typedBoolean
-                            : new bool?()));
-                        break;
+                            : new bool?()), langs);
                     case ValueTypes.DateTime:
-                        typedModel = new Value<DateTime?>(value as DateTime? ?? (DateTime.TryParse(stringValue, CultureInfo.InvariantCulture,
+                        return new Value<DateTime?>(value as DateTime? ?? (DateTime.TryParse(stringValue, CultureInfo.InvariantCulture,
                                                      DateTimeStyles.None, out var typedDateTime)
                                                      ? typedDateTime
-                                                     : new DateTime?()));
-                        break;
+                                                     : new DateTime?()), langs);
 
                     case ValueTypes.Number:
                         decimal? newDec = null;
@@ -61,13 +64,12 @@ namespace ToSic.Eav.Data.Builder
                             // only try converting if it's not an empty string
                             try
                             {
-                                newDec = System.Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+                                newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                             }
                             catch { /* ignored */ }
                         }
 
-                        typedModel = new Value<decimal?>(newDec);
-                        break;
+                        return new Value<decimal?>(newDec, langs);
 
                     case ValueTypes.Entity:
                         IEnumerable<IEntity> rel;
@@ -76,17 +78,12 @@ namespace ToSic.Eav.Data.Builder
                         if (entityIds != null)
                             rel = new LazyEntities(fullEntityListForLookup, entityIds.ToList());
                         else if (value is IEnumerable<IEntity> relList)
-                            //var lazy = (LazyEntities) relList;
-                            //rel = lazy.Guids != null
-                            //    ? new LazyEntities(fullEntityListForLookup, lazy.Guids)
-                            //    : new LazyEntities(fullEntityListForLookup, lazy.EntityIds);
                             rel = new LazyEntities(fullEntityListForLookup, ((LazyEntities)relList).Identifiers);
                         else if (value is List<Guid?> guids)
                             rel = new LazyEntities(fullEntityListForLookup, guids);
                         else
                             rel = new LazyEntities(fullEntityListForLookup, GuidCsvToList(value));
-                        typedModel = new Value<IEnumerable<IEntity>>(rel);
-                        break;
+                        return new Value<IEnumerable<IEntity>>(rel, langs);
                     // ReSharper disable RedundantCaseLabel
                     case ValueTypes.String:  // most common case
                     case ValueTypes.Empty:   // empty - should actually not contain anything!
@@ -96,18 +93,13 @@ namespace ToSic.Eav.Data.Builder
                     case ValueTypes.Undefined:// backup case, where it's not known...
                     // ReSharper restore RedundantCaseLabel
                     default:
-                        typedModel = new Value<string>(stringValue);
-                        break;
+                        return new Value<string>(stringValue, langs);
                 }
             }
             catch
             {
-                typedModel = new Value<string>(stringValue);
+                return new Value<string>(stringValue, langs);
             }
-
-            typedModel.Languages = languages;
-
-            return (IValue)typedModel;
         }
 
 
@@ -138,9 +130,6 @@ namespace ToSic.Eav.Data.Builder
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
         internal Value<IEnumerable<IEntity>> NullRelationship
-            => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null))
-            {
-                Languages =  LanguageBuilder.NoLanguages()
-            };
+            => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null), DimensionBuilder.NoLanguages);
     }
 }

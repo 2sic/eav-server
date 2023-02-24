@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -139,39 +140,40 @@ namespace ToSic.Eav.Persistence
         /// <summary>
         /// Will remove all language-information for values which have no language
         /// </summary>
-        /// <param name="attribs"></param>
+        /// <param name="allFields"></param>
         /// <param name="saveOptions"></param>
         /// <remarks>
         /// this expects that saveOptions contain Languages & PrimaryLanguage, and that this is reliable
         /// </remarks>
-        private void StripUnknownLanguages(Dictionary<string, IAttribute> attribs, SaveOptions saveOptions)
+        private void StripUnknownLanguages(Dictionary<string, IAttribute> allFields, SaveOptions saveOptions) => Log.Do(() =>
         {
-            Log.A("strip unknown langs");
             var languages = saveOptions.Languages;
 
-            foreach (var attribElm in attribs)
+            foreach (var field in allFields)
             {
                 var values = new List<IValue>();       // new empty values list
 
                 // when we go through the values, we should always take the primary language first
                 // this is detectable by having either no language, or having the primary language
-                var orderedValues = ValuesOrderedForProcessing(attribElm.Value, saveOptions);
+                var orderedValues = ValuesOrderedForProcessing(field.Value.Values, saveOptions);
                 foreach (var value in orderedValues)
                 {
                     // create filtered list of languages
-                    var newLangs = value.Languages?.Where(l => languages.Any(sysLang => sysLang.Matches(l.Key))).ToList();
+                    var newLangs = value.Languages?
+                        .Where(l => languages.Any(sysLang => sysLang.Matches(l.Key)))
+                        .ToImmutableList();
                     // only keep this value, if it is either the first (so contains primary or null-language) or that it still has a remaining language assignment
                     if (values.Any() && !(newLangs?.Any() ?? false)) continue;
-                    value.Languages = newLangs;
-                    values.Add(value);
+                    //value.Languages = newLangs;
+                    values.Add(value.Clone(newLangs));
                 }
-                attribElm.Value.Values = values;
+                field.Value.Values = values;
             }
-        }
+        });
 
-        private static IOrderedEnumerable<IValue> ValuesOrderedForProcessing(IAttribute attribElm, SaveOptions saveOptions)
+        private static IList<IValue> ValuesOrderedForProcessing(IList<IValue> values, SaveOptions saveOptions)
         {
-            var valuesWithPrimaryFirst = attribElm.Values
+            var valuesWithPrimaryFirst = values
                 .OrderBy(v =>
                 {
                     if(v.Languages == null || !v.Languages.Any()) return 2; // possible primary as no language specified, but not certainly
@@ -179,12 +181,17 @@ namespace ToSic.Eav.Persistence
                 });
 
             // now sort the language definitions to ensure correct handling
-            foreach (var value in valuesWithPrimaryFirst)
-                value.Languages = value.Languages
-                    .OrderBy(l => (l.Key == saveOptions.PrimaryLanguage ? 0 : 1) // first sort-order: primary language yes/no
-                        + (l.ReadOnly ? 20 : 10)) // then - place read-only at the end of the list
-                    .ToList();
-            return valuesWithPrimaryFirst;
+            var valsWithLanguagesSorted = valuesWithPrimaryFirst
+                .Select(value =>
+                {
+                    var sortedLangs = value.Languages.OrderBy(l =>
+                            (l.Key == saveOptions.PrimaryLanguage ? 0 : 1) // first sort-order: primary language yes/no
+                            + (l.ReadOnly ? 20 : 10)) // then - place read-only at the end of the list
+                        .ToImmutableList();
+                    return value.Clone(sortedLangs);
+                })
+                .ToList();
+            return valsWithLanguagesSorted;
         }
 
         /// <summary>
@@ -199,7 +206,7 @@ namespace ToSic.Eav.Persistence
             var callLog = Log.Fn<IAttribute>();
             // everything in the update will be kept, and optionally some stuff in the original may be preserved
             var result = update;
-            foreach (var orgVal in ValuesOrderedForProcessing(original, saveOptions))
+            foreach (var orgVal in ValuesOrderedForProcessing(original.Values, saveOptions))
             {
                 var remainingLanguages = new List<ILanguage>();
                 foreach (var valLang in orgVal.Languages) // first process master-languages, then read-only
@@ -217,8 +224,10 @@ namespace ToSic.Eav.Persistence
                 if (remainingLanguages.Count == 0) continue;
 
                 // Add the value with the remaining languages / relationships
-                var val = _multiBuilder.Value.Clone(orgVal, original.Type); // orgVal.Copy(original.Type);
-                val.Languages = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
+                // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
+                //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
+                var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
+                var val = _multiBuilder.Value.Clone(orgVal, original.Type, languagesToUse);
                 result.Values.Add(val);
             }
 

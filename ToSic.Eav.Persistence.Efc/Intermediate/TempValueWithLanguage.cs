@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Persistence.Efc.Intermediate
@@ -6,7 +6,7 @@ namespace ToSic.Eav.Persistence.Efc.Intermediate
     internal class TempValueWithLanguage
     {
         public string Value;
-        public List<ILanguage> Languages;
+        public IImmutableList<ILanguage> Languages;
 
     }
 }

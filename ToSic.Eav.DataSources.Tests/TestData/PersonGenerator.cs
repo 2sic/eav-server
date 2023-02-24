@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Testing.Shared;
 using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
 using static ToSic.Testing.Shared.ValueBuilderTestExtensions;
 
@@ -118,7 +119,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                 ? (object) original
                 : AttributeBuilder.CreateTyped(name, type, new List<IValue>
                 {
-                    MultiBuilder.Value.Build4Test(type, original, new List<ILanguage>()),
+                    MultiBuilder.Value.Build4Test(type, original, DimensionBuilder.NoLanguages),
                 });
     }
 }

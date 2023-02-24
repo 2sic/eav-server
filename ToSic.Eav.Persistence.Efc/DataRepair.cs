@@ -32,12 +32,7 @@ namespace ToSic.Eav.Persistence.Efc
             if (!hasPrimary)
             {
                 var firstWithoutLanguage = badValuesWithoutLanguage.First();
-                firstWithoutLanguage.Languages.Add(new Language
-                {
-                    DimensionId = 0, // unknown - should be fine...
-                    Key = primaryLanguage,
-                    ReadOnly = false
-                });
+                firstWithoutLanguage.Languages.Add(new Language(primaryLanguage, false));
 
                 // Skip the modified item and check if we still have any to remove
                 badValuesWithoutLanguage.Remove(firstWithoutLanguage);

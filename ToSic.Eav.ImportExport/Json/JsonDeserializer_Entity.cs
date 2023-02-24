@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -120,7 +121,8 @@ namespace ToSic.Eav.ImportExport.Json
             foreach (var attrib in list)
             {
                 var newAtt = AttributeBuilder.CreateTyped(attrib.Key, type, attrib.Value
-                    .Select(v => MultiBuilder.Value.Build(type, v.Value, RecreateLanguageList(v.Key), relationshipsSource)).ToList());
+                    .Select(v => MultiBuilder.Value.Build(type, v.Value, RecreateLanguageList(v.Key), relationshipsSource))
+                    .ToList());
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
             }
         }
@@ -145,7 +147,9 @@ namespace ToSic.Eav.ImportExport.Json
                             .Select(v => MultiBuilder.Value.Build(
                                 definition.Type, 
                                 v.Value,
-                                RecreateLanguageList(v.Key),
+                                // 2023-02-24 2dm #immutable
+                                //RecreateLanguageList(v.Key),
+                                DimensionBuilder.NoLanguages,
                                 relationshipsSource ?? LazyRelationshipLookupList))
                             .ToList();
                         break;
@@ -184,16 +188,19 @@ namespace ToSic.Eav.ImportExport.Json
         {
             if (!list?.ContainsKey(attrDef.Name) ?? true) return;
             target.Values = list[attrDef.Name]
-                .Select(v => MultiBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key))).ToList();
+                .Select(v => MultiBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
+                .ToList();
 
         }
 
-        private static List<ILanguage> RecreateLanguageList(string languages) 
+        private static IImmutableList<ILanguage> RecreateLanguageList(string languages) 
             => languages == NoLanguage
-            ? new List<ILanguage>()
+            ? DimensionBuilder.NoLanguages
             : languages.Split(',')
-                .Select(a => new Language {Key = a.Replace(ReadOnlyMarker, ""), ReadOnly = a.StartsWith(ReadOnlyMarker)} as ILanguage)
-                .ToList();
+                // 2023-02-24 2dm #immutable
+                //.Select(a => new Language { Key = a.Replace(ReadOnlyMarker, ""), ReadOnly = a.StartsWith(ReadOnlyMarker) } as ILanguage)
+                .Select(a => new Language(a.Replace(ReadOnlyMarker, ""), a.StartsWith(ReadOnlyMarker)) as ILanguage)
+                .ToImmutableList();
 
 
         private Dictionary<string, Dictionary<string, string>> ConvertReferences(Dictionary<string, Dictionary<string, string>> links, Guid entityGuid

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Apps;
@@ -173,7 +174,7 @@ namespace ToSic.Eav.ImportExport.Xml
                                                          "cant' build attribute with unknown value-type"),
                             tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
                             throw new NullReferenceException("can't build attribute without value"),
-                            tempImportValue.Dimensions))
+                            tempImportValue.Dimensions.ToImmutableList()))
                     .ToList();
 
                 // construct the attribute with these value elements
@@ -225,7 +226,9 @@ namespace ToSic.Eav.ImportExport.Xml
             var dimensionsToAdd = new List<ILanguage>();
             if (_envLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
             {
-                dimensionsToAdd.Add(new Language { Key = envLang.EnvironmentKey, ReadOnly = readOnly });
+                // 2023-02-24 2dm #immutable
+                //dimensionsToAdd.Add(new Language { Key = envLang.EnvironmentKey, ReadOnly = readOnly });
+                dimensionsToAdd.Add(new Language(envLang.EnvironmentKey, readOnly));
                 logText += "built dimension-list";
             }
 

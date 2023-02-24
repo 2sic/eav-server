@@ -187,7 +187,8 @@ namespace ToSic.Eav.Apps.ImportExport
                     var entityValue = AttributeLanguageImportHelper.ValueItemOfLanguageOrNull(entity.Attributes, valName, valueReferenceLanguage);
                     if (entityValue != null)
                     {
-                        entityValue.Languages.Add(new Language { Key = nodeLang, ReadOnly = valueReadOnly });
+                        // 2023-02-24 2dm #immutable
+                        entityValue.Languages.Add(new Language(nodeLang, valueReadOnly));
                         continue;
                     }
 
@@ -213,7 +214,8 @@ namespace ToSic.Eav.Apps.ImportExport
                             valueReferenceLanguage,
                             valExisting.Languages.FirstOrDefault(l => l.Key == valueReferenceLanguage)?.ReadOnly ?? false,
                             ResolveLinks);
-                    val.Languages.Add(new Language {Key = nodeLang, ReadOnly = valueReadOnly});
+                    // 2023-02-24 2dm #immutable
+                    val.Languages.Add(new Language (nodeLang, valueReadOnly));
 
                     Log.A($"Nr. {nodesCount} ok");
                 }

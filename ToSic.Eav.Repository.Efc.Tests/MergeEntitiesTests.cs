@@ -90,10 +90,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
         #endregion
 
         #region languge definitions
-        private static Language langEn = new Language {DimensionId = 1, Key = "en-US"};
-        private static Language langDeDe = new Language {DimensionId = 42, Key = "de-DE"};
-        private static Language langDeCh = new Language {DimensionId = 39, Key = "de-CH"};
-        private static Language langFr = new Language {DimensionId = 99, Key = "fr-FR"};
+
+        private static Language langEn = new Language("en-US", false, 1);// {DimensionId = 1, Key = "en-US"};
+        private static Language langDeDe = new Language ("de-DE", false, 42); //{DimensionId = 42, Key = "de-DE"};
+        private static Language langDeCh = new Language ("de-CH", false, 39);//{DimensionId = 39, Key = "de-CH"};
+        private static Language langFr = new Language ("fr-FR", false, 99);//{DimensionId = 99, Key = "fr-FR"};
 
         private static DimensionDefinition langEnDef = new DimensionDefinition { DimensionId = 1, EnvironmentKey = "en-US" };
         private static DimensionDefinition langDeDeDef = new DimensionDefinition { DimensionId = 42, EnvironmentKey = "de-DE" };
@@ -204,7 +205,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                     new List<ILanguage> { Clone(langDeDe), Clone(langFr) }),
                 BuildData.Value.Build4Test(ValueTypes.String, "File FR", new List<ILanguage> {Clone(langFr)}),
                 // special test - empty language item
-                BuildData.Value.Build4Test(ValueTypes.String, "File without language!", new List<ILanguage>()),
+                BuildData.Value.Build4Test(ValueTypes.String, "File without language!", DimensionBuilder.NoLanguages.ToList()),
                 BuildData.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
             });
 

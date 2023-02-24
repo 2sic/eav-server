@@ -73,11 +73,11 @@ namespace ToSic.Eav.DataSourceTests.TestData
         internal const string FrFr = "fr-FR";
         internal const string Pri = "pr";
         internal const string PrPr = "pr-PR";
-        internal static Language LangPri = new Language { DimensionId = 0, Key = PrPr};
-        internal static Language LangEn = new Language { DimensionId = 1, Key = EnUs };
-        internal static Language LangDeDe = new Language { DimensionId = 42, Key = DeDe };
-        internal static Language LangDeCh = new Language { DimensionId = 39, Key = DeCh };
-        internal static Language LangFr = new Language { DimensionId = 99, Key = FrFr };
+        internal static Language LangPri = new Language(PrPr, false); // { DimensionId = 0, Key = PrPr};
+        internal static Language LangEn = new Language(EnUs, false, 1); // { DimensionId = 1, Key = EnUs };
+        internal static Language LangDeDe = new Language(DeDe, false, 42); // { DimensionId = 42, Key = DeDe };
+        internal static Language LangDeCh = new Language (DeCh, false, 39); // { DimensionId = 39, Key = DeCh };
+        internal static Language LangFr = new Language (FrFr, false, 99); // { DimensionId = 99, Key = FrFr };
 
         internal const string PriPrefix = "PR-";
         internal const string EnPrefix = "EN-";

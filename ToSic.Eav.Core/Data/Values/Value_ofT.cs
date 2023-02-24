@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Lib.Documentation;
 
@@ -15,21 +16,24 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// The default constructor to create a value object. Used internally to build the memory model. 
         /// </summary>
-        /// <param name="typedContents"></param>
-        public Value(T typedContents) => TypedContents = typedContents;
+        public Value(T typedContents, IImmutableList<ILanguage> languages)
+        {
+            TypedContents = typedContents;
+            Languages = languages;
+        }
 
-        public T TypedContents { get; internal set; }
+        public T TypedContents { get; }
 
 
         /// <inheritdoc />
-        public IList<ILanguage> Languages { get; set; }
+        public IImmutableList<ILanguage> Languages { get; set; }
 
         /// <inheritdoc />
         public object SerializableObject
         {
             get
             {
-                var typedObject = ((IValue<T>)this).TypedContents;
+                var typedObject = TypedContents;
 
                 if (!(typedObject is IEnumerable<IEntity> maybeRelationshipList)) return typedObject;
 
@@ -56,10 +60,9 @@ namespace ToSic.Eav.Data
         }
 
         [PrivateApi]
+        public IValue Clone(IImmutableList<ILanguage> newLanguages) => new Value<T>(TypedContents, newLanguages);
+
+        [PrivateApi]
         public object ObjectContents => TypedContents;
-
-
-        [PrivateApi] public bool? DynamicUseCache { get; set; }
-        [PrivateApi] public object DynamicCache { get; set; }
     }
 }

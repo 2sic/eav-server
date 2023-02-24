@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
@@ -105,12 +106,9 @@ namespace ToSic.Eav.Persistence.Efc
                             .Select(v2 => new TempValueWithLanguage
                             {
                                 Value = v2.Value,
-                                Languages = v2.ToSicEavValuesDimensions.Select(l => new Language
-                                {
-                                    DimensionId = l.DimensionId,
-                                    ReadOnly = l.ReadOnly,
-                                    Key = l.Dimension.EnvironmentKey.ToLowerInvariant()
-                                } as ILanguage).ToList(),
+                                Languages = v2.ToSicEavValuesDimensions
+                                    .Select(l => new Language(l.Dimension.EnvironmentKey.ToLowerInvariant(), l.ReadOnly, l.DimensionId) as ILanguage)
+                                    .ToImmutableList(),
                             })
                     }));
             return wrapLog.ReturnAsOk(attributes);

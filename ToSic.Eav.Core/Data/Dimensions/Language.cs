@@ -9,11 +9,18 @@ namespace ToSic.Eav.Data
     [PrivateApi("2021-09-30 hidden, previously marked as PublicApi_Stable_ForUseInYourCode")]
     public class Language : ILanguage
     {
-        /// <inheritdoc />
-        public int DimensionId { get; set; }
+        public Language(string key, bool readOnly, int dimensionId = 0)
+        {
+            Key = key;
+            ReadOnly = readOnly;
+            DimensionId = dimensionId;
+        }
 
         /// <inheritdoc />
-        public bool ReadOnly { get; set; }
+        public int DimensionId { get; }
+
+        /// <inheritdoc />
+        public bool ReadOnly { get; }
 
         /// <inheritdoc />
         public string Key
