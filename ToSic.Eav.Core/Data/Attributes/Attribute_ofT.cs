@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Lib.Documentation;
 
@@ -18,12 +19,13 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create an attribute object - usually when building up the data-model for caching.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="type"></param>
-        public Attribute(string name, string type) : base(name, type) { }
+        public Attribute(string name, string type, IList<IValue> values = null) : base(name, type)
+        {
+            Values = values ?? new List<IValue>();
+        }
 
         /// <inheritdoc/>
-        public IList<IValue> Values { get; set; } = new List<IValue>();
+        public IList<IValue> Values { get; set; }
 
         /// <inheritdoc/>
         public T TypedContents
@@ -65,8 +67,6 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         object IAttribute.this[string languageKey] => GetInternal(new [] {languageKey}, FindHavingDimensions);
 
-        [PrivateApi]
-        object IAttribute.this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
 
         [PrivateApi]
         public (IValue ValueField, object Result) GetTypedValue(string[] languageKeys)
@@ -79,15 +79,21 @@ namespace ToSic.Eav.Data
         object IAttribute.this[int languageId] => this[languageId];
         #endregion
 
-        /// <inheritdoc/>
-        public T this[int[] languageIds] => GetInternal(languageIds, FindHavingDimensions);
+        #region 2dm Removed Accessors which I believe were only internal and never used!
 
+        //[PrivateApi]
+        //object IAttribute.this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
 
-        /// <inheritdoc/>
-        public T this[string languageKey] => GetInternal(new[] { languageKey }, FindHavingDimensions);
+        ///// <inheritdoc/>
+        //public T this[int[] languageIds] => GetInternal(languageIds, FindHavingDimensions);
 
-        /// <inheritdoc/>
-        public T this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
+        ///// <inheritdoc/>
+        //public T this[string languageKey] => GetInternal(new[] { languageKey }, FindHavingDimensions);
+
+        ///// <inheritdoc/>
+        //public T this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
+
+        #endregion
 
         private T GetInternal<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
         {

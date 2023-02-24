@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        {
 	            var delayedQuery = _queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider, showDrafts, null);
                 // make sure it doesn't break if two queries have the same name...
-	            var name = entQuery.Title[0].ToString();
+	            var name = entQuery.GetBestTitle(); //.Title[0].ToString();
 	            if (!dict.ContainsKey(name))
 	                dict[name] = delayedQuery;
 	        }

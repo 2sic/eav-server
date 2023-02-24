@@ -11,10 +11,9 @@ namespace ToSic.Eav.Data.Builder
             _valueBuilder = valueBuilder;
         }
         private readonly ValueBuilder _valueBuilder;
-        private AttributeBuilder _attributeBuilder;
 
-        protected AttributeBuilder AttributeBuilder =>
-            _attributeBuilder ?? (_attributeBuilder = new AttributeBuilder(_valueBuilder));
+        protected AttributeBuilder AttributeBuilder => _attributeBuilder ?? (_attributeBuilder = new AttributeBuilder(_valueBuilder));
+        private AttributeBuilder _attributeBuilder;
 
         public static AttribBuilder GetStatic() => new AttribBuilder(new ValueBuilder(new DimensionBuilder()));
 
@@ -34,15 +33,16 @@ namespace ToSic.Eav.Data.Builder
                 else
                 {
                     var attributeType = DataTypes.GetAttributeTypeName(oAttrib.Value);
-                    var attributeModel = AttributeBuilder.CreateTyped(oAttrib.Key, attributeType);
                     var valuesModelList = new List<IValue>();
                     if (oAttrib.Value != null)
                     {
-                        var valueModel = _valueBuilder.Build(attributeType, oAttrib.Value, null);
+                        var valueModel = _valueBuilder.Build(attributeType, oAttrib.Value);
                         valuesModelList.Add(valueModel);
                     }
+                    var attributeModel = AttributeBuilder.CreateTyped(oAttrib.Key, attributeType, valuesModelList);
 
-                    attributeModel.Values = valuesModelList;
+                    // #immutable
+                    //attributeModel.Values = valuesModelList;
 
                     result[oAttrib.Key] = attributeModel;
                 }

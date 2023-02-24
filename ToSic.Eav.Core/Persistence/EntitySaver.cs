@@ -131,8 +131,10 @@ namespace ToSic.Eav.Persistence
 
         private IAttribute CreateIsPublishedAttribute(bool isPublished)
         {
-            var attribute = AttributeBuilder.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean);
-            attribute.Values = new List<IValue> { _multiBuilder.Value.Build(ValueTypes.Boolean.ToString(), isPublished, null)};
+            var values = new List<IValue> { _multiBuilder.Value.Build(ValueTypes.Boolean.ToString(), isPublished) };
+            var attribute = AttributeBuilder.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
+            // #immutable
+            //attribute.Values = values;
             return attribute;
         }
 

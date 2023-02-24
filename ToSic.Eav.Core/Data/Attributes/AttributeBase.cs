@@ -11,22 +11,6 @@ namespace ToSic.Eav.Data
     [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi. This is just fyi, use Interface IAttributeBase")]
     public class AttributeBase : IAttributeBase
     {
-        /// <inheritdoc />
-        public string Name { get; set; }
-        /// <inheritdoc />
-        public string Type { get; set; }
-
-        private ValueTypes _controlledType = ValueTypes.Undefined;
-
-        [PrivateApi]
-        public ValueTypes ControlledType
-        {
-            get => _controlledType != ValueTypes.Undefined 
-                ? _controlledType
-                : _controlledType = ValueTypeHelpers.Get(Type);
-            internal set => _controlledType = value;
-        }
-
         /// <summary>
         /// Extended constructor when also storing the persistence ID-Info
         /// </summary>
@@ -37,6 +21,20 @@ namespace ToSic.Eav.Data
         {
             Name = name;
             Type = type;
-		}
+        }
+
+        /// <inheritdoc />
+        public string Name { get; }
+
+        /// <inheritdoc />
+        public string Type { get; }
+
+
+        [PrivateApi]
+        public ValueTypes ControlledType => _controlledType != ValueTypes.Undefined
+            ? _controlledType
+            : _controlledType = ValueTypeHelpers.Get(Type);
+        private ValueTypes _controlledType = ValueTypes.Undefined;
+
     }
 }

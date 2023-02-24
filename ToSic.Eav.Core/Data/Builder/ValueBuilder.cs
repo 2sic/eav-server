@@ -28,7 +28,7 @@ namespace ToSic.Eav.Data.Builder
         /// <summary>
         /// Creates a Typed Value Model
         /// </summary>
-        public IValue Build(string attributeType, object value, IImmutableList<ILanguage> languages,
+        public IValue Build(string attributeType, object value, IImmutableList<ILanguage> languages = null,
             IEntitiesSource fullEntityListForLookup = null)
             => Build((ValueTypes)Enum.Parse(typeof(ValueTypes), attributeType), value, languages?.ToImmutableList(), fullEntityListForLookup);
 

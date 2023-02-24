@@ -35,12 +35,17 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         object this[string languageKey] { get; }
 
-        /// <summary>
-        /// Get the best/first matching value for the specified language keys - untyped
-        /// </summary>
-        /// <param name="languageKeys">list of language keys</param>
-        [PrivateApi]
-        object this[string[] languageKeys] { get; }
+
+        #endregion
+
+        #region 2dm Removed Accessors which I believe were only internal and never used!
+
+        ///// <summary>
+        ///// Get the best/first matching value for the specified language keys - untyped
+        ///// </summary>
+        ///// <param name="languageKeys">list of language keys</param>
+        //[PrivateApi]
+        //object this[string[] languageKeys] { get; }
 
         #endregion
 

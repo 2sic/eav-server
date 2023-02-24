@@ -154,7 +154,7 @@ namespace ToSic.Eav.ImportExport.Json
                             .ToList();
                         break;
                     case ValueTypes.Hyperlink:
-                        BuildValues(jAtts.Hyperlink, definition,newAtt);
+                        BuildValues(jAtts.Hyperlink, definition, newAtt);
                         break;
                     case ValueTypes.Number:
                         BuildValues(jAtts.Number, definition, newAtt);
