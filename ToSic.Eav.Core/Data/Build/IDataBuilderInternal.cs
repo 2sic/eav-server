@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data.Build
 {
     /// <summary>
     /// This is a Builder-Object which is used to create any kind of data.

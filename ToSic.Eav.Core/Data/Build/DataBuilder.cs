@@ -8,7 +8,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data.Build
 {
     [PrivateApi("Still experimental/hide implementation")]
     public class DataBuilder : ServiceBase, IDataBuilder

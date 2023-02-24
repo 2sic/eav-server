@@ -5,7 +5,7 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data.Build
 {
     /// <summary>
     /// This is a Builder-Object which is used to create any kind of data.
