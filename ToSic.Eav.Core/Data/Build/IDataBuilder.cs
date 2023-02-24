@@ -100,9 +100,11 @@ namespace ToSic.Eav.Data.Build
         /// IMPORTANT: WIP
         /// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
         /// </summary>
-        /// <typeparam name="TRaw"></typeparam>
+        /// <typeparam name="TNewEntity"></typeparam>
         /// <param name="rawEntities"></param>
         /// <returns></returns>
-        IDictionary<TRaw, IEntity> Prepare<TRaw>(IEnumerable<TRaw> rawEntities) where TRaw: INewEntity;
+        IList<NewEntitySet<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> rawEntities) where TNewEntity: INewEntity;
+
+        IImmutableList<IEntity> Finalize(IEnumerable<ICanBeEntity> newEntitySetList);
     }
 }

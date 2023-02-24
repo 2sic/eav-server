@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.New;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
@@ -23,9 +24,9 @@ namespace ToSic.Eav.DataSources
             bool cloneFirst = true
         );
 
-        IDictionary<TRaw, IEntity> AddOneRelationship<TRaw, TKey>(
+        IList<NewEntitySet<TNewEntity>> AddOneRelationship<TNewEntity, TKey>(
             string fieldName,
-            List<(TRaw Raw, IEntity Entity, List<TKey> Ids)> needs,
+            List<(NewEntitySet<TNewEntity> Set, List<TKey> Ids)> needs,
             List<(IEntity Entity, TKey Id)> lookup,
             bool cloneFirst = true
         );

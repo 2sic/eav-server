@@ -113,26 +113,33 @@ namespace ToSic.Eav.Data.Build
             return all.ToImmutableList();
         }
 
-        public IDictionary<TRaw, IEntity> Prepare<TRaw>(IEnumerable<TRaw> rawEntities) where TRaw : INewEntity
+        public IList<NewEntitySet<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> rawEntities) where TNewEntity : INewEntity
         {
-            var all = rawEntities.ToDictionary(r => r, r =>
-            {
-                
-                // Todo: improve this, so if anything fails, we have a clear info which item failed
-                try
+            var all = rawEntities.Select(r =>
                 {
-                    // WIP - this isn't nice ATM, but it's important
-                    // so the resulting object has Multi-language attributes
-                    // Should be improved ASAP
-                    return _multiBuilder.FullClone(Create(r)) as IEntity;
-                }
-                catch
-                {
-                    return null;
-                }
-            });
+                    IEntity newEntity = null;
+
+                    // Todo: improve this, so if anything fails, we have a clear info which item failed
+                    try
+                    {
+                        // WIP - this isn't nice ATM, but it's important
+                        // so the resulting object has Multi-language attributes
+                        // Should be improved ASAP
+                        newEntity = _multiBuilder.FullClone(Create(r));
+                    }
+                    catch
+                    {
+                        /* ignore */
+                    }
+
+                    return new NewEntitySet<TNewEntity>(r, newEntity);
+                })
+                .ToList();
             return all;
         }
+
+        public IImmutableList<IEntity> Finalize(IEnumerable<ICanBeEntity> newEntitySetList)
+            => newEntitySetList.Select(set => set.Entity).ToImmutableList();
 
         /// <inheritdoc />
         public IEntity Create(Dictionary<string, object> values,
