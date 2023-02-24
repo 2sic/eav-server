@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Data.Create
+namespace ToSic.Eav.Data.New
 {
     /// <summary>
     /// Options which may be needed to create raw entities.
