@@ -22,7 +22,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    public class LicenseState: IHasNewEntity
+    public class LicenseState: IHasNewEntity<INewEntity>
     {
         public LicenseState() { }
 

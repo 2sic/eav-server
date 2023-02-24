@@ -93,8 +93,8 @@ namespace ToSic.Eav.Data.Build
         #endregion
 
         /// <inheritdoc />
-        public NewEntitySet<INewEntity> Create(IHasNewEntity withNewEntity) 
-            => new NewEntitySet<INewEntity>(withNewEntity.NewEntity, Create(withNewEntity.NewEntity));
+        public NewEntitySet<T> Create<T>(IHasNewEntity<T> withNewEntity) where T: INewEntity
+            => new NewEntitySet<T>(withNewEntity.NewEntity, Create(withNewEntity.NewEntity));
 
         /// <inheritdoc />
         public IEntity Create(INewEntity newEntity) => Create(
@@ -111,14 +111,14 @@ namespace ToSic.Eav.Data.Build
             return all.ToImmutableList();
         }
 
-        public IImmutableList<IEntity> Build(IEnumerable<IHasNewEntity> data)
+        public IImmutableList<IEntity> Build<T>(IEnumerable<IHasNewEntity<T>> data) where T: INewEntity
         {
             var list = Prepare(data);
             return Finalize(list);
         }
 
-        public IList<NewEntitySet<INewEntity>> Prepare(IEnumerable<IHasNewEntity> rawEntities)
-            => rawEntities.Select(Create).ToList();
+        public IList<NewEntitySet<T>> Prepare<T>(IEnumerable<IHasNewEntity<T>> data) where T: INewEntity
+            => data.Select(Create).ToList();
 
         public IList<NewEntitySet<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> rawEntities) where TNewEntity : INewEntity
         {

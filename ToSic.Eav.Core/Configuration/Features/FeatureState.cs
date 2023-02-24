@@ -15,7 +15,7 @@ namespace ToSic.Eav.Configuration
     /// Note that this is also used as a DTO for the edit-UI, so don't just rename fields or anything.
     /// </summary>
     [PrivateApi("no good reason to publish this")]
-    public class FeatureState: IHasNewEntity, IHasIdentityNameId
+    public class FeatureState: IHasNewEntity<INewEntity>, IHasIdentityNameId
     {
         /// <summary>
         /// Feature Definition can be null, if a feature was activated with an unknown ID

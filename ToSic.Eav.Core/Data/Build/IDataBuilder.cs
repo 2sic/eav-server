@@ -70,14 +70,14 @@ namespace ToSic.Eav.Data.Build
             CreateFromNewOptions createFromNewOptions = default
         );
 
-        IImmutableList<IEntity> Build(IEnumerable<IHasNewEntity> data);
+        IImmutableList<IEntity> Build<T>(IEnumerable<IHasNewEntity<T>> data) where T: INewEntity;
 
         /// <summary>
         /// For objects which delegate the IRawEntity to a property.
         /// </summary>
         /// <param name="withNewEntity"></param>
         /// <returns></returns>
-        NewEntitySet<INewEntity> Create(IHasNewEntity withNewEntity);
+        NewEntitySet<T> Create<T>(IHasNewEntity<T> withNewEntity) where T : INewEntity;
 
         /// <summary>
         /// For objects which themselves are IRawEntity
@@ -93,7 +93,7 @@ namespace ToSic.Eav.Data.Build
             DateTime modified = default);
 
         IImmutableList<IEntity> CreateMany(IEnumerable<INewEntity> rawEntities);
-        IList<NewEntitySet<INewEntity>> Prepare(IEnumerable<IHasNewEntity> rawEntities);
+        IList<NewEntitySet<T>> Prepare<T>(IEnumerable<IHasNewEntity<T>> data) where T : INewEntity;
 
         /// <summary>
         /// This will create IEntity but return it in a dictionary mapped to the original.
