@@ -92,37 +92,51 @@ namespace ToSic.Eav.Data.Build
         private bool _alreadyConfigured;
         #endregion
 
-        /// <inheritdoc />
-        public NewEntitySet<T> Create<T>(IHasNewEntity<T> withNewEntity) where T: INewEntity
-            => new NewEntitySet<T>(withNewEntity.NewEntity, Create(withNewEntity.NewEntity));
+        #region Build / Finalize
 
         /// <inheritdoc />
-        public IEntity Create(INewEntity newEntity) => Create(
-            newEntity.GetProperties(CreateFromNewOptions),
-            id: newEntity.Id, 
-            guid: newEntity.Guid,
-            created: newEntity.Created,
-            modified: newEntity.Modified
-        );
+        public IImmutableList<IEntity> Build<T>(IEnumerable<T> list) where T : INewEntity
+            => Finalize(Prepare(list));
 
-        public IImmutableList<IEntity> CreateMany(IEnumerable<INewEntity> rawEntities)
-        {
-            var all = rawEntities.Select(Create).ToList();
-            return all.ToImmutableList();
-        }
+        /// <inheritdoc />
+        public IImmutableList<IEntity> Build<T>(IEnumerable<IHasNewEntity<T>> list) where T : INewEntity
+            => Finalize(Prepare(list));
 
-        public IImmutableList<IEntity> Build<T>(IEnumerable<IHasNewEntity<T>> data) where T: INewEntity
-        {
-            var list = Prepare(data);
-            return Finalize(list);
-        }
+        /// <inheritdoc />
+        public IImmutableList<IEntity> Finalize(IEnumerable<ICanBeEntity> list)
+            => list.Select(set => set.Entity).ToImmutableList();
 
+        #endregion
+
+        #region Prepare One
+
+        /// <inheritdoc />
+        public NewEntitySet<T> Prepare<T>(IHasNewEntity<T> withNewEntity) where T: INewEntity
+            => Prepare<T>(withNewEntity.NewEntity);
+
+        /// <inheritdoc />
+        public NewEntitySet<T> Prepare<T>(T newEntity) where T : INewEntity
+            => new NewEntitySet<T>(newEntity, Create(
+                newEntity.GetProperties(CreateFromNewOptions),
+                id: newEntity.Id,
+                guid: newEntity.Guid,
+                created: newEntity.Created,
+                modified: newEntity.Modified
+            ));
+
+        #endregion
+
+
+        #region Prepare Many
+
+        /// <inheritdoc />
         public IList<NewEntitySet<T>> Prepare<T>(IEnumerable<IHasNewEntity<T>> data) where T: INewEntity
-            => data.Select(Create).ToList();
+            => data.Select(Prepare).ToList();
 
-        public IList<NewEntitySet<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> rawEntities) where TNewEntity : INewEntity
+        /// <inheritdoc />
+        public IList<NewEntitySet<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list) where TNewEntity : INewEntity
         {
-            var all = rawEntities.Select(r =>
+            var all = list.Select(n =>
                 {
                     IEntity newEntity = null;
 
@@ -132,21 +146,20 @@ namespace ToSic.Eav.Data.Build
                         // WIP - this isn't nice ATM, but it's important
                         // so the resulting object has Multi-language attributes
                         // Should be improved ASAP
-                        newEntity = _multiBuilder.FullClone(Create(r));
+                        newEntity = _multiBuilder.FullClone(Create(n));
                     }
                     catch
                     {
                         /* ignore */
                     }
 
-                    return new NewEntitySet<TNewEntity>(r, newEntity);
+                    return new NewEntitySet<TNewEntity>(n, newEntity);
                 })
                 .ToList();
             return all;
         }
 
-        public IImmutableList<IEntity> Finalize(IEnumerable<ICanBeEntity> newEntitySetList)
-            => newEntitySetList.Select(set => set.Entity).ToImmutableList();
+        #endregion
 
         /// <inheritdoc />
         public IEntity Create(Dictionary<string, object> values,
@@ -166,5 +179,17 @@ namespace ToSic.Eav.Data.Build
             );
             return ent;
         }
+
+        #region Create internal
+
+        private IEntity Create(INewEntity newEntity) => Create(
+            newEntity.GetProperties(CreateFromNewOptions),
+            id: newEntity.Id, 
+            guid: newEntity.Guid,
+            created: newEntity.Created,
+            modified: newEntity.Modified
+        );
+
+        #endregion
     }
 }

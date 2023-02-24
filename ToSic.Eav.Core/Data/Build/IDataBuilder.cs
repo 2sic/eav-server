@@ -70,29 +70,69 @@ namespace ToSic.Eav.Data.Build
             CreateFromNewOptions createFromNewOptions = default
         );
 
-        IImmutableList<IEntity> Build<T>(IEnumerable<IHasNewEntity<T>> data) where T: INewEntity;
+        #region Build / Finalize
 
         /// <summary>
-        /// For objects which delegate the IRawEntity to a property.
+        /// Build a complete stream of <see cref="INewEntity"/>s.
+        /// This is the method to use when you don't plan on doing any post-processing.
+        ///
+        /// If you need post-processing, call `Prepare` instead and finish using `Finalize`.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        IImmutableList<IEntity> Build<T>(IEnumerable<T> list) where T : INewEntity;
+
+        /// <summary>
+        /// Build a complete stream of <see cref="INewEntity"/>s.
+        /// This is the method to use when you don't plan on doing any post-processing.
+        ///
+        /// If you need post-processing, call `Prepare` instead and finish using `Finalize`.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        IImmutableList<IEntity> Build<T>(IEnumerable<IHasNewEntity<T>> list) where T: INewEntity;
+
+        /// <summary>
+        /// Finalize the work of building something, using prepared materials.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        IImmutableList<IEntity> Finalize(IEnumerable<ICanBeEntity> list);
+
+        #endregion
+
+        #region Prepare One
+
+        /// <summary>
+        /// For objects which delegate the <see cref="INewEntity"/> to a property.
         /// </summary>
         /// <param name="withNewEntity"></param>
         /// <returns></returns>
-        NewEntitySet<T> Create<T>(IHasNewEntity<T> withNewEntity) where T : INewEntity;
+        NewEntitySet<T> Prepare<T>(IHasNewEntity<T> withNewEntity) where T : INewEntity;
 
         /// <summary>
-        /// For objects which themselves are IRawEntity
+        /// For objects which themselves are <see cref="INewEntity"/>
         /// </summary>
         /// <param name="newEntity"></param>
         /// <returns></returns>
-        IEntity Create(INewEntity newEntity);
+        NewEntitySet<T> Prepare<T>(T newEntity) where T : INewEntity;
 
-        IEntity Create(Dictionary<string, object> values,
-            int id = default,
-            Guid guid = default,
-            DateTime created = default,
-            DateTime modified = default);
+        #endregion
 
-        IImmutableList<IEntity> CreateMany(IEnumerable<INewEntity> rawEntities);
+        #region Prepare Many
+
+        /// <summary>
+        /// This will create IEntity but return it in a dictionary mapped to the original.
+        /// This is useful when you intend to do further processing and need to know which original matches the generated entity.
+        ///
+        /// IMPORTANT: WIP
+        /// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
         IList<NewEntitySet<T>> Prepare<T>(IEnumerable<IHasNewEntity<T>> data) where T : INewEntity;
 
         /// <summary>
@@ -102,11 +142,21 @@ namespace ToSic.Eav.Data.Build
         /// IMPORTANT: WIP
         /// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
         /// </summary>
-        /// <typeparam name="TNewEntity"></typeparam>
-        /// <param name="rawEntities"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
         /// <returns></returns>
-        IList<NewEntitySet<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> rawEntities) where TNewEntity: INewEntity;
+        IList<NewEntitySet<T>> Prepare<T>(IEnumerable<T> list) where T: INewEntity;
 
-        IImmutableList<IEntity> Finalize(IEnumerable<ICanBeEntity> newEntitySetList);
+        #endregion
+
+        IEntity Create(Dictionary<string, object> values,
+            int id = default,
+            Guid guid = default,
+            DateTime created = default,
+            DateTime modified = default);
+
+
+
+
     }
 }
