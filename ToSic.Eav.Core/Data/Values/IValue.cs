@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data
         /// <remarks>
         /// This was an IList up until 15.04. Since it's very internal, we felt safe to change it to immutable
         /// </remarks>
-        IImmutableList<ILanguage> Languages { get; set; }
+        IImmutableList<ILanguage> Languages { get; }
 
         /// <summary>
         /// The internal contents of the value as a .net object.

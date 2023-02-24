@@ -26,7 +26,7 @@ namespace ToSic.Eav.Data
 
 
         /// <inheritdoc />
-        public IImmutableList<ILanguage> Languages { get; set; }
+        public IImmutableList<ILanguage> Languages { get; }
 
         /// <inheritdoc />
         public object SerializableObject
