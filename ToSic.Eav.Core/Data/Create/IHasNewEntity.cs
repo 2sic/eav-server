@@ -1,10 +1,10 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data.Raw
+namespace ToSic.Eav.Data.Create
 {
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP for DataSources")]
-    public interface IHasRawEntity
+    public interface IHasNewEntity
     {
-        IRawEntity RawEntity { get; }
+        INewEntity NewEntity { get; }
     }
 }

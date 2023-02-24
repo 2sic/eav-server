@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Data.Create;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Data
         public DateTime Created { get; } = DateTime.Now;
         public DateTime Modified { get; } = DateTime.Now;
 
-        private CreateRawOptions CreateRawOptions { get; set; }
+        private CreateFromNewOptions CreateFromNewOptions { get; set; }
 
         #endregion
 
@@ -65,7 +65,7 @@ namespace ToSic.Eav.Data
             string titleField = default,
             int idSeed = DefaultIdSeed,
             bool idAutoIncrementZero = true,
-            CreateRawOptions createRawOptions = default
+            CreateFromNewOptions createFromNewOptions = default
         )
         {
             // Ensure parameters are named
@@ -85,30 +85,30 @@ namespace ToSic.Eav.Data
             ContentType = _parentBuilder.Type(typeName ?? DataBuilderInternal.DefaultTypeName);
             IdAutoIncrementZero = idAutoIncrementZero;
 
-            CreateRawOptions = createRawOptions ?? new CreateRawOptions();
+            CreateFromNewOptions = createFromNewOptions ?? new CreateFromNewOptions();
             return this;
         }
         private bool _alreadyConfigured;
 
         /// <inheritdoc />
-        public IEntity Create(IHasRawEntity withRawEntity) => Create(withRawEntity.RawEntity);
+        public IEntity Create(IHasNewEntity withNewEntity) => Create(withNewEntity.NewEntity);
 
         /// <inheritdoc />
-        public IEntity Create(IRawEntity rawEntity) => Create(
-            rawEntity.GetProperties(CreateRawOptions),
-            id: rawEntity.Id, 
-            guid: rawEntity.Guid,
-            created: rawEntity.Created,
-            modified: rawEntity.Modified
+        public IEntity Create(INewEntity newEntity) => Create(
+            newEntity.GetProperties(CreateFromNewOptions),
+            id: newEntity.Id, 
+            guid: newEntity.Guid,
+            created: newEntity.Created,
+            modified: newEntity.Modified
         );
 
-        public IImmutableList<IEntity> CreateMany(IEnumerable<IRawEntity> rawEntities)
+        public IImmutableList<IEntity> CreateMany(IEnumerable<INewEntity> rawEntities)
         {
             var all = rawEntities.Select(Create).ToList();
             return all.ToImmutableList();
         }
 
-        public IDictionary<TRaw, IEntity> Prepare<TRaw>(IEnumerable<TRaw> rawEntities) where TRaw : IRawEntity
+        public IDictionary<TRaw, IEntity> Prepare<TRaw>(IEnumerable<TRaw> rawEntities) where TRaw : INewEntity
         {
             var all = rawEntities.ToDictionary(r => r, r =>
             {

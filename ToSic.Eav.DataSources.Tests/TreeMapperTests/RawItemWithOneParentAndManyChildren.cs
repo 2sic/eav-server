@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Data.Raw;
 
 namespace ToSic.Eav.DataSourceTests.TreeMapperTests
 {
-    internal class RawItemWithOneParentAndManyChildren: IRawEntity
+    internal class NewItemWithOneParentAndManyChildren: INewEntity
     {
-        public RawItemWithOneParentAndManyChildren(int id, Guid guid, int parentId, List<int> childrenIds)
+        public NewItemWithOneParentAndManyChildren(int id, Guid guid, int parentId, List<int> childrenIds)
         {
             Id = id;
             Guid = guid;
@@ -27,7 +26,7 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
 
         public List<int> ChildrenIds { get; }
 
-        public Dictionary<string, object> GetProperties(CreateRawOptions options) => new Dictionary<string, object>()
+        public Dictionary<string, object> GetProperties(CreateFromNewOptions options) => new Dictionary<string, object>()
         {
             { nameof(Title), Title }
         };

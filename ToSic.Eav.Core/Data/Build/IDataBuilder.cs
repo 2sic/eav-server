@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Data.Create;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
@@ -58,7 +58,7 @@ namespace ToSic.Eav.Data
         /// <param name="titleField">The field name to use as title, defaults to `Title`</param>
         /// <param name="idSeed">Default is `1`</param>
         /// <param name="idAutoIncrementZero">Default is `true`</param>
-        /// <param name="createRawOptions">Optional special options which create-raw might use</param>
+        /// <param name="createFromNewOptions">Optional special options which create-raw might use</param>
         /// <returns>Itself, to make call chaining easier</returns>
         IDataBuilder Configure(
             string noParamOrder = Parameters.Protector,
@@ -67,22 +67,22 @@ namespace ToSic.Eav.Data
             string titleField = default,
             int idSeed = DataBuilder.DefaultIdSeed,
             bool idAutoIncrementZero = true,
-            CreateRawOptions createRawOptions = default
+            CreateFromNewOptions createFromNewOptions = default
         );
 
         /// <summary>
         /// For objects which delegate the IRawEntity to a property.
         /// </summary>
-        /// <param name="withRawEntity"></param>
+        /// <param name="withNewEntity"></param>
         /// <returns></returns>
-        IEntity Create(IHasRawEntity withRawEntity);
+        IEntity Create(IHasNewEntity withNewEntity);
 
         /// <summary>
         /// For objects which themselves are IRawEntity
         /// </summary>
-        /// <param name="rawEntity"></param>
+        /// <param name="newEntity"></param>
         /// <returns></returns>
-        IEntity Create(IRawEntity rawEntity);
+        IEntity Create(INewEntity newEntity);
 
         IEntity Create(Dictionary<string, object> values,
             int id = default,
@@ -90,7 +90,7 @@ namespace ToSic.Eav.Data
             DateTime created = default,
             DateTime modified = default);
 
-        IImmutableList<IEntity> CreateMany(IEnumerable<IRawEntity> rawEntities);
+        IImmutableList<IEntity> CreateMany(IEnumerable<INewEntity> rawEntities);
 
         /// <summary>
         /// This will create IEntity but return it in a dictionary mapped to the original.
@@ -102,6 +102,6 @@ namespace ToSic.Eav.Data
         /// <typeparam name="TRaw"></typeparam>
         /// <param name="rawEntities"></param>
         /// <returns></returns>
-        IDictionary<TRaw, IEntity> Prepare<TRaw>(IEnumerable<TRaw> rawEntities) where TRaw: IRawEntity;
+        IDictionary<TRaw, IEntity> Prepare<TRaw>(IEnumerable<TRaw> rawEntities) where TRaw: INewEntity;
     }
 }

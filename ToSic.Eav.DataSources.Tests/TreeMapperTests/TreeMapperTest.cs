@@ -16,13 +16,13 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
         {
             var builder = GetService<IDataBuilder>();
 
-            var parentsRaw = new RawItemWithOneParentAndManyChildren(1, Guid.Empty, 0, new List<int> { 101, 102 });
+            var parentsRaw = new NewItemWithOneParentAndManyChildren(1, Guid.Empty, 0, new List<int> { 101, 102 });
             var parents = builder.Create(parentsRaw);
 
-            var childrenRaw = new List<RawItemWithOneParentAndManyChildren>
+            var childrenRaw = new List<NewItemWithOneParentAndManyChildren>
             {
-                new RawItemWithOneParentAndManyChildren(101, Guid.Empty, 0, null),
-                new RawItemWithOneParentAndManyChildren(102, Guid.Empty, 0, null),
+                new NewItemWithOneParentAndManyChildren(101, Guid.Empty, 0, null),
+                new NewItemWithOneParentAndManyChildren(102, Guid.Empty, 0, null),
             };
             var children = builder.CreateMany(childrenRaw);
 

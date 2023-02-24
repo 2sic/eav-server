@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data.Raw
+namespace ToSic.Eav.Data.Create
 {
     /// <summary>
     /// This marks objects which have data prepared to be converted to Entities.
@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data.Raw
     /// Typically used for external data DataSources which get something and pass it to an Entity Builder.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP for DataSources")]
-    public interface IRawEntity
+    public interface INewEntity
     {
         /// <summary>
         /// The ID to use.
@@ -42,6 +42,6 @@ namespace ToSic.Eav.Data.Raw
         /// * Please ensure it doesn't have duplicate keys. Also not keys which are only different in casing.
         /// * Also ensure you don't use spaces, dots or special characters in keys
         /// </remarks>
-        Dictionary<string, object> GetProperties(CreateRawOptions options);
+        Dictionary<string, object> GetProperties(CreateFromNewOptions options);
     }
 }

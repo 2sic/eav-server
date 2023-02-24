@@ -4,14 +4,14 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Data.Raw
+namespace ToSic.Eav.Data.Create
 {
     /// <summary>
     /// Options which may be needed to create raw entities.
     /// </summary>
-    public class CreateRawOptions
+    public class CreateFromNewOptions
     {
-        public CreateRawOptions(
+        public CreateFromNewOptions(
             string noParamOrder = Parameters.Protector,
             IEnumerable<string> addKeys = default
             )
