@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     {
         public Language(string key, bool readOnly, int dimensionId = 0)
         {
-            Key = key;
+            Key = key.ToLowerInvariant();
             ReadOnly = readOnly;
             DimensionId = dimensionId;
         }
@@ -23,11 +23,6 @@ namespace ToSic.Eav.Data
         public bool ReadOnly { get; }
 
         /// <inheritdoc />
-        public string Key
-        {
-            get => _key;
-            set => _key = value.ToLowerInvariant();
-        }
-        private string _key;
+        public string Key { get; }
     }
 }

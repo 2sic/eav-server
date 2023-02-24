@@ -107,7 +107,7 @@ namespace ToSic.Eav.Persistence.Efc
                             {
                                 Value = v2.Value,
                                 Languages = v2.ToSicEavValuesDimensions
-                                    .Select(l => new Language(l.Dimension.EnvironmentKey.ToLowerInvariant(), l.ReadOnly, l.DimensionId) as ILanguage)
+                                    .Select(l => new Language(l.Dimension.EnvironmentKey, l.ReadOnly, l.DimensionId) as ILanguage)
                                     .ToImmutableList(),
                             })
                     }));
