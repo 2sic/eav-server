@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources.Sys
         #endregion
 
 
-        private readonly IDataBuilder _featuresDataBuilder;
+        private readonly IDataBuilder _builder;
 
         /// <inheritdoc />
         /// <summary>
@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             ConnectServices(
                 _featuresService = featuresService,
-                _featuresDataBuilder = dataBuilder.Configure(typeName: "Feature")
+                _builder = dataBuilder.Configure(typeName: "Feature")
             );
             Provide(GetList);
         }
@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources.Sys
             // Don't parse configuration as there is nothing to configure
             // Configuration.Parse();
 
-            var list = _featuresDataBuilder.CreateMany(_featuresService.All.OrderBy(f => f.NameId));
+            var list = _builder.Build(_featuresService.All.OrderBy(f => f.NameId));
 
             return (list, $"{list.Count}");
         });

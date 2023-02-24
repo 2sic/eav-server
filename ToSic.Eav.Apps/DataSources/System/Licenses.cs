@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Licenses : DataSource
     {
-        private readonly IDataBuilder _licensesDataBuilder;
+        private readonly IDataBuilder _builder;
 
         #region Configuration-properties (no config)
 
@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             ConnectServices(
                 _licenseService = licenseService,
-                _licensesDataBuilder = dataBuilder.Configure(typeName: "License")
+                _builder = dataBuilder.Configure(typeName: "License")
             );
             Provide(GetList);
         }
@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources.Sys
             // Don't parse configuration as there is nothing to configure
             // Configuration.Parse();
 
-            var list = _licensesDataBuilder.CreateMany(_licenseService.All.OrderBy(l => l.License?.Priority ?? 0));
+            var list = _builder.Build(_licenseService.All.OrderBy(l => l.License?.Priority ?? 0));
             
             return (list, $"{list.Count}");
         });

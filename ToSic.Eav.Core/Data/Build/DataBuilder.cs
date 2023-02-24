@@ -57,6 +57,7 @@ namespace ToSic.Eav.Data.Build
 
         #endregion
 
+        #region Configure
         /// <inheritdoc />
         public IDataBuilder Configure(
             string noParamOrder = Parameters.Protector,
@@ -89,9 +90,11 @@ namespace ToSic.Eav.Data.Build
             return this;
         }
         private bool _alreadyConfigured;
+        #endregion
 
         /// <inheritdoc />
-        public IEntity Create(IHasNewEntity withNewEntity) => Create(withNewEntity.NewEntity);
+        public NewEntitySet<INewEntity> Create(IHasNewEntity withNewEntity) 
+            => new NewEntitySet<INewEntity>(withNewEntity.NewEntity, Create(withNewEntity.NewEntity));
 
         /// <inheritdoc />
         public IEntity Create(INewEntity newEntity) => Create(
@@ -107,11 +110,15 @@ namespace ToSic.Eav.Data.Build
             var all = rawEntities.Select(Create).ToList();
             return all.ToImmutableList();
         }
-        public IImmutableList<IEntity> CreateMany(IEnumerable<IHasNewEntity> rawEntities)
+
+        public IImmutableList<IEntity> Build(IEnumerable<IHasNewEntity> data)
         {
-            var all = rawEntities.Select(Create).ToList();
-            return all.ToImmutableList();
+            var list = Prepare(data);
+            return Finalize(list);
         }
+
+        public IList<NewEntitySet<INewEntity>> Prepare(IEnumerable<IHasNewEntity> rawEntities)
+            => rawEntities.Select(Create).ToList();
 
         public IList<NewEntitySet<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> rawEntities) where TNewEntity : INewEntity
         {
