@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
@@ -46,7 +47,7 @@ namespace ToSic.Eav.DataSources
 
         private IDataStream CreateErrorStream(string title, string message, IDataSource intendedSource = null)
         {
-            var errorHandler = Connection.DataSource?.ErrorHandler ?? new DataSourceErrorHandling();
+            var errorHandler = Connection.DataSource?.ErrorHandler ?? new DataSourceErrorHandling(new EntityBuilder(new AttributeBuilder(new ValueBuilder(new DimensionBuilder()))));
             var entityList = errorHandler.CreateErrorList(title: title, message: message);
             return new DataStream(intendedSource, "ConnectionStreamError", () => entityList);
         }

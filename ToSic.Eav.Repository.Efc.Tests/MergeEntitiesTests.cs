@@ -16,10 +16,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public MergeEntitiesTests()
         {
             _entitySaver = GetService<EntitySaver>();
-            BuildData = GetService<MultiBuilder>();
+            Builder = GetService<MultiBuilder>();
         }
         private readonly EntitySaver _entitySaver;
-        private readonly MultiBuilder BuildData;
+        protected MultiBuilder Builder { get; }
 
 
 
@@ -57,7 +57,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         }};
         Entity _origENull = null;
 
-        private Entity GirlSingle => new Entity(AppId, 999, _ctPerson, new Dictionary<string, object>
+        private Entity GirlSingle => Builder.Entity.Create(appId: AppId, entityId: 999, contentType: _ctPerson, values: new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried"},
             {"FirstName", "Sandra"},
@@ -65,7 +65,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"Birthday", new DateTime(1981, 5, 14) }
         });
 
-        private Entity GirlMarried => new Entity(AppId, 0, BuildData.ContentType.Transient("DynPerson"), new Dictionary<string, object>
+        private Entity GirlMarried => Builder.Entity.Create(appId: AppId, contentType: Builder.ContentType.Transient("DynPerson"), values: new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried-Married"},
             {"FirstName", "Sandra"},
@@ -75,7 +75,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"WeddingDate", DateTime.Today }
         });
 
-        private Entity GirlMarriedUpdate => new Entity(AppId, 0, _ctPerson, new Dictionary<string, object>
+        private Entity GirlMarriedUpdate => Builder.Entity.Create(appId: AppId, contentType: _ctPerson, values: new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried-Married"},
             //{"FirstName", "Sandra"},
@@ -143,36 +143,36 @@ namespace ToSic.Eav.Repository.Efc.Tests
         };
 
         private readonly Entity _prodNull = null;
-        private Entity ProdNoLang => new Entity(AppId, 3006, _ctMlProduct, new Dictionary<string, object>()
+        private Entity ProdNoLang => Builder.Entity.Create(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new Dictionary<string, object>
         {
             { Attributes.TitleNiceName, "Original Product No Lang" },
             { "Teaser", "Original Teaser no lang" },
             { "Image", "file:403" }
-        }, Attributes.TitleNiceName);
+        }, titleField: Attributes.TitleNiceName);
 
         private Entity ProductEntityEn => _prodEn ?? (_prodEn = GetProdEn());
         private Entity _prodEn;
         private Entity GetProdEn() 
         {
-            var title = BuildData.Attribute.CreateTyped(Attributes.TitleNiceName, "String", new List<IValue>
+            var title = Builder.Attribute.CreateTyped(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
             {
-                BuildData.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn)}),
+                Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn)}),
             });
-            var teaser = BuildData.Attribute.CreateTyped("Teaser", "String", new List<IValue>
+            var teaser = Builder.Attribute.CreateTyped("Teaser", ValueTypes.String, new List<IValue>
             {
-                BuildData.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { Clone(langEn)}),
+                Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { Clone(langEn)}),
             });
-            var file = BuildData.Attribute.CreateTyped("File", "String", new List<IValue>
+            var file = Builder.Attribute.CreateTyped("File", ValueTypes.String, new List<IValue>
             {
-                BuildData.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn) }),
+                Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn) }),
             });
 
-            return new Entity(AppId, 3006, BuildData.ContentType.Transient("Product"), new Dictionary<string, object>
+            return Builder.Entity.Create(appId: AppId, entityId: 3006, contentType: Builder.ContentType.Transient("Product"), values: new Dictionary<string, object>
             {
                 {title.Name, title},
                 {teaser.Name, teaser},
                 {file.Name, file}
-            }, Attributes.TitleNiceName);
+            }, titleField: Attributes.TitleNiceName);
         }
 
 
@@ -182,39 +182,39 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private Entity GetProductEntityMl()
         {
-            var title = BuildData.Attribute.CreateTyped(Attributes.TitleNiceName, "String", new List<IValue>
+            var title = Builder.Attribute.CreateTyped(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
             {
-                BuildData.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn) }),
-                BuildData.Value.Build4Test(ValueTypes.String, "Title DE",
+                Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn) }),
+                Builder.Value.Build4Test(ValueTypes.String, "Title DE",
                     new List<ILanguage> { Clone(langDeDe), Clone(langDeCh, true)}),
-                BuildData.Value.Build4Test(ValueTypes.String, "titre FR", new List<ILanguage> { Clone(langFr)})
+                Builder.Value.Build4Test(ValueTypes.String, "titre FR", new List<ILanguage> { Clone(langFr)})
             });
 
-            var teaser = BuildData.Attribute.CreateTyped("Teaser", "String", new List<IValue>
+            var teaser = Builder.Attribute.CreateTyped("Teaser", ValueTypes.String, new List<IValue>
             {
-                BuildData.Value.Build4Test(ValueTypes.String, "teaser de de", new List<ILanguage> {Clone(langDeDe) }),
-                BuildData.Value.Build4Test(ValueTypes.String, "teaser de CH", new List<ILanguage> {Clone(langDeCh)}),
-                BuildData.Value.Build4Test(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
+                Builder.Value.Build4Test(ValueTypes.String, "teaser de de", new List<ILanguage> {Clone(langDeDe) }),
+                Builder.Value.Build4Test(ValueTypes.String, "teaser de CH", new List<ILanguage> {Clone(langDeCh)}),
+                Builder.Value.Build4Test(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
                 // special test: leave EN (primary) at end of list, as this could happen in real life
-                BuildData.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {Clone(langEn)}),
+                Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {Clone(langEn)}),
             });
-            var file = BuildData.Attribute.CreateTyped("File", "String", new List<IValue>
+            var file = Builder.Attribute.CreateTyped("File", ValueTypes.String, new List<IValue>
             {
-                BuildData.Value.Build4Test(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
-                BuildData.Value.Build4Test(ValueTypes.String, "File de de",
+                Builder.Value.Build4Test(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
+                Builder.Value.Build4Test(ValueTypes.String, "File de de",
                     new List<ILanguage> { Clone(langDeDe), Clone(langFr) }),
-                BuildData.Value.Build4Test(ValueTypes.String, "File FR", new List<ILanguage> {Clone(langFr)}),
+                Builder.Value.Build4Test(ValueTypes.String, "File FR", new List<ILanguage> {Clone(langFr)}),
                 // special test - empty language item
-                BuildData.Value.Build4Test(ValueTypes.String, "File without language!", DimensionBuilder.NoLanguages.ToList()),
-                BuildData.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
+                Builder.Value.Build4Test(ValueTypes.String, "File without language!", DimensionBuilder.NoLanguages.ToList()),
+                Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
             });
 
-            return new Entity(AppId, 430, BuildData.ContentType.Transient("Product"), new Dictionary<string, object>
+            return Builder.Entity.Create(appId: AppId, entityId: 430, contentType: Builder.ContentType.Transient("Product"), values: new Dictionary<string, object>
             {
                 {title.Name, title},
                 {teaser.Name, teaser},
                 {file.Name, file}
-            }, Attributes.TitleNiceName);
+            }, titleField: Attributes.TitleNiceName);
         }
 
 

@@ -24,7 +24,7 @@ namespace ToSic.Eav.Apps.Parts
                 UpdateParts(existingEntity.EntityId, values);
             else
             {
-                var saveEnt = new Entity(Parent.AppId, Guid.NewGuid(), Parent.Read.ContentTypes.Get(typeName), values);
+                var saveEnt = _multiBuilder.Value.Entity.Create(appId: Parent.AppId, guid: Guid.NewGuid(), contentType: Parent.Read.ContentTypes.Get(typeName), values: values);
                 saveEnt.SetMetadata(target);
                 Save(saveEnt);
             }

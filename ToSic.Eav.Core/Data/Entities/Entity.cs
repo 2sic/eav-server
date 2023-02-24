@@ -24,53 +24,50 @@ namespace ToSic.Eav.Data
         /// For now we're including parameters which should not have a public setter
         /// </summary>
         [PrivateApi]
-        internal Entity(Dictionary<string, IAttribute> attributes)
+        internal Entity(int appId, Dictionary<string, IAttribute> values
+        )
         {
-            Attributes = (attributes ?? new Dictionary<string, IAttribute>()).ToInvariant();
+            Attributes = (values ?? new Dictionary<string, IAttribute>()).ToInvariant();
         }
 
-        /// <summary>
-        /// Special constructor for importing-new/creating-external entities without a known content-type
-        /// </summary>
-        [PrivateApi]
-        public Entity(int appId, int entityId, Guid entityGuid, string contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? modified = null, string owner = null) 
-            : base(appId, entityId, entityGuid, new ContentType(appId, contentType), values, titleAttribute, modified: modified, owner: owner)
-        {
-            (IsLight, Attributes) = MapAttributesInConstructor(values);
-            RepositoryId = entityId;
-        }
 
         [PrivateApi]
-        public Entity(int appId, int entityId, IContentType contentType, Dictionary<string, object> values, string titleAttribute = null, DateTime? created = null, DateTime? modified = null, Guid? guid = null, string owner = null) 
+        public Entity(int appId, int entityId,
+            IContentType contentType,
+            bool useLightMode = default,
+            Dictionary<string, object> values = default,
+            Dictionary<string, IAttribute> typedValues = default,
+            string titleAttribute = null,
+            DateTime? created = null, DateTime? modified = null,
+            int repositoryId = default,
+            Guid? guid = default,
+            string owner = default,
+            int version = default,
+            bool isPublished = true)
             : base(appId, entityId, guid, contentType, values, titleAttribute, created: created, modified: modified, owner: owner)
         {
-            (IsLight, Attributes) = MapAttributesInConstructor(values);
+            IsLight = useLightMode;
+            Attributes = typedValues;
+            RepositoryId = repositoryId;
+            Version = version;
+            IsPublished = isPublished;
+            // (IsLight, Attributes) = MapAttributesInConstructor(values);
             RepositoryId = entityId;
         }
 
-        private (bool isLight, Dictionary<string, IAttribute> attributes) MapAttributesInConstructor(Dictionary<string, object> values)
-        {
-            // If all values are IAttributes, then it should be converted to a real IEntity
-            if (values.All(x => x.Value is IAttribute))
-            {
-                var extendedAttribs = values
-                    .ToDictionary(x => x.Key, x => x.Value as IAttribute, InvariantCultureIgnoreCase);
-                return (false, extendedAttribs);
-            }
+        //private (bool isLight, Dictionary<string, IAttribute> attributes) MapAttributesInConstructor(Dictionary<string, object> values)
+        //{
+        //    // If all values are IAttributes, then it should be converted to a real IEntity
+        //    if (values.All(x => x.Value is IAttribute))
+        //    {
+        //        var extendedAttribs = values
+        //            .ToDictionary(x => x.Key, x => x.Value as IAttribute, InvariantCultureIgnoreCase);
+        //        return (false, extendedAttribs);
+        //    }
 
-            // Otherwise it's a light IEntity, make sure this is known
-            return (true, AttribBuilder.GetStatic().ConvertToInvariantDic(AttributesLight));
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Create a brand new Entity. 
-        /// Mainly used for entities which are created for later saving
-        /// </summary>
-        [PrivateApi]
-        public Entity(int appId, Guid entityGuid, IContentType contentType, Dictionary<string, object> values, string owner = null) 
-            : this(appId, 0, contentType, values, guid: entityGuid, owner: owner)
-        {}
+        //    // Otherwise it's a light IEntity, make sure this is known
+        //    return (true, AttribBuilder.GetStatic().ConvertToInvariantDic(AttributesLight));
+        //}
 
         #region CanBeEntity
 

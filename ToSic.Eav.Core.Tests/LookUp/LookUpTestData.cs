@@ -8,14 +8,20 @@ namespace ToSic.Eav.Core.Tests.LookUp
 {
     public class LookUpTestData
     {
+        private readonly EntityBuilder _builder;
         public const string KeyAppSettings = "AppSettings";
         public const string KeyAppResources = "AppResources";
 
         private const int AppIdX = -1;
 
+        public LookUpTestData(EntityBuilder builder)
+        {
+            _builder = builder;
+        }
+
         public static LookUpEngine EmptyLookupEngine => new LookUpEngine(null);
 
-        public static LookUpEngine AppSetAndRes(int appId = AppIdX)
+        public LookUpEngine AppSetAndRes(int appId = AppIdX)
         {
             var vc = EmptyLookupEngine;
             vc.Add(AppSettings(appId));
@@ -24,13 +30,13 @@ namespace ToSic.Eav.Core.Tests.LookUp
             return vc;
         }
 
-        public static LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = AppIdX)
+        public LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = AppIdX)
         {
-            var ent = new Eav.Data.Entity(appId, 0, new ContentTypeBuilder().Transient(name), values, values.FirstOrDefault().Key);
+            var ent = _builder.Create(appId: appId, contentType: new ContentTypeBuilder().Transient(name), values: values, titleField: values.FirstOrDefault().Key);
             return new LookUpInEntity(name, ent, null);
         }
 
-        public static LookUpInEntity AppSettings(int appId)
+        private LookUpInEntity AppSettings(int appId)
         {
             var values = new Dictionary<string, object>
             {
@@ -42,7 +48,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
             return BuildLookUpEntity(KeyAppSettings, values, appId);
         }
 
-        public static LookUpInEntity AppResources(int appId)
+        private LookUpInEntity AppResources(int appId)
         {
             var values = new Dictionary<string, object>
             {

@@ -21,15 +21,18 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class AppInitializer : ServiceBase
     {
+
         #region Constructor / DI
 
         public AppInitializer(
+            LazySvc<MultiBuilder> builder,
             Generator<IRepositoryLoader> repositoryLoaderGenerator,
             Generator<AppManager> appManagerGenerator,
             SystemManager systemManager,
             IAppStates appStates) : base("Eav.AppBld")
         {
             ConnectServices(
+                _builder = builder,
                 SystemManager = systemManager,
                 _repositoryLoaderGenerator = repositoryLoaderGenerator,
                 _appManagerGenerator = appManagerGenerator,
@@ -37,6 +40,7 @@ namespace ToSic.Eav.Apps.Parts
             );
         }
 
+        private readonly LazySvc<MultiBuilder> _builder;
         private readonly Generator<AppManager> _appManagerGenerator;
         private readonly Generator<IRepositoryLoader> _repositoryLoaderGenerator;
         private readonly IAppStates _appStates;
@@ -170,8 +174,7 @@ namespace ToSic.Eav.Apps.Parts
             }
 
             var values = cTypeAndOrEntity.Values ?? new Dictionary<string, object>();
-
-            var newEnt = new Entity(AppState.AppId, Guid.NewGuid(), ct, values);
+            var newEnt = _builder.Value.Entity.Create(appId: AppState.AppId, guid: Guid.NewGuid(), contentType: ct, values: values);
             newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
             AppManager.Entities.Save(newEnt);
         });

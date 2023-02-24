@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Data.New;
 
 namespace ToSic.Eav.DataSourceTests.TreeMapperTests
 {
@@ -26,7 +27,7 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
 
         public List<int> ChildrenIds { get; }
 
-        public Dictionary<string, object> GetProperties(CreateFromNewOptions options) => new Dictionary<string, object>()
+        public Dictionary<string, object> GetProperties(CreateFromNewOptions options) => new Dictionary<string, object>
         {
             { nameof(Title), Title }
         };

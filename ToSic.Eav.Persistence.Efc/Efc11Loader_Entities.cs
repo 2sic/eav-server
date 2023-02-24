@@ -139,14 +139,11 @@ namespace ToSic.Eav.Persistence.Efc
             if (contentType == null)
                 throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
+            // Get all Attributes of that Content-Type
+            var specs = _multiBuilder.Attribute.GenerateAttributesOfContentType(contentType);
             newEntity = _multiBuilder.Entity.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
                 e.MetadataFor, contentType, e.IsPublished, app, e.Created, e.Modified, e.Owner,
-                e.Version);
-
-            // Add all Attributes of that Content-Type
-            var titleAttrib = _multiBuilder.Attribute.GenerateAttributesOfContentType(newEntity, contentType);
-            if (titleAttrib != null)
-                newEntity.SetTitleField(titleAttrib.Name);
+                e.Version, values: specs.All, titleField: specs.Title);
 
             // add Related-Entities Attributes to the entity
             if (relatedEntities.ContainsKey(e.EntityId))

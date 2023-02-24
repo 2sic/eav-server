@@ -70,9 +70,9 @@ namespace ToSic.Eav.Apps.Parts
         private Entity CreatePartialEntityOld(IEntity orig, UpdateList values) => Log.Func(() =>
         {
             if (values == null || !values.Any())
-                return (null as Entity, "nothing to save");
+                return (null, "nothing to save");
 
-            return (new Entity(Parent.AppId, 0, orig.Type, values), "ok");
+            return (_multiBuilder.Value.Entity.Create(appId: Parent.AppId, contentType: orig.Type, values: values), "ok");
         });
     }
 }

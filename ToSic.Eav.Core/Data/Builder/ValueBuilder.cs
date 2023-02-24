@@ -129,7 +129,7 @@ namespace ToSic.Eav.Data.Builder
         /// ...and then it must be a new object every time, 
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
-        internal Value<IEnumerable<IEntity>> NullRelationship
+        internal Value<IEnumerable<IEntity>> NewEmptyRelationship
             => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null), DimensionBuilder.NoLanguages);
     }
 }

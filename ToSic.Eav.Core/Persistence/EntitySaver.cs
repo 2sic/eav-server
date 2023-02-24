@@ -56,8 +56,8 @@ namespace ToSic.Eav.Persistence
 
             #region Step 2: clean up unwanted attributes from both lists
 
-            var origAttribs = _multiBuilder.Attribute.Clone(original?.Attributes); //.Copy();
-            var newAttribs = _multiBuilder.Attribute.Clone(update.Attributes); //.Copy();
+            var origAttribs = _multiBuilder.Attribute.ListDeepClone(original?.Attributes);
+            var newAttribs = _multiBuilder.Attribute.ListDeepClone(update.Attributes);
 
             Log.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribs?.Count}, newAtts⋮{newAttribs.Count}");
 
@@ -132,7 +132,7 @@ namespace ToSic.Eav.Persistence
         private IAttribute CreateIsPublishedAttribute(bool isPublished)
         {
             var values = new List<IValue> { _multiBuilder.Value.Build(ValueTypes.Boolean.ToString(), isPublished) };
-            var attribute = AttributeBuilder.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
+            var attribute = _multiBuilder.Attribute.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
             // #immutable
             //attribute.Values = values;
             return attribute;

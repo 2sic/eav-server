@@ -10,7 +10,6 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Permissions;
@@ -33,14 +32,24 @@ namespace ToSic.Eav.Api.Api01
     /// </summary>
     public partial class SimpleDataController: ServiceBase
     {
+        private readonly LazySvc<EntityBuilder> _entityBuilder;
+
         #region Constructor / DI
 
         /// <summary>
         /// Used for DI - must always call Init to use
         /// </summary>
-        public SimpleDataController(LazySvc<AttributeBuilderForImport> lazyAttributeBuilder, LazySvc<AppManager> appManagerLazy, LazySvc<DbDataController> dbDataLazy, IZoneMapper zoneMapper, IContextOfSite ctx, Generator<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
+        public SimpleDataController(
+            LazySvc<AttributeBuilderForImport> lazyAttributeBuilder,
+            LazySvc<EntityBuilder> entityBuilder,
+            LazySvc<AppManager> appManagerLazy,
+            LazySvc<DbDataController> dbDataLazy,
+            IZoneMapper zoneMapper,
+            IContextOfSite ctx,
+            Generator<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             ConnectServices(
+                _entityBuilder = entityBuilder,
                 _appManagerLazy = appManagerLazy,
                 _dbDataLazy = dbDataLazy,
                 _zoneMapper = zoneMapper,
@@ -144,7 +153,7 @@ namespace ToSic.Eav.Api.Api01
             }
 
             var eGuid = Guid.Parse(values[Attributes.EntityFieldGuid].ToString());
-            var importEntity = new Entity(_appId, eGuid, type, new Dictionary<string, object>(), owner);
+            var importEntity = _entityBuilder.Value.Create(appId: _appId, guid: eGuid, contentType: type, values: new Dictionary<string, object>(), owner: owner);
             if (target != null)
             {
                 l.A("Set metadata target which was provided.");

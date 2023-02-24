@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
@@ -34,7 +35,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
             });
             AddSemirandomTrivial(dataTable, itemsToGenerate, firstId);
 
-            var source = _parent.CreateDataSource<DataTable>(LookUpTestData.AppSetAndRes())
+            var source = _parent.CreateDataSource<DataTable>(new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes())
                 .Setup(dataTable, "Person", modifiedField: PersonSpecs.FieldModifiedInternal)
                 //.Init(LookUpTestData.AppSetAndRes())
                 ;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Core.Tests.LookUp;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
 using static ToSic.Eav.DataSourceTests.RelationshipTests.MetadataTestSpecs;
@@ -42,7 +43,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
 
         protected MetadataTargets PrepareDs(string appType = null, IEnumerable<int> ids = null, string typeName = null, bool? deduplicate = null)
         {
-            var lookUpEngine = LookUpTestData.AppSetAndRes();
+            var lookUpEngine = new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes();
 
             var baseDs = DataSourceFactory.GetPublishing(AppIdentity, configProvider: lookUpEngine);
             var appDs = CreateDataSource<App>(baseDs);

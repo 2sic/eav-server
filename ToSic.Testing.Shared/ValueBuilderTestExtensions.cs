@@ -20,6 +20,11 @@ namespace ToSic.Testing.Shared
         {
             return vBuilder.Build(type, value, languages?.ToImmutableList(), fullEntityListForLookup);
         }
+        public static IValue Build4Test(this ValueBuilder vBuilder, ValueTypes type, object value, IImmutableList<ILanguage> languages,
+            IEntitiesSource fullEntityListForLookup = null)
+        {
+            return vBuilder.Build(type, value, languages, fullEntityListForLookup);
+        }
 
     }
 }

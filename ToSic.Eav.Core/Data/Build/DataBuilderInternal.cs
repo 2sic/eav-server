@@ -14,6 +14,8 @@ namespace ToSic.Eav.Data.Build
     [PrivateApi("Hide implementation")]
     public class DataBuilderInternal: ServiceBase, IDataBuilderInternal
     {
+        private readonly LazySvc<EntityBuilder> _entityBuilder;
+        private readonly LazySvc<ContentTypeBuilder> _contentTypeBuilder;
 
         #region Constructor / DI
 
@@ -21,14 +23,14 @@ namespace ToSic.Eav.Data.Build
         /// Primary constructor for DI.
         /// We recommend that you always call Init afterwards to supply the logger.
         /// </summary>
-        public DataBuilderInternal(LazySvc<ContentTypeBuilder> contentTypeBuilder) : base("Dta.Buildr")
+        public DataBuilderInternal(LazySvc<ContentTypeBuilder> contentTypeBuilder, LazySvc<EntityBuilder> entityBuilder) : base("Dta.Buildr")
         {
             ConnectServices(
-                _contentTypeBuilder = contentTypeBuilder
+                _contentTypeBuilder = contentTypeBuilder,
+                _entityBuilder = entityBuilder
             );
         }
 
-        private readonly LazySvc<ContentTypeBuilder> _contentTypeBuilder;
 
         #endregion
 
@@ -36,24 +38,24 @@ namespace ToSic.Eav.Data.Build
         public const int DefaultEntityId = 0;
         public const string DefaultTypeName = "unspecified";
 
-        /// <inheritdoc />
-        public IContentType Type(string typeName) => _contentTypeBuilder.Value.Transient(typeName);
+        ///// <inheritdoc />
+        //private IContentType Type(string typeName) => _contentTypeBuilder.Value.Transient(typeName);
 
-        /// <inheritdoc />
-        [PublicApi]
-        public IEntity Entity(
-            Dictionary<string, object> values = null,
-            string noParamOrder = Parameters.Protector,
-            int appId = DefaultAppId,
-            int id = DefaultEntityId,
-            string titleField = null,
-            string typeName = DefaultTypeName,
-            IContentType type = null,
-            Guid? guid = null,
-            DateTime? created = null,
-            DateTime? modified = null
-            ) 
-            => new Entity(appId, id, type ?? Type(typeName), values, titleField, created: created, modified: modified, guid: guid);
+        ///// <inheritdoc />
+        //[PublicApi]
+        //public IEntity Entity(
+        //    Dictionary<string, object> values = null,
+        //    string noParamOrder = Parameters.Protector,
+        //    int appId = DefaultAppId,
+        //    int id = DefaultEntityId,
+        //    string titleField = null,
+        //    string typeName = DefaultTypeName,
+        //    IContentType type = null,
+        //    Guid? guid = null,
+        //    DateTime? created = null,
+        //    DateTime? modified = null
+        //    ) 
+        //    => new Entity(appId, id, type ?? Type(typeName), values, titleField, created: created, modified: modified, guid: guid);
 
         // 2022-02-13 2dm - disabled, shouldn't be API any more
         ///// <inheritdoc />
@@ -74,13 +76,14 @@ namespace ToSic.Eav.Data.Build
         //    );
         //}
 
-        /// <inheritdoc />
-        [PrivateApi]
-        public IEntity FakeEntity(int appId)
-            => Entity(new Dictionary<string, object> { { Attributes.TitleNiceName, "" } },
-                appId: appId,
-                typeName: "FakeEntity",
-                titleField: Attributes.TitleNiceName
-            );
+        ///// <inheritdoc />
+        //[PrivateApi]
+        //public IEntity FakeEntity(int appId)
+        //    => _entityBuilder.Value.Create(
+        //        appId: appId,
+        //        values: new Dictionary<string, object> { { Attributes.TitleNiceName, "" } },
+        //        contentType: Type("FakeEntity"),
+        //        titleField: Attributes.TitleNiceName
+        //    );
     }
 }

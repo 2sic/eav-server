@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Core.Tests.Data
 {
-    public static class SampleData
+    public class SampleData
     {
+        private readonly EntityBuilder _builder;
         public const int AppId = -1;
+
+        public SampleData(EntityBuilder builder)
+        {
+            _builder = builder;
+        }
 
         static ContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
         {
@@ -39,9 +46,9 @@ namespace ToSic.Eav.Core.Tests.Data
             }
         };
 
-        public static IEntity TestEntityDaniel()
+        public IEntity TestEntityDaniel()
         {
-            var valDaniel = new Dictionary<string, object>()
+            var valDaniel = new Dictionary<string, object>
             {
                 {"FirstName", "Daniel"},
                 {"LastName", "Mettler"},
@@ -49,13 +56,13 @@ namespace ToSic.Eav.Core.Tests.Data
                 {"Age", 37},
                 {"AnyDate", DateTime.Parse("2019-11-06T01:00:05Z") }
             };
-            var entDaniel = new Entity(AppId, 1, CtTestType, valDaniel, "FirstName");
+            var entDaniel = _builder.Create(appId: AppId, entityId: 1, contentType: CtTestType, values: valDaniel, titleField: "FirstName");
             return entDaniel;
         }
 
-        public static IEntity TestEntityLeonie()
+        public IEntity TestEntityLeonie()
         {
-            var valLeonie = new Dictionary<string, object>()
+            var valLeonie = new Dictionary<string, object>
             {
                 {"FirstName", "Leonie"},
                 {"LastName", "Mettler"},
@@ -63,12 +70,12 @@ namespace ToSic.Eav.Core.Tests.Data
                 {"Age", 6}
             };
 
-            var entLeonie = new Entity(AppId, 2, CtTestType, valLeonie, "FirstName");
+            var entLeonie = _builder.Create(appId: AppId, entityId: 2, contentType: CtTestType, values: valLeonie, titleField: "FirstName");
             return entLeonie;
         }
-        public static IEntity TestEntityPet(int petNumber)
+        public IEntity TestEntityPet(int petNumber)
         {
-            var valsPet = new Dictionary<string, object>()
+            var valsPet = new Dictionary<string, object>
             {
                 {"FirstName", "PetNo" + petNumber},
                 {"LastName", "Of Bonsaikitten"},
@@ -76,7 +83,7 @@ namespace ToSic.Eav.Core.Tests.Data
                 {"Age", petNumber}
             };
 
-            var entPet = new Entity(AppId, 1000 + petNumber, CtPet, valsPet, "FirstName");
+            var entPet = _builder.Create(appId: AppId, entityId: 1000 + petNumber, contentType: CtPet, values: valsPet, titleField: "FirstName");
             return entPet;
         }
         

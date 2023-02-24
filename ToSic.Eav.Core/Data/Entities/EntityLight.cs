@@ -86,7 +86,7 @@ namespace ToSic.Eav.Data
         {
             AppId = appId;
             EntityId = entityId;
-            if(guid != null) EntityGuid = guid.Value;
+            if (guid != null) EntityGuid = guid.Value;
             Type = contentType;
             AttributesLight = values;
             try

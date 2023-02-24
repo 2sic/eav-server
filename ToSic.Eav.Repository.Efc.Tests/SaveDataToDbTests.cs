@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Interfaces;
@@ -81,7 +82,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var itm1 = app1.List.One(test.ExistingItem);
 
             // todo: make some minor changes
-            var itmNewTitle = new Entity(test.AppId, 0, itm1.Type, new Dictionary<string, object>()
+            var itmNewTitle = GetService<EntityBuilder>().Create(appId: test.AppId, entityId: 0, contentType: itm1.Type, values: new Dictionary<string, object>
             {
                 {test.TitleField, "changed title on " + DateTime.Now}
             });
@@ -121,7 +122,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var app1 = loader1.AppState(test.AppId, false);
             var ct1 = app1.GetContentType(ctName);
 
-            var newE = new Entity(test.AppId, Guid.NewGuid(), ct1, new Dictionary<string, object>
+            var newE = GetService<EntityBuilder>().Create(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new Dictionary<string, object>
             {
                 { test.TitleField, ctTitle }
             });

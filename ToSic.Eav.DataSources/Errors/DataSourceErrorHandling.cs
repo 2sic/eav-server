@@ -12,10 +12,15 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class DataSourceErrorHandling
     {
+        private readonly EntityBuilder _entityBuilder;
+
         /// <summary>
         /// Constructor - to find out if it's used anywhere
         /// </summary>
-        public DataSourceErrorHandling() {}
+        public DataSourceErrorHandling(EntityBuilder entityBuilder)
+        {
+            _entityBuilder = entityBuilder;
+        }
 
         public static string ErrorType = "Error";
         public static string ErrorTitle = "Error";
@@ -41,8 +46,8 @@ namespace ToSic.Eav.DataSources
             // Don't use the default data builder here, as it needs DI and this object
             // will often be created late when DI is already destroyed
             //var errorEntity = new DataBuilder().Entity(values, titleField: ErrorTitle, typeName: ErrorType);
-            var errorEntity = new Entity(DataBuilderInternal.DefaultAppId, DataBuilderInternal.DefaultEntityId,
-                new ContentTypeBuilder().Transient(ErrorType), values, ErrorTitle);
+            var errorEntity = _entityBuilder.Create(appId: DataBuilderInternal.DefaultAppId, entityId: DataBuilderInternal.DefaultEntityId,
+                contentType: new ContentTypeBuilder().Transient(ErrorType), values: values, titleField: ErrorTitle);
             return errorEntity;
         }
 

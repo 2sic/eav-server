@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.DI;
+﻿using System.Collections.Generic;
+using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Builder
@@ -41,8 +42,17 @@ namespace ToSic.Eav.Data.Builder
         public Entity FullClone(IEntity entity)
         {
             return Entity.Clone(entity,
-                Attribute.Clone(entity.Attributes),
+                Attribute.ListDeepClone(entity.Attributes),
                 ((RelationshipManager)entity.Relationships).AllRelationships);
         }
+
+        public IEntity FakeEntity(int appId)
+            => _entityBuilder.Value.Create(
+                appId: appId,
+                values: new Dictionary<string, object> { { Attributes.TitleNiceName, "" } },
+                contentType: ContentType.Transient("FakeEntity"),
+                titleField: Attributes.TitleNiceName
+            );
+
     }
 }

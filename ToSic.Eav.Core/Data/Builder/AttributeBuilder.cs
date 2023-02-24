@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 using static System.StringComparer;
@@ -30,23 +31,44 @@ namespace ToSic.Eav.Data.Builder
             attrib.Values = new List<IValue> { ValueBuilder.Build(attrib.Type, references, null, app) };
         }
 
+        public IDictionary<string, IAttribute> ListRemoveOne(IDictionary<string, IAttribute> list, string keyToDrop)
+            => list.Where(a => !a.Key.EqualsInsensitive(keyToDrop))
+                .ToDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
 
-        public Dictionary<string, IAttribute> Clone(IDictionary<string, IAttribute> attributes) 
-            => attributes?.ToDictionary(x => x.Key, x => Clone(x.Value), InvariantCultureIgnoreCase);
+        public IDictionary<string, IAttribute> ListAddOne(IDictionary<string, IAttribute> list, string name, IAttribute fieldToAdd) 
+            => new Dictionary<string, IAttribute>(list, InvariantCultureIgnoreCase) { { name, fieldToAdd } };
 
-        public IAttribute Clone(IAttribute original, IList<IValue> values = null)
+        public IDictionary<string, IAttribute> ListUpdateOne(IDictionary<string, IAttribute> list, IAttribute field,
+            IList<IValue> values)
+        {
+            var copy = new Dictionary<string, IAttribute>(list, InvariantCultureIgnoreCase)
+            {
+                [field.Name] = CloneUpdateOne(field, values)
+            };
+            return copy;
+        }
+
+        // Note: ATM it makes a deep clone, but once everything is #immutable that won't be necessary any more
+        public Dictionary<string, IAttribute> ListDeepClone(IDictionary<string, IAttribute> attributes) 
+            => attributes?.ToDictionary(pair => pair.Key, pair => CloneUpdateOne(pair.Value), InvariantCultureIgnoreCase);
+
+        public IAttribute CloneUpdateOne(IAttribute original, IList<IValue> values = null)
             => CreateTyped(original.Name, original.Type,
                 values ?? original.Values
                     .Select(v => ValueBuilder.Clone(v, original.Type))
                     .ToList()
             );
 
+        [PrivateApi]
+        public IAttribute CreateTyped(string name, string type, IList<IValue> values = null)
+            => CreateTyped(name, ValueTypeHelpers.Get(type), values);
+
         /// <summary>
         /// Get Attribute for specified Typ
         /// </summary>
         /// <returns><see cref="Attribute{ValueType}"/></returns>
         [PrivateApi("probably move to some attribute-builder or something")]
-        public static IAttribute CreateTyped(string name, ValueTypes type, IList<IValue> values = null)
+        public IAttribute CreateTyped(string name, ValueTypes type, IList<IValue> values = null)
         {
             var typeName = type.ToString();
             switch (type)
@@ -59,7 +81,11 @@ namespace ToSic.Eav.Data.Builder
                     return new Attribute<decimal?>(name, typeName, values);
                 case ValueTypes.Entity:
                     return new Attribute<IEnumerable<IEntity>>(name, typeName,
-                        new List<IValue> { new ValueBuilder(new DimensionBuilder()).NullRelationship });
+                        // Note 2023-02-24 2dm - up until now the values were never used
+                        // in this case, so relationships created here were always empty
+                        // Could break something, but I don't think it will
+                        values 
+                        ?? new List<IValue> { ValueBuilder.NewEmptyRelationship });
                 // ReSharper disable RedundantCaseLabel
                 case ValueTypes.String:
                 case ValueTypes.Hyperlink:
@@ -73,24 +99,20 @@ namespace ToSic.Eav.Data.Builder
             }
         }
 
-        public IAttribute GenerateAttributesOfContentType(IEntity newEntity, IContentType contentType)
+        public (Dictionary<string, IAttribute> All, string Title) GenerateAttributesOfContentType(IContentType contentType)
         {
-            IAttribute titleAttrib = null;
-            foreach (var definition in contentType.Attributes)
-            {
-
-                var entityAttribute = CreateTyped(definition.Name, definition.Type);
-                newEntity.Attributes.Add(entityAttribute.Name, entityAttribute);
-                if (definition.IsTitle)
-                    titleAttrib = entityAttribute;
-            }
-            return titleAttrib;
+            string titleField = null;
+            var attributes = contentType.Attributes.ToDictionary(
+                a => a.Name,
+                a =>
+                {
+                    var entityAttribute = CreateTyped(a.Name, a.Type);
+                    if (a.IsTitle)
+                        titleField = entityAttribute.Name;
+                    return entityAttribute;
+                });
+            return (attributes, titleField);
         }
-
-
-        [PrivateApi]
-        public IAttribute CreateTyped(string name, string type, IList<IValue> values = null)
-            => CreateTyped(name, ValueTypeHelpers.Get(type), values);
 
 
     }

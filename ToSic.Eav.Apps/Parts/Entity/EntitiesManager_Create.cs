@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null
         ) => Log.Func($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}", () =>
         {
-            var newEnt = new Entity(Parent.AppId, Guid.NewGuid(), Parent.Read.ContentTypes.Get(typeName), values);
+            var newEnt = _multiBuilder.Value.Entity.Create(appId: Parent.AppId, guid: Guid.NewGuid(), contentType: Parent.Read.ContentTypes.Get(typeName), values: values);
             if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
             var eid = Save(newEnt);
             var guid = Parent.DataController.Entities.TempLastSaveGuid;
@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.Parts
                 return existingEnt.EntityId;
             }
 
-            var newE = new Entity(Parent.AppId, newGuid, Parent.Read.ContentTypes.Get(typeName), values);
+            var newE = _multiBuilder.Value.Entity.Create(appId: Parent.AppId, guid: newGuid, contentType: Parent.Read.ContentTypes.Get(typeName), values: values);
             return Save(newE);
         }
     }

@@ -198,8 +198,9 @@ namespace ToSic.Eav.ImportExport.Xml
 		    var attribs = finalAttributes.ToDictionary(x => x.Key, y => (object) y.Value);
 
 		    var targetEntity = globalType != null
-		        ? new Entity(AppId, guid, globalType, attribs)
-		        : new Entity(AppId, 0, guid, typeName, attribs);
+		        ? _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, values: attribs)
+                // If not yet a known type, create a temporary pointer ContentType
+		        : _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: new ContentType(AppId, typeName), values: attribs);
 		    if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
 
             // if it's not a global type but still marked as IsJson

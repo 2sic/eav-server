@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Builder
 {
-    public class ContentTypeAttributeBuilder
+    public class ContentTypeAttributeBuilder: ServiceBase
     {
-        public ContentTypeAttributeBuilder(IAppStates appStates)
+        private readonly MultiBuilder _builder;
+        private readonly AppState _globalApp;
+
+        public ContentTypeAttributeBuilder(IAppStates appStates, MultiBuilder builder): base("Eav.CtAtBl")
         {
+            ConnectServices(
+                _builder = builder
+            );
             _globalApp = appStates.GetPresetApp();
         }
-        private readonly AppState _globalApp;
 
         /// <summary>
         /// Shortcut to get an @All Entity Describing an Attribute
@@ -24,7 +30,7 @@ namespace ToSic.Eav.Data.Builder
             if (defaultValue != null) valDic.Add("DefaultValue", defaultValue);
             if (!string.IsNullOrEmpty(inputType)) valDic.Add(AttributeMetadata.GeneralFieldInputType, inputType);
 
-            return new Entity(appId, Guid.Empty, _globalApp.GetContentType(AttributeMetadata.TypeGeneral), valDic);
+            return _builder.Entity.Create(appId: appId, guid: Guid.Empty, contentType: _globalApp.GetContentType(AttributeMetadata.TypeGeneral), values: valDic);
         }
     }
 }

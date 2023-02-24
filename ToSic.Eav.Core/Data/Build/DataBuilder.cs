@@ -41,16 +41,14 @@ namespace ToSic.Eav.Data.Build
 
         #region Constructor / DI
 
-        private readonly IDataBuilderInternal _parentBuilder;
         private readonly MultiBuilder _multiBuilder;
 
         /// <summary>
         /// Constructor for DI
         /// </summary>
-        public DataBuilder(IDataBuilderInternal parentBuilder, MultiBuilder multiBuilder): base("Ds.DatBld")
+        public DataBuilder(MultiBuilder multiBuilder): base("Ds.DatBld")
         {
             ConnectServices(
-                _parentBuilder = parentBuilder,
                 _multiBuilder = multiBuilder
             );
         }
@@ -83,7 +81,7 @@ namespace ToSic.Eav.Data.Build
             AppId = appId;
             TitleField = titleField.UseFallbackIfNoValue(Attributes.TitleNiceName);
             IdCounter = idSeed;
-            ContentType = _parentBuilder.Type(typeName ?? DataBuilderInternal.DefaultTypeName);
+            ContentType = _multiBuilder.ContentType.Transient(typeName ?? DataBuilderInternal.DefaultTypeName);
             IdAutoIncrementZero = idAutoIncrementZero;
 
             CreateFromNewOptions = createFromNewOptions ?? new CreateFromNewOptions();
@@ -168,10 +166,11 @@ namespace ToSic.Eav.Data.Build
             DateTime created = default,
             DateTime modified = default)
         {
-            var ent = _parentBuilder.Entity(values,
+            var ent = _multiBuilder.Entity.Create(
                 appId: AppId,
-                id: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
-                type: ContentType,
+                entityId: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
+                contentType: ContentType,
+                values: values,
                 titleField: TitleField,
                 guid: guid,
                 created: created == default ? Created : created,

@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.RelationshipTests;
 using ToSic.Lib.Logging;
@@ -111,10 +112,11 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         }
 
 
-        protected static LookUpEngine BuildConfigurationProvider(Dictionary<string, object> vals)
+        protected LookUpEngine BuildConfigurationProvider(Dictionary<string, object> vals)
         {
-            var vc = LookUpTestData.AppSetAndRes();
-            vc.Add(LookUpTestData.BuildLookUpEntity(DataSource.MyConfiguration, vals));
+            var testData = new LookUpTestData(GetService<EntityBuilder>());
+            var vc = testData.AppSetAndRes();
+            vc.Add(testData.BuildLookUpEntity(DataSource.MyConfiguration, vals));
             return vc;
         }
 

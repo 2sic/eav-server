@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.LookUp;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
 
@@ -130,7 +131,7 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
 
         public Sql GenerateSqlDataSource(string connection, string query, string typeName)
         {
-            return CreateDataSource<Sql>(LookUpTestData.AppSetAndRes())
+            return CreateDataSource<Sql>(new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes())
                 .Setup(connection, query, typeName);
         }
     }
