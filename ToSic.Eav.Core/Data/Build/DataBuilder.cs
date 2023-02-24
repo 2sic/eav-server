@@ -107,6 +107,11 @@ namespace ToSic.Eav.Data.Build
             var all = rawEntities.Select(Create).ToList();
             return all.ToImmutableList();
         }
+        public IImmutableList<IEntity> CreateMany(IEnumerable<IHasNewEntity> rawEntities)
+        {
+            var all = rawEntities.Select(Create).ToList();
+            return all.ToImmutableList();
+        }
 
         public IDictionary<TRaw, IEntity> Prepare<TRaw>(IEnumerable<TRaw> rawEntities) where TRaw : INewEntity
         {
@@ -141,7 +146,7 @@ namespace ToSic.Eav.Data.Build
                 id: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
                 type: ContentType,
                 titleField: TitleField,
-                guid: guid, 
+                guid: guid,
                 created: created == default ? Created : created,
                 modified: modified == default ? Modified : modified
             );

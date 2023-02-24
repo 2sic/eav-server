@@ -18,10 +18,11 @@ using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.New;
+using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    public class LicenseState: INewEntity
+    public class LicenseState: IHasNewEntity
     {
         public LicenseState() { }
 
@@ -53,17 +54,8 @@ namespace ToSic.Eav.Configuration.Licenses
         
         public string Owner { get; internal set; }
 
-        #region ICanBecomeEntity
-
-        int INewEntity.Id => 0;
-
-        Guid INewEntity.Guid => License.Guid;
-
-        private readonly DateTime _objectCreated = DateTime.Now;
-        DateTime INewEntity.Created => _objectCreated;
-
-        DateTime INewEntity.Modified => _objectCreated;
-
+        #region IHasNewEntity
+        
         /// <summary>
         /// Important: We are creating an object which is basically the License.
         /// So even though we're creating an Entity from the LicenseState,
@@ -71,35 +63,41 @@ namespace ToSic.Eav.Configuration.Licenses
         /// root definition does.
         /// But basically it should be the License + State information.
         /// </summary>
-        public Dictionary<string, object> GetProperties(CreateFromNewOptions options) => new Dictionary<string, object>
+        public INewEntity NewEntity => _newEntity.Get(() => new NewEntity
         {
-            // Properties describing the License
-            // { Attributes.NameIdNiceName, License.Name },
-            { Attributes.TitleNiceName, License.Name },
-            { nameof(License.NameId), License.NameId },
-            { nameof(LicenseKey), LicenseKey },
-            { nameof(License.Description), License.Description },
-            { nameof(License.AutoEnable), License.AutoEnable },
-            { nameof(License.Priority), License.Priority },
-            // The License Condition is an internal property
-            // Used when checking conditions on other objects - if this license is what is expected
-            //{ "LicenseConditionType", License.Condition.Type },
-            //{ "LicenseConditionNameId", License.Condition.NameId },
-            //{ "LicenseConditionIsEnabled", License.Condition.IsEnabled },
+            Guid = License.Guid,
+            Values = new Dictionary<string, object>
+            {
+                // Properties describing the License
+                // { Attributes.NameIdNiceName, License.Name },
+                { Attributes.TitleNiceName, License.Name },
+                { nameof(License.NameId), License.NameId },
+                { nameof(LicenseKey), LicenseKey },
+                { nameof(License.Description), License.Description },
+                { nameof(License.AutoEnable), License.AutoEnable },
+                { nameof(License.Priority), License.Priority },
+                // The License Condition is an internal property
+                // Used when checking conditions on other objects - if this license is what is expected
+                //{ "LicenseConditionType", License.Condition.Type },
+                //{ "LicenseConditionNameId", License.Condition.NameId },
+                //{ "LicenseConditionIsEnabled", License.Condition.IsEnabled },
 
-            // Properties describing the state/enabled
-            { nameof(Enabled), Enabled },
-            { nameof(EnabledInConfiguration), EnabledInConfiguration },
-            { nameof(Valid), Valid },
-            { nameof(Expiration), Expiration },
-            { nameof(ExpirationIsValid), ExpirationIsValid },
-            { nameof(SignatureIsValid), SignatureIsValid },
-            { nameof(FingerprintIsValid), FingerprintIsValid },
-            { nameof(VersionIsValid), VersionIsValid },
-            { nameof(Owner), Owner }
-        };
+                // Properties describing the state/enabled
+                { nameof(Enabled), Enabled },
+                { nameof(EnabledInConfiguration), EnabledInConfiguration },
+                { nameof(Valid), Valid },
+                { nameof(Expiration), Expiration },
+                { nameof(ExpirationIsValid), ExpirationIsValid },
+                { nameof(SignatureIsValid), SignatureIsValid },
+                { nameof(FingerprintIsValid), FingerprintIsValid },
+                { nameof(VersionIsValid), VersionIsValid },
+                { nameof(Owner), Owner }
+            },
+        });
+        private readonly GetOnce<INewEntity> _newEntity = new GetOnce<INewEntity>();
 
         #endregion
+
 
     }
 }

@@ -91,6 +91,7 @@ namespace ToSic.Eav.Data.Build
             DateTime modified = default);
 
         IImmutableList<IEntity> CreateMany(IEnumerable<INewEntity> rawEntities);
+        IImmutableList<IEntity> CreateMany(IEnumerable<IHasNewEntity> rawEntities);
 
         /// <summary>
         /// This will create IEntity but return it in a dictionary mapped to the original.

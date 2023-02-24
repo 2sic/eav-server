@@ -15,7 +15,7 @@ namespace ToSic.Eav.Configuration
     /// Note that this is also used as a DTO for the edit-UI, so don't just rename fields or anything.
     /// </summary>
     [PrivateApi("no good reason to publish this")]
-    public class FeatureState: INewEntity, IHasIdentityNameId
+    public class FeatureState: IHasNewEntity, IHasIdentityNameId
     {
         /// <summary>
         /// Feature Definition can be null, if a feature was activated with an unknown ID
@@ -103,35 +103,34 @@ namespace ToSic.Eav.Configuration
         public string Link => $"https://patrons.2sxc.org/rf?{NameId}";
 
 
-        #region ICanBecomeEntity
+        #region IHasNewEntity
 
-        int INewEntity.Id => 0;
-
-        private readonly DateTime _objectCreated = DateTime.Now;
-        DateTime INewEntity.Created => _objectCreated;
-        DateTime INewEntity.Modified => _objectCreated;
-
-        public Dictionary<string, object> GetProperties(CreateFromNewOptions options) => new Dictionary<string, object>
+        public INewEntity NewEntity => _newEntity.Get(() => new NewEntity
         {
-            { nameof(NameId), NameId },
-            { Attributes.TitleNiceName, Name },
-            { nameof(Description), Description },
-            { nameof(Enabled), Enabled },
-            { nameof(EnabledByDefault), EnabledByDefault },
-            // Not important, don't include
-            //{ "EnabledReason", EnabledReason },
-            //{ "EnabledReasonDetailed", EnabledReasonDetailed },
-            //{ "SecurityImpact", Security?.Impact },
-            //{ "SecurityMessage", Security?.Message },
-            { nameof(EnabledInConfiguration), EnabledInConfiguration },
-            { nameof(Expiration), Expiration },
-            { nameof(IsForEditUi), IsForEditUi },
-            { $"{nameof(License)}{nameof(License.Name)}", License?.Name ?? Constants.NullNameId },
-            { $"{nameof(License)}{nameof(License.Guid)}", License?.Guid ?? Guid.Empty },
-            { nameof(AllowedByLicense), AllowedByLicense },
-            { nameof(Link), Link },
-            { nameof(IsPublic), IsPublic },
-        };
+            Guid = Guid,
+            Values = new Dictionary<string, object>
+            {
+                { nameof(NameId), NameId },
+                { Attributes.TitleNiceName, Name },
+                { nameof(Description), Description },
+                { nameof(Enabled), Enabled },
+                { nameof(EnabledByDefault), EnabledByDefault },
+                // Not important, don't include
+                //{ "EnabledReason", EnabledReason },
+                //{ "EnabledReasonDetailed", EnabledReasonDetailed },
+                //{ "SecurityImpact", Security?.Impact },
+                //{ "SecurityMessage", Security?.Message },
+                { nameof(EnabledInConfiguration), EnabledInConfiguration },
+                { nameof(Expiration), Expiration },
+                { nameof(IsForEditUi), IsForEditUi },
+                { $"{nameof(License)}{nameof(License.Name)}", License?.Name ?? Constants.NullNameId },
+                { $"{nameof(License)}{nameof(License.Guid)}", License?.Guid ?? Guid.Empty },
+                { nameof(AllowedByLicense), AllowedByLicense },
+                { nameof(Link), Link },
+                { nameof(IsPublic), IsPublic },
+            }
+        });
+        private readonly GetOnce<INewEntity> _newEntity = new GetOnce<INewEntity>();
 
         #endregion
     }
