@@ -132,7 +132,7 @@ namespace ToSic.Eav.DataSources
                             // Remove first, in case the new name replaces an old one
                             attributes.Remove(entry.OriginalField);
                             // Now add the resulting new attribute
-                            _multiBuilder.Attribute.AddValue(attributes, map.Target, value, newAttribute.Type, entry.Language);
+                            _multiBuilder.AttributeImport.AddValue(attributes, map.Target, value, newAttribute.Type, entry.Language);
                         }
                     }
                     else // simple re-mapping / renaming

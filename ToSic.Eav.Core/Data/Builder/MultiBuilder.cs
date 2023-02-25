@@ -6,31 +6,36 @@ namespace ToSic.Eav.Data.Builder
 {
     public class MultiBuilder: ServiceBase
     {
+        private readonly LazySvc<AttributeBuilder> _attributeBuilder;
 
         public MultiBuilder(
             LazySvc<EntityBuilder> entityBuilder,
-            LazySvc<AttributeBuilderForImport> attributeBuilder,
+            LazySvc<AttributeBuilderForImport> attributeImport,
+            LazySvc<AttributeBuilder> attributeBuilder,
             LazySvc<ValueBuilder> valueBuilder,
             LazySvc<ContentTypeBuilder> contentTypeBuilder): base(EavLogs.Eav + "MltBld")
         {
             ConnectServices(
                 _entityBuilder = entityBuilder,
+                _attributeImport = attributeImport,
+                _contentTypeBuilder = contentTypeBuilder,
                 _attributeBuilder = attributeBuilder,
-                _valueBuilder = valueBuilder,
-                _contentTypeBuilder = contentTypeBuilder
+                _valueBuilder = valueBuilder
             );
         }
         private readonly LazySvc<EntityBuilder> _entityBuilder;
-        private readonly LazySvc<AttributeBuilderForImport> _attributeBuilder;
+        private readonly LazySvc<AttributeBuilderForImport> _attributeImport;
         private readonly LazySvc<ValueBuilder> _valueBuilder;
         private readonly LazySvc<ContentTypeBuilder> _contentTypeBuilder;
 
+        public ContentTypeBuilder ContentType => _contentTypeBuilder.Value;
         public EntityBuilder Entity => _entityBuilder.Value;
-        public AttributeBuilderForImport Attribute => _attributeBuilder.Value;
+
+        public AttributeBuilder Attribute => _attributeBuilder.Value;
+        public AttributeBuilderForImport AttributeImport => _attributeImport.Value;
 
         public ValueBuilder Value => _valueBuilder.Value;
 
-        public ContentTypeBuilder ContentType => _contentTypeBuilder.Value;
 
         /// <summary>
         /// Does a full-clone while also cloning (separating) attributes and relationships...?
@@ -41,17 +46,17 @@ namespace ToSic.Eav.Data.Builder
         /// <returns></returns>
         public Entity FullClone(IEntity entity)
         {
-            return Entity.Clone(entity,
-                Attribute.ListDeepClone(entity.Attributes),
+            return Entity.Clone(entity, Attribute.ListDeepClone(entity.Attributes),
                 ((RelationshipManager)entity.Relationships).AllRelationships);
         }
+        
 
         public IEntity FakeEntity(int appId)
             => _entityBuilder.Value.Create(
                 appId: appId,
-                values: new Dictionary<string, object> { { Attributes.TitleNiceName, "" } },
+                values: new Dictionary<string, object> { { Data.Attributes.TitleNiceName, "" } },
                 contentType: ContentType.Transient("FakeEntity"),
-                titleField: Attributes.TitleNiceName
+                titleField: Data.Attributes.TitleNiceName
             );
 
     }
