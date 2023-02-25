@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Generics;
+using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
 using static System.StringComparer;
 
@@ -43,7 +44,8 @@ namespace ToSic.Eav.Data
             Guid? guid = default,
             string owner = default,
             int version = default,
-            bool isPublished = true)
+            bool isPublished = true,
+            ITarget metadataFor = default)
             : base(appId, entityId, guid, contentType, values, titleAttribute, created: created, modified: modified, owner: owner)
         {
             IsLight = useLightMode;

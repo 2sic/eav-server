@@ -34,7 +34,8 @@ namespace ToSic.Eav.Data.Builder
             DateTime? created = default, DateTime? modified = default,
             string owner = default,
             int version = default,
-            bool isPublished = true
+            bool isPublished = true,
+            ITarget metadataFor = default
             )
         {
             // if we have typed, make sure invariant
@@ -63,14 +64,17 @@ namespace ToSic.Eav.Data.Builder
                 useLightMode: useLightMode, values: values, typedValues: typedValues,
                 guid: guid, titleAttribute: titleField,
                 created: created, modified: modified, owner: owner,
-                version: version, isPublished: isPublished);
+                version: version, isPublished: isPublished,
+                metadataFor: metadataFor);
         }
 
         /// <summary>
         /// Create a new Entity from a data store (usually SQL backend)
         /// </summary>
         public Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, 
-            int repositoryId, ITarget metadataFor, IContentType type, 
+            int repositoryId, 
+            ITarget metadataFor, 
+            IContentType type, 
             bool isPublished, 
             AppState source,
             DateTime created,
@@ -79,12 +83,17 @@ namespace ToSic.Eav.Data.Builder
             Dictionary<string, IAttribute> values = default
             )
         {
-            //var e2 = Create(appId: appId, guid: entityGuid, entityId: entityId, repositoryId: repositoryId,
-            //    contentType: type, created: created, modified: modified, owner: owner, version: version);
-            var e = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId,
-                type, isPublished, created, modified, owner, version, values: values, titleField: titleField);
+            var e = Create(appId: appId,
+                values: null, typedValues: values,
+                guid: entityGuid, entityId: entityId, repositoryId: repositoryId,
+                contentType: type, titleField: titleField,
+                created: created, modified: modified,
+                owner: owner, version: version, isPublished: isPublished,
+                metadataFor: metadataFor);
+            //var e = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId,
+            //    type, isPublished, created, modified, owner, version, values: values, titleField: titleField);
 
-            e.MetadataFor = metadataFor;
+            //e.MetadataFor = metadataFor;
 
             e.Relationships = new RelationshipManager(e, source, null);
 
@@ -97,39 +106,44 @@ namespace ToSic.Eav.Data.Builder
         /// Create an empty entity of a specific type.
         /// Usually used in edit scenarios, where the presentation doesn't exist yet
         /// </summary>
-        public Entity EmptyOfType(int appId, Guid entityGuid, int entityId,
-            int repositoryId, IContentType type)
+        public Entity EmptyOfType(int appId, Guid entityGuid, int entityId, IContentType type)
         {
             var specs = _attributeBuilder.GenerateAttributesOfContentType(type);
-            var ent = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId, 
-                type, true, DateTime.MinValue, DateTime.Now, "", 1,
-                values: specs.All, titleField: specs.Title);
+            return Create(appId: appId,
+                entityId: entityId, guid: entityGuid,
+                contentType: type, titleField: specs.Title,
+                values: null, typedValues: specs.All,
+                created: DateTime.MinValue, modified: DateTime.Now, 
+                owner: "");
+            //var ent = EntityWithAllIdsAndType(appId, entityGuid, entityId, entityId, 
+            //    type, true, DateTime.MinValue, DateTime.Now, "", 1,
+            //    values: specs.All, titleField: specs.Title);
 
-            ent.MetadataFor = new Target();
+            //ent.MetadataFor = new Target();
 
-            return ent;
+            //return ent;
         }
 
-        private Entity EntityWithAllIdsAndType(int appId, Guid entityGuid, int entityId,
-            int repositoryId, IContentType type, bool isPublished,
-            DateTime created,
-            DateTime modified, string owner, int version, 
-            Dictionary<string, IAttribute> values = default,
-            string titleField = default) =>
-            Create(appId: appId,
-                values: null,
-                typedValues: values, 
-                entityId: entityId,
-                version: version,
-                guid: entityGuid,
-                contentType: type,
-                isPublished: isPublished,
-                repositoryId: repositoryId,
-                created: created,
-                modified: modified,
-                owner: owner,
-                titleField: titleField
-            );
+        //private Entity EntityWithAllIdsAndType(int appId, Guid entityGuid, int entityId,
+        //    int repositoryId, IContentType type, bool isPublished,
+        //    DateTime created,
+        //    DateTime modified, string owner, int version, 
+        //    Dictionary<string, IAttribute> values = default,
+        //    string titleField = default) =>
+        //    Create(appId: appId,
+        //        values: null,
+        //        typedValues: values, 
+        //        entityId: entityId,
+        //        version: version,
+        //        guid: entityGuid,
+        //        contentType: type,
+        //        isPublished: isPublished,
+        //        repositoryId: repositoryId,
+        //        created: created,
+        //        modified: modified,
+        //        owner: owner,
+        //        titleField: titleField
+        //    );
 
         /// <summary>
         /// Create a new Entity based on an Entity and Attributes
@@ -142,13 +156,22 @@ namespace ToSic.Eav.Data.Builder
         {
             var targetType = newType ?? entity.Type;
 
-            var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, targetType, 
-                entity.IsPublished, entity.Created, entity.Modified, entity.Owner, entity.Version, attributes);
-            e.TitleFieldName = entity.Title?.Name;
+            var e = Create(appId: entity.AppId,
+                values: null, typedValues: attributes,
+                entityId: entity.EntityId, repositoryId: entity.RepositoryId, guid: entity.EntityGuid,
+                contentType: targetType, titleField: entity.Title?.Name,
+                isPublished: entity.IsPublished,
+                created: entity.Created, modified: entity.Modified,
+                owner: entity.Owner, version: entity.Version,
+                metadataFor: new Target(entity.MetadataFor));
+            //var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, targetType, 
+            //    entity.IsPublished, entity.Created, entity.Modified, entity.Owner, entity.Version, attributes);
+            //e.TitleFieldName = entity.Title?.Name;
+            //e.MetadataFor = new Metadata.Target(entity.MetadataFor);
+
             var lookupApp = (entity as Entity)?.DeferredLookupData as AppState;
             e.Relationships = new RelationshipManager(e, lookupApp, allRelationships);
 
-            e.MetadataFor = new Metadata.Target(entity.MetadataFor);
 
             e.DeferredLookupData = lookupApp;
             return e;
