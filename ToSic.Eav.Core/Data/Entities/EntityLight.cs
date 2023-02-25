@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
@@ -48,7 +49,7 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         [JsonIgnore]
-        public IRelationshipManager Relationships { get; internal set; }
+        public IRelationshipManager Relationships { get; }
 
         /// <inheritdoc />
         public ITarget MetadataFor { get; internal set; }
@@ -82,7 +83,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         [PrivateApi]
         internal EntityLight(
-            int appId, int entityId, Guid? guid, IContentType contentType, Dictionary<string, object> values, string titleAttribute = null, 
+            int appId, int entityId, Guid? guid, IContentType contentType, EntityPartsBuilder partsBuilder, Dictionary<string, object> values, string titleAttribute = null, 
             DateTime? created = null, DateTime? modified = null, string owner = null,
             ITarget metadataFor = default)
         {
@@ -103,7 +104,7 @@ namespace ToSic.Eav.Data
             if (created.HasValue) Created = created.Value;
             if (modified.HasValue) Modified = modified.Value;
             if (!string.IsNullOrEmpty(owner)) Owner = owner;
-            Relationships = new RelationshipManager(this, null, null);
+            Relationships = partsBuilder.RelationshipManager(this); // new RelationshipManager(this, null, null);
         }
 
 

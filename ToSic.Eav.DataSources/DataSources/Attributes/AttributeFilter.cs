@@ -82,6 +82,9 @@ namespace ToSic.Eav.DataSources
         {
             Configuration.Parse();
 
+            if (!GetRequiredInList(out var sourceList))
+                return (sourceList, "error");
+
             var raw = AttributeNames;
             // note: since 2sxc 11.13 we have lines for attributes
             // older data still uses commas since it was single-line
@@ -94,29 +97,26 @@ namespace ToSic.Eav.DataSources
             l.A($"attrib filter names:[{string.Join(",", attributeNames)}]");
 
             // Determine if we should remove or keep the things in the list
-            var keepNamedAttributes = Mode != ModeRemove;
+            var modeIsKeepAttributes = Mode != ModeRemove;
 
             // If no attributes were given or just one with *, then don't filter at all
             var noFieldNames = attributeNames.Length == 0
                                || attributeNames.Length == 1 && string.IsNullOrWhiteSpace(attributeNames[0]);
 
-            if (!GetRequiredInList(out var sourceList))
-                return (sourceList, "error");
-
             // Case #1 if we don't change anything, short-circuit and return original
-            if (noFieldNames && !keepNamedAttributes)
+            if (noFieldNames && !modeIsKeepAttributes)
                 return (sourceList, $"keep original {sourceList.Count}");
 
             var result = sourceList
                 .Select(e =>
                 {
                     // Case 2: Check if we should take none at all
-                    if (noFieldNames && keepNamedAttributes)
-                        return _entityBuilder.Clone(e, new Dictionary<string, IAttribute>(), null);
+                    if (noFieldNames && modeIsKeepAttributes)
+                        return _entityBuilder.Clone(e, new Dictionary<string, IAttribute>());
 
                     // Case 3 - not all fields, keep/drop the ones we don't want
                     var attributes = e.Attributes
-                        .Where(a => attributeNames.Contains(a.Key) == keepNamedAttributes)
+                        .Where(aPair => attributeNames.Contains(aPair.Key) == modeIsKeepAttributes)
                         .ToDictionary(k => k.Key, v => v.Value);
                     return _entityBuilder.Clone(e, attributes, e.Relationships.AllRelationships);
                 })

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
 using static System.StringComparer;
@@ -23,9 +24,11 @@ namespace ToSic.Eav.Data.Builder
         public EntityBuilder(AttributeBuilder attributeBuilder) => _attributeBuilder = attributeBuilder;
         private readonly AttributeBuilder _attributeBuilder;
 
-        public Entity Create(int appId,
-            Dictionary<string, object> values,
+        public Entity Create(
+            int appId,
             IContentType contentType,
+            string noParamOrder = Eav.Parameters.Protector,
+            Dictionary<string, object> values = default,
             Dictionary<string, IAttribute> typedValues = default,
             int entityId = default,
             int repositoryId = Constants.NullId,
@@ -35,7 +38,8 @@ namespace ToSic.Eav.Data.Builder
             string owner = default,
             int version = default,
             bool isPublished = true,
-            ITarget metadataFor = default
+            ITarget metadataFor = default,
+            EntityPartsBuilder partsBuilder = default
             )
         {
             // if we have typed, make sure invariant
@@ -60,7 +64,12 @@ namespace ToSic.Eav.Data.Builder
             repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
             version = version == default ? 1 : version;
 
-            return new Entity(appId, entityId, repositoryId: repositoryId, contentType: contentType,
+            // Prepare the Parts-builder in case it wasn't provided
+            partsBuilder = partsBuilder ?? new EntityPartsBuilder(
+                e => new RelationshipManager(e, null, null)
+            );
+
+            return new Entity(appId, entityId, partsBuilder: partsBuilder,  repositoryId: repositoryId, contentType: contentType,
                 useLightMode: useLightMode, values: values, typedValues: typedValues,
                 guid: guid, titleAttribute: titleField,
                 created: created, modified: modified, owner: owner,
@@ -83,19 +92,25 @@ namespace ToSic.Eav.Data.Builder
             Dictionary<string, IAttribute> values = default
             )
         {
+            var partsBuilder = new EntityPartsBuilder(
+                entity => new RelationshipManager(entity, source, null)
+            );
+
             var e = Create(appId: appId,
                 values: null, typedValues: values,
                 guid: entityGuid, entityId: entityId, repositoryId: repositoryId,
                 contentType: type, titleField: titleField,
                 created: created, modified: modified,
                 owner: owner, version: version, isPublished: isPublished,
-                metadataFor: metadataFor);
+                metadataFor: metadataFor,
+                partsBuilder: partsBuilder
+            );
             //var e = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId,
             //    type, isPublished, created, modified, owner, version, values: values, titleField: titleField);
 
             //e.MetadataFor = metadataFor;
 
-            e.Relationships = new RelationshipManager(e, source, null);
+            //e.Relationships = new RelationshipManager(e, source, null);
 
             e.DeferredLookupData = source;
 
@@ -150,32 +165,56 @@ namespace ToSic.Eav.Data.Builder
         /// Used in the Attribute-Filter, which generates a new entity with less properties
         /// </summary>
         public Entity Clone(IEntity entity, 
-            Dictionary<string, IAttribute> attributes, 
-            IEnumerable<EntityRelationship> allRelationships,
-            IContentType newType = null)
+            Dictionary<string, IAttribute> newValues, 
+            IEnumerable<EntityRelationship> entityRelationshipsIfNoApp = default,
+            int? newId = default,
+            int? newRepoId = default,
+            Guid? newGuid = default,
+            IContentType newType = default)
         {
+            var entityPartsBuilder = new EntityPartsBuilder(
+                ent =>
+                {
+                    var lookupApp2 = (entity as Entity)?.DeferredLookupData as AppState;
+                    return new RelationshipManager(ent, lookupApp2, entityRelationshipsIfNoApp);
+                }
+            );
+
             var targetType = newType ?? entity.Type;
 
             var e = Create(appId: entity.AppId,
-                values: null, typedValues: attributes,
-                entityId: entity.EntityId, repositoryId: entity.RepositoryId, guid: entity.EntityGuid,
+                values: null,
+                typedValues: newValues,
+                entityId: newId ?? entity.EntityId,
+                repositoryId: newRepoId ?? entity.RepositoryId,
+                guid: newGuid ?? entity.EntityGuid,
                 contentType: targetType, titleField: entity.Title?.Name,
                 isPublished: entity.IsPublished,
                 created: entity.Created, modified: entity.Modified,
                 owner: entity.Owner, version: entity.Version,
-                metadataFor: new Target(entity.MetadataFor));
+                metadataFor: new Target(entity.MetadataFor),
+                partsBuilder: entityPartsBuilder
+            );
             //var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, targetType, 
             //    entity.IsPublished, entity.Created, entity.Modified, entity.Owner, entity.Version, attributes);
             //e.TitleFieldName = entity.Title?.Name;
             //e.MetadataFor = new Metadata.Target(entity.MetadataFor);
 
             var lookupApp = (entity as Entity)?.DeferredLookupData as AppState;
-            e.Relationships = new RelationshipManager(e, lookupApp, allRelationships);
+            //e.Relationships = new RelationshipManager(e, lookupApp, entityRelationshipsIfNoApp);
 
 
             e.DeferredLookupData = lookupApp;
             return e;
         }
 
+        // WIP - when done move elsewhere and probably rename
+        public enum CloneRelationships
+        {
+            Unknown = 0,
+            UseOriginalList = 1,
+            GetFromApp = 2,
+            NoRelationships,
+        }
     }
 }

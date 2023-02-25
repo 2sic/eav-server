@@ -24,13 +24,12 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Initializes a new instance of the RelationshipManager class.
 		/// </summary>
-		public RelationshipManager(IEntityLight entity, AppState app, IEnumerable<EntityRelationship> allRelationships)
+		internal RelationshipManager(IEntityLight entity, AppState app, IEnumerable<EntityRelationship> allRelationships)
         {
 			_entity = entity;
             App = app;
 		    if (app != null)
-		        AllRelationships = new SynchronizedList<EntityRelationship>(app,
-		            () => app.Relationships.List);
+		        AllRelationships = new SynchronizedList<EntityRelationship>(app, () => app.Relationships.List);
             else
 		        AllRelationships = allRelationships ?? new List<EntityRelationship>();
 		}
@@ -58,8 +57,8 @@ namespace ToSic.Eav.Data
 	    private IImmutableList<EntityRelationship> ParentRelationships()
         {
             if (_parentRelationships != null) return _parentRelationships.List;
-            Func<IImmutableList<EntityRelationship>> getParents = () => AllRelationships.Where(r => r.Child == _entity).ToImmutableArray();// .ToList();
-            if (App == null) return getParents.Invoke(); // return AllRelationships.Where(r => r.Child == _entity);
+            Func<IImmutableList<EntityRelationship>> getParents = () => AllRelationships.Where(r => r.Child == _entity).ToImmutableArray();
+            if (App == null) return getParents.Invoke();
             _parentRelationships = new SynchronizedList<EntityRelationship>(App, getParents);
             return _parentRelationships.List;
         }
@@ -67,8 +66,7 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         [PrivateApi]
-        public IRelationshipChildren Children 
-            => _entity is IEntity entity ? new RelationshipChildren(entity.Attributes) : null ;
+        public IRelationshipChildren Children => _entity is IEntity entity ? new RelationshipChildren(entity.Attributes) : null ;
 
 
 

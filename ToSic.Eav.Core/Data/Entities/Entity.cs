@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Generics;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
-using static System.StringComparer;
 
 namespace ToSic.Eav.Data
 {
@@ -16,26 +13,11 @@ namespace ToSic.Eav.Data
 
     public partial class Entity: EntityLight, IEntity
     {
-        /// <inheritdoc />
-        /// <summary>
-        /// Special constructor for entity-builders.
-        /// Goal is that this results in a final, full IEntity which will then be immutable
-        /// This is still WIP @2dm 2023-02-19
-        ///
-        /// For now we're including parameters which should not have a public setter
-        /// </summary>
         [PrivateApi]
-        internal Entity(int appId, Dictionary<string, IAttribute> values
-        )
-        {
-            Attributes = (values ?? new Dictionary<string, IAttribute>()).ToInvariant();
-        }
-
-
-        [PrivateApi]
-        public Entity(int appId, int entityId,
+        internal Entity(int appId, int entityId,
             IContentType contentType,
-            bool useLightMode = default,
+            EntityPartsBuilder partsBuilder,
+            bool useLightMode,
             Dictionary<string, object> values = default,
             Dictionary<string, IAttribute> typedValues = default,
             string titleAttribute = null,
@@ -46,7 +28,7 @@ namespace ToSic.Eav.Data
             int version = default,
             bool isPublished = true,
             ITarget metadataFor = default)
-            : base(appId, entityId, guid, contentType, values, titleAttribute, created: created, modified: modified, owner: owner)
+            : base(appId, entityId, guid, contentType, partsBuilder, values, titleAttribute, created: created, modified: modified, owner: owner, metadataFor: metadataFor)
         {
             IsLight = useLightMode;
             Attributes = typedValues;

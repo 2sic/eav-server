@@ -195,12 +195,12 @@ namespace ToSic.Eav.ImportExport.Xml
             var guidString = xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
                              throw new NullReferenceException("can't import an entity without a guid identifier");
             var guid = Guid.Parse(guidString);
-		    var attribs = finalAttributes.ToDictionary(x => x.Key, y => (object) y.Value);
+		    // var attribs = finalAttributes.ToDictionary(x => x.Key, y => (object) y.Value);
 
-		    var targetEntity = globalType != null
-		        ? _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, values: attribs)
+		    var targetEntity = // globalType != null
+		        // ? _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, typedValues: finalAttributes)
                 // If not yet a known type, create a temporary pointer ContentType
-		        : _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: new ContentType(AppId, typeName), values: attribs);
+		        /*:*/ _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType ?? new ContentType(AppId, typeName), typedValues: finalAttributes);
 		    if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
 
             // if it's not a global type but still marked as IsJson
@@ -209,7 +209,7 @@ namespace ToSic.Eav.ImportExport.Xml
             if (globalType == null && xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True")
                 (targetEntity.Type as ContentType).SetSource(RepositoryTypes.Folder);
 
-            return wrap.Return(targetEntity, $"returning {guid} of type {globalType?.Name ?? typeName} with attribs:{attribs.Count} and metadata:{metadataForFor != null}");
+            return wrap.Return(targetEntity, $"returning {guid} of type {globalType?.Name ?? typeName} with attribs:{finalAttributes.Count} and metadata:{metadataForFor != null}");
         }
 
         /// <summary>

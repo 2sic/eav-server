@@ -86,7 +86,7 @@ namespace ToSic.Eav.WebApi
                 var ent = p.EntityId != 0 || p.DuplicateEntity.HasValue
                         ? GetEditableEditionAndMaybeCloneIt(p)
                         : null;
-                return new BundleWithHeader<IEntity>()
+                return new BundleWithHeader<IEntity>
                 {
                     Header = p,
                     Entity = ent
@@ -127,9 +127,10 @@ namespace ToSic.Eav.WebApi
 
             if (!p.DuplicateEntity.HasValue) return found;
 
-            var copy = _entityBuilder.Clone(found, found.Attributes, null);
-            copy.SetGuid(Guid.Empty);
-            copy.ResetEntityId();
+            // TODO: 2023-02-25 seems that EntityId is reset, but RepositoryId isn't - not sure why or if this is correct
+            var copy = _entityBuilder.Clone(found, found.Attributes, newId: 0, newGuid: Guid.Empty);
+            //copy.SetGuid(Guid.Empty);
+            //copy.ResetEntityId();
             return copy;
         }
 
