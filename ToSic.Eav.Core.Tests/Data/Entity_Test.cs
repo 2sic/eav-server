@@ -28,18 +28,21 @@ namespace ToSic.Eav.Core.Tests.Data
         [TestMethod]
         public void Entity_EntityRelationship()
         {
-            var dan = new SampleData(GetService<EntityBuilder>()).TestEntityDaniel();
-            var relDtoL = new EntityRelationship(dan, new SampleData(GetService<EntityBuilder>()).TestEntityLeonie());
+            var entityBuilder = GetService<EntityBuilder>();
+            var sampleData = new SampleData(entityBuilder);
+            var dan = sampleData.TestEntityDaniel();
+            var relDtoL = new EntityRelationship(dan, sampleData.TestEntityLeonie());
             var relationshipList = new List<EntityRelationship> {relDtoL};
             for (var p = 0; p < 15; p++)
             {
-                var relPet = new EntityRelationship(dan, new SampleData(GetService<EntityBuilder>()).TestEntityPet(p));
+                var relPet = new EntityRelationship(dan, sampleData.TestEntityPet(p));
                 relationshipList.Add(relPet);
             }
 
             // ReSharper disable once UnusedVariable
             var relMan = new RelationshipManager(dan, null, relationshipList);
 
+            Assert.AreEqual(16, relMan.AllChildren.Count());
             // note: can't test more, because the other properties are internal
         }
 

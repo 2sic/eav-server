@@ -32,7 +32,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
 
         public LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = AppIdX)
         {
-            var ent = _builder.Create(appId: appId, contentType: new ContentTypeBuilder().Transient(name), values: values, titleField: values.FirstOrDefault().Key);
+            var ent = _builder.TestCreate(appId: appId, contentType: new ContentTypeBuilder().Transient(name), values: values, titleField: values.FirstOrDefault().Key);
             return new LookUpInEntity(name, ent, null);
         }
 

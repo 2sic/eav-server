@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Testing.Shared;
 using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
-using static ToSic.Testing.Shared.ValueBuilderTestExtensions;
 
 namespace ToSic.Eav.DataSourceTests.TestData
 {
@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                 {FieldHeight, MaybeMakeMlNonString(multiLanguage, FieldHeight, ValueTypes.Number, person.Height)},
                 {FieldBioForMlSortTest, MaybeMakeMlBio(multiLanguage, person.IsMale)}
             };
-            return MultiBuilder.Entity.Create(appId: 0, entityId: person.Id, contentType: MultiBuilder.ContentType.Transient(PersonTypeName), values: dic,
+            return MultiBuilder.Entity.TestCreate(appId: 0, entityId: person.Id, contentType: MultiBuilder.ContentType.Transient(PersonTypeName), values: dic,
                 titleField: FieldFullName, modified: person.Modified);
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Persistence;
@@ -57,7 +58,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         }};
         Entity _origENull = null;
 
-        private Entity GirlSingle => Builder.Entity.Create(appId: AppId, entityId: 999, contentType: _ctPerson, values: new Dictionary<string, object>
+        private Entity GirlSingle => Builder.Entity.TestCreate(appId: AppId, entityId: 999, contentType: _ctPerson, values: new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried"},
             {"FirstName", "Sandra"},
@@ -65,7 +66,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"Birthday", new DateTime(1981, 5, 14) }
         });
 
-        private Entity GirlMarried => Builder.Entity.Create(appId: AppId, contentType: Builder.ContentType.Transient("DynPerson"), values: new Dictionary<string, object>
+        private Entity GirlMarried => Builder.Entity.TestCreate(appId: AppId, contentType: Builder.ContentType.Transient("DynPerson"), values: new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried-Married"},
             {"FirstName", "Sandra"},
@@ -75,7 +76,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"WeddingDate", DateTime.Today }
         });
 
-        private Entity GirlMarriedUpdate => Builder.Entity.Create(appId: AppId, contentType: _ctPerson, values: new Dictionary<string, object>
+        private Entity GirlMarriedUpdate => Builder.Entity.TestCreate(appId: AppId, contentType: _ctPerson, values: new Dictionary<string, object>
         {
             {"FullName", "Sandra Unmarried-Married"},
             //{"FirstName", "Sandra"},
@@ -143,7 +144,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         };
 
         private readonly Entity _prodNull = null;
-        private Entity ProdNoLang => Builder.Entity.Create(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new Dictionary<string, object>
+        private Entity ProdNoLang => Builder.Entity.TestCreate(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new Dictionary<string, object>
         {
             { Attributes.TitleNiceName, "Original Product No Lang" },
             { "Teaser", "Original Teaser no lang" },
@@ -167,7 +168,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn) }),
             });
 
-            return Builder.Entity.Create(appId: AppId, entityId: 3006, contentType: Builder.ContentType.Transient("Product"), values: new Dictionary<string, object>
+            return Builder.Entity.TestCreate(appId: AppId, entityId: 3006, contentType: Builder.ContentType.Transient("Product"), values: new Dictionary<string, object>
             {
                 {title.Name, title},
                 {teaser.Name, teaser},
@@ -209,7 +210,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
             });
 
-            return Builder.Entity.Create(appId: AppId, entityId: 430, contentType: Builder.ContentType.Transient("Product"), values: new Dictionary<string, object>
+            return Builder.Entity.TestCreate(appId: AppId, entityId: 430, contentType: Builder.ContentType.Transient("Product"), values: new Dictionary<string, object>
             {
                 {title.Name, title},
                 {teaser.Name, teaser},
