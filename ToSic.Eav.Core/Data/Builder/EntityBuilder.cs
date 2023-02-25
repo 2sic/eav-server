@@ -51,7 +51,7 @@ namespace ToSic.Eav.Data.Builder
             // If TypedValues still don't exist
             var useLightMode = typedValues == null;
             if (typedValues == null)
-                typedValues = AttribBuilder.GetStatic().ConvertToInvariantDic(values);
+                typedValues = _attributeBuilder.ConvertToIAttributeDic(values);
             else
                 values = null;
 

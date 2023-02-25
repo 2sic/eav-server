@@ -115,5 +115,28 @@ namespace ToSic.Eav.Data.Builder
         }
 
 
+        /// <summary>
+        /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
+        /// </summary>
+        public Dictionary<string, IAttribute> ConvertToIAttributeDic(IDictionary<string, object> objAttributes) =>
+            objAttributes.ToDictionary(pair => pair.Key, oAttrib =>
+            {
+                // in case the object is already an IAttribute, use that, don't rebuild it
+                if (oAttrib.Value is IAttribute typedValue)
+                    return typedValue;
+
+                // Not yet a proper IAttribute, construct from value
+                var attributeType = DataTypes.GetAttributeTypeName(oAttrib.Value);
+                var valuesModelList = new List<IValue>();
+                if (oAttrib.Value != null)
+                {
+                    var valueModel = ValueBuilder.Build(attributeType, oAttrib.Value);
+                    valuesModelList.Add(valueModel);
+                }
+
+                var attributeModel = CreateTyped(oAttrib.Key, attributeType, valuesModelList);
+
+                return attributeModel;
+            });
     }
 }
