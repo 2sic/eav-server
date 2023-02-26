@@ -5,10 +5,6 @@ namespace ToSic.Eav.Data.Builder
 {
     public static class ContentTypeExtensions
     {
-        public static void SetSource(this ContentType type, RepositoryTypes repoType)
-        {
-            type.RepositoryType = repoType;
-        }
 
         public static void SetSourceParentAndIdForPresetTypes(this ContentType type, RepositoryTypes repoType, int parentId, string address, int id = -1)
         {

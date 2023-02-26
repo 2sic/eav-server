@@ -65,18 +65,18 @@ namespace ToSic.Eav.ImportExport.Json
                 allEntities.AddRange(ctMeta);
 
                 // Create the Content Type
-                var type = new ContentType(
+                var type = this.MultiBuilder.ContentType.Create(
                     appId: AppId, 
                     name: jsonType.Name,
                     nameId: jsonType.Id,
-                    typeId: 0,
+                    id: 0,
                     scope: jsonType.Scope,
                     // #RemoveContentTypeDescription #2974 - #remove 2023 Q2 if all works
                     //jsonType.Description,
                     parentTypeId: jsonType.Sharing?.ParentId,
                     configZoneId: jsonType.Sharing?.ParentZoneId ?? 0,
                     configAppId: jsonType.Sharing?.ParentAppId ?? 0,
-                    alwaysShareConfig: jsonType.Sharing?.AlwaysShare ?? false, 
+                    isAlwaysShared: jsonType.Sharing?.AlwaysShare ?? false, 
                     attributes: attribs);
 
                 type.Metadata.Use(ctMeta);

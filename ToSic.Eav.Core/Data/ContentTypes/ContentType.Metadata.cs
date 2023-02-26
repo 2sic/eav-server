@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data
 {
@@ -9,10 +10,10 @@ namespace ToSic.Eav.Data
         #region Metadata
 
         /// <inheritdoc />
-        public ContentTypeMetadata Metadata => _metadata ?? (_metadata = new ContentTypeMetadata(NameId, _metaSourceFinder, Name));
-
-        private ContentTypeMetadata _metadata;
-        private readonly Func<IHasMetadataSource> _metaSourceFinder;
+        public ContentTypeMetadata Metadata { get; }
+        //public ContentTypeMetadata Metadata => _metadata.Get(() => new ContentTypeMetadata(NameId, _metaSourceFinder, Name));
+        //private readonly GetOnce<ContentTypeMetadata> _metadata = new GetOnce<ContentTypeMetadata>();
+        //private readonly Func<IHasMetadataSource> _metaSourceFinder;
 
         IMetadataOf IHasMetadata.Metadata => Metadata;
 

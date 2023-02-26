@@ -149,18 +149,18 @@ namespace ToSic.Eav.Persistence.Efc
                     .Cast<IContentTypeAttribute>()
                     .ToList();
 
-                return (IContentType)new ContentType(
+                return _multiBuilder.ContentType.Create(
                     appId: appId, 
                     name: set.Name,
                     nameId: set.StaticName, 
-                    typeId: set.AttributeSetId,
+                    id: set.AttributeSetId,
                     scope: set.Scope,
                     // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
                     /*set.Description,*/
                     parentTypeId: set.IsGhost,
                     configZoneId: set.ZoneId,
                     configAppId: set.AppId,
-                    alwaysShareConfig: set.ConfigIsOmnipresent,
+                    isAlwaysShared: set.ConfigIsOmnipresent,
                     metaSourceFinder: (() => notGhost ? source : _appStates.Get(new AppIdentity(set.ZoneId, set.AppId))),
                     attributes: ctAttributes
                 );

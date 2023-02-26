@@ -21,9 +21,7 @@ namespace ToSic.Eav.Core.Tests.Data
             return new ContentTypeAttribute(appId, firstName, dataType, isTitle, attId, index);
         }
 
-        static readonly ContentType CtTestType = new ContentType(AppId, "TestType")
-        {
-            Attributes = new List<IContentTypeAttribute>
+        static readonly ContentType CtTestType = new ContentType(AppId, 0, "TestType", attributes: new List<IContentTypeAttribute>
             {
                 ContentTypeAttribute(AppId, "FirstName", DataTypes.String, true, 0, 0),
                 ContentTypeAttribute(AppId, "LastName", DataTypes.String, false, 0, 0),
@@ -31,12 +29,10 @@ namespace ToSic.Eav.Core.Tests.Data
                 ContentTypeAttribute(AppId, "Age", DataTypes.Number, false, 0,0),
                 ContentTypeAttribute(AppId, "AnyDate", DataTypes.DateTime, false, 0,0)
             }
-        };
+        );
 
 
-        static readonly ContentType CtPet = new ContentType(AppId, "Pet")
-        {
-            Attributes = new List<IContentTypeAttribute>
+        static readonly ContentType CtPet = new ContentType(AppId, 0, "Pet", attributes: new List<IContentTypeAttribute>
             {
                 ContentTypeAttribute(AppId, "FirstName", DataTypes.String, true, 0, 0),
                 ContentTypeAttribute(AppId, "LastName", DataTypes.String, false, 0, 0),
@@ -44,7 +40,7 @@ namespace ToSic.Eav.Core.Tests.Data
                 ContentTypeAttribute(AppId, "Phone", DataTypes.String, false, 0, 0),
                 ContentTypeAttribute(AppId, "Age", DataTypes.Number, false, 0,0)
             }
-        };
+        );
 
         public IEntity TestEntityDaniel()
         {

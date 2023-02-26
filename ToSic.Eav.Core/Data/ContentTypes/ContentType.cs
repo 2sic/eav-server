@@ -2,10 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Shared;
-using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
@@ -35,7 +31,7 @@ namespace ToSic.Eav.Data
         public string StaticName => NameId;
 
         /// <inheritdoc />
-        public string NameId { get; private set; }
+        public string NameId { get; }
 
         // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
         ///// <inheritdoc />
@@ -43,7 +39,7 @@ namespace ToSic.Eav.Data
         //public string Description { get; private set; }
 
         /// <inheritdoc />
-        public string Scope { get; private set; }
+        public string Scope { get; }
 
         /// <inheritdoc />
         public int Id { get; internal set; }
@@ -53,16 +49,16 @@ namespace ToSic.Eav.Data
         public int ContentTypeId => Id;
 
         /// <inheritdoc />
-        public IList<IContentTypeAttribute> Attributes { get; set; }
+        public IList<IContentTypeAttribute> Attributes { get; }
 
         /// <inheritdoc />
-        public RepositoryTypes RepositoryType { get; internal set; } = RepositoryTypes.Sql;
+        public RepositoryTypes RepositoryType { get; internal set; }
 
         /// <inheritdoc />
         public string RepositoryAddress { get; internal set; } = "";
 
         /// <inheritdoc />
-        public bool IsDynamic { get; internal set; }
+        public bool IsDynamic { get; }
 
         #endregion
 
@@ -90,43 +86,60 @@ namespace ToSic.Eav.Data
 
         #region constructors
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Initializes a new ContentType - usually when building the cache
-        /// </summary>
-        [PrivateApi]
-        public ContentType(int appId,
-            string name,
-            string nameId,
-            int typeId,
-            string scope,
-            // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-            //string description = default, 
-            int? parentTypeId = default, 
-            int configZoneId = default, 
-            int configAppId = default,
-            bool alwaysShareConfig = default,
-            IList<IContentTypeAttribute> attributes = default,
-            Func<IHasMetadataSource> metaSourceFinder = default,
-            bool isDynamic = default): this(appId, name: name, nameId: nameId, scope: scope, alwaysShareConfiguration: alwaysShareConfig, attributes: attributes)
-        {
-            Id = typeId;
-            // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-            //Description = description;
+        ///// <inheritdoc />
+        ///// <summary>
+        ///// Initializes a new ContentType - usually when building the cache
+        ///// </summary>
+        //[PrivateApi]
+        //public ContentType(
+        //    int appId,
+        //    string name,
+        //    string nameId,
+        //    int typeId,
+        //    string scope,
 
-            // move to other constructor
-            //Scope = Scopes.RenameOldScope(scope);
-            //AlwaysShareConfiguration = alwaysShareConfig;
+        //    List<IDecorator<IContentType>> decorators,
+        //    ContentTypeMetadata ctMetadata,
+        //// #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+        ////string description = default,
 
-            if (parentTypeId != null)
-                Decorators.Add(new Ancestor<IContentType>(new AppIdentity(configZoneId, configAppId),
-                    parentTypeId.Value));
+        //    // Reference to original if it inherits something
+        //    //int? parentTypeId = default, 
+        //    //int configZoneId = default, 
+        //    //int configAppId = default,
 
-            // Metadata
-            _metaSourceFinder = metaSourceFinder;
+        //    // This is a shared type
+        //    bool alwaysShareConfig = default,
 
-            IsDynamic = isDynamic;
-        }
+        //    IList<IContentTypeAttribute> attributes = default,
+
+
+        //    //Func<IHasMetadataSource> metaSourceFinder = default,
+        //    bool isDynamic = default
+        //    ): this(appId, id: typeId, name: name, nameId: nameId, 
+        //    scope: scope, alwaysShareConfiguration: alwaysShareConfig,
+        //    attributes: attributes, isDynamic: isDynamic,
+        //    ctMetadata: ctMetadata, decorators: decorators)
+        //{
+        //    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+        //    //Description = description;
+
+        //    // move to other constructor
+        //    //Scope = Scopes.RenameOldScope(scope);
+        //    //AlwaysShareConfiguration = alwaysShareConfig;
+        //    //IsDynamic = isDynamic;
+
+        //    //Decorators = decorators ?? new List<IDecorator<IContentType>>();
+
+        //    //if (parentTypeId != null)
+        //    //    Decorators.Add(new Ancestor<IContentType>(new AppIdentity(configZoneId, configAppId),
+        //    //        parentTypeId.Value));
+
+        //    // Metadata
+        //    //_metaSourceFinder = metaSourceFinder;
+
+
+        //}
 
         /// <summary>
         /// Basic initializer of ContentType class
@@ -135,21 +148,36 @@ namespace ToSic.Eav.Data
         /// Overload for in-memory entities
         /// </remarks>
         [PrivateApi]
-        public ContentType(int appId,
+        public ContentType(
+            int appId,
+            int id,
             string name,
             string nameId = default,
             string scope = default,
             IList<IContentTypeAttribute> attributes = default,
-            bool alwaysShareConfiguration = default,
+            bool isAlwaysShared = default,
             bool? onSaveSortAttributes = default,
-            string onSaveUseParentStaticName = default
+            string onSaveUseParentStaticName = default,
+            RepositoryTypes repositoryType = RepositoryTypes.Sql,
+            bool isDynamic = default,
+            ContentTypeMetadata ctMetadata = default,
+            List<IDecorator<IContentType>> decorators = default
             )
         {
             AppId = appId;
+            Id = id;
+
             Name = name;
             NameId = nameId ?? name;
 
-            AlwaysShareConfiguration = alwaysShareConfiguration;
+            RepositoryType = repositoryType;
+
+            AlwaysShareConfiguration = isAlwaysShared;
+
+            IsDynamic = isDynamic;
+
+            Decorators = decorators ?? new List<IDecorator<IContentType>>();
+            Metadata = ctMetadata ?? new ContentTypeMetadata(NameId, null, Name);
 
             if (scope != default)
                 Scope = Scopes.RenameOldScope(scope);

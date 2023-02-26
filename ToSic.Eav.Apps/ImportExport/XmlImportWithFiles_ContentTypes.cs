@@ -118,13 +118,14 @@ namespace ToSic.Eav.Apps.ImportExport
             // create ContentType
             var ct = new ContentType(
                 appId: AppId,
+                id: 0,
                 name: typeName,
                 nameId: xmlContentType.Attribute(XmlConstants.Static).Value,
                 scope: xmlContentType.Attributes(XmlConstants.Scope).Any()
                     ? xmlContentType.Attribute(XmlConstants.Scope).Value
                     : base.Services.Environment.FallbackContentTypeScope,
                 attributes: attributes,
-                alwaysShareConfiguration: AllowUpdateOnSharedTypes && isSharedType,
+                isAlwaysShared: AllowUpdateOnSharedTypes && isSharedType,
                 onSaveSortAttributes: xmlContentType.Attributes(XmlConstants.SortAttributes).Any() &&
                                       bool.Parse(xmlContentType.Attribute(XmlConstants.SortAttributes).Value),
                 onSaveUseParentStaticName: xmlContentType.Attributes(XmlConstants.AttributeSetParentDef).Any()
