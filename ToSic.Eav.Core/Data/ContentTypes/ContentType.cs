@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 using static System.StringComparison;
 
 namespace ToSic.Eav.Data
@@ -66,6 +68,11 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public bool Is(string name) => Name.Equals(name, InvariantCultureIgnoreCase) || NameId.Equals(name, InvariantCultureIgnoreCase);
+        
+        [JsonIgnore]
+        [PrivateApi("new 15.04")]
+        public string TitleFieldName => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
+        private readonly GetOnce<string> _titleFieldName = new GetOnce<string>();
 
         /// <inheritdoc />
         public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => string.Equals(a.Name, fieldName, OrdinalIgnoreCase));
@@ -88,21 +95,27 @@ namespace ToSic.Eav.Data
         /// Initializes a new ContentType - usually when building the cache
         /// </summary>
         [PrivateApi]
-        public ContentType(int appId, string name, string nameId, int attributeSetId, string scope,
+        public ContentType(int appId,
+            string name,
+            string nameId,
+            int typeId,
+            string scope,
             // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
             //string description = default, 
-            int? parentTypeId = null, 
-            int configZoneId = 0, 
-            int configAppId = 0,
-            bool configurationIsOmnipresent = false,
-            Func<IHasMetadataSource> metaSourceFinder = null): this(appId, name, nameId)
+            int? parentTypeId = default, 
+            int configZoneId = default, 
+            int configAppId = default,
+            bool alwaysShareConfig = default,
+            IList<IContentTypeAttribute> attributes = default,
+            Func<IHasMetadataSource> metaSourceFinder = default,
+            bool isDynamic = default): this(appId, name: name, nameId: nameId, attributes: attributes)
         {
-            Id = attributeSetId;
+            Id = typeId;
             // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
             //Description = description;
             Scope = Scopes.RenameOldScope(scope);
 
-            AlwaysShareConfiguration = configurationIsOmnipresent;
+            AlwaysShareConfiguration = alwaysShareConfig;
 
             if (parentTypeId != null)
                 Decorators.Add(new Ancestor<IContentType>(new AppIdentity(configZoneId, configAppId),
@@ -110,6 +123,8 @@ namespace ToSic.Eav.Data
 
             // Metadata
             _metaSourceFinder = metaSourceFinder;
+
+            IsDynamic = isDynamic;
         }
 
         /// <summary>
@@ -119,11 +134,14 @@ namespace ToSic.Eav.Data
         /// Overload for in-memory entities
         /// </remarks>
         [PrivateApi]
-        public ContentType(int appId, string name, string nameId = null)
+        public ContentType(int appId, string name, string nameId = null, IList<IContentTypeAttribute> attributes = default)
         {
             AppId = appId;
             Name = name;
             NameId = nameId ?? name;
+
+            if (attributes != null)
+                Attributes = attributes;
         }
 
         #endregion

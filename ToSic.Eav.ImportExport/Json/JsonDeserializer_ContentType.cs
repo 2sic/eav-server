@@ -32,49 +32,56 @@ namespace ToSic.Eav.ImportExport.Json
 
         public IContentType ConvertContentType(JsonContentTypeSet json) => Log.Func(l =>
         {
+            var allEntities = new List<IEntity>();
+            // new in v1.2 2sxc 12
+            var relationshipsSource = AppPackageOrNull == null ? new DirectEntitiesSource(allEntities) : null;
+
+            IEntity ConvertPart(JsonEntity e) => Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
+
             try
             {
-                // new in v1.2 2sxc 12
-                var allEntities = new List<IEntity>();
-                var relationshipsSource = AppPackageOrNull == null ? new DirectEntitiesSource(allEntities) : null;
-
-                var directEntities = json.Entities?.Any() == true
-                    ? json.Entities.Select(e => Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource)).ToList()
-                    : new List<IEntity>();
-
+                var directEntities = json.Entities?.Select(ConvertPart).ToList() ?? new List<IEntity>();
                 allEntities.AddRange(directEntities);
 
-
+                // Verify that it has a Json ContentType
                 var jsonType = json.ContentType ?? throw new Exception("Tried to import JSON ContentType but JSON file didn't have any ContentType. Are you trying to import an Entity?");
 
-                var type = new ContentType(AppId, jsonType.Name, jsonType.Id, 0,
-                    jsonType.Scope,
+                // Prepare ContentType Attributes
+                l.A("deserialize attributes");
+                var attribs = jsonType.Attributes
+                    .Select((jsonAttr, pos) =>
+                    {
+                        var attDef = new ContentTypeAttribute(AppId, jsonAttr.Name, jsonAttr.Type, jsonAttr.IsTitle, 0, pos);
+                        var mdEntities = jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
+                        allEntities.AddRange(mdEntities);
+                        ((IMetadataInternals)attDef.Metadata).Use(mdEntities);
+                        return (IContentTypeAttribute)attDef;
+                    })
+                    .ToList();
+
+                // Prepare Content-Type Metadata
+                l.A("deserialize metadata");
+                var ctMeta = jsonType.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
+                allEntities.AddRange(ctMeta);
+
+                // Create the Content Type
+                var type = new ContentType(
+                    appId: AppId, 
+                    name: jsonType.Name,
+                    nameId: jsonType.Id,
+                    typeId: 0,
+                    scope: jsonType.Scope,
                     // #RemoveContentTypeDescription #2974 - #remove 2023 Q2 if all works
                     //jsonType.Description,
-                    jsonType.Sharing?.ParentId,
-                    jsonType.Sharing?.ParentZoneId ?? 0,
-                    jsonType.Sharing?.ParentAppId ?? 0,
-                    jsonType.Sharing?.AlwaysShare ?? false);
+                    parentTypeId: jsonType.Sharing?.ParentId,
+                    configZoneId: jsonType.Sharing?.ParentZoneId ?? 0,
+                    configAppId: jsonType.Sharing?.ParentAppId ?? 0,
+                    alwaysShareConfig: jsonType.Sharing?.AlwaysShare ?? false, 
+                    attributes: attribs);
 
-                l.A("deserialize metadata");
-                var ctMeta =
-                    jsonType.Metadata?.Select(je => Deserialize(je, AssumeUnknownTypesAreDynamic, false, relationshipsSource)).ToList()
-                    ?? new List<IEntity>();
-                allEntities.AddRange(ctMeta);
                 type.Metadata.Use(ctMeta);
 
-                l.A("deserialize attributes");
-                var attribs = jsonType.Attributes.Select((attr, pos) =>
-                {
-                    var attDef = new ContentTypeAttribute(AppId, attr.Name, attr.Type, attr.IsTitle, 0, pos);
-                    var mdEntities = attr.Metadata?.Select(m => Deserialize(m, AssumeUnknownTypesAreDynamic, false, relationshipsSource)).ToList() ??
-                             new List<IEntity>();
-                    allEntities.AddRange(mdEntities);
-                    ((IMetadataInternals)attDef.Metadata).Use(mdEntities);
-                    return (IContentTypeAttribute)attDef;
-                }).ToList();
-
-                type.Attributes = attribs;
+                //type.Attributes = attribs;
 
                 // new in 1.2 2sxc v12 - build relation relationships manager
                 return (type, $"converted {type.Name} with {attribs.Count} attributes");

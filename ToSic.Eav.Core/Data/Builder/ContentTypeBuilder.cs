@@ -18,11 +18,9 @@ namespace ToSic.Eav.Data.Builder
 
         public IContentType Transient(int appId, string typeName, string nameId, string scope = null)
             // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-            => new ContentType(appId, typeName, nameId, DynTypeId, scope ?? Scopes.System/*, DynTypeDefDescription*/)
-            {
-                Attributes = new List<IContentTypeAttribute>(),
-                IsDynamic = true
-            };
+            => new ContentType(appId: appId, name: typeName, nameId: nameId, typeId: DynTypeId,
+                scope: scope ?? Scopes.System /*, DynTypeDefDescription*/,
+                attributes: new List<IContentTypeAttribute>(), isDynamic: true);
 
     }
 }

@@ -47,11 +47,7 @@ namespace ToSic.Eav.Data
         [Obsolete("Deprecated in V13, please use Id instead.")]
         public int ContentTypeId => UnwrappedContents.Id;
 
-        public IList<IContentTypeAttribute> Attributes
-        {
-            get => UnwrappedContents.Attributes;
-            set => UnwrappedContents.Attributes = value;
-        }
+        public IList<IContentTypeAttribute> Attributes => UnwrappedContents.Attributes;
 
         public IContentTypeAttribute this[string fieldName] => UnwrappedContents[fieldName];
 
@@ -64,6 +60,9 @@ namespace ToSic.Eav.Data
         public ContentTypeMetadata Metadata => UnwrappedContents.Metadata;
 
         public bool Is(string name) => UnwrappedContents.Is(name);
+
+
+        //public string TitleFieldName => UnwrappedContents.TitleFieldName;
 
         public string DynamicChildrenField => UnwrappedContents.DynamicChildrenField;
 
