@@ -16,21 +16,26 @@ namespace ToSic.Eav.Data
         public int AppId { get; }
 
         /// <inheritdoc />
-        public int AttributeId { get; set; }
+        public int AttributeId { get; }
 
         /// <inheritdoc />
-        public int SortOrder { get; internal set; }
+        public int SortOrder { get; }
 
         /// <inheritdoc />
-        public bool IsTitle { get; set; }
+        public bool IsTitle { get; }
 
         /// <inheritdoc />
         /// <summary>
         /// Extended constructor when also storing the persistence Id
         /// </summary>
         // TODO: clean up call to this function, as 2 params are not used
-        public ContentTypeAttribute(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder, 
-            IHasMetadataSource metaProvider = null, int parentApp = 0, 
+        public ContentTypeAttribute(int appId,
+            string name,
+            string type,
+            bool isTitle,
+            int attributeId,
+            int sortOrder, 
+            //IHasMetadataSource metaProvider = null, int parentApp = 0, 
             Func<IHasMetadataSource> metaSourceFinder = null) : base(name, type)
         {
             AppId = appId;
@@ -44,9 +49,11 @@ namespace ToSic.Eav.Data
         /// Create an attribute definition "from scratch" so for
         /// import-scenarios and code-created attribute definitions
         /// </summary>
-        public ContentTypeAttribute(int appId, string name, string type, List<IEntity> attributeMetadata)
-            : this(appId, name, type, false, 0, 0)
-            => MetadataInternal.Use(attributeMetadata);
+        public ContentTypeAttribute(int appId, string name, string type, bool isTitle, List<IEntity> attributeMetadata)
+            : this(appId, name, type, isTitle, 0, 0)
+        {
+            MetadataInternal.Use(attributeMetadata);
+        }
 
 
         #region Metadata and Permissions

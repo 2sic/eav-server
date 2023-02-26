@@ -92,20 +92,20 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .ToList() // important because it otherwise has problems with the next step...
                 .Max(s => (int?) s.SortOrder);
 
-            contentTypeAttribute.SetSortOrder(maxIndex + 1 ?? 0);
+            //contentTypeAttribute.SetSortOrder(maxIndex + 1 ?? 0);
 
-            return AddAttributeAndSave(attributeSetId, contentTypeAttribute);
+            return AddAttributeAndSave(attributeSetId, contentTypeAttribute, maxIndex + 1 ?? 0);
         }
         
         /// <summary>
         /// Append a new Attribute to an AttributeSet
         /// </summary>
-        public int AddAttributeAndSave(int attributeSetId, ContentTypeAttribute contentTypeAttribute)
+        public int AddAttributeAndSave(int attributeSetId, ContentTypeAttribute contentTypeAttribute, int? newSortOrder = default)
         {
             var staticName = contentTypeAttribute.Name;
             var type = contentTypeAttribute.Type;
             var isTitle = contentTypeAttribute.IsTitle;
-            var sortOrder = contentTypeAttribute.SortOrder;
+            var sortOrder = newSortOrder ?? contentTypeAttribute.SortOrder;
 
             var attributeSet = DbContext.AttribSet.GetDbAttribSet(attributeSetId);
 

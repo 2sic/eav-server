@@ -108,7 +108,7 @@ namespace ToSic.Eav.Persistence.Efc
                     Attributes = set.ToSicEavAttributesInSets
                         .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
                         .Select(a => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type,
-                            a.IsTitle, a.AttributeId, a.SortOrder, source, metaSourceFinder: () => source)),
+                            a.IsTitle, a.AttributeId, a.SortOrder, /*source,*/ metaSourceFinder: () => source)),
                     IsGhost = set.UsesConfigurationOfAttributeSet,
                     SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                     AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
@@ -131,7 +131,7 @@ namespace ToSic.Eav.Persistence.Efc
                     s => s.AttributeSetId,
                     s => s.ToSicEavAttributesInSets.Select(a
                         => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
-                            a.AttributeId, a.SortOrder, parentApp: s.AppId,
+                            a.AttributeId, a.SortOrder, // parentApp: s.AppId,
                             metaSourceFinder: () => _appStates.Get(s.AppId))));// Must get own MetaSourceFinder since they come from other apps
             sqlTime.Stop();
 

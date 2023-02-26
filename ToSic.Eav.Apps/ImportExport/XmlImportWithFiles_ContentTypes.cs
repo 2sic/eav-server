@@ -45,11 +45,45 @@ namespace ToSic.Eav.Apps.ImportExport
 	        var attributes = new List<IContentTypeAttribute>();
             if (ctElement != null)
             {
-                foreach (var xmlField in ctElement.Elements(XmlConstants.Attribute))
+                // Figure out which one is the title
+                var set = ctElement.Elements(XmlConstants.Attribute).Select(xmlField =>
                 {
+                    if (!bool.Parse(xmlField.Attribute(XmlConstants.IsTitle).Value))
+                        return new
+                        {
+                            XmlElement = xmlField,
+                            IsTitle = false
+                        };
+
+                    Log.A("set title on this attribute");
+                    return new
+                    {
+                        XmlElement = xmlField,
+                        IsTitle = true
+                    };
+                }).ToList();
+
+                // If neither is the title, make sure the first one is
+                if (set.Any() && !set.Any(a => a.IsTitle))
+                    set = set.Select((s, i) => i == 0 ? new { s.XmlElement, IsTitle = true } : s).ToList();
+
+
+                foreach (var s in set) // ctElement.Elements(XmlConstants.Attribute))
+                {
+                    var xmlField = s.XmlElement;
                     var name = xmlField.Attribute(XmlConstants.Static).Value;
                     var fieldTypeName = xmlField.Attribute(XmlConstants.EntityTypeAttribute).Value;
-                    var attribute = new ContentTypeAttribute(AppId, name, fieldTypeName, attributeMetadata: new List<IEntity>
+
+                    //// Set Title Attribute
+                    //var isTitle = false;
+                    //if (bool.Parse(xmlField.Attribute(XmlConstants.IsTitle).Value))
+                    //{
+                    //    Log.A("set title on this attribute");
+                    //    isTitle = true;
+                    //}
+
+                    var attribute = new ContentTypeAttribute(AppId, name, fieldTypeName, s.IsTitle,
+                        attributeMetadata: new List<IEntity>
                         {
                             base.Services.CtAttribBuilder.Value.GenerateAttributeMetadata(AppId, null, null, null,
                                 string.Empty, null)
@@ -60,17 +94,11 @@ namespace ToSic.Eav.Apps.ImportExport
 
                     Log.A($"Attribute: {name} ({fieldTypeName}) with {md.Count} metadata items");
 
-                    // Set Title Attribute
-                    if (bool.Parse(xmlField.Attribute(XmlConstants.IsTitle).Value))
-                    {
-                        Log.A("set title on this attribute");
-                        attribute.IsTitle = true;
-                    }
                 }
 
-                // check if it's normal (not a ghost) but still missing a title
-                if (attributes.Any() && !attributes.Any(a => a.IsTitle))
-                    (attributes.First() as ContentTypeAttribute).IsTitle = true;
+                //// check if it's normal (not a ghost) but still missing a title
+                //if (attributes.Any() && !attributes.Any(a => a.IsTitle))
+                //    (attributes.First() as ContentTypeAttribute).IsTitle = true;
             }
 
             
