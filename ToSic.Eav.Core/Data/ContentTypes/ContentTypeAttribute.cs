@@ -35,7 +35,6 @@ namespace ToSic.Eav.Data
             bool isTitle,
             int attributeId,
             int sortOrder, 
-            //IHasMetadataSource metaProvider = null, int parentApp = 0, 
             Func<IHasMetadataSource> metaSourceFinder = null) : base(name, type)
         {
             AppId = appId;

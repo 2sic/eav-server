@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Logging;
 
@@ -92,8 +91,6 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .ToList() // important because it otherwise has problems with the next step...
                 .Max(s => (int?) s.SortOrder);
 
-            //contentTypeAttribute.SetSortOrder(maxIndex + 1 ?? 0);
-
             return AddAttributeAndSave(attributeSetId, contentTypeAttribute, maxIndex + 1 ?? 0);
         }
         
@@ -127,7 +124,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 Attribute = newAttribute,
                 AttributeSet = attributeSet,
                 SortOrder = sortOrder,
-                AttributeGroupId = 1, //attributeGroupId,
+                AttributeGroupId = 1,
                 IsTitle = isTitle
             };
             DbContext.SqlDb.Add(newAttribute);
