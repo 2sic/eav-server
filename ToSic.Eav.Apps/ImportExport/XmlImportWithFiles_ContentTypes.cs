@@ -72,9 +72,8 @@ namespace ToSic.Eav.Apps.ImportExport
             }
 
             // create ContentType
-	        var ct = new ContentType(AppId, typeName)
+	        var ct = new ContentType(AppId, typeName, attributes: attributes)
 	        {
-	            Attributes = attributes,
 	            OnSaveUseParentStaticName = xmlContentType.Attributes(XmlConstants.AttributeSetParentDef).Any()
 	                ? xmlContentType.Attribute(XmlConstants.AttributeSetParentDef).Value
 	                : "",
