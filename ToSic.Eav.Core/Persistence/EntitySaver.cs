@@ -117,8 +117,8 @@ namespace ToSic.Eav.Persistence
                         ? MergeAttribute(mergedAttribs[newAttrib.Key], newAttrib.Value, saveOptions)
                         : newAttrib.Value;
 
-            var result = _multiBuilder.Entity.Clone(idProvidingEntity, newValues: mergedAttribs);
-            CorrectPublishedAndGuidImports(result, logDetails);
+            var clone = _multiBuilder.Entity.Clone(idProvidingEntity, newValues: mergedAttribs);
+            var result = CorrectPublishedAndGuidImports(clone, logDetails) as Entity;
             return callLog?.ReturnAsOk(result) ?? result;
         }
 
@@ -249,34 +249,40 @@ namespace ToSic.Eav.Persistence
             return callLog.Return(result, $"{result.Count}");
         }
 
-        private bool CorrectPublishedAndGuidImports(Entity newE,  bool logDetails)
+        private IEntity CorrectPublishedAndGuidImports(IEntity newE, bool logDetails) => Log.Func(enabled: logDetails, func: l =>
         {
-            var callLog = logDetails ? Log.Fn<bool>() : null;
             // check IsPublished
             var isPublished = newE.Value(Attributes.EntityFieldIsPublished);
+            bool? newIsPublished = null;
             if (isPublished != null)
             {
-                Log.A("Found property for published, will move");
+                l.A("Found property for published, will move");
                 newE.Attributes.Remove(Attributes.EntityFieldIsPublished);
 
-                if(isPublished is bool b)
-                    newE.IsPublished = b;
+                if (isPublished is bool b)
+                    newIsPublished = b;
+                //newE.IsPublished = b;
                 else if (isPublished is string sPublished && bool.TryParse(sPublished, out var boolPublished))
-                    newE.IsPublished = boolPublished;
+                    newIsPublished = boolPublished;
+                    //newE.IsPublished = boolPublished;
             }
 
             // check EntityGuid
             var probablyGuid = newE.Value(Attributes.EntityFieldGuid);
+            Guid? newGuid = null;
             if (probablyGuid != null)
             {
-                Log.A("Found property for published, will move");
+                l.A("Found property for published, will move");
                 newE.Attributes.Remove(Attributes.EntityFieldGuid);
                 if (Guid.TryParse(probablyGuid.ToString(), out var eGuid))
-                    newE.SetGuid(eGuid);
+                    newGuid = eGuid;
+                    //newE.SetGuid(eGuid);
             }
 
-            return callLog.ReturnTrue("ok");
-        }
+            var cloned = _multiBuilder.Entity.ResetIdentifiers(newE, newGuid: newGuid, isPublished: newIsPublished);
+
+            return (cloned, "ok");
+        });
 
     }
     

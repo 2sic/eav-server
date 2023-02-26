@@ -105,12 +105,6 @@ namespace ToSic.Eav.Data.Builder
                 metadataFor: metadataFor,
                 partsBuilder: partsBuilder
             );
-            //var e = EntityWithAllIdsAndType(appId, entityGuid, entityId, repositoryId,
-            //    type, isPublished, created, modified, owner, version, values: values, titleField: titleField);
-
-            //e.MetadataFor = metadataFor;
-
-            //e.Relationships = new RelationshipManager(e, source, null);
 
             e.DeferredLookupData = source;
 
@@ -130,35 +124,8 @@ namespace ToSic.Eav.Data.Builder
                 values: null, typedValues: specs.All,
                 created: DateTime.MinValue, modified: DateTime.Now, 
                 owner: "");
-            //var ent = EntityWithAllIdsAndType(appId, entityGuid, entityId, entityId, 
-            //    type, true, DateTime.MinValue, DateTime.Now, "", 1,
-            //    values: specs.All, titleField: specs.Title);
 
-            //ent.MetadataFor = new Target();
-
-            //return ent;
         }
-
-        //private Entity EntityWithAllIdsAndType(int appId, Guid entityGuid, int entityId,
-        //    int repositoryId, IContentType type, bool isPublished,
-        //    DateTime created,
-        //    DateTime modified, string owner, int version, 
-        //    Dictionary<string, IAttribute> values = default,
-        //    string titleField = default) =>
-        //    Create(appId: appId,
-        //        values: null,
-        //        typedValues: values, 
-        //        entityId: entityId,
-        //        version: version,
-        //        guid: entityGuid,
-        //        contentType: type,
-        //        isPublished: isPublished,
-        //        repositoryId: repositoryId,
-        //        created: created,
-        //        modified: modified,
-        //        owner: owner,
-        //        titleField: titleField
-        //    );
 
         /// <summary>
         /// Create a new Entity based on an Entity and Attributes
@@ -195,18 +162,46 @@ namespace ToSic.Eav.Data.Builder
                 metadataFor: new Target(entity.MetadataFor),
                 partsBuilder: entityPartsBuilder
             );
-            //var e = EntityWithAllIdsAndType(entity.AppId, entity.EntityGuid, entity.EntityId, entity.RepositoryId, targetType, 
-            //    entity.IsPublished, entity.Created, entity.Modified, entity.Owner, entity.Version, attributes);
-            //e.TitleFieldName = entity.Title?.Name;
-            //e.MetadataFor = new Metadata.Target(entity.MetadataFor);
 
             var lookupApp = (entity as Entity)?.DeferredLookupData as AppState;
-            //e.Relationships = new RelationshipManager(e, lookupApp, entityRelationshipsIfNoApp);
-
-
             e.DeferredLookupData = lookupApp;
             return e;
         }
+
+
+        #region Entity Pre-Save - TODO WIP 
+        // 1. first make sure all the calls are here, and return the _same_ entity
+        // 2. Then make sure the caller always uses the result, not the original entity
+        // 3. Then enforce cloning
+
+        public IEntity ResetIdentifiers(IEntity entity,
+            string noParamOrder = Eav.Parameters.Protector,
+            Guid? newGuid = default,
+            int? newId = default,
+            ITarget metadataFor = default,
+            bool? isPublished = default,
+            bool? placeDraftInBranch = default)
+        {
+            var editable = ((Entity)entity); // todo: clone
+            if (newGuid != null) 
+                editable.EntityGuid = newGuid.Value;
+            if (newId != null)
+            {
+                editable.EntityId = newId.Value;
+                editable.RepositoryId = newId.Value;//note: this was not in before, could cause side-effects
+            }
+
+            if (isPublished != null) editable.IsPublished = isPublished.Value;
+            if (placeDraftInBranch != null) editable.PlaceDraftInBranch = placeDraftInBranch.Value;
+
+            if (metadataFor != default)
+                editable.MetadataFor = metadataFor;
+
+            return entity;
+        }
+
+        #endregion
+
 
         // WIP - when done move elsewhere and probably rename
         public enum CloneRelationships

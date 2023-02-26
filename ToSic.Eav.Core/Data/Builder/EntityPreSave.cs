@@ -11,14 +11,14 @@ namespace ToSic.Eav.Data.Builder
     /// </summary>
     public static class EntityPreSave
     {
-        public static void SetGuid(this IEntity entity, Guid newGuid) => ((EntityLight) entity).EntityGuid = newGuid;
+        //public static void SetGuid(this IEntity entity, Guid newGuid) => ((EntityLight) entity).EntityGuid = newGuid;
 
         public static void SetTitleField(this Entity entity, string name) => entity.TitleFieldName = name;
 
         public static void SetMetadata(this Entity entity, ITarget meta) => entity.MetadataFor = meta;
 
-        public static void Retarget(this Entity entity, Guid newTarget)
-            => entity.SetMetadata(new Metadata.Target(entity.MetadataFor) {KeyGuid = newTarget});
+        //public static void Retarget(this Entity entity, Guid newTarget)
+        //    => entity.SetMetadata(new Metadata.Target(entity.MetadataFor, keyGuid: newTarget));
 
         public static void UpdateType(this Entity entity, IContentType newType, bool updateTitleField = false)
         {

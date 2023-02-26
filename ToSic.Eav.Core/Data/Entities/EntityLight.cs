@@ -29,7 +29,7 @@ namespace ToSic.Eav.Data
 
         [JsonIgnore]
         [PrivateApi]
-        internal string TitleFieldName;
+        internal string TitleFieldName { get; set; }
 
         /// <summary>
         /// List of all attributes in light-mode - single language, simple.

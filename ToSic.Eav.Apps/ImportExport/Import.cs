@@ -22,6 +22,7 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public class Import: ServiceBase
     {
+        private readonly EntityBuilder _entityBuilder;
         private const int ChunkLimitToStartChunking = 2500;
         private const int ChunkSizeAboveLimit = 500;
 
@@ -29,13 +30,15 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public Import(LazySvc<AppManager> appManagerLazy, 
             IImportExportEnvironment importExportEnvironment,
-            LazySvc<EntitySaver> entitySaverLazy
+            LazySvc<EntitySaver> entitySaverLazy,
+            EntityBuilder entityBuilder
             ) : base("Eav.Import")
         {
             ConnectServices(
                 _appManagerLazy = appManagerLazy,
                 _importExportEnvironment = importExportEnvironment,
-                _entitySaver = entitySaverLazy
+                _entitySaver = entitySaverLazy,
+                _entityBuilder = entityBuilder
             );
         }
         private readonly LazySvc<AppManager> _appManagerLazy;
@@ -246,10 +249,11 @@ namespace ToSic.Eav.Apps.ImportExport
             IEntity metadataToUse;
             if (existingMetadata == null)
             {
-                metadataToUse = newMd;
+                //metadataToUse = newMd;
                 // Important to reset, otherwise the save process assumes it already exists in the DB
-                metadataToUse.ResetEntityId();
-                metadataToUse.SetGuid(Guid.NewGuid());
+                metadataToUse = _entityBuilder.ResetIdentifiers(newMd, newGuid: Guid.NewGuid(), newId: 0);
+                //metadataToUse.ResetEntityId();
+                //metadataToUse.SetGuid(Guid.NewGuid());
             }
             else
                 metadataToUse = _entitySaver.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);

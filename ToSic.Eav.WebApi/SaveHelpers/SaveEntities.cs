@@ -12,34 +12,47 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.SaveHelpers
 {
-    public class SaveEntities: HelperBase
+    public class SaveEntities: ServiceBase
     {
-        public SaveEntities(ILog parentLog) : base(parentLog, "Eav.SavHlp") {}
+        private readonly EntityBuilder _entityBuilder;
+        public SaveEntities(EntityBuilder entityBuilder) : base("Eav.SavHlp")
+        {
+            ConnectServices(
+                _entityBuilder = entityBuilder
+            );
+        }
 
 
-        public void UpdateGuidAndPublishedAndSaveMany(AppManager appMan, List<BundleWithHeader<IEntity>> itemsToImport,
+        public void UpdateGuidAndPublishedAndSaveMany(AppManager initializedAppMan, List<BundleWithHeader<IEntity>> itemsToImport,
             bool enforceDraft
         ) => Log.Do(l =>
         {
-            foreach (var bundle in itemsToImport)
-            {
-                var curEntity = (Entity)bundle.Entity;
-                curEntity.SetGuid(bundle.Header.Guid);
-                if (enforceDraft)
-                    EnforceDraft(curEntity);
-            }
+            //foreach (var bundle in itemsToImport)
+            //{
+            //    var curEntity = (Entity)bundle.Entity;
+            //    curEntity.SetGuid(bundle.Header.Guid);
+            //    if (enforceDraft)
+            //        EnforceDraft(curEntity);
+            //}
 
-            var entitiesToImport = itemsToImport.Select(e => e.Entity).ToList();
+            var entitiesToImport = itemsToImport
+                // TODO: NOTE: here a clone should work
+                .Select(bundle => _entityBuilder.ResetIdentifiers(bundle.Entity,
+                    newGuid: bundle.Header.Guid,
+                    isPublished: enforceDraft ? (bool?)false : null,
+                    placeDraftInBranch: enforceDraft ? (bool?)true : null)
+                )
+                .ToList();
 
-            l.A("will save " + entitiesToImport.Count + " items");
-            appMan.Entities.Save(entitiesToImport);
+            l.A($"will save {entitiesToImport.Count} items");
+            initializedAppMan.Entities.Save(entitiesToImport);
         });
 
-        private void EnforceDraft(Entity currEntity) => Log.Do($"will set published/isbranch on {currEntity.EntityGuid}", () =>
-        {
-            currEntity.IsPublished = false;
-            currEntity.PlaceDraftInBranch = true;
-        });
+        //private void EnforceDraft(Entity currEntity) => Log.Do($"will set published/isbranch on {currEntity.EntityGuid}", () =>
+        //{
+        //    currEntity.IsPublished = false;
+        //    currEntity.PlaceDraftInBranch = true;
+        //});
 
         /// <summary>
         /// Generate pairs of guid/id of the newly added items

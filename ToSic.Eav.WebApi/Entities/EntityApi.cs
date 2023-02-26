@@ -95,16 +95,20 @@ namespace ToSic.Eav.WebApi
 
             // make sure the header has the right "new" guid as well - as this is the primary one to work with
             // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
-            var itemsToCorrect = list.Where(i => i.Header.Guid == Guid.Empty).ToArray(); // must do toArray, to prevent re-checking after setting the guid
-            foreach (var bundle in itemsToCorrect)
+            var itemsWithEmptyHeaderGuid = list
+                .Where(i => i.Header.Guid == default)
+                .ToArray(); // must do toArray, to prevent re-checking after setting the guid
+
+            foreach (var bundle in itemsWithEmptyHeaderGuid)
             {
                 var hasEntity = bundle.Entity != null;
-                var useExistingGuid = hasEntity && bundle.Entity.EntityGuid != Guid.Empty;
-                bundle.Header.Guid = useExistingGuid
+                var useEntityGuid = hasEntity && bundle.Entity.EntityGuid != default;
+                bundle.Header.Guid = useEntityGuid
                     ? bundle.Entity.EntityGuid
                     : Guid.NewGuid();
-                if (hasEntity && !useExistingGuid)
-                    (bundle.Entity as Entity).SetGuid(bundle.Header.Guid);
+                if (hasEntity && !useEntityGuid)
+                    bundle.Entity = _entityBuilder.ResetIdentifiers(bundle.Entity, newGuid: bundle.Header.Guid);
+                //(bundle.Entity as Entity).SetGuid(bundle.Header.Guid);
             }
 
             // Update header with ContentTypeName in case it wasn't there before
@@ -122,9 +126,10 @@ namespace ToSic.Eav.WebApi
         private IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
         {
             var found = AppRead.AppState.List.GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
-            // if there is a draft, only allow editing that
+            // if there is a draft, use that for editing - not the original
             found = found.GetDraft() ?? found;
 
+            // If we want the original (not a copy for new) then stop here
             if (!p.DuplicateEntity.HasValue) return found;
 
             // TODO: 2023-02-25 seems that EntityId is reset, but RepositoryId isn't - not sure why or if this is correct

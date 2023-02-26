@@ -45,12 +45,12 @@ namespace ToSic.Eav.Metadata
         /// </summary>
         /// <param name="originalToCopy"></param>
         [PrivateApi("not sure if this should be public, since we don't have a proper cloning standard")]
-        public Target(ITarget originalToCopy)
+        public Target(ITarget originalToCopy, Guid? keyGuid = default)
         {
             TargetType = originalToCopy.TargetType;
             KeyString = originalToCopy.KeyString;
             KeyNumber = originalToCopy.KeyNumber;
-            KeyGuid = originalToCopy.KeyGuid;
+            KeyGuid = keyGuid ?? originalToCopy.KeyGuid;
             Title = originalToCopy.Title;
         }
 

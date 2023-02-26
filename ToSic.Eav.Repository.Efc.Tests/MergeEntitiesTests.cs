@@ -47,7 +47,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             return new ContentTypeAttribute(appId, firstName, dataType, isTitle, attId, index);
         }
 
-        ContentType _ctPerson = new ContentType(AppId, "Person") {Attributes = new List<IContentTypeAttribute>
+        ContentType _ctPerson = new ContentType(AppId, 0, "Person", attributes: new List<IContentTypeAttribute>
         {
             ContentTypeAttribute(AppId, "FullName", "String", true, 0, 0),
             ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             ContentTypeAttribute(AppId, "Birthday", "DateTime", true, 0, 0),
             ContentTypeAttribute(AppId, "Husband", "String", true, 0, 0),
             ContentTypeAttribute(AppId, "UnusedField", "String", true, 0,0)
-        }};
+        });
         Entity _origENull = null;
 
         private Entity GirlSingle => Builder.Entity.TestCreate(appId: AppId, entityId: 999, contentType: _ctPerson, values: new Dictionary<string, object>
@@ -133,15 +133,13 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         #region Test Data ML
 
-        private readonly IContentType _ctMlProduct = new ContentType(-1, "Product")
-        {
-            Attributes = new List<IContentTypeAttribute>
+        private readonly IContentType _ctMlProduct = new ContentType(-1, 0, "Product", attributes: new List<IContentTypeAttribute>
             {
                 ContentTypeAttribute(AppId, Attributes.TitleNiceName, "String", true, 0, 0),
                 ContentTypeAttribute(AppId, "Teaser", "String", false, 0, 0),
                 ContentTypeAttribute(AppId, "Image", "Hyperlink", false, 0, 0),
             }
-        };
+        );
 
         private readonly Entity _prodNull = null;
         private Entity ProdNoLang => Builder.Entity.TestCreate(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new Dictionary<string, object>
