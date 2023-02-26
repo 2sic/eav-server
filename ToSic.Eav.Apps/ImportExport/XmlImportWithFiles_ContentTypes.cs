@@ -15,24 +15,26 @@ namespace ToSic.Eav.Apps.ImportExport
     public partial class XmlImportWithFiles
     {
 
-		private List<IContentType> GetImportContentTypes(IEnumerable<XElement> xmlContentTypes)
-		{
-            var wrap = Log.Fn<List<IContentType>>();
-            var list = xmlContentTypes.ToList();
-            Log.A($"items: {list.Count}");
+        private List<IContentType> GetImportContentTypes(IReadOnlyCollection<XElement> list) => Log.Func($"items: {list.Count}", () =>
+        {
+            //var list = xmlContentTypes.ToList();
+            //Log.A($"items: {list.Count}");
+            //var importTypes = new List<IContentType>();
+            //foreach (var contentType in list)
+            //{
+            //    var ct = BuildContentTypeFromXml(contentType);
+            //    if (ct != null)
+            //        importTypes.Add(ct);
+            //}
 
-            var importAttributeSets = new List<IContentType>();
+            // Loop through AttributeSets
+            var importTypes = list
+                .Select(BuildContentTypeFromXml)
+                .Where(t => t != null)
+                .ToList();
 
-			// Loop through AttributeSets
-			foreach (var attributeSet in list)
-			{
-			    var ct = BuildContentTypeFromXml(attributeSet);
-                if (ct != null)
-                    importAttributeSets.Add(ct);
-            }
-
-		    return wrap.Return(importAttributeSets, $"found {importAttributeSets.Count}");
-        }
+            return (importTypes, $"found {importTypes.Count}");
+        });
 
 	    private IContentType BuildContentTypeFromXml(XElement xmlContentType)
 	    {
@@ -71,17 +73,9 @@ namespace ToSic.Eav.Apps.ImportExport
                     (attributes.First() as ContentTypeAttribute).IsTitle = true;
             }
 
-            // create ContentType
-	        var ct = new ContentType(AppId, typeName, attributes: attributes)
-	        {
-	            OnSaveUseParentStaticName = xmlContentType.Attributes(XmlConstants.AttributeSetParentDef).Any()
-	                ? xmlContentType.Attribute(XmlConstants.AttributeSetParentDef).Value
-	                : "",
-	            OnSaveSortAttributes = xmlContentType.Attributes(XmlConstants.SortAttributes).Any() &&
-	                                   bool.Parse(xmlContentType.Attribute(XmlConstants.SortAttributes).Value)
-	        };
-
+            
             #region check for shared type and if it's allowed
+
             var isSharedType = xmlContentType.Attributes(XmlConstants.AlwaysShareConfig).Any() &&
                            bool.Parse(xmlContentType.Attribute(XmlConstants.AlwaysShareConfig).Value);
 
@@ -90,17 +84,36 @@ namespace ToSic.Eav.Apps.ImportExport
                 Log.A("trying to update a shared type, but not allowed");
                 return wrapLog.ReturnNull("error"); 
             }
-            #endregion
 
-            ct.SetImportParameters(
-	            scope: xmlContentType.Attributes(XmlConstants.Scope).Any()
-	                ? xmlContentType.Attribute(XmlConstants.Scope).Value
-	                : base.Services.Environment.FallbackContentTypeScope,
-	            nameId: xmlContentType.Attribute(XmlConstants.Static).Value,
-                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                // description: xmlContentType.Attribute(XmlConstants.Description).Value,
-	            AllowUpdateOnSharedTypes && isSharedType
+            #endregion
+            
+            // create ContentType
+            var ct = new ContentType(
+                appId: AppId,
+                name: typeName,
+                nameId: xmlContentType.Attribute(XmlConstants.Static).Value,
+                scope: xmlContentType.Attributes(XmlConstants.Scope).Any()
+                    ? xmlContentType.Attribute(XmlConstants.Scope).Value
+                    : base.Services.Environment.FallbackContentTypeScope,
+                attributes: attributes,
+                alwaysShareConfiguration: AllowUpdateOnSharedTypes && isSharedType,
+                onSaveSortAttributes: xmlContentType.Attributes(XmlConstants.SortAttributes).Any() &&
+                                      bool.Parse(xmlContentType.Attribute(XmlConstants.SortAttributes).Value),
+                onSaveUseParentStaticName: xmlContentType.Attributes(XmlConstants.AttributeSetParentDef).Any()
+	                ? xmlContentType.Attribute(XmlConstants.AttributeSetParentDef).Value
+	                : ""
 	        );
+
+
+         //   ct.SetImportParameters(
+	        //    scope: xmlContentType.Attributes(XmlConstants.Scope).Any()
+	        //        ? xmlContentType.Attribute(XmlConstants.Scope).Value
+	        //        : base.Services.Environment.FallbackContentTypeScope,
+	        //    nameId: xmlContentType.Attribute(XmlConstants.Static).Value,
+         //       // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+         //       // description: xmlContentType.Attribute(XmlConstants.Description).Value,
+	        //    AllowUpdateOnSharedTypes && isSharedType
+	        //);
 	        return wrapLog.ReturnAsOk(ct);
         }
 

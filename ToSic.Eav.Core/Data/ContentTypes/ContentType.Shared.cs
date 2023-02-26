@@ -11,7 +11,7 @@
         ///// <inheritdoc />
         //public int ParentZoneId { get; }
         /// <inheritdoc />
-        public bool AlwaysShareConfiguration { get; private set; }
+        public bool AlwaysShareConfiguration { get; }
 
         #endregion
     }

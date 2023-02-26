@@ -108,14 +108,15 @@ namespace ToSic.Eav.Data
             bool alwaysShareConfig = default,
             IList<IContentTypeAttribute> attributes = default,
             Func<IHasMetadataSource> metaSourceFinder = default,
-            bool isDynamic = default): this(appId, name: name, nameId: nameId, attributes: attributes)
+            bool isDynamic = default): this(appId, name: name, nameId: nameId, scope: scope, alwaysShareConfiguration: alwaysShareConfig, attributes: attributes)
         {
             Id = typeId;
             // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
             //Description = description;
-            Scope = Scopes.RenameOldScope(scope);
 
-            AlwaysShareConfiguration = alwaysShareConfig;
+            // move to other constructor
+            //Scope = Scopes.RenameOldScope(scope);
+            //AlwaysShareConfiguration = alwaysShareConfig;
 
             if (parentTypeId != null)
                 Decorators.Add(new Ancestor<IContentType>(new AppIdentity(configZoneId, configAppId),
@@ -134,14 +135,33 @@ namespace ToSic.Eav.Data
         /// Overload for in-memory entities
         /// </remarks>
         [PrivateApi]
-        public ContentType(int appId, string name, string nameId = null, IList<IContentTypeAttribute> attributes = default)
+        public ContentType(int appId,
+            string name,
+            string nameId = default,
+            string scope = default,
+            IList<IContentTypeAttribute> attributes = default,
+            bool alwaysShareConfiguration = default,
+            bool? onSaveSortAttributes = default,
+            string onSaveUseParentStaticName = default
+            )
         {
             AppId = appId;
             Name = name;
             NameId = nameId ?? name;
 
+            AlwaysShareConfiguration = alwaysShareConfiguration;
+
+            if (scope != default)
+                Scope = Scopes.RenameOldScope(scope);
+
             if (attributes != null)
                 Attributes = attributes;
+
+            if (onSaveSortAttributes != null)
+                OnSaveSortAttributes = onSaveSortAttributes.Value;
+
+            if (onSaveUseParentStaticName != default)
+                OnSaveUseParentStaticName = onSaveUseParentStaticName;
         }
 
         #endregion
