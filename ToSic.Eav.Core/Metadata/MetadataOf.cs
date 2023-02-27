@@ -21,28 +21,33 @@ namespace ToSic.Eav.Metadata
     public class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamped
     {
 
+        public MetadataOf(int targetType, T key, IHasMetadataSource metaSource, string targetIdentifier) : this(targetType, key, targetIdentifier)
+            => _appMetadataSource = metaSource;
         #region Constructors
 
-        /// <summary>
-        /// initialize using an already prepared metadata source
-        /// </summary>
-        public MetadataOf(int targetType, T key, IHasMetadataSource metaSource, string targetIdentifier) : this(targetType, key, targetIdentifier) 
-            => _appMetadataSource = metaSource;
-
-        /// <summary>
-        /// initialize using an already prepared metadata source
-        /// </summary>
-        public MetadataOf(int targetType, T key, Func<IHasMetadataSource> metaSourceRemote, string targetIdentifier) : this(targetType, key, targetIdentifier) 
+        public MetadataOf(int targetType, T key, Func<IHasMetadataSource> metaSourceRemote, string targetIdentifier) : this(targetType, key, targetIdentifier)
             => _metaSourceRemote = metaSourceRemote;
 
         /// <summary>
-        /// Inner constructor, primarily needed by this and inheriting classes
+        /// Constructor that can take both a direct App-Source as well as a deferred source.
+        /// Note that both sources can be null!
         /// </summary>
-        private MetadataOf(int targetType, T key, string targetIdentifier)
+        /// <param name="targetType"></param>
+        /// <param name="key"></param>
+        /// <param name="title">Title of the target we're describing - for further automating when using or creating more Metadata</param>
+        /// <param name="items">A direct list of items to use as metadata - instead of lazy-loading from a source. If specified, auto-sync will be disabled.</param>
+        /// <param name="appSource"></param>
+        /// <param name="deferredSource"></param>
+        public MetadataOf(int targetType, T key, string title, List<IEntity> items = default, IHasMetadataSource appSource = default, Func<IHasMetadataSource> deferredSource = default)
         {
             _targetType = targetType;
             Key = key;
-            _metadataIdentifier = targetIdentifier;
+            _metadataTitle = title;
+
+            // This is the implementation with a constant list, where no more lookups ever happen.
+            _constantList = items;
+            _appMetadataSource = appSource;
+            _metaSourceRemote = deferredSource;
         }
 
         #endregion
@@ -74,6 +79,12 @@ namespace ToSic.Eav.Metadata
         #endregion
 
         /// <summary>
+        /// This is a constant / stable list of entities.
+        /// When it is defined, no items are retrieved from the sources, since this is all that's ever used. 
+        /// </summary>
+        private readonly List<IEntity> _constantList;
+
+        /// <summary>
         /// Type-information of the thing we're describing. This is used to retrieve metadata from the correct sub-list of pre-indexed metadata
         /// </summary>
         private readonly int _targetType;
@@ -91,14 +102,15 @@ namespace ToSic.Eav.Metadata
         public List<IEntity> AllWithHidden {
             get
             {
+                if (_constantList != null) return _constantList;
                 //_debugAllEntry++;
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-                _loadAllInLock.Go(() => _allEntities == null || RequiresReload(), LoadFromProviderInsideLock);
+                _loadAllInLock.Go(() => _allCached == null || RequiresReload(), LoadFromProviderInsideLock);
                 //_debugAllReturn++;
-                return _allEntities;
+                return _allCached;
             }
         }
-        private List<IEntity> _allEntities;
+        private List<IEntity> _allCached;
         private readonly TryLockTryDo _loadAllInLock = new TryLockTryDo();
 
         /// <summary>
@@ -136,14 +148,7 @@ namespace ToSic.Eav.Metadata
         public long CacheTimestamp { get; private set; }
 
         [PrivateApi]
-        protected bool RequiresReload() => _reloadWhenAppChanges && GetMetadataSource()?.CacheChanged(CacheTimestamp) == true;
-
-        /// <summary>
-        /// Mark the metadata to load (or not) when the source app for metadata changes.
-        /// ATM there is just a very rare case where this must be false.
-        /// When importing a Visual Query, the resulting entity must NOT reload the data. 
-        /// </summary>
-        private bool _reloadWhenAppChanges = true;
+        protected bool RequiresReload() => _constantList == null && GetMetadataSource()?.CacheChanged(CacheTimestamp) == true;
 
         /// <summary>
         /// Load the metadata from the provider
@@ -182,16 +187,17 @@ namespace ToSic.Eav.Metadata
         {
             //_debugUse++;
             // Set the local cache to a list of items, and reset the dependent objects so they will be rebuilt if accessed.
-            _allEntities = items;
+            _allCached = items;
             _metadataWithoutPermissions = null;
             _permissions = null;
         }
 
-        public void Use(List<IEntity> items, bool reloadWhenAppChanges)
-        {
-            Use(items);
-            _reloadWhenAppChanges = reloadWhenAppChanges;
-        }
+        //[PrivateApi]
+        //public void Use(List<IEntity> items, bool reloadWhenAppChanges)
+        //{
+        //    Use(items);
+        //    _syncWithSource = reloadWhenAppChanges;
+        //}
 
         #region GetBestValue
 
@@ -226,21 +232,9 @@ namespace ToSic.Eav.Metadata
 
         #region Target
 
-        public ITarget Target
-        {
-            get
-            {
-                if (_target != null) return _target;
-                var target = new Target(_targetType, _metadataIdentifier);
-                if (Key is string stringKey) target.KeyString = stringKey;
-                if (Key is int intKey) target.KeyNumber = intKey;
-                if (Key is Guid guidKey) target.KeyGuid = guidKey;
-                return _target = target;
-            }
-        }
-
-        private ITarget _target;
-        private readonly string _metadataIdentifier;
+        public ITarget Target => _target.Get(() => new Target(_targetType, _metadataTitle, Key));
+        private readonly GetOnce<ITarget> _target = new GetOnce<ITarget>();
+        private readonly string _metadataTitle;
 
         #endregion
 
