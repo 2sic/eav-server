@@ -59,33 +59,31 @@ namespace ToSic.Eav.ImportExport.Json
                                       $"- cannot continue with {jEnt.Type.Id}")
                               );
 
-            // Metadata
-            var ismeta = new Target();
-            if (jEnt.For != null)
-            {
-                var md = jEnt.For;
-                l.A($"this is metadata; will construct 'For' object. Type: {md.Target} ({md.TargetType})");
-                ismeta.TargetType = md.TargetType != 0 ? md.TargetType : MetadataTargets.GetId(md.Target); // #TargetTypeIdInsteadOfTarget
-                ismeta.KeyGuid = md.Guid;
-                ismeta.KeyNumber = md.Number;
-                ismeta.KeyString = md.String;
-            }
+            // Metadata Target
+            var target = DeserializeEntityTarget(jEnt);
+
+            // Metadata Items
+            l.A($"found metadata: {jEnt.Metadata != null}, will deserialize");
+            var mdItems = jEnt.Metadata?
+                              .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
+                              .ToList()
+                          ?? new List<IEntity>();
 
             l.A("build entity");
-            var newEntity = Services.MultiBuilder.Entity.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
-                AppPackageOrNull, DateTime.MinValue, DateTime.Now, jEnt.Owner, jEnt.Version);
+            var newEntity = Services.MultiBuilder.Entity.EntityFromRepository(
+                appId: AppId, entityGuid: jEnt.Guid, entityId: jEnt.Id, repositoryId: jEnt.Id,
+                metadataFor: target, type: contentType,
+                isPublished: true,
+                source: AppPackageOrNull, metadataItems: mdItems,
+                created: DateTime.MinValue, modified: DateTime.Now,
+                owner: jEnt.Owner, version: jEnt.Version);
 
-            // check if metadata was included
-            if (jEnt.Metadata != null)
-            {
-                l.A("found more metadata, will deserialize");
-                var mdItems = jEnt.Metadata
-                    .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
-                    .ToList();
+            //if (jEnt.Metadata != null)
+            //{
 
-                // Attach the metadata, ensure that it won't reload data from the App otherwise the metadata would get reset again
-                ((IMetadataInternals)newEntity.Metadata).Use(mdItems, false);
-            }
+            //    // Attach the metadata, ensure that it won't reload data from the App otherwise the metadata would get reset again
+            //    ((IMetadataInternals)newEntity.Metadata).Use(mdItems, false);
+            //}
 
             // build attributes - based on type definition
             if (contentType.IsDynamic)
@@ -104,6 +102,24 @@ namespace ToSic.Eav.ImportExport.Json
             }
             
             return (newEntity, l.Try(() => $"'{newEntity?.GetBestTitle()}'", "can't get title"));
+        });
+
+        private Target DeserializeEntityTarget(JsonEntity jEnt) => Log.Func(() =>
+        {
+            if (jEnt.For == null) return (new Target(), "no for found");
+
+            var mdFor = jEnt.For;
+            var target = new Target(
+                targetType: mdFor.TargetType != 0
+                    ? mdFor.TargetType
+                    : MetadataTargets.GetId(mdFor.Target), identifier // #TargetTypeIdInsteadOfTarget
+                : null,
+                keyString: mdFor.String,
+                keyNumber: mdFor.Number,
+                keyGuid: mdFor.Guid
+            );
+
+            return (target, $"this is metadata; will construct 'For' object. Type: {mdFor.Target} ({mdFor.TargetType})");
         });
 
         private void BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null) => Log.Do(() =>

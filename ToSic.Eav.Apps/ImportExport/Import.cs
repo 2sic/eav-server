@@ -22,7 +22,6 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public class Import: ServiceBase
     {
-        private readonly EntityBuilder _entityBuilder;
         private const int ChunkLimitToStartChunking = 2500;
         private const int ChunkSizeAboveLimit = 500;
 
@@ -31,19 +30,23 @@ namespace ToSic.Eav.Apps.ImportExport
         public Import(LazySvc<AppManager> appManagerLazy, 
             IImportExportEnvironment importExportEnvironment,
             LazySvc<EntitySaver> entitySaverLazy,
-            EntityBuilder entityBuilder
+            EntityBuilder entityBuilder,
+            MultiBuilder multiBuilder
             ) : base("Eav.Import")
         {
             ConnectServices(
                 _appManagerLazy = appManagerLazy,
                 _importExportEnvironment = importExportEnvironment,
                 _entitySaver = entitySaverLazy,
-                _entityBuilder = entityBuilder
+                _entityBuilder = entityBuilder,
+                _multiBuilder = multiBuilder
             );
         }
         private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly IImportExportEnvironment _importExportEnvironment;
         private readonly LazySvc<EntitySaver> _entitySaver;
+        private readonly MultiBuilder _multiBuilder;
+        private readonly EntityBuilder _entityBuilder;
 
 
         public Import Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes)
@@ -183,21 +186,20 @@ namespace ToSic.Eav.Apps.ImportExport
         private void MergeAndSaveContentTypes(AppState appState, List<IContentType> contentTypes) => Log.Do(timer: true, action: () =>
         {
             // Here's the problem! #badmergeofmetadata
-            contentTypes.ForEach(type => MergeContentTypeUpdateWithExisting(appState, type));
+            var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appState, type));
             var so = _importExportEnvironment.SaveOptions(ZoneId);
             so.DiscardAttributesNotInType = true;
-            Storage.Save(contentTypes.ToList(), so);
+            Storage.Save(toUpdate.ToList(), so);
         });
-        
-        
 
 
-        private bool MergeContentTypeUpdateWithExisting(AppState appState, IContentType contentType)
+
+
+        private IContentType MergeContentTypeUpdateWithExisting(AppState appState, IContentType contentType) => Log.Func(l =>
         {
-            var callLog = Log.Fn<bool>();
             var existing = appState.GetContentType(contentType.NameId);
 
-            Log.A("New CT, must reset attributes");
+            l.A("New CT, must reset attributes");
             // must ensure that attribute Metadata is officially seen as new
             // but the import data could have an Id, so we must reset it here.
             foreach (var attribute in contentType.Attributes)
@@ -207,19 +209,20 @@ namespace ToSic.Eav.Apps.ImportExport
                 foreach (var permission in attribute.Metadata.Permissions)
                     permission.Entity.ResetEntityId();
             }
+
             foreach (var metadata in contentType.Metadata)
                 metadata.ResetEntityId();
 
             if (existing == null)
-                return callLog.ReturnTrue("existing not found, won't merge");
+                return (contentType, "existing not found, won't merge");
 
-            Log.A("found existing, will merge");
+            l.A("found existing, will merge");
             foreach (var newAttribute in contentType.Attributes)
             {
                 var oldAttr = existing.Attributes.FirstOrDefault(a => a.Name == newAttribute.Name);
                 if (oldAttr == null)
                 {
-                    Log.A($"New attr {newAttribute.Name} not found on original, merge not needed");
+                    l.A($"New attr {newAttribute.Name} not found on original, merge not needed");
                     continue;
                 }
 
@@ -227,7 +230,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     .Select(impMd => MergeOneMd(appState, (int)TargetTypes.Attribute, oldAttr.AttributeId, impMd))
                     .ToList();
 
-                if(newAttribute.Metadata.Permissions.Any())
+                if (newAttribute.Metadata.Permissions.Any())
                     newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
 
                 ((IMetadataInternals)newAttribute.Metadata).Use(newMetaList);
@@ -238,10 +241,12 @@ namespace ToSic.Eav.Apps.ImportExport
                 .Select(impMd => MergeOneMd(appState, (int)TargetTypes.ContentType, contentType.NameId, impMd))
                 .ToList();
             merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
-            contentType.Metadata.Use(merged);
 
-            return callLog.ReturnTrue("done");
-        }
+            var newContentType = _multiBuilder.ContentType.Clone(contentType, metadataItems: merged);
+            // contentType.Metadata.Use(merged);
+
+            return (newContentType, "done");
+        });
 
         private IEntity MergeOneMd<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)
         {

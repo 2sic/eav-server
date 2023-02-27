@@ -36,13 +36,12 @@ namespace ToSic.Eav.Apps.ImportExport
             return (importTypes, $"found {importTypes.Count}");
         });
 
-	    private IContentType BuildContentTypeFromXml(XElement xmlContentType)
-	    {
-	        var ctElement = xmlContentType.Element(XmlConstants.Attributes);
-	        var typeName = xmlContentType.Attribute(XmlConstants.Name).Value;
-	        var wrapLog = Log.Fn<IContentType>(typeName);
+        private IContentType BuildContentTypeFromXml(XElement xmlContentType) => Log.Func(l =>
+        {
+            var ctElement = xmlContentType.Element(XmlConstants.Attributes);
+            var typeName = xmlContentType.Attribute(XmlConstants.Name).Value;
 
-	        var attributes = new List<IContentTypeAttribute>();
+            var attributes = new List<IContentTypeAttribute>();
             if (ctElement != null)
             {
                 // Figure out which one is the title
@@ -55,7 +54,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             IsTitle = false
                         };
 
-                    Log.A("set title on this attribute");
+                    l.A("set title on this attribute");
                     return new
                     {
                         XmlElement = xmlField,
@@ -82,17 +81,22 @@ namespace ToSic.Eav.Apps.ImportExport
                     //    isTitle = true;
                     //}
 
+                    var xmlMetadata = xmlField.Elements(XmlConstants.Entity).ToList();
+                    var attributeMetadata = BuildEntities(xmlMetadata, (int)TargetTypes.Attribute);
                     var attribute = new ContentTypeAttribute(AppId, name, fieldTypeName, s.IsTitle,
-                        attributeMetadata: new List<IEntity>
-                        {
-                            base.Services.CtAttribBuilder.Value.GenerateAttributeMetadata(AppId, null, null, null,
-                                string.Empty, null)
-                        });
-                    var md = xmlField.Elements(XmlConstants.Entity).ToList();
-                    ((IMetadataInternals)attribute.Metadata).Use(BuildEntities(md, (int)TargetTypes.Attribute));
+                        attributeMetadata: attributeMetadata
+                        // 2023-02-27 2dm - pretty sure this had no effect, as the follow-up "Use" call flushed this again
+                        //new List<IEntity>
+                        //{
+
+                        //    base.Services.CtAttribBuilder.Value.GenerateAttributeMetadata(AppId, null, null, null,
+                        //        string.Empty, null)
+                        //}
+                    );
+                    //((IMetadataInternals)attribute.Metadata).Use(attributeMetadata);
                     attributes.Add(attribute);
 
-                    Log.A($"Attribute: {name} ({fieldTypeName}) with {md.Count} metadata items");
+                    l.A($"Attribute: {name} ({fieldTypeName}) with {xmlMetadata.Count} metadata items");
 
                 }
 
@@ -101,20 +105,20 @@ namespace ToSic.Eav.Apps.ImportExport
                 //    (attributes.First() as ContentTypeAttribute).IsTitle = true;
             }
 
-            
+
             #region check for shared type and if it's allowed
 
             var isSharedType = xmlContentType.Attributes(XmlConstants.AlwaysShareConfig).Any() &&
-                           bool.Parse(xmlContentType.Attribute(XmlConstants.AlwaysShareConfig).Value);
+                               bool.Parse(xmlContentType.Attribute(XmlConstants.AlwaysShareConfig).Value);
 
-            if(isSharedType & !AllowUpdateOnSharedTypes)
+            if (isSharedType & !AllowUpdateOnSharedTypes)
             {
-                Log.A("trying to update a shared type, but not allowed");
-                return wrapLog.ReturnNull("error"); 
+                l.A("trying to update a shared type, but not allowed");
+                return (null, "error");
             }
 
             #endregion
-            
+
             // create ContentType
             var ct = Services.MultiBuilder.Value.ContentType.Create(
                 appId: AppId,
@@ -129,23 +133,23 @@ namespace ToSic.Eav.Apps.ImportExport
                 onSaveSortAttributes: xmlContentType.Attributes(XmlConstants.SortAttributes).Any() &&
                                       bool.Parse(xmlContentType.Attribute(XmlConstants.SortAttributes).Value),
                 onSaveUseParentStaticName: xmlContentType.Attributes(XmlConstants.AttributeSetParentDef).Any()
-	                ? xmlContentType.Attribute(XmlConstants.AttributeSetParentDef).Value
-	                : ""
-	        );
+                    ? xmlContentType.Attribute(XmlConstants.AttributeSetParentDef).Value
+                    : ""
+            );
 
 
-         //   ct.SetImportParameters(
-	        //    scope: xmlContentType.Attributes(XmlConstants.Scope).Any()
-	        //        ? xmlContentType.Attribute(XmlConstants.Scope).Value
-	        //        : base.Services.Environment.FallbackContentTypeScope,
-	        //    nameId: xmlContentType.Attribute(XmlConstants.Static).Value,
-         //       // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-         //       // description: xmlContentType.Attribute(XmlConstants.Description).Value,
-	        //    AllowUpdateOnSharedTypes && isSharedType
-	        //);
-	        return wrapLog.ReturnAsOk(ct);
-        }
+            //   ct.SetImportParameters(
+            //    scope: xmlContentType.Attributes(XmlConstants.Scope).Any()
+            //        ? xmlContentType.Attribute(XmlConstants.Scope).Value
+            //        : base.Services.Environment.FallbackContentTypeScope,
+            //    nameId: xmlContentType.Attribute(XmlConstants.Static).Value,
+            //       // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
+            //       // description: xmlContentType.Attribute(XmlConstants.Description).Value,
+            //    AllowUpdateOnSharedTypes && isSharedType
+            //);
+            return (ct, "ok");
+        });
 
-	}
+    }
 
 }

@@ -13,16 +13,16 @@ namespace ToSic.Eav.Data
     [PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi")]
     public class ContentTypeMetadata : MetadataOf<string>
     {
-
         /// <summary>
         /// Used in cases where the metadata-provider is already known
         /// </summary>
         /// <param name="typeId">type id / static-name</param>
-        /// <param name="metaSourceRemote">remote / deferred metadata provider</param>
-        internal ContentTypeMetadata(string typeId, Func<IHasMetadataSource> metaSourceRemote, string targetIdentifier)
-            : base((int)TargetTypes.ContentType, typeId, metaSourceRemote, targetIdentifier)
+        /// <param name="deferredSource">remote / deferred metadata provider</param>
+        /// <param name="title"></param>
+        internal ContentTypeMetadata(string typeId, List<IEntity> items, Func<IHasMetadataSource> deferredSource, string title)
+            : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, items: items, deferredSource: deferredSource)
         {
-            SourceForClone = metaSourceRemote;
+            SourceForClone = deferredSource;
         }
 
         /// <summary>

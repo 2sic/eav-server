@@ -43,6 +43,7 @@ namespace ToSic.Eav.Data.Builder
 
             // Metadata (2)
             ContentTypeMetadata metadata = default,                 // for clone
+            List<IEntity> metadataItems = default,
             Func<IHasMetadataSource> metaSourceFinder = default,    // for find-it-yourself
 
             // Save Specs (2) Older stuff, should be removed some day
@@ -57,7 +58,7 @@ namespace ToSic.Eav.Data.Builder
                     parentTypeId.Value));
 
             // Prepare metadata retrieval
-            metadata = metadata ?? new ContentTypeMetadata(nameId, metaSourceFinder, name);
+            metadata = metadata ?? new ContentTypeMetadata(typeId: nameId, items: metadataItems, deferredSource: metaSourceFinder, title: name);
 
             attributes = attributes ?? new List<IContentTypeAttribute>();
 
@@ -105,7 +106,8 @@ namespace ToSic.Eav.Data.Builder
             int? configAppId = default,
 
             // Metadata (2)
-            ContentTypeMetadata metadata = default                 // for clone
+            ContentTypeMetadata metadata = default,                 // for clone
+            List<IEntity> metadataItems = default
             //Func<IHasMetadataSource> metaSourceFinder = default
 
             // Save Specs (2) Older stuff, should be removed some day - ATM not supported
@@ -126,6 +128,10 @@ namespace ToSic.Eav.Data.Builder
                     configAppId = configAppId ?? ancestorDecorator.AppId;
                 }
             }
+
+            metadata = metadata ?? (metadataItems != default
+                ? new ContentTypeMetadata(original.NameId, metadataItems, null, original.Name)
+                : original.Metadata);
 
             return Create(
                 // Identifiers (5)
@@ -150,7 +156,7 @@ namespace ToSic.Eav.Data.Builder
                 configAppId: configAppId ?? default,
 
                 // Metadata
-                metadata: metadata ?? original.Metadata
+                metadata: metadata
                 //metaSourceFinder: metaSourceFinder ?? original.Metadata.SourceForClone
 
                 // Save Specs not implemented

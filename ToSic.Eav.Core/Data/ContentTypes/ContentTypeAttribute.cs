@@ -29,7 +29,8 @@ namespace ToSic.Eav.Data
         /// Extended constructor when also storing the persistence Id
         /// </summary>
         // TODO: clean up call to this function, as 2 params are not used
-        public ContentTypeAttribute(int appId,
+        public ContentTypeAttribute(
+            int appId,
             string name,
             string type,
             bool isTitle,
@@ -41,29 +42,32 @@ namespace ToSic.Eav.Data
             IsTitle = isTitle;
             AttributeId = attributeId;
             SortOrder = sortOrder;
-            _metaSourceFinder = metaSourceFinder;
+            //_metaSourceFinder = metaSourceFinder;
+            Metadata = new MetadataOf<int>(targetType: (int)TargetTypes.Attribute, key: AttributeId,
+                title: Name + " (" + Type + ")", deferredSource: metaSourceFinder);
         }
 
         /// <summary>
         /// Create an attribute definition "from scratch" so for
         /// import-scenarios and code-created attribute definitions
         /// </summary>
-        public ContentTypeAttribute(int appId, string name, string type, bool isTitle, List<IEntity> attributeMetadata)
-            : this(appId, name, type, isTitle, 0, 0)
+        public ContentTypeAttribute(int appId, string name, string type, bool isTitle, int sortOrder = default, List<IEntity> attributeMetadata = default)
+            : this(appId, name, type, isTitle, 0, sortOrder)
         {
-            MetadataInternal.Use(attributeMetadata);
+            Metadata = new MetadataOf<int>(targetType: (int)TargetTypes.Attribute, key: AttributeId,
+                title: Name + " (" + Type + ")", items: attributeMetadata);
         }
 
 
         #region Metadata and Permissions
 
         /// <inheritdoc />
-        public IMetadataOf Metadata => MetadataInternal;
+        public IMetadataOf Metadata { get; } // => MetadataInternal;
 
-        private MetadataOf<int> MetadataInternal 
-            => _metadata ?? (_metadata = new MetadataOf<int>((int)TargetTypes.Attribute, AttributeId, _metaSourceFinder, Name + " (" + Type + ")"));
-        private MetadataOf<int> _metadata;
-        private readonly Func<IHasMetadataSource> _metaSourceFinder;
+        //private MetadataOf<int> MetadataInternal 
+        //    => _metadata ?? (_metadata = new MetadataOf<int>(targetType: (int)TargetTypes.Attribute, key: AttributeId, targetTitle: Name + " (" + Type + ")", deferredSource: _metaSourceFinder));
+        //private MetadataOf<int> _metadata;
+        //private readonly Func<IHasMetadataSource> _metaSourceFinder;
 
         /// <inheritdoc />
         [PrivateApi("because permissions will probably become an entity-based type")]

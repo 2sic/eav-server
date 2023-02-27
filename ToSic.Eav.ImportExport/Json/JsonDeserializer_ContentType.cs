@@ -51,10 +51,10 @@ namespace ToSic.Eav.ImportExport.Json
                 var attribs = jsonType.Attributes
                     .Select((jsonAttr, pos) =>
                     {
-                        var attDef = new ContentTypeAttribute(AppId, jsonAttr.Name, jsonAttr.Type, jsonAttr.IsTitle, 0, pos);
                         var mdEntities = jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
+                        var attDef = new ContentTypeAttribute(AppId, jsonAttr.Name, jsonAttr.Type, jsonAttr.IsTitle, sortOrder: pos, mdEntities);
                         allEntities.AddRange(mdEntities);
-                        ((IMetadataInternals)attDef.Metadata).Use(mdEntities);
+                        //((IMetadataInternals)attDef.Metadata).Use(mdEntities);
                         return (IContentTypeAttribute)attDef;
                     })
                     .ToList();
@@ -77,9 +77,11 @@ namespace ToSic.Eav.ImportExport.Json
                     configZoneId: jsonType.Sharing?.ParentZoneId ?? 0,
                     configAppId: jsonType.Sharing?.ParentAppId ?? 0,
                     isAlwaysShared: jsonType.Sharing?.AlwaysShare ?? false, 
-                    attributes: attribs);
+                    attributes: attribs,
+                    metadataItems: ctMeta
+                    );
 
-                type.Metadata.Use(ctMeta);
+                //type.Metadata.Use(ctMeta);
 
                 //type.Attributes = attribs;
 
