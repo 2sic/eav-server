@@ -41,6 +41,7 @@ namespace ToSic.Eav.Data
             RepositoryId = entityId;
             PlaceDraftInBranch = placeDraftInBranch;
             PublishedEntityId = publishedId;
+            _getMetadataOf = partsBuilder.GetMetadataOf;
         }
 
         #region CanBeEntity

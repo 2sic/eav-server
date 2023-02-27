@@ -10,6 +10,7 @@ namespace ToSic.Eav.Plumbing
         public TryLockTryDo(object lockObject = null) 
             => _loadLock = lockObject ?? new object();
 
+        // TODO: @STV SHOULD be applied to more places that use a lock, as I assume it's robust
         public void Go(Func<bool> condition, Action action)
         {
             if (!condition()) return;

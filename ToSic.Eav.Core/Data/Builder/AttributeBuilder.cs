@@ -99,19 +99,19 @@ namespace ToSic.Eav.Data.Builder
             }
         }
 
-        public (Dictionary<string, IAttribute> All, string Title) GenerateAttributesOfContentType(IContentType contentType)
+        public (Dictionary<string, IAttribute> All, string Nothing) GenerateAttributesOfContentType(IContentType contentType)
         {
-            string titleField = null;
+            //string titleField = null;
             var attributes = contentType.Attributes.ToDictionary(
                 a => a.Name,
                 a =>
                 {
                     var entityAttribute = CreateTyped(a.Name, a.Type);
-                    if (a.IsTitle)
-                        titleField = entityAttribute.Name;
+                    //if (a.IsTitle)
+                    //    titleField = entityAttribute.Name;
                     return entityAttribute;
                 });
-            return (attributes, titleField);
+            return (attributes, /*titleField*/ "");
         }
 
 

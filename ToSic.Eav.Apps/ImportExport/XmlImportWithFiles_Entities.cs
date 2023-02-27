@@ -124,13 +124,7 @@ namespace ToSic.Eav.Apps.ImportExport
 			    }
 			}
 
-            var metadata = new Target
-            {
-                TargetType = targetType,
-                KeyNumber = keyNumber,
-                KeyGuid = keyGuid,
-                KeyString = keyString
-            };
+            var metadata = new Target(targetType: targetType, identifier: null, keyString: keyString, keyGuid: keyGuid, keyNumber: keyNumber);
 
             Log.A($"Metadata ({metadata.IsMetadata}) - type:{metadata.TargetType}, #:{metadata.KeyNumber} guid:{metadata.KeyGuid}, $:{metadata.KeyString}");
 

@@ -19,7 +19,7 @@ namespace ToSic.Eav.Metadata
         /// <param name="items"></param>
         [PrivateApi]
         void Use(List<IEntity> items);
-        void Use(List<IEntity> items, bool reloadWhenAppChanges);
+        //void Use(List<IEntity> items, bool reloadWhenAppChanges);
 
         /// <summary>
         /// The complete list of metadata items, incl. the hidden ones
