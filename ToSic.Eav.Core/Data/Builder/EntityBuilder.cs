@@ -121,11 +121,16 @@ namespace ToSic.Eav.Data.Builder
             string owner,
             int version,
             string titleField = default,
-            Dictionary<string, IAttribute> values = default
+            Dictionary<string, IAttribute> values = default,
+            List<IEntity> metadataItems = default,
+            EntityPartsBuilder partsBuilder = default
             )
         {
-            var partsBuilder = new EntityPartsBuilder(
-                entity => new RelationshipManager(entity, source, null)
+            partsBuilder = partsBuilder ?? new EntityPartsBuilder(
+                entity => new RelationshipManager(entity, source, null),
+                getMetadataOf: metadataItems != default
+                    ? EntityPartsBuilder.CreateMetadataOfItems(metadataItems)
+                    : EntityPartsBuilder.CreateMetadataOfAppSources(source)
             );
 
             var e = Create(appId: appId,
@@ -138,6 +143,7 @@ namespace ToSic.Eav.Data.Builder
                 partsBuilder: partsBuilder
             );
 
+            // WIP trying to get rid of this
             e.DeferredLookupData = source;
 
             return e;
@@ -152,8 +158,10 @@ namespace ToSic.Eav.Data.Builder
             var specs = _attributeBuilder.GenerateAttributesOfContentType(type);
             return Create(appId: appId,
                 entityId: entityId, guid: entityGuid,
-                contentType: type, titleField: specs.Title,
-                rawValues: null, values: specs.All,
+                contentType: type,
+                // titleField: specs.Title,
+                rawValues: null,
+                values: specs.All,
                 created: DateTime.MinValue, modified: DateTime.Now, 
                 owner: "");
 
@@ -188,7 +196,9 @@ namespace ToSic.Eav.Data.Builder
             var originalEntity = original as Entity;
             var lookupApp = originalEntity?.DeferredLookupData as AppState;
             var entityPartsBuilder = new EntityPartsBuilder(
-                ent => new RelationshipManager(ent, originalEntity?.Relationships as RelationshipManager)
+                ent => new RelationshipManager(ent, originalEntity?.Relationships as RelationshipManager),
+                getMetadataOf: EntityPartsBuilder.CreateMetadataOfAppSources(lookupApp)
+
             );
 
             var e = Create(

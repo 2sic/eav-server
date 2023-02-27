@@ -144,9 +144,15 @@ namespace ToSic.Eav.Persistence.Efc
 
             // Get all Attributes of that Content-Type
             var specs = _multiBuilder.Attribute.GenerateAttributesOfContentType(contentType);
-            var newEntity = _multiBuilder.Entity.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
-                e.MetadataFor, contentType, e.IsPublished, app, e.Created, e.Modified, e.Owner,
-                e.Version, values: specs.All, titleField: specs.Title);
+            var newEntity = _multiBuilder.Entity.EntityFromRepository(
+                appId: app.AppId,
+                entityGuid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,
+                metadataFor: e.MetadataFor, 
+                type: contentType, isPublished: e.IsPublished, 
+                source: app, 
+                created: e.Created, modified: e.Modified, 
+                owner: e.Owner, version: e.Version, 
+                values: specs.All/*, titleField: specs.Title*/);
 
             // add Related-Entities Attributes to the entity
             if (relatedEntities.ContainsKey(e.EntityId))
