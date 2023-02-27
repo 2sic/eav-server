@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Persistence.File
@@ -17,27 +18,40 @@ namespace ToSic.Eav.Persistence.File
             Loaders.ForEach(ldr => ldr.TypeIdSeed = FsDataConstants.GlobalContentTypeMin + FsDataConstants.GlobalContentTypeSourceSkip * loaderIndex++);
 
             // 3 - return content types
-            var types = Loaders.SelectMany(ldr => ldr.ContentTypes()).ToList();
+
+            var types = new List<IContentType>();
+            var delayedContentTypeProvider = new ContentTypeProvider();
+
+            var newTypes = Loaders.SelectMany(ldr =>
+            {
+                ldr.Serializer.ContentTypeProvider = delayedContentTypeProvider;
+                var result = ldr.ContentTypes();
+                ldr.Serializer.ContentTypeProvider = null;
+                return result;
+            }).ToList();
+            var typesDeduplicated = EliminateDuplicateTypes(newTypes);
+            types.AddRange(typesDeduplicated);
+            delayedContentTypeProvider.Source.AddRange(typesDeduplicated);
 
             types = SetTypesOfContentTypeParts(types);
 
             return (types, $"found {types.Count} types");
         });
 
-        private List<IContentType> SetTypesOfContentTypeParts(List<IContentType> types) => Log.Func(timer: true, func: l =>
+        
+        private List<IContentType> SetTypesOfContentTypeParts(List<IContentType> typesDistinct) => Log.Func(timer: true, func: l =>
         {
             var changeCount = 0;
             try
             {
-                var typeDic = EliminateDuplicateTypes(types)
-                    .ToDictionary(t => t.NameId, t => t);
+                var typeDic = typesDistinct.ToDictionary(t => t.NameId, t => t);
 
-                var entitiesToRetype = types.SelectMany(t => t.Metadata).ToList();
+                var entitiesToRetype = typesDistinct.SelectMany(t => t.Metadata).ToList();
                 l.A($"Metadata found to retype: {entitiesToRetype.Count}");
                 var temp = UpdateTypes("ContentType Metadata", entitiesToRetype, typeDic);
                 changeCount += temp.Count;
 
-                entitiesToRetype = types.SelectMany(t => t.Attributes.SelectMany(a => a.Metadata)).ToList();
+                entitiesToRetype = typesDistinct.SelectMany(t => t.Attributes.SelectMany(a => a.Metadata)).ToList();
                 temp = UpdateTypes("Attribute Metadata", entitiesToRetype, typeDic);
                 changeCount += temp.Count;
             }
@@ -47,10 +61,10 @@ namespace ToSic.Eav.Persistence.File
                 l.Ex(ex);
             }
 
-            return (types, $"{changeCount}");
+            return (types: typesDistinct, $"{changeCount}");
         });
 
-        private IEnumerable<IContentType> EliminateDuplicateTypes(List<IContentType> types) => Log.Func(l =>
+        private List<IContentType> EliminateDuplicateTypes(List<IContentType> types) => Log.Func(l =>
         {
             // In rare cases there can be a mistake and the same type may be duplicate!
             var typesGrouped = types.GroupBy(t => t.NameId).ToList();
@@ -63,7 +77,9 @@ namespace ToSic.Eav.Persistence.File
                     l.A($"Source: {bad.RepositoryAddress}");
             }
 
-            var typesUngrouped = typesGrouped.Select(g => g.First());
+            var typesUngrouped = typesGrouped
+                .Select(g => g.First())
+                .ToList();
             return typesUngrouped;
         });
 
@@ -85,7 +101,9 @@ namespace ToSic.Eav.Persistence.File
 
                     changeCount++;
                     l.A($"TypeChange:{entity.Type.NameId} - {realType.Name}");
-                    (entity as Entity).UpdateType(realType);
+                    if (entity.Type is ContentTypeWrapper wrapper)
+                        wrapper.Reset();
+                    //(entity as Entity).UpdateType(realType);
                     return entity;
                 })
                 .ToList();

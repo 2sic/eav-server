@@ -99,7 +99,7 @@ namespace ToSic.Eav.Apps.Parts
 
             // TODO: NOTE - here a clean clone/copy should be ok
             newEnt = _multiBuilder.Value.Entity.ResetIdentifiers(newEnt, newGuid: Guid.NewGuid(), newId: 0,
-                metadataFor: newMetadataTarget == null ? null : new Metadata.Target(origQuery.MetadataFor, keyGuid: newMetadataTarget.Value)
+                metadataFor: newMetadataTarget == null ? null : new Target(origQuery.MetadataFor, keyGuid: newMetadataTarget.Value)
             ); // as Entity;
             //newEnt.SetGuid(Guid.NewGuid());
             //newEnt.ResetEntityId();

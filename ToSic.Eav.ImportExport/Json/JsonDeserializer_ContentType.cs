@@ -65,7 +65,7 @@ namespace ToSic.Eav.ImportExport.Json
                 allEntities.AddRange(ctMeta);
 
                 // Create the Content Type
-                var type = this.MultiBuilder.ContentType.Create(
+                var type = Services.MultiBuilder.ContentType.Create(
                     appId: AppId, 
                     name: jsonType.Name,
                     nameId: jsonType.Id,

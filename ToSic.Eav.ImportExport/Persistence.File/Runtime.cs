@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
@@ -17,17 +18,19 @@ namespace ToSic.Eav.Persistence.File
     {
         #region Constructor and DI
 
-        public Runtime(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator) : base("Eav.RunTme")
+        public Runtime(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, MultiBuilder builder) : base("Eav.RunTme")
         {
             _serviceProvider = sp;
             ConnectServices(
-                _fslGenerator = fslGenerator
+                _fslGenerator = fslGenerator,
+                _builder = builder
             );
             // Only add the first time it's really used
-            if (LoadLog == null) LoadLog = Log;
+            LoadLog = LoadLog ?? Log;
         }
 
         private readonly IServiceProvider _serviceProvider;
+        private readonly MultiBuilder _builder;
         private readonly Generator<FileSystemLoader> _fslGenerator;
         public static ILog LoadLog = null;
 

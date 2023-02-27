@@ -212,8 +212,8 @@ namespace ToSic.Eav.ImportExport.Xml
 		    var targetEntity = // globalType != null
 		        // ? _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, typedValues: finalAttributes)
                 // If not yet a known type, create a temporary pointer ContentType
-		        /*:*/ _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity, typedValues: finalAttributes);
-		    if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
+		        /*:*/ _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity, typedValues: finalAttributes, metadataFor: metadataForFor);
+		    //if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
 
             //// if it's not a global type but still marked as IsJson
             //// then it's a local extension type with Content-Type definitions in the app/system folder

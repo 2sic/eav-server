@@ -18,15 +18,12 @@ namespace ToSic.Eav.ImportExport.Json
         public new class MyServices: SerializerBase.MyServices
         {
             public MyServices(ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder, LazySvc<IValueConverter> valueConverter)
-                : base(metadataTargets, appStates)
+                : base(metadataTargets, multiBuilder, appStates)
             {
                 ConnectServices(
-                    MultiBuilder = multiBuilder,
                     ValueConverter = valueConverter
                 );
             }
-
-            public MultiBuilder MultiBuilder { get; }
             public LazySvc<IValueConverter> ValueConverter { get; }
         }
 
@@ -43,10 +40,7 @@ namespace ToSic.Eav.ImportExport.Json
         /// </summary>
         protected JsonSerializer(MyServices services, string logName): base(services, logName)
         {
-            MultiBuilder = services.MultiBuilder;
         }
-        [PrivateApi]
-        protected MultiBuilder MultiBuilder { get; }
 
         /// <summary>
         /// WIP test API to ensure content-types serialized for UI resolve any hyperlinks.

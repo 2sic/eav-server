@@ -58,7 +58,7 @@ namespace ToSic.Eav.Persistence.File
         protected IEntitiesSource EntitiesSource;
 
         #region json serializer
-        private JsonSerializer Serializer
+        public JsonSerializer Serializer
         {
             get
             {

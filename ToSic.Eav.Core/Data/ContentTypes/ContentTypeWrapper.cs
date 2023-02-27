@@ -3,30 +3,39 @@ using System.Collections.Generic;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Data;
+using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data
 {
-    public partial class ContentTypeWrapper: Wrapper<IContentType>, IContentType, IHasDecorators<IContentType>, IMultiWrapper<IContentType>
+    public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType, IHasDecorators<IContentType>, IMultiWrapper<IContentType>
     {
-        public List<IDecorator<IContentType>> Decorators { get; } = new List<IDecorator<IContentType>>();
-
-        /// <summary>
-        /// Create a new wrapper.
-        /// In case we're re-wrapping another wrapper, make sure we use the real, underlying contentType for the Contents
-        /// </summary>
-        /// <param name="contentType"></param>
         public ContentTypeWrapper(IContentType contentType) : base((contentType as ContentTypeWrapper)?.GetContents() ?? contentType)
         {
-            RootContentsForEqualityCheck = contentType;
-            if (contentType is IMultiWrapper<IContentType> wrapper)
-                RootContentsForEqualityCheck = wrapper.RootContentsForEqualityCheck ?? RootContentsForEqualityCheck;
-
-            if(contentType is IHasDecorators<IContentType> hasDecorators)
-                Decorators.AddRange(hasDecorators.Decorators);
         }
 
-        public ContentTypeWrapper(IContentType contentType, IDecorator<IContentType> decorator) : this(contentType) 
-            => Decorators.Add(decorator);
+        public ContentTypeWrapper(IContentType contentType, IDecorator<IContentType> wrapperDecorator = null) : this(contentType)
+        {
+            _wrapperDecorator = wrapperDecorator;
+        }
+
+        public ContentTypeWrapper(Func<IContentType> lazy) : base(lazy)
+        {
+        }
+
+        public new void Reset() => base.Reset();
+
+
+        public List<IDecorator<IContentType>> Decorators => _decorators.Get(() =>
+        {
+            var list = new List<IDecorator<IContentType>>();
+            if (_wrapperDecorator != null) list.Add(_wrapperDecorator);
+            if (GetContents() is IHasDecorators<IContentType> hasDecors) list.AddRange(hasDecors.Decorators);
+            return list;
+        });
+        private readonly GetOnce<List<IDecorator<IContentType>>> _decorators = new GetOnce<List<IDecorator<IContentType>>>();
+        private readonly IDecorator<IContentType> _wrapperDecorator;
+
+
 
         public int AppId => GetContents().AppId;
 

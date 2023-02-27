@@ -48,12 +48,13 @@ namespace ToSic.Eav.ImportExport.Json
         {
             // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
             var contentType = GetContentType(jEnt.Type.Id)
-                                       ?? (allowDynamic || skipUnknownType
-                                           ? MultiBuilder.ContentType.Transient(AppId, jEnt.Type.Name, jEnt.Type.Id)
-                                           : throw new FormatException(
-                                               "type not found for deserialization and dynamic not allowed " +
-                                               $"- cannot continue with {jEnt.Type.Id}")
-                                       );
+                              ?? (allowDynamic || skipUnknownType
+                                  ? GetTransientContentType(jEnt.Type.Name, jEnt.Type.Id) 
+                                  // Services.MultiBuilder.ContentType.Transient(AppId, jEnt.Type.Name, jEnt.Type.Id)
+                                  : throw new FormatException(
+                                      "type not found for deserialization and dynamic not allowed " +
+                                      $"- cannot continue with {jEnt.Type.Id}")
+                              );
 
             // Metadata
             var ismeta = new Target();
@@ -68,7 +69,7 @@ namespace ToSic.Eav.ImportExport.Json
             }
 
             l.A("build entity");
-            var newEntity = MultiBuilder.Entity.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
+            var newEntity = Services.MultiBuilder.Entity.EntityFromRepository(AppId, jEnt.Guid, jEnt.Id, jEnt.Id, ismeta, contentType, true,
                 AppPackageOrNull, DateTime.MinValue, DateTime.Now, jEnt.Owner, jEnt.Version);
 
             // check if metadata was included
@@ -120,8 +121,8 @@ namespace ToSic.Eav.ImportExport.Json
 
             foreach (var attrib in list)
             {
-                var newAtt = MultiBuilder.Attribute.CreateTyped(attrib.Key, type, attrib.Value
-                    .Select(v => MultiBuilder.Value.Build(type, v.Value, RecreateLanguageList(v.Key), relationshipsSource))
+                var newAtt = Services.MultiBuilder.Attribute.CreateTyped(attrib.Key, type, attrib.Value
+                    .Select(v => Services.MultiBuilder.Value.Build(type, v.Value, RecreateLanguageList(v.Key), relationshipsSource))
                     .ToList());
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
             }
@@ -131,7 +132,7 @@ namespace ToSic.Eav.ImportExport.Json
         {
             foreach (var definition in contentType.Attributes)
             {
-                var newAtt = MultiBuilder.Attribute.CreateTyped(definition.Name, definition.Type);
+                var newAtt = Services.MultiBuilder.Attribute.CreateTyped(definition.Name, definition.Type);
                 switch (definition.ControlledType)
                 {
                     case ValueTypes.Boolean:
@@ -144,7 +145,7 @@ namespace ToSic.Eav.ImportExport.Json
                         if (!jAtts.Entity?.ContainsKey(definition.Name) ?? true)
                             break; // just keep the empty definition, as that's fine
                         newAtt.Values = jAtts.Entity[definition.Name]
-                            .Select(v => MultiBuilder.Value.Build(
+                            .Select(v => Services.MultiBuilder.Value.Build(
                                 definition.Type, 
                                 v.Value,
                                 // 2023-02-24 2dm #immutable
@@ -188,7 +189,7 @@ namespace ToSic.Eav.ImportExport.Json
         {
             if (!list?.ContainsKey(attrDef.Name) ?? true) return;
             target.Values = list[attrDef.Name]
-                .Select(v => MultiBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
+                .Select(v => Services.MultiBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
                 .ToList();
 
         }

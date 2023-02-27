@@ -17,14 +17,12 @@ namespace ToSic.Lib.Data
         //protected virtual T UnwrappedContents => _unwrappedContents;
 
         private T _unwrappedContents;
-        private readonly Func<T> _getContents;
 
         /// <inheritdoc />
-        public T GetContents() => _unwrappedContents != null ? _unwrappedContents : _unwrappedContents = _getContents();
+        public virtual T GetContents() => _unwrappedContents;
 
         protected Wrapper(T contents) => _unwrappedContents = contents;
 
-        protected Wrapper(Func<T> getContents) => _getContents = getContents;
 
         protected void Wrap(T contents) => _unwrappedContents = contents;
     }

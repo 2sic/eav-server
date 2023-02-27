@@ -15,18 +15,18 @@ namespace ToSic.Eav.Data.Builder
 
         //public static void SetTitleField(this Entity entity, string name) => entity.TitleFieldName = name;
 
-        public static void SetMetadata(this Entity entity, ITarget meta) => entity.MetadataFor = meta;
+        //public static void SetMetadata(this Entity entity, ITarget meta) => entity.MetadataFor = meta;
 
         //public static void Retarget(this Entity entity, Guid newTarget)
         //    => entity.SetMetadata(new Metadata.Target(entity.MetadataFor, keyGuid: newTarget));
 
-        public static void UpdateType(this Entity entity, IContentType newType)
-        {
-            if (entity.Type.Name != newType.Name && entity.Type.NameId != newType.NameId)
-                throw new Exception("trying to update the type definition - but the new type is different");
+        //public static void UpdateType(this Entity entity, IContentType newType)
+        //{
+        //    if (entity.Type.Name != newType.Name && entity.Type.NameId != newType.NameId)
+        //        throw new Exception("trying to update the type definition - but the new type is different");
 
-            entity.Type = newType;
-        }
+        //    entity.Type = newType;
+        //}
 
         public static int? GetInternalPublishedIdForSaving(this Entity entity) => entity.PublishedEntity?.EntityId ?? entity.PublishedEntityId;
         

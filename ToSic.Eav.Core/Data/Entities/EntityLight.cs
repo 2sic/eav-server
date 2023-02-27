@@ -16,7 +16,7 @@ namespace ToSic.Eav.Data
     {
         #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
         /// <inheritdoc />
-        public int AppId { get; internal set; }
+        public int AppId { get; }
 
         /// <inheritdoc />
 		public int EntityId { get; internal set; } 
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         internal string TitleFieldName => _titleFieldName ?? Type.TitleFieldName;
 
-        private string _titleFieldName;
+        private readonly string _titleFieldName;
 
         /// <summary>
         /// List of all attributes in light-mode - single language, simple.
@@ -41,7 +41,7 @@ namespace ToSic.Eav.Data
 		public Dictionary<string, object> AttributesLight { get; }
 
         /// <inheritdoc />
-		public IContentType Type { get; internal set; }
+		public IContentType Type { get; }
 
         /// <inheritdoc />
 		public DateTime Created { get; internal set; }

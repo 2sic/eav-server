@@ -176,7 +176,8 @@ namespace ToSic.Eav.Data.Builder
         // 2. Then make sure the caller always uses the result, not the original entity
         // 3. Then enforce cloning
 
-        public IEntity ResetIdentifiers(IEntity entity,
+        public IEntity ResetIdentifiers(
+            IEntity entity,
             string noParamOrder = Eav.Parameters.Protector,
             Guid? newGuid = default,
             int? newId = default,

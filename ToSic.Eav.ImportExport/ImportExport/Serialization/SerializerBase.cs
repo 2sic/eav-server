@@ -5,6 +5,8 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -17,10 +19,13 @@ namespace ToSic.Eav.Serialization
 
         public class MyServices: MyServicesBase
         {
-            public MyServices(ITargetTypes metadataTargets, IAppStates appStates)
+            public MultiBuilder MultiBuilder { get; }
+
+            public MyServices(ITargetTypes metadataTargets, MultiBuilder multiBuilder, IAppStates appStates)
             {
                 ConnectServices(
                     MetadataTargets = metadataTargets,
+                    MultiBuilder = multiBuilder,
                     AppStates = appStates
                 );
             }
@@ -35,10 +40,9 @@ namespace ToSic.Eav.Serialization
         protected SerializerBase(MyServices services, string logName): base(services, logName)
         {
             MetadataTargets = services.MetadataTargets;
-            GlobalApp = services.AppStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
+            _globalApp = services.AppStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
         }
-
-        private readonly AppState GlobalApp;
+        private readonly AppState _globalApp;
 
         public ITargetTypes MetadataTargets { get; }
 
@@ -71,10 +75,9 @@ namespace ToSic.Eav.Serialization
 
         public bool PreferLocalAppTypes = false;
 
-        protected IContentType GetContentType(string staticName)
+        protected IContentType GetContentType(string staticName
+        ) => Log.Func($"name: {staticName}, preferLocal: {PreferLocalAppTypes}", () =>
         {
-            var wrapLog = Log.Fn<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}");
-
             // There is a complex lookup we must protocol, to better detect issues, which is why we assemble a message
             var msg = "";
 
@@ -84,13 +87,13 @@ namespace ToSic.Eav.Serialization
             if (PreferLocalAppTypes)
             {
                 var type = App.GetContentType(staticName);
-                if (type != null) return wrapLog.Return(type, msg + "app: found");
+                if (type != null) return (type, $"app: found");
                 msg += "app: not found, ";
             }
 
-            var globalType = GlobalApp?.GetContentType(staticName);
+            var globalType = _globalApp?.GetContentType(staticName);
 
-            if (globalType != null) return wrapLog.Return(globalType, msg + "global: found");
+            if (globalType != null) return (globalType, $"{msg}global: found");
             msg += "global: not found, ";
 
             if (_types != null)
@@ -104,9 +107,19 @@ namespace ToSic.Eav.Serialization
                 globalType = App.GetContentType(staticName);
             }
 
-            return wrapLog.Return(globalType, msg + (globalType == null ? "not " : "") + "found");
-        }
+            return (globalType, $"{msg}{(globalType == null ? "not " : "")}found");
+        });
 
+        protected IContentType GetTransientContentType(string name, string nameId)
+        {
+            var defaultTransient = Services.MultiBuilder.ContentType.Transient(AppId, name, nameId);
+            return ContentTypeProvider?.LazyTypeGenerator(AppId, name, nameId, defaultTransient)
+                   ?? defaultTransient;
+        }
+        /// <summary>
+        /// Ability to inject a different TransientContentTypeGenerator
+        /// </summary>
+        public ContentTypeProvider ContentTypeProvider { get; set; } = null;
 
         protected IEntity Lookup(int entityId) => App.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
 

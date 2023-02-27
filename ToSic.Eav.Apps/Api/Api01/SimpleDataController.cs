@@ -153,11 +153,11 @@ namespace ToSic.Eav.Api.Api01
             }
 
             var eGuid = Guid.Parse(values[Attributes.EntityFieldGuid].ToString());
-            var importEntity = _entityBuilder.Value.Create(appId: _appId, guid: eGuid, contentType: type, values: new Dictionary<string, object>(), owner: owner);
+            var importEntity = _entityBuilder.Value.Create(appId: _appId, guid: eGuid, contentType: type, values: new Dictionary<string, object>(), owner: owner, metadataFor: target);
             if (target != null)
             {
-                l.A("Set metadata target which was provided.");
-                importEntity.SetMetadata(target);
+                l.A("FYI: Set metadata target which was provided.");
+                //importEntity.SetMetadata(target);
             }
 
             var preparedValues = ConvertEntityRelations(values);
