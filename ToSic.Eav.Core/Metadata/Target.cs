@@ -34,10 +34,20 @@ namespace ToSic.Eav.Metadata
         /// Constructor for a new MetadataTarget, which is empty.
         /// </summary>
         [PrivateApi]
-        public Target(int targetType, string identifier)
+        public Target(int targetType, string identifier, string keyString = default, int? keyNumber = default, Guid? keyGuid = default)
         {
             TargetType = targetType;
             Title = identifier;
+            KeyString = keyString;
+            KeyNumber = keyNumber;
+            KeyGuid = keyGuid;
+        }
+        /// <summary>
+        /// Constructor for a new MetadataTarget, which is empty.
+        /// </summary>
+        [PrivateApi]
+        public Target(int targetType, string identifier, object key): this(targetType, identifier, key as string, key as int?, key as Guid?)
+        {
         }
 
         /// <summary>

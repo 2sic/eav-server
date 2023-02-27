@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps
             => _metadataManager.GetMetadata(targetType, key, contentTypeName);
         
         [PrivateApi]
-        public IMetadataOf GetMetadataOf<T>(TargetTypes targetType, T key, string title = null) => new MetadataOf<T>((int)targetType, key, this, title);
+        public IMetadataOf GetMetadataOf<T>(TargetTypes targetType, T key, string title = null) => new MetadataOf<T>((int)targetType, key, title, appSource: this);
 
 
         /// <summary>

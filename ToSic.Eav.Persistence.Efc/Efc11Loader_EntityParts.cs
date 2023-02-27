@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Data;
+using ToSic.Eav.Metadata;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Efc.Intermediate;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -53,12 +54,7 @@ namespace ToSic.Eav.Persistence.Efc
                     EntityGuid = e.EntityGuid,
                     Version = e.Version,
                     AttributeSetId = e.AttributeSetId,
-                    MetadataFor = new Metadata.Target(e.AssignmentObjectTypeId, null)
-                    {
-                        KeyGuid = e.KeyGuid,
-                        KeyNumber = e.KeyNumber,
-                        KeyString = e.KeyString
-                    },
+                    MetadataFor = new Target(e.AssignmentObjectTypeId, null, e.KeyString, e.KeyNumber, e.KeyGuid),
                     IsPublished = e.IsPublished,
                     PublishedEntityId = e.PublishedEntityId,
                     Owner = e.Owner,

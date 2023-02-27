@@ -204,7 +204,7 @@ namespace ToSic.Eav.Apps.Parts
                 else
                 {
                     Tuple<int, Guid> entity = Parent.Entities.Create(Constants.QueryPartTypeName, dataSource,
-                        new Target((int)TargetTypes.Entity, null) { KeyGuid = queryEntityGuid });
+                        new Target((int)TargetTypes.Entity, null, keyGuid: queryEntityGuid));
                     newDataSources.Add(originalIdentity, entity.Item2);
                 }
             }
