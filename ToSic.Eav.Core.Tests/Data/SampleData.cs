@@ -8,10 +8,10 @@ namespace ToSic.Eav.Core.Tests.Data
 {
     public class SampleData
     {
-        private readonly EntityBuilder _builder;
+        private readonly MultiBuilder _builder;
         public const int AppId = -1;
 
-        public SampleData(EntityBuilder builder)
+        public SampleData(MultiBuilder builder)
         {
             _builder = builder;
         }
@@ -21,7 +21,7 @@ namespace ToSic.Eav.Core.Tests.Data
             return new ContentTypeAttribute(appId, firstName, dataType, isTitle, attId, index);
         }
 
-        static readonly ContentType CtTestType = new ContentType(AppId, 0, "TestType", attributes: new List<IContentTypeAttribute>
+        IContentType CtTestType => _builder.ContentType.TestCreate(appId: AppId, name: "TestType", attributes: new List<IContentTypeAttribute>
             {
                 ContentTypeAttribute(AppId, "FirstName", DataTypes.String, true, 0, 0),
                 ContentTypeAttribute(AppId, "LastName", DataTypes.String, false, 0, 0),
@@ -32,7 +32,7 @@ namespace ToSic.Eav.Core.Tests.Data
         );
 
 
-        static readonly ContentType CtPet = new ContentType(AppId, 0, "Pet", attributes: new List<IContentTypeAttribute>
+        IContentType CtPet => _builder.ContentType.TestCreate(appId: AppId, name: "Pet", attributes: new List<IContentTypeAttribute>
             {
                 ContentTypeAttribute(AppId, "FirstName", DataTypes.String, true, 0, 0),
                 ContentTypeAttribute(AppId, "LastName", DataTypes.String, false, 0, 0),
@@ -52,7 +52,7 @@ namespace ToSic.Eav.Core.Tests.Data
                 {"Age", 37},
                 {"AnyDate", DateTime.Parse("2019-11-06T01:00:05Z") }
             };
-            var entDaniel = _builder.TestCreate(appId: AppId, entityId: 1, contentType: CtTestType, values: valDaniel, titleField: "FirstName");
+            var entDaniel = _builder.Entity.TestCreate(appId: AppId, entityId: 1, contentType: CtTestType, values: valDaniel, titleField: "FirstName");
             return entDaniel;
         }
 
@@ -66,7 +66,7 @@ namespace ToSic.Eav.Core.Tests.Data
                 {"Age", 6}
             };
 
-            var entLeonie = _builder.TestCreate(appId: AppId, entityId: 2, contentType: CtTestType, values: valLeonie, titleField: "FirstName");
+            var entLeonie = _builder.Entity.TestCreate(appId: AppId, entityId: 2, contentType: CtTestType, values: valLeonie, titleField: "FirstName");
             return entLeonie;
         }
         public IEntity TestEntityPet(int petNumber)
@@ -79,7 +79,7 @@ namespace ToSic.Eav.Core.Tests.Data
                 {"Age", petNumber}
             };
 
-            var entPet = _builder.TestCreate(appId: AppId, entityId: 1000 + petNumber, contentType: CtPet, values: valsPet, titleField: "FirstName");
+            var entPet = _builder.Entity.TestCreate(appId: AppId, entityId: 1000 + petNumber, contentType: CtPet, values: valsPet, titleField: "FirstName");
             return entPet;
         }
         

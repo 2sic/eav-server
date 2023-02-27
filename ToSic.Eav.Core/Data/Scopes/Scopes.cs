@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
-using static System.StringComparison;
 
 namespace ToSic.Eav.Data
 {
@@ -61,9 +61,10 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         public static string RenameOldScope(string scope)
         {
-            if (DefaultOld.Equals(scope, InvariantCultureIgnoreCase)) return Default;
-            if (AppOld.Equals(scope, InvariantCultureIgnoreCase)) return App;
-            if (CmsOld.Equals(scope, InvariantCultureIgnoreCase)) return Cms;
+            if (!scope.HasValue()) return scope;
+            if (DefaultOld.EqualsInsensitive(scope)) return Default;
+            if (AppOld.EqualsInsensitive(scope)) return App;
+            if (CmsOld.EqualsInsensitive(scope)) return Cms;
             return scope;
         }
     }

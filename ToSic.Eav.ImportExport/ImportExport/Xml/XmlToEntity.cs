@@ -206,7 +206,8 @@ namespace ToSic.Eav.ImportExport.Xml
                 var newTypeRepoType = xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True"
                     ? RepositoryTypes.Folder
                     : RepositoryTypes.Sql;
-                typeForEntity = new ContentType(AppId, 0, typeName, repositoryType: newTypeRepoType);
+                typeForEntity = _multiBuilder.ContentType.Create(appId: AppId,
+                    id: 0, name: typeName, nameId: null, scope: null, repositoryType: newTypeRepoType);
             }
 		    var targetEntity = // globalType != null
 		        // ? _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, typedValues: finalAttributes)

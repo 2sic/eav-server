@@ -116,7 +116,7 @@ namespace ToSic.Eav.Apps.ImportExport
             #endregion
             
             // create ContentType
-            var ct = new ContentType(
+            var ct = Services.MultiBuilder.Value.ContentType.Create(
                 appId: AppId,
                 id: 0,
                 name: typeName,

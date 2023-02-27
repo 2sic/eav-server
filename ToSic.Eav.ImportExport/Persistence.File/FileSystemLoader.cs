@@ -22,19 +22,21 @@ namespace ToSic.Eav.Persistence.File
 {
     public partial class FileSystemLoader: ServiceBase, IContentTypeLoader
     {
+        private readonly Generator<JsonSerializer> _jsonSerializerGenerator;
+        private readonly MultiBuilder _multiBuilder;
         public int AppId = -999;
 
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
-        public FileSystemLoader(Generator<JsonSerializer> jsonSerializerGenerator) : base($"{EavLogs.Eav}.FsLoad")
+        public FileSystemLoader(Generator<JsonSerializer> jsonSerializerGenerator, MultiBuilder multiBuilder) : base($"{EavLogs.Eav}.FsLoad")
         {
             ConnectServices(
-                _jsonSerializerGenerator = jsonSerializerGenerator
+                _jsonSerializerGenerator = jsonSerializerGenerator,
+                _multiBuilder = multiBuilder
             );
         }
 
-        private readonly Generator<JsonSerializer> _jsonSerializerGenerator;
 
         public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource
         ) => Log.Func($"init with appId:{appId}, path:{path}, ignore:{ignoreMissing}", () =>
@@ -182,7 +184,7 @@ namespace ToSic.Eav.Persistence.File
             return (contentTypes, $"{contentTypes.Count}");
         });
 
-        private string ContentTypePath => System.IO.Path.Combine(Path, Configuration.FsDataConstants.TypesFolder);
+        private string ContentTypePath => System.IO.Path.Combine(Path, FsDataConstants.TypesFolder);
 
         /// <summary>
         /// Try to load a content-type file, but if anything fails, just return a null
@@ -199,8 +201,9 @@ namespace ToSic.Eav.Persistence.File
                 var ct = ser.DeserializeContentType(json);
 
                 infoIfError = "couldn't set source/parent";
-                (ct as ContentType).SetSourceParentAndIdForPresetTypes(RepoType, Constants.PresetContentTypeFakeParent,
-                    path, ++TypeIdSeed);
+                ct = _multiBuilder.ContentType.Clone(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: Constants.PresetContentTypeFakeParent, repoAddress: path);
+                //(ct as ContentType).SetSourceParentAndIdForPresetTypes(RepoType, Constants.PresetContentTypeFakeParent,
+                //    path, ++TypeIdSeed);
                 return ct;
             }
             catch (IOException e)
@@ -279,7 +282,7 @@ namespace ToSic.Eav.Persistence.File
             return (entities, $"{entities.Count}");
         });
         
-        private string BundlesPath => System.IO.Path.Combine(Path, Configuration.FsDataConstants.BundlesFolder);
+        private string BundlesPath => System.IO.Path.Combine(Path, FsDataConstants.BundlesFolder);
 
         /// <summary>
         /// Build contentTypes from bundle json
@@ -292,14 +295,24 @@ namespace ToSic.Eav.Persistence.File
             {
                 var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
 
+                var copyTypeIdSeed = TypeIdSeed;
+                var newContentTypes = contentTypes
+                    .Select(ct => _multiBuilder.ContentType.Clone(ct, id: ++copyTypeIdSeed,
+                        repoType: RepoType, repoAddress: path,
+                        parentTypeId: Constants.PresetContentTypeFakeParent,
+                        configZoneId: Constants.PresetZoneId,
+                        configAppId: Constants.PresetAppId)
+                    )
+                    .ToList();
 
-                contentTypes.ForEach(contentType =>
-                {
-                    (contentType as ContentType).SetSourceParentAndIdForPresetTypes(RepoType,
-                        Constants.PresetContentTypeFakeParent, path, ++TypeIdSeed);
-                });
+                return newContentTypes;
+                //contentTypes.ForEach(contentType =>
+                //{
+                //    (contentType as ContentType).SetSourceParentAndIdForPresetTypes(RepoType,
+                //        Constants.PresetContentTypeFakeParent, path, ++TypeIdSeed);
+                //});
+                //return contentTypes;
 
-                return contentTypes;
             }
             catch (Exception e)
             {

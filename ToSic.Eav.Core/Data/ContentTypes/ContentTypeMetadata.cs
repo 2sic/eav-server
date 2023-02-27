@@ -18,10 +18,12 @@ namespace ToSic.Eav.Data
         /// Used in cases where the metadata-provider is already known
         /// </summary>
         /// <param name="typeId">type id / static-name</param>
-        /// <param name="metaSourceFinder">remote / deferred metadata provider</param>
-        public ContentTypeMetadata(string typeId, Func<IHasMetadataSource> metaSourceFinder, string targetIdentifier)
-            : base((int)TargetTypes.ContentType, typeId, metaSourceFinder, targetIdentifier)
-        { }
+        /// <param name="metaSourceRemote">remote / deferred metadata provider</param>
+        internal ContentTypeMetadata(string typeId, Func<IHasMetadataSource> metaSourceRemote, string targetIdentifier)
+            : base((int)TargetTypes.ContentType, typeId, metaSourceRemote, targetIdentifier)
+        {
+            SourceForClone = metaSourceRemote;
+        }
 
         /// <summary>
         /// Description <see cref="IEntity"/> metadata of this content-type.
@@ -53,10 +55,13 @@ namespace ToSic.Eav.Data
             // add the guid metadata on entity if it has a real guid
             // this is kind of wrong, because it should use the type MetadataForContentType
             // but this slipped in a long time ago, and we cannot change it any more
-            var additional = GetMetadataSource()?.GetMetadata(TargetTypes.Entity, ctGuid)
+            var additional = GetMetadataSource()?
+                                 .GetMetadata(TargetTypes.Entity, ctGuid)
                                  .ToList()
                              ?? new List<IEntity>();
             Use(AllWithHidden.Concat(additional).ToList());
         }
+
+        internal Func<IHasMetadataSource> SourceForClone { get; }
     }
 }

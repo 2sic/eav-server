@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
+using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Helpers;
 using static System.StringComparison;
 
 namespace ToSic.Eav.Data
@@ -18,6 +18,54 @@ namespace ToSic.Eav.Data
     [PrivateApi("2021-09-30 hidden now, was internal_don't use Always use the interface, not this class")]
     public partial class ContentType : IContentType, IContentTypeShared
     {
+        #region Constructor - internal only, should only ever be called by the ContentTypeBuilder
+
+        /// <summary>
+        /// Basic initializer of ContentType class
+        /// </summary>
+        /// <remarks>
+        /// Overload for in-memory entities
+        /// </remarks>
+        [PrivateApi]
+        internal ContentType(
+            int appId,
+            int id,
+            string name,
+            string nameId,
+            string scope,
+            IList<IContentTypeAttribute> attributes,
+            bool isAlwaysShared,
+            bool? onSaveSortAttributes,
+            string onSaveUseParentStaticName,
+            RepositoryTypes repositoryType,
+            string repositoryAddress,
+            bool isDynamic,
+            ContentTypeMetadata ctMetadata,
+            List<IDecorator<IContentType>> decorators
+        )
+        {
+            AppId = appId;
+            Id = id;
+            Name = name;
+            NameId = nameId ?? name;
+            RepositoryType = repositoryType;
+            RepositoryAddress = repositoryAddress ?? "";
+            AlwaysShareConfiguration = isAlwaysShared;
+            IsDynamic = isDynamic;
+            Decorators = decorators;
+            Metadata = ctMetadata;
+            Scope = scope;
+            Attributes = attributes;
+
+            // Temporary properties which are only to specify saving rules
+            // Should be moved elsewhere...
+            OnSaveSortAttributes = onSaveSortAttributes ?? false;
+            OnSaveUseParentStaticName = onSaveUseParentStaticName;
+        }
+
+        #endregion
+
+
         #region simple properties
 
         /// <inheritdoc />
@@ -33,16 +81,11 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public string NameId { get; }
 
-        // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-        ///// <inheritdoc />
-        //[Obsolete("Obsolete in v12, used to contain the description, which is now in the metadata")]
-        //public string Description { get; private set; }
-
         /// <inheritdoc />
         public string Scope { get; }
 
         /// <inheritdoc />
-        public int Id { get; internal set; }
+        public int Id { get; }
 
         /// <inheritdoc />
         [Obsolete("Deprecated in V13, please use Id instead.")]
@@ -52,10 +95,10 @@ namespace ToSic.Eav.Data
         public IList<IContentTypeAttribute> Attributes { get; }
 
         /// <inheritdoc />
-        public RepositoryTypes RepositoryType { get; internal set; }
+        public RepositoryTypes RepositoryType { get; }
 
         /// <inheritdoc />
-        public string RepositoryAddress { get; internal set; } = "";
+        public string RepositoryAddress { get; }
 
         /// <inheritdoc />
         public bool IsDynamic { get; }
@@ -63,12 +106,12 @@ namespace ToSic.Eav.Data
         #endregion
 
         /// <inheritdoc />
-        public bool Is(string name) => Name.Equals(name, InvariantCultureIgnoreCase) || NameId.Equals(name, InvariantCultureIgnoreCase);
+        public bool Is(string name) => Name.EqualsInsensitive(name) || NameId.EqualsInsensitive(name);
         
-        [JsonIgnore]
-        [PrivateApi("new 15.04")]
-        public string TitleFieldName => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
-        private readonly GetOnce<string> _titleFieldName = new GetOnce<string>();
+        //[JsonIgnore]
+        //[PrivateApi("new 15.04")]
+        //public string TitleFieldName => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
+        //private readonly GetOnce<string> _titleFieldName = new GetOnce<string>();
 
         /// <inheritdoc />
         public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => string.Equals(a.Name, fieldName, OrdinalIgnoreCase));
@@ -84,118 +127,25 @@ namespace ToSic.Eav.Data
         #endregion
 
 
-        #region constructors
+        #region Advanced Properties: Metadata, Decorators
 
-        ///// <inheritdoc />
-        ///// <summary>
-        ///// Initializes a new ContentType - usually when building the cache
-        ///// </summary>
-        //[PrivateApi]
-        //public ContentType(
-        //    int appId,
-        //    string name,
-        //    string nameId,
-        //    int typeId,
-        //    string scope,
+        /// <inheritdoc />
+        public ContentTypeMetadata Metadata { get; }
 
-        //    List<IDecorator<IContentType>> decorators,
-        //    ContentTypeMetadata ctMetadata,
-        //// #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-        ////string description = default,
-
-        //    // Reference to original if it inherits something
-        //    //int? parentTypeId = default, 
-        //    //int configZoneId = default, 
-        //    //int configAppId = default,
-
-        //    // This is a shared type
-        //    bool alwaysShareConfig = default,
-
-        //    IList<IContentTypeAttribute> attributes = default,
+        IMetadataOf IHasMetadata.Metadata => Metadata;
 
 
-        //    //Func<IHasMetadataSource> metaSourceFinder = default,
-        //    bool isDynamic = default
-        //    ): this(appId, id: typeId, name: name, nameId: nameId, 
-        //    scope: scope, alwaysShareConfiguration: alwaysShareConfig,
-        //    attributes: attributes, isDynamic: isDynamic,
-        //    ctMetadata: ctMetadata, decorators: decorators)
-        //{
-        //    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-        //    //Description = description;
+        /// <inheritdoc />
+        public List<IDecorator<IContentType>> Decorators { get; }
 
-        //    // move to other constructor
-        //    //Scope = Scopes.RenameOldScope(scope);
-        //    //AlwaysShareConfiguration = alwaysShareConfig;
-        //    //IsDynamic = isDynamic;
-
-        //    //Decorators = decorators ?? new List<IDecorator<IContentType>>();
-
-        //    //if (parentTypeId != null)
-        //    //    Decorators.Add(new Ancestor<IContentType>(new AppIdentity(configZoneId, configAppId),
-        //    //        parentTypeId.Value));
-
-        //    // Metadata
-        //    //_metaSourceFinder = metaSourceFinder;
-
-
-        //}
-
-        /// <summary>
-        /// Basic initializer of ContentType class
-        /// </summary>
-        /// <remarks>
-        /// Overload for in-memory entities
-        /// </remarks>
-        [PrivateApi]
-        public ContentType(
-            int appId,
-            int id,
-            string name,
-            string nameId = default,
-            string scope = default,
-            IList<IContentTypeAttribute> attributes = default,
-            bool isAlwaysShared = default,
-            bool? onSaveSortAttributes = default,
-            string onSaveUseParentStaticName = default,
-            RepositoryTypes repositoryType = RepositoryTypes.Sql,
-            bool isDynamic = default,
-            ContentTypeMetadata ctMetadata = default,
-            List<IDecorator<IContentType>> decorators = default
-            )
-        {
-            AppId = appId;
-            Id = id;
-
-            Name = name;
-            NameId = nameId ?? name;
-
-            RepositoryType = repositoryType;
-
-            AlwaysShareConfiguration = isAlwaysShared;
-
-            IsDynamic = isDynamic;
-
-            Decorators = decorators ?? new List<IDecorator<IContentType>>();
-            Metadata = ctMetadata ?? new ContentTypeMetadata(NameId, null, Name);
-
-            if (scope != default)
-                Scope = Scopes.RenameOldScope(scope);
-
-            if (attributes != null)
-                Attributes = attributes;
-
-            if (onSaveSortAttributes != null)
-                OnSaveSortAttributes = onSaveSortAttributes.Value;
-
-            if (onSaveUseParentStaticName != default)
-                OnSaveUseParentStaticName = onSaveUseParentStaticName;
-        }
 
         #endregion
 
+        #region Sharing Content Types
 
+        public bool AlwaysShareConfiguration { get; }
 
+        #endregion
 
     }
 }

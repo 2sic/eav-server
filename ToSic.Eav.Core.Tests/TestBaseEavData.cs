@@ -45,5 +45,21 @@ namespace ToSic.Eav.Core.Tests
             );
 
         }
+
+        public static IContentType TestCreate(this ContentTypeBuilder builder,
+            int appId,
+            string name,
+            int? id = default,
+            string nameId = default,
+            string scope = default,
+            IList<IContentTypeAttribute> attributes = default)
+        {
+            return builder.Create(appId: appId,
+                id: id ?? 0,
+                name: name,
+                nameId: nameId,
+                scope: scope ?? "TestScope",
+                attributes: attributes);
+        }
     }
 }

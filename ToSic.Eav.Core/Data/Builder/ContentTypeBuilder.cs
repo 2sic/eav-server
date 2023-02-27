@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.Metadata;
@@ -19,24 +18,37 @@ namespace ToSic.Eav.Data.Builder
         // #RemoveContentTypeDescription #2974 - #remove ca. 2023 Q2 if all works
         //public const string DynTypeDefDescription = "Dynamic content type";
 
-        public IContentType Create(int appId,
+        public IContentType Create(
+            // Basic identifiers (5)
+            int appId,
             string name,
             string nameId,
             int id,
             string scope,
-            
-            // Reference to original if it inherits something
+
+            // Contents (1)
+            IList<IContentTypeAttribute> attributes = default,
+
+            // Basic specs (2)
+            bool isAlwaysShared = default,  // This is a shared type
+            bool isDynamic = default,
+
+            // How it's saved / where it's from incl. inheritance (5)
             int? parentTypeId = default,
             int configZoneId = default,
             int configAppId = default,
+            RepositoryTypes repositoryType = RepositoryTypes.Sql,
+            string repositoryAddress = default,
 
-            // This is a shared type
-            bool isAlwaysShared = default,
 
-            IList<IContentTypeAttribute> attributes = default,
+            // Metadata (2)
+            ContentTypeMetadata metadata = default,                 // for clone
+            Func<IHasMetadataSource> metaSourceFinder = default,    // for find-it-yourself
 
-            Func<IHasMetadataSource> metaSourceFinder = default,
-            bool isDynamic = default)
+            // Save Specs (2) Older stuff, should be removed some day
+            bool? onSaveSortAttributes = default,
+            string onSaveUseParentStaticName = default
+            )
         {
             // Prepare decorators - if it's inheriting, add that information
             var decorators = new List<IDecorator<IContentType>>();
@@ -45,7 +57,11 @@ namespace ToSic.Eav.Data.Builder
                     parentTypeId.Value));
 
             // Prepare metadata retrieval
-            var ctMetadata = new ContentTypeMetadata(nameId, metaSourceFinder, name);
+            metadata = metadata ?? new ContentTypeMetadata(nameId, metaSourceFinder, name);
+
+            attributes = attributes ?? new List<IContentTypeAttribute>();
+
+            scope = Scopes.RenameOldScope(scope);
 
             return new ContentType(
                 appId: appId,
@@ -54,34 +70,92 @@ namespace ToSic.Eav.Data.Builder
                 id: id,
                 scope: scope,
                 decorators: decorators,
-                ctMetadata: ctMetadata,
-                //parentTypeId: parentTypeId,
-                //configZoneId: configZoneId,
-                //configAppId: configAppId,
+                ctMetadata: metadata,
                 isAlwaysShared: isAlwaysShared,
                 attributes: attributes,
-                //metaSourceFinder: metaSourceFinder,
-                isDynamic: isDynamic
+                isDynamic: isDynamic,
+                repositoryType: repositoryType,
+                repositoryAddress: repositoryAddress,
+                // older stuff
+                onSaveSortAttributes: onSaveSortAttributes,
+                onSaveUseParentStaticName: onSaveUseParentStaticName
             );
         }
 
         public IContentType Clone(
             IContentType original,
+            // Basic identifiers (5)
             int? appId = default,
             string name = default,
             string nameId = default,
             int? id = default,
             string scope = default,
-            RepositoryTypes? repoType = default
+            // Contents (1)
+            IList<IContentTypeAttribute> attributes = default,
+
+            // Basic specs (2)
+            bool? isAlwaysShared = default,  // This is a shared type
+            bool? isDynamic = default,
+
+            // Where it's from
+            RepositoryTypes? repoType = default,
+            string repoAddress = default,
+            int? parentTypeId = default,
+            int? configZoneId = default,
+            int? configAppId = default,
+
+            // Metadata (2)
+            ContentTypeMetadata metadata = default                 // for clone
+            //Func<IHasMetadataSource> metaSourceFinder = default
+
+            // Save Specs (2) Older stuff, should be removed some day - ATM not supported
+            //bool? onSaveSortAttributes = default,
+            //string onSaveUseParentStaticName = default
+
         )
         {
+            if (original == null) throw new ArgumentNullException(nameof(original));
+
+            // If we are reconfiguring where it's from / shared, we must retrieve / update that
+            if (parentTypeId != null)
+            {
+                var ancestorDecorator = original.GetDecorator<IAncestor>();
+                if (ancestorDecorator != null)
+                {
+                    configZoneId = configZoneId ?? ancestorDecorator.ZoneId;
+                    configAppId = configAppId ?? ancestorDecorator.AppId;
+                }
+            }
+
             return Create(
+                // Identifiers (5)
                 appId: appId ?? original.AppId,
                 name: name ?? original.Name,
                 nameId: nameId ?? original.NameId,
                 id: id ?? original.Id,
-                scope: scope ?? original.Scope
-                );
+                scope: scope ?? original.Scope,
+
+                // Contents
+                attributes: attributes ?? original.Attributes,
+
+                // Specs (2)
+                isAlwaysShared: isAlwaysShared ?? original.AlwaysShareConfiguration,
+                isDynamic: isDynamic ?? original.IsDynamic,
+
+                // Where it's from
+                repositoryType: repoType ?? original.RepositoryType,
+                repositoryAddress: repoAddress ?? original.RepositoryAddress,
+                parentTypeId: parentTypeId,
+                configZoneId: configZoneId ?? default,
+                configAppId: configAppId ?? default,
+
+                // Metadata
+                metadata: metadata ?? original.Metadata
+                //metaSourceFinder: metaSourceFinder ?? original.Metadata.SourceForClone
+
+                // Save Specs not implemented
+                // onSaveSortAttributes: onSaveSortAttributes ?? original
+            );
         }
 
         public IContentType Transient(string typeName)
