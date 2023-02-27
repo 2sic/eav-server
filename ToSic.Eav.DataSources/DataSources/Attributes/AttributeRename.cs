@@ -145,9 +145,8 @@ namespace ToSic.Eav.DataSources
 
             var result = originals
                 .Select(entity => _multiBuilder.Entity.Clone(entity,
-                    newValues: CreateDic(entity),
-                    entity.Relationships.AllRelationships,
-                    newType: newType
+                    values: CreateDic(entity),
+                    type: newType
                 ))
                 .Cast<IEntity>()
                 .ToImmutableArray();

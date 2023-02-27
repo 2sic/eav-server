@@ -46,15 +46,15 @@ namespace ToSic.Eav.Data.Builder
         /// <returns></returns>
         public Entity FullClone(IEntity entity)
         {
-            return Entity.Clone(entity, Attribute.ListDeepClone(entity.Attributes),
-                ((RelationshipManager)entity.Relationships).AllRelationships);
+            return Entity.Clone(entity,
+                values: Attribute.ListDeepClone(entity.Attributes));
         }
         
 
         public IEntity FakeEntity(int appId)
             => _entityBuilder.Value.Create(
                 appId: appId,
-                values: new Dictionary<string, object> { { Data.Attributes.TitleNiceName, "" } },
+                rawValues: new Dictionary<string, object> { { Data.Attributes.TitleNiceName, "" } },
                 contentType: ContentType.Transient("FakeEntity"),
                 titleField: Data.Attributes.TitleNiceName
             );

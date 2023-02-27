@@ -88,7 +88,7 @@ namespace ToSic.Eav.Apps
         /// This ensures that any request for metadata would include this entity, if it's metadata
         /// </summary>
         /// <param name="entity"></param>
-        internal void Register(Entity entity)
+        internal void Register(IEntity entity)
         {
             var md = entity.MetadataFor;
             if (!md.IsMetadata) return;

@@ -14,24 +14,25 @@ namespace ToSic.Eav.Data
     public partial class Entity: EntityLight, IEntity
     {
         [PrivateApi]
-        internal Entity(int appId, int entityId,
+        internal Entity(int appId,
+            int entityId,
             IContentType contentType,
             EntityPartsBuilder partsBuilder,
             bool useLightMode,
-            Dictionary<string, object> values = default,
-            Dictionary<string, IAttribute> typedValues = default,
-            string titleFieldName = null,
-            DateTime? created = null, DateTime? modified = null,
-            int repositoryId = default,
-            Guid? guid = default,
-            string owner = default,
-            int version = default,
-            bool isPublished = true,
-            ITarget metadataFor = default)
-            : base(appId, entityId, guid, contentType, partsBuilder, values, titleFieldName, created: created, modified: modified, owner: owner, metadataFor: metadataFor)
+            Dictionary<string, object> rawValues,
+            Dictionary<string, IAttribute> values,
+            string titleFieldName,
+            DateTime? created, DateTime? modified,
+            int repositoryId,
+            Guid? guid,
+            string owner,
+            int version,
+            bool isPublished,
+            ITarget metadataFor)
+            : base(appId, entityId, guid, contentType, partsBuilder, rawValues, titleFieldName, created: created, modified: modified, owner: owner, metadataFor: metadataFor)
         {
             IsLight = useLightMode;
-            Attributes = typedValues;
+            Attributes = values;
             RepositoryId = repositoryId;
             Version = version;
             IsPublished = isPublished;

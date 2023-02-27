@@ -112,7 +112,7 @@ namespace ToSic.Eav.Apps.Parts
                         return entity;
                     var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
                     if (newType == null) return entity;
-                    return _multiBuilder.Value.Entity.Clone(entity, newType: newType);
+                    return _multiBuilder.Value.Entity.Clone(entity, type: newType);
                 }).ToList();
 
                 // Clear Ephemeral attributes which shouldn't be saved (new in v12)

@@ -294,7 +294,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Simplest case - nothing existing to update: return update-entity unchanged
             if (existingEntities == null || !existingEntities.Any())
-                return (_entityBuilder.Clone(update, newType: typeReset), "is new, nothing to merge, just set type to be sure");
+                return (_entityBuilder.Clone(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
 
             Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information,
                 $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));

@@ -6,10 +6,10 @@ namespace ToSic.Eav.Data.ContentTypes
     /// <summary>
     /// Special helper class for delayed construction of ContentTypes so they can be immutable
     /// </summary>
-    public class ContentTypeProvider
+    public class DeferredContentTypeProvider : IDeferredContentTypeProvider
     {
         public List<IContentType> Source { get; } = new List<IContentType>();
-        public ContentTypeProvider()
+        public DeferredContentTypeProvider()
         {
         }
 

@@ -133,7 +133,7 @@ namespace ToSic.Eav.WebApi
             if (!p.DuplicateEntity.HasValue) return found;
 
             // TODO: 2023-02-25 seems that EntityId is reset, but RepositoryId isn't - not sure why or if this is correct
-            var copy = _entityBuilder.Clone(found, found.Attributes, newId: 0, newGuid: Guid.Empty);
+            var copy = _entityBuilder.Clone(found, values: found.Attributes, id: 0, guid: Guid.Empty);
             //copy.SetGuid(Guid.Empty);
             //copy.ResetEntityId();
             return copy;

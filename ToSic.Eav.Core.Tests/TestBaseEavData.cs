@@ -29,8 +29,8 @@ namespace ToSic.Eav.Core.Tests
         {
             return entityBuilder.Create(appId: appId,
                 contentType: contentType,
-                values: values,
-                typedValues: typedValues,
+                rawValues: values,
+                values: typedValues,
                 entityId: entityId,
                 repositoryId: repositoryId,
                 guid:guid,

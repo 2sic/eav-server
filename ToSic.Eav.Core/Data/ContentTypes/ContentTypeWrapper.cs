@@ -20,7 +20,13 @@ namespace ToSic.Eav.Data
 
         public ContentTypeWrapper(Func<IContentType> lazy) : base(lazy)
         {
+            IsDeferred = true;
         }
+
+        /// <summary>
+        /// Marks this as being a deferred content-type, which could be reloaded at some point
+        /// </summary>
+        public bool IsDeferred { get; }
 
         public new void Reset() => base.Reset();
 

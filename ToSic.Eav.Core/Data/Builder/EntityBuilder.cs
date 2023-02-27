@@ -27,9 +27,9 @@ namespace ToSic.Eav.Data.Builder
         public Entity Create(
             int appId,
             IContentType contentType,
-            string noParamOrder = Eav.Parameters.Protector,
-            Dictionary<string, object> values = default,
-            Dictionary<string, IAttribute> typedValues = default,
+            string noParamOrder = Parameters.Protector,
+            Dictionary<string, object> rawValues = default,
+            Dictionary<string, IAttribute> values = default,
             int entityId = default,
             int repositoryId = Constants.NullId,
             Guid guid = default,
@@ -43,22 +43,22 @@ namespace ToSic.Eav.Data.Builder
             )
         {
             // if we have typed, make sure invariant
-            typedValues = typedValues?.ToInvariant();
+            values = values?.ToInvariant();
 
             // If typed and basic values don't exist, set Typed as new list for now WIP
-            if (typedValues == null && values == null)
-                typedValues = new Dictionary<string, IAttribute>(InvariantCultureIgnoreCase);
+            if (values == null && rawValues == null)
+                values = new Dictionary<string, IAttribute>(InvariantCultureIgnoreCase);
 
             // Typed values exist if given explicitly, OR if the values are of the desired type
-            if (typedValues == null && values.All(x => x.Value is IAttribute))
-                typedValues = values.ToDictionary(pair => pair.Key, pair => pair.Value as IAttribute, InvariantCultureIgnoreCase);
+            if (values == null && rawValues.All(x => x.Value is IAttribute))
+                values = rawValues.ToDictionary(pair => pair.Key, pair => pair.Value as IAttribute, InvariantCultureIgnoreCase);
 
             // If TypedValues still don't exist
-            var useLightMode = typedValues == null;
-            if (typedValues == null)
-                typedValues = _attributeBuilder.ConvertToIAttributeDic(values);
+            var useLightMode = values == null;
+            if (values == null)
+                values = _attributeBuilder.ConvertToIAttributeDic(rawValues);
             else
-                values = null;
+                rawValues = null;
 
             // If repositoryId isn't known set it it to EntityId
             repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Data.Builder
             );
 
             return new Entity(appId, entityId, partsBuilder: partsBuilder,  repositoryId: repositoryId, contentType: contentType,
-                useLightMode: useLightMode, values: values, typedValues: typedValues,
+                useLightMode: useLightMode, rawValues: rawValues, values: values,
                 guid: guid, titleFieldName: titleField,
                 created: created, modified: modified, owner: owner,
                 version: version, isPublished: isPublished,
@@ -87,7 +87,9 @@ namespace ToSic.Eav.Data.Builder
             bool isPublished, 
             AppState source,
             DateTime created,
-            DateTime modified, string owner, int version,
+            DateTime modified,
+            string owner,
+            int version,
             string titleField = default,
             Dictionary<string, IAttribute> values = default
             )
@@ -97,7 +99,7 @@ namespace ToSic.Eav.Data.Builder
             );
 
             var e = Create(appId: appId,
-                values: null, typedValues: values,
+                rawValues: null, values: values,
                 guid: entityGuid, entityId: entityId, repositoryId: repositoryId,
                 contentType: type, titleField: titleField,
                 created: created, modified: modified,
@@ -121,7 +123,7 @@ namespace ToSic.Eav.Data.Builder
             return Create(appId: appId,
                 entityId: entityId, guid: entityGuid,
                 contentType: type, titleField: specs.Title,
-                values: null, typedValues: specs.All,
+                rawValues: null, values: specs.All,
                 created: DateTime.MinValue, modified: DateTime.Now, 
                 owner: "");
 
@@ -131,41 +133,46 @@ namespace ToSic.Eav.Data.Builder
         /// Create a new Entity based on an Entity and Attributes
         /// Used in the Attribute-Filter, which generates a new entity with less properties
         /// </summary>
-        public Entity Clone(IEntity entity, 
-            Dictionary<string, IAttribute> newValues = default,
-            IEnumerable<EntityRelationship> entityRelationshipsIfNoApp = default,
-            int? newId = default,
-            int? newRepoId = default,
-            Guid? newGuid = default,
-            IContentType newType = default
+        public Entity Clone(
+            IEntity original,
+            string noParamOrder = Parameters.Protector,
+            int? appId = default,
+            Dictionary<string, IAttribute> values = default,
+            //IEnumerable<EntityRelationship> entityRelationshipsIfNoApp = default,
+            int? id = default,
+            int? repositoryId = default,
+            Guid? guid = default,
+            IContentType type = default,
+            bool? isPublished = default,
+            DateTime? created = default,
+            DateTime? modified = default,
+            string owner = default,
+            int? version = default
             )
         {
+            var lookupApp = (original as Entity)?.DeferredLookupData as AppState;
             var entityPartsBuilder = new EntityPartsBuilder(
-                ent =>
-                {
-                    var lookupApp2 = (entity as Entity)?.DeferredLookupData as AppState;
-                    return new RelationshipManager(ent, lookupApp2, entityRelationshipsIfNoApp);
-                }
+                ent => new RelationshipManager(ent, (original as Entity)?.Relationships as RelationshipManager)
             );
-            newValues = newValues ?? entity.Attributes;
-            newType = newType ?? entity.Type;
 
-            var e = Create(appId: entity.AppId,
-                values: null,
-                typedValues: newValues,
-                entityId: newId ?? entity.EntityId,
-                repositoryId: newRepoId ?? entity.RepositoryId,
-                guid: newGuid ?? entity.EntityGuid,
-                contentType: newType,
-                titleField: entity.Title?.Name,
-                isPublished: entity.IsPublished,
-                created: entity.Created, modified: entity.Modified,
-                owner: entity.Owner, version: entity.Version,
-                metadataFor: new Target(entity.MetadataFor),
+            var e = Create(
+                appId: appId ?? original.AppId,
+                rawValues: null,
+                values: values ?? original.Attributes,
+                entityId: id ?? original.EntityId,
+                repositoryId: repositoryId ?? original.RepositoryId,
+                guid: guid ?? original.EntityGuid,
+                contentType: type ?? original.Type,
+                titleField: original.Title?.Name,
+                isPublished: isPublished ?? original.IsPublished,
+                created: created ?? original.Created,
+                modified: modified ?? original.Modified,
+                owner: owner ?? original.Owner,
+                version: version ?? original.Version,
+                metadataFor: new Target(original.MetadataFor),
                 partsBuilder: entityPartsBuilder
             );
 
-            var lookupApp = (entity as Entity)?.DeferredLookupData as AppState;
             e.DeferredLookupData = lookupApp;
             return e;
         }
@@ -178,7 +185,7 @@ namespace ToSic.Eav.Data.Builder
 
         public IEntity ResetIdentifiers(
             IEntity entity,
-            string noParamOrder = Eav.Parameters.Protector,
+            string noParamOrder = Parameters.Protector,
             Guid? newGuid = default,
             int? newId = default,
             ITarget metadataFor = default,

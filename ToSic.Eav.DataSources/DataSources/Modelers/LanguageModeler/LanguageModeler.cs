@@ -97,8 +97,7 @@ namespace ToSic.Eav.DataSources
             foreach (var entity in originals)
             {
                 var modifiedEntity = _multiBuilder.Entity.Clone(entity,
-                    _multiBuilder.Attribute.ListDeepClone(entity.Attributes), 
-                    (entity.Relationships as RelationshipManager)?.AllRelationships);
+                    values: _multiBuilder.Attribute.ListDeepClone(entity.Attributes));
 
                 var attributes = modifiedEntity.Attributes;
 

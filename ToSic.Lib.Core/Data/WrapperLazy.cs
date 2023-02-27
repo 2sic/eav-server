@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ToSic.Lib.Data
 {
@@ -17,12 +14,27 @@ namespace ToSic.Lib.Data
         /// </summary>
         /// <param name="getContents"></param>
         protected WrapperLazy(Func<T> getContents): base(default) => _getContents = getContents;
+        private Func<T> _getContents;
 
         private T _unwrappedContents;
 
         protected void Reset() => Wrap(default);
 
-        private readonly Func<T> _getContents;
+        /// <summary>
+        /// Complete the wrapper, ensure the data was retrieved, and drop the getter.
+        /// </summary>
+        public T Freeze()
+        {
+            // Reset the contents to ensure final reloading
+            Wrap(default);
+            // Access the content to ensure loading
+            var result = GetContents();
+            // Kill the getter
+            _getContents = null;
+            // return the result
+            return result;
+        }
+
 
         /// <inheritdoc />
         public override T GetContents()

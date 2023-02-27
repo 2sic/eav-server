@@ -119,7 +119,7 @@ namespace ToSic.Eav.Serialization
         /// <summary>
         /// Ability to inject a different TransientContentTypeGenerator
         /// </summary>
-        public ContentTypeProvider ContentTypeProvider { get; set; } = null;
+        public IDeferredContentTypeProvider ContentTypeProvider { get; set; } = null;
 
         protected IEntity Lookup(int entityId) => App.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
 

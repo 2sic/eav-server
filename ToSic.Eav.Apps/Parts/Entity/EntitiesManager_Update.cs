@@ -72,7 +72,7 @@ namespace ToSic.Eav.Apps.Parts
             if (values == null || !values.Any())
                 return (null, "nothing to save");
 
-            return (_multiBuilder.Value.Entity.Create(appId: Parent.AppId, contentType: orig.Type, values: values), "ok");
+            return (_multiBuilder.Value.Entity.Create(appId: Parent.AppId, contentType: orig.Type, rawValues: values), "ok");
         });
     }
 }

@@ -30,7 +30,7 @@ namespace ToSic.Eav.Data.Builder
             if (defaultValue != null) valDic.Add("DefaultValue", defaultValue);
             if (!string.IsNullOrEmpty(inputType)) valDic.Add(AttributeMetadata.GeneralFieldInputType, inputType);
 
-            return _builder.Entity.Create(appId: appId, guid: Guid.Empty, contentType: _globalApp.GetContentType(AttributeMetadata.TypeGeneral), values: valDic);
+            return _builder.Entity.Create(appId: appId, guid: Guid.Empty, contentType: _globalApp.GetContentType(AttributeMetadata.TypeGeneral), rawValues: valDic);
         }
     }
 }

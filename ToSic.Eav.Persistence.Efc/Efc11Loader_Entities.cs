@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Efc.Intermediate;
@@ -98,8 +97,7 @@ namespace ToSic.Eav.Persistence.Efc
                 if (AddLogCount++ == MaxLogDetailsCount)
                     l.A($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-                var newEntity = BuildNewEntity(app, rawEntity, serializer, relatedEntities, attributes,
-                    PrimaryLanguage);
+                var newEntity = BuildNewEntity(app, rawEntity, serializer, relatedEntities, attributes, PrimaryLanguage);
 
                 // If entity is a draft, also include references to Published Entity
                 app.Add(newEntity, rawEntity.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
@@ -115,24 +113,29 @@ namespace ToSic.Eav.Persistence.Efc
 
 
 
-        private Entity BuildNewEntity(AppState app, TempEntity e, 
+        private IEntity BuildNewEntity(AppState app, TempEntity e, 
             IDataDeserializer serializer,
             Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities,
             Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes,
             string primaryLanguage)
         {
-            Entity newEntity;
 
             if (e.Json != null)
             {
-                newEntity = serializer.Deserialize(e.Json, false, true) as Entity;
+                var fromJson = serializer.Deserialize(e.Json, false, true);
                 // add properties which are not in the json
                 // ReSharper disable once PossibleNullReferenceException
-                newEntity.IsPublished = e.IsPublished;
-                newEntity.Created = e.Created;
-                newEntity.Modified = e.Modified;
-                newEntity.Owner = e.Owner;
-                return newEntity;
+                //fromJson.IsPublished = e.IsPublished;
+                //fromJson.Created = e.Created;
+                //fromJson.Modified = e.Modified;
+                //fromJson.Owner = e.Owner;
+                var clonedExtended = _multiBuilder.Entity.Clone(fromJson,
+                    isPublished: e.IsPublished,
+                    created: e.Created,
+                    modified: e.Modified,
+                    owner: e.Owner
+                );
+                return clonedExtended; // fromJson;
             }
 
             var contentType = app.GetContentType(e.AttributeSetId);
@@ -141,7 +144,7 @@ namespace ToSic.Eav.Persistence.Efc
 
             // Get all Attributes of that Content-Type
             var specs = _multiBuilder.Attribute.GenerateAttributesOfContentType(contentType);
-            newEntity = _multiBuilder.Entity.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
+            var newEntity = _multiBuilder.Entity.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
                 e.MetadataFor, contentType, e.IsPublished, app, e.Created, e.Modified, e.Owner,
                 e.Version, values: specs.All, titleField: specs.Title);
 

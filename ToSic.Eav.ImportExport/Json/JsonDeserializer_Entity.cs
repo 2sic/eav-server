@@ -43,7 +43,10 @@ namespace ToSic.Eav.ImportExport.Json
             return (jsonObj, "ok");
         });
 
-        public IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType, IEntitiesSource dynRelationshipsSource = null
+        public IEntity Deserialize(JsonEntity jEnt,
+            bool allowDynamic,
+            bool skipUnknownType,
+            IEntitiesSource dynRelationshipsSource = default
         ) => Log.Func($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}", l =>
         {
             // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types

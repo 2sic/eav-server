@@ -170,7 +170,7 @@ namespace ToSic.Eav.Data.Build
                 appId: AppId,
                 entityId: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
                 contentType: ContentType,
-                values: values,
+                rawValues: values,
                 titleField: TitleField,
                 guid: guid,
                 created: created == default ? Created : created,

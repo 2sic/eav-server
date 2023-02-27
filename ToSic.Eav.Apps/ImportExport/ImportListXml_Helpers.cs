@@ -69,7 +69,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 Log.A($"Add entity to import list {entityGuid}");
             if (_appendEntityCount == 100) Log.A("Add entity: will stop listing each one...");
             if (_appendEntityCount % 100 == 0) Log.A("Add entity: Current count:" + _appendEntityCount);
-            var entity = _builder.Value.Entity.Create(appId: _appId, guid: entityGuid, contentType: ContentType, values: new Dictionary<string, object>());
+            var entity = _builder.Value.Entity.Create(appId: _appId, guid: entityGuid, contentType: ContentType, rawValues: new Dictionary<string, object>());
             ImportEntities.Add(entity);
             return entity;
         }

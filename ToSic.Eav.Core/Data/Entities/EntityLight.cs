@@ -44,10 +44,10 @@ namespace ToSic.Eav.Data
 		public IContentType Type { get; }
 
         /// <inheritdoc />
-		public DateTime Created { get; internal set; }
+		public DateTime Created { get; /*internal set;*/ }
         
         /// <inheritdoc />
-		public DateTime Modified { get; internal set; }
+		public DateTime Modified { get; /*internal set;*/ }
 
         /// <inheritdoc />
         [JsonIgnore]
@@ -57,7 +57,7 @@ namespace ToSic.Eav.Data
         public ITarget MetadataFor { get; internal set; }
 
         /// <inheritdoc />
-        public string Owner { get; internal set; }
+        public string Owner { get; /*internal set;*/ }
 
         public int OwnerId => _ownerId.Get(() => int.TryParse(Owner.After("="), out var o) ? o : -1);
         private readonly GetOnce<int> _ownerId = new GetOnce<int>();
@@ -85,7 +85,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         [PrivateApi]
         internal EntityLight(
-            int appId, int entityId, Guid? guid, IContentType contentType, EntityPartsBuilder partsBuilder, Dictionary<string, object> values, string titleFieldName = null, 
+            int appId, int entityId, Guid? guid, IContentType contentType, EntityPartsBuilder partsBuilder, Dictionary<string, object> rawValues, string titleFieldName = null, 
             DateTime? created = null, DateTime? modified = null, string owner = null,
             ITarget metadataFor = default)
         {
@@ -93,7 +93,7 @@ namespace ToSic.Eav.Data
             EntityId = entityId;
             EntityGuid = guid ?? Guid.Empty;
             Type = contentType;
-            AttributesLight = values;
+            AttributesLight = rawValues;
             _titleFieldName = titleFieldName;
             MetadataFor = metadataFor ?? new Target();
             if (created.HasValue) Created = created.Value;

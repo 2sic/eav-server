@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps
         /// Add an entity to the cache. Should only be used by EAV code
         /// </summary>
         [PrivateApi("Only internal use")]
-        public void Add(Entity newEntity, int? publishedId, bool log)
+        public void Add(IEntity newEntity, int? publishedId, bool log)
         {
             if (!Loading)
                 throw new Exception("trying to add entity, but not in loading state. set that first!");
@@ -48,7 +48,7 @@ namespace ToSic.Eav.Apps
 
             RemoveObsoleteDraft(newEntity, log);
             Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
-            MapDraftToPublished(newEntity, publishedId, log);
+            MapDraftToPublished(newEntity as Entity, publishedId, log);
             _metadataManager.Register(newEntity);
 
             if (FirstLoadCompleted)
