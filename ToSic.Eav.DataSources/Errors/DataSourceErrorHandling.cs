@@ -12,15 +12,15 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class DataSourceErrorHandling
     {
-        private readonly EntityBuilder _entityBuilder;
 
         /// <summary>
         /// Constructor - to find out if it's used anywhere
         /// </summary>
-        public DataSourceErrorHandling(EntityBuilder entityBuilder)
+        public DataSourceErrorHandling(MultiBuilder builder)
         {
-            _entityBuilder = entityBuilder;
+            _builder = builder;
         }
+        private readonly MultiBuilder _builder;
 
         public static string ErrorType = "Error";
         public static string ErrorTitle = "Error";
@@ -46,15 +46,15 @@ namespace ToSic.Eav.DataSources
             // Don't use the default data builder here, as it needs DI and this object
             // will often be created late when DI is already destroyed
             //var errorEntity = new DataBuilder().Entity(values, titleField: ErrorTitle, typeName: ErrorType);
-            var errorEntity = _entityBuilder.Create(appId: DataBuilderInternal.DefaultAppId, entityId: DataBuilderInternal.DefaultEntityId,
-                contentType: new ContentTypeBuilder().Transient(ErrorType), values: values, titleField: ErrorTitle);
+            var errorEntity = _builder.Entity.Create(appId: DataBuilderInternal.DefaultAppId, entityId: DataBuilderInternal.DefaultEntityId,
+                contentType: _builder.ContentType.Transient(ErrorType), values: values, titleField: ErrorTitle);
             return errorEntity;
         }
 
         /// <summary>
-        /// This must be public so it can be used/verified in testing
+        /// This must be internal so it can be used/verified in testing
         /// </summary>
-        public static string GenerateTitle(string title) => "Error: " + title;
+        internal static string GenerateTitle(string title) => "Error: " + title;
 
         public ImmutableArray<IEntity> CreateErrorList(
             string noParamOrder = Parameters.Protector,

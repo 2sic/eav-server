@@ -24,7 +24,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void LookUpEngine_SourcesWork()
         {
-            var lookUpEngine = new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes();
+            var lookUpEngine = new LookUpTestData(GetService<MultiBuilder>()).AppSetAndRes();
             AssertLookUpEngineHasSourcesOfOriginal(lookUpEngine);
         }
 
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void LookUpEngine_DontModifyThingsWithoutTokens()
         {
-            var vc = new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes();
+            var vc = new LookUpTestData(GetService<MultiBuilder>()).AppSetAndRes();
             var settings = Settings();
             settings = vc.LookUp(settings);
             Assert.AreEqual(ResolvedSettingDefaultCat, settings["DefaultCategory"], "Default should be all");
@@ -50,7 +50,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void BasicLookupsWork()
         {
-            var mainEngine = new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes(-1);
+            var mainEngine = new LookUpTestData(GetService<MultiBuilder>()).AppSetAndRes(-1);
             var settings = mainEngine.LookUp(TestTokens());
             foreach (var setting in settings)
                 Assert.AreEqual(setting.Key, setting.Value,
@@ -60,7 +60,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void OverrideLookUps()
         {
-            var mainEngine = new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes(-1);
+            var mainEngine = new LookUpTestData(GetService<MultiBuilder>()).AppSetAndRes(-1);
             var overrideSources = new DictionaryInvariant<ILookUp>();
             const string overridenTitle = "overriden Title";
             var overrideDic = new Dictionary<string, string>
@@ -76,7 +76,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void InheritEngine()
         {
-            var original = new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes();
+            var original = new LookUpTestData(GetService<MultiBuilder>()).AppSetAndRes();
             var cloned = new LookUpEngine(original, null);
             Assert.AreEqual(0, cloned.Sources.Count);
             AssertLookUpEngineHasSourcesOfOriginal(cloned.Downstream);

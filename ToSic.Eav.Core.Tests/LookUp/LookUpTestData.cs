@@ -8,13 +8,13 @@ namespace ToSic.Eav.Core.Tests.LookUp
 {
     public class LookUpTestData
     {
-        private readonly EntityBuilder _builder;
+        private readonly MultiBuilder _builder;
         public const string KeyAppSettings = "AppSettings";
         public const string KeyAppResources = "AppResources";
 
         private const int AppIdX = -1;
 
-        public LookUpTestData(EntityBuilder builder)
+        public LookUpTestData(MultiBuilder builder)
         {
             _builder = builder;
         }
@@ -32,7 +32,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
 
         public LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = AppIdX)
         {
-            var ent = _builder.TestCreate(appId: appId, contentType: new ContentTypeBuilder().Transient(name), values: values, titleField: values.FirstOrDefault().Key);
+            var ent = _builder.Entity.TestCreate(appId: appId, contentType: _builder.ContentType.Transient(name), values: values, titleField: values.FirstOrDefault().Key);
             return new LookUpInEntity(name, ent, null);
         }
 

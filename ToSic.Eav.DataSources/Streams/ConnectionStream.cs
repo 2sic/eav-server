@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
@@ -12,9 +11,14 @@ namespace ToSic.Eav.DataSources
     public class ConnectionStream: IDataStream, IWrapper<IDataStream>
     {
 
-        public ConnectionStream(Connection connection) => Connection = connection;
+        public ConnectionStream(Connection connection, DataSourceErrorHandling errorHandler = null)
+        {
+            Connection = connection;
+            _errorHandler = errorHandler;
+        }
 
         public Connection Connection;
+        private readonly DataSourceErrorHandling _errorHandler;
 
         private IDataStream LoadStream()
         {
@@ -47,9 +51,8 @@ namespace ToSic.Eav.DataSources
 
         private IDataStream CreateErrorStream(string title, string message, IDataSource intendedSource = null)
         {
-            var errorHandler = Connection.DataSource?.ErrorHandler ?? new DataSourceErrorHandling(new EntityBuilder(new AttributeBuilder(new ValueBuilder(new DimensionBuilder()))));
-            var entityList = errorHandler.CreateErrorList(title: title, message: message);
-            return new DataStream(intendedSource, "ConnectionStreamError", () => entityList);
+            var errors = _errorHandler.CreateErrorList(title: title, message: message);
+            return new DataStream(intendedSource, "ConnectionStreamError", () => errors);
         }
 
         public IDataStream GetContents() => UnwrappedDataStream;

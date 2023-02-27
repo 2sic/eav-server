@@ -138,7 +138,7 @@ namespace ToSic.Eav.DataSources
             var typeName = TypeName;
             IContentType newType = null;
             if (!string.IsNullOrEmpty(typeName))
-                newType = new ContentTypeBuilder().Transient(AppId, typeName, typeName);
+                newType = _multiBuilder.ContentType.Transient(AppId, typeName, typeName);
 
             if (!GetRequiredInList(out var originals))
                 return (originals, "error");

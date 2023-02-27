@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
 
         protected MetadataTargets PrepareDs(string appType = null, IEnumerable<int> ids = null, string typeName = null, bool? deduplicate = null)
         {
-            var lookUpEngine = new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes();
+            var lookUpEngine = new LookUpTestData(GetService<MultiBuilder>()).AppSetAndRes();
 
             var baseDs = DataSourceFactory.GetPublishing(AppIdentity, configProvider: lookUpEngine);
             var appDs = CreateDataSource<App>(baseDs);

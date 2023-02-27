@@ -125,7 +125,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
 
         public CsvDataSource CreateCsvDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
         {
-            var source = CreateDataSource<CsvDataSource>(new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes());
+            var source = CreateDataSource<CsvDataSource>(new LookUpTestData(GetService<MultiBuilder>()).AppSetAndRes());
 
             source.FilePath = filePath;
             source.Delimiter = delimiter;

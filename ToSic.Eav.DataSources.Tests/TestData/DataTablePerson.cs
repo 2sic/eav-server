@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                     person.CityOrNull,
                     person.Modified));
 
-            var source = _parent.CreateDataSource<DataTable>(new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes())
+            var source = _parent.CreateDataSource<DataTable>(new LookUpTestData(_multiBuilder).AppSetAndRes())
                 .Setup(dataTable, PersonSpecs.PersonTypeName, 
                     titleField: PersonSpecs.FieldFullName, 
                     modifiedField: PersonSpecs.FieldModifiedInternal)

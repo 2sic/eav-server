@@ -114,7 +114,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
         protected LookUpEngine BuildConfigurationProvider(Dictionary<string, object> vals)
         {
-            var testData = new LookUpTestData(GetService<EntityBuilder>());
+            var testData = new LookUpTestData(GetService<MultiBuilder>());
             var vc = testData.AppSetAndRes();
             vc.Add(testData.BuildLookUpEntity(DataSource.MyConfiguration, vals));
             return vc;

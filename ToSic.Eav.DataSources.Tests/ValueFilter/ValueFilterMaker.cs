@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var ds = useDataTable
                 ? new DataTablePerson(Parent).Generate(itemsToGenerate) as IDataSource
-                : Parent.CreateDataSource<PersonsDataSource>(new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes())
+                : Parent.CreateDataSource<PersonsDataSource>(new LookUpTestData(GetService<MultiBuilder>()).AppSetAndRes())
                     .Init(itemsToGenerate, multiLanguage: multiLanguage);
             var filtered = Parent.CreateDataSource<ValueFilter>(ds);
             return filtered;
@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var ds = useDataTable
                 ? new DataTablePerson(Parent).Generate(itemsToGenerate) as IDataSource
-                : Parent.CreateDataSource<PersonsDataSource>(new LookUpTestData(GetService<EntityBuilder>()).AppSetAndRes())
+                : Parent.CreateDataSource<PersonsDataSource>(new LookUpTestData(GetService<MultiBuilder>()).AppSetAndRes())
                     .Init(itemsToGenerate, multiLanguage: multiLanguage);
             var filtered = Parent.DataSourceFactory.GetDataSource<ValueSort>(ds);
             return filtered;

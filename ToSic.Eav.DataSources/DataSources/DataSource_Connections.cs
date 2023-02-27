@@ -82,7 +82,7 @@ namespace ToSic.Eav.DataSources
         
         private void ConnectIn(Connection connection)
         {
-            var connStream = new ConnectionStream(connection);
+            var connStream = new ConnectionStream(connection, ErrorHandler);
             if (In.ContainsKey(connection.TargetStream)) In.Remove(connection.TargetStream);
             In.Add(connection.TargetStream, connStream);
             Connections.AddIn(connection);
