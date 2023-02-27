@@ -18,7 +18,7 @@ namespace ToSic.Eav.Data
             int entityId,
             IContentType contentType,
             EntityPartsBuilder partsBuilder,
-            bool useLightMode,
+            //bool useLightMode,
             Dictionary<string, object> rawValues,
             Dictionary<string, IAttribute> values,
             string titleFieldName,
@@ -28,31 +28,20 @@ namespace ToSic.Eav.Data
             string owner,
             int version,
             bool isPublished,
-            ITarget metadataFor)
+            ITarget metadataFor,
+            bool placeDraftInBranch = false,
+            int publishedId = default)
             : base(appId, entityId, guid, contentType, partsBuilder, rawValues, titleFieldName, created: created, modified: modified, owner: owner, metadataFor: metadataFor)
         {
-            IsLight = useLightMode;
+            IsLight = rawValues != null;
             Attributes = values;
             RepositoryId = repositoryId;
             Version = version;
             IsPublished = isPublished;
-            // (IsLight, Attributes) = MapAttributesInConstructor(values);
             RepositoryId = entityId;
+            PlaceDraftInBranch = placeDraftInBranch;
+            PublishedEntityId = publishedId;
         }
-
-        //private (bool isLight, Dictionary<string, IAttribute> attributes) MapAttributesInConstructor(Dictionary<string, object> values)
-        //{
-        //    // If all values are IAttributes, then it should be converted to a real IEntity
-        //    if (values.All(x => x.Value is IAttribute))
-        //    {
-        //        var extendedAttribs = values
-        //            .ToDictionary(x => x.Key, x => x.Value as IAttribute, InvariantCultureIgnoreCase);
-        //        return (false, extendedAttribs);
-        //    }
-
-        //    // Otherwise it's a light IEntity, make sure this is known
-        //    return (true, AttribBuilder.GetStatic().ConvertToInvariantDic(AttributesLight));
-        //}
 
         #region CanBeEntity
 

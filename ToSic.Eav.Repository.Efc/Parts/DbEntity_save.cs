@@ -66,8 +66,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
             // ...we have to check if we'll actually update the draft of the entity
             // ...or create a new draft (branch)
             var draftInfo = GetDraftAndCorrectIdAndBranching(newEnt, logDetails);
-            var existingDraftId = draftInfo.Item1;
-            var hasAdditionalDraft = draftInfo.Item2;
+            var existingDraftId = draftInfo.ExistingDraftId;
+            var hasAdditionalDraft = draftInfo.HasDraft;
+            newEnt = draftInfo.Entity; // may have been replaced with an updated IEntity during corrections
 
             var isNew = newEnt.EntityId <= 0; // remember how we want to work...
             if (logDetails) l.A($"entity id:{newEnt.EntityId} - will treat as new:{isNew}");
@@ -99,7 +100,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                         dbEnt = CreateDbRecord(newEnt, changeLogId, contentTypeId);
                         // update the ID - for versioning and/or json persistence
-                        newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated
+                        newEnt = _builder.Entity.Clone(newEnt, id: dbEnt.EntityId);
+                        //newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated
 
                         // prepare export for save json OR versioning later on
                         jsonExport = GenerateJsonOrReportWhyNot(newEnt, logDetails);
@@ -134,6 +136,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         // Update as Published but Current Entity is a Draft-Entity
                         // case 1: saved entity is a draft and save wants to publish
                         // case 2: new data is set to not publish, but we don't want a branch
+                        int? resetId = default;
                         if (stateChanged || hasAdditionalDraft)
                         {
                             // now reset the branch/entity-state to properly set the state / purge the draft
@@ -142,7 +145,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                                 newEnt.IsPublished);
 
                             // update ID of the save-entity, as it's used again later on...
-                            newEnt.ResetEntityId(dbEnt.EntityId);
+                            resetId = dbEnt.EntityId;
+                            //newEnt.ResetEntityId(dbEnt.EntityId);
                         }
 
                         #endregion
@@ -152,7 +156,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                         // increase version
                         dbEnt.Version++;
-                        newEnt = _builder.Entity.ResetIdentifiers(newEnt, version: dbEnt.Version);
+                        //newEnt = _builder.Entity.ResetIdentifiers(newEnt, version: dbEnt.Version);
+                        newEnt = _builder.Entity.Clone(newEnt, id: resetId, version: dbEnt.Version);
 
                         // prepare export for save json OR versioning later on
                         jsonExport = Serializer.Serialize(newEnt);
@@ -160,10 +165,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         if (saveJson)
                         {
                             dbEnt.Json = jsonExport;
-                            dbEnt.AttributeSetId =
-                                contentTypeId; // in case the previous entity wasn't json stored yet
-                            dbEnt.ContentType =
-                                newEnt.Type.NameId; // in case the previous entity wasn't json stored yet
+                            dbEnt.AttributeSetId = contentTypeId; // in case the previous entity wasn't json stored yet
+                            dbEnt.ContentType = newEnt.Type.NameId; // in case the previous entity wasn't json stored yet
                         }
                         // super exotic case - maybe it was a json before, but isn't any more...
                         // this probably only happens on the master system, where we maintain the 
@@ -235,66 +238,68 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// <param name="newEnt">the entity to be saved, with IDs and Guids</param>
         /// <param name="logDetails"></param>
         /// <returns></returns>
-        private Tuple<int?, bool> GetDraftAndCorrectIdAndBranching(IEntity newEnt, bool logDetails
-        ) => Log.Func($"entity:{newEnt.EntityId}", timer: true, func: l =>
+        private (int? ExistingDraftId, bool HasDraft, IEntity Entity) GetDraftAndCorrectIdAndBranching(IEntity newEnt, bool logDetails
+        ) => Log.Func<(int?, bool, IEntity)>($"entity:{newEnt.EntityId}", timer: true, func: l =>
         {
             // only do this, if we were given an EntityId, otherwise we assume new entity
             if (newEnt.EntityId <= 0)
-                return (new Tuple<int?, bool>(null, false), "entity id == 0 means new, so skip draft lookup");
+                return ((null, false, newEnt), "entity id <= 0 means new, so skip draft lookup");
 
             if (logDetails) l.A("entity id > 0 - will check draft/branching");
 
             // find a draft of this - note that it won't find anything, if the item itself is the draft
-            var ent = (Entity)newEnt;
-
             // new 2020-10-08 2dm - use cache
             if (EntityDraftMapCache == null)
                 throw new Exception("Needs cached list of draft-branches, but list is null");
-            if (!EntityDraftMapCache.ContainsKey(ent.EntityId))
+            if (!EntityDraftMapCache.ContainsKey(newEnt.EntityId))
                 throw new Exception("Expected item to be preloaded in draft-branching map, but not found");
-            var existingDraftId = EntityDraftMapCache[ent.EntityId];
+            var existingDraftId = EntityDraftMapCache[newEnt.EntityId];
 
-            var hasDraft =
-                existingDraftId != null &&
-                ent.EntityId !=
-                existingDraftId; // only true, if there is an "attached" draft; false if the item itself is draft
+            // only true, if there is an "attached" draft; false if the item itself is draft
+            var hasDraft = existingDraftId != null && newEnt.EntityId != existingDraftId; 
 
             if (logDetails)
-                l.A($"draft check: id:{ent.EntityId} {nameof(existingDraftId)}:{existingDraftId}, " +
+                l.A($"draft check: id:{newEnt.EntityId} {nameof(existingDraftId)}:{existingDraftId}, " +
                       $"{nameof(hasDraft)}:{hasDraft}");
 
+            var placeDraftInBranch = ((Entity)newEnt).PlaceDraftInBranch;
+
             // if it's being saved as published, or the draft will be without an old original, then exit 
-            if (ent.IsPublished || !ent.PlaceDraftInBranch)
+            if (newEnt.IsPublished || !placeDraftInBranch)
             {
                 if (logDetails)
                     l.A(
                         $"new is published or branching is not wanted, so we won't branch - returning draft-id:{existingDraftId}");
-                return (new Tuple<int?, bool>(existingDraftId, hasDraft), existingDraftId?.ToString() ?? "null");
+                return ((existingDraftId, hasDraft, newEnt), existingDraftId?.ToString() ?? "null");
             }
 
-            if (logDetails)
-                l.A($"will save as draft, and setting is PlaceDraftInBranch:{ent.PlaceDraftInBranch}=true");
+            if (logDetails) l.A($"will save as draft, and setting is PlaceDraftInBranch:true");
 
-            if (logDetails) l.A($"Will look for original {ent.EntityId} to check if it's not published.");
+            if (logDetails) l.A($"Will look for original {newEnt.EntityId} to check if it's not published.");
             // check if the original is also not published, with must prevent a second branch!
-            var entityInDb = DbContext.Entities.GetDbEntity(ent.EntityId);
+            var entityInDb = DbContext.Entities.GetDbEntity(newEnt.EntityId);
             if (!entityInDb.IsPublished)
             {
                 if (logDetails) l.A("original in DB is not published, will overwrite and not branch again");
-            }
-            else
-            {
-                if (logDetails) l.A("original is published, so we'll draft in a branch");
-                ent = _builder.Entity.ResetIdentifiers(ent,
-                    publishedId: ent.EntityId, // set this, in case we'll create a new one
-                    newId: existingDraftId ?? 0  // set to the draft OR 0 = new
-                    ) as Entity;
-                //ent.SetPublishedIdForSaving(ent.EntityId); // set this, in case we'll create a new one
-                //ent.ResetEntityId(existingDraftId ?? 0); // set to the draft OR 0 = new
-                hasDraft = false; // not additional any more, as we're now pointing this as primary
+                return ((existingDraftId, hasDraft, newEnt), existingDraftId?.ToString() ?? "null");
             }
 
-            return (new Tuple<int?, bool>(existingDraftId, hasDraft), existingDraftId?.ToString() ?? "null");
+            if (logDetails) l.A("original is published, so we'll draft in a branch");
+            var clone = _builder.Entity.Clone(newEnt,
+                publishedId: newEnt.EntityId, // set this, in case we'll create a new one
+                id: existingDraftId ?? 0  // set to the draft OR 0 = new
+            ) as Entity;
+            //var clone = _builder.Entity.ResetIdentifiers(newEnt,
+            //    publishedId: newEnt.EntityId, // set this, in case we'll create a new one
+            //    newId: existingDraftId ?? 0  // set to the draft OR 0 = new
+            //) as Entity;
+            //ent.SetPublishedIdForSaving(ent.EntityId); // set this, in case we'll create a new one
+            //ent.ResetEntityId(existingDraftId ?? 0); // set to the draft OR 0 = new
+
+            return ((existingDraftId,
+                false, // not additional any more, as we're now pointing this as primary
+                clone),
+                existingDraftId?.ToString() ?? "null");
         });
 
         private Dictionary<int, int?> EntityDraftMapCache;

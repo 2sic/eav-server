@@ -251,7 +251,8 @@ namespace ToSic.Eav.Apps.ImportExport
                 //metadataToUse = newMd;
                 // Important to reset, otherwise the save process assumes it already exists in the DB
                 // NOTE: clone would be ok
-                return _entityBuilder.ResetIdentifiers(newMd, newGuid: Guid.NewGuid(), newId: 0);
+                return _entityBuilder.Clone(newMd, guid: Guid.NewGuid(), id: 0);
+                //return _entityBuilder.ResetIdentifiers(newMd, newGuid: Guid.NewGuid(), newId: 0);
                 //metadataToUse.ResetEntityId();
                 //metadataToUse.SetGuid(Guid.NewGuid());
             }

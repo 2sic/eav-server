@@ -33,12 +33,12 @@ namespace ToSic.Eav.Data.Builder
         // this is old method that probably should be replaced with new ResetEntityIdAll after testing
         public static int? ResetEntityId(this IEntity entity, int newId = 0) => ((EntityLight)entity).EntityId = newId;
         
-        // this is new for bundles in v15, probably it should replace ResetEntityId everywhere but we have to test that first
-        public static int? ResetEntityIdAll(this IEntity entity, int newId = 0)
-        {
-            ((Entity) entity).RepositoryId = newId;
-            return ((EntityLight) entity).EntityId = newId;
-        }
+        //// this is new for bundles in v15, probably it should replace ResetEntityId everywhere but we have to test that first
+        //public static int? ResetEntityIdAll(this IEntity entity, int newId = 0)
+        //{
+        //    ((Entity) entity).RepositoryId = newId;
+        //    return ((EntityLight) entity).EntityId = newId;
+        //}
 
         //public static int? SetVersion(this Entity entity, int newVersion) => entity.Version = newVersion;
 

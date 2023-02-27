@@ -148,7 +148,6 @@ namespace ToSic.Eav.DataSources
                     values: CreateDic(entity),
                     type: newType
                 ))
-                .Cast<IEntity>()
                 .ToImmutableArray();
 
             Log.A($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");

@@ -91,15 +91,17 @@ namespace ToSic.Eav.Apps.Parts
             return newWiring;
         }
 
-        private IEntity CopyAndResetIds(IEntity origQuery, Guid? newMetadataTarget = null)
+        private IEntity CopyAndResetIds(IEntity original, Guid? newMetadataTarget = null)
         {
             var serializer = Serializer.Value;
-            var newSer = serializer.Serialize(origQuery);
-            var newEnt = serializer.Deserialize(newSer); // as Entity;
+            var newSer = serializer.Serialize(original);
+            var newEnt = serializer.Deserialize(newSer);
 
             // TODO: NOTE - here a clean clone/copy should be ok
-            newEnt = _multiBuilder.Value.Entity.ResetIdentifiers(newEnt, newGuid: Guid.NewGuid(), newId: 0,
-                metadataFor: newMetadataTarget == null ? null : new Target(origQuery.MetadataFor, keyGuid: newMetadataTarget.Value)
+            newEnt = _multiBuilder.Value.Entity.Clone(newEnt,
+                guid: Guid.NewGuid(),
+                id: 0,
+                target: newMetadataTarget == null ? null : new Target(original.MetadataFor, keyGuid: newMetadataTarget.Value)
             ); // as Entity;
             //newEnt.SetGuid(Guid.NewGuid());
             //newEnt.ResetEntityId();

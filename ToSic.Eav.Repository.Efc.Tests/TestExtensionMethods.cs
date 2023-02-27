@@ -5,7 +5,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 {
     internal static class TestExtensionMethods
     {
-        public static Entity TestCreateMergedForSaving(this EntitySaver saver, IEntity original, IEntity update,
+        public static IEntity TestCreateMergedForSaving(this EntitySaver saver, IEntity original, IEntity update,
             SaveOptions saveOptions,
             bool logDetails = true)
         {

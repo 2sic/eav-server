@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Formats;
@@ -37,11 +36,16 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
             var entitiesToImport = itemsToImport
                 // TODO: NOTE: here a clone should work
-                .Select(bundle => _entityBuilder.ResetIdentifiers(bundle.Entity,
-                    newGuid: bundle.Header.Guid,
+                .Select(bundle => _entityBuilder.Clone(bundle.Entity,
+                    guid: bundle.Header.Guid,
                     isPublished: enforceDraft ? (bool?)false : null,
-                    placeDraftInBranch: enforceDraft ? (bool?)true : null)
+                    placeDraftInBranch: enforceDraft ? (bool?)true : null) as IEntity
                 )
+                //.Select(bundle => _entityBuilder.ResetIdentifiers(bundle.Entity,
+                //    newGuid: bundle.Header.Guid,
+                //    isPublished: enforceDraft ? (bool?)false : null,
+                //    placeDraftInBranch: enforceDraft ? (bool?)true : null)
+                //)
                 .ToList();
 
             l.A($"will save {entitiesToImport.Count} items");

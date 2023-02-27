@@ -44,7 +44,7 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public Entity FullClone(IEntity entity)
+        public IEntity FullClone(IEntity entity)
         {
             return Entity.Clone(entity,
                 values: Attribute.ListDeepClone(entity.Attributes));

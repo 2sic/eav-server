@@ -107,7 +107,8 @@ namespace ToSic.Eav.WebApi
                     ? bundle.Entity.EntityGuid
                     : Guid.NewGuid();
                 if (hasEntity && !useEntityGuid)
-                    bundle.Entity = _entityBuilder.ResetIdentifiers(bundle.Entity, newGuid: bundle.Header.Guid);
+                    bundle.Entity = _entityBuilder.Clone(bundle.Entity, guid: bundle.Header.Guid);
+                //bundle.Entity = _entityBuilder.ResetIdentifiers(bundle.Entity, newGuid: bundle.Header.Guid);
                 //(bundle.Entity as Entity).SetGuid(bundle.Header.Guid);
             }
 

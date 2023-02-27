@@ -68,12 +68,18 @@ namespace ToSic.Eav.Apps.Parts
 
         public void Import(List<IEntity> newEntities)
         {
-            newEntities.ForEach(e =>
-            {
-                e.ResetEntityId();
-                if (Parent.Read.Entities.Get(e.EntityGuid) != null)
-                    throw new ArgumentException("Can't import this item - an item with the same guid already exists");
-            });
+            foreach (var e in newEntities.Where(e => Parent.Read.Entities.Get(e.EntityGuid) != null))
+                throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
+
+            newEntities = newEntities
+                .Select(e => _multiBuilder.Value.Entity.Clone(e, id: 0, repositoryId: 0))
+                .ToList();
+            //newEntities.ForEach(e =>
+            //{
+            //    e.ResetEntityId();
+            //    if (Parent.Read.Entities.Get(e.EntityGuid) != null)
+            //        throw new ArgumentException("Can't import this item - an item with the same guid already exists");
+            //});
             Save(newEntities);
         }
 

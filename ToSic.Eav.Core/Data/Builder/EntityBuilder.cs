@@ -39,8 +39,52 @@ namespace ToSic.Eav.Data.Builder
             int version = default,
             bool isPublished = true,
             ITarget metadataFor = default,
-            EntityPartsBuilder partsBuilder = default
+            EntityPartsBuilder partsBuilder = default,
+            // Publishing instructions
+            bool placeDraftInBranch = default,
+            int publishedId = default
             )
+        {
+            (values, rawValues) = PreprocessValues(values, rawValues);
+            //// if we have typed, make sure invariant
+            //values = values?.ToInvariant();
+
+            //// If typed and basic values don't exist, set Typed as new list for now WIP
+            //if (values == null && rawValues == null)
+            //    values = new Dictionary<string, IAttribute>(InvariantCultureIgnoreCase);
+
+            //// Typed values exist if given explicitly, OR if the values are of the desired type
+            //if (values == null && rawValues.All(x => x.Value is IAttribute))
+            //    values = rawValues.ToDictionary(pair => pair.Key, pair => pair.Value as IAttribute, InvariantCultureIgnoreCase);
+
+            //// If TypedValues still don't exist
+            //var useLightMode = values == null;
+            //if (useLightMode)
+            //    values = _attributeBuilder.ConvertToIAttributeDic(rawValues);
+            //else
+            //    rawValues = null;
+
+            // If repositoryId isn't known set it it to EntityId
+            repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
+            version = version == default ? 1 : version;
+
+            // Prepare the Parts-builder in case it wasn't provided
+            partsBuilder = partsBuilder ?? new EntityPartsBuilder(
+                e => new RelationshipManager(e, null, null)
+            );
+
+            return new Entity(appId, entityId, partsBuilder: partsBuilder,  repositoryId: repositoryId, contentType: contentType,
+                //useLightMode: useLightMode,
+                rawValues: rawValues, values: values,
+                guid: guid, titleFieldName: titleField,
+                created: created, modified: modified, owner: owner,
+                version: version, isPublished: isPublished,
+                metadataFor: metadataFor,
+                placeDraftInBranch: placeDraftInBranch,
+                publishedId: publishedId);
+        }
+
+        private (Dictionary<string, IAttribute> values, Dictionary<string, object> rawValues) PreprocessValues(Dictionary<string, IAttribute> values, Dictionary<string, object> rawValues)
         {
             // if we have typed, make sure invariant
             values = values?.ToInvariant();
@@ -55,26 +99,12 @@ namespace ToSic.Eav.Data.Builder
 
             // If TypedValues still don't exist
             var useLightMode = values == null;
-            if (values == null)
+            if (useLightMode)
                 values = _attributeBuilder.ConvertToIAttributeDic(rawValues);
             else
                 rawValues = null;
 
-            // If repositoryId isn't known set it it to EntityId
-            repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
-            version = version == default ? 1 : version;
-
-            // Prepare the Parts-builder in case it wasn't provided
-            partsBuilder = partsBuilder ?? new EntityPartsBuilder(
-                e => new RelationshipManager(e, null, null)
-            );
-
-            return new Entity(appId, entityId, partsBuilder: partsBuilder,  repositoryId: repositoryId, contentType: contentType,
-                useLightMode: useLightMode, rawValues: rawValues, values: values,
-                guid: guid, titleFieldName: titleField,
-                created: created, modified: modified, owner: owner,
-                version: version, isPublished: isPublished,
-                metadataFor: metadataFor);
+            return (values, rawValues);
         }
 
         /// <summary>
@@ -133,7 +163,7 @@ namespace ToSic.Eav.Data.Builder
         /// Create a new Entity based on an Entity and Attributes
         /// Used in the Attribute-Filter, which generates a new entity with less properties
         /// </summary>
-        public Entity Clone(
+        public IEntity Clone(
             IEntity original,
             string noParamOrder = Parameters.Protector,
             int? appId = default,
@@ -147,12 +177,18 @@ namespace ToSic.Eav.Data.Builder
             DateTime? created = default,
             DateTime? modified = default,
             string owner = default,
-            int? version = default
+            int? version = default,
+            ITarget target = default,
+
+            // publishing Instructions
+            bool? placeDraftInBranch = default,
+            int? publishedId = default
             )
         {
-            var lookupApp = (original as Entity)?.DeferredLookupData as AppState;
+            var originalEntity = original as Entity;
+            var lookupApp = originalEntity?.DeferredLookupData as AppState;
             var entityPartsBuilder = new EntityPartsBuilder(
-                ent => new RelationshipManager(ent, (original as Entity)?.Relationships as RelationshipManager)
+                ent => new RelationshipManager(ent, originalEntity?.Relationships as RelationshipManager)
             );
 
             var e = Create(
@@ -163,13 +199,17 @@ namespace ToSic.Eav.Data.Builder
                 repositoryId: repositoryId ?? original.RepositoryId,
                 guid: guid ?? original.EntityGuid,
                 contentType: type ?? original.Type,
-                titleField: original.Title?.Name,
+                titleField: originalEntity.TitleFieldName, 
                 isPublished: isPublished ?? original.IsPublished,
                 created: created ?? original.Created,
                 modified: modified ?? original.Modified,
                 owner: owner ?? original.Owner,
                 version: version ?? original.Version,
-                metadataFor: new Target(original.MetadataFor),
+                metadataFor: target ?? new Target(original.MetadataFor),
+
+                placeDraftInBranch: placeDraftInBranch ?? originalEntity?.PlaceDraftInBranch ?? default,
+                publishedId: publishedId ?? originalEntity?.PublishedEntityId ?? default,
+                
                 partsBuilder: entityPartsBuilder
             );
 
@@ -183,33 +223,34 @@ namespace ToSic.Eav.Data.Builder
         // 2. Then make sure the caller always uses the result, not the original entity
         // 3. Then enforce cloning
 
-        public IEntity ResetIdentifiers(
-            IEntity entity,
-            string noParamOrder = Parameters.Protector,
-            Guid? newGuid = default,
-            int? newId = default,
-            ITarget metadataFor = default,
-            bool? isPublished = default,
-            bool? placeDraftInBranch = default,
-            int? version = default,
-            int? publishedId = default)
-        {
-            var editable = (Entity)entity; // todo: clone
-            if (newGuid != null) editable.EntityGuid = newGuid.Value;
-            if (isPublished != null) editable.IsPublished = isPublished.Value;
-            if (placeDraftInBranch != null) editable.PlaceDraftInBranch = placeDraftInBranch.Value;
-            if (metadataFor != default) editable.MetadataFor = metadataFor;
-            if (version != default) editable.Version = version.Value;
-            if (newId != default) editable.EntityId = newId.Value;
-            if (publishedId != default) editable.PublishedEntityId = publishedId.Value;
+        //public IEntity ResetIdentifiers(
+        //    IEntity entity,
+        //    string noParamOrder = Parameters.Protector,
+        //    Guid? newGuid = default,
+        //    int? newId = default,
+        //    ITarget metadataFor = default,
+        //    bool? isPublished = default
+        //    //bool? placeDraftInBranch = default,
+        //    //int? version = default,
+        //    //int? publishedId = default
+        //    )
+        //{
+        //    var editable = (Entity)entity; // todo: clone
+        //    if (newGuid != null) editable.EntityGuid = newGuid.Value;
+        //    if (isPublished != null) editable.IsPublished = isPublished.Value;
+        //    //if (placeDraftInBranch != null) editable.PlaceDraftInBranch = placeDraftInBranch.Value;
+        //    if (metadataFor != default) editable.MetadataFor = metadataFor;
+        //    //if (version != default) editable.Version = version.Value;
+        //    if (newId != default) editable.EntityId = newId.Value;
+        //    //if (publishedId != default) editable.PublishedEntityId = publishedId.Value;
 
-            if (newId != null)
-            {
-                editable.RepositoryId = newId.Value;//note: this was not in before, could cause side-effects
-            }
+        //    if (newId != null)
+        //    {
+        //        editable.RepositoryId = newId.Value;//note: this was not in before, could cause side-effects
+        //    }
 
-            return entity;
-        }
+        //    return entity;
+        //}
 
         #endregion
 

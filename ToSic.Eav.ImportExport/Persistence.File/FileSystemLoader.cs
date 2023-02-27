@@ -326,7 +326,14 @@ namespace ToSic.Eav.Persistence.File
                 // which will be repopulated later, so only create a new one if there is none
                 relationshipSource = relationshipSource ?? new DirectEntitiesSource(new List<IEntity>());
                 var entities = ser.GetEntitiesFromBundles(bundleJson, relationshipSource);
-                entities.ForEach(e => e.ResetEntityIdAll(++EntityIdSeed));
+                entities = entities
+                    .Select(e =>
+                    {
+                        var newId = ++EntityIdSeed;
+                        return _multiBuilder.Entity.Clone(e, id: newId, repositoryId: newId);
+                    })
+                    .ToList();
+                //entities.ForEach(e => e.ResetEntityIdAll(++EntityIdSeed));
                 return (entities, $"{entities.Count}");
             }
             catch (Exception e)

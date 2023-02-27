@@ -18,7 +18,7 @@ namespace ToSic.Eav.Repository.Efc
         private DbRelationship _relationships;
         public DbAttributeSet AttribSet => _attributeSet ?? (_attributeSet = new DbAttributeSet(this));
         private DbAttributeSet _attributeSet;
-        internal DbPublishing Publishing => _publishing ?? (_publishing = new DbPublishing(this));
+        internal DbPublishing Publishing => _publishing ?? (_publishing = new DbPublishing(this, _builder));
         private DbPublishing _publishing;
         public DbDimensions Dimensions => _dimensions ?? (_dimensions = new DbDimensions(this));
         private DbDimensions _dimensions;

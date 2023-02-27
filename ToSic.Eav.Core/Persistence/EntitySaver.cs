@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -29,13 +30,13 @@ namespace ToSic.Eav.Persistence
         /// modifications. 
         /// </summary>
         /// <returns></returns>
-        public Entity CreateMergedForSaving(
+        public IEntity CreateMergedForSaving(
             IEntity original,
             IEntity update,
             SaveOptions saveOptions,
             string noParamOrder = Eav.Parameters.Protector,
             int? newId = default,
-            Guid? newGuid = default,
+            //Guid? newGuid = default,
             IContentType newType = default,
             bool logDetails = true
         ) => Log.Func($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", enabled: logDetails, func: l =>
@@ -82,10 +83,10 @@ namespace ToSic.Eav.Persistence
                 keys.Add(Attributes.EntityFieldGuid);
                 keys.Add(Attributes.EntityFieldIsPublished);
 
-                AddIsPublishedAttribute(origAttribs,
-                    original?.IsPublished); // tmp store original IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
-                AddIsPublishedAttribute(newAttribs,
-                    update.IsPublished); // tmp store update IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
+                // tmp store original IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
+                AddIsPublishedAttribute(origAttribs, original?.IsPublished);
+                // tmp store update IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
+                AddIsPublishedAttribute(newAttribs, update.IsPublished);
 
                 if (originalWasSaved) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
                 newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
@@ -94,8 +95,7 @@ namespace ToSic.Eav.Persistence
             // optionally remove new things which already exist
             if (originalWasSaved && saveOptions.SkipExistingAttributes)
                 newAttribs = KeepOnlyKnownKeys(newAttribs, newAttribs.Keys
-                    .Where(k => !origAttribs.Keys.Any(
-                        ok => string.Equals(k, ok, StringComparison.InvariantCultureIgnoreCase))).ToList());
+                    .Where(k => !origAttribs.Keys.Any(k.EqualsInsensitive)).ToList());
 
             #endregion
 
@@ -129,9 +129,10 @@ namespace ToSic.Eav.Persistence
                         ? MergeAttribute(mergedAttribs[newAttrib.Key], newAttrib.Value, saveOptions)
                         : newAttrib.Value;
 
-            var clone = _multiBuilder.Entity.Clone(idProvidingEntity, id: newId, guid: newGuid, type: newType, values: mergedAttribs);
-            var result = CorrectPublishedAndGuidImports(clone, logDetails) as Entity;
-            return (result, "ok");
+            var preCleaned = CorrectPublishedAndGuidImports(/*idProvidingEntity,*/ mergedAttribs, logDetails); // as Entity;
+            var clone = _multiBuilder.Entity.Clone(idProvidingEntity, id: newId, guid: /*newGuid*/ preCleaned.NewGuid, type: newType, values: preCleaned.Attributes, isPublished: preCleaned.NewIsPublished);
+            //var result = CorrectPublishedAndGuidImports(clone, clone.Attributes, logDetails); // as Entity;
+            return (clone, "ok");
         });
 
         private void AddIsPublishedAttribute(IDictionary<string, IAttribute> attributes, bool? isPublished) 
@@ -215,9 +216,8 @@ namespace ToSic.Eav.Persistence
         /// <param name="update"></param>
         /// <param name="saveOptions"></param>
         /// <returns></returns>
-        private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions)
+        private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions) => Log.Func(() =>
         {
-            var callLog = Log.Fn<IAttribute>();
             // everything in the update will be kept, and optionally some stuff in the original may be preserved
             var result = update;
             foreach (var orgVal in ValuesOrderedForProcessing(original.Values, saveOptions))
@@ -245,8 +245,8 @@ namespace ToSic.Eav.Persistence
                 result.Values.Add(val);
             }
 
-            return callLog.ReturnAsOk(result);
-        }
+            return result;
+        });
 
         private DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
         private DimensionBuilder _langBuilder;
@@ -261,16 +261,21 @@ namespace ToSic.Eav.Persistence
             return callLog.Return(result, $"{result.Count}");
         }
 
-        private IEntity CorrectPublishedAndGuidImports(IEntity newE, bool logDetails) => Log.Func(enabled: logDetails, func: l =>
+        private (/*IEntity Entity,*/ Dictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)
+            CorrectPublishedAndGuidImports(/*IEntity newE,*/ Dictionary<string, IAttribute> values, bool logDetails
+            ) => Log.Func(enabled: logDetails, func: l =>
         {
             // check IsPublished
-            var isPublished = newE.Value(Attributes.EntityFieldIsPublished);
+            //var isPublished = newE.Value(Attributes.EntityFieldIsPublished);
+            values.TryGetValue(Attributes.EntityFieldIsPublished, out var isPublishedAttr);
+            var isPublished = isPublishedAttr?.GetTypedValue(Array.Empty<string>()).Result;
             bool? newIsPublished = null;
             if (isPublished != null)
             {
                 l.A("Found property for published, will move");
-                newE.Attributes.Remove(Attributes.EntityFieldIsPublished);
+                values.Remove(Attributes.EntityFieldIsPublished);
 
+                //var temp = isPublished.GetTypedValue(Array.Empty<string>());
                 if (isPublished is bool b)
                     newIsPublished = b;
                 //newE.IsPublished = b;
@@ -280,20 +285,22 @@ namespace ToSic.Eav.Persistence
             }
 
             // check EntityGuid
-            var probablyGuid = newE.Value(Attributes.EntityFieldGuid);
+            //var probablyGuid = newE.Value(Attributes.EntityFieldGuid);
+            values.TryGetValue(Attributes.EntityFieldGuid, out var probablyGuidAttr);
+            var probablyGuid = probablyGuidAttr?.GetTypedValue(Array.Empty<string>()).Result;
             Guid? newGuid = null;
             if (probablyGuid != null)
             {
                 l.A("Found property for published, will move");
-                newE.Attributes.Remove(Attributes.EntityFieldGuid);
+                values.Remove(Attributes.EntityFieldGuid);
                 if (Guid.TryParse(probablyGuid.ToString(), out var eGuid))
                     newGuid = eGuid;
                     //newE.SetGuid(eGuid);
             }
 
-            var cloned = _multiBuilder.Entity.ResetIdentifiers(newE, newGuid: newGuid, isPublished: newIsPublished);
+            //var cloned = _multiBuilder.Entity.ResetIdentifiers(newE, newGuid: newGuid, isPublished: newIsPublished);
 
-            return (cloned, "ok");
+            return ((/*newEnt,*/ values, newGuid, newIsPublished), "ok");
         });
 
     }
