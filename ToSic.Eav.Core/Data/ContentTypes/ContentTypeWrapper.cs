@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data
         /// In case we're re-wrapping another wrapper, make sure we use the real, underlying contentType for the Contents
         /// </summary>
         /// <param name="contentType"></param>
-        public ContentTypeWrapper(IContentType contentType) : base((contentType as ContentTypeWrapper)?.UnwrappedContents ?? contentType)
+        public ContentTypeWrapper(IContentType contentType) : base((contentType as ContentTypeWrapper)?.GetContents() ?? contentType)
         {
             RootContentsForEqualityCheck = contentType;
             if (contentType is IMultiWrapper<IContentType> wrapper)
@@ -28,46 +28,46 @@ namespace ToSic.Eav.Data
         public ContentTypeWrapper(IContentType contentType, IDecorator<IContentType> decorator) : this(contentType) 
             => Decorators.Add(decorator);
 
-        public int AppId => UnwrappedContents.AppId;
+        public int AppId => GetContents().AppId;
 
-        public string Name => UnwrappedContents.Name;
+        public string Name => GetContents().Name;
 
         [Obsolete("Deprecated in v13, please use NameId instead")]
-        public string StaticName => UnwrappedContents.NameId;
+        public string StaticName => GetContents().NameId;
 
-        public string NameId => UnwrappedContents.NameId;
+        public string NameId => GetContents().NameId;
 
         // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
         //public string Description => _contents.Description;
 
-        public string Scope => UnwrappedContents.Scope;
+        public string Scope => GetContents().Scope;
 
-        public int Id => UnwrappedContents.Id;
+        public int Id => GetContents().Id;
 
         [Obsolete("Deprecated in V13, please use Id instead.")]
-        public int ContentTypeId => UnwrappedContents.Id;
+        public int ContentTypeId => GetContents().Id;
 
-        public IList<IContentTypeAttribute> Attributes => UnwrappedContents.Attributes;
+        public IList<IContentTypeAttribute> Attributes => GetContents().Attributes;
 
-        public IContentTypeAttribute this[string fieldName] => UnwrappedContents[fieldName];
+        public IContentTypeAttribute this[string fieldName] => GetContents()[fieldName];
 
-        public RepositoryTypes RepositoryType => UnwrappedContents.RepositoryType;
+        public RepositoryTypes RepositoryType => GetContents().RepositoryType;
 
-        public string RepositoryAddress => UnwrappedContents.RepositoryAddress;
+        public string RepositoryAddress => GetContents().RepositoryAddress;
 
-        public bool IsDynamic => UnwrappedContents.IsDynamic;
+        public bool IsDynamic => GetContents().IsDynamic;
 
-        public ContentTypeMetadata Metadata => UnwrappedContents.Metadata;
+        public ContentTypeMetadata Metadata => GetContents().Metadata;
 
-        public bool Is(string name) => UnwrappedContents.Is(name);
+        public bool Is(string name) => GetContents().Is(name);
 
 
-        public string TitleFieldName => UnwrappedContents.TitleFieldName;
+        public string TitleFieldName => GetContents().TitleFieldName;
 
-        public string DynamicChildrenField => UnwrappedContents.DynamicChildrenField;
+        public string DynamicChildrenField => GetContents().DynamicChildrenField;
 
-        public bool AlwaysShareConfiguration => UnwrappedContents.AlwaysShareConfiguration;
+        public bool AlwaysShareConfiguration => GetContents().AlwaysShareConfiguration;
 
-        IMetadataOf IHasMetadata.Metadata => ((IHasMetadata)UnwrappedContents).Metadata;
+        IMetadataOf IHasMetadata.Metadata => ((IHasMetadata)GetContents()).Metadata;
     }
 }
