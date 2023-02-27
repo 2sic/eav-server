@@ -71,7 +71,7 @@ namespace ToSic.Eav.Data.Builder
 
             return new Entity(appId, entityId, partsBuilder: partsBuilder,  repositoryId: repositoryId, contentType: contentType,
                 useLightMode: useLightMode, values: values, typedValues: typedValues,
-                guid: guid, titleAttribute: titleField,
+                guid: guid, titleFieldName: titleField,
                 created: created, modified: modified, owner: owner,
                 version: version, isPublished: isPublished,
                 metadataFor: metadataFor);
@@ -132,12 +132,13 @@ namespace ToSic.Eav.Data.Builder
         /// Used in the Attribute-Filter, which generates a new entity with less properties
         /// </summary>
         public Entity Clone(IEntity entity, 
-            Dictionary<string, IAttribute> newValues, 
+            Dictionary<string, IAttribute> newValues = default,
             IEnumerable<EntityRelationship> entityRelationshipsIfNoApp = default,
             int? newId = default,
             int? newRepoId = default,
             Guid? newGuid = default,
-            IContentType newType = default)
+            IContentType newType = default
+            )
         {
             var entityPartsBuilder = new EntityPartsBuilder(
                 ent =>
@@ -146,8 +147,8 @@ namespace ToSic.Eav.Data.Builder
                     return new RelationshipManager(ent, lookupApp2, entityRelationshipsIfNoApp);
                 }
             );
-
-            var targetType = newType ?? entity.Type;
+            newValues = newValues ?? entity.Attributes;
+            newType = newType ?? entity.Type;
 
             var e = Create(appId: entity.AppId,
                 values: null,
@@ -155,7 +156,8 @@ namespace ToSic.Eav.Data.Builder
                 entityId: newId ?? entity.EntityId,
                 repositoryId: newRepoId ?? entity.RepositoryId,
                 guid: newGuid ?? entity.EntityGuid,
-                contentType: targetType, titleField: entity.Title?.Name,
+                contentType: newType,
+                titleField: entity.Title?.Name,
                 isPublished: entity.IsPublished,
                 created: entity.Created, modified: entity.Modified,
                 owner: entity.Owner, version: entity.Version,
@@ -180,22 +182,23 @@ namespace ToSic.Eav.Data.Builder
             int? newId = default,
             ITarget metadataFor = default,
             bool? isPublished = default,
-            bool? placeDraftInBranch = default)
+            bool? placeDraftInBranch = default,
+            int? version = default,
+            int? publishedId = default)
         {
-            var editable = ((Entity)entity); // todo: clone
-            if (newGuid != null) 
-                editable.EntityGuid = newGuid.Value;
-            if (newId != null)
-            {
-                editable.EntityId = newId.Value;
-                editable.RepositoryId = newId.Value;//note: this was not in before, could cause side-effects
-            }
-
+            var editable = (Entity)entity; // todo: clone
+            if (newGuid != null) editable.EntityGuid = newGuid.Value;
             if (isPublished != null) editable.IsPublished = isPublished.Value;
             if (placeDraftInBranch != null) editable.PlaceDraftInBranch = placeDraftInBranch.Value;
+            if (metadataFor != default) editable.MetadataFor = metadataFor;
+            if (version != default) editable.Version = version.Value;
+            if (newId != default) editable.EntityId = newId.Value;
+            if (publishedId != default) editable.PublishedEntityId = publishedId.Value;
 
-            if (metadataFor != default)
-                editable.MetadataFor = metadataFor;
+            if (newId != null)
+            {
+                editable.RepositoryId = newId.Value;//note: this was not in before, could cause side-effects
+            }
 
             return entity;
         }

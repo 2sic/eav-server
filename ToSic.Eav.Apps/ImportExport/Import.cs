@@ -186,7 +186,7 @@ namespace ToSic.Eav.Apps.ImportExport
             contentTypes.ForEach(type => MergeContentTypeUpdateWithExisting(appState, type));
             var so = _importExportEnvironment.SaveOptions(ZoneId);
             so.DiscardAttributesNotInType = true;
-            Storage.Save(contentTypes.Cast<IContentType>().ToList(), so);
+            Storage.Save(contentTypes.ToList(), so);
         });
         
         
@@ -246,40 +246,44 @@ namespace ToSic.Eav.Apps.ImportExport
         private IEntity MergeOneMd<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)
         {
             var existingMetadata = appState.GetMetadata(mdType, key, newMd.Type.NameId).FirstOrDefault();
-            IEntity metadataToUse;
             if (existingMetadata == null)
             {
                 //metadataToUse = newMd;
                 // Important to reset, otherwise the save process assumes it already exists in the DB
-                metadataToUse = _entityBuilder.ResetIdentifiers(newMd, newGuid: Guid.NewGuid(), newId: 0);
+                // NOTE: clone would be ok
+                return _entityBuilder.ResetIdentifiers(newMd, newGuid: Guid.NewGuid(), newId: 0);
                 //metadataToUse.ResetEntityId();
                 //metadataToUse.SetGuid(Guid.NewGuid());
             }
-            else
-                metadataToUse = _entitySaver.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
-            return metadataToUse;
+
+            return _entitySaver.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
         }
 
 
         /// <summary>
         /// Import an Entity with all values
         /// </summary>
-        private Entity CreateMergedForSaving(Entity update, AppState appState, SaveOptions saveOptions)
+        private IEntity CreateMergedForSaving(Entity update, AppState appState, SaveOptions saveOptions) => Log.Func(l =>
         {
             _mergeCountToStopLogging++;
             var logDetails = _mergeCountToStopLogging <= LogMaxMerges;
             if (_mergeCountToStopLogging == LogMaxMerges)
-                Log.A($"Hit {LogMaxMerges} merges, will stop logging details");
-            var callLog = Log.Fn<Entity>();
+                l.A($"Hit {LogMaxMerges} merges, will stop logging details");
+
             #region try to get AttributeSet or otherwise cancel & log error
 
-            var dbAttrSet = appState.GetContentType(update.Type.NameId); 
+            var contentType = appState.GetContentType(update.Type.NameId);
 
-            if (dbAttrSet == null) // AttributeSet not Found
+            if (contentType == null) // AttributeSet not Found
             {
-                Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, "ContentType not found for " + update.Type.NameId));
-                return callLog.ReturnNull("error");
+                Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, $"ContentType not found for {update.Type.NameId}"));
+                return (null, "error");
             }
+
+            // set type only if is not set yet 
+            //if (update.Type.Id == 0)
+            //    update.UpdateType(contentType);
+            var typeReset = update.Type.Id != default ? update.Type : null;
 
             #endregion
 
@@ -288,23 +292,19 @@ namespace ToSic.Eav.Apps.ImportExport
             if (update.EntityGuid != Guid.Empty)
                 existingEntities = appState.List.Where(e => e.EntityGuid == update.EntityGuid).ToList();
 
-            // set type only if is not set yet 
-            if (update.Type.Id == 0)
-                update.UpdateType(dbAttrSet);
-
-            // Simplest case - nothing existing to update: return entity
-
+            // Simplest case - nothing existing to update: return update-entity unchanged
             if (existingEntities == null || !existingEntities.Any())
-                return callLog.Return(update, "is new, nothing to merge");
+                return (_entityBuilder.Clone(update, newType: typeReset), "is new, nothing to merge, just set type to be sure");
 
-            Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information, $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));
+            Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information,
+                $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));
 
             // now update (main) entity id from existing - since it already exists
             var original = existingEntities.First();
-            update.ResetEntityId(original.EntityId);
-            var result = _entitySaver.Value.CreateMergedForSaving(original, update, saveOptions, logDetails);
-            return callLog.ReturnAsOk(result);
-        }
+            //update.ResetEntityId(original.EntityId);
+            var result = _entitySaver.Value.CreateMergedForSaving(original, update, saveOptions, newId: original.EntityId, newType: typeReset, logDetails: logDetails);
+            return (result, "ok");
+        });
 
         private int _mergeCountToStopLogging;
         private const int LogMaxMerges = 100;

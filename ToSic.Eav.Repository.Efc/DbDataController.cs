@@ -6,6 +6,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Compression;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Builder;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence;
@@ -22,38 +23,8 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Repository.Efc
 {
 
-    public class DbDataController : ServiceBase, IStorage, IAppIdentity
+    public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     {
-        #region Extracted, now externalized objects with actions and private fields
-
-        public DbVersioning Versioning => _versioning ?? (_versioning = new DbVersioning(this, _compressor));
-        private DbVersioning _versioning;
-        public DbEntity Entities => _entities ?? (_entities = new DbEntity(this));
-        private DbEntity _entities;
-        public DbValue Values => _values ?? (_values = new DbValue(this));
-        private DbValue _values;
-        public DbAttribute Attributes => _attributes ?? (_attributes = new DbAttribute(this));
-        private DbAttribute _attributes;
-        public DbRelationship Relationships => _relationships ?? (_relationships = new DbRelationship(this));
-        private DbRelationship _relationships;
-        public DbAttributeSet AttribSet => _attributeSet ?? (_attributeSet = new DbAttributeSet(this));
-        private DbAttributeSet _attributeSet;
-        internal DbPublishing Publishing => _publishing ?? (_publishing = new DbPublishing(this));
-        private DbPublishing _publishing;
-        public DbDimensions Dimensions => _dimensions ?? (_dimensions = new DbDimensions(this));
-        private DbDimensions _dimensions;
-        public DbZone Zone => _dbZone ?? (_dbZone = new DbZone(this));
-        private DbZone _dbZone;
-        public DbApp App => _dbApp ?? (_dbApp = new DbApp(this));
-        private DbApp _dbApp;
-        public DbContentType ContentType => _contentType ?? (_contentType = new DbContentType(this));
-        private DbContentType _contentType;
-
-        private int _appId;
-
-        private int? _parentAppId;
-        private int _zoneId;
-        #endregion
 
         #region Properties like AppId, ZoneId, UserName etc.
 
@@ -62,11 +33,13 @@ namespace ToSic.Eav.Repository.Efc
         /// </summary>
         public int AppId => _appId == Constants.AppIdEmpty ? Constants.MetaDataAppId : _appId;
         public int[] AppIds => _parentAppId == null ? new[] { AppId } : new[] { AppId, _parentAppId.Value };
+        private int _appId;
 
         /// <summary>
         /// ZoneId of this whole Context
         /// </summary>
         public int ZoneId => _zoneId == 0 ? Constants.DefaultZoneId : _zoneId;
+        private int _zoneId;
 
         private const string UserNameUnknown = "unresolved(eav)";
         private string _userName;
@@ -91,14 +64,10 @@ namespace ToSic.Eav.Repository.Efc
             }
         }
 
-        #endregion
-
-        #region shared logs in case of write commands
         public List<LogItem> ImportLogToBeRefactored { get; } = new List<LogItem>();
 
-        //public ILog Log { get; private set; }
-
         public int? ParentAppId { get; set; }
+        private int? _parentAppId;
 
         #endregion
 
@@ -111,7 +80,8 @@ namespace ToSic.Eav.Repository.Efc
             AppsCacheSwitch appsCache,
             Generator<JsonSerializer> jsonSerializerGenerator,
             ILogStore logStore,
-            LazySvc<Compressor> compressor
+            LazySvc<Compressor> compressor,
+            MultiBuilder builder
             ) : base("Db.Data")
         {
             ConnectServices(
@@ -121,11 +91,13 @@ namespace ToSic.Eav.Repository.Efc
                 _logStore = logStore,
                 SqlDb = dbContext,
                 JsonSerializerGenerator = jsonSerializerGenerator,
-                _compressor = compressor
+                _compressor = compressor,
+                _builder = builder
             );
             SqlDb.AlternateSaveHandler += SaveChanges;
         }
 
+        private readonly MultiBuilder _builder;
         private readonly LazySvc<Efc11Loader> _efcLoaderLazy;
         private readonly LazySvc<IUser> _userLazy;
         private readonly AppsCacheSwitch _appsCache;

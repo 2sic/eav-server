@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MergeEntitiesTests.cs" />
+    <Compile Include="TestExtensionMethods.cs" />
     <Compile Include="TestGlobalFolderRepository.cs" />
     <Compile Include="SaveDataToDbTests.cs" />
     <Compile Include="SpecsTestExportSerialize.cs" />

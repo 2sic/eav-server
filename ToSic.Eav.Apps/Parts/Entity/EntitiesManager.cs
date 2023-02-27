@@ -95,14 +95,25 @@ namespace ToSic.Eav.Apps.Parts
             List<int> InnerSaveInLock()
             {
                 // ensure the type-definitions are real, not just placeholders
-                foreach (var entity in entities)
-                    if (entity is Entity e2
-                        && !e2.Type.IsDynamic // it's not dynamic
-                        && e2.Type.Attributes == null) // it doesn't have attributes, so it must have been in-memory
-                    {
-                        var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
-                        if (newType != null) e2.UpdateType(newType); // try to update, but leave if not found
-                    }
+                //foreach (var entity in entities)
+                //    if (entity is Entity e2
+                //        && !e2.Type.IsDynamic // it's not dynamic
+                //        && e2.Type.Attributes == null) // it doesn't have attributes, so it must have been in-memory
+                //    {
+                //        var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
+                //        if (newType != null) e2.UpdateType(newType); // try to update, but leave if not found
+                //    }
+
+                // Try to reset the content-type if not specified
+                entities = entities.Select(entity =>
+                {
+                    // If not Entity, or isDynamic, or no attributes (in-memory) leaves as is
+                    if (!(entity is Entity e2) || e2.Type.IsDynamic || e2.Type.Attributes != null)
+                        return entity;
+                    var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
+                    if (newType == null) return entity;
+                    return _multiBuilder.Value.Entity.Clone(entity, newType: newType);
+                }).ToList();
 
                 // Clear Ephemeral attributes which shouldn't be saved (new in v12)
                 entities.ForEach(e => ClearEphemeralAttributes(e));

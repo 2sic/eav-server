@@ -121,14 +121,14 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        ///// <summary>
-        ///// Find the title field of the current content type.
-        ///// In edge cases it can happen that there is no field
-        ///// </summary>
-        ///// <returns></returns>
-        //[JsonIgnore]
-        //[PrivateApi("new 15.04")]
-        //string TitleFieldName { get; }
+        /// <summary>
+        /// Find the title field of the current content type.
+        /// In edge cases it can happen that there is no field
+        /// </summary>
+        /// <returns></returns>
+        [JsonIgnore]
+        [PrivateApi("new 15.04")]
+        string TitleFieldName { get; }
 
     }
 }

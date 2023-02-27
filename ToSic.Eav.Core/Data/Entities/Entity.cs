@@ -20,7 +20,7 @@ namespace ToSic.Eav.Data
             bool useLightMode,
             Dictionary<string, object> values = default,
             Dictionary<string, IAttribute> typedValues = default,
-            string titleAttribute = null,
+            string titleFieldName = null,
             DateTime? created = null, DateTime? modified = null,
             int repositoryId = default,
             Guid? guid = default,
@@ -28,7 +28,7 @@ namespace ToSic.Eav.Data
             int version = default,
             bool isPublished = true,
             ITarget metadataFor = default)
-            : base(appId, entityId, guid, contentType, partsBuilder, values, titleAttribute, created: created, modified: modified, owner: owner, metadataFor: metadataFor)
+            : base(appId, entityId, guid, contentType, partsBuilder, values, titleFieldName, created: created, modified: modified, owner: owner, metadataFor: metadataFor)
         {
             IsLight = useLightMode;
             Attributes = typedValues;

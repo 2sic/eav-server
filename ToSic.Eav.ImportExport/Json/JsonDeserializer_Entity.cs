@@ -60,7 +60,7 @@ namespace ToSic.Eav.ImportExport.Json
             if (jEnt.For != null)
             {
                 var md = jEnt.For;
-                Log.A($"this is metadata; will construct 'For' object. Type: {md.Target} ({md.TargetType})");
+                l.A($"this is metadata; will construct 'For' object. Type: {md.Target} ({md.TargetType})");
                 ismeta.TargetType = md.TargetType != 0 ? md.TargetType : MetadataTargets.GetId(md.Target); // #TargetTypeIdInsteadOfTarget
                 ismeta.KeyGuid = md.Guid;
                 ismeta.KeyNumber = md.Number;
@@ -179,8 +179,8 @@ namespace ToSic.Eav.ImportExport.Json
 
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
 
-                if (definition.IsTitle)
-                    newEntity.SetTitleField(definition.Name);
+                //if (definition.IsTitle)
+                //    newEntity.SetTitleField(definition.Name);
             }
         });
 

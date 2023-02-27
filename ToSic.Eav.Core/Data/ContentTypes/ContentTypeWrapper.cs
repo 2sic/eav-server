@@ -62,7 +62,7 @@ namespace ToSic.Eav.Data
         public bool Is(string name) => UnwrappedContents.Is(name);
 
 
-        //public string TitleFieldName => UnwrappedContents.TitleFieldName;
+        public string TitleFieldName => UnwrappedContents.TitleFieldName;
 
         public string DynamicChildrenField => UnwrappedContents.DynamicChildrenField;
 

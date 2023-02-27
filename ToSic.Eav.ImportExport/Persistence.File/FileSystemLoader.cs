@@ -202,8 +202,6 @@ namespace ToSic.Eav.Persistence.File
 
                 infoIfError = "couldn't set source/parent";
                 ct = _multiBuilder.ContentType.Clone(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: Constants.PresetContentTypeFakeParent, repoAddress: path);
-                //(ct as ContentType).SetSourceParentAndIdForPresetTypes(RepoType, Constants.PresetContentTypeFakeParent,
-                //    path, ++TypeIdSeed);
                 return ct;
             }
             catch (IOException e)
@@ -295,9 +293,8 @@ namespace ToSic.Eav.Persistence.File
             {
                 var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
 
-                var copyTypeIdSeed = TypeIdSeed;
                 var newContentTypes = contentTypes
-                    .Select(ct => _multiBuilder.ContentType.Clone(ct, id: ++copyTypeIdSeed,
+                    .Select(ct => _multiBuilder.ContentType.Clone(ct, id: ++TypeIdSeed,
                         repoType: RepoType, repoAddress: path,
                         parentTypeId: Constants.PresetContentTypeFakeParent,
                         configZoneId: Constants.PresetZoneId,
@@ -306,13 +303,6 @@ namespace ToSic.Eav.Persistence.File
                     .ToList();
 
                 return newContentTypes;
-                //contentTypes.ForEach(contentType =>
-                //{
-                //    (contentType as ContentType).SetSourceParentAndIdForPresetTypes(RepoType,
-                //        Constants.PresetContentTypeFakeParent, path, ++TypeIdSeed);
-                //});
-                //return contentTypes;
-
             }
             catch (Exception e)
             {
@@ -341,7 +331,7 @@ namespace ToSic.Eav.Persistence.File
             }
             catch (Exception e)
             {
-                l.Ex($"Failed building entities from bundle json", e);
+                l.Ex("Failed building entities from bundle json", e);
                 return (new List<IEntity>(), "error return none");
             }
         });

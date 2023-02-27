@@ -19,14 +19,13 @@ namespace ToSic.Eav.Persistence.File
             // 3 - return content types
             var types = Loaders.SelectMany(ldr => ldr.ContentTypes()).ToList();
 
-            types = SetInternalTypes(types);
+            types = SetTypesOfContentTypeParts(types);
 
             return (types, $"found {types.Count} types");
         });
 
-        private List<IContentType> SetInternalTypes(List<IContentType> types)
+        private List<IContentType> SetTypesOfContentTypeParts(List<IContentType> types) => Log.Func(timer: true, func: l =>
         {
-            var wrapLog = Log.Fn<List<IContentType>>(timer: true);
             var changeCount = 0;
             try
             {
@@ -34,58 +33,64 @@ namespace ToSic.Eav.Persistence.File
                     .ToDictionary(t => t.NameId, t => t);
 
                 var entitiesToRetype = types.SelectMany(t => t.Metadata).ToList();
-                Log.A($"Metadata found to retype: {entitiesToRetype.Count}");
-                changeCount += UpdateTypes("ContentType Metadata", entitiesToRetype, typeDic);
+                l.A($"Metadata found to retype: {entitiesToRetype.Count}");
+                var temp = UpdateTypes("ContentType Metadata", entitiesToRetype, typeDic);
+                changeCount += temp.Count;
 
                 entitiesToRetype = types.SelectMany(t => t.Attributes.SelectMany(a => a.Metadata)).ToList();
-                changeCount += UpdateTypes("Attribute Metadata", entitiesToRetype, typeDic);
+                temp = UpdateTypes("Attribute Metadata", entitiesToRetype, typeDic);
+                changeCount += temp.Count;
             }
             catch (Exception ex)
             {
-                Log.A("Error adding types");
-                Log.Ex(ex);
+                l.A("Error adding types");
+                l.Ex(ex);
             }
 
-            return wrapLog.Return(types, $"{changeCount}");
-        }
-        
-        private IEnumerable<IContentType> EliminateDuplicateTypes(List<IContentType> types)
+            return (types, $"{changeCount}");
+        });
+
+        private IEnumerable<IContentType> EliminateDuplicateTypes(List<IContentType> types) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<IEnumerable<IContentType>>();
             // In rare cases there can be a mistake and the same type may be duplicate!
             var typesGrouped = types.GroupBy(t => t.NameId).ToList();
 
             foreach (var badGroups in typesGrouped.Where(g => g.Count() > 1))
             {
-                Log.A("Warning: This type exists more than once - possibly defined in more plugins: " +
-                     $"'{badGroups.First().NameId}' / '{badGroups.First().Name}'");
+                l.A("Warning: This type exists more than once - possibly defined in more plugins: " +
+                      $"'{badGroups.First().NameId}' / '{badGroups.First().Name}'");
                 foreach (var bad in badGroups)
-                    Log.A($"Source: {bad.RepositoryAddress}");
+                    l.A($"Source: {bad.RepositoryAddress}");
             }
 
             var typesUngrouped = typesGrouped.Select(g => g.First());
-            return wrapLog.Return(typesUngrouped);
-        }
+            return typesUngrouped;
+        });
 
-        private int UpdateTypes(string name, IEnumerable<IEntity> entitiesToRetype, IDictionary<string, IContentType> typeDic)
+        private (List<IEntity> Changed, int Count) UpdateTypes(string name, List<IEntity> entitiesToRetype, IDictionary<string, IContentType> typeDic
+        ) => Log.Func($"For {name}", timer: true, func: l =>
         {
-            var wrapLog = Log.Fn<int>(name, timer: true);
             var changeCount = 0;
-            foreach (var entity in entitiesToRetype)
-                if (entity.Type.IsDynamic)
+            var sameChanged = entitiesToRetype
+                .Select(entity =>
                 {
+                    if (!entity.Type.IsDynamic) return entity;
+
                     typeDic.TryGetValue(entity.Type.NameId, out var realType);
                     if (realType == null)
                     {
-                        Log.A("TypeUnchanged:" + entity.Type.NameId);
-                        continue;
+                        l.A("TypeUnchanged:" + entity.Type.NameId);
+                        return entity;
                     }
-                    changeCount++;
-                    Log.A($"TypeChange:{entity.Type.NameId} - {realType.Name}");
-                    (entity as Entity).UpdateType(realType, true);
-                }
 
-            return wrapLog.ReturnAndLog(changeCount);
-        }
+                    changeCount++;
+                    l.A($"TypeChange:{entity.Type.NameId} - {realType.Name}");
+                    (entity as Entity).UpdateType(realType);
+                    return entity;
+                })
+                .ToList();
+
+            return (entitiesToRetype, changeCount);
+        });
     }
 }

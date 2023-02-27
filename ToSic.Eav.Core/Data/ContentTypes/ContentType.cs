@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 using static System.StringComparison;
 
 namespace ToSic.Eav.Data
@@ -107,11 +109,11 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public bool Is(string name) => Name.EqualsInsensitive(name) || NameId.EqualsInsensitive(name);
-        
-        //[JsonIgnore]
-        //[PrivateApi("new 15.04")]
-        //public string TitleFieldName => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
-        //private readonly GetOnce<string> _titleFieldName = new GetOnce<string>();
+
+        [JsonIgnore]
+        [PrivateApi("new 15.04")]
+        public string TitleFieldName => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
+        private readonly GetOnce<string> _titleFieldName = new GetOnce<string>();
 
         /// <inheritdoc />
         public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => string.Equals(a.Name, fieldName, OrdinalIgnoreCase));

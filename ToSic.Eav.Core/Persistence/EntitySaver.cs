@@ -28,30 +28,38 @@ namespace ToSic.Eav.Persistence
         /// Goal: Pass changes into an existing entity so that it can then be saved as a whole, with correct
         /// modifications. 
         /// </summary>
-        /// <param name="original"></param>
-        /// <param name="update"></param>
-        /// <param name="saveOptions"></param>
         /// <returns></returns>
-        public Entity CreateMergedForSaving(IEntity original, IEntity update, SaveOptions saveOptions, bool logDetails = true)
+        public Entity CreateMergedForSaving(
+            IEntity original,
+            IEntity update,
+            SaveOptions saveOptions,
+            string noParamOrder = Eav.Parameters.Protector,
+            int? newId = default,
+            Guid? newGuid = default,
+            IContentType newType = default,
+            bool logDetails = true
+        ) => Log.Func($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", enabled: logDetails, func: l =>
         {
-            var callLog = logDetails 
-                ? Log.Fn<Entity>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}" )
-                : null;
             if (saveOptions == null) throw new ArgumentNullException(nameof(saveOptions));
-            Log.A(Log.Try(() => "opts " + saveOptions.LogInfo));
-            #region Step 0: initial error checks
-            if(update == null) throw new Exception("can't prepare entities for saving, no new item with attributes provided");
+            l.A(l.Try(() => "opts " + saveOptions.LogInfo));
+
+            #region Step 0: initial error checks / content-type
+
+            if (update == null)
+                throw new Exception("can't prepare entities for saving, no new item with attributes provided");
 
             var ct = (original ?? update).Type;
-            if(ct==null) throw new Exception("unknown content-type");
+            if (ct == null) throw new Exception("unknown content-type");
 
             #endregion
 
             #region Step 1: check if there is an original item
+
             // only accept original if it's a real object with a valid GUID, otherwise it's not an existing entity
             var hasOriginal = original != null;
             var originalWasSaved = hasOriginal && !(original.EntityId == 0 && original.EntityGuid == Guid.Empty);
             var idProvidingEntity = originalWasSaved ? original : update;
+
             #endregion
 
             #region Step 2: clean up unwanted attributes from both lists
@@ -59,7 +67,7 @@ namespace ToSic.Eav.Persistence
             var origAttribs = _multiBuilder.Attribute.ListDeepClone(original?.Attributes);
             var newAttribs = _multiBuilder.Attribute.ListDeepClone(update.Attributes);
 
-            Log.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribs?.Count}, newAtts⋮{newAttribs.Count}");
+            l.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribs?.Count}, newAtts⋮{newAttribs.Count}");
 
             // Optionally remove original values not in the update - but only if no option prevents this
             if (originalWasSaved && !saveOptions.PreserveUntouchedAttributes && !saveOptions.SkipExistingAttributes)
@@ -74,8 +82,10 @@ namespace ToSic.Eav.Persistence
                 keys.Add(Attributes.EntityFieldGuid);
                 keys.Add(Attributes.EntityFieldIsPublished);
 
-                AddIsPublishedAttribute(origAttribs, original?.IsPublished); // tmp store original IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
-                AddIsPublishedAttribute(newAttribs, update.IsPublished); // tmp store update IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
+                AddIsPublishedAttribute(origAttribs,
+                    original?.IsPublished); // tmp store original IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
+                AddIsPublishedAttribute(newAttribs,
+                    update.IsPublished); // tmp store update IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
 
                 if (originalWasSaved) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
                 newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
@@ -85,7 +95,7 @@ namespace ToSic.Eav.Persistence
             if (originalWasSaved && saveOptions.SkipExistingAttributes)
                 newAttribs = KeepOnlyKnownKeys(newAttribs, newAttribs.Keys
                     .Where(k => !origAttribs.Keys.Any(
-                                ok => string.Equals(k, ok, StringComparison.InvariantCultureIgnoreCase))).ToList());
+                        ok => string.Equals(k, ok, StringComparison.InvariantCultureIgnoreCase))).ToList());
 
             #endregion
 
@@ -97,8 +107,9 @@ namespace ToSic.Eav.Persistence
             if (hasLanguages && !saveOptions.PreserveUnknownLanguages)
                 if ((!saveOptions.Languages?.Any() ?? true)
                     || string.IsNullOrWhiteSpace(saveOptions.PrimaryLanguage)
-                    || saveOptions.Languages.All(l => !l.Matches(saveOptions.PrimaryLanguage)))
-                    throw new Exception("primary language must exist in languages, cannot continue preparation to save with unclear language setup");
+                    || saveOptions.Languages.All(lang => !lang.Matches(saveOptions.PrimaryLanguage)))
+                    throw new Exception(
+                        "primary language must exist in languages, cannot continue preparation to save with unclear language setup");
 
 
             if (hasLanguages && !saveOptions.PreserveUnknownLanguages && (saveOptions.Languages?.Any() ?? false))
@@ -111,16 +122,17 @@ namespace ToSic.Eav.Persistence
 
             // now merge into new target
             var mergedAttribs = origAttribs ?? newAttribs;
-            if(original != null)
+            if (original != null)
                 foreach (var newAttrib in newAttribs)
-                    mergedAttribs[newAttrib.Key] = saveOptions.PreserveExistingLanguages && mergedAttribs.ContainsKey(newAttrib.Key)
+                    mergedAttribs[newAttrib.Key] = saveOptions.PreserveExistingLanguages &&
+                                                   mergedAttribs.ContainsKey(newAttrib.Key)
                         ? MergeAttribute(mergedAttribs[newAttrib.Key], newAttrib.Value, saveOptions)
                         : newAttrib.Value;
 
-            var clone = _multiBuilder.Entity.Clone(idProvidingEntity, newValues: mergedAttribs);
+            var clone = _multiBuilder.Entity.Clone(idProvidingEntity, newId: newId, newGuid: newGuid, newType: newType, newValues: mergedAttribs);
             var result = CorrectPublishedAndGuidImports(clone, logDetails) as Entity;
-            return callLog?.ReturnAsOk(result) ?? result;
-        }
+            return (result, "ok");
+        });
 
         private void AddIsPublishedAttribute(IDictionary<string, IAttribute> attributes, bool? isPublished) 
         {

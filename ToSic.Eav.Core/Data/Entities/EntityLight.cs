@@ -25,11 +25,13 @@ namespace ToSic.Eav.Data
 		public Guid EntityGuid { get; internal set; }
 
         /// <inheritdoc />
-        public object Title => TitleFieldName == null ? null : this[TitleFieldName];
+        public object Title => TitleFieldName.HasValue() ? this[TitleFieldName] : null;
 
         [JsonIgnore]
         [PrivateApi]
-        internal string TitleFieldName { get; set; }
+        internal string TitleFieldName => _titleFieldName ?? Type.TitleFieldName;
+
+        private string _titleFieldName;
 
         /// <summary>
         /// List of all attributes in light-mode - single language, simple.
@@ -83,7 +85,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         [PrivateApi]
         internal EntityLight(
-            int appId, int entityId, Guid? guid, IContentType contentType, EntityPartsBuilder partsBuilder, Dictionary<string, object> values, string titleAttribute = null, 
+            int appId, int entityId, Guid? guid, IContentType contentType, EntityPartsBuilder partsBuilder, Dictionary<string, object> values, string titleFieldName = null, 
             DateTime? created = null, DateTime? modified = null, string owner = null,
             ITarget metadataFor = default)
         {
@@ -92,14 +94,7 @@ namespace ToSic.Eav.Data
             EntityGuid = guid ?? Guid.Empty;
             Type = contentType;
             AttributesLight = values;
-            try
-            {
-                if (titleAttribute != null) TitleFieldName = titleAttribute;
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new KeyNotFoundException($"The Title Attribute with Name \"{titleAttribute}\" doesn't exist in the Entity-Attributes.");
-            }
+            _titleFieldName = titleFieldName;
             MetadataFor = metadataFor ?? new Target();
             if (created.HasValue) Created = created.Value;
             if (modified.HasValue) Modified = modified.Value;

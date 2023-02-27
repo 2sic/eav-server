@@ -87,7 +87,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {
                 {test.TitleField, "changed title on " + DateTime.Now}
             });
-            var saveEntity = _entitySaver.CreateMergedForSaving(itm1, itmNewTitle, so);
+            var saveEntity = _entitySaver.TestCreateMergedForSaving(itm1, itmNewTitle, so);
 
             // save it
             dbi.Save(new List<IEntity> {saveEntity}, so);
@@ -128,7 +128,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 { test.TitleField, ctTitle }
             });
 
-            var saveEntity = _entitySaver.CreateMergedForSaving(null, newE, so);
+            var saveEntity = _entitySaver.TestCreateMergedForSaving(null, newE, so);
 
             // save it
             var newId = dbi.Save(new List<IEntity> {saveEntity}, so);

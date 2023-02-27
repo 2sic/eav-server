@@ -168,18 +168,18 @@ namespace ToSic.Eav.Apps.ImportExport
                 var attributes = new XElement(XmlConstants.Attributes);
 
                 // Add all Attributes to AttributeSet including meta information
-                foreach (var x in set.Attributes.OrderBy(a => a.SortOrder))
+                foreach (var a in set.Attributes.OrderBy(a => a.SortOrder))
                 {
-                    var attribute = new XElement(XmlConstants.Attribute,
-                        new XAttribute(XmlConstants.Static, x.Name),
-                        new XAttribute(XmlConstants.Type, x.Type),
-                        new XAttribute(XmlConstants.IsTitle, x.IsTitle),
+                    var xmlAttribute = new XElement(XmlConstants.Attribute,
+                        new XAttribute(XmlConstants.Static, a.Name),
+                        new XAttribute(XmlConstants.Type, a.Type),
+                        new XAttribute(XmlConstants.IsTitle, a.IsTitle),
                         // Add Attribute MetaData
-                        from c in AppState.GetMetadata(TargetTypes.Attribute, x.AttributeId).ToList()
-                        select GetEntityXElement(c.EntityId, c.Type.NameId)
+                        AppState.GetMetadata(TargetTypes.Attribute, a.AttributeId)
+                            .Select(c => GetEntityXElement(c.EntityId, c.Type.NameId))
                     );
 
-                    attributes.Add(attribute);
+                    attributes.Add(xmlAttribute);
                 }
 
                 // Add AttributeSet / Content Type
