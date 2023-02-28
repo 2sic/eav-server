@@ -143,6 +143,7 @@ namespace ToSic.Eav.ImportExport.Json
                 var newAtt = Services.MultiBuilder.Attribute.CreateTyped(attrib.Key, type, attrib.Value
                     .Select(v => Services.MultiBuilder.Value.Build(type, v.Value, RecreateLanguageList(v.Key), relationshipsSource))
                     .ToList());
+                // #immutableTodo
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
             }
         }
@@ -197,6 +198,7 @@ namespace ToSic.Eav.ImportExport.Json
                         throw new ArgumentOutOfRangeException();
                 }
 
+                // #immutableTodo
                 newEntity.Attributes.Add(newAtt.Name, newAtt);
 
                 //if (definition.IsTitle)

@@ -115,6 +115,7 @@ namespace ToSic.Eav.DataSources
                             _multiBuilder.Attribute.CreateTyped(map.Target,
                                 firstExistingValue?.Type ??
                                 "string"); // if there are no values, we assume it's a string field
+                        // #immutableTodo
                         attributes.Add(map.Target, newAttribute);
 
                         foreach (var entry in map.Fields)
@@ -129,6 +130,7 @@ namespace ToSic.Eav.DataSources
                             var value = attributes[entry.OriginalField].Values.FirstOrDefault()
                                 ?.ObjectContents;
                             // Remove first, in case the new name replaces an old one
+                            // #immutableTodo
                             attributes.Remove(entry.OriginalField);
                             // Now add the resulting new attribute
                             _multiBuilder.AttributeImport.AddValue(attributes, map.Target, value, newAttribute.Type, entry.Language);
@@ -144,11 +146,12 @@ namespace ToSic.Eav.DataSources
 
                         // Make a copy to make sure the Name property of the attribute is set correctly
                         var sourceAttr = attributes[map.Source];
-                        var newAttribute = _multiBuilder.Attribute.CreateTyped(map.Target, sourceAttr.Type,
-                            (List<IValue>)sourceAttr.Values);
+                        var newAttribute = _multiBuilder.Attribute.CreateTyped(map.Target, sourceAttr.Type, sourceAttr.Values);
                         // Remove first, in case the new name replaces an old one
+                        // #immutableTodo
                         attributes.Remove(map.Source);
                         // Now add the resulting new attribute
+                        // #immutableTodo
                         attributes.Add(map.Target, newAttribute);
                     }
 
