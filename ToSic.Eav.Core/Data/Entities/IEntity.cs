@@ -62,7 +62,7 @@ namespace ToSic.Eav.Data
 #if NETFRAMEWORK
         new
 #endif
-            Dictionary<string, IAttribute> Attributes { get; }
+            IDictionary<string, IAttribute> Attributes { get; }
 
         /// <summary>
         /// Gets the "official" Title-Attribute <see cref="IAttribute{T}"/>

@@ -142,8 +142,13 @@ namespace ToSic.Eav.Persistence.Efc
             if (contentType == null)
                 throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
+            // Prepare relationships to add to AttributeGenerator
+            var preparedRelationships = relatedEntities.TryGetValue(e.EntityId, out var rawRels)
+                ? rawRels.ToLookup(r => r.StaticName, r => _multiBuilder.Value.BuildRelationship(r.Children, app), StringComparer.InvariantCultureIgnoreCase)
+                : null;
+
             // Get all Attributes of that Content-Type
-            var specs = _multiBuilder.Attribute.GenerateAttributesOfContentType(contentType);
+            var newAttributes = _multiBuilder.Attribute.GenerateAttributesOfContentType(contentType, preparedRelationships);
             var newEntity = _multiBuilder.Entity.EntityFromRepository(
                 appId: app.AppId,
                 entityGuid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,
@@ -152,12 +157,7 @@ namespace ToSic.Eav.Persistence.Efc
                 source: app, 
                 created: e.Created, modified: e.Modified, 
                 owner: e.Owner, version: e.Version, 
-                values: specs);
-
-            // add Related-Entities Attributes to the entity
-            if (relatedEntities.ContainsKey(e.EntityId))
-                foreach (var r in relatedEntities[e.EntityId])
-                    _multiBuilder.Attribute.BuildReferenceAttribute(newEntity, r.StaticName, r.Children, app);
+                values: newAttributes);
 
             #region Add "normal" Attributes (that are not Entity-Relations)
 

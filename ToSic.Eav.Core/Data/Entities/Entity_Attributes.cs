@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data
     public partial class Entity
     {
         /// <inheritdoc />
-        public Dictionary<string, IAttribute> Attributes { get; }
+        public IDictionary<string, IAttribute> Attributes { get; }
 
         /// <summary>
         /// This determines if the access to the properties will use light-objects, or IAttributes containing multi-language objects

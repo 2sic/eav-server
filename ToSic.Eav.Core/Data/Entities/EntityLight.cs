@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.Json.Serialization;
 using ToSic.Eav.Data.Build;
@@ -34,7 +35,6 @@ namespace ToSic.Eav.Data
         [JsonIgnore]
         [PrivateApi]
         internal string TitleFieldName => _titleFieldName ?? Type.TitleFieldName;
-
         private readonly string _titleFieldName;
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace ToSic.Eav.Data
         /// Internal use only!
         /// </summary>
         [PrivateApi("Internal use only!")]
-		public Dictionary<string, object> AttributesLight { get; }
+		public IImmutableDictionary<string, object> AttributesLight { get; }
 
         /// <inheritdoc />
 		public IContentType Type { get; }
@@ -90,7 +90,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         [PrivateApi]
         internal EntityLight(
-            int appId, int entityId, Guid? guid, IContentType contentType, EntityPartsBuilder partsBuilder, Dictionary<string, object> rawValues, string titleFieldName = null, 
+            int appId, int entityId, Guid? guid, IContentType contentType, EntityPartsBuilder partsBuilder, IImmutableDictionary<string, object> rawValues, string titleFieldName = null, 
             DateTime? created = null, DateTime? modified = null, string owner = null,
             ITarget metadataFor = default)
         {
@@ -203,13 +203,5 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        #region Save/Update settings - needed when passing this object to the save-layer
-
-
-        // todo: move to save options
-        [PrivateApi]
-        public bool PlaceDraftInBranch { get; set; }
-
-        #endregion
     }
 }

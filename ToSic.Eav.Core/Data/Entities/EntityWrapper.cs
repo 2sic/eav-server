@@ -68,7 +68,7 @@ namespace ToSic.Eav.Data
         public ITarget MetadataFor => Entity.MetadataFor;
 
         /// <inheritdoc />
-        public Dictionary<string, IAttribute> Attributes => Entity.Attributes;
+        public IDictionary<string, IAttribute> Attributes => Entity.Attributes;
 
         /// <inheritdoc />
         public IContentType Type => Entity.Type;

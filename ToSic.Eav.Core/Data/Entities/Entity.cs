@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
@@ -19,8 +20,8 @@ namespace ToSic.Eav.Data
             IContentType contentType,
             EntityPartsBuilder partsBuilder,
             //bool useLightMode,
-            Dictionary<string, object> rawValues,
-            Dictionary<string, IAttribute> values,
+            IImmutableDictionary<string, object> rawValues,
+            IDictionary<string, IAttribute> values,
             string titleFieldName,
             DateTime? created, DateTime? modified,
             int repositoryId,
@@ -38,7 +39,6 @@ namespace ToSic.Eav.Data
             RepositoryId = repositoryId;
             Version = version;
             IsPublished = isPublished;
-            RepositoryId = entityId;
             PlaceDraftInBranch = placeDraftInBranch;
             PublishedEntityId = publishedId;
             _getMetadataOf = partsBuilder.GetMetadataOf;

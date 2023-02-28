@@ -22,7 +22,7 @@ namespace ToSic.Eav.Data.Builder
         /// Add a value to the attribute specified. To do so, set the name, type and string of the value, as 
         /// well as some language properties.
         /// </summary>
-        public IValue AddValue(Dictionary<string, IAttribute> target, string attributeName,
+        public IValue AddValue(IDictionary<string, IAttribute> target, string attributeName,
             object value, string valueType, string language = null, bool languageReadOnly = false,
             bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null)
         {

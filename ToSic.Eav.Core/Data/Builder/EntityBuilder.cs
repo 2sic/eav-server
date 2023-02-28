@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
@@ -28,8 +29,8 @@ namespace ToSic.Eav.Data.Builder
             int appId,
             IContentType contentType,
             string noParamOrder = Parameters.Protector,
-            Dictionary<string, object> rawValues = default,
-            Dictionary<string, IAttribute> values = default,
+            IDictionary<string, object> rawValues = default,
+            IDictionary<string, IAttribute> values = default,
             int entityId = default,
             int repositoryId = Constants.NullId,
             Guid guid = default,
@@ -59,7 +60,7 @@ namespace ToSic.Eav.Data.Builder
             return new Entity(appId, entityId, repositoryId: repositoryId,
                 partsBuilder: partsBuilder, 
                 contentType: contentType,
-                rawValues: rawValues, values: values,
+                rawValues: rawValues?.ToImmutableDictionary(), values: values,
                 guid: guid, titleFieldName: titleField,
                 created: created, modified: modified, owner: owner,
                 version: version, isPublished: isPublished,
@@ -68,7 +69,7 @@ namespace ToSic.Eav.Data.Builder
                 publishedId: publishedId);
         }
 
-        private (Dictionary<string, IAttribute> values, Dictionary<string, object> rawValues) PreprocessValues(Dictionary<string, IAttribute> values, Dictionary<string, object> rawValues)
+        private (IDictionary<string, IAttribute> values, IDictionary<string, object> rawValues) PreprocessValues(IDictionary<string, IAttribute> values, IDictionary<string, object> rawValues)
         {
             // if we have typed, make sure invariant
             values = values?.ToInvariant();
@@ -105,7 +106,7 @@ namespace ToSic.Eav.Data.Builder
             string owner,
             int version,
             string titleField = default,
-            Dictionary<string, IAttribute> values = default,
+            IDictionary<string, IAttribute> values = default,
             List<IEntity> metadataItems = default,
             EntityPartsBuilder partsBuilder = default
             )
@@ -136,16 +137,14 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         public Entity EmptyOfType(int appId, Guid entityGuid, int entityId, IContentType type)
         {
-            var specs = _attributeBuilder.GenerateAttributesOfContentType(type);
+            var attributes = _attributeBuilder.GenerateAttributesOfContentType(type, null);
             return Create(appId: appId,
                 entityId: entityId, guid: entityGuid,
                 contentType: type,
-                // titleField: specs.Title,
                 rawValues: null,
-                values: specs,
+                values: attributes,
                 created: DateTime.MinValue, modified: DateTime.Now, 
                 owner: "");
-
         }
 
         /// <summary>
@@ -156,7 +155,7 @@ namespace ToSic.Eav.Data.Builder
             IEntity original,
             string noParamOrder = Parameters.Protector,
             int? appId = default,
-            Dictionary<string, IAttribute> values = default,
+            IDictionary<string, IAttribute> values = default,
             //IEnumerable<EntityRelationship> entityRelationshipsIfNoApp = default,
             int? id = default,
             int? repositoryId = default,

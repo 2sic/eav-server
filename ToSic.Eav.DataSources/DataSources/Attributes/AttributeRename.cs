@@ -144,10 +144,11 @@ namespace ToSic.Eav.DataSources
                 return (originals, "error");
 
             var result = originals
-                .Select(entity => _multiBuilder.Entity.Clone(entity,
-                    values: CreateDic(entity),
-                    type: newType
-                ))
+                .Select(entity =>
+                {
+                    var values = CreateDic(entity);
+                    return _multiBuilder.Entity.Clone(entity, values: values, type: newType);
+                })
                 .ToImmutableArray();
 
             Log.A($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");

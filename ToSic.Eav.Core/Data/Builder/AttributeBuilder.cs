@@ -21,14 +21,14 @@ namespace ToSic.Eav.Data.Builder
         #endregion
 
 
-        /// <summary>
-        /// Create a reference / relationship attribute on an entity being constructed (at DB load)
-        /// </summary>
-        public void BuildReferenceAttribute(IEntity newEntity, string attribName, IEnumerable<int?> references, IEntitiesSource app)
-        {
-            var attrib = newEntity.Attributes[attribName];
-            attrib.Values = new List<IValue> { ValueBuilder.Build(attrib.Type, references, null, app) };
-        }
+        ///// <summary>
+        ///// Create a reference / relationship attribute on an entity being constructed (at DB load)
+        ///// </summary>
+        //public void BuildReferenceAttribute(IEntity newEntity, string attribName, IEnumerable<int?> references, IEntitiesSource app)
+        //{
+        //    var attrib = newEntity.Attributes[attribName];
+        //    attrib.Values = new List<IValue> { ValueBuilder.Build(attrib.Type, references, null, app) };
+        //}
 
         //public IDictionary<string, IAttribute> ListRemoveOne(IDictionary<string, IAttribute> list, string keyToDrop)
         //    => list.Where(a => !a.Key.EqualsInsensitive(keyToDrop))
@@ -98,7 +98,7 @@ namespace ToSic.Eav.Data.Builder
             }
         }
 
-        public Dictionary<string, IAttribute> GenerateAttributesOfContentType(IContentType contentType, ILookup<string, IValue> preparedValues = null)
+        public Dictionary<string, IAttribute> GenerateAttributesOfContentType(IContentType contentType, ILookup<string, IValue> preparedValues)
         {
             var attributes = contentType.Attributes.ToDictionary(
                 a => a.Name,
