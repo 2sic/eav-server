@@ -17,10 +17,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             attributeSetId = DbContext.ContentType.ResolvePotentialGhostAttributeSetId(attributeSetId);
 
-            return from ais in DbContext.SqlDb.ToSicEavAttributesInSets
-                   where ais.AttributeSetId == attributeSetId
-                   orderby ais.SortOrder
-                   select ais.Attribute;
+            return DbContext.SqlDb.ToSicEavAttributesInSets
+                .Where(ais => ais.AttributeSetId == attributeSetId)
+                .OrderBy(ais => ais.SortOrder)
+                .Select(ais => ais.Attribute);
         }
 
 
