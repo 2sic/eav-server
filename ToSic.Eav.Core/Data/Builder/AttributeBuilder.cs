@@ -24,29 +24,28 @@ namespace ToSic.Eav.Data.Builder
         /// <summary>
         /// Create a reference / relationship attribute on an entity being constructed (at DB load)
         /// </summary>
-        public void BuildReferenceAttribute(IEntity newEntity, string attribName, IEnumerable<int?> references,
-            IEntitiesSource app)
+        public void BuildReferenceAttribute(IEntity newEntity, string attribName, IEnumerable<int?> references, IEntitiesSource app)
         {
             var attrib = newEntity.Attributes[attribName];
             attrib.Values = new List<IValue> { ValueBuilder.Build(attrib.Type, references, null, app) };
         }
 
-        public IDictionary<string, IAttribute> ListRemoveOne(IDictionary<string, IAttribute> list, string keyToDrop)
-            => list.Where(a => !a.Key.EqualsInsensitive(keyToDrop))
-                .ToDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
+        //public IDictionary<string, IAttribute> ListRemoveOne(IDictionary<string, IAttribute> list, string keyToDrop)
+        //    => list.Where(a => !a.Key.EqualsInsensitive(keyToDrop))
+        //        .ToDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
 
-        public IDictionary<string, IAttribute> ListAddOne(IDictionary<string, IAttribute> list, string name, IAttribute fieldToAdd) 
-            => new Dictionary<string, IAttribute>(list, InvariantCultureIgnoreCase) { { name, fieldToAdd } };
+        //public IDictionary<string, IAttribute> ListAddOne(IDictionary<string, IAttribute> list, string name, IAttribute fieldToAdd) 
+        //    => new Dictionary<string, IAttribute>(list, InvariantCultureIgnoreCase) { { name, fieldToAdd } };
 
-        public IDictionary<string, IAttribute> ListUpdateOne(IDictionary<string, IAttribute> list, IAttribute field,
-            IList<IValue> values)
-        {
-            var copy = new Dictionary<string, IAttribute>(list, InvariantCultureIgnoreCase)
-            {
-                [field.Name] = CloneUpdateOne(field, values)
-            };
-            return copy;
-        }
+        //public IDictionary<string, IAttribute> ListUpdateOne(IDictionary<string, IAttribute> list, IAttribute field,
+        //    IList<IValue> values)
+        //{
+        //    var copy = new Dictionary<string, IAttribute>(list, InvariantCultureIgnoreCase)
+        //    {
+        //        [field.Name] = CloneUpdateOne(field, values)
+        //    };
+        //    return copy;
+        //}
 
         // Note: ATM it makes a deep clone, but once everything is #immutable that won't be necessary any more
         public Dictionary<string, IAttribute> ListDeepClone(IDictionary<string, IAttribute> attributes) 
@@ -99,19 +98,17 @@ namespace ToSic.Eav.Data.Builder
             }
         }
 
-        public (Dictionary<string, IAttribute> All, string Nothing) GenerateAttributesOfContentType(IContentType contentType)
+        public Dictionary<string, IAttribute> GenerateAttributesOfContentType(IContentType contentType, ILookup<string, IValue> preparedValues = null)
         {
-            //string titleField = null;
             var attributes = contentType.Attributes.ToDictionary(
                 a => a.Name,
                 a =>
                 {
-                    var entityAttribute = CreateTyped(a.Name, a.Type);
-                    //if (a.IsTitle)
-                    //    titleField = entityAttribute.Name;
+                    var values = preparedValues?[a.Name].ToList();
+                    var entityAttribute = CreateTyped(a.Name, a.Type, values);
                     return entityAttribute;
                 });
-            return (attributes, /*titleField*/ "");
+            return attributes;
         }
 
 

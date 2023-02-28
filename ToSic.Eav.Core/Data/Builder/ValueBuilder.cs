@@ -32,6 +32,10 @@ namespace ToSic.Eav.Data.Builder
             IEntitiesSource fullEntityListForLookup = null)
             => Build((ValueTypes)Enum.Parse(typeof(ValueTypes), attributeType), value, languages?.ToImmutableList(), fullEntityListForLookup);
 
+        public IValue BuildRelationship(List<int?> references, IEntitiesSource app)
+        {
+            return new Value<IEnumerable<IEntity>>(new LazyEntities(app, references), DimensionBuilder.NoLanguages);
+        }
 
         /// <summary>
         /// Creates a Typed Value Model
@@ -72,18 +76,8 @@ namespace ToSic.Eav.Data.Builder
                         return new Value<decimal?>(newDec, langs);
 
                     case ValueTypes.Entity:
-                        IEnumerable<IEntity> rel;
-                        var entityIds = value as IEnumerable<int?> ?? (value as IEnumerable<int>)
-                                        ?.Select(x => (int?)x).ToList();
-                        if (entityIds != null)
-                            rel = new LazyEntities(fullEntityListForLookup, entityIds.ToList());
-                        else if (value is IEnumerable<IEntity> relList)
-                            rel = new LazyEntities(fullEntityListForLookup, ((LazyEntities)relList).Identifiers);
-                        else if (value is List<Guid?> guids)
-                            rel = new LazyEntities(fullEntityListForLookup, guids);
-                        else
-                            rel = new LazyEntities(fullEntityListForLookup, GuidCsvToList(value));
-                        return new Value<IEnumerable<IEntity>>(rel, langs);
+                        var rel = GetLazyEntitiesForRelationship(value, fullEntityListForLookup);
+                        return new Value<IEnumerable<IEntity>>(rel, DimensionBuilder.NoLanguages);
                     // ReSharper disable RedundantCaseLabel
                     case ValueTypes.String:  // most common case
                     case ValueTypes.Empty:   // empty - should actually not contain anything!
@@ -100,6 +94,19 @@ namespace ToSic.Eav.Data.Builder
             {
                 return new Value<string>(stringValue, langs);
             }
+        }
+
+        private LazyEntities GetLazyEntitiesForRelationship(object value, IEntitiesSource fullEntityListForLookup)
+        {
+            var entityIds = (value as IEnumerable<int?>)?.ToList()
+                            ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
+            if (entityIds != null)
+                return new LazyEntities(fullEntityListForLookup, entityIds);
+            if (value is IEnumerable<IEntity> relList)
+                return new LazyEntities(fullEntityListForLookup, ((LazyEntities)relList).Identifiers);
+            if (value is List<Guid?> guids)
+                return new LazyEntities(fullEntityListForLookup, guids);
+            return new LazyEntities(fullEntityListForLookup, GuidCsvToList(value));
         }
 
 

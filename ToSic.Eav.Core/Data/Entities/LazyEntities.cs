@@ -114,7 +114,7 @@ namespace ToSic.Eav.Data
 
         }
 
-        // todo: unclear when this is actually needed / used?
+        // todo: unclear when this is actually needed / used? - maybe just for debug?
         [PrivateApi]
         public override string ToString()
         {

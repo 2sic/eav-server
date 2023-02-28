@@ -68,7 +68,7 @@ namespace ToSic.Eav.Data
         #endregion
 
 
-        #region simple properties
+        #region simple properties - all are #immutable
 
         /// <inheritdoc />
         public int AppId { get; }
@@ -119,7 +119,7 @@ namespace ToSic.Eav.Data
         public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => string.Equals(a.Name, fieldName, OrdinalIgnoreCase));
 
 
-        #region New DynamicChildren Navigation - new in 12.03
+        #region New DynamicChildren Navigation - new in 12.03 - #immutable
 
         /// <inheritdoc />
         [PrivateApi("WIP 12.03")]
@@ -129,7 +129,7 @@ namespace ToSic.Eav.Data
         #endregion
 
 
-        #region Advanced Properties: Metadata, Decorators
+        #region Advanced Properties: Metadata, Decorators - all #immutable
 
         /// <inheritdoc />
         public ContentTypeMetadata Metadata { get; }
@@ -143,7 +143,7 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        #region Sharing Content Types
+        #region Sharing Content Types - all #immutable
 
         public bool AlwaysShareConfiguration { get; }
 

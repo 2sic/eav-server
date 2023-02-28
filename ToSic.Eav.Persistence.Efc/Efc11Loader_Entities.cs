@@ -152,7 +152,7 @@ namespace ToSic.Eav.Persistence.Efc
                 source: app, 
                 created: e.Created, modified: e.Modified, 
                 owner: e.Owner, version: e.Version, 
-                values: specs.All/*, titleField: specs.Title*/);
+                values: specs);
 
             // add Related-Entities Attributes to the entity
             if (relatedEntities.ContainsKey(e.EntityId))

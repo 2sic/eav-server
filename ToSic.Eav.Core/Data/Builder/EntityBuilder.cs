@@ -142,7 +142,7 @@ namespace ToSic.Eav.Data.Builder
                 contentType: type,
                 // titleField: specs.Title,
                 rawValues: null,
-                values: specs.All,
+                values: specs,
                 created: DateTime.MinValue, modified: DateTime.Now, 
                 owner: "");
 
