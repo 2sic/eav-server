@@ -24,7 +24,9 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         public IValue AddValue(IDictionary<string, IAttribute> target, string attributeName,
             object value, string valueType, string language = null, bool languageReadOnly = false,
-            bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null)
+            bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null,
+            ILanguage additionalLanguageWip = default // 2023-02-28 2dm - added this for an edge case, should be cleaned up some day
+            )
         {
             var wrapLog = Log.Fn<IValue>($"..., {attributeName}, {value} ({valueType}), {language}, ..., {nameof(resolveHyperlink)}: {resolveHyperlink}");
             // pre-convert links if necessary...
@@ -38,11 +40,20 @@ namespace ToSic.Eav.Data.Builder
             // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
             if (string.IsNullOrWhiteSpace(language)) language = null;
 
-            var valueWithLanguages = ValueBuilder.Build(valueType, value, language == null
-                ? null
+            var valueLanguages = language == null
+                ? null // must be null if no languages are specified, to cause proper fallback
                 // 2023-02-24 2dm #immutable
                 //: new List<ILanguage> { new Language { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
-                : new List<ILanguage> { new Language(language, languageReadOnly) }.ToImmutableList(), allEntitiesForRelationships);
+                : new List<ILanguage> { new Language(language, languageReadOnly) };
+
+            // 2023-02-28 2dm #immutable workaround for now
+            if (additionalLanguageWip != null)
+            {
+                valueLanguages = valueLanguages ?? new List<ILanguage>();
+                valueLanguages.Add(additionalLanguageWip);
+            }
+
+            var valueWithLanguages = ValueBuilder.Build(valueType, value, valueLanguages?.ToImmutableList(), allEntitiesForRelationships);
 
 
             // add or replace to the collection

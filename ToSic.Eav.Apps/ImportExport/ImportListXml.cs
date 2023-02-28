@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps.ImportExport.ImportHelpers;
@@ -188,12 +189,16 @@ namespace ToSic.Eav.Apps.ImportExport
                     var valueReadOnly = valueReferenceProtection == XmlConstants.ReadOnly;
 
                     // if this value is just a placeholder/reference to another value,
-                    // then find the master record, and add this language to it's users
+                    // then find the master/primary value, and add this language to it's language list
                     var entityValue = AttributeLanguageImportHelper.ValueItemOfLanguageOrNull(entity.Attributes, valName, valueReferenceLanguage);
-                    if (entityValue != null)
+                    if (entityValue.Value != null)
                     {
                         // 2023-02-24 2dm #immutable
-                        entityValue.Languages.Add(new Language(nodeLang, valueReadOnly));
+                        // 2023-02-28 2dm As of now we have to clone to update the languages, and replace on the values list
+                        // In future, we should move immutability "up" so this would go into a queue for values to create the final entity
+                        var updatedValue = entityValue.Value.Clone(entityValue.Value.Languages.ToImmutableList().Add(new Language(nodeLang, valueReadOnly)));
+                        entityValue.Attribute.Values.Remove(entityValue.Value);
+                        entityValue.Attribute.Values.Add(updatedValue);
                         continue;
                     }
 
@@ -213,14 +218,16 @@ namespace ToSic.Eav.Apps.ImportExport
                         continue;
                     }
 
+                    // Just add the value (note 2023-02-28 2dm - not exactly sure how/why, assume it's the final-no-errors case)
                     var val = AttributeBuilder.Value.AddValue(entity.Attributes, valName,
                             valExisting,
                             valType,
                             valueReferenceLanguage,
                             valExisting.Languages.FirstOrDefault(l => l.Key == valueReferenceLanguage)?.ReadOnly ?? false,
-                            ResolveLinks);
-                    // 2023-02-24 2dm #immutable
-                    val.Languages.Add(new Language (nodeLang, valueReadOnly));
+                            ResolveLinks,
+                            additionalLanguageWip: new Language(nodeLang, valueReadOnly));
+                    // 2023-02-24 2dm #immutable - moved to AddValue above
+                    //val.Languages.Add(new Language (nodeLang, valueReadOnly));
 
                     Log.A($"Nr. {nodesCount} ok");
                 }

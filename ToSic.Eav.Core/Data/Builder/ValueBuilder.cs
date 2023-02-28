@@ -22,7 +22,7 @@ namespace ToSic.Eav.Data.Builder
             => Build(
                 type, original.ObjectContents,
                 // 2023-02-24 2dm #immutable - don't need to clone if it's immutable
-                languages ?? /*LanguageBuilder.Clone(*/original.Languages /*)*/, null);
+                languages ?? /*LanguageBuilder.Clone(*/original.Languages.ToImmutableList() /*)*/, null);
 
 
         /// <summary>
