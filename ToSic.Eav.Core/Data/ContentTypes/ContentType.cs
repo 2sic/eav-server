@@ -116,7 +116,7 @@ namespace ToSic.Eav.Data
         private readonly GetOnce<string> _titleFieldName = new GetOnce<string>();
 
         /// <inheritdoc />
-        public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => string.Equals(a.Name, fieldName, OrdinalIgnoreCase));
+        public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => a.Name.EqualsInsensitive(fieldName));
 
 
         #region New DynamicChildren Navigation - new in 12.03 - #immutable

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 using static System.StringComparer;
@@ -104,7 +103,11 @@ namespace ToSic.Eav.Data.Builder
                 a => a.Name,
                 a =>
                 {
-                    var values = preparedValues?[a.Name].ToList();
+                    // It's important that we only get a list if there are values, otherwise we create empty lists
+                    // which breaks other code
+                    var values = preparedValues?.Contains(a.Name) == true
+                        ? preparedValues[a.Name].ToList()
+                        : null;
                     var entityAttribute = CreateTyped(a.Name, a.Type, values);
                     return entityAttribute;
                 });

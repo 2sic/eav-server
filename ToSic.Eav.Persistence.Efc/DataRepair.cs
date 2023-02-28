@@ -1,32 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Persistence.Efc
 {
     internal class DataRepair
     {
-        public static void FixIncorrectLanguageDefinitions(IAttribute attrib, string primaryLanguage)
+        /// <summary>
+        /// Background: there are rare cases, where data was stored incorrectly
+        /// this happens when a attribute has multiple values, but some don't have languages assigned
+        /// that would be invalid, as any property with a language code must have all the values (for that property) with language codes
+        /// </summary>
+        /// <param name="attrib"></param>
+        /// <param name="primaryLanguage"></param>
+        public static IList<IValue> FixIncorrectLanguageDefinitions(IList<IValue> values, string primaryLanguage)
         {
-            // Background: there are rare cases, where data was stored incorrectly
-            // this happens when a attribute has multiple values, but some don't have languages assigned
-            // that would be invalid, as any property with a language code must have all the values (for that property) with language codes
+            //var values = attrib.Values;
             // Case 1 ok: Value has max 1 real value, so no risk
-            if (attrib.Values.Count <= 1) return;
+            if (values.Count <= 1) return values;
             // Case 2 ok: All values have languages assigned
-            if (attrib.Values.All(v => v.Languages.Any())) return;
+            if (values.All(v => v.Languages.Any())) return values;
 
 
-            var badValuesWithoutLanguage = attrib.Values.Where(v => !v.Languages.Any()).ToList();
-            if (!badValuesWithoutLanguage.Any()) return;
+            var badValuesWithoutLanguage = values.Where(v => !v.Languages.Any()).ToList();
+            if (!badValuesWithoutLanguage.Any()) return values;
 
             // new 2020-11-12 We sometimes ran into old data which had this problem
             // but since the primary language was the missing one, this caused a lot of follow up
             // so no we want to check if the primary language is missing - and if yes, assign that
-            var hasPrimary = attrib.Values.Any(v => v.Languages.Any(l => l.Key == primaryLanguage));
+            var hasPrimary = values.Any(v => v.Languages.Any(l => l.Key == primaryLanguage));
 
             // only attach the primary language to a value if we don't already have a primary value
             if (!hasPrimary)
@@ -40,7 +42,9 @@ namespace ToSic.Eav.Persistence.Efc
 
             if (badValuesWithoutLanguage.Any())
                 badValuesWithoutLanguage.ForEach(badValue =>
-                    attrib.Values.Remove(badValue));
+                    values.Remove(badValue));
+            
+            return values;
         }
     }
 }

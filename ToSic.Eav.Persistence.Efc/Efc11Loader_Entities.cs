@@ -7,6 +7,7 @@ using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Efc.Intermediate;
 using ToSic.Eav.Serialization;
+using static System.StringComparer;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -143,12 +144,40 @@ namespace ToSic.Eav.Persistence.Efc
                 throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
             // Prepare relationships to add to AttributeGenerator
+            var emptyValueList = new List<(string StaticName, IValue)>();
             var preparedRelationships = relatedEntities.TryGetValue(e.EntityId, out var rawRels)
-                ? rawRels.ToLookup(r => r.StaticName, r => _multiBuilder.Value.BuildRelationship(r.Children, app), StringComparer.InvariantCultureIgnoreCase)
-                : null;
+                ? rawRels.Select(r => (r.StaticName, _multiBuilder.Value.BuildRelationship(r.Children, app))).ToList()
+                : emptyValueList;
+
+            var ctAttribDic = contentType.Attributes
+                .ToDictionary(a => a.Name, a => a, InvariantCultureIgnoreCase);
+
+            var attributeValuesLookup = !attributes.TryGetValue(e.EntityId, out var attribValues)
+                ? emptyValueList
+                : attribValues
+                    .Select(a => new
+                    {
+                        a.Name,
+                        CtAttribute = contentType[a.Name],// ctAttribDic.TryGetValue(a.Name, out var attrib) ? attrib : null,
+                        a.Values
+                    })
+                    .Where(set => set.CtAttribute != null)
+                    .SelectMany(a =>
+                    {
+                        var results = a.Values
+                            .Select(v => _multiBuilder.Value.Build(a.CtAttribute.ControlledType, v.Value, v.Languages))
+                            .ToList();
+                        var final = DataRepair.FixIncorrectLanguageDefinitions(results, primaryLanguage);
+                        return final.Select(r => (a.Name, r));
+                    }).ToList();
+
+
+            var mergedValueLookups = preparedRelationships
+                .Concat(attributeValuesLookup)
+                .ToLookup(x => x.Item1, x => x.Item2, InvariantCultureIgnoreCase);
 
             // Get all Attributes of that Content-Type
-            var newAttributes = _multiBuilder.Attribute.GenerateAttributesOfContentType(contentType, preparedRelationships);
+            var newAttributes = _multiBuilder.Attribute.GenerateAttributesOfContentType(contentType, mergedValueLookups);
             var newEntity = _multiBuilder.Entity.EntityFromRepository(
                 appId: app.AppId,
                 entityGuid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,
@@ -158,26 +187,6 @@ namespace ToSic.Eav.Persistence.Efc
                 created: e.Created, modified: e.Modified, 
                 owner: e.Owner, version: e.Version, 
                 values: newAttributes);
-
-            #region Add "normal" Attributes (that are not Entity-Relations)
-
-            if (!attributes.ContainsKey(e.EntityId)) 
-                return newEntity;
-
-            foreach (var a in attributes[e.EntityId])
-            {
-                if (!newEntity.Attributes.TryGetValue(a.Name, out var attrib))
-                    continue;
-
-                attrib.Values = a.Values
-                    .Select(v => _multiBuilder.Value.Build(attrib.Type, v.Value, v.Languages))
-                    .ToList();
-
-                // fix faulty data dimensions in case old storage mechanisms messed up
-                DataRepair.FixIncorrectLanguageDefinitions(attrib, primaryLanguage);
-            }
-
-            #endregion
 
             return newEntity;
         }
