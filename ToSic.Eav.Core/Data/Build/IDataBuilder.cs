@@ -9,13 +9,11 @@ namespace ToSic.Eav.Data.Build
     /// <summary>
     /// A data builder which will generate items for a specific type.
     /// In many cases it will also take care of auto increasing the id and more.
-    ///
-    /// This is more efficient than using the bare bones <see cref="IDataBuilderInternal"/>
     /// </summary>
     /// <remarks>
     /// * Added in v15 to replace the previous IDataBuilder which is now internal
     /// </remarks>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("in development for v15")]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("in development for v15 - should be final soon")]
     public interface IDataBuilder
     {
         /// <summary>

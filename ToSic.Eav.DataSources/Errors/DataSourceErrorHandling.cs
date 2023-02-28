@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
             // Don't use the default data builder here, as it needs DI and this object
             // will often be created late when DI is already destroyed
             //var errorEntity = new DataBuilder().Entity(values, titleField: ErrorTitle, typeName: ErrorType);
-            var errorEntity = _builder.Entity.Create(appId: DataBuilderInternal.DefaultAppId, entityId: DataBuilderInternal.DefaultEntityId,
+            var errorEntity = _builder.Entity.Create(appId: DataBuilder.DefaultAppId, entityId: DataBuilder.DefaultEntityId,
                 contentType: _builder.ContentType.Transient(ErrorType), rawValues: values, titleField: ErrorTitle);
             return errorEntity;
         }

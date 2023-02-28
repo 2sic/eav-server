@@ -13,10 +13,20 @@ namespace ToSic.Eav.Data.Build
     [PrivateApi("Still experimental/hide implementation")]
     public class DataBuilder : ServiceBase, IDataBuilder
     {
+        #region Constants
+
+        public const int DefaultAppId = 0;
+
+        public const int DefaultEntityId = 0;
+
+        public const string DefaultTypeName = "unspecified";
+
+        #endregion
+
         #region Properties to configure Builder / Defaults
 
         /// <inheritdoc />
-        public int AppId { get; private set; } = DataBuilderInternal.DefaultAppId;
+        public int AppId { get; private set; } = DefaultAppId;
 
         /// <inheritdoc />
         public string TitleField { get; private set; } = Attributes.TitleNiceName;
@@ -81,7 +91,7 @@ namespace ToSic.Eav.Data.Build
             AppId = appId;
             TitleField = titleField.UseFallbackIfNoValue(Attributes.TitleNiceName);
             IdCounter = idSeed;
-            ContentType = _multiBuilder.ContentType.Transient(typeName ?? DataBuilderInternal.DefaultTypeName);
+            ContentType = _multiBuilder.ContentType.Transient(typeName ?? DefaultTypeName);
             IdAutoIncrementZero = idAutoIncrementZero;
 
             CreateFromNewOptions = createFromNewOptions ?? new CreateFromNewOptions();

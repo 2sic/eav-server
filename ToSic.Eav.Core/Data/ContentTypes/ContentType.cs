@@ -7,7 +7,6 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
-using static System.StringComparison;
 
 namespace ToSic.Eav.Data
 {
