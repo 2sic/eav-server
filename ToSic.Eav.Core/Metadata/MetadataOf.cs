@@ -187,13 +187,6 @@ namespace ToSic.Eav.Metadata
             _permissions = null;
         }
 
-        //[PrivateApi]
-        //public void Use(List<IEntity> items, bool reloadWhenAppChanges)
-        //{
-        //    Use(items);
-        //    _syncWithSource = reloadWhenAppChanges;
-        //}
-
         #region GetBestValue
 
         /// <inheritdoc />
