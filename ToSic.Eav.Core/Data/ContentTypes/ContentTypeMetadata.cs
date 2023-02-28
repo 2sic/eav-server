@@ -17,12 +17,12 @@ namespace ToSic.Eav.Data
         /// Used in cases where the metadata-provider is already known
         /// </summary>
         /// <param name="typeId">type id / static-name</param>
+        /// <param name="items"></param>
         /// <param name="deferredSource">remote / deferred metadata provider</param>
         /// <param name="title"></param>
         internal ContentTypeMetadata(string typeId, List<IEntity> items, Func<IHasMetadataSource> deferredSource, string title)
             : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, items: items, deferredSource: deferredSource)
         {
-            SourceForClone = deferredSource;
         }
 
         /// <summary>
@@ -62,6 +62,5 @@ namespace ToSic.Eav.Data
             Use(AllWithHidden.Concat(additional).ToList());
         }
 
-        internal Func<IHasMetadataSource> SourceForClone { get; }
     }
 }

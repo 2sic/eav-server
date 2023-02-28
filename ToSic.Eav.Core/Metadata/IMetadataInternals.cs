@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -13,12 +14,12 @@ namespace ToSic.Eav.Metadata
     [PrivateApi("not sure yet how to publish this api, if at all")]
     public interface IMetadataInternals
     {
-        /// <summary>
-        /// Internal API to override metadata providing, for example when creating new entities before saving.
-        /// </summary>
-        /// <param name="items"></param>
-        [PrivateApi]
-        void Use(List<IEntity> items);
+        ///// <summary>
+        ///// Internal API to override metadata providing, for example when creating new entities before saving.
+        ///// </summary>
+        ///// <param name="items"></param>
+        //[PrivateApi]
+        //void Use(List<IEntity> items);
         //void Use(List<IEntity> items, bool reloadWhenAppChanges);
 
         /// <summary>
@@ -34,5 +35,6 @@ namespace ToSic.Eav.Metadata
         /// <returns></returns>
         IAppIdentity Context(string type);
 
+        (int TargetType, List<IEntity> list, IHasMetadataSource appSource, Func<IHasMetadataSource> deferredSource) GetCloneSpecs();
     }
 }

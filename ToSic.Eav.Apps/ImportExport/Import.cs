@@ -14,6 +14,7 @@ using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.Services;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
+using System.Net.Mime;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -193,48 +194,89 @@ namespace ToSic.Eav.Apps.ImportExport
         });
 
 
-
+        private List<IEntity> MetadataWithResetIds(IMetadataOf metadata)
+        {
+            return metadata.Concat(metadata.Permissions.Select(p => p.Entity))
+                .Select(e => _entityBuilder.Clone(e, id: 0, repositoryId: 0, guid: Guid.NewGuid()))
+                .ToList();
+        }
 
         private IContentType MergeContentTypeUpdateWithExisting(AppState appState, IContentType contentType) => Log.Func(l =>
         {
-            var existing = appState.GetContentType(contentType.NameId);
 
             l.A("New CT, must reset attributes");
-            // must ensure that attribute Metadata is officially seen as new
-            // but the import data could have an Id, so we must reset it here.
-            foreach (var attribute in contentType.Attributes)
-            {
-                foreach (var attributeMd in attribute.Metadata)
-                    attributeMd.ResetEntityId();
-                foreach (var permission in attribute.Metadata.Permissions)
-                    permission.Entity.ResetEntityId();
-            }
 
-            foreach (var metadata in contentType.Metadata)
-                metadata.ResetEntityId();
-
+            // Is it an update or new?
+            var existing = appState.GetContentType(contentType.NameId);
             if (existing == null)
-                return (contentType, "existing not found, won't merge");
-
-            l.A("found existing, will merge");
-            foreach (var newAttribute in contentType.Attributes)
             {
-                var oldAttr = existing.Attributes.FirstOrDefault(a => a.Name == newAttribute.Name);
-                if (oldAttr == null)
-                {
-                    l.A($"New attr {newAttribute.Name} not found on original, merge not needed");
-                    continue;
-                }
-
-                var newMetaList = newAttribute.Metadata
-                    .Select(impMd => MergeOneMd(appState, (int)TargetTypes.Attribute, oldAttr.AttributeId, impMd))
+                // must ensure that attribute Metadata is officially seen as new
+                // but the import data could have an Id, so we must reset it here.
+                var newAttributes = contentType.Attributes.Select(a =>
+                    {
+                        var attributeMetadata = MetadataWithResetIds(a.Metadata);
+                        return _multiBuilder.TypeAttributeBuilder.Clone(a, metadataItems: attributeMetadata);
+                    })
                     .ToList();
 
-                if (newAttribute.Metadata.Permissions.Any())
-                    newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
 
-                ((IMetadataInternals)newAttribute.Metadata).Use(newMetaList);
+                //foreach (var attribute in contentType.Attributes)
+                //{
+                //    foreach (var attributeMd in attribute.Metadata)
+                //        attributeMd.ResetEntityId();
+                //    foreach (var permission in attribute.Metadata.Permissions)
+                //        permission.Entity.ResetEntityId();
+                //}
+
+                var ctMetadata = MetadataWithResetIds(contentType.Metadata);
+
+                //foreach (var metadata in contentType.Metadata)
+                //    metadata.ResetEntityId();
+
+                var newType = _multiBuilder.ContentType.Clone(contentType, metadataItems: ctMetadata,
+                    attributes: newAttributes);
+                return (newType, "existing not found, only reset IDs");
             }
+
+            l.A("found existing, will merge");
+
+            var mergedAttributes = contentType.Attributes.Select(newAttribute =>
+                {
+                    var oldAttr = existing.Attributes.FirstOrDefault(a => a.Name == newAttribute.Name);
+                    if (oldAttr == null)
+                    {
+                        l.A($"New attr {newAttribute.Name} not found on original, merge not needed");
+                        return newAttribute;
+                    }
+
+                    var newMetaList = newAttribute.Metadata
+                        .Select(impMd => MergeOneMd(appState, (int)TargetTypes.Attribute, oldAttr.AttributeId, impMd))
+                        .ToList();
+
+                    if (newAttribute.Metadata.Permissions.Any())
+                        newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
+                    return _multiBuilder.TypeAttributeBuilder.Clone(newAttribute, metadataItems: newMetaList);
+                })
+                .ToList();
+
+            //foreach (var newAttribute in contentType.Attributes)
+            //{
+            //    var oldAttr = existing.Attributes.FirstOrDefault(a => a.Name == newAttribute.Name);
+            //    if (oldAttr == null)
+            //    {
+            //        l.A($"New attr {newAttribute.Name} not found on original, merge not needed");
+            //        continue;
+            //    }
+
+            //    var newMetaList = newAttribute.Metadata
+            //        .Select(impMd => MergeOneMd(appState, (int)TargetTypes.Attribute, oldAttr.AttributeId, impMd))
+            //        .ToList();
+
+            //    if (newAttribute.Metadata.Permissions.Any())
+            //        newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
+
+            //    ((IMetadataInternals)newAttribute.Metadata).Use(newMetaList);
+            //}
 
             // check if the content-type has metadata, which needs merging
             var merged = contentType.Metadata
@@ -242,7 +284,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 .ToList();
             merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
 
-            var newContentType = _multiBuilder.ContentType.Clone(contentType, metadataItems: merged);
+            var newContentType = _multiBuilder.ContentType.Clone(contentType, metadataItems: merged, attributes: mergedAttributes);
             // contentType.Metadata.Use(merged);
 
             return (newContentType, "done");

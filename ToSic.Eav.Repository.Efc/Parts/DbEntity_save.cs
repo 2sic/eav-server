@@ -73,7 +73,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             var isNew = newEnt.EntityId <= 0; // remember how we want to work...
             if (logDetails) l.A($"entity id:{newEnt.EntityId} - will treat as new:{isNew}");
 
-            var contentTypeId = GetContentTypeAndAttribIds(newEnt, out var attributeDefs, logDetails);
+            var (contentTypeId, attributeDefs) = GetContentTypeAndAttribIds(newEnt, /*out var attributeDefs,*/ logDetails);
 
             #endregion Step 2
 

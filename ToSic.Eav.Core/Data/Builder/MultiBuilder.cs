@@ -6,6 +6,7 @@ namespace ToSic.Eav.Data.Builder
 {
     public class MultiBuilder: ServiceBase
     {
+        private readonly LazySvc<ContentTypeAttributeBuilder> _typeAttributeBuilder;
         private readonly LazySvc<AttributeBuilder> _attributeBuilder;
 
         public MultiBuilder(
@@ -13,8 +14,10 @@ namespace ToSic.Eav.Data.Builder
             LazySvc<AttributeBuilderForImport> attributeImport,
             LazySvc<AttributeBuilder> attributeBuilder,
             LazySvc<ValueBuilder> valueBuilder,
-            LazySvc<ContentTypeBuilder> contentTypeBuilder): base(EavLogs.Eav + "MltBld")
+            LazySvc<ContentTypeBuilder> contentTypeBuilder,
+            LazySvc<ContentTypeAttributeBuilder> typeAttributeBuilder): base(EavLogs.Eav + "MltBld")
         {
+            _typeAttributeBuilder = typeAttributeBuilder;
             ConnectServices(
                 _entityBuilder = entityBuilder,
                 _attributeImport = attributeImport,
@@ -35,6 +38,8 @@ namespace ToSic.Eav.Data.Builder
         public AttributeBuilderForImport AttributeImport => _attributeImport.Value;
 
         public ValueBuilder Value => _valueBuilder.Value;
+
+        public ContentTypeAttributeBuilder TypeAttributeBuilder => _typeAttributeBuilder.Value;
 
 
         /// <summary>

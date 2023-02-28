@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -31,7 +29,7 @@ namespace ToSic.Eav.Data.Builder
         public static int? GetInternalPublishedIdForSaving(this Entity entity) => entity.PublishedEntity?.EntityId ?? entity.PublishedEntityId;
         
         // this is old method that probably should be replaced with new ResetEntityIdAll after testing
-        public static int? ResetEntityId(this IEntity entity, int newId = 0) => ((EntityLight)entity).EntityId = newId;
+        //public static int? ResetEntityId(this IEntity entity, int newId = 0) => ((EntityLight)entity).EntityId = newId;
         
         //// this is new for bundles in v15, probably it should replace ResetEntityId everywhere but we have to test that first
         //public static int? ResetEntityIdAll(this IEntity entity, int newId = 0)

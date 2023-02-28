@@ -52,7 +52,8 @@ namespace ToSic.Eav.ImportExport.Json
                     .Select((jsonAttr, pos) =>
                     {
                         var mdEntities = jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
-                        var attDef = new ContentTypeAttribute(AppId, jsonAttr.Name, jsonAttr.Type, jsonAttr.IsTitle, sortOrder: pos, mdEntities);
+                        var attDef = Services.MultiBuilder.TypeAttributeBuilder
+                            .Create(appId: AppId, name: jsonAttr.Name, type: jsonAttr.Type, isTitle: jsonAttr.IsTitle, sortOrder: pos, metadataItems: mdEntities);
                         allEntities.AddRange(mdEntities);
                         //((IMetadataInternals)attDef.Metadata).Use(mdEntities);
                         return (IContentTypeAttribute)attDef;

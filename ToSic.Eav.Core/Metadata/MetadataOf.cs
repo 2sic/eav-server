@@ -21,12 +21,12 @@ namespace ToSic.Eav.Metadata
     public class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamped
     {
 
-        public MetadataOf(int targetType, T key, IHasMetadataSource metaSource, string targetIdentifier) : this(targetType, key, targetIdentifier)
-            => _appMetadataSource = metaSource;
         #region Constructors
 
-        public MetadataOf(int targetType, T key, Func<IHasMetadataSource> metaSourceRemote, string targetIdentifier) : this(targetType, key, targetIdentifier)
-            => _metaSourceRemote = metaSourceRemote;
+        //public MetadataOf(int targetType, T key, IHasMetadataSource metaSource, string title) : this(targetType, key, title)
+        //    => _appMetadataSource = metaSource;
+        //public MetadataOf(int targetType, T key, Func<IHasMetadataSource> metaSourceRemote, string title) : this(targetType, key, title)
+        //    => _metaSourceRemote = metaSourceRemote;
 
         /// <summary>
         /// Constructor that can take both a direct App-Source as well as a deferred source.
@@ -183,7 +183,7 @@ namespace ToSic.Eav.Metadata
         /// </summary>
         /// <param name="items"></param>
         [PrivateApi]
-        public void Use(List<IEntity> items)
+        protected void Use(List<IEntity> items)
         {
             //_debugUse++;
             // Set the local cache to a list of items, and reset the dependent objects so they will be rebuilt if accessed.
@@ -241,6 +241,8 @@ namespace ToSic.Eav.Metadata
         #region Context for data to be created
 
         public IAppIdentity Context(string type) => GetMetadataSource();
+        public (int TargetType, List<IEntity> list, IHasMetadataSource appSource, Func<IHasMetadataSource> deferredSource) GetCloneSpecs() 
+            => (_targetType, _constantList, _appMetadataSource, _metaSourceRemote);
 
         #endregion
 

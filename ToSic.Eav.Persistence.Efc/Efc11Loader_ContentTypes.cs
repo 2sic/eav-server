@@ -107,8 +107,9 @@ namespace ToSic.Eav.Persistence.Efc
                     //set.Description,
                     Attributes = set.ToSicEavAttributesInSets
                         .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
-                        .Select(a => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type,
-                            a.IsTitle, a.AttributeId, a.SortOrder, metaSourceFinder: () => source)),
+                        .Select(a => _multiBuilder.TypeAttributeBuilder
+                            .Create(appId: appId, name: a.Attribute.StaticName, type: a.Attribute.Type,
+                            isTitle: a.IsTitle, attributeId: a.AttributeId, sortOrder: a.SortOrder, metaSourceFinder: () => source)),
                     IsGhost = set.UsesConfigurationOfAttributeSet,
                     SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                     AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
@@ -130,8 +131,8 @@ namespace ToSic.Eav.Persistence.Efc
                 .ToDictionary(
                     s => s.AttributeSetId,
                     s => s.ToSicEavAttributesInSets.Select(a
-                        => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
-                            a.AttributeId, a.SortOrder,
+                        => _multiBuilder.TypeAttributeBuilder.Create(appId: appId, name: a.Attribute.StaticName, type: a.Attribute.Type, isTitle: a.IsTitle,
+                            attributeId: a.AttributeId, sortOrder: a.SortOrder,
                             // Must get own MetaSourceFinder since they come from other apps
                             metaSourceFinder: () => _appStates.Get(s.AppId)))
                 );

@@ -42,9 +42,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private const int AppId = Constants.TransientAppId;
         //ContentType _ctNull = null;
 
-        static ContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
+        private ContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
         {
-            return new ContentTypeAttribute(appId, firstName, dataType, isTitle, attId, index);
+            return Builder.TypeAttributeBuilder.Create(appId: appId, name: firstName, type: dataType, isTitle: isTitle, attributeId: attId, sortOrder: index);
         }
 
         IContentType _ctPerson => Builder.ContentType.TestCreate(appId: AppId, name: "Person", attributes: new List<IContentTypeAttribute>
