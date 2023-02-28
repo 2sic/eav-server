@@ -3,7 +3,9 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// Represents an Attribute Definition. Used in Content-Types and IEntities.
+    /// Represents an Attribute Definition.
+    /// Used in Content-Types and IEntities.
+    /// Note: Fully #immutable
     /// </summary>
     /// <remarks>
     /// > We recommend you read about the [](xref:Basics.Data.Index)

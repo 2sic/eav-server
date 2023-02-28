@@ -11,6 +11,10 @@ using ToSic.Lib.Helpers;
 namespace ToSic.Eav.Data
 {
     /// <inheritdoc />
+    /// <remarks>
+    /// Not 100% #immutable, because the EntityId is still manipulated once in case it's a draft-entity of another entity.
+    /// Not sure when/how to fix.
+    /// </remarks>
     [PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi, always use IEntity")]
 	public partial class EntityLight : IEntityLight
     {
@@ -22,7 +26,7 @@ namespace ToSic.Eav.Data
 		public int EntityId { get; internal set; } 
 
         /// <inheritdoc />
-		public Guid EntityGuid { get; internal set; }
+		public Guid EntityGuid { get; }
 
         /// <inheritdoc />
         public object Title => TitleFieldName.HasValue() ? this[TitleFieldName] : null;
@@ -44,21 +48,22 @@ namespace ToSic.Eav.Data
 		public IContentType Type { get; }
 
         /// <inheritdoc />
-		public DateTime Created { get; /*internal set;*/ }
+		public DateTime Created { get; }
         
         /// <inheritdoc />
-		public DateTime Modified { get; /*internal set;*/ }
+		public DateTime Modified { get; }
 
         /// <inheritdoc />
         [JsonIgnore]
         public IRelationshipManager Relationships { get; }
 
         /// <inheritdoc />
-        public ITarget MetadataFor { get; internal set; }
+        public ITarget MetadataFor { get; }
 
         /// <inheritdoc />
-        public string Owner { get; /*internal set;*/ }
+        public string Owner { get; }
 
+        /// <inheritdoc />
         public int OwnerId => _ownerId.Get(() => int.TryParse(Owner.After("="), out var o) ? o : -1);
         private readonly GetOnce<int> _ownerId = new GetOnce<int>();
         #endregion
@@ -99,7 +104,7 @@ namespace ToSic.Eav.Data
             if (created.HasValue) Created = created.Value;
             if (modified.HasValue) Modified = modified.Value;
             if (!string.IsNullOrEmpty(owner)) Owner = owner;
-            Relationships = partsBuilder.RelationshipManager(this); // new RelationshipManager(this, null, null);
+            Relationships = partsBuilder.RelationshipManager(this);
         }
 
 

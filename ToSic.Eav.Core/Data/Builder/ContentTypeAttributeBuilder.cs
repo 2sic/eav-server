@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Builder
 {
+    /// <summary>
+    /// Builder to create / clone <see cref="IContentTypeAttribute"/> definitions.
+    /// </summary>
     public class ContentTypeAttributeBuilder: ServiceBase
     {
         public ContentTypeAttributeBuilder(): base("Eav.CtAtBl")
@@ -17,47 +20,56 @@ namespace ToSic.Eav.Data.Builder
             string name,
             string type,
             bool isTitle,
-            int attributeId = default,
+            int id = default,
             int sortOrder = default,
             IMetadataOf metadata = default,
             List<IEntity> metadataItems = default,
             Func<IHasMetadataSource> metaSourceFinder = null)
         {
-            metadata = metadata ?? new MetadataOf<int>(targetType: (int)TargetTypes.Attribute, key: attributeId,
-                    title: name + " (" + type + ")", items: metadataItems,  deferredSource: metaSourceFinder);
+            metadata = metadata ?? new MetadataOf<int>(targetType: (int)TargetTypes.Attribute, key: id,
+                    title: $"{name} ({type})", items: metadataItems,  deferredSource: metaSourceFinder);
 
             return new ContentTypeAttribute(appId: appId, name: name, type: type, isTitle: isTitle,
-                attributeId: attributeId, sortOrder: sortOrder, metadata: metadata);
+                attributeId: id, sortOrder: sortOrder, metadata: metadata);
         }
 
-        public IContentTypeAttribute Clone(IContentTypeAttribute original,
+        public IContentTypeAttribute Clone(
+            IContentTypeAttribute original,
             int? appId = default,
             string name = default,
             string type = default,
             bool? isTitle = default,
-            int? attributeId = default,
+            int? id = default,
             int? sortOrder = default,
             IMetadataOf metadata = default,
             List<IEntity> metadataItems = default,
             Func<IHasMetadataSource> metaSourceFinder = null
         )
         {
-            var metadataSpecs = ((IMetadataInternals)original.Metadata).GetCloneSpecs();
+            // Prepare parts which we also need for new Metadata Creation
+            name = name ?? original.Name;
+            id = id ?? original.AttributeId;
+            type = type ?? original.Type;
+            //var metadataSpecs = ((IMetadataInternals)original.Metadata).GetCloneSpecs();
+            metadata = metadata ??
+                       EntityPartsBuilder.CloneMetadataFunc<int>(original.Metadata, items: metadataItems,
+                           deferredSource: metaSourceFinder)(id.Value, $"{name} ({type})");
 
             return Create(
                 appId: appId ?? original.AppId,
-                name: name ?? original.Name,
-                type: type ?? original.Type,
+                name: name,
+                type: type,
                 isTitle: isTitle ?? original.IsTitle,
-                attributeId: attributeId ?? original.AttributeId,
+                id: id.Value,
                 sortOrder: sortOrder ?? original.SortOrder,
-                metadata: metadata,
-                metadataItems: metadataSpecs.list,
-                metaSourceFinder: metadataSpecs.deferredSource
+                metadata: metadata
+                //metadataItems: metadataItems ?? metadataSpecs.list,
+                //metaSourceFinder: metaSourceFinder ?? metadataSpecs.deferredSource
             );
         }
 
         // 2023-02-27 2dm - was originally used by XML import, but after adding it was overwritten with "Use" so I believe it didn't have any effect.
+        // Keep till ca. #2023q3 just in case we have surprises and need to undo something
         ///// <summary>
         ///// Shortcut to get an @All Entity Describing an Attribute
         ///// </summary>

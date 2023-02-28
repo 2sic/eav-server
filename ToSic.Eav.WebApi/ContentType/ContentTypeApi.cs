@@ -305,7 +305,7 @@ namespace ToSic.Eav.WebApi
 	    {
 	        Log.A($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
             var attDef = _multiBuilder.Value.TypeAttributeBuilder
-                .Create(appId: AppManager.AppId, name: staticName, type: type, isTitle: false, attributeId: 0, sortOrder: sortOrder);
+                .Create(appId: AppManager.AppId, name: staticName, type: type, isTitle: false, id: 0, sortOrder: sortOrder);
             return AppManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
 	    }
 

@@ -46,23 +46,6 @@ namespace ToSic.Eav.Data.Builder
             )
         {
             (values, rawValues) = PreprocessValues(values, rawValues);
-            //// if we have typed, make sure invariant
-            //values = values?.ToInvariant();
-
-            //// If typed and basic values don't exist, set Typed as new list for now WIP
-            //if (values == null && rawValues == null)
-            //    values = new Dictionary<string, IAttribute>(InvariantCultureIgnoreCase);
-
-            //// Typed values exist if given explicitly, OR if the values are of the desired type
-            //if (values == null && rawValues.All(x => x.Value is IAttribute))
-            //    values = rawValues.ToDictionary(pair => pair.Key, pair => pair.Value as IAttribute, InvariantCultureIgnoreCase);
-
-            //// If TypedValues still don't exist
-            //var useLightMode = values == null;
-            //if (useLightMode)
-            //    values = _attributeBuilder.ConvertToIAttributeDic(rawValues);
-            //else
-            //    rawValues = null;
 
             // If repositoryId isn't known set it it to EntityId
             repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
@@ -73,8 +56,9 @@ namespace ToSic.Eav.Data.Builder
                 e => new RelationshipManager(e, null, null)
             );
 
-            return new Entity(appId, entityId, partsBuilder: partsBuilder,  repositoryId: repositoryId, contentType: contentType,
-                //useLightMode: useLightMode,
+            return new Entity(appId, entityId, repositoryId: repositoryId,
+                partsBuilder: partsBuilder, 
+                contentType: contentType,
                 rawValues: rawValues, values: values,
                 guid: guid, titleFieldName: titleField,
                 created: created, modified: modified, owner: owner,
@@ -143,9 +127,6 @@ namespace ToSic.Eav.Data.Builder
                 partsBuilder: partsBuilder
             );
 
-            // WIP trying to get rid of this
-            e.DeferredLookupData = source;
-
             return e;
         }
 
@@ -194,11 +175,14 @@ namespace ToSic.Eav.Data.Builder
             )
         {
             var originalEntity = original as Entity;
-            var lookupApp = originalEntity?.DeferredLookupData as AppState;
+
             var entityPartsBuilder = new EntityPartsBuilder(
                 ent => new RelationshipManager(ent, originalEntity?.Relationships as RelationshipManager),
-                getMetadataOf: EntityPartsBuilder.CreateMetadataOfAppSources(lookupApp)
-
+                getMetadataOf: (id == default && guid == default)
+                    // If identifiers don't change, it will provide the identical metadata
+                    ? EntityPartsBuilder.ReUseMetadataFunc<Guid>(original.Metadata)
+                    // If they do change, we need to create a derived clone
+                    : EntityPartsBuilder.CloneMetadataFunc<Guid>(original.Metadata)
             );
 
             var e = Create(
@@ -223,7 +207,6 @@ namespace ToSic.Eav.Data.Builder
                 partsBuilder: entityPartsBuilder
             );
 
-            e.DeferredLookupData = lookupApp;
             return e;
         }
 

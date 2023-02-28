@@ -23,11 +23,6 @@ namespace ToSic.Eav.Metadata
 
         #region Constructors
 
-        //public MetadataOf(int targetType, T key, IHasMetadataSource metaSource, string title) : this(targetType, key, title)
-        //    => _appMetadataSource = metaSource;
-        //public MetadataOf(int targetType, T key, Func<IHasMetadataSource> metaSourceRemote, string title) : this(targetType, key, title)
-        //    => _metaSourceRemote = metaSourceRemote;
-
         /// <summary>
         /// Constructor that can take both a direct App-Source as well as a deferred source.
         /// Note that both sources can be null!

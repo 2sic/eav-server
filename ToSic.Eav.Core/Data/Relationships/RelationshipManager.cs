@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
@@ -31,7 +30,7 @@ namespace ToSic.Eav.Data
             _app = app;
             _fallbackRels = fallbackRels;
             if (app != null)
-                AllRelationships = app.Relationships; //  new SynchronizedList<EntityRelationship>(app, () => app.Relationships.List);
+                AllRelationships = app.Relationships;
             else
 		        AllRelationships = fallbackRels ?? new List<EntityRelationship>();
 		}
@@ -40,7 +39,7 @@ namespace ToSic.Eav.Data
         private readonly IEnumerable<EntityRelationship> _fallbackRels;
 
         internal RelationshipManager(IEntityLight entity, RelationshipManager original)
-            : this(entity, original._app, original._fallbackRels) { }
+            : this(entity, original?._app, original?._fallbackRels) { }
 
         /// <inheritdoc />
 		public IEnumerable<IEntity> AllChildren => ChildRelationships().Select(r => r.Child);
