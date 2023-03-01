@@ -186,7 +186,7 @@ namespace ToSic.Eav.Persistence.Efc
                 source: app, 
                 created: e.Created, modified: e.Modified, 
                 owner: e.Owner, version: e.Version, 
-                values: newAttributes);
+                attributes: newAttributes);
 
             return newEntity;
         }

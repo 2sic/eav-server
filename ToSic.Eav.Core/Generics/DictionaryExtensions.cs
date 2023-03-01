@@ -17,11 +17,10 @@ namespace ToSic.Eav.Generics
                 return originalDic.ToInvariant();
             return new Dictionary<string, T>(original, InvariantCultureIgnoreCase);
         }
-        public static IReadOnlyDictionary<string, T> ToInvariant<T>(this IReadOnlyDictionary<string, T> original)
+        public static IImmutableDictionary<string, T> ToImmutableInvariant<T>(this IDictionary<string, T> original)
         {
             // Bypass if it's already doing this - can only be checked on "real" dictionaries
-            var mutable = original.ToDictionary(pair => pair.Key, pair => pair.Value);
-            return mutable.ToImmutableDictionary(InvariantCultureIgnoreCase);
+            return original.ToImmutableDictionary(InvariantCultureIgnoreCase);
         }
         public static IDictionary<string, T> ToEditable<T>(this IReadOnlyDictionary<string, T> original)
         {

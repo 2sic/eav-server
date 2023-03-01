@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
+using System.Collections.Immutable;
 
 // This is old stuff / compatibility necessary for DNN
 // It should not bleed into Oqtane or newer implementations
@@ -59,7 +60,7 @@ namespace ToSic.Eav.Interfaces
         /// <summary>
         /// All the attributes of the current Entity.
         /// </summary>
-        IReadOnlyDictionary<string, IAttribute> Attributes { get; }
+        IImmutableDictionary<string, IAttribute> Attributes { get; }
 
         /// <summary>
         /// Gets the "official" Title-Attribute <see cref="IAttribute{T}"/>

@@ -6,6 +6,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -117,8 +118,8 @@ namespace ToSic.Eav.DataSources
                     // Case 3 - not all fields, keep/drop the ones we don't want
                     var attributes = e.Attributes
                         .Where(aPair => attributeNames.Contains(aPair.Key) == modeIsKeepAttributes)
-                        .ToDictionary(k => k.Key, v => v.Value);
-                    return _entityBuilder.Clone(e, values: attributes);
+                        .ToImmutableDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
+                    return _entityBuilder.Clone(e, valuesInvariant: attributes);
                 })
                 .Cast<IEntity>()
                 .ToImmutableList();

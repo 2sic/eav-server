@@ -22,15 +22,14 @@ namespace ToSic.Eav.Data.Builder
         /// <summary>
         /// Constructor - should never be called as it should be used with DI
         /// </summary>
-        public EntityBuilder(AttributeBuilder attributeBuilder) => _attributeBuilder = attributeBuilder;
-        private readonly AttributeBuilder _attributeBuilder;
+        public EntityBuilder(AttributeBuilder attributeBuilder) => Attribute = attributeBuilder;
+        public AttributeBuilder Attribute { get; }
 
         public Entity Create(
             int appId,
             IContentType contentType,
             string noParamOrder = Parameters.Protector,
-            IDictionary<string, object> rawValues = default,
-            IDictionary<string, IAttribute> values = default,
+            IImmutableDictionary<string, IAttribute> attributes = default,
             int entityId = default,
             int repositoryId = Constants.NullId,
             Guid guid = default,
@@ -46,7 +45,10 @@ namespace ToSic.Eav.Data.Builder
             int publishedId = default
             )
         {
-            (values, rawValues) = PreprocessValues(values, rawValues);
+            Eav.Parameters.ProtectAgainstMissingParameterNames(noParamOrder);
+            var typedValues = attributes ?? Attribute.Empty();
+            //if (typedValues == null)
+            //    (typedValues, _) = PreprocessValues(valuesToBeRemoved, null);
 
             // If repositoryId isn't known set it it to EntityId
             repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
@@ -60,7 +62,8 @@ namespace ToSic.Eav.Data.Builder
             return new Entity(appId, entityId, repositoryId: repositoryId,
                 partsBuilder: partsBuilder, 
                 contentType: contentType,
-                rawValues: rawValues?.ToImmutableDictionary(InvariantCultureIgnoreCase), values: values,
+                rawValues: null, // typedRawValues,// ToImmutableDictionary(InvariantCultureIgnoreCase),
+                values: typedValues,
                 guid: guid, titleFieldName: titleField,
                 created: created, modified: modified, owner: owner,
                 version: version, isPublished: isPublished,
@@ -69,28 +72,33 @@ namespace ToSic.Eav.Data.Builder
                 publishedId: publishedId);
         }
 
-        private (IDictionary<string, IAttribute> values, IDictionary<string, object> rawValues) PreprocessValues(IDictionary<string, IAttribute> values, IDictionary<string, object> rawValues)
-        {
-            // if we have typed, make sure invariant
-            values = values?.ToInvariant();
+        //private (IImmutableDictionary<string, IAttribute> values, IImmutableDictionary<string, object> rawValues) PreprocessValues(IDictionary<string, IAttribute> values, IDictionary<string, object> rawValues)
+        //{
+        //    // if we have typed, make sure invariant
+        //    values = values?.ToInvariant();
 
-            // If typed and basic values don't exist, set Typed as new list for now WIP
-            if (values == null && rawValues == null)
-                values = new Dictionary<string, IAttribute>(InvariantCultureIgnoreCase);
+        //    // If we have values, only use these; done
+        //    if (values != null)
+        //        return (values.ToImmutableInvariant(), null);
 
-            // Typed values exist if given explicitly, OR if the values are of the desired type
-            if (values == null && rawValues.All(x => x.Value is IAttribute))
-                values = rawValues.ToDictionary(pair => pair.Key, pair => pair.Value as IAttribute, InvariantCultureIgnoreCase);
+        //    // If typed and basic values don't exist, set Typed as new list for now WIP
+        //    if (rawValues == null)
+        //        return (new Dictionary<string, IAttribute>().ToImmutableInvariant(), null);
 
-            // If TypedValues still don't exist
-            var useLightMode = values == null;
-            if (useLightMode)
-                values = _attributeBuilder.ConvertToIAttributeDic(rawValues);
-            else
-                rawValues = null;
+        //    // Typed values exist if given explicitly, OR if the values are of the desired type
+        //    if (rawValues.All(x => x.Value is IAttribute))
+        //        return(rawValues.ToImmutableDictionary(pair => pair.Key, pair => pair.Value as IAttribute, InvariantCultureIgnoreCase), null);
 
-            return (values, rawValues);
-        }
+        //    // Apparently we don't have values, and the raw are really raw, so make sure we convert them
+        //    return (Attribute.Create(rawValues), null);
+        //    //var useLightMode = true;
+        //    //if (useLightMode)
+        //    //    values = _attributeBuilder.ConvertToIAttributeDic(rawValues);
+        //    //else
+        //    //    rawValues = null;
+
+        //    //return (values?.ToImmutableInvariant(), rawValues?.ToImmutableInvariant());
+        //}
 
         /// <summary>
         /// Create a new Entity from a data store (usually SQL backend)
@@ -106,7 +114,7 @@ namespace ToSic.Eav.Data.Builder
             string owner,
             int version,
             string titleField = default,
-            IDictionary<string, IAttribute> values = default,
+            IImmutableDictionary<string, IAttribute> attributes = default,
             List<IEntity> metadataItems = default,
             EntityPartsBuilder partsBuilder = default
             )
@@ -118,8 +126,10 @@ namespace ToSic.Eav.Data.Builder
                     : EntityPartsBuilder.CreateMetadataOfAppSources(source)
             );
 
-            var e = Create(appId: appId,
-                rawValues: null, values: values,
+            var e = Create(
+                appId: appId,
+                attributes: attributes,
+                //valuesToBeRemoved: values,
                 guid: entityGuid, entityId: entityId, repositoryId: repositoryId,
                 contentType: type, titleField: titleField,
                 created: created, modified: modified,
@@ -137,12 +147,11 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         public Entity EmptyOfType(int appId, Guid entityGuid, int entityId, IContentType type)
         {
-            var attributes = _attributeBuilder.GenerateAttributesOfContentType(type, null);
+            var attributes = Attribute.GenerateAttributesOfContentType(type, null);
             return Create(appId: appId,
                 entityId: entityId, guid: entityGuid,
                 contentType: type,
-                rawValues: null,
-                values: attributes,
+                attributes: attributes,
                 created: DateTime.MinValue, modified: DateTime.Now, 
                 owner: "");
         }
@@ -156,7 +165,7 @@ namespace ToSic.Eav.Data.Builder
             string noParamOrder = Parameters.Protector,
             int? appId = default,
             IDictionary<string, IAttribute> values = default,
-            //IEnumerable<EntityRelationship> entityRelationshipsIfNoApp = default,
+            IImmutableDictionary<string, IAttribute> valuesInvariant = default,
             int? id = default,
             int? repositoryId = default,
             Guid? guid = default,
@@ -184,10 +193,11 @@ namespace ToSic.Eav.Data.Builder
                     : EntityPartsBuilder.CloneMetadataFunc<Guid>(original.Metadata)
             );
 
+            valuesInvariant = valuesInvariant ?? values?.ToImmutableInvariant() ?? originalEntity.Attributes;
+
             var e = Create(
                 appId: appId ?? original.AppId,
-                rawValues: null,
-                values: values ?? originalEntity?._attributesForClone, // original.Attributes,
+                attributes: valuesInvariant, 
                 entityId: id ?? original.EntityId,
                 repositoryId: repositoryId ?? original.RepositoryId,
                 guid: guid ?? original.EntityGuid,

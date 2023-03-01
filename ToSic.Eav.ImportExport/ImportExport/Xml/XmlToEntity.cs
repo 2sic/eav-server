@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Services;
@@ -212,7 +213,9 @@ namespace ToSic.Eav.ImportExport.Xml
 		    var targetEntity = // globalType != null
 		        // ? _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, typedValues: finalAttributes)
                 // If not yet a known type, create a temporary pointer ContentType
-		        /*:*/ _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity, values: finalAttributes, metadataFor: metadataForFor);
+		        /*:*/ _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity,
+                    attributes: finalAttributes.ToImmutableInvariant(),
+                    metadataFor: metadataForFor);
 		    //if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
 
             //// if it's not a global type but still marked as IsJson

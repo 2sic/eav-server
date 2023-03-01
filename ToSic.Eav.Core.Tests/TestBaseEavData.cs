@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Core.Tests
 {
     public static class DataTestExtensions
     {
-        public static Entity TestCreate(this EntityBuilder entityBuilder,
+        public static Entity TestCreate(
+            this EntityBuilder entityBuilder,
             int appId,
             IContentType contentType,
             string noParamOrder = Eav.Parameters.Protector,
@@ -29,8 +31,11 @@ namespace ToSic.Eav.Core.Tests
         {
             return entityBuilder.Create(appId: appId,
                 contentType: contentType,
-                rawValues: values,
-                values: typedValues,
+                attributes: typedValues != null 
+                    ? entityBuilder.Attribute.Create(typedValues)
+                    : values != null
+                        ? entityBuilder.Attribute.Create(values)
+                        : null, // typedValues?.ToImmutableInvariant(),
                 entityId: entityId,
                 repositoryId: repositoryId,
                 guid:guid,

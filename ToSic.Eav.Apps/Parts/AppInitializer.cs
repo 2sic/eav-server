@@ -175,7 +175,9 @@ namespace ToSic.Eav.Apps.Parts
 
             var values = cTypeAndOrEntity.Values ?? new Dictionary<string, object>();
             var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: AppState.AppId);
-            var newEnt = _builder.Value.Entity.Create(appId: AppState.AppId, guid: Guid.NewGuid(), contentType: ct, rawValues: values, metadataFor: mdTarget);
+            var newEnt = _builder.Value.Entity.Create(appId: AppState.AppId, guid: Guid.NewGuid(),
+                contentType: ct,
+                attributes: _builder.Value.Attribute.Create(values), metadataFor: mdTarget);
             //newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
             AppManager.Entities.Save(newEnt);
         });

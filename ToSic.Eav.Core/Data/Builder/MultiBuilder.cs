@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Generics;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
@@ -6,9 +7,6 @@ namespace ToSic.Eav.Data.Builder
 {
     public class MultiBuilder: ServiceBase
     {
-        private readonly LazySvc<ContentTypeAttributeBuilder> _typeAttributeBuilder;
-        private readonly LazySvc<AttributeBuilder> _attributeBuilder;
-
         public MultiBuilder(
             LazySvc<EntityBuilder> entityBuilder,
             LazySvc<AttributeBuilderForImport> attributeImport,
@@ -17,15 +15,17 @@ namespace ToSic.Eav.Data.Builder
             LazySvc<ContentTypeBuilder> contentTypeBuilder,
             LazySvc<ContentTypeAttributeBuilder> typeAttributeBuilder): base(EavLogs.Eav + "MltBld")
         {
-            _typeAttributeBuilder = typeAttributeBuilder;
             ConnectServices(
                 _entityBuilder = entityBuilder,
                 _attributeImport = attributeImport,
                 _contentTypeBuilder = contentTypeBuilder,
                 _attributeBuilder = attributeBuilder,
-                _valueBuilder = valueBuilder
+                _valueBuilder = valueBuilder,
+                _typeAttributeBuilder = typeAttributeBuilder
             );
         }
+        private readonly LazySvc<ContentTypeAttributeBuilder> _typeAttributeBuilder;
+        private readonly LazySvc<AttributeBuilder> _attributeBuilder;
         private readonly LazySvc<EntityBuilder> _entityBuilder;
         private readonly LazySvc<AttributeBuilderForImport> _attributeImport;
         private readonly LazySvc<ValueBuilder> _valueBuilder;
@@ -52,14 +52,14 @@ namespace ToSic.Eav.Data.Builder
         public IEntity FullClone(IEntity entity)
         {
             return Entity.Clone(entity,
-                values: Attribute.ListDeepClone(entity.Attributes));
+                values: Attribute.ListDeepClone(entity.Attributes.ToEditable()));
         }
         
 
         public IEntity FakeEntity(int appId)
             => _entityBuilder.Value.Create(
                 appId: appId,
-                rawValues: new Dictionary<string, object> { { Data.Attributes.TitleNiceName, "" } },
+                attributes: Attribute.Create(new Dictionary<string, object> { { Data.Attributes.TitleNiceName, "" } }),
                 contentType: ContentType.Transient("FakeEntity"),
                 titleField: Data.Attributes.TitleNiceName
             );

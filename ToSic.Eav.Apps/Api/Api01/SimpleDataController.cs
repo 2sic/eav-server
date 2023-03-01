@@ -158,10 +158,12 @@ namespace ToSic.Eav.Api.Api01
 
             // Prepare values to add
             var preparedValues = ConvertEntityRelations(values);
-            var preparedIAttributes = _builder.Attribute.ConvertToIAttributeDic(preparedValues);
+            var preparedIAttributes = _builder.Attribute.ToIAttribute(preparedValues);
             var pubAndValues = BuildNewEntityValues(type, preparedIAttributes, _defaultLanguageCode, existingIsPublished);
 
-            var newEntity = _builder.Entity.Create(appId: _appId, guid: eGuid, contentType: type, values: pubAndValues.Attributes, owner: owner, metadataFor: targetOrNull);
+            var newEntity = _builder.Entity.Create(appId: _appId, guid: eGuid, contentType: type,
+                attributes: pubAndValues.Attributes.ToImmutableInvariant(),
+                owner: owner, metadataFor: targetOrNull);
             if (targetOrNull != null) l.A("FYI: Set metadata target which was provided.");
 
             return (importEntity: newEntity, pubAndValues.Publishing);

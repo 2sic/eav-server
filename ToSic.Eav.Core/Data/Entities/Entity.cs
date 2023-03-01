@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
@@ -21,7 +20,7 @@ namespace ToSic.Eav.Data
             EntityPartsBuilder partsBuilder,
             //bool useLightMode,
             IImmutableDictionary<string, object> rawValues,
-            IDictionary<string, IAttribute> values,
+            IImmutableDictionary<string, IAttribute> values,
             string titleFieldName,
             DateTime? created, DateTime? modified,
             int repositoryId,
@@ -35,7 +34,7 @@ namespace ToSic.Eav.Data
             : base(appId, entityId, guid, contentType, partsBuilder, rawValues, titleFieldName, created: created, modified: modified, owner: owner, metadataFor: metadataFor)
         {
             IsLight = rawValues != null;
-            _attributesRaw = values;
+            Attributes = values;
             RepositoryId = repositoryId;
             Version = version;
             IsPublished = isPublished;

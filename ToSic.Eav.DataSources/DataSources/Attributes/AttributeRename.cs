@@ -151,8 +151,7 @@ namespace ToSic.Eav.DataSources
                 })
                 .ToImmutableArray();
 
-            Log.A($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
-            return (result, "ok");
+            return (result, $"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
         });
 
 

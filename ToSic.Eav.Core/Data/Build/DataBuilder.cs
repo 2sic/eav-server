@@ -23,6 +23,23 @@ namespace ToSic.Eav.Data.Build
 
         #endregion
 
+        #region Constructor / DI
+
+
+        /// <summary>
+        /// Constructor for DI
+        /// </summary>
+        public DataBuilder(MultiBuilder builder) : base("Ds.DatBld")
+        {
+            ConnectServices(
+                _builder = builder
+            );
+        }
+        private readonly MultiBuilder _builder;
+
+        #endregion
+
+
         #region Properties to configure Builder / Defaults
 
         /// <inheritdoc />
@@ -49,21 +66,6 @@ namespace ToSic.Eav.Data.Build
 
         #endregion
 
-        #region Constructor / DI
-
-        private readonly MultiBuilder _multiBuilder;
-
-        /// <summary>
-        /// Constructor for DI
-        /// </summary>
-        public DataBuilder(MultiBuilder multiBuilder): base("Ds.DatBld")
-        {
-            ConnectServices(
-                _multiBuilder = multiBuilder
-            );
-        }
-
-        #endregion
 
         #region Configure
         /// <inheritdoc />
@@ -91,7 +93,7 @@ namespace ToSic.Eav.Data.Build
             AppId = appId;
             TitleField = titleField.UseFallbackIfNoValue(Attributes.TitleNiceName);
             IdCounter = idSeed;
-            ContentType = _multiBuilder.ContentType.Transient(typeName ?? DefaultTypeName);
+            ContentType = _builder.ContentType.Transient(typeName ?? DefaultTypeName);
             IdAutoIncrementZero = idAutoIncrementZero;
 
             CreateFromNewOptions = createFromNewOptions ?? new CreateFromNewOptions();
@@ -154,7 +156,7 @@ namespace ToSic.Eav.Data.Build
                         // WIP - this isn't nice ATM, but it's important
                         // so the resulting object has Multi-language attributes
                         // Should be improved ASAP
-                        newEntity = _multiBuilder.FullClone(Create(n));
+                        newEntity = _builder.FullClone(Create(n));
                     }
                     catch
                     {
@@ -176,11 +178,11 @@ namespace ToSic.Eav.Data.Build
             DateTime created = default,
             DateTime modified = default)
         {
-            var ent = _multiBuilder.Entity.Create(
+            var ent = _builder.Entity.Create(
                 appId: AppId,
                 entityId: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
                 contentType: ContentType,
-                rawValues: values,
+                attributes: _builder.Attribute.Create(values),
                 titleField: TitleField,
                 guid: guid,
                 created: created == default ? Created : created,

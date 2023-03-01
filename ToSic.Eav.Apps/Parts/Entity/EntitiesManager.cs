@@ -21,12 +21,8 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public partial class EntitiesManager: PartOf<AppManager>
     {
-        private readonly LazySvc<MultiBuilder> _multiBuilder;
-
         #region Constructor / DI
 
-        private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false));
-        private Import _import;
         public EntitiesManager(
             LazySvc<ImportListXml> lazyImportListXml,
             LazySvc<Import> importLazy,
@@ -63,6 +59,12 @@ namespace ToSic.Eav.Apps.Parts
         protected readonly SystemManager SystemManager;
         private LazySvc<JsonSerializer> Serializer { get; }
 
+        private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false));
+        private Import _import;
+
+        private readonly LazySvc<MultiBuilder> _multiBuilder;
+        private MultiBuilder Builder => _multiBuilder.Value;
+
         #endregion
 
 
@@ -72,7 +74,7 @@ namespace ToSic.Eav.Apps.Parts
                 throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
 
             newEntities = newEntities
-                .Select(e => _multiBuilder.Value.Entity.Clone(e, id: 0, repositoryId: 0))
+                .Select(e => Builder.Entity.Clone(e, id: 0, repositoryId: 0))
                 .ToList();
             //newEntities.ForEach(e =>
             //{
@@ -118,7 +120,7 @@ namespace ToSic.Eav.Apps.Parts
                         return entity;
                     var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
                     if (newType == null) return entity;
-                    return _multiBuilder.Value.Entity.Clone(entity, type: newType);
+                    return Builder.Entity.Clone(entity, type: newType);
                 }).ToList();
 
                 // Clear Ephemeral attributes which shouldn't be saved (new in v12)

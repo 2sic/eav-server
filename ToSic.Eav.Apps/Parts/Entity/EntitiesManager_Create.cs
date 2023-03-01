@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 
@@ -12,7 +11,10 @@ namespace ToSic.Eav.Apps.Parts
         public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null
         ) => Log.Func($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}", () =>
         {
-            var newEnt = _multiBuilder.Value.Entity.Create(appId: Parent.AppId, guid: Guid.NewGuid(), contentType: Parent.Read.ContentTypes.Get(typeName), rawValues: values, metadataFor: metadataFor);
+            var newEnt = Builder.Entity.Create(appId: Parent.AppId, guid: Guid.NewGuid(),
+                contentType: Parent.Read.ContentTypes.Get(typeName),
+                attributes: Builder.Attribute.Create(values),
+                metadataFor: metadataFor);
             //if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
             var eid = Save(newEnt);
             var guid = Parent.DataController.Entities.TempLastSaveGuid;
@@ -41,7 +43,9 @@ namespace ToSic.Eav.Apps.Parts
                 return existingEnt.EntityId;
             }
 
-            var newE = _multiBuilder.Value.Entity.Create(appId: Parent.AppId, guid: newGuid, contentType: Parent.Read.ContentTypes.Get(typeName), rawValues: values);
+            var newE = Builder.Entity.Create(appId: Parent.AppId, guid: newGuid,
+                contentType: Parent.Read.ContentTypes.Get(typeName),
+                attributes: Builder.Attribute.Create(values));
             return Save(newE);
         }
     }

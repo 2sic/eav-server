@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
@@ -62,7 +63,7 @@ namespace ToSic.Eav.Data
 #if NETFRAMEWORK
         new
 #endif
-        IReadOnlyDictionary<string, IAttribute> Attributes { get; }
+        IImmutableDictionary<string, IAttribute> Attributes { get; }
 
         /// <summary>
         /// Gets the "official" Title-Attribute <see cref="IAttribute{T}"/>

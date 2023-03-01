@@ -70,11 +70,6 @@ namespace ToSic.Eav.DataSources
                     var ownId = GetTypedKeyOrDefault<TKey>(e, parentIdField);
                     var relatedId = GetTypedKeyOrDefault<TKey>(e, childToParentRefField);
                     return new NewEntitySet<(TKey OwnId, TKey RelatedId)>((ownId, relatedId), e);
-                    //{
-                    //    Set = new NewEntitySet<(TKey OwnId, TKey RelatedId)>((ownId, relatedId), e),
-                    //    OwnId = ownId,
-                    //    RelatedId = relatedId,
-                    //};
                 })
                 .ToList();
 

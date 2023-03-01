@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Generics;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 using static System.StringComparer;
@@ -99,9 +101,9 @@ namespace ToSic.Eav.Data.Builder
             }
         }
 
-        public Dictionary<string, IAttribute> GenerateAttributesOfContentType(IContentType contentType, ILookup<string, IValue> preparedValues)
+        public IImmutableDictionary<string, IAttribute> GenerateAttributesOfContentType(IContentType contentType, ILookup<string, IValue> preparedValues)
         {
-            var attributes = contentType.Attributes.ToDictionary(
+            var attributes = contentType.Attributes.ToImmutableDictionary(
                 a => a.Name,
                 a =>
                 {
@@ -112,15 +114,30 @@ namespace ToSic.Eav.Data.Builder
                         : null;
                     var entityAttribute = CreateTyped(a.Name, a.Type, values);
                     return entityAttribute;
-                });
+                }, InvariantCultureIgnoreCase);
             return attributes;
         }
 
+        public IImmutableDictionary<string, IAttribute> Empty() => new Dictionary<string, IAttribute>().ToImmutableInvariant();
+
+        public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, IAttribute> attributes)
+            => attributes?.ToImmutableInvariant() ?? Empty();
+
+        public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, object> attributes)
+        {
+            if (attributes == null)
+                return Empty();
+
+            if (attributes.All(x => x.Value is IAttribute))
+                return attributes.ToImmutableDictionary(pair => pair.Key, pair => pair.Value as IAttribute, InvariantCultureIgnoreCase);
+
+            return ToIAttribute(attributes).ToImmutableInvariant();
+        }
 
         /// <summary>
         /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
         /// </summary>
-        public Dictionary<string, IAttribute> ConvertToIAttributeDic(IDictionary<string, object> objAttributes) =>
+        public Dictionary<string, IAttribute> ToIAttribute(IDictionary<string, object> objAttributes) =>
             objAttributes.ToDictionary(pair => pair.Key, oAttrib =>
             {
                 // in case the object is already an IAttribute, use that, don't rebuild it
@@ -139,6 +156,6 @@ namespace ToSic.Eav.Data.Builder
                 var attributeModel = CreateTyped(oAttrib.Key, attributeType, valuesModelList);
 
                 return attributeModel;
-            });
+            }, InvariantCultureIgnoreCase);
     }
 }
