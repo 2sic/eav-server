@@ -36,11 +36,10 @@ namespace ToSic.Eav.Data.Build
             )
         {
             var specs = ((IMetadataInternals)original).GetCloneSpecs();
-            return (key, title) =>
-                new MetadataOf<TKey>(targetType: specs.TargetType, key: key, title: title,
-                    items: items ?? specs.list,
-                    appSource: appSource ?? specs.appSource,
-                    deferredSource: deferredSource ?? specs.deferredSource);
+            return (key, title) => new MetadataOf<TKey>(targetType: specs.TargetType, key: key, title: title,
+                items: items ?? specs.list,
+                appSource: appSource ?? specs.appSource,
+                deferredSource: deferredSource ?? specs.deferredSource);
         }
 
         public IRelationshipManager RelationshipManager(IEntityLight entity) => _getRm(entity);

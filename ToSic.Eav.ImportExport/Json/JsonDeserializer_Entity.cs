@@ -63,12 +63,12 @@ namespace ToSic.Eav.ImportExport.Json
             // Metadata Target
             var target = DeserializeEntityTarget(jEnt);
 
-            // Metadata Items
+            // Metadata Items - it's important that they are null, if no metadata was specified
+            // This is to ensure that without own metadata, it will access the app (if available) to find metadata.
             l.A($"found metadata: {jEnt.Metadata != null}, will deserialize");
             var mdItems = jEnt.Metadata?
-                              .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
-                              .ToList()
-                          ?? new List<IEntity>();
+                .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
+                .ToList();
 
             // build attributes - based on type definition
             Dictionary<string, IAttribute> attributes = new Dictionary<string, IAttribute>();
