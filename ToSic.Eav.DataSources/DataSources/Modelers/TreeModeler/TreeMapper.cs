@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Data.New;
+using ToSic.Eav.Generics;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
@@ -33,23 +34,6 @@ namespace ToSic.Eav.DataSources
             Debug = false;
         }
 
-        public List<IEntity> AddSomeRelationshipsWIP<TKey>(
-            string fieldName,
-            List<(IEntity Entity, List<TKey> Ids)> needs,
-            List<(IEntity Entity, TKey Id)> lookup,
-            bool cloneFirst = true
-        )
-        {
-            // WIP - for now the clone is very important, because it changes the attribute-model on generated entities from light to not-light
-            // otherwise adding relationship attributes fails for now
-            if (cloneFirst)
-                needs = needs.Select(n => (_builder.FullClone(n.Entity) as IEntity, n.Ids)).ToList();
-            
-            var properLookup = lookup.ToLookup(i => i.Id, i => i.Entity);
-
-            return AddRelationshipField(fieldName, needs, properLookup).ToList();
-        }
-
         public IList<NewEntitySet<TRaw>> AddOneRelationship<TRaw, TKey>(
             string fieldName,
             List<(NewEntitySet<TRaw> Set, List<TKey> Ids)> needs,
@@ -60,7 +44,7 @@ namespace ToSic.Eav.DataSources
             // WIP - for now the clone is very important, because it changes the attribute-model on generated entities from light to not-light
             // otherwise adding relationship attributes fails for now
             if (cloneFirst)
-                needs = needs.Select(n => (new NewEntitySet<TRaw>(n.Set.Original, _builder.FullClone(n.Set.Entity) as IEntity), n.Ids)).ToList();
+                needs = needs.Select(n => (new NewEntitySet<TRaw>(n.Set.Original, _builder.FullClone(n.Set.Entity)), n.Ids)).ToList();
             
             var properLookup = lookup.ToLookup(i => i.Id, i => i.Entity);
 
@@ -83,7 +67,7 @@ namespace ToSic.Eav.DataSources
             var withKeys = clones
                 .Select(e => new
                 {
-                    Entity = e as IEntity,
+                    Set = new NewEntitySet<string>("dummy", e),
                     OwnId = GetTypedKeyOrDefault<TKey>(e, parentIdField),
                     RelatedId = GetTypedKeyOrDefault<TKey>(e, childToParentRefField),
                 })
@@ -91,37 +75,43 @@ namespace ToSic.Eav.DataSources
 
             // Assign parents to children
             AddRelationshipField(newParentField, 
-                withKeys.Select(set => (set.Entity, new List<TKey> { set.RelatedId })).ToList(), 
-                withKeys.ToLookup(s => s.OwnId,  s => s.Entity as IEntity));
+                withKeys.Select(set => (set.Set, new List<TKey> { set.RelatedId })).ToList(), 
+                withKeys.ToLookup(s => s.OwnId,  s => s.Set.Entity));
 
             AddRelationshipField(newChildrenField, 
-                withKeys.Select(set => (set.Entity, new List<TKey> { set.OwnId })).ToList(),
-                withKeys.ToLookup(s => s.RelatedId, s => s.Entity as IEntity));
+                withKeys.Select(set => (set.Set, new List<TKey> { set.OwnId })).ToList(),
+                withKeys.ToLookup(s => s.RelatedId, s => s.Set.Entity));
 
 
-            var result = withKeys.Select(set => set.Entity);
+            var result = withKeys.Select(set => set.Set.Entity);
             
             return result.ToImmutableArray();
         });
-        
 
-        private List<IEntity> AddRelationshipField<TKey>(string newField, List<(IEntity Entity, List<TKey> NeedsIds)> list, ILookup<TKey, IEntity> lookup = null)
-        {
-            var useNumber = typeof(TKey).IsNumeric();
-            foreach (var item in list)
-                AddRelationships(item.Entity, newField, lookup, item.NeedsIds, useNumber);
-            return list.Select(i => i.Entity).ToList();
-        }
+
         private List<NewEntitySet<TNewEntity>> AddRelationshipField<TNewEntity, TKey>(string newField, List<(NewEntitySet<TNewEntity> set, List<TKey> NeedsIds)> list, ILookup<TKey, IEntity> lookup = null)
         {
             var useNumber = typeof(TKey).IsNumeric();
-            foreach (var item in list)
-                AddRelationships(item.set.Entity, newField, lookup, item.NeedsIds, useNumber);
-            return list.Select(i => i.set).ToList();
+            var result = list.Select(setNeedsBundle =>
+            {
+                var target = setNeedsBundle.set.Entity;
+                var attributes = target.Attributes.ToEditable();
+                attributes = AddRelationships(attributes, newField, lookup, setNeedsBundle.NeedsIds, useNumber,
+                    $"Entity: {target.EntityId}/{target.EntityGuid}");
+                return new NewEntitySet<TNewEntity>(setNeedsBundle.set.Original,
+                    _builder.Entity.Clone(target, values: attributes));
+            });
+            return result.ToList();
         }
 
-        private void AddRelationships<TKey>(IEntity target, string newFieldName, ILookup<TKey, IEntity> lookup, List<TKey> lookupIds, bool keyIsNumeric
-        ) => Log.Do($"Entity: {target.EntityId}/{target.EntityGuid} {newFieldName} pointing to {lookupIds}", () =>
+        private IDictionary<string, IAttribute> AddRelationships<TKey>(
+            IDictionary<string, IAttribute> attributes,
+            string newFieldName,
+            ILookup<TKey, IEntity> lookup,
+            List<TKey> lookupIds,
+            bool keyIsNumeric,
+            string debug
+        ) => Log.Func($"{debug} {newFieldName} pointing to {lookupIds}", () =>
         {
             // Find referencing entities (children or parents) - but only if we have a valid reference
             var related = lookupIds.SelectMany(lookupId => lookup[lookupId]).ToList();
@@ -131,11 +121,11 @@ namespace ToSic.Eav.DataSources
             var childGuids = keyIsNumeric // typeof(TKey).IsNumeric()
                 ? related.Select(e => e.EntityId).ToList() as object
                 : related.Select(e => e.EntityGuid).ToList();
-            _builder.AttributeImport.AddValueWIP(target, newFieldName, childGuids, DataTypes.Entity,
+            _builder.AttributeImport.AddValue(attributes, newFieldName, childGuids, DataTypes.Entity,
                 null, false, false, new DirectEntitiesSource(related));
 
             // Log
-            return $"added {related.Count} items";
+            return (attributes, $"added {related.Count} items");
         });
 
         private TRelationshipKey GetTypedKeyOrDefault<TRelationshipKey>(IEntity e, string attribute) => Log.Func(enabled: Debug, func: l =>

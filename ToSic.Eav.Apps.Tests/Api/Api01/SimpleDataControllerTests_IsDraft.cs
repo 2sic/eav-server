@@ -3,12 +3,12 @@ using ToSic.Eav.Api.Api01;
 
 namespace ToSic.Eav.Apps.Tests.Api.Api01
 {
-    [TestClass()]
+    [TestClass]
     // ReSharper disable once InconsistentNaming
     public class SimpleDataControllerTests_IsDraft
     {
-        private static (bool published, bool branch) IsDraft(object publishedState, bool? existingIsPublished, bool writePublishAllowed) 
-            => SimpleDataController.IsDraft(publishedState, existingIsPublished, writePublishAllowed);
+        private static (bool ShouldPublish, bool ShouldBranchDrafts) TestGetPublishSpecs(object publishedState, bool? existingIsPublished, bool writePublishAllowed) 
+            => SimpleDataController.GetPublishSpecs(publishedState, existingIsPublished, writePublishAllowed);
 
         /// <summary>
         /// Scenarios when creating new.
@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// This should be the same as previous implementation. 
         /// </summary>
         /// <param name="publishedState"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("null")]
@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         [DataRow("NUll")]
         public void New_NoPublishedState(object publishedState)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState, 
                 existingIsPublished: null,
                 writePublishAllowed: true);
@@ -41,11 +41,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// This should be the same as previous implementation. 
         /// </summary>
         /// <param name="publishedState"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(null)]
         public void New_NoPublishedState_WritePublishNotAllowed(object publishedState)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: null,
                 writePublishAllowed: false);
@@ -61,7 +61,7 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// and permissions may not work if you set it.
         /// </summary>
         /// <param name="publishedState"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(true)]
         [DataRow(1)]
         [DataRow("true")]
@@ -69,7 +69,7 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         [DataRow("TRue")]
         public void New_True(object publishedState)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: null,
                 writePublishAllowed: true);
@@ -85,11 +85,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// and permissions may not work if you set it.
         /// </summary>
         /// <param name="publishedState"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(true)]
         public void New_True_WritePublishNotAllowed(object publishedState)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: null,
                 writePublishAllowed: false);
@@ -103,7 +103,7 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// 3.	False, 0, etc. – should not be published
         /// </summary>
         /// <param name="publishedState"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(false)]
         [DataRow(0)]
         [DataRow("false")]
@@ -111,7 +111,7 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         [DataRow("FAlse")]
         public void New_False(object publishedState)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: null,
                 writePublishAllowed: true);
@@ -125,11 +125,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// 3.	False, 0, etc. – should not be published
         /// </summary>
         /// <param name="publishedState"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(false)]
         public void New_False_WritePublishNotAllowed(object publishedState)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: null,
                 writePublishAllowed: false);
@@ -147,11 +147,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(null, true, true)]
         public void ExistingPublished_NoPublishedState(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -169,11 +169,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(null, true, false)]
         public void ExistingPublished_NoPublishedState_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -190,11 +190,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(true, true, true)]
         public void ExistingPublished_True(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -211,11 +211,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(true, true, false)]
         public void ExistingPublished_True_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -232,11 +232,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(false, true, true)]
         public void ExistingPublished_False(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -253,11 +253,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(false, true, false)]
         public void ExistingPublished_False_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -273,11 +273,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow("draft", true, true)]
         public void ExistingPublished_Draft(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -293,11 +293,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow("draft", true, false)]
         public void ExistingPublish_Draft_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -313,12 +313,12 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(null, false, true)]
         [DataRow(null, false, false)]
         public void ExistingDraft_NoPublishedState(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -335,11 +335,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(true, false, true)]
         public void ExistingDraft_True(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -356,11 +356,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(true, false, false)]
         public void ExistingDraft_True_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -376,12 +376,12 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(false, false, true)]
         [DataRow(false, false, false)]
         public void ExistingDraft_False(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -397,12 +397,12 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow("DRAFT", false, true)]
         [DataRow("DRaft", false, false)]
         public void ExistingDraft_Draft(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -418,12 +418,12 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(null, false, true)]
         [DataRow(null, false, false)]
         public void ExistingDraftAndPublish_NoPublishedState(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -441,11 +441,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(true, false, true)]
         public void ExistingDraftAndPublish_True(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -463,11 +463,11 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(true, false, false)]
         public void ExistingDraftAndPublish_True_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -486,12 +486,12 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow(false, false, true)]
         [DataRow(false, false, false)]
         public void ExistingDraftAndPublish_False(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);
@@ -508,12 +508,12 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
         /// <param name="publishedState"></param>
         /// <param name="existingIsPublished"></param>
         /// <param name="writePublishAllowed"></param>
-        [TestMethod()]
+        [TestMethod]
         [DataRow("DRAFT", false, true)]
         [DataRow("DRaft", false, false)]
         public void ExistingDraftAndPublish_Draft(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var (published, branch) = IsDraft(
+            var (published, branch) = TestGetPublishSpecs(
                 publishedState: publishedState,
                 existingIsPublished: existingIsPublished,
                 writePublishAllowed: writePublishAllowed);

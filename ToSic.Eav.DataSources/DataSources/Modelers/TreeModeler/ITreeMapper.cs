@@ -17,13 +17,6 @@ namespace ToSic.Eav.DataSources
             string newParentField = default
         );
 
-        List<IEntity> AddSomeRelationshipsWIP<TKey>(
-            string fieldName,
-            List<(IEntity Entity, List<TKey> Ids)> needs,
-            List<(IEntity Entity, TKey Id)> lookup,
-            bool cloneFirst = true
-        );
-
         IList<NewEntitySet<TNewEntity>> AddOneRelationship<TNewEntity, TKey>(
             string fieldName,
             List<(NewEntitySet<TNewEntity> Set, List<TKey> Ids)> needs,

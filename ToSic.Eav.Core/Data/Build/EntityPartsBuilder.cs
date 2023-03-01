@@ -37,7 +37,7 @@ namespace ToSic.Eav.Data.Build
         {
             var specs = ((IMetadataInternals)original).GetCloneSpecs();
             return (key, title) =>
-                new MetadataOf<TKey>(targetType: (int)TargetTypes.Entity, key: key, title: title,
+                new MetadataOf<TKey>(targetType: specs.TargetType, key: key, title: title,
                     items: items ?? specs.list,
                     appSource: appSource ?? specs.appSource,
                     deferredSource: deferredSource ?? specs.deferredSource);

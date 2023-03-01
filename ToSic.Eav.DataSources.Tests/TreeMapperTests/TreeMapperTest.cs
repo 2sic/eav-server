@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.New;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
 
@@ -30,17 +31,17 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
             var mapper = GetService<TreeMapper>();
 
             const string childrenField = "Children";
-            var result = mapper.AddSomeRelationshipsWIP(childrenField,
-                new List<(IEntity, List<int>)> { (parents.Entity, parentsRaw.ChildrenIds) },
+            var result = mapper.AddOneRelationship(childrenField,
+                new List<(NewEntitySet<string>, List<int>)> { (new NewEntitySet<string>("dummy", parents.Entity), parentsRaw.ChildrenIds) },
                 children.Select(c => (c.Entity, c.Entity.EntityId)).ToList()
             );
             var updatedParents = result.First();
 
             // Control - to be sure the test can make sense
-            var getTitle = updatedParents.GetBestValue("Title", Array.Empty<string>());
+            var getTitle = updatedParents.Entity.GetBestValue("Title", Array.Empty<string>());
             Assert.IsNotNull(getTitle);
 
-            var childrenProperty = updatedParents.GetBestValue(childrenField, Array.Empty<string>());
+            var childrenProperty = updatedParents.Entity.GetBestValue(childrenField, Array.Empty<string>());
             Assert.IsNotNull(childrenProperty);
 
 

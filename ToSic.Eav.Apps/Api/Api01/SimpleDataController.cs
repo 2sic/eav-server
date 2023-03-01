@@ -10,12 +10,12 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
-using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // This is the simple API used to quickly create/edit/delete entities
@@ -32,16 +32,13 @@ namespace ToSic.Eav.Api.Api01
     /// </summary>
     public partial class SimpleDataController: ServiceBase
     {
-        private readonly LazySvc<EntityBuilder> _entityBuilder;
-
         #region Constructor / DI
 
         /// <summary>
         /// Used for DI - must always call Init to use
         /// </summary>
         public SimpleDataController(
-            LazySvc<AttributeBuilderForImport> lazyAttributeBuilder,
-            LazySvc<EntityBuilder> entityBuilder,
+            MultiBuilder builder,
             LazySvc<AppManager> appManagerLazy,
             LazySvc<DbDataController> dbDataLazy,
             IZoneMapper zoneMapper,
@@ -49,13 +46,12 @@ namespace ToSic.Eav.Api.Api01
             Generator<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             ConnectServices(
-                _entityBuilder = entityBuilder,
                 _appManagerLazy = appManagerLazy,
                 _dbDataLazy = dbDataLazy,
                 _zoneMapper = zoneMapper,
+                _builder = builder,
                 _ctx = ctx,
-                _appPermissionCheckGenerator = appPermissionCheckGenerator,
-                AttributeBuilder = lazyAttributeBuilder
+                _appPermissionCheckGenerator = appPermissionCheckGenerator
             );
         }
         private readonly LazySvc<AppManager> _appManagerLazy;
@@ -63,8 +59,9 @@ namespace ToSic.Eav.Api.Api01
         private readonly IZoneMapper _zoneMapper;
         private readonly IContextOfSite _ctx;
         private readonly Generator<AppPermissionCheck> _appPermissionCheckGenerator;
+        private readonly MultiBuilder _builder;
 
-        private readonly LazySvc<AttributeBuilderForImport> AttributeBuilder;
+
         private DbDataController _context;
         private AppManager _appManager;
         private string _defaultLanguageCode;
@@ -124,15 +121,18 @@ namespace ToSic.Eav.Api.Api01
 
             l.A($"Type {contentTypeName} found. Will build entities to save...");
 
-            var importEntity = multiValues.Select(values => BuildEntity(type, values, target, null).Entity).ToList();
+            var importEntity = multiValues.Select(values => BuildNewEntity(type, values, target, null).Entity).ToList();
 
             var ids = _appManager.Entities.Save(importEntity);
             return (ids, "ok");
         });
 
-        private (IEntity Entity, (bool Draft, bool Branch)? DraftAndBranch) BuildEntity(
-            IContentType type, Dictionary<string, object> values, ITarget target, bool? existingIsPublished
-        ) => Log.Func($"{type.Name}, {values?.Count}, target: {target != null}", l =>
+        private (IEntity Entity, (bool ShouldPublish, bool DraftShouldBranch)? DraftAndBranch) BuildNewEntity(
+            IContentType type,
+            Dictionary<string, object> values,
+            ITarget targetOrNull,
+            bool? existingIsPublished
+        ) => Log.Func($"{type.Name}, {values?.Count}, target: {targetOrNull != null}", l =>
         {
             // ensure it's case insensitive...
             values = values.ToInvariant();
@@ -158,13 +158,13 @@ namespace ToSic.Eav.Api.Api01
 
             // Prepare values to add
             var preparedValues = ConvertEntityRelations(values);
+            var preparedIAttributes = _builder.Attribute.ConvertToIAttributeDic(preparedValues);
+            var pubAndValues = BuildNewEntityValues(type, preparedIAttributes, _defaultLanguageCode, existingIsPublished);
 
-            var importEntity = _entityBuilder.Value.Create(appId: _appId, guid: eGuid, contentType: type, rawValues: new Dictionary<string, object>(), owner: owner, metadataFor: target);
-            if (target != null) l.A("FYI: Set metadata target which was provided.");
+            var newEntity = _builder.Entity.Create(appId: _appId, guid: eGuid, contentType: type, values: pubAndValues.Attributes, owner: owner, metadataFor: targetOrNull);
+            if (targetOrNull != null) l.A("FYI: Set metadata target which was provided.");
 
-            var draftAndBranch = AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false, true,
-                existingIsPublished);
-            return (importEntity, draftAndBranch);
+            return (importEntity: newEntity, pubAndValues.Publishing);
         });
 
 
@@ -179,15 +179,12 @@ namespace ToSic.Eav.Api.Api01
         /// </param>
         /// <exception cref="ArgumentException">Attribute in values does not exit</exception>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
-        public void Update(int entityId, Dictionary<string, object> values)
+        public void Update(int entityId, Dictionary<string, object> values) => Log.Do($"update i:{entityId}", () =>
         {
-            Log.A($"update i:{entityId}");
             var original = _appManager.AppState.List.FindRepoId(entityId);
-
-            var import = BuildEntity(original.Type, values, null, original.IsPublished);
-
+            var import = BuildNewEntity(original.Type, values, null, original.IsPublished);
             _appManager.Entities.UpdateParts(entityId, import.Entity as Entity, import.DraftAndBranch);
-        }
+        });
 
 
         /// <summary>
@@ -205,9 +202,8 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(Guid entityGuid) => Delete(_context.Entities.GetMostCurrentDbEntity(entityGuid).EntityId);
 
 
-        private Dictionary<string, object> ConvertEntityRelations(Dictionary<string, object> values)
+        private IDictionary<string, object> ConvertEntityRelations(IDictionary<string, object> values) => Log.Func(() =>
         {
-            Log.A("convert entity relations");
             var result = new Dictionary<string, object>();
             foreach (var value in values)
                 if (value.Value is IEnumerable<int> ids)
@@ -223,45 +219,50 @@ namespace ToSic.Eav.Api.Api01
                     result.Add(value.Key, string.Join(",", nullGuids));
                 else
                     result.Add(value.Key, value.Value);
-            return result;
-        }
 
-        private (bool Draft, bool Branch)? AddValues(Entity entity, IContentType contentType, Dictionary<string, object> valuePairs,
-            string valuesLanguage, bool valuesReadOnly, bool resolveHyperlink, bool? existingIsPublished
-        ) => Log.Func($"..., ..., values: {valuePairs?.Count}, {valuesLanguage}, read-only: {valuesReadOnly}, {nameof(resolveHyperlink)}: {resolveHyperlink}", l =>
+            return result;
+        });
+
+        private ((bool ShouldPublish, bool DraftShouldBranch)? Publishing, IDictionary<string, IAttribute> Attributes) BuildNewEntityValues(
+            IContentType contentType,
+            IDictionary<string, IAttribute> values,
+            string valuesLanguage,
+            bool? existingIsPublished
+        ) => Log.Func($"..., ..., values: {values?.Count}, {valuesLanguage}", l =>
         {
-            (bool Draft, bool Branch)? draftAndBranch = null;
-            if (valuePairs == null)
-                return (draftAndBranch, "no values");
+            (bool ShouldPublish, bool DraftShouldBranch)? publishAndBranch = null;
+            if (values?.Any() != true)
+                return ((publishAndBranch, values), "no values to process");
 
             // On update, by default preserve IsPublished state
-            if (existingIsPublished.HasValue) entity.IsPublished = existingIsPublished.Value;
+            var isPublished = existingIsPublished ?? true;
 
             // Ensure WritePublished or WriteDraft user permissions. 
-            var writePublishAllowed = GetWritePublishAllowedOrThrow(contentType);
+            var allowed = GetWriteAndPublishAllowed(contentType);
+            if (!allowed.WriteAllowed)
+                throw new Exception("User is not allowed to do anything. Both published and draft are not allowed.");
 
             // IsPublished becomes false when write published is not allowed.
-            if (entity.IsPublished && !writePublishAllowed) entity.IsPublished = false;
+            if (isPublished && !allowed.PublishAllowed) isPublished = false;
 
-            foreach (var keyValuePair in valuePairs)
+            foreach (var keyValuePair in values)
             {
                 // Handle special "PublishState" attribute
-                if (SaveApiAttributes.SavePublishingState.Equals(keyValuePair.Key, InvariantCultureIgnoreCase))
+                if (keyValuePair.Key.EqualsInsensitive(SaveApiAttributes.SavePublishingState))
                 {
+                    publishAndBranch = GetPublishSpecs(
+                        publishedState: values[SaveApiAttributes.SavePublishingState],
+                        existingIsPublished: isPublished,
+                        allowed.PublishAllowed);
 
-                    draftAndBranch = IsDraft(
-                        publishedState: valuePairs[SaveApiAttributes.SavePublishingState],
-                        existingIsPublished: existingIsPublished,
-                        writePublishAllowed);
+                    isPublished = publishAndBranch.Value.ShouldPublish;
 
-                    if (draftAndBranch.HasValue) entity.IsPublished = draftAndBranch.Value.Item1; // published
-
-                    l.A($"IsPublished: {entity.IsPublished}");
+                    l.A($"IsPublished: {isPublished}");
                     continue;
                 }
 
                 // Ignore entity guid - it's already set earlier
-                if (keyValuePair.Key.ToLowerInvariant() == Attributes.EntityFieldGuid)
+                if (keyValuePair.Key.EqualsInsensitive(Attributes.EntityFieldGuid))
                 {
                     l.A("entity-guid, ignore here");
                     continue;
@@ -271,21 +272,20 @@ namespace ToSic.Eav.Api.Api01
                 var attribute = contentType[keyValuePair.Key];
                 if (attribute != null && keyValuePair.Value != null)
                 {
-                    AttributeBuilder.Value.AddValueWIP(entity, attribute.Name, keyValuePair.Value,
-                        attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
+                    _builder.AttributeImport.AddValue(values, attribute.Name, keyValuePair.Value,
+                        attribute.Type, valuesLanguage, false, true);
                     l.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({attribute.Type})");
                 }
             }
-            
-            return (draftAndBranch, "done");
+            return ((publishAndBranch, values), "done");
         });
 
         #region Permission Checks
 
-        private bool GetWritePublishAllowedOrThrow(IContentType targetType)
+        private (bool PublishAllowed, bool WriteAllowed) GetWriteAndPublishAllowed(IContentType targetType)
         {
             // skip write publish/draft permission checks for c# API
-            if (!_checkWritePermissions) return true;
+            if (!_checkWritePermissions) return (true, true);
 
             // this write publish/draft permission checks should happen only for REST API
 
@@ -293,26 +293,26 @@ namespace ToSic.Eav.Api.Api01
 
             // 1.1. app permissions 
             if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, _appManager.AppState)
-                .UserMay(GrantSets.WritePublished)) return true;
+                .UserMay(GrantSets.WritePublished)) return (true, true);
 
             // 1.2. type permissions
             if (_appPermissionCheckGenerator.New().ForType(_ctx, _appManager.AppState, targetType)
-                .UserMay(GrantSets.WritePublished)) return true;
+                .UserMay(GrantSets.WritePublished)) return (true, true);
 
 
             // 2. Find if user may write DRAFT:
 
             // 2.1. app permissions 
             if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, _appManager.AppState)
-                .UserMay(GrantSets.WriteDraft)) return false;
+                .UserMay(GrantSets.WriteDraft)) return (false, true);
 
             // 2.2. type permissions
             if (_appPermissionCheckGenerator.New().ForType(_ctx, _appManager.AppState, targetType)
-                .UserMay(GrantSets.WriteDraft)) return false;
+                .UserMay(GrantSets.WriteDraft)) return (false, true);
 
 
             // 3. User is not allowed to update published or draft entity.
-            throw new Exception("User is not allowed to update published or draft entity.");
+            return (false, false);
         }
 
 
