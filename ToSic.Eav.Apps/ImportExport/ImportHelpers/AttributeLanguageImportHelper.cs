@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
         /// <summary>
         /// Get the value of an attribute in the language specified.
         /// </summary>
-        public static (IValue Value, IAttribute Attribute) ValueItemOfLanguageOrNull(IReadOnlyDictionary<string, IAttribute> attributes, string key, string language)
+        public static (IValue Value, IAttribute Attribute) ValueItemOfLanguageOrNull(IDictionary<string, IAttribute> attributes, string key, string language)
         {
             var values = attributes
                 .Where(item => item.Key == key)

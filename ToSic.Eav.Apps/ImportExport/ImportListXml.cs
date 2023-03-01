@@ -6,6 +6,7 @@ using System.Linq;
 using ToSic.Eav.Apps.ImportExport.ImportHelpers;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Generics;
 using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
@@ -13,6 +14,7 @@ using ToSic.Eav.ImportExport.Xml;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.Services;
+using static System.StringComparer;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -71,7 +73,7 @@ namespace ToSic.Eav.Apps.ImportExport
             ImportDeleteUnmentionedItems deleteSetting, 
             ImportResolveReferenceMode resolveLinkMode)
         {
-            ImportEntities = new List<Entity>();
+            //ImportEntities = new List<Entity>();
             ErrorLog = new ImportErrorLog(Log);
 
             AppMan = appMan;
@@ -124,9 +126,8 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Deserialize data xml stream to the memory. The data will also be checked for 
         /// errors.
         /// </summary>
-        private bool ValidateAndImportToMemory()
+        private bool ValidateAndImportToMemory() => Log.Func(timer: true, func: l =>
         {
-            var callLog = Log.Fn<bool>(timer: true);
             var nodesCount = 0;
             var entityGuidManager = new ImportItemGuidManager();
 
@@ -143,7 +144,9 @@ namespace ToSic.Eav.Apps.ImportExport
                 }
 
                 var entityGuid = entityGuidManager.GetGuid(xEntity, _docLangPrimary);
-                var entity = GetImportEntity(entityGuid) ?? AppendEntity(entityGuid);
+                var entityInImportQueue = GetImportEntity(entityGuid);
+                var entityAttributes = entityInImportQueue?.Attributes.ToEditable()
+                                       ?? new Dictionary<string, IAttribute>();
 
                 foreach (var attribute in ContentType.Attributes)
                 {
@@ -158,45 +161,55 @@ namespace ToSic.Eav.Apps.ImportExport
                     // Case 2: Xml empty string
                     if (value == XmlConstants.Empty)
                     {
-                        AttributeBuilder.Value.AddValueWIP(entity, valName, "", attribute.Type, nodeLang, false, ResolveLinks);
+                        AttributeBuilder.Value.AddValue(entityAttributes, valName, "", attribute.Type, nodeLang, false,
+                            ResolveLinks);
                         continue;
                     }
 
                     // Check if reference to another language like "[ref(en-US,ro)]"
-                    var valueReferenceLanguage = AttributeLanguageImportHelper.GetLanguageInARefTextCode(value)?.ToLowerInvariant();
+                    var valueReferenceLanguage = AttributeLanguageImportHelper.GetLanguageInARefTextCode(value)
+                        ?.ToLowerInvariant();
 
                     // Case 3: Not a reference, normal value
                     if (valueReferenceLanguage == null) // It is not a value reference.. it is a normal text
                     {
                         try
                         {
-                            AttributeBuilder.Value.AddValueWIP(entity, valName, value, valType, nodeLang, false, ResolveLinks);
+                            AttributeBuilder.Value.AddValue(entityAttributes, valName, value, valType, nodeLang, false,
+                                ResolveLinks);
                         }
                         catch (FormatException)
                         {
-                            ErrorLog.Add(ImportErrorCode.InvalidValueFormat, $"{valName}:{valType}={value}", nodesCount);
+                            ErrorLog.Add(ImportErrorCode.InvalidValueFormat, $"{valName}:{valType}={value}",
+                                nodesCount);
                         }
+
                         continue;
                     }
 
                     // Case 4: Error - Reference without specific "ro" or "rw"
                     var valueReferenceProtection = AttributeLanguageImportHelper.GetValueReferenceProtection(value);
-                    if (valueReferenceProtection != XmlConstants.ReadWrite && valueReferenceProtection != XmlConstants.ReadOnly)
+                    if (valueReferenceProtection != XmlConstants.ReadWrite &&
+                        valueReferenceProtection != XmlConstants.ReadOnly)
                     {
                         ErrorLog.Add(ImportErrorCode.InvalidValueReferenceProtection, value, nodesCount);
                         continue;
                     }
+
                     var valueReadOnly = valueReferenceProtection == XmlConstants.ReadOnly;
 
                     // if this value is just a placeholder/reference to another value,
                     // then find the master/primary value, and add this language to it's language list
-                    var entityValue = AttributeLanguageImportHelper.ValueItemOfLanguageOrNull(entity.Attributes, valName, valueReferenceLanguage);
+                    var entityValue =
+                        AttributeLanguageImportHelper.ValueItemOfLanguageOrNull(entityAttributes, valName,
+                            valueReferenceLanguage);
                     if (entityValue.Value != null)
                     {
                         // 2023-02-24 2dm #immutable
                         // 2023-02-28 2dm As of now we have to clone to update the languages, and replace on the values list
                         // In future, we should move immutability "up" so this would go into a queue for values to create the final entity
-                        var updatedValue = entityValue.Value.Clone(entityValue.Value.Languages.ToImmutableList().Add(new Language(nodeLang, valueReadOnly)));
+                        var updatedValue = entityValue.Value.Clone(entityValue.Value.Languages.ToImmutableList()
+                            .Add(new Language(nodeLang, valueReadOnly)));
                         entityValue.Attribute.Values.Remove(entityValue.Value);
                         entityValue.Attribute.Values.Add(updatedValue);
                         continue;
@@ -211,7 +224,8 @@ namespace ToSic.Eav.Apps.ImportExport
                     }
 
                     var valExisting =
-                        ExportImportValueConversion.GetExactAssignedValue(existingEnt[attribute.Name], valueReferenceLanguage, null);
+                        ExportImportValueConversion.GetExactAssignedValue(existingEnt[attribute.Name],
+                            valueReferenceLanguage, null);
                     if (valExisting == null)
                     {
                         ErrorLog.Add(ImportErrorCode.InvalidValueReference, value, nodesCount);
@@ -220,23 +234,34 @@ namespace ToSic.Eav.Apps.ImportExport
 
                     // Just add the value (note 2023-02-28 2dm - not exactly sure how/why, assume it's the final-no-errors case)
                     //var val = 
-                    AttributeBuilder.Value.AddValueWIP(entity, valName,
+                    AttributeBuilder.Value.AddValue(entityAttributes, valName,
                         valExisting,
                         valType,
                         valueReferenceLanguage,
-                        valExisting.Languages.FirstOrDefault(l => l.Key == valueReferenceLanguage)?.ReadOnly ?? false,
+                        valExisting.Languages.FirstOrDefault(lang => lang.Key == valueReferenceLanguage)?.ReadOnly ?? false,
                         ResolveLinks,
                         additionalLanguageWip: new Language(nodeLang, valueReadOnly));
                     // 2023-02-24 2dm #immutable - moved to AddValue above
                     //val.Languages.Add(new Language (nodeLang, valueReadOnly));
 
-                    Log.A($"Nr. {nodesCount} ok");
+                    l.A($"Nr. {nodesCount} ok");
                 }
+
+                // entityAttributes was now updated, so we will either update/clone the existing entity, or create a new one
+                if (entityInImportQueue == null)
+                    AppendEntity(entityGuid, entityAttributes);
+                else
+                {
+                    var entityClone = _builder.Value.Entity.Clone(entityInImportQueue, values: entityAttributes);
+                    ImportEntities.Remove(entityInImportQueue);
+                    ImportEntities.Add(entityClone as Entity);
+                }
+
             }
 
-            Log.A($"Prepared {ImportEntities.Count} entities for import");
-            return callLog.ReturnTrue("done");
-        }
+            l.A($"Prepared {ImportEntities.Count} entities for import");
+            return (true, "done");
+        });
 
 
         /// <summary>

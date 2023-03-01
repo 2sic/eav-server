@@ -23,6 +23,10 @@ namespace ToSic.Eav.Generics
             var mutable = original.ToDictionary(pair => pair.Key, pair => pair.Value);
             return mutable.ToImmutableDictionary(InvariantCultureIgnoreCase);
         }
+        public static IDictionary<string, T> ToEditable<T>(this IReadOnlyDictionary<string, T> original)
+        {
+            return original.ToDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
+        }
 
         public static Dictionary<string, T> ToInvariant<T>(this Dictionary<string, T> original)
         {

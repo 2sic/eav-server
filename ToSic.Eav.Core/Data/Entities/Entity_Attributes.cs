@@ -13,7 +13,9 @@ namespace ToSic.Eav.Data
         private IReadOnlyDictionary<string, IAttribute> _attributes;
 
         [PrivateApi("WIP till immutable")]
-        public readonly IDictionary<string, IAttribute> _attributesRaw;
+        public IDictionary<string, IAttribute> _attributesRaw { get; }
+
+        public IDictionary<string, IAttribute> _attributesForClone => _attributesRaw;
 
         /// <summary>
         /// Temporary workaround as we're making the Attributes immutable

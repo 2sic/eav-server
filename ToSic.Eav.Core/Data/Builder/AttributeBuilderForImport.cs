@@ -38,15 +38,14 @@ namespace ToSic.Eav.Data.Builder
             object value, string valueType, string language = null, bool languageReadOnly = false,
             bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null,
             ILanguage additionalLanguageWip = default // 2023-02-28 2dm - added this for an edge case, should be cleaned up some day
-            )
+            ) => Log.Func($"..., {attributeName}, {value} ({valueType}), {language}, ..., {nameof(resolveHyperlink)}: {resolveHyperlink}", l =>
         {
-            var wrapLog = Log.Fn<IValue>($"..., {attributeName}, {value} ({valueType}), {language}, ..., {nameof(resolveHyperlink)}: {resolveHyperlink}");
             // pre-convert links if necessary...
             if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString() && value is string stringValue)
             {
-                Log.A($"Will resolve hyperlink for '{stringValue}'");
+                l.A($"Will resolve hyperlink for '{stringValue}'");
                 value = _valueConverter.Value.ToReference(stringValue);
-                Log.A($"New value: '{stringValue}'");
+                l.A($"New value: '{stringValue}'");
             }
 
             // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
@@ -88,8 +87,8 @@ namespace ToSic.Eav.Data.Builder
                 attrib.Values.Add(valueWithLanguages);
             }
 
-            return wrapLog.Return(valueWithLanguages);
-        }
+            return valueWithLanguages;
+        });
         #endregion
     }
 }

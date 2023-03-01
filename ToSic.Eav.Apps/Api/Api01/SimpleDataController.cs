@@ -152,15 +152,16 @@ namespace ToSic.Eav.Api.Api01
                 values.Remove(Attributes.EntityFieldOwner);
             }
 
+            // Find Guid from fields - a bit unclear why it's guaranteed to be here, probably was force-added before...
+            // A clearer implementation would be better
             var eGuid = Guid.Parse(values[Attributes.EntityFieldGuid].ToString());
-            var importEntity = _entityBuilder.Value.Create(appId: _appId, guid: eGuid, contentType: type, rawValues: new Dictionary<string, object>(), owner: owner, metadataFor: target);
-            if (target != null)
-            {
-                l.A("FYI: Set metadata target which was provided.");
-                //importEntity.SetMetadata(target);
-            }
 
+            // Prepare values to add
             var preparedValues = ConvertEntityRelations(values);
+
+            var importEntity = _entityBuilder.Value.Create(appId: _appId, guid: eGuid, contentType: type, rawValues: new Dictionary<string, object>(), owner: owner, metadataFor: target);
+            if (target != null) l.A("FYI: Set metadata target which was provided.");
+
             var draftAndBranch = AddValues(importEntity, type, preparedValues, _defaultLanguageCode, false, true,
                 existingIsPublished);
             return (importEntity, draftAndBranch);

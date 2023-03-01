@@ -187,7 +187,7 @@ namespace ToSic.Eav.Data.Builder
             var e = Create(
                 appId: appId ?? original.AppId,
                 rawValues: null,
-                values: values ?? originalEntity?._attributesRaw, // original.Attributes,
+                values: values ?? originalEntity?._attributesForClone, // original.Attributes,
                 entityId: id ?? original.EntityId,
                 repositoryId: repositoryId ?? original.RepositoryId,
                 guid: guid ?? original.EntityGuid,
