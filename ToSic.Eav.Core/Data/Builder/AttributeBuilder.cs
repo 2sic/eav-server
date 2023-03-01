@@ -49,6 +49,8 @@ namespace ToSic.Eav.Data.Builder
         // Note: ATM it makes a deep clone, but once everything is #immutable that won't be necessary any more
         public Dictionary<string, IAttribute> ListDeepClone(IDictionary<string, IAttribute> attributes) 
             => attributes?.ToDictionary(pair => pair.Key, pair => CloneUpdateOne(pair.Value), InvariantCultureIgnoreCase);
+        public Dictionary<string, IAttribute> ListDeepClone(IReadOnlyDictionary<string, IAttribute> attributes) 
+            => attributes?.ToDictionary(pair => pair.Key, pair => CloneUpdateOne(pair.Value), InvariantCultureIgnoreCase);
 
         public IAttribute CloneUpdateOne(IAttribute original, IList<IValue> values = null)
             => CreateTyped(original.Name, original.Type,

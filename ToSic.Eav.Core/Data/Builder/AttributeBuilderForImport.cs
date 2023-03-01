@@ -16,6 +16,18 @@ namespace ToSic.Eav.Data.Builder
         }
         private readonly LazySvc<IValueConverter> _valueConverter;
 
+        public IEntity AddValueWIP(IEntity entity, string attributeName,
+            object value, string valueType, string language = null, bool languageReadOnly = false,
+            bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null,
+            ILanguage additionalLanguageWip =
+                default // 2023-02-28 2dm - added this for an edge case, should be cleaned up some day
+        )
+        {
+            var temp = AddValue((entity as Entity)._attributesRaw, attributeName, value, valueType, language,
+                languageReadOnly, resolveHyperlink, allEntitiesForRelationships, additionalLanguageWip);
+            return entity;
+        }
+
 
         #region Helper to add a value with languages to an existing list of Attributes
         /// <summary>
@@ -57,7 +69,11 @@ namespace ToSic.Eav.Data.Builder
 
 
             // add or replace to the collection
-            var attrExists = target.Where(item => item.Key == attributeName).Select(item => item.Value).FirstOrDefault();
+            var attrExists = target
+                .Where(item => item.Key == attributeName)
+                .Select(item => item.Value)
+                .FirstOrDefault();
+
             if (attrExists == null)
             {
                 var newAttr = CreateTyped(attributeName, valueType, new List<IValue> { valueWithLanguages });

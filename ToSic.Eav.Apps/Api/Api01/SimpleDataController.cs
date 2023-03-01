@@ -270,7 +270,7 @@ namespace ToSic.Eav.Api.Api01
                 var attribute = contentType[keyValuePair.Key];
                 if (attribute != null && keyValuePair.Value != null)
                 {
-                    AttributeBuilder.Value.AddValue(entity.Attributes, attribute.Name, keyValuePair.Value,
+                    AttributeBuilder.Value.AddValueWIP(entity, attribute.Name, keyValuePair.Value,
                         attribute.Type, valuesLanguage, valuesReadOnly, resolveHyperlink);
                     l.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({attribute.Type})");
                 }

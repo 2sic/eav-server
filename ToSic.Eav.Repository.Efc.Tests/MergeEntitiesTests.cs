@@ -414,7 +414,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             // Merge keeping all and remove unknown attributes
             var merged = _entitySaver.TestCreateMergedForSaving(GirlSingle, GirlMarried, _saveKeepAndClean);
-            var expectedFields = GirlSingle.Attributes.Keys;// GirlSingle.Attributes.Keys.Concat(GirlMarried.Attributes.Keys).Distinct().ToList();
+            var expectedFields = GirlSingle.Attributes.Keys.ToList();// GirlSingle.Attributes.Keys.Concat(GirlMarried.Attributes.Keys).Distinct().ToList();
             Assert.IsNotNull(merged, "result should never be null");
             Assert.IsTrue(expectedFields.Count <= merged.Attributes.Count 
                 && GirlSingle.Type.Attributes.Count >= merged.Attributes.Count, "should have only ct-field count except the un-used one");

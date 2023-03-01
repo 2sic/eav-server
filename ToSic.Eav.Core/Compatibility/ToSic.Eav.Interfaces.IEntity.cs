@@ -59,7 +59,7 @@ namespace ToSic.Eav.Interfaces
         /// <summary>
         /// All the attributes of the current Entity.
         /// </summary>
-        IDictionary<string, IAttribute> Attributes { get; }
+        IReadOnlyDictionary<string, IAttribute> Attributes { get; }
 
         /// <summary>
         /// Gets the "official" Title-Attribute <see cref="IAttribute{T}"/>

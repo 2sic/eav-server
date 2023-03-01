@@ -158,7 +158,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     // Case 2: Xml empty string
                     if (value == XmlConstants.Empty)
                     {
-                        AttributeBuilder.Value.AddValue(entity.Attributes, valName, "", attribute.Type, nodeLang, false, ResolveLinks);
+                        AttributeBuilder.Value.AddValueWIP(entity, valName, "", attribute.Type, nodeLang, false, ResolveLinks);
                         continue;
                     }
 
@@ -170,7 +170,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         try
                         {
-                            AttributeBuilder.Value.AddValue(entity.Attributes, valName, value, valType, nodeLang, false, ResolveLinks);
+                            AttributeBuilder.Value.AddValueWIP(entity, valName, value, valType, nodeLang, false, ResolveLinks);
                         }
                         catch (FormatException)
                         {
@@ -219,13 +219,14 @@ namespace ToSic.Eav.Apps.ImportExport
                     }
 
                     // Just add the value (note 2023-02-28 2dm - not exactly sure how/why, assume it's the final-no-errors case)
-                    var val = AttributeBuilder.Value.AddValue(entity.Attributes, valName,
-                            valExisting,
-                            valType,
-                            valueReferenceLanguage,
-                            valExisting.Languages.FirstOrDefault(l => l.Key == valueReferenceLanguage)?.ReadOnly ?? false,
-                            ResolveLinks,
-                            additionalLanguageWip: new Language(nodeLang, valueReadOnly));
+                    //var val = 
+                    AttributeBuilder.Value.AddValueWIP(entity, valName,
+                        valExisting,
+                        valType,
+                        valueReferenceLanguage,
+                        valExisting.Languages.FirstOrDefault(l => l.Key == valueReferenceLanguage)?.ReadOnly ?? false,
+                        ResolveLinks,
+                        additionalLanguageWip: new Language(nodeLang, valueReadOnly));
                     // 2023-02-24 2dm #immutable - moved to AddValue above
                     //val.Languages.Add(new Language (nodeLang, valueReadOnly));
 

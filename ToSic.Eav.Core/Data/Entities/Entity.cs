@@ -35,7 +35,7 @@ namespace ToSic.Eav.Data
             : base(appId, entityId, guid, contentType, partsBuilder, rawValues, titleFieldName, created: created, modified: modified, owner: owner, metadataFor: metadataFor)
         {
             IsLight = rawValues != null;
-            Attributes = values;
+            _attributesRaw = values;
             RepositoryId = repositoryId;
             Version = version;
             IsPublished = isPublished;

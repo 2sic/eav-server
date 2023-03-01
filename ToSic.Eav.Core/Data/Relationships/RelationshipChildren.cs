@@ -10,13 +10,13 @@ namespace ToSic.Eav.Data
     [PrivateApi("this is for the Relationship.Children API, not recommended for others")]
     public class RelationshipChildren : IRelationshipChildren
     {
-        private readonly IDictionary<string, IAttribute> _attributes;
+        private readonly IReadOnlyDictionary<string, IAttribute> _attributes;
 
         /// <summary>
         /// Initializes a new instance of the Children class.
         /// </summary>
         /// <param name="attributes"></param>
-        internal RelationshipChildren(IDictionary<string, IAttribute> attributes)
+        internal RelationshipChildren(IReadOnlyDictionary<string, IAttribute> attributes)
         {
             _attributes = attributes;
         }

@@ -60,7 +60,7 @@ namespace ToSic.Eav.Data.Builder
             return new Entity(appId, entityId, repositoryId: repositoryId,
                 partsBuilder: partsBuilder, 
                 contentType: contentType,
-                rawValues: rawValues?.ToImmutableDictionary(), values: values,
+                rawValues: rawValues?.ToImmutableDictionary(InvariantCultureIgnoreCase), values: values,
                 guid: guid, titleFieldName: titleField,
                 created: created, modified: modified, owner: owner,
                 version: version, isPublished: isPublished,
@@ -187,7 +187,7 @@ namespace ToSic.Eav.Data.Builder
             var e = Create(
                 appId: appId ?? original.AppId,
                 rawValues: null,
-                values: values ?? original.Attributes,
+                values: values ?? originalEntity?._attributesRaw, // original.Attributes,
                 entityId: id ?? original.EntityId,
                 repositoryId: repositoryId ?? original.RepositoryId,
                 guid: guid ?? original.EntityGuid,
