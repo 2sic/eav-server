@@ -65,25 +65,30 @@ namespace ToSic.Eav.DataSources
 
             // Prepare - figure out the parent IDs and Reference to Parent ID
             var withKeys = clones
-                .Select(e => new
+                .Select(e =>
                 {
-                    Set = new NewEntitySet<string>("dummy", e),
-                    OwnId = GetTypedKeyOrDefault<TKey>(e, parentIdField),
-                    RelatedId = GetTypedKeyOrDefault<TKey>(e, childToParentRefField),
+                    var ownId = GetTypedKeyOrDefault<TKey>(e, parentIdField);
+                    var relatedId = GetTypedKeyOrDefault<TKey>(e, childToParentRefField);
+                    return new NewEntitySet<(TKey OwnId, TKey RelatedId)>((ownId, relatedId), e);
+                    //{
+                    //    Set = new NewEntitySet<(TKey OwnId, TKey RelatedId)>((ownId, relatedId), e),
+                    //    OwnId = ownId,
+                    //    RelatedId = relatedId,
+                    //};
                 })
                 .ToList();
 
             // Assign parents to children
-            AddRelationshipField(newParentField, 
-                withKeys.Select(set => (set.Set, new List<TKey> { set.RelatedId })).ToList(), 
-                withKeys.ToLookup(s => s.OwnId,  s => s.Set.Entity));
+            withKeys = AddRelationshipField(newParentField, 
+                withKeys.Select(s => (s, new List<TKey> { s.Original.RelatedId })).ToList(), 
+                withKeys.ToLookup(s => s.Original.OwnId,  s => s.Entity));
 
-            AddRelationshipField(newChildrenField, 
-                withKeys.Select(set => (set.Set, new List<TKey> { set.OwnId })).ToList(),
-                withKeys.ToLookup(s => s.RelatedId, s => s.Set.Entity));
+            withKeys = AddRelationshipField(newChildrenField, 
+                withKeys.Select(s => (s, new List<TKey> { s.Original.OwnId })).ToList(),
+                withKeys.ToLookup(s => s.Original.RelatedId, s => s.Entity));
 
 
-            var result = withKeys.Select(set => set.Set.Entity);
+            var result = withKeys.Select(set => set.Entity);
             
             return result.ToImmutableArray();
         });
