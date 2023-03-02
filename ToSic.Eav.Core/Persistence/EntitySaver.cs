@@ -132,7 +132,10 @@ namespace ToSic.Eav.Persistence
                         : newAttrib.Value;
 
             var preCleaned = CorrectPublishedAndGuidImports(mergedAttribs, logDetails);
-            var clone = _multiBuilder.Entity.Clone(idProvidingEntity, id: newId, guid: preCleaned.NewGuid, type: newType, values: preCleaned.Attributes, isPublished: preCleaned.NewIsPublished);
+            var clone = _multiBuilder.Entity.Clone(idProvidingEntity, id: newId, guid: preCleaned.NewGuid,
+                type: newType,
+                attributes: _multiBuilder.Attribute.Create(preCleaned.Attributes),
+                isPublished: preCleaned.NewIsPublished);
             //var result = CorrectPublishedAndGuidImports(clone, clone.Attributes, logDetails); // as Entity;
             return (clone, "ok");
         });

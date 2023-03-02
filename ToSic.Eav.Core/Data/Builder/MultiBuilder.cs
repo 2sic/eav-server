@@ -52,7 +52,7 @@ namespace ToSic.Eav.Data.Builder
         public IEntity FullClone(IEntity entity)
         {
             return Entity.Clone(entity,
-                values: Attribute.ListDeepCloneOrNull(entity.Attributes.ToEditable()));
+                attributes: Attribute.ListDeepCloneOrNull(entity.Attributes.ToEditable()));
         }
         
 

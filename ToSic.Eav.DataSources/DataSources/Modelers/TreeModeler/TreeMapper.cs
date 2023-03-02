@@ -99,7 +99,7 @@ namespace ToSic.Eav.DataSources
                 attributes = AddRelationships(attributes, newField, lookup, setNeedsBundle.NeedsIds, useNumber,
                     $"Entity: {target.EntityId}/{target.EntityGuid}");
                 return new NewEntitySet<TNewEntity>(setNeedsBundle.set.Original,
-                    _builder.Entity.Clone(target, valuesInvariant: _builder.Attribute.Create(attributes)));
+                    _builder.Entity.Clone(target, attributes: _builder.Attribute.Create(attributes)));
             });
             return result.ToList();
         }

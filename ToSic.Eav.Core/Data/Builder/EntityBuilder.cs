@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
 
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
@@ -135,8 +134,7 @@ namespace ToSic.Eav.Data.Builder
             IEntity original,
             string noParamOrder = Parameters.Protector,
             int? appId = default,
-            IDictionary<string, IAttribute> values = default,
-            IImmutableDictionary<string, IAttribute> valuesInvariant = default,
+            IImmutableDictionary<string, IAttribute> attributes = default,
             int? id = default,
             int? repositoryId = default,
             Guid? guid = default,
@@ -164,11 +162,11 @@ namespace ToSic.Eav.Data.Builder
                     : EntityPartsBuilder.CloneMetadataFunc<Guid>(original.Metadata)
             );
 
-            valuesInvariant = valuesInvariant ?? values?.ToImmutableInvariant() ?? originalEntity.Attributes;
+            attributes = attributes ?? originalEntity.Attributes;
 
             var e = Create(
                 appId: appId ?? original.AppId,
-                attributes: valuesInvariant, 
+                attributes: attributes, 
                 entityId: id ?? original.EntityId,
                 repositoryId: repositoryId ?? original.RepositoryId,
                 guid: guid ?? original.EntityGuid,
@@ -190,51 +188,5 @@ namespace ToSic.Eav.Data.Builder
             return e;
         }
 
-
-        #region Entity Pre-Save - TODO WIP 
-        // 1. first make sure all the calls are here, and return the _same_ entity
-        // 2. Then make sure the caller always uses the result, not the original entity
-        // 3. Then enforce cloning
-
-        //public IEntity ResetIdentifiers(
-        //    IEntity entity,
-        //    string noParamOrder = Parameters.Protector,
-        //    Guid? newGuid = default,
-        //    int? newId = default,
-        //    ITarget metadataFor = default,
-        //    bool? isPublished = default
-        //    //bool? placeDraftInBranch = default,
-        //    //int? version = default,
-        //    //int? publishedId = default
-        //    )
-        //{
-        //    var editable = (Entity)entity; // todo: clone
-        //    if (newGuid != null) editable.EntityGuid = newGuid.Value;
-        //    if (isPublished != null) editable.IsPublished = isPublished.Value;
-        //    //if (placeDraftInBranch != null) editable.PlaceDraftInBranch = placeDraftInBranch.Value;
-        //    if (metadataFor != default) editable.MetadataFor = metadataFor;
-        //    //if (version != default) editable.Version = version.Value;
-        //    if (newId != default) editable.EntityId = newId.Value;
-        //    //if (publishedId != default) editable.PublishedEntityId = publishedId.Value;
-
-        //    if (newId != null)
-        //    {
-        //        editable.RepositoryId = newId.Value;//note: this was not in before, could cause side-effects
-        //    }
-
-        //    return entity;
-        //}
-
-        #endregion
-
-
-        // WIP - when done move elsewhere and probably rename
-        public enum CloneRelationships
-        {
-            Unknown = 0,
-            UseOriginalList = 1,
-            GetFromApp = 2,
-            NoRelationships,
-        }
     }
 }

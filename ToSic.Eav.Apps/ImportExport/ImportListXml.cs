@@ -255,7 +255,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     // note: I'm not sure if this should ever happen, if the same entity already exists
                     // in the ImportEntities list. But because there is a check if it's already in there
                     // which was from 2017 or before, I'll leave it in for now
-                    var entityClone = _builder.Entity.Clone(entityInImportQueue, valuesInvariant: _builder.Attribute.Create(entityAttributes));
+                    var entityClone = _builder.Entity.Clone(entityInImportQueue, attributes: _builder.Attribute.Create(entityAttributes));
                     ImportEntities.Remove(entityInImportQueue);
                     ImportEntities.Add(entityClone as Entity);
                 }

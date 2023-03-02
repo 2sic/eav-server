@@ -147,7 +147,7 @@ namespace ToSic.Eav.DataSources
                 .Select(entity =>
                 {
                     var values = CreateDic(entity);
-                    return _multiBuilder.Entity.Clone(entity, valuesInvariant: _multiBuilder.Attribute.Create(values), type: newType);
+                    return _multiBuilder.Entity.Clone(entity, attributes: _multiBuilder.Attribute.Create(values), type: newType);
                 })
                 .ToImmutableArray();
 

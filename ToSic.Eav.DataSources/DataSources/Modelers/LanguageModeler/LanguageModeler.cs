@@ -152,7 +152,7 @@ namespace ToSic.Eav.DataSources
                         attributes.Add(map.Target, newAttribute);
                     }
 
-                var modifiedEntity = _multiBuilder.Entity.Clone(entity, valuesInvariant: _multiBuilder.Attribute.Create(attributes));
+                var modifiedEntity = _multiBuilder.Entity.Clone(entity, attributes: _multiBuilder.Attribute.Create(attributes));
 
                 result.Add(modifiedEntity);
             }
