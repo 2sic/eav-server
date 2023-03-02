@@ -73,7 +73,10 @@ namespace ToSic.Eav.Data.Builder
         /// <summary>
         /// Create a new Entity from a data store (usually SQL backend)
         /// </summary>
-        public Entity EntityFromRepository(int appId, Guid entityGuid, int entityId, 
+        public Entity EntityFromRepository(
+            int appId,
+            Guid entityGuid,
+            int entityId, 
             int repositoryId, 
             ITarget metadataFor, 
             IContentType type, 
@@ -85,11 +88,10 @@ namespace ToSic.Eav.Data.Builder
             int version,
             string titleField = default,
             IImmutableDictionary<string, IAttribute> attributes = default,
-            List<IEntity> metadataItems = default,
-            EntityPartsBuilder partsBuilder = default
+            List<IEntity> metadataItems = default
             )
         {
-            partsBuilder = partsBuilder ?? new EntityPartsBuilder(
+            var partsBuilder = new EntityPartsBuilder(
                 entity => new RelationshipManager(entity, source, null),
                 getMetadataOf: metadataItems != default
                     ? EntityPartsBuilder.CreateMetadataOfItems(metadataItems)

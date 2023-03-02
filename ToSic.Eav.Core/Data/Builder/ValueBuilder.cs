@@ -138,5 +138,7 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         internal Value<IEnumerable<IEntity>> NewEmptyRelationship
             => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null), DimensionBuilder.NoLanguages);
+
+        internal List<IValue> NewEmptyRelationshipValues => new List<IValue> { NewEmptyRelationship };
     }
 }

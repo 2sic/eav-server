@@ -92,12 +92,11 @@ namespace ToSic.Eav.Data.Builder
                 case ValueTypes.Number:
                     return new Attribute<decimal?>(name, typeName, values);
                 case ValueTypes.Entity:
+                    // Note 2023-02-24 2dm - up until now the values were never used
+                    // in this case, so relationships created here were always empty
+                    // Could break something, but I don't think it will
                     return new Attribute<IEnumerable<IEntity>>(name, typeName,
-                        // Note 2023-02-24 2dm - up until now the values were never used
-                        // in this case, so relationships created here were always empty
-                        // Could break something, but I don't think it will
-                        values 
-                        ?? new List<IValue> { ValueBuilder.NewEmptyRelationship });
+                        values?.Any() == true ? values : ValueBuilder.NewEmptyRelationshipValues);
                 // ReSharper disable RedundantCaseLabel
                 case ValueTypes.String:
                 case ValueTypes.Hyperlink:
