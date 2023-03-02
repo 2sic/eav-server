@@ -9,7 +9,6 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -17,13 +16,13 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// query manager to work with queries
     /// </summary>
-    public class QueryManager: PartOf<AppManager>
+    public partial class QueryManager: PartOf<AppManager>
     {
-        private readonly LazySvc<MultiBuilder> _multiBuilder;
+        private readonly LazySvc<MultiBuilder> _builder;
 
         public QueryManager(
             LazySvc<SystemManager> systemManagerLazy,
-            LazySvc<MultiBuilder> multiBuilder,
+            LazySvc<MultiBuilder> builder,
             LazySvc<ValueBuilder> valueBuilder,
             LazySvc<JsonSerializer> jsonSerializer,
             LazySvc<Eav.DataSources.Queries.QueryManager> queryManager
@@ -32,7 +31,7 @@ namespace ToSic.Eav.Apps.Parts
             ConnectServices(
                 _systemManagerLazy = systemManagerLazy,
                 _valueBuilder = valueBuilder,
-                _multiBuilder = multiBuilder,
+                _builder = builder,
                 Serializer = jsonSerializer.SetInit(j => j.SetApp(Parent.AppState)),
                 _queryManager = queryManager
             );
@@ -42,72 +41,6 @@ namespace ToSic.Eav.Apps.Parts
         private LazySvc<JsonSerializer> Serializer { get; }
         private readonly LazySvc<Eav.DataSources.Queries.QueryManager> _queryManager;
 
-        public void SaveCopy(int id) => SaveCopy(Parent.Read.Queries.Get(id));
-
-        public void SaveCopy(QueryDefinition query)
-        {
-            var newQuery = CopyAndResetIds(query.Entity);
-            var parts = query.Parts;
-            var newParts = parts.ToDictionary(o => o.Guid, o => CopyAndResetIds(o.Entity, newQuery.EntityGuid));
-
-            var origMetadata = parts
-                .ToDictionary(o => o.Guid, o => o.Entity.Metadata.FirstOrDefault())
-                .Where(m => m.Value != null);
-
-            var newMetadata = origMetadata.Select(o => CopyAndResetIds(o.Value, newParts[o.Key].EntityGuid));
-
-            // now update wiring...
-            var origWiring = query.Connections;
-            var keyMap = newParts.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value.EntityGuid.ToString());
-            var newWiring = RemapWiringToCopy(origWiring, keyMap);
-
-            newQuery.Attributes[Constants.QueryStreamWiringAttributeName].Values = new List<IValue>
-            {
-                _valueBuilder.Value.Build(ValueTypes.String, newWiring, DimensionBuilder.NoLanguages)
-            };
-
-            var saveList = newParts.Select(p => p.Value).Concat(newMetadata).ToList();
-            saveList.Add(newQuery);
-            Parent.Entities.Save(saveList);
-        }
-
-
-        private static string RemapWiringToCopy(IList<Connection> origWiring, Dictionary<string, string> keyMap)
-        {
-            var wiringsSource = origWiring;
-            var wiringsClone = new List<Connection>();
-            if (wiringsSource != null)
-                foreach (var wireInfo in wiringsSource)
-                {
-                    var wireInfoClone = wireInfo; // creates a clone of the Struct
-                    if (keyMap.ContainsKey(wireInfo.From))
-                        wireInfoClone.From = keyMap[wireInfo.From];
-                    if (keyMap.ContainsKey(wireInfo.To))
-                        wireInfoClone.To = keyMap[wireInfo.To];
-
-                    wiringsClone.Add(wireInfoClone);
-                }
-            var newWiring = Connections.Serialize(wiringsClone);
-            return newWiring;
-        }
-
-        private IEntity CopyAndResetIds(IEntity original, Guid? newMetadataTarget = null)
-        {
-            var newSer = Serializer.Value.Serialize(original);
-            var newEnt = Serializer.Value.Deserialize(newSer);
-
-            // TODO: NOTE - here a clean clone/copy should be ok
-            newEnt = _multiBuilder.Value.Entity.Clone(newEnt,
-                guid: Guid.NewGuid(),
-                id: 0,
-                target: newMetadataTarget == null ? null : new Target(original.MetadataFor, keyGuid: newMetadataTarget.Value)
-            ); // as Entity;
-            //newEnt.SetGuid(Guid.NewGuid());
-            //newEnt.ResetEntityId();
-            //if(newMetadataTarget != null)
-                //newEnt.Retarget(newMetadataTarget.Value);
-            return newEnt;
-        }
 
         public bool Delete(int id)
         {
