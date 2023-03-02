@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data.Builder
@@ -102,9 +103,8 @@ namespace ToSic.Eav.Data.Builder
 
         private static List<Guid?> GuidCsvToList(object value)
         {
-            var stringValue = value as string;
             var entityIdEnum = value as IEnumerable; // note: strings are also enum!
-            if (value is string && !String.IsNullOrEmpty(stringValue))
+            if (value is string stringValue && stringValue.HasValue())
                 entityIdEnum = stringValue.Split(',').ToList();
             // this is the case when we get a CSV-string with GUIDs
             var entityGuids = entityIdEnum?.Cast<object>().Select(x =>
@@ -115,7 +115,7 @@ namespace ToSic.Eav.Data.Builder
                     return new Guid?();
                 var guid = Guid.Parse(v);
                 return guid == Guid.Empty ? new Guid?() : guid;
-            }).ToList() ?? new List<Guid?>(0);
+            }).ToList() ?? new List<Guid?>();
             return entityGuids;
         }
 
@@ -126,7 +126,7 @@ namespace ToSic.Eav.Data.Builder
         /// ...and then it must be a new object every time, 
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
-        internal Value<IEnumerable<IEntity>> NewEmptyRelationship
+        private Value<IEnumerable<IEntity>> NewEmptyRelationship
             => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null), DimensionBuilder.NoLanguages);
 
         internal IImmutableList<IValue> NewEmptyRelationshipValues => new List<IValue> { NewEmptyRelationship }.ToImmutableList();

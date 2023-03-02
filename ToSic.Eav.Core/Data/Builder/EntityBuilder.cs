@@ -43,8 +43,7 @@ namespace ToSic.Eav.Data.Builder
             int publishedId = default
             )
         {
-            Eav.Parameters.ProtectAgainstMissingParameterNames(noParamOrder);
-            var typedValues = attributes ?? Attribute.EmptyList();
+            Parameters.ProtectAgainstMissingParameterNames(noParamOrder);
 
             // If repositoryId isn't known set it it to EntityId
             repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
@@ -59,11 +58,14 @@ namespace ToSic.Eav.Data.Builder
                 partsBuilder: partsBuilder, 
                 contentType: contentType,
                 rawValues: null,
-                values: typedValues,
+                values: attributes ?? Attribute.EmptyList(),
                 guid: guid,
                 titleFieldName: titleField,
-                created: created, modified: modified, owner: owner,
-                version: version, isPublished: isPublished,
+                created: created,
+                modified: modified,
+                owner: owner,
+                version: version,
+                isPublished: isPublished,
                 metadataFor: metadataFor,
                 placeDraftInBranch: placeDraftInBranch,
                 publishedId: publishedId);
@@ -98,10 +100,9 @@ namespace ToSic.Eav.Data.Builder
                     : EntityPartsBuilder.CreateMetadataOfAppSources(source)
             );
 
-            var e = Create(
+            return Create(
                 appId: appId,
                 attributes: attributes,
-                //valuesToBeRemoved: values,
                 guid: entityGuid, entityId: entityId, repositoryId: repositoryId,
                 contentType: type, titleField: titleField,
                 created: created, modified: modified,
@@ -109,24 +110,21 @@ namespace ToSic.Eav.Data.Builder
                 metadataFor: metadataFor,
                 partsBuilder: partsBuilder
             );
-
-            return e;
         }
 
         /// <summary>
         /// Create an empty entity of a specific type.
         /// Usually used in edit scenarios, where the presentation doesn't exist yet
         /// </summary>
-        public Entity EmptyOfType(int appId, Guid entityGuid, int entityId, IContentType type)
-        {
-            var attributes = Attribute.GenerateAttributesOfContentType(type, null);
-            return Create(appId: appId,
-                entityId: entityId, guid: entityGuid,
+        public Entity EmptyOfType(int appId, Guid entityGuid, int entityId, IContentType type) =>
+            Create(appId: appId,
+                entityId: entityId,
+                guid: entityGuid,
                 contentType: type,
-                attributes: attributes,
-                created: DateTime.MinValue, modified: DateTime.Now, 
+                attributes: Attribute.GenerateAttributesOfContentType(type, null),
+                created: DateTime.MinValue,
+                modified: DateTime.Now, 
                 owner: "");
-        }
 
         /// <summary>
         /// Create a new Entity based on an Entity and Attributes

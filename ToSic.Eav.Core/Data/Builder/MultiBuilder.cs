@@ -59,9 +59,9 @@ namespace ToSic.Eav.Data.Builder
         public IEntity FakeEntity(int appId)
             => _entityBuilder.Value.Create(
                 appId: appId,
-                attributes: Attribute.Create(new Dictionary<string, object> { { Data.Attributes.TitleNiceName, "" } }),
+                attributes: Attribute.Create(new Dictionary<string, object> { { Attributes.TitleNiceName, "" } }),
                 contentType: ContentType.Transient("FakeEntity"),
-                titleField: Data.Attributes.TitleNiceName
+                titleField: Attributes.TitleNiceName
             );
 
     }
