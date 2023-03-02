@@ -21,7 +21,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public Attribute(string name, string type, IList<IValue> values = null) : base(name, type)
         {
-            Values = values ?? new List<IValue>();
+            Values = (values ?? new List<IValue>()).ToImmutableList();
         }
 
         [PrivateApi]
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Data
         }
 
         /// <inheritdoc/>
-        public IList<IValue> Values { get; set; }
+        public IReadOnlyList<IValue> Values { get; }
 
         /// <inheritdoc/>
         public T TypedContents

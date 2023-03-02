@@ -121,8 +121,9 @@ namespace ToSic.Eav.DataSources
             var childGuids = keyIsNumeric // typeof(TKey).IsNumeric()
                 ? related.Select(e => e.EntityId).ToList() as object
                 : related.Select(e => e.EntityGuid).ToList();
-            _builder.AttributeImport.AddValue(attributes, newFieldName, childGuids, DataTypes.Entity,
-                null, false, false, new DirectEntitiesSource(related));
+            var newAttribute = _builder.AttributeImport.CreateAttribute(attributes, newFieldName, childGuids, DataTypes.Entity,
+                null, allEntitiesForRelationships: new DirectEntitiesSource(related));
+            attributes = _builder.AttributeImport.UpdateAttribute(attributes, newAttribute);
 
             // Log
             return (attributes, $"added {related.Count} items");

@@ -161,8 +161,8 @@ namespace ToSic.Eav.Apps.ImportExport
                     // Case 2: Xml empty string
                     if (value == XmlConstants.Empty)
                     {
-                        AttributeBuilder.Value.AddValue(entityAttributes, valName, "", attribute.Type, nodeLang, false,
-                            ResolveLinks);
+                        var emptyAttribute = AttributeBuilder.Value.CreateAttribute(entityAttributes, valName, "", attribute.Type, nodeLang);
+                        entityAttributes = AttributeBuilder.Value.UpdateAttribute(entityAttributes, emptyAttribute);
                         continue;
                     }
 
@@ -175,8 +175,10 @@ namespace ToSic.Eav.Apps.ImportExport
                     {
                         try
                         {
-                            AttributeBuilder.Value.AddValue(entityAttributes, valName, value, valType, nodeLang, false,
-                                ResolveLinks);
+                            var preConverted = _builder.AttributeImport.PreConvertReferences(value, attribute.Type, ResolveLinks);
+                            var valRefAttribute = AttributeBuilder.Value.CreateAttribute(entityAttributes, valName, preConverted, valType, nodeLang);
+                            entityAttributes = AttributeBuilder.Value.UpdateAttribute(entityAttributes, valRefAttribute);
+
                         }
                         catch (FormatException)
                         {
@@ -187,7 +189,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         continue;
                     }
 
-                    // Case 4: Error - Reference without specific "ro" or "rw"
+                    // Case 4: It is a reference - but Error - Reference without specific "ro" or "rw"
                     var valueReferenceProtection = AttributeLanguageImportHelper.GetValueReferenceProtection(value);
                     if (valueReferenceProtection != XmlConstants.ReadWrite &&
                         valueReferenceProtection != XmlConstants.ReadOnly)
@@ -210,8 +212,13 @@ namespace ToSic.Eav.Apps.ImportExport
                         // In future, we should move immutability "up" so this would go into a queue for values to create the final entity
                         var updatedValue = entityValue.Value.Clone(entityValue.Value.Languages.ToImmutableList()
                             .Add(new Language(nodeLang, valueReadOnly)));
-                        entityValue.Attribute.Values.Remove(entityValue.Value);
-                        entityValue.Attribute.Values.Add(updatedValue);
+                        var newValues = AttributeBuilder.Value.ReplaceValue(entityValue.Attribute.Values,
+                            entityValue.Value, updatedValue);
+                        var newAttribute = AttributeBuilder.Value.CloneUpdateOne(entityValue.Attribute, newValues.ToList());
+                        entityAttributes = AttributeBuilder.Value.UpdateAttribute(entityAttributes, newAttribute);
+                        //entityValue.Attribute.Values = dummy - fix;
+                        //entityValue.Attribute.Values.Remove(entityValue.Value);
+                        //entityValue.Attribute.Values.Add(updatedValue);
                         continue;
                     }
 
@@ -223,8 +230,8 @@ namespace ToSic.Eav.Apps.ImportExport
                         continue;
                     }
 
-                    var valExisting =
-                        ExportImportValueConversion.GetExactAssignedValue(existingEnt[attribute.Name],
+                    var attrExisting = existingEnt[attribute.Name];
+                    var valExisting = ExportImportValueConversion.GetExactAssignedValue(attrExisting,
                             valueReferenceLanguage, null);
                     if (valExisting == null)
                     {
@@ -232,18 +239,38 @@ namespace ToSic.Eav.Apps.ImportExport
                         continue;
                     }
 
-                    // Just add the value (note 2023-02-28 2dm - not exactly sure how/why, assume it's the final-no-errors case)
-                    //var val = 
-                    AttributeBuilder.Value.AddValue(entityAttributes, valName,
-                        valExisting,
-                        valType,
-                        valueReferenceLanguage,
-                        valExisting.Languages.FirstOrDefault(lang => lang.Key == valueReferenceLanguage)?.ReadOnly ?? false,
-                        ResolveLinks,
-                        additionalLanguageWip: new Language(nodeLang, valueReadOnly));
-                    // 2023-02-24 2dm #immutable - moved to AddValue above
-                    //val.Languages.Add(new Language (nodeLang, valueReadOnly));
+                    #region 2024-03-02 2dm Section I completely rewrote incl. old code
+                    // Note that the purpose of this code is not very clear, so I have to guess a bit
+                    // as I'm rewriting it.
 
+                    // 2023-02-24 2dm - old code for reference if something fails - remove ca. 2023Q2
+                    // Note that according to my analysis, it would not have done anything useful
+                    // Internally it would have gotteth the IValue (valExisting) to create a node
+                    // It would then try to create a Value<string> or whatever, but can't cast the IValue to the real thing
+                    // I'll try to fix it below, but it's not sure if it will result in anything useful.
+                    //var val = AttributeBuilder.Value.AddValue(entity.Attributes, valName,
+                    //    valExisting,
+                    //    valType,
+                    //    valueReferenceLanguage,
+                    //    valExisting.Languages.FirstOrDefault(l => l.Key == valueReferenceLanguage)?.ReadOnly ?? false,
+                    //    ResolveLinks);
+                    //val.Languages.Add(new Language(nodeLang, valueReadOnly));
+
+                    // Just add the value. Note 2023-02-28 2dm - not exactly sure how/why, assume it's the final-no-errors case
+                    var langShouldBeReadOnly = valExisting.Languages
+                        .FirstOrDefault(lang => lang.Key == valueReferenceLanguage)?.ReadOnly ?? false;
+                    var valueLanguages = AttributeBuilder.Value.GetBestValueLanguages(valueReferenceLanguage, langShouldBeReadOnly)
+                                         ?? new List<ILanguage>();
+                    valueLanguages.Add(new Language(nodeLang, valueReadOnly));
+                    // update languages on valExisting
+                    var updatedValue2 = AttributeBuilder.Value.UpdateLanguages(valExisting, valueLanguages);
+                    // TODO: update/replace value in existingEnt[attribute.Name]
+                    var values2 = AttributeBuilder.Value.ReplaceValue(attrExisting.Values, valExisting, updatedValue2);
+                    var attribute2 = AttributeBuilder.Value.CloneUpdateOne(attrExisting, values2.ToList());
+                    entityAttributes = AttributeBuilder.Value.UpdateAttribute(entityAttributes, attribute2);
+
+
+                    #endregion
                     l.A($"Nr. {nodesCount} ok");
                 }
 

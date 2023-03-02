@@ -198,7 +198,7 @@ namespace ToSic.Eav.Persistence
             return modified;
         });
 
-        private static IList<IValue> ValuesOrderedForProcessing(IList<IValue> values, SaveOptions saveOptions)
+        private static IList<IValue> ValuesOrderedForProcessing(IReadOnlyList<IValue> values, SaveOptions saveOptions)
         {
             var valuesWithPrimaryFirst = values
                 .OrderBy(v =>
@@ -230,32 +230,36 @@ namespace ToSic.Eav.Persistence
         /// <returns></returns>
         private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions) => Log.Func(() =>
         {
-            // everything in the update will be kept, and optionally some stuff in the original may be preserved
-            var result = update;
-            foreach (var orgVal in ValuesOrderedForProcessing(original.Values, saveOptions))
+            //foreach (var orgVal in ValuesOrderedForProcessing(original.Values, saveOptions))
+            var values = ValuesOrderedForProcessing(original.Values, saveOptions).Select(orgVal =>
             {
                 var remainingLanguages = new List<ILanguage>();
                 foreach (var valLang in orgVal.Languages) // first process master-languages, then read-only
                 {
                     // se if this language has already been set, in that case just leave it
-                    var valInResults = result.Values.FirstOrDefault(rv => rv.Languages.Any(rvl => rvl.Key == valLang.Key));
+                    var valInResults = update.Values.FirstOrDefault(rv => rv.Languages.Any(rvl => rvl.Key == valLang.Key));
                     if (valInResults == null)
                         // special case: if the original set had named languages, and the new set has no language set (undefined = primary)
                         // to detect this, we must check if we're on primary, and there may be a "undefined" language assignment
-                        if (!(valLang.Key == saveOptions.PrimaryLanguage && result.Values.Any(v => v.Languages?.Count == 0))) 
+                        if (!(valLang.Key == saveOptions.PrimaryLanguage && update.Values.Any(v => v.Languages?.Count == 0))) 
                             remainingLanguages.Add(valLang);
                 }
 
                 // nothing found to keep...
-                if (remainingLanguages.Count == 0) continue;
+                if (remainingLanguages.Count == 0) return null;
 
                 // Add the value with the remaining languages / relationships
                 // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
                 //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
                 var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
                 var val = _multiBuilder.Value.Clone(orgVal, original.Type, languagesToUse);
-                result.Values.Add(val);
-            }
+                return val;
+            })
+                .Where(val => val != null)
+                .ToList();
+
+            // everything in the update will be kept, and optionally some stuff in the original may be preserved
+            var result = _multiBuilder.Attribute.Clone(update, values);
 
             return result;
         });

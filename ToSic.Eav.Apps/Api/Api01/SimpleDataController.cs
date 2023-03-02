@@ -16,6 +16,7 @@ using ToSic.Eav.Run;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // This is the simple API used to quickly create/edit/delete entities
@@ -156,17 +157,20 @@ namespace ToSic.Eav.Api.Api01
             // A clearer implementation would be better
             var eGuid = Guid.Parse(values[Attributes.EntityFieldGuid].ToString());
 
+            // Figure out publishing before converting to IAttribute
+            var publishing = FigureOutPublishing(type, values, existingIsPublished);
+
             // Prepare values to add
             var preparedValues = ConvertEntityRelations(values);
             var preparedIAttributes = _builder.Attribute.ToIAttribute(preparedValues);
-            var pubAndValues = BuildNewEntityValues(type, preparedIAttributes, _defaultLanguageCode, existingIsPublished);
+            var attributes = BuildNewEntityValues(type, preparedIAttributes, _defaultLanguageCode);
 
             var newEntity = _builder.Entity.Create(appId: _appId, guid: eGuid, contentType: type,
-                attributes: _builder.Attribute.Create(pubAndValues.Attributes),
+                attributes: _builder.Attribute.Create(attributes),
                 owner: owner, metadataFor: targetOrNull);
             if (targetOrNull != null) l.A("FYI: Set metadata target which was provided.");
 
-            return (importEntity: newEntity, pubAndValues.Publishing);
+            return (importEntity: newEntity, publishing);
         });
 
 
@@ -225,16 +229,15 @@ namespace ToSic.Eav.Api.Api01
             return result;
         });
 
-        private ((bool ShouldPublish, bool DraftShouldBranch)? Publishing, IDictionary<string, IAttribute> Attributes) BuildNewEntityValues(
+        private (bool ShouldPublish, bool DraftShouldBranch)? FigureOutPublishing(
             IContentType contentType,
-            IDictionary<string, IAttribute> values,
-            string valuesLanguage,
+            IDictionary<string, object> values,
             bool? existingIsPublished
-        ) => Log.Func($"..., ..., values: {values?.Count}, {valuesLanguage}", l =>
+        ) => Log.Func($"..., ..., values: {values?.Count}", l =>
         {
             (bool ShouldPublish, bool DraftShouldBranch)? publishAndBranch = null;
             if (values?.Any() != true)
-                return ((publishAndBranch, values), "no values to process");
+                return (publishAndBranch, "no values to process");
 
             // On update, by default preserve IsPublished state
             var isPublished = existingIsPublished ?? true;
@@ -247,39 +250,56 @@ namespace ToSic.Eav.Api.Api01
             // IsPublished becomes false when write published is not allowed.
             if (isPublished && !allowed.PublishAllowed) isPublished = false;
 
-            foreach (var keyValuePair in values)
+            // Find publishing instructions
+            // Handle special "PublishState" attribute
+            var publishKvp = values.FirstOrDefault(pair => pair.Key.EqualsInsensitive(SaveApiAttributes.SavePublishingState));
+            if (publishKvp.Key != default)  // must check key, because kvps don't have a null-default
             {
-                // Handle special "PublishState" attribute
-                if (keyValuePair.Key.EqualsInsensitive(SaveApiAttributes.SavePublishingState))
-                {
-                    publishAndBranch = GetPublishSpecs(
-                        publishedState: values[SaveApiAttributes.SavePublishingState],
-                        existingIsPublished: isPublished,
-                        allowed.PublishAllowed);
+                publishAndBranch = GetPublishSpecs(
+                    publishedState: publishKvp.Value,
+                    existingIsPublished: isPublished,
+                    allowed.PublishAllowed);
 
-                    isPublished = publishAndBranch.Value.ShouldPublish;
+                isPublished = publishAndBranch.Value.ShouldPublish;
 
-                    l.A($"IsPublished: {isPublished}");
-                    continue;
-                }
-
-                // Ignore entity guid - it's already set earlier
-                if (keyValuePair.Key.EqualsInsensitive(Attributes.EntityFieldGuid))
-                {
-                    l.A("entity-guid, ignore here");
-                    continue;
-                }
-
-                // Handle content-type attributes
-                var attribute = contentType[keyValuePair.Key];
-                if (attribute != null && keyValuePair.Value != null)
-                {
-                    _builder.AttributeImport.AddValue(values, attribute.Name, keyValuePair.Value,
-                        attribute.Type, valuesLanguage, false, true);
-                    l.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({attribute.Type})");
-                }
+                l.A($"IsPublished: {isPublished}");
             }
-            return ((publishAndBranch, values), "done");
+            
+            return (publishAndBranch, "done");
+        });
+
+        private IDictionary<string, IAttribute> BuildNewEntityValues(
+            IContentType contentType,
+            IDictionary<string, IAttribute> values,
+            string valuesLanguage
+        ) => Log.Func($"..., ..., values: {values?.Count}, {valuesLanguage}", l =>
+        {
+            if (values?.Any() != true)
+                return (new Dictionary<string, IAttribute>(), "null/empty");
+
+            var attributes = values.Select(keyValuePair =>
+                {
+                    // Handle content-type attributes
+                    var attribute = contentType[keyValuePair.Key];
+                    if (attribute != null && keyValuePair.Value != null)
+                    {
+                        var preConverted =
+                            _builder.AttributeImport.PreConvertReferences(keyValuePair.Value, attribute.Type, true);
+                        var newAttribute = _builder.AttributeImport.CreateAttribute(values, attribute.Name, preConverted,
+                            attribute.Type, valuesLanguage);
+                        l.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({attribute.Type})");
+                        return new
+                        {
+                            keyValuePair.Key,
+                            Attribute = newAttribute
+                        };
+                    }
+
+                    return null;
+                })
+                .Where(x => x != null)
+                .ToDictionary(pair => pair.Key, pair => pair.Attribute, InvariantCultureIgnoreCase);
+            return (attributes, "done");
         });
 
         #region Permission Checks

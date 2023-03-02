@@ -128,9 +128,10 @@ namespace ToSic.Eav.DataSources
                                 ?.ObjectContents;
                             // Remove first, in case the new name replaces an old one
                             // #immutableTodo
-                            attributes.Remove(entry.OriginalField);
+                            //attributes.Remove(entry.OriginalField);
                             // Now add the resulting new attribute
-                            _multiBuilder.AttributeImport.AddValue(attributes, map.Target, value, newAttribute.Type, entry.Language);
+                            var temp = _multiBuilder.AttributeImport.CreateAttribute(attributes, map.Target, value, newAttribute.Type, entry.Language);
+                            attributes = _multiBuilder.AttributeImport.UpdateAttribute(attributes, temp);
                         }
                     }
                     else // simple re-mapping / renaming
@@ -143,7 +144,7 @@ namespace ToSic.Eav.DataSources
 
                         // Make a copy to make sure the Name property of the attribute is set correctly
                         var sourceAttr = attributes[map.Source];
-                        var newAttribute = _multiBuilder.Attribute.CreateTyped(map.Target, sourceAttr.Type, sourceAttr.Values);
+                        var newAttribute = _multiBuilder.Attribute.CreateTyped(map.Target, sourceAttr.Type, sourceAttr.Values.ToList());
                         // Remove first, in case the new name replaces an old one
                         // #immutableTodo
                         attributes.Remove(map.Source);

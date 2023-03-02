@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
+using ToSic.Eav.Generics;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
+using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Builder
 {
@@ -22,20 +26,55 @@ namespace ToSic.Eav.Data.Builder
         /// Add a value to the attribute specified. To do so, set the name, type and string of the value, as 
         /// well as some language properties.
         /// </summary>
-        public IValue AddValue(IDictionary<string, IAttribute> target, string attributeName,
+        public IAttribute CreateAttribute(IDictionary<string, IAttribute> target, string attributeName,
             object value, string valueType, string language = null, bool languageReadOnly = false,
-            bool resolveHyperlink = false, IEntitiesSource allEntitiesForRelationships = null,
-            ILanguage additionalLanguageWip = default // 2023-02-28 2dm - added this for an edge case, should be cleaned up some day
-            ) => Log.Func($"..., {attributeName}, {value} ({valueType}), {language}, ..., {nameof(resolveHyperlink)}: {resolveHyperlink}", l =>
+            IEntitiesSource allEntitiesForRelationships = null
+        ) => Log.Func($"..., {attributeName}, {value} ({valueType}), {language}, ...", l =>
         {
-            // pre-convert links if necessary...
+            var valueLanguages = GetBestValueLanguages(language, languageReadOnly);
+
+            var valueWithLanguages = ValueBuilder.Build(valueType, value, valueLanguages?.ToImmutableList(), allEntitiesForRelationships);
+
+
+            // add or replace to the collection
+            var exists = target.TryGetValue(attributeName, out var existingAttribute);
+
+            IAttribute newAttr;
+            if (!exists)
+                return CreateTyped(attributeName, valueType, new List<IValue> { valueWithLanguages });
+            
+            // maybe: test if the new model has the same type as the attribute we're adding to
+            // WIP: if(attrib.ControlledType != valueModel.)
+            // Now add...
+            //var attribModifyiable = existingAttribute.Values.ToList();
+            //attribModifyiable.Add(valueWithLanguages);
+            var updatedValueList = ReplaceValue(existingAttribute.Values, null, valueWithLanguages);
+            return existingAttribute.CloneWithNewValues(updatedValueList.ToList());
+            //attrib.Values.Add(valueWithLanguages);
+        });
+
+        public IDictionary<string, IAttribute> UpdateAttribute(IDictionary<string, IAttribute> target,
+            IAttribute newAttribute)
+        {
+            return new Dictionary<string, IAttribute>(target, InvariantCultureIgnoreCase)
+            {
+                [newAttribute.Name] = newAttribute
+            };
+        }
+
+        public object PreConvertReferences(object value, string valueType, bool resolveHyperlink) => Log.Func(() =>
+        {
             if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString() && value is string stringValue)
             {
-                l.A($"Will resolve hyperlink for '{stringValue}'");
-                value = _valueConverter.Value.ToReference(stringValue);
-                l.A($"New value: '{stringValue}'");
+                var converted = _valueConverter.Value.ToReference(stringValue);
+                return (converted, $"Resolve hyperlink for '{stringValue}' - New value: '{converted}'") ;
             }
 
+            return (value, "unmodified");
+        });
+
+        public List<ILanguage> GetBestValueLanguages(string language, bool languageReadOnly)
+        {
             // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
             if (string.IsNullOrWhiteSpace(language)) language = null;
 
@@ -45,38 +84,35 @@ namespace ToSic.Eav.Data.Builder
                 //: new List<ILanguage> { new Language { Key = language, ReadOnly = languageReadOnly } }, allEntitiesForRelationships);
                 : new List<ILanguage> { new Language(language, languageReadOnly) };
 
-            // 2023-02-28 2dm #immutable workaround for now
-            if (additionalLanguageWip != null)
-            {
-                valueLanguages = valueLanguages ?? new List<ILanguage>();
-                valueLanguages.Add(additionalLanguageWip);
-            }
+            return valueLanguages;
+        }
 
-            var valueWithLanguages = ValueBuilder.Build(valueType, value, valueLanguages?.ToImmutableList(), allEntitiesForRelationships);
+        // todo: possibly move to a valuebuilder or something
+        public IValue UpdateLanguages(IValue original, List<ILanguage> updateLanguages)
+        {
+            var languages = original.Languages.ToList();
+            // loop through original to ensure we don't modify the order
+            languages = languages
+                .Select(l => updateLanguages.FirstOrDefault(ul => ul.Key.EqualsInsensitive(l.Key)) ?? l)
+                .ToList();
+            var rest = updateLanguages.Where(ul => !languages.Any(l => l.Key.EqualsInsensitive(ul.Key)));
+            var final = languages.Concat(rest).ToImmutableList();
+            var clonedValue = original.Clone(final);
+            return clonedValue;
+        }
 
-
-            // add or replace to the collection
-            var attrExists = target
-                .Where(item => item.Key == attributeName)
-                .Select(item => item.Value)
-                .FirstOrDefault();
-
-            if (attrExists == null)
-            {
-                var newAttr = CreateTyped(attributeName, valueType, new List<IValue> { valueWithLanguages });
-                target.Add(attributeName, newAttr);
-            }
+        public IReadOnlyList<IValue> ReplaceValue(IReadOnlyList<IValue> values, IValue oldValue, IValue newValue)
+        {
+            var editable = values.ToList();
+            // note: should preserve order
+            var index = editable.IndexOf(oldValue);
+            if (index == -1)
+                editable.Add(newValue);
             else
-            {
-                // todo: test if the new model has the same type as the attribute we're adding to
-                var attrib = target[attributeName];
-                // WIP: if(attrib.ControlledType != valueModel.)
-                // Now add...
-                attrib.Values.Add(valueWithLanguages);
-            }
+                editable[index] = newValue;
+            return editable.AsReadOnly();
+        }
 
-            return valueWithLanguages;
-        });
         #endregion
     }
 }

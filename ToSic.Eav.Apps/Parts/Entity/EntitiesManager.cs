@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Caching;
@@ -10,7 +11,9 @@ using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
+using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Parts
@@ -120,11 +123,19 @@ namespace ToSic.Eav.Apps.Parts
                         return entity;
                     var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
                     if (newType == null) return entity;
+
                     return Builder.Entity.Clone(entity, type: newType);
                 }).ToList();
 
                 // Clear Ephemeral attributes which shouldn't be saved (new in v12)
-                entities.ForEach(e => ClearEphemeralAttributes(e));
+                entities = entities.Select(entity =>
+                {
+                    var attributes = AttributesWithEmptyEphemerals(entity);
+                    return attributes == null ? entity : Builder.Entity.Clone(entity, attributes: attributes);
+                }).ToList();
+
+                //// Clear Ephemeral attributes which shouldn't be saved (new in v12)
+                //entities.ForEach(e => ClearEphemeralAttributes(e));
 
                 // attach relationship resolver - important when saving data which doesn't yet have the guid
                 entities.ForEach(appState.Relationships.AttachRelationshipResolver);
@@ -150,25 +161,28 @@ namespace ToSic.Eav.Apps.Parts
         /// WIP - clear attributes which shouldn't be saved at all
         /// </summary>
         /// <param name="entity"></param>
-        private bool ClearEphemeralAttributes(IEntity entity) => Log.Func(() =>
+        private IImmutableDictionary<string, IAttribute> AttributesWithEmptyEphemerals(IEntity entity) => Log.Func(() =>
         {
             var attributes = entity.Type?.Attributes;
-            if (attributes == null || !attributes.Any()) return (false, "no attributes");
+            if (attributes == null || !attributes.Any()) return (null, "no attributes");
 
             var toClear = attributes.Where(a =>
                     a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
                 .ToList();
 
-            if (!toClear.Any()) return (false, "no ephemeral attributes");
+            if (!toClear.Any()) return (null, "no ephemeral attributes");
 
-            foreach (var a in toClear)
-                if (entity.Attributes.TryGetValue(a.Name, out var attr))
+            var result = entity.Attributes.ToImmutableDictionary(pair => pair.Key,
+                pair =>
                 {
-                    attr.Values.Clear();
-                    Log.A("Cleared " + a.Name);
-                }
+                    if (!toClear.Any(tc => tc.Name.EqualsInsensitive(pair.Key)))
+                        return pair.Value;
+                    var empty = _multiBuilder.Value.Attribute.CloneUpdateOne(pair.Value, new List<IValue>());
+                    Log.A("Cleared " + pair.Key);
+                    return empty;
+                }, InvariantCultureIgnoreCase);
 
-            return (true, "cleared");
+            return (result, "temp");
         });
     }
 }
