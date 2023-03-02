@@ -43,7 +43,7 @@ namespace ToSic.Eav.ImportExport.Json
                 .ToList();
 
             var attribs = new JsonAttributes();
-            attributesInUse.GroupBy(a => a.ControlledType, a => a).ToList().ForEach(g =>
+            attributesInUse.GroupBy(a => a.Type, a => a).ToList().ForEach(g =>
             {
                 var gList = g.ToList();
                 switch (g.Key)

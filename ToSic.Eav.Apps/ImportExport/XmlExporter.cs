@@ -172,7 +172,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 {
                     var xmlAttribute = new XElement(XmlConstants.Attribute,
                         new XAttribute(XmlConstants.Static, a.Name),
-                        new XAttribute(XmlConstants.Type, a.Type),
+                        new XAttribute(XmlConstants.Type, a.Type.ToString()),
                         new XAttribute(XmlConstants.IsTitle, a.IsTitle),
                         // Add Attribute MetaData
                         AppState.GetMetadata(TargetTypes.Attribute, a.AttributeId)

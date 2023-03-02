@@ -29,10 +29,25 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Extended constructor when also storing the persistence Id
         /// </summary>
+        //public ContentTypeAttribute(
+        //    int appId,
+        //    string name,
+        //    string type,
+        //    bool isTitle,
+        //    int attributeId,
+        //    int sortOrder,
+        //    IMetadataOf metadata = default) : base(name, type)
+        //{
+        //    AppId = appId;
+        //    IsTitle = isTitle;
+        //    AttributeId = attributeId;
+        //    SortOrder = sortOrder;
+        //    Metadata = metadata;
+        //}
         public ContentTypeAttribute(
             int appId,
             string name,
-            string type,
+            ValueTypes type,
             bool isTitle,
             int attributeId,
             int sortOrder,

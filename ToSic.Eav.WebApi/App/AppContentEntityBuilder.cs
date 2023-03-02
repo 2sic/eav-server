@@ -39,34 +39,34 @@ namespace ToSic.Eav.WebApi.App
                 var attrName = attrDef.Name;
                 if (!newContentItem.ContainsKey(attrName)) continue;
                 var foundValue = newContentItem[attrName];
-                switch (attrDef.Type.ToLowerInvariant())
+                switch (attrDef.Type)
                 {
-                    case "string":
-                    case "hyperlink":
+                    case ValueTypes.String:
+                    case ValueTypes.Hyperlink:
                         if (foundValue is string)
                             cleanedNewItem.Add(attrName, foundValue.ToString());
                         else
                             throw ValueMappingError(attrDef, foundValue);
                         break;
-                    case "boolean":
+                    case ValueTypes.Boolean:
                         if (bool.TryParse(foundValue.ToString(), out var bolValue))
                             cleanedNewItem.Add(attrName, bolValue);
                         else
                             throw ValueMappingError(attrDef, foundValue);
                         break;
-                    case "datetime":
+                    case ValueTypes.DateTime:
                         if (DateTime.TryParse(foundValue.ToString(), out var dtm))
                             cleanedNewItem.Add(attrName, dtm);
                         else
                             throw ValueMappingError(attrDef, foundValue);
                         break;
-                    case "number":
+                    case ValueTypes.Number:
                         if (decimal.TryParse(foundValue.ToString(), out var dec))
                             cleanedNewItem.Add(attrName, dec);
                         else
                             throw ValueMappingError(attrDef, foundValue);
                         break;
-                    case "entity":
+                    case ValueTypes.Entity:
                         var relationships = new List<int>();
 
                         if (foundValue is IEnumerable foundEnum) // it's a list!
@@ -79,8 +79,8 @@ namespace ToSic.Eav.WebApi.App
 
                         break;
                     default:
-                        throw new Exception("Tried to create attribute '" + attrName + "' but the type is not known: '" +
-                                            attrDef.Type + "'");
+                        throw new Exception(
+                            $"Tried to create attribute '{attrName}' but the type is not known: '{attrDef.Type}'");
                 }
 
                 // todo: maybe one day get default-values and insert them if not supplied by JS
@@ -104,10 +104,8 @@ namespace ToSic.Eav.WebApi.App
         /// <param name="attributeDefinition"></param>
         /// <param name="foundValue"></param>
         private static Exception ValueMappingError(IAttributeBase attributeDefinition, object foundValue)
-            => new Exception("Tried to create " + attributeDefinition.Name
-                             + " and couldn't convert to correct "
-                             + attributeDefinition.Type + ": '" +
-                             foundValue + "'");
+            => new Exception(
+                $"Tried to create {attributeDefinition.Name} and couldn't convert to correct {attributeDefinition.Type}: '{foundValue}'");
 
         /// <summary>
         /// Takes input from JSON which could be in many formats like Category=ID or Category={id=#} 

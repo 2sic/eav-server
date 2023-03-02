@@ -219,7 +219,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         private IList<IValue> GetValues(IContentTypeAttribute a, JsonAttributes jAtts, IEntitiesSource relationshipsSource = null)
         {
-            switch (a.ControlledType)
+            switch (a.Type)
             {
                 case ValueTypes.Boolean: return BuildValues(jAtts.Boolean, a);
                 case ValueTypes.DateTime:

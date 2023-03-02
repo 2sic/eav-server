@@ -19,7 +19,7 @@ namespace ToSic.Eav.Data
         /// <param name="name"></param>
         /// <param name="type"></param>
         [PrivateApi]
-        public AttributeBase(string name, string type)
+        protected AttributeBase(string name, ValueTypes type)
         {
             Name = name;
             Type = type;
@@ -28,15 +28,12 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public string Name { get; }
 
-        /// <inheritdoc />
-        public string Type { get; }
+        // Removed 2023-03-02 2dm - keep comment in till 2023q3 because it is technically a breaking change
+        ///// <inheritdoc />
+        //public string Type => ControlledType.ToString();
 
 
         [PrivateApi]
-        public ValueTypes ControlledType => _controlledType != ValueTypes.Undefined
-            ? _controlledType
-            : _controlledType = ValueTypeHelpers.Get(Type);
-        private ValueTypes _controlledType = ValueTypes.Undefined;
-
+        public ValueTypes Type { get; }
     }
 }

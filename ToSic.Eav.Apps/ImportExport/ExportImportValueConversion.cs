@@ -100,22 +100,22 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Append an element to this. The element will have the value of the EavValue. File and page references 
         /// can optionally be resolved.
         /// </summary>
-        internal string ResolveValue(IEntity entity, string attrType, string value, bool resolveLinks) 
-            => ResolveValue(entity.AppId, entity.EntityGuid, attrType, value, resolveLinks);
+        internal string ResolveValue(IEntity entity, ValueTypes attrType, string value, bool resolveLinks) 
+            => ResolveValue(entity.EntityGuid, attrType, value, resolveLinks);
 
 
         /// <summary>
         /// Append an element to this. The element will have the value of the EavValue. File and page references 
         /// can optionally be resolved.
         /// </summary>
-        internal string ResolveValue(int appId, Guid itemGuid, string attrType, string value, bool resolveLinks)
+        internal string ResolveValue(Guid itemGuid, ValueTypes attrType, string value, bool resolveLinks)
         {
             if (value == null)
                 return XmlConstants.Null;
             if (value == string.Empty)
                 return XmlConstants.Empty;
             if (resolveLinks)
-                return ResolveHyperlinksFromSite(appId, itemGuid, value, attrType);
+                return ResolveHyperlinksFromSite(itemGuid, value, attrType);
             return value;
         }
 
@@ -124,8 +124,8 @@ namespace ToSic.Eav.Apps.ImportExport
         /// File:4711 to Content/file4711.jpg. If the reference cannot be resolved, 
         /// the original value will be returned. 
         /// </summary>
-        internal string ResolveHyperlinksFromSite(int appId, Guid itemGuid, string value, string attrType)
-            => attrType != DataTypes.Hyperlink
+        internal string ResolveHyperlinksFromSite(Guid itemGuid, string value, ValueTypes attrType)
+            => attrType != ValueTypes.Hyperlink
                 ? value
                 : ValueConverter.ToValue(value, itemGuid);
 

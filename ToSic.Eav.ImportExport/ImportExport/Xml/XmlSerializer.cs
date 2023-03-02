@@ -33,7 +33,7 @@ namespace ToSic.Eav.Persistence.Xml
         public XElement ToXml(IEntity entity)
         {
             var valuesXElement = entity.Attributes.Values
-                .Where(a => a.Type != DataTypes.Entity || ((a.Values.FirstOrDefault() as IValue<IEnumerable<IEntity>>)?.TypedContents?.Any() ?? false))
+                .Where(a => a.Type != ValueTypes.Entity || ((a.Values.FirstOrDefault() as IValue<IEnumerable<IEntity>>)?.TypedContents?.Any() ?? false))
                 .OrderBy(a => a.Name)
                 .SelectMany(a => a.Values.Select(v => XmlValue(a, v)));
 
@@ -78,7 +78,7 @@ namespace ToSic.Eav.Persistence.Xml
             var valueXElement = new XElement(XmlConstants.ValueNode,
                 new XAttribute(XmlConstants.KeyAttr, attrib.Name),
                 new XAttribute(XmlConstants.ValueAttr, str),
-                new XAttribute(XmlConstants.EntityTypeAttribute, attrib.Type),
+                new XAttribute(XmlConstants.EntityTypeAttribute, attrib.Type.ToString()),
                 value.Languages
                 .OrderBy(l => l.Key)
                 .Select(p => new XElement(XmlConstants.ValueDimNode,

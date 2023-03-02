@@ -110,8 +110,7 @@ namespace ToSic.Eav.DataSources
                             .Select(s => attributes[s]).FirstOrDefault();
                         var newAttribute =
                             _multiBuilder.Attribute.CreateTyped(map.Target,
-                                firstExistingValue?.Type ??
-                                "string"); // if there are no values, we assume it's a string field
+                                firstExistingValue?.Type ?? ValueTypes.String); // if there are no values, we assume it's a string field
                         // #immutableTodo
                         attributes.Add(map.Target, newAttribute);
 

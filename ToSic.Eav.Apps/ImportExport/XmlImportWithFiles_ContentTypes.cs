@@ -83,7 +83,11 @@ namespace ToSic.Eav.Apps.ImportExport
 
                     var xmlMetadata = xmlField.Elements(XmlConstants.Entity).ToList();
                     var attributeMetadata = BuildEntities(xmlMetadata, (int)TargetTypes.Attribute);
-                    var attribute = Services.MultiBuilder.Value.TypeAttributeBuilder.Create(/*) new ContentTypeAttribute(*/appId: AppId, name: name, type: fieldTypeName, isTitle: s.IsTitle,
+                    var attribute = Services.MultiBuilder.Value.TypeAttributeBuilder.Create(
+                        appId: AppId,
+                        name: name,
+                        type: ValueTypeHelpers.Get(fieldTypeName),
+                        isTitle: s.IsTitle,
                         metadataItems: attributeMetadata
                         // 2023-02-27 2dm - pretty sure this had no effect, as the follow-up "Use" call flushed this again
                         // Keep till ca. #2023q3 just in case we have surprises and need to undo something

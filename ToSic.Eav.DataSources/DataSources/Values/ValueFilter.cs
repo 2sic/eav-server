@@ -147,7 +147,7 @@ namespace ToSic.Eav.DataSources
             // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
             // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
             // 2022-03-09 2dm 
-            if (!isSpecial) fieldType = firstEntity[fieldName].ControlledType;
+            if (!isSpecial) fieldType = firstEntity[fieldName].Type;
             //var firstValue = firstEntity.Value(fieldName);
 
 

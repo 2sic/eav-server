@@ -165,7 +165,7 @@ namespace ToSic.Eav.Persistence.Efc
                     .SelectMany(a =>
                     {
                         var results = a.Values
-                            .Select(v => _multiBuilder.Value.Build(a.CtAttribute.ControlledType, v.Value, v.Languages))
+                            .Select(v => _multiBuilder.Value.Build(a.CtAttribute.Type, v.Value, v.Languages))
                             .ToList();
                         var final = DataRepair.FixIncorrectLanguageDefinitions(results, primaryLanguage);
                         return final.Select(r => (a.Name, r));

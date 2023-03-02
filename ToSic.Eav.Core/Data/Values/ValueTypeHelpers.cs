@@ -4,14 +4,15 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.Data
 {
     [PrivateApi]
-    internal class ValueTypeHelpers
+    public class ValueTypeHelpers
     {
-        public static ValueTypes Get(string typeName)
-        {
-            // if the type has not been set yet, try to look it up...
-            if (typeName != null && Enum.IsDefined(typeof(ValueTypes), typeName))
-                return (ValueTypes)Enum.Parse(typeof(ValueTypes), typeName);
-            return ValueTypes.Undefined;
-        }
+        /// <summary>
+        /// Look up the type code if we started with a string.
+        /// This is case-insensitive.
+        /// </summary>
+        /// <param name="typeName"></param>
+        /// <returns></returns>
+        public static ValueTypes Get(string typeName) 
+            => Enum.TryParse<ValueTypes>(typeName ?? "", true, out var code) ? code : ValueTypes.Undefined;
     }
 }

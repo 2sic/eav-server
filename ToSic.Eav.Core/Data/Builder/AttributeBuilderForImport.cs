@@ -27,7 +27,7 @@ namespace ToSic.Eav.Data.Builder
         /// well as some language properties.
         /// </summary>
         public IAttribute CreateAttribute(IDictionary<string, IAttribute> target, string attributeName,
-            object value, string valueType, string language = null, bool languageReadOnly = false,
+            object value, ValueTypes valueType, string language = null, bool languageReadOnly = false,
             IEntitiesSource allEntitiesForRelationships = null
         ) => Log.Func($"..., {attributeName}, {value} ({valueType}), {language}, ...", l =>
         {
@@ -39,7 +39,6 @@ namespace ToSic.Eav.Data.Builder
             // add or replace to the collection
             var exists = target.TryGetValue(attributeName, out var existingAttribute);
 
-            IAttribute newAttr;
             if (!exists)
                 return CreateTyped(attributeName, valueType, new List<IValue> { valueWithLanguages });
             
@@ -49,7 +48,7 @@ namespace ToSic.Eav.Data.Builder
             //var attribModifyiable = existingAttribute.Values.ToList();
             //attribModifyiable.Add(valueWithLanguages);
             var updatedValueList = ReplaceValue(existingAttribute.Values, null, valueWithLanguages);
-            return existingAttribute.CloneWithNewValues(updatedValueList.ToList());
+            return existingAttribute.CloneWithNewValues(updatedValueList);
             //attrib.Values.Add(valueWithLanguages);
         });
 
@@ -62,9 +61,9 @@ namespace ToSic.Eav.Data.Builder
             };
         }
 
-        public object PreConvertReferences(object value, string valueType, bool resolveHyperlink) => Log.Func(() =>
+        public object PreConvertReferences(object value, ValueTypes valueType, bool resolveHyperlink) => Log.Func(() =>
         {
-            if (resolveHyperlink && valueType == ValueTypes.Hyperlink.ToString() && value is string stringValue)
+            if (resolveHyperlink && valueType == ValueTypes.Hyperlink && value is string stringValue)
             {
                 var converted = _valueConverter.Value.ToReference(stringValue);
                 return (converted, $"Resolve hyperlink for '{stringValue}' - New value: '{converted}'") ;
@@ -101,7 +100,7 @@ namespace ToSic.Eav.Data.Builder
             return clonedValue;
         }
 
-        public IReadOnlyList<IValue> ReplaceValue(IReadOnlyList<IValue> values, IValue oldValue, IValue newValue)
+        public IImmutableList<IValue> ReplaceValue(IReadOnlyList<IValue> values, IValue oldValue, IValue newValue)
         {
             var editable = values.ToList();
             // note: should preserve order
@@ -110,7 +109,7 @@ namespace ToSic.Eav.Data.Builder
                 editable.Add(newValue);
             else
                 editable[index] = newValue;
-            return editable.AsReadOnly();
+            return editable.ToImmutableList();
         }
 
         #endregion

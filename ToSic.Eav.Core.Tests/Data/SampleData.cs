@@ -18,7 +18,7 @@ namespace ToSic.Eav.Core.Tests.Data
 
         private ContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
         {
-            return _builder.TypeAttributeBuilder.Create(appId: appId, name: firstName, type: dataType, isTitle: isTitle, id: attId, sortOrder: index);
+            return _builder.TypeAttributeBuilder.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
         }
 
         IContentType CtTestType => _builder.ContentType.TestCreate(appId: AppId, name: "TestType", attributes: new List<IContentTypeAttribute>

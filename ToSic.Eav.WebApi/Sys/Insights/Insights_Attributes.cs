@@ -32,7 +32,7 @@ namespace ToSic.Eav.WebApi.Sys
                         (++count).ToString(),
                         att.AttributeId.ToString(),
                         att.Name,
-                        att.Type,
+                        att.Type.ToString(),
                         att.InputType(),
                         EmojiTrueFalse(att.IsTitle),
                         LinkTo($"{att.Metadata.Count()}", nameof(AttributeMetadata), appId, type: type, nameId: att.Name),

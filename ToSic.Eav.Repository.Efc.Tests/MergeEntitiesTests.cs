@@ -44,7 +44,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private ContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
         {
-            return Builder.TypeAttributeBuilder.Create(appId: appId, name: firstName, type: dataType, isTitle: isTitle, id: attId, sortOrder: index);
+            return Builder.TypeAttributeBuilder.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
         }
 
         IContentType _ctPerson => Builder.ContentType.TestCreate(appId: AppId, name: "Person", attributes: new List<IContentTypeAttribute>

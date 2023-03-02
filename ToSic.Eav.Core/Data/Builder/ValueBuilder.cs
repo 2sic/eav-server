@@ -18,11 +18,8 @@ namespace ToSic.Eav.Data.Builder
         }
         private DimensionBuilder LanguageBuilder { get; }
 
-        public IValue Clone(IValue original, string type, IImmutableList<ILanguage> languages = null) 
-            => Build(
-                type, original.ObjectContents,
-                // 2023-02-24 2dm #immutable - don't need to clone if it's immutable
-                languages ?? /*LanguageBuilder.Clone(*/original.Languages.ToImmutableList() /*)*/, null);
+        public IValue Clone(IValue original, ValueTypes type, IImmutableList<ILanguage> languages = null) 
+            => Build(type, original.ObjectContents, languages ?? original.Languages.ToImmutableList());
 
 
         /// <summary>
@@ -30,7 +27,7 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         public IValue Build(string attributeType, object value, IImmutableList<ILanguage> languages = null,
             IEntitiesSource fullEntityListForLookup = null)
-            => Build((ValueTypes)Enum.Parse(typeof(ValueTypes), attributeType), value, languages?.ToImmutableList(), fullEntityListForLookup);
+            => Build(ValueTypeHelpers.Get(attributeType), value, languages, fullEntityListForLookup);
 
         public IValue BuildRelationship(List<int?> references, IEntitiesSource app)
         {
@@ -43,7 +40,7 @@ namespace ToSic.Eav.Data.Builder
         /// <returns>
         /// An IValue, which is actually an IValue<string>, IValue<decimal>, IValue<IEnumerable<IEntity>> etc.
         /// </returns>
-        public IValue Build(ValueTypes type, object value, IImmutableList<ILanguage> languages, IEntitiesSource fullEntityListForLookup = null)
+        public IValue Build(ValueTypes type, object value, IImmutableList<ILanguage> languages = null, IEntitiesSource fullEntityListForLookup = null)
         {
             var langs = languages ?? DimensionBuilder.NoLanguages;
             var stringValue = value as string;
@@ -139,6 +136,6 @@ namespace ToSic.Eav.Data.Builder
         internal Value<IEnumerable<IEntity>> NewEmptyRelationship
             => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null), DimensionBuilder.NoLanguages);
 
-        internal List<IValue> NewEmptyRelationshipValues => new List<IValue> { NewEmptyRelationship };
+        internal IImmutableList<IValue> NewEmptyRelationshipValues => new List<IValue> { NewEmptyRelationship }.ToImmutableList();
     }
 }

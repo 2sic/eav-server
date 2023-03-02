@@ -22,16 +22,9 @@ namespace ToSic.Eav.Data.Builder
         #endregion
 
 
-        public IAttribute<T> Create<T>(string name, string type, IList<IValue> values)
-        {
-            return new Attribute<T>(name, type, values);
-        }
+        public IAttribute Clone(IAttribute original, IImmutableList<IValue> values) 
+            => original.CloneWithNewValues(values);
 
-        public IAttribute Clone(IAttribute original, IList<IValue> values)
-        {
-            return original.CloneWithNewValues(values);
-        }
-             
         ///// <summary>
         ///// Create a reference / relationship attribute on an entity being constructed (at DB load)
         ///// </summary>
@@ -85,21 +78,21 @@ namespace ToSic.Eav.Data.Builder
         [PrivateApi("probably move to some attribute-builder or something")]
         public IAttribute CreateTyped(string name, ValueTypes type, IList<IValue> values = null)
         {
-            var typeName = type.ToString();
+            var imValues = values?.ToImmutableList();
             switch (type)
             {
                 case ValueTypes.Boolean:
-                    return new Attribute<bool?>(name, typeName, values);
+                    return new Attribute<bool?>(name, type, imValues);
                 case ValueTypes.DateTime:
-                    return new Attribute<DateTime?>(name, typeName, values);
+                    return new Attribute<DateTime?>(name, type, imValues);
                 case ValueTypes.Number:
-                    return new Attribute<decimal?>(name, typeName, values);
+                    return new Attribute<decimal?>(name, type, imValues);
                 case ValueTypes.Entity:
                     // Note 2023-02-24 2dm - up until now the values were never used
                     // in this case, so relationships created here were always empty
                     // Could break something, but I don't think it will
-                    return new Attribute<IEnumerable<IEntity>>(name, typeName,
-                        values?.Any() == true ? values : ValueBuilder.NewEmptyRelationshipValues);
+                    return new Attribute<IEnumerable<IEntity>>(name, type,
+                        imValues?.Any() == true ? imValues : ValueBuilder.NewEmptyRelationshipValues);
                 // ReSharper disable RedundantCaseLabel
                 case ValueTypes.String:
                 case ValueTypes.Hyperlink:
@@ -109,7 +102,7 @@ namespace ToSic.Eav.Data.Builder
                 case ValueTypes.Empty:
                 // ReSharper restore RedundantCaseLabel
                 default:
-                    return new Attribute<string>(name, typeName, values);
+                    return new Attribute<string>(name, type, imValues);
             }
         }
 

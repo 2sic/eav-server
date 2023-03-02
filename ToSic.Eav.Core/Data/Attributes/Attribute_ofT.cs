@@ -19,19 +19,23 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create an attribute object - usually when building up the data-model for caching.
         /// </summary>
-        public Attribute(string name, string type, IList<IValue> values = null) : base(name, type)
+        //public Attribute(string name, string type, IImmutableList<IValue> values = null) : base(name, type)
+        //{
+        //    Values = values ?? new List<IValue>().ToImmutableList();
+        //}
+        public Attribute(string name, ValueTypes type, IImmutableList<IValue> values = null) : base(name, type)
         {
-            Values = (values ?? new List<IValue>()).ToImmutableList();
+            Values = values ?? new List<IValue>().ToImmutableList();
         }
 
         [PrivateApi]
-        public IAttribute CloneWithNewValues(IList<IValue> values)
+        public IAttribute CloneWithNewValues(IImmutableList<IValue> values)
         {
             return new Attribute<T>(Name, Type, values);
         }
 
         /// <inheritdoc/>
-        public IReadOnlyList<IValue> Values { get; }
+        public IImmutableList<IValue> Values { get; }
 
         /// <inheritdoc/>
         public T TypedContents

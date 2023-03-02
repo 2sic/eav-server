@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
@@ -17,7 +16,7 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Gets a list of all <see cref="IValue"/>s of this Entity's Attribute. To get the typed objects, use the <see cref="IAttribute{T}.Typed"/>
 		/// </summary>
-		IReadOnlyList<IValue> Values { get; } 
+		IImmutableList<IValue> Values { get; } 
 
         #region get-value eaccessors
 
@@ -54,6 +53,6 @@ namespace ToSic.Eav.Data
         (IValue ValueField, object Result) GetTypedValue(string[] languageKeys);
 
         [PrivateApi("internal only")]
-        IAttribute CloneWithNewValues(IList<IValue> values);
+        IAttribute CloneWithNewValues(IImmutableList<IValue> values);
     }
 }

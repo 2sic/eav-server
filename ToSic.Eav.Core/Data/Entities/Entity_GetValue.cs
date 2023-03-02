@@ -33,14 +33,14 @@ namespace ToSic.Eav.Data
             {
                 var attribute = Attributes[field];
                 var (valueField, result) = attribute.GetTypedValue(languages);
-                return new PropReqResult(result, path) { Value = valueField, FieldType = attribute.Type, Source = this };
+                return new PropReqResult(result, path) { Value = valueField, FieldType = attribute.Type.ToString(), Source = this };
             }
             
             if (field == EntityFieldTitle)
             {
                 var attribute = Title;
                 var valT = attribute?.GetTypedValue(languages);
-                return new PropReqResult(valT?.Result, path) { Value = valT?.ValueField, FieldType = attribute?.Type, Source = this };
+                return new PropReqResult(valT?.Result, path) { Value = valT?.ValueField, FieldType = attribute?.Type.ToString(), Source = this };
             }
 
             // directly return internal properties, mark as virtual to not cause further Link resolution

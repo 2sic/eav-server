@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
@@ -43,7 +44,7 @@ namespace ToSic.Eav.Apps.Parts
             var queryAttributes = query.Entity.Attributes.ToEditable();
             var newWiringAttribute =
                 _builder.Value.Attribute.Clone(queryAttributes[Constants.QueryStreamWiringAttributeName],
-                    newWiringValues);
+                    newWiringValues.ToImmutableList());
             queryAttributes[Constants.QueryStreamWiringAttributeName] = newWiringAttribute;
 
             var newQuery = _builder.Value.Entity.Clone(query.Entity, id: 0, guid: newQueryGuid, attributes: _builder.Value.Attribute.Create(queryAttributes));

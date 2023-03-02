@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
@@ -100,19 +101,19 @@ namespace ToSic.Eav.DataSources.Sys
                     if (!list.Any(dic =>
                             dic.TryGetValue(AttributeType.Name.ToString(), out var name) &&
                             name as string == sysField.Key))
-                        list.Insert(0, AsDic(sysField.Key, sysField.Value, false, 0, true));
+                        list.Insert(0, AsDic(sysField.Key, ValueTypeHelpers.Get(sysField.Value), false, 0, true));
 
             // if it didn't work yet, maybe try from stream items
             return list?.Select(attribData => _dataBuilder.Create(attribData)).ToImmutableArray()
                    ?? ImmutableArray<IEntity>.Empty;
         }
 
-        private static Dictionary<string, object> AsDic(string name, string type, bool isTitle, int sortOrder,
+        private static Dictionary<string, object> AsDic(string name, ValueTypes type, bool isTitle, int sortOrder,
             bool builtIn)
             => new Dictionary<string, object>
             {
                 { AttributeType.Name.ToString(), name },
-                { AttributeType.Type.ToString(), type },
+                { AttributeType.Type.ToString(), type.ToString() },
                 { AttributeType.IsTitle.ToString(), isTitle },
                 { AttributeType.SortOrder.ToString(), sortOrder },
                 { AttributeType.IsBuiltIn.ToString(), builtIn },

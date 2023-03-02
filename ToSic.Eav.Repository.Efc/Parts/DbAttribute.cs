@@ -100,7 +100,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         public int AddAttributeAndSave(int attributeSetId, ContentTypeAttribute contentTypeAttribute, int? newSortOrder = default)
         {
             var staticName = contentTypeAttribute.Name;
-            var type = contentTypeAttribute.Type;
+            var type = contentTypeAttribute.Type.ToString();
             var isTitle = contentTypeAttribute.IsTitle;
             var sortOrder = newSortOrder ?? contentTypeAttribute.SortOrder;
 

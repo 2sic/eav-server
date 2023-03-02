@@ -18,7 +18,7 @@ namespace ToSic.Eav.Data.Builder
         public ContentTypeAttribute Create(
             int appId,
             string name,
-            string type,
+            ValueTypes type,
             bool isTitle,
             int id = default,
             int sortOrder = default,
@@ -33,11 +33,13 @@ namespace ToSic.Eav.Data.Builder
                 attributeId: id, sortOrder: sortOrder, metadata: metadata);
         }
 
+
+
         public IContentTypeAttribute Clone(
             IContentTypeAttribute original,
             int? appId = default,
             string name = default,
-            string type = default,
+            ValueTypes? type = default,
             bool? isTitle = default,
             int? id = default,
             int? sortOrder = default,
@@ -49,16 +51,16 @@ namespace ToSic.Eav.Data.Builder
             // Prepare parts which we also need for new Metadata Creation
             name = name ?? original.Name;
             id = id ?? original.AttributeId;
-            type = type ?? original.Type;
+            var realType = type ?? original.Type;
             //var metadataSpecs = ((IMetadataInternals)original.Metadata).GetCloneSpecs();
             metadata = metadata ??
                        EntityPartsBuilder.CloneMetadataFunc<int>(original.Metadata, items: metadataItems,
-                           deferredSource: metaSourceFinder)(id.Value, $"{name} ({type})");
+                           deferredSource: metaSourceFinder)(id.Value, $"{name} ({realType})");
 
             return Create(
                 appId: appId ?? original.AppId,
                 name: name,
-                type: type,
+                type: realType,
                 isTitle: isTitle ?? original.IsTitle,
                 id: id.Value,
                 sortOrder: sortOrder ?? original.SortOrder,

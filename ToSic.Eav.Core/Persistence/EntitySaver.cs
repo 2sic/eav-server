@@ -149,7 +149,7 @@ namespace ToSic.Eav.Persistence
 
         private IAttribute CreateIsPublishedAttribute(bool isPublished)
         {
-            var values = new List<IValue> { _multiBuilder.Value.Build(ValueTypes.Boolean.ToString(), isPublished) };
+            var values = new List<IValue> { _multiBuilder.Value.Build(ValueTypes.Boolean, isPublished) };
             var attribute = _multiBuilder.Attribute.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
             // #immutable
             //attribute.Values = values;
@@ -170,30 +170,29 @@ namespace ToSic.Eav.Persistence
             var languages = saveOptions.Languages;
 
             var modified = allFields.ToDictionary(
-                    pair => pair.Key,
-                    field =>
-                //foreach (var field in allFields)
-            {
-                var values = new List<IValue>(); // new empty values list
-
-                // when we go through the values, we should always take the primary language first
-                // this is detectable by having either no language, or having the primary language
-                var orderedValues = ValuesOrderedForProcessing(field.Value.Values, saveOptions);
-                foreach (var value in orderedValues)
+                pair => pair.Key,
+                field =>
                 {
-                    // create filtered list of languages
-                    var newLangs = value.Languages?
-                        .Where(l => languages.Any(sysLang => sysLang.Matches(l.Key)))
-                        .ToImmutableList();
-                    // only keep this value, if it is either the first (so contains primary or null-language)
-                    // ...or that it still has a remaining language assignment
-                    if (values.Any() && !(newLangs?.Any() ?? false)) continue;
-                    values.Add(value.Clone(newLangs));
-                }
+                    var values = new List<IValue>(); // new empty values list
 
-                //field.Value.Values = values;
-                return _multiBuilder.Attribute.Clone(field.Value, values);
-            }, InvariantCultureIgnoreCase);
+                    // when we go through the values, we should always take the primary language first
+                    // this is detectable by having either no language, or having the primary language
+                    var orderedValues = ValuesOrderedForProcessing(field.Value.Values, saveOptions);
+                    foreach (var value in orderedValues)
+                    {
+                        // create filtered list of languages
+                        var newLangs = value.Languages?
+                            .Where(l => languages.Any(sysLang => sysLang.Matches(l.Key)))
+                            .ToImmutableList();
+                        // only keep this value, if it is either the first (so contains primary or null-language)
+                        // ...or that it still has a remaining language assignment
+                        if (values.Any() && !(newLangs?.Any() ?? false)) continue;
+                        values.Add(value.Clone(newLangs));
+                    }
+
+                    //field.Value.Values = values;
+                    return _multiBuilder.Attribute.Clone(field.Value, values.ToImmutableList());
+                }, InvariantCultureIgnoreCase);
 
             return modified;
         });
@@ -230,33 +229,35 @@ namespace ToSic.Eav.Persistence
         /// <returns></returns>
         private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions) => Log.Func(() =>
         {
-            //foreach (var orgVal in ValuesOrderedForProcessing(original.Values, saveOptions))
-            var values = ValuesOrderedForProcessing(original.Values, saveOptions).Select(orgVal =>
-            {
-                var remainingLanguages = new List<ILanguage>();
-                foreach (var valLang in orgVal.Languages) // first process master-languages, then read-only
+            var values = ValuesOrderedForProcessing(original.Values, saveOptions)
+                .Select(orgVal =>
                 {
-                    // se if this language has already been set, in that case just leave it
-                    var valInResults = update.Values.FirstOrDefault(rv => rv.Languages.Any(rvl => rvl.Key == valLang.Key));
-                    if (valInResults == null)
-                        // special case: if the original set had named languages, and the new set has no language set (undefined = primary)
-                        // to detect this, we must check if we're on primary, and there may be a "undefined" language assignment
-                        if (!(valLang.Key == saveOptions.PrimaryLanguage && update.Values.Any(v => v.Languages?.Count == 0))) 
-                            remainingLanguages.Add(valLang);
-                }
+                    var remainingLanguages = new List<ILanguage>();
+                    foreach (var valLang in orgVal.Languages) // first process master-languages, then read-only
+                    {
+                        // se if this language has already been set, in that case just leave it
+                        var valInResults =
+                            update.Values.FirstOrDefault(rv => rv.Languages.Any(rvl => rvl.Key == valLang.Key));
+                        if (valInResults == null)
+                            // special case: if the original set had named languages, and the new set has no language set (undefined = primary)
+                            // to detect this, we must check if we're on primary, and there may be a "undefined" language assignment
+                            if (!(valLang.Key == saveOptions.PrimaryLanguage &&
+                                  update.Values.Any(v => v.Languages?.Count == 0)))
+                                remainingLanguages.Add(valLang);
+                    }
 
-                // nothing found to keep...
-                if (remainingLanguages.Count == 0) return null;
+                    // nothing found to keep...
+                    if (remainingLanguages.Count == 0) return null;
 
-                // Add the value with the remaining languages / relationships
-                // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
-                //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
-                var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
-                var val = _multiBuilder.Value.Clone(orgVal, original.Type, languagesToUse);
-                return val;
-            })
+                    // Add the value with the remaining languages / relationships
+                    // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
+                    //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
+                    var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
+                    var val = _multiBuilder.Value.Clone(orgVal, original.Type, languagesToUse);
+                    return val;
+                })
                 .Where(val => val != null)
-                .ToList();
+                .ToImmutableList();
 
             // everything in the update will be kept, and optionally some stuff in the original may be preserved
             var result = _multiBuilder.Attribute.Clone(update, values);
