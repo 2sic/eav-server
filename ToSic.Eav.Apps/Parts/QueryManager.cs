@@ -88,9 +88,10 @@ namespace ToSic.Eav.Apps.Parts
             // Get/Save Query EntityGuid. Its required to assign Query Parts to it.
             var qdef = Parent.Read.Queries.Get(queryId);
 
-            // todo: maybe create a GetBestValue<typed> ? 
-            if (((IAttribute<bool?>)qdef.Entity["AllowEdit"]).TypedContents == false)
-                throw new InvalidOperationException("Query has AllowEdit set to false");
+            // todo: maybe create a GetBestValue<typed> ?
+            const string AllowEdit = "AllowEdit";
+            if (qdef.Entity.GetBestValue<bool>(AllowEdit, Array.Empty<string>()) == false)
+                throw new InvalidOperationException($"Query has {AllowEdit} set to false");
 
             Dictionary<string, Guid> addedSources = SavePartsAndGenerateRenameMap(
                 partDefs, qdef.Entity.EntityGuid);

@@ -8,8 +8,10 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Defines an attribute with name and the type this attribute has.
     /// Part of of a <see cref="IContentType"/> definition.
-    /// Note: Fully #immutable
     /// </summary>
+    /// <remarks>
+    /// * completely #immutable since v15.04
+    /// </remarks>
     [PrivateApi("2021-09-30 changed to private, before was internal-this is just fyi, always use the interface")]
     public class ContentTypeAttribute : AttributeBase, IContentTypeAttribute
     {
@@ -29,21 +31,6 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Extended constructor when also storing the persistence Id
         /// </summary>
-        //public ContentTypeAttribute(
-        //    int appId,
-        //    string name,
-        //    string type,
-        //    bool isTitle,
-        //    int attributeId,
-        //    int sortOrder,
-        //    IMetadataOf metadata = default) : base(name, type)
-        //{
-        //    AppId = appId;
-        //    IsTitle = isTitle;
-        //    AttributeId = attributeId;
-        //    SortOrder = sortOrder;
-        //    Metadata = metadata;
-        //}
         public ContentTypeAttribute(
             int appId,
             string name,

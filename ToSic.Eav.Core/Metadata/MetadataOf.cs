@@ -17,6 +17,9 @@ namespace ToSic.Eav.Metadata
     /// It's usually on a <strong>Metadata</strong> property of things that can have metadata.
     /// </summary>
     /// <typeparam name="T">The type this metadata uses as a key - int, string, guid</typeparam>
+    /// <remarks>
+    /// * Since v15.04 fully #immutable
+    /// </remarks>
     [PrivateApi] // changed 2020-12-09 v11.11 from [PublicApi_Stable_ForUseInYourCode] - as this is a kind of lazy-metadata, we should change it to that
     public class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamped
     {

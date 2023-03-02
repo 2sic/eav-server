@@ -134,9 +134,6 @@ namespace ToSic.Eav.Apps.Parts
                     return attributes == null ? entity : Builder.Entity.Clone(entity, attributes: attributes);
                 }).ToList();
 
-                //// Clear Ephemeral attributes which shouldn't be saved (new in v12)
-                //entities.ForEach(e => ClearEphemeralAttributes(e));
-
                 // attach relationship resolver - important when saving data which doesn't yet have the guid
                 entities.ForEach(appState.Relationships.AttachRelationshipResolver);
 

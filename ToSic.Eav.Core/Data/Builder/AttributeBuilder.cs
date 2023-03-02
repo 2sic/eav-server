@@ -123,8 +123,8 @@ namespace ToSic.Eav.Data.Builder
             return attributes;
         }
 
-        public IImmutableDictionary<string, IAttribute> EmptyList() => _emptyAttributes;
-        private static readonly IImmutableDictionary<string, IAttribute> _emptyAttributes = new Dictionary<string, IAttribute>().ToImmutableInvariant();
+        public IImmutableDictionary<string, IAttribute> EmptyList() => _emptyList;
+        private static readonly IImmutableDictionary<string, IAttribute> _emptyList = new Dictionary<string, IAttribute>().ToImmutableInvariant();
 
 
         public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, IAttribute> attributes)

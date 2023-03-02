@@ -5,10 +5,10 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents an Attribute Definition.
     /// Used in Content-Types and IEntities.
-    /// Note: Fully #immutable
     /// </summary>
     /// <remarks>
-    /// > We recommend you read about the [](xref:Basics.Data.Index)
+    /// * completely #immutable since v15.04
+    /// * We recommend you read about the [](xref:Basics.Data.Index)
     /// </remarks>
     [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi. This is just fyi, use Interface IAttributeBase")]
     public class AttributeBase : IAttributeBase

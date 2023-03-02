@@ -7,10 +7,11 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// Represents an Attribute / Property of an Entity with Values of a Generic Type
+    /// Represents an Attribute / Property of an Entity with Values of a Generic Type.
     /// </summary>
     /// <remarks>
-    /// > We recommend you read about the [](xref:Basics.Data.Index)
+    /// * completely #immutable since v15.04
+    /// * We recommend you read about the [](xref:Basics.Data.Index)
     /// </remarks>
     /// <typeparam name="T">Type of the Value</typeparam>
     [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi, this is just fyi, use interface IAttribute<T>")]
@@ -19,10 +20,6 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create an attribute object - usually when building up the data-model for caching.
         /// </summary>
-        //public Attribute(string name, string type, IImmutableList<IValue> values = null) : base(name, type)
-        //{
-        //    Values = values ?? new List<IValue>().ToImmutableList();
-        //}
         public Attribute(string name, ValueTypes type, IImmutableList<IValue> values = null) : base(name, type)
         {
             Values = values ?? new List<IValue>().ToImmutableList();

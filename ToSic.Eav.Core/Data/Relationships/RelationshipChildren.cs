@@ -30,7 +30,7 @@ namespace ToSic.Eav.Data
         {
             get
             {
-                if (_attributes == null) return null;
+                if (_attributes == null) return new List<IEntity>();
                 return _attributes.ContainsKey(attributeName) 
                     ? (_attributes[attributeName] as Attribute<IEnumerable<IEntity>>)?.TypedContents 
                     : new List<IEntity>();

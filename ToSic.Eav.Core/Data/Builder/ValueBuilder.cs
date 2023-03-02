@@ -22,13 +22,6 @@ namespace ToSic.Eav.Data.Builder
             => Build(type, original.ObjectContents, languages ?? original.Languages.ToImmutableList());
 
 
-        /// <summary>
-        /// Creates a Typed Value Model
-        /// </summary>
-        public IValue Build(string attributeType, object value, IImmutableList<ILanguage> languages = null,
-            IEntitiesSource fullEntityListForLookup = null)
-            => Build(ValueTypeHelpers.Get(attributeType), value, languages, fullEntityListForLookup);
-
         public IValue BuildRelationship(List<int?> references, IEntitiesSource app)
         {
             return new Value<IEnumerable<IEntity>>(new LazyEntities(app, references), DimensionBuilder.NoLanguages);

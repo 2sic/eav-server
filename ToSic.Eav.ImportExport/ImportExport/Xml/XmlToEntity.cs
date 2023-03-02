@@ -169,18 +169,20 @@ namespace ToSic.Eav.ImportExport.Xml
 
                 // construct value elements
                 var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
-                        => _multiBuilder.Value.Build(tempImportValue.XmlValue.Attribute(
-                                                         XmlConstants.EntityTypeAttribute)?.Value ??
-                                                     throw new NullReferenceException(
-                                                         "cant' build attribute with unknown value-type"),
+                        => _multiBuilder.Value.Build(
+                            ValueTypeHelpers.Get(
+                                tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value ??
+                                throw new NullReferenceException("can't build attribute with unknown value-type")
+                            ),
                             tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
                             throw new NullReferenceException("can't build attribute without value"),
                             tempImportValue.Dimensions.ToImmutableList()))
                     .ToList();
 
                 // construct the attribute with these value elements
-                var newAttr = _multiBuilder.Attribute.CreateTyped(sourceAttrib.StaticName,
-                    tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value,
+                var newAttr = _multiBuilder.Attribute.CreateTyped(
+                    sourceAttrib.StaticName,
+                    ValueTypeHelpers.Get(tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value),
                     currentAttributesImportValues);
 
                 // attach to attributes-list

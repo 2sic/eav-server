@@ -16,6 +16,9 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// The default constructor to create a value object. Used internally to build the memory model. 
         /// </summary>
+        /// <remarks>
+        /// * completely #immutable since v15.04
+        /// </remarks>
         public Value(T typedContents, IImmutableList<ILanguage> languages)
         {
             TypedContents = typedContents;
