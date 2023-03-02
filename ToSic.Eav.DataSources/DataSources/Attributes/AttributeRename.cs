@@ -107,7 +107,7 @@ namespace ToSic.Eav.DataSources
 
             var preserveOthers = KeepOtherAttributes;
 
-            Dictionary<string, IAttribute> CreateDic(IEntity original)
+            IDictionary<string, IAttribute> CreateDic(IEntity original)
             {
                 return original.Attributes
                     .Select(a =>
@@ -147,7 +147,7 @@ namespace ToSic.Eav.DataSources
                 .Select(entity =>
                 {
                     var values = CreateDic(entity);
-                    return _multiBuilder.Entity.Clone(entity, values: values, type: newType);
+                    return _multiBuilder.Entity.Clone(entity, valuesInvariant: _multiBuilder.Attribute.Create(values), type: newType);
                 })
                 .ToImmutableArray();
 

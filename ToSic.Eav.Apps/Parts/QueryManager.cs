@@ -93,9 +93,8 @@ namespace ToSic.Eav.Apps.Parts
 
         private IEntity CopyAndResetIds(IEntity original, Guid? newMetadataTarget = null)
         {
-            var serializer = Serializer.Value;
-            var newSer = serializer.Serialize(original);
-            var newEnt = serializer.Deserialize(newSer);
+            var newSer = Serializer.Value.Serialize(original);
+            var newEnt = Serializer.Value.Deserialize(newSer);
 
             // TODO: NOTE - here a clean clone/copy should be ok
             newEnt = _multiBuilder.Value.Entity.Clone(newEnt,

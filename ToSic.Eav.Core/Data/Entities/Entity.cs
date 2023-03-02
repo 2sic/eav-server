@@ -31,8 +31,9 @@ namespace ToSic.Eav.Data
             ITarget metadataFor,
             bool placeDraftInBranch = false,
             int publishedId = default)
-            : base(appId, entityId, guid, contentType, partsBuilder, rawValues, titleFieldName, created: created, modified: modified, owner: owner, metadataFor: metadataFor)
+            : base(appId, entityId, guid, contentType, partsBuilder, rawValues: null, titleFieldName, created: created, modified: modified, owner: owner, metadataFor: metadataFor)
         {
+            // TODO: islight isn't used any more, rawValues is always null
             IsLight = rawValues != null;
             Attributes = values;
             RepositoryId = repositoryId;

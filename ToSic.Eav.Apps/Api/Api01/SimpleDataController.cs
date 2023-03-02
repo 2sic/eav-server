@@ -162,7 +162,7 @@ namespace ToSic.Eav.Api.Api01
             var pubAndValues = BuildNewEntityValues(type, preparedIAttributes, _defaultLanguageCode, existingIsPublished);
 
             var newEntity = _builder.Entity.Create(appId: _appId, guid: eGuid, contentType: type,
-                attributes: pubAndValues.Attributes.ToImmutableInvariant(),
+                attributes: _builder.Attribute.Create(pubAndValues.Attributes),
                 owner: owner, metadataFor: targetOrNull);
             if (targetOrNull != null) l.A("FYI: Set metadata target which was provided.");
 
