@@ -53,5 +53,7 @@ namespace ToSic.Eav.Data
         [PrivateApi("experimental in 12.05")]
         (IValue ValueField, object Result) GetTypedValue(string[] languageKeys);
 
+        [PrivateApi("internal only")]
+        IAttribute CloneWithNewValues(IList<IValue> values);
     }
 }

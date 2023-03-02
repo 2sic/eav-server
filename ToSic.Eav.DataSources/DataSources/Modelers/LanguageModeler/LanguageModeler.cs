@@ -96,7 +96,7 @@ namespace ToSic.Eav.DataSources
             var result = new List<IEntity>();
             foreach (var entity in originals)
             {
-                var attributes = _multiBuilder.Attribute.ListDeepClone(entity.Attributes);
+                var attributes = _multiBuilder.Attribute.ListDeepCloneOrNull(entity.Attributes);
 
                 foreach (var map in fieldMap)
                     // if source value contains = it must be a language mapping
@@ -152,7 +152,7 @@ namespace ToSic.Eav.DataSources
                         attributes.Add(map.Target, newAttribute);
                     }
 
-                var modifiedEntity = _multiBuilder.Entity.Clone(entity, values: attributes);
+                var modifiedEntity = _multiBuilder.Entity.Clone(entity, valuesInvariant: _multiBuilder.Attribute.Create(attributes));
 
                 result.Add(modifiedEntity);
             }

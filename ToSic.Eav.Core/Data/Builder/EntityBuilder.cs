@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
-using static System.StringComparer;
+
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
 
 namespace ToSic.Eav.Data.Builder
@@ -46,9 +45,7 @@ namespace ToSic.Eav.Data.Builder
             )
         {
             Eav.Parameters.ProtectAgainstMissingParameterNames(noParamOrder);
-            var typedValues = attributes ?? Attribute.Empty();
-            //if (typedValues == null)
-            //    (typedValues, _) = PreprocessValues(valuesToBeRemoved, null);
+            var typedValues = attributes ?? Attribute.EmptyList();
 
             // If repositoryId isn't known set it it to EntityId
             repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
@@ -62,43 +59,17 @@ namespace ToSic.Eav.Data.Builder
             return new Entity(appId, entityId, repositoryId: repositoryId,
                 partsBuilder: partsBuilder, 
                 contentType: contentType,
-                rawValues: null, // typedRawValues,// ToImmutableDictionary(InvariantCultureIgnoreCase),
+                rawValues: null,
                 values: typedValues,
-                guid: guid, titleFieldName: titleField,
+                guid: guid,
+                titleFieldName: titleField,
                 created: created, modified: modified, owner: owner,
                 version: version, isPublished: isPublished,
                 metadataFor: metadataFor,
                 placeDraftInBranch: placeDraftInBranch,
                 publishedId: publishedId);
         }
-
-        //private (IImmutableDictionary<string, IAttribute> values, IImmutableDictionary<string, object> rawValues) PreprocessValues(IDictionary<string, IAttribute> values, IDictionary<string, object> rawValues)
-        //{
-        //    // if we have typed, make sure invariant
-        //    values = values?.ToInvariant();
-
-        //    // If we have values, only use these; done
-        //    if (values != null)
-        //        return (values.ToImmutableInvariant(), null);
-
-        //    // If typed and basic values don't exist, set Typed as new list for now WIP
-        //    if (rawValues == null)
-        //        return (new Dictionary<string, IAttribute>().ToImmutableInvariant(), null);
-
-        //    // Typed values exist if given explicitly, OR if the values are of the desired type
-        //    if (rawValues.All(x => x.Value is IAttribute))
-        //        return(rawValues.ToImmutableDictionary(pair => pair.Key, pair => pair.Value as IAttribute, InvariantCultureIgnoreCase), null);
-
-        //    // Apparently we don't have values, and the raw are really raw, so make sure we convert them
-        //    return (Attribute.Create(rawValues), null);
-        //    //var useLightMode = true;
-        //    //if (useLightMode)
-        //    //    values = _attributeBuilder.ConvertToIAttributeDic(rawValues);
-        //    //else
-        //    //    rawValues = null;
-
-        //    //return (values?.ToImmutableInvariant(), rawValues?.ToImmutableInvariant());
-        //}
+        
 
         /// <summary>
         /// Create a new Entity from a data store (usually SQL backend)

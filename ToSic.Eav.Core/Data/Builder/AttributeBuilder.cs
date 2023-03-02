@@ -22,6 +22,16 @@ namespace ToSic.Eav.Data.Builder
         #endregion
 
 
+        public IAttribute<T> Create<T>(string name, string type, IList<IValue> values)
+        {
+            return new Attribute<T>(name, type, values);
+        }
+
+        public IAttribute Clone(IAttribute original, IList<IValue> values)
+        {
+            return original.CloneWithNewValues(values);
+        }
+             
         ///// <summary>
         ///// Create a reference / relationship attribute on an entity being constructed (at DB load)
         ///// </summary>
@@ -49,9 +59,9 @@ namespace ToSic.Eav.Data.Builder
         //}
 
         // Note: ATM it makes a deep clone, but once everything is #immutable that won't be necessary any more
-        public Dictionary<string, IAttribute> ListDeepClone(IDictionary<string, IAttribute> attributes) 
+        public Dictionary<string, IAttribute> ListDeepCloneOrNull(IDictionary<string, IAttribute> attributes) 
             => attributes?.ToDictionary(pair => pair.Key, pair => CloneUpdateOne(pair.Value), InvariantCultureIgnoreCase);
-        public Dictionary<string, IAttribute> ListDeepClone(IReadOnlyDictionary<string, IAttribute> attributes) 
+        public IDictionary<string, IAttribute> ListDeepCloneOrNull(IReadOnlyDictionary<string, IAttribute> attributes) 
             => attributes?.ToDictionary(pair => pair.Key, pair => CloneUpdateOne(pair.Value), InvariantCultureIgnoreCase);
 
         public IAttribute CloneUpdateOne(IAttribute original, IList<IValue> values = null)
@@ -118,15 +128,17 @@ namespace ToSic.Eav.Data.Builder
             return attributes;
         }
 
-        public IImmutableDictionary<string, IAttribute> Empty() => new Dictionary<string, IAttribute>().ToImmutableInvariant();
+        public IImmutableDictionary<string, IAttribute> EmptyList() => _emptyAttributes;
+        private static readonly IImmutableDictionary<string, IAttribute> _emptyAttributes = new Dictionary<string, IAttribute>().ToImmutableInvariant();
+
 
         public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, IAttribute> attributes)
-            => attributes?.ToImmutableInvariant() ?? Empty();
+            => attributes?.ToImmutableInvariant() ?? EmptyList();
 
         public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, object> attributes)
         {
             if (attributes == null)
-                return Empty();
+                return EmptyList();
 
             if (attributes.All(x => x.Value is IAttribute))
                 return attributes.ToImmutableDictionary(pair => pair.Key, pair => pair.Value as IAttribute, InvariantCultureIgnoreCase);

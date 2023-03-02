@@ -71,7 +71,7 @@ namespace ToSic.Eav.ImportExport.Json
                 .ToList();
 
             // build attributes - based on type definition
-            IImmutableDictionary<string, IAttribute> attributes = Services.MultiBuilder.Attribute.Empty();// new Dictionary<string, IAttribute>();
+            IImmutableDictionary<string, IAttribute> attributes = Services.MultiBuilder.Attribute.EmptyList();
             if (contentType.IsDynamic)
             {
                 if (allowDynamic)
@@ -84,7 +84,7 @@ namespace ToSic.Eav.ImportExport.Json
                 // Note v12.03: even though we're using known types, ATM there are edge cases 
                 // with system types where the type is known, but the entities-source is not a full app-state
                 // We'll probably correct this some day, but for now we're including the relationshipSource if defined
-                attributes = BuildAttribsOfKnownType(jEnt.Attributes, contentType, null, dynRelationshipsSource);
+                attributes = BuildAttribsOfKnownType(jEnt.Attributes, contentType, dynRelationshipsSource);
             }
 
 
@@ -98,14 +98,7 @@ namespace ToSic.Eav.ImportExport.Json
                 created: DateTime.MinValue, modified: DateTime.Now,
                 owner: jEnt.Owner, version: jEnt.Version);
 
-            //if (jEnt.Metadata != null)
-            //{
 
-            //    // Attach the metadata, ensure that it won't reload data from the App otherwise the metadata would get reset again
-            //    ((IMetadataInternals)newEntity.Metadata).Use(mdItems, false);
-            //}
-
-            
             return (newEntity, l.Try(() => $"'{newEntity?.GetBestTitle()}'", "can't get title"));
         });
 
@@ -131,14 +124,14 @@ namespace ToSic.Eav.ImportExport.Json
         {
             var attribs = new Dictionary<string, IAttribute>[]
             {
-                BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, newEntity, null),
-                BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, newEntity, null),
-                BuildAttrib(jAtts.Custom, ValueTypes.Custom, newEntity, null),
-                BuildAttrib(jAtts.Json, ValueTypes.Json, newEntity, null),
-                BuildAttrib(jAtts.Entity, ValueTypes.Entity, newEntity, relationshipsSource),
-                BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, newEntity, null),
-                BuildAttrib(jAtts.Number, ValueTypes.Number, newEntity, null),
-                BuildAttrib(jAtts.String, ValueTypes.String, newEntity, null)
+                BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, null),
+                BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, null),
+                BuildAttrib(jAtts.Custom, ValueTypes.Custom, null),
+                BuildAttrib(jAtts.Json, ValueTypes.Json, null),
+                BuildAttrib(jAtts.Entity, ValueTypes.Entity, relationshipsSource),
+                BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, null),
+                BuildAttrib(jAtts.Number, ValueTypes.Number, null),
+                BuildAttrib(jAtts.String, ValueTypes.String, null)
             };
             var final = attribs
                 .Where(dic => dic != null)
@@ -148,96 +141,132 @@ namespace ToSic.Eav.ImportExport.Json
             return final;
         });
 
-        private Dictionary<string, IAttribute> BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, ValueTypes type, Entity newEntity, IEntitiesSource relationshipsSource)
+        private Dictionary<string, IAttribute> BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, ValueTypes type, IEntitiesSource relationshipsSource)
         {
             if (list == null) return null;
 
+            var builder = Services.MultiBuilder;
             var newAttributes = list.ToDictionary(
-                    a => a.Key,
-                    attrib
-                    => Services.MultiBuilder.Attribute.CreateTyped(attrib.Key, type,
-                        attrib.Value.Select(v =>
-                                Services.MultiBuilder.Value.Build(type, v.Value, RecreateLanguageList(v.Key),
-                                    relationshipsSource))
-                            .ToList()),
-                    InvariantCultureIgnoreCase);
-                
+                a => a.Key,
+                attrib => builder.Attribute.CreateTyped(attrib.Key, type,
+                    attrib.Value.Select(v =>
+                            builder.Value.Build(type, v.Value, RecreateLanguageList(v.Key),
+                                relationshipsSource))
+                        .ToList()),
+                InvariantCultureIgnoreCase);
 
-            //foreach (var attrib in list)
-            //{
-            //    var newAtt = Services.MultiBuilder.Attribute.CreateTyped(attrib.Key, type, attrib.Value
-            //        .Select(v => Services.MultiBuilder.Value.Build(type, v.Value, RecreateLanguageList(v.Key), relationshipsSource))
-            //        .ToList());
-            //    // #immutableTodo
-            //    newEntity.Attributes.Add(newAtt.Name, newAtt);
-            //}
 
             return newAttributes;
         }
 
-        private IImmutableDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, Entity newEntity, IEntitiesSource relationshipsSource = null
+        private IImmutableDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, IEntitiesSource relationshipsSource = null
         ) => Log.Func(() => contentType.Attributes.ToImmutableDictionary(
             a => a.Name, 
             a => 
             {
-                var newAtt = Services.MultiBuilder.Attribute.CreateTyped(a.Name, a.Type);
-                switch (a.ControlledType)
-                {
-                    case ValueTypes.Boolean:
-                        BuildValues(jAtts.Boolean, a, newAtt);
-                        break;
-                    case ValueTypes.DateTime:
-                        BuildValues(jAtts.DateTime, a, newAtt);
-                        break;
-                    case ValueTypes.Entity:
-                        if (!jAtts.Entity?.ContainsKey(a.Name) ?? true)
-                            break; // just keep the empty definition, as that's fine
-                        newAtt.Values = jAtts.Entity[a.Name]
-                            .Select(v => Services.MultiBuilder.Value.Build(
-                                a.Type,
-                                v.Value,
-                                // 2023-02-24 2dm #immutable
-                                //RecreateLanguageList(v.Key),
-                                DimensionBuilder.NoLanguages,
-                                relationshipsSource ?? LazyRelationshipLookupList))
-                            .ToList();
-                        break;
-                    case ValueTypes.Hyperlink:
-                        BuildValues(jAtts.Hyperlink, a, newAtt);
-                        break;
-                    case ValueTypes.Number:
-                        BuildValues(jAtts.Number, a, newAtt);
-                        break;
-                    case ValueTypes.String:
-                        BuildValues(jAtts.String, a, newAtt);
-                        break;
-                    case ValueTypes.Custom:
-                        BuildValues(jAtts.Custom, a, newAtt);
-                        break;
-                    case ValueTypes.Json:
-                        BuildValues(jAtts.Json, a, newAtt);
-                        break;
-                    // ReSharper disable RedundantCaseLabel
-                    case ValueTypes.Empty:
-                    case ValueTypes.Undefined:
-                        // ReSharper restore RedundantCaseLabel
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+
+                // TODO: FINISH THIS - GET VALUES BEFORE CREATING THE TYPE
+                var values = GetValues(a, jAtts, relationshipsSource);
+                var newAtt = Services.MultiBuilder.Attribute.CreateTyped(a.Name, a.Type, values);
+                //switch (a.ControlledType)
+                //{
+                //    case ValueTypes.Boolean:
+                //        BuildValues(jAtts.Boolean, a, newAtt);
+                //        break;
+                //    case ValueTypes.DateTime:
+                //        BuildValues(jAtts.DateTime, a, newAtt);
+                //        break;
+                //    case ValueTypes.Entity:
+                //        if (!jAtts.Entity?.ContainsKey(a.Name) ?? true)
+                //            break; // just keep the empty definition, as that's fine
+                //        newAtt.Values = jAtts.Entity[a.Name]
+                //            .Select(v => Services.MultiBuilder.Value.Build(
+                //                a.Type,
+                //                v.Value,
+                //                // 2023-02-24 2dm #immutable
+                //                //RecreateLanguageList(v.Key),
+                //                DimensionBuilder.NoLanguages,
+                //                relationshipsSource ?? LazyRelationshipLookupList))
+                //            .ToList();
+                //        break;
+                //    case ValueTypes.Hyperlink:
+                //        BuildValues(jAtts.Hyperlink, a, newAtt);
+                //        break;
+                //    case ValueTypes.Number:
+                //        BuildValues(jAtts.Number, a, newAtt);
+                //        break;
+                //    case ValueTypes.String:
+                //        BuildValues(jAtts.String, a, newAtt);
+                //        break;
+                //    case ValueTypes.Custom:
+                //        BuildValues(jAtts.Custom, a, newAtt);
+                //        break;
+                //    case ValueTypes.Json:
+                //        BuildValues(jAtts.Json, a, newAtt);
+                //        break;
+                //    // ReSharper disable RedundantCaseLabel
+                //    case ValueTypes.Empty:
+                //    case ValueTypes.Undefined:
+                //        // ReSharper restore RedundantCaseLabel
+                //        break;
+                //    default:
+                //        throw new ArgumentOutOfRangeException();
+                //}
 
                 return newAtt;
             },
             InvariantCultureIgnoreCase));
 
-        private void BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IContentTypeAttribute attrDef, IAttribute target)
+        private IList<IValue> GetValues(IContentTypeAttribute a, JsonAttributes jAtts, IEntitiesSource relationshipsSource = null)
         {
-            if (!list?.ContainsKey(attrDef.Name) ?? true) return;
-            target.Values = list[attrDef.Name]
+            switch (a.ControlledType)
+            {
+                case ValueTypes.Boolean: return BuildValues(jAtts.Boolean, a);
+                case ValueTypes.DateTime:
+                    return BuildValues(jAtts.DateTime, a);
+                case ValueTypes.Entity:
+                    if (!jAtts.Entity?.ContainsKey(a.Name) ?? true)
+                        return new List<IValue>(); // just keep the empty definition, as that's fine
+                    return jAtts.Entity[a.Name].Select(v => Services.MultiBuilder.Value.Build(
+                            a.Type,
+                            v.Value,
+                            // 2023-02-24 2dm #immutable
+                            //RecreateLanguageList(v.Key),
+                            DimensionBuilder.NoLanguages,
+                            relationshipsSource ?? LazyRelationshipLookupList))
+                        .ToList();
+                case ValueTypes.Hyperlink: return BuildValues(jAtts.Hyperlink, a);
+                case ValueTypes.Number: return BuildValues(jAtts.Number, a);
+                case ValueTypes.String: return BuildValues(jAtts.String, a);
+                case ValueTypes.Custom: return BuildValues(jAtts.Custom, a);
+                case ValueTypes.Json: return BuildValues(jAtts.Json, a);
+                // ReSharper disable RedundantCaseLabel
+                case ValueTypes.Empty:
+                case ValueTypes.Undefined:
+                    // ReSharper restore RedundantCaseLabel
+                    return new List<IValue>();
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IContentTypeAttribute attrDef)
+        {
+            if (!list?.ContainsKey(attrDef.Name) ?? true) return new List<IValue>();
+            return list[attrDef.Name]
                 .Select(v => Services.MultiBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
                 .ToList();
 
         }
+
+        //private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IContentTypeAttribute attrDef, IAttribute target)
+        //{
+        //    if (!list?.ContainsKey(attrDef.Name) ?? true) return new List<IValue>();
+        //    return target.Values = list[attrDef.Name]
+        //        .Select(v => Services.MultiBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
+        //        .ToList();
+
+        //}
 
         private static IImmutableList<ILanguage> RecreateLanguageList(string languages) 
             => languages == NoLanguage

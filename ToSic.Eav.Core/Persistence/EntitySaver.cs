@@ -7,6 +7,7 @@ using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
+using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence
@@ -65,14 +66,14 @@ namespace ToSic.Eav.Persistence
 
             #region Step 2: clean up unwanted attributes from both lists
 
-            var origAttribs = _multiBuilder.Attribute.ListDeepClone(original?.Attributes);
-            var newAttribs = _multiBuilder.Attribute.ListDeepClone(update.Attributes);
+            var origAttribsOrNull = _multiBuilder.Attribute.ListDeepCloneOrNull(original?.Attributes);
+            var newAttribs = _multiBuilder.Attribute.ListDeepCloneOrNull(update.Attributes);
 
-            l.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribs?.Count}, newAtts⋮{newAttribs.Count}");
+            l.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribsOrNull?.Count}, newAtts⋮{newAttribs.Count}");
 
             // Optionally remove original values not in the update - but only if no option prevents this
             if (originalWasSaved && !saveOptions.PreserveUntouchedAttributes && !saveOptions.SkipExistingAttributes)
-                origAttribs = KeepOnlyKnownKeys(origAttribs, newAttribs.Keys.ToList());
+                origAttribsOrNull = KeepOnlyKnownKeys(origAttribsOrNull, newAttribs.Keys.ToList());
 
             // Optionaly remove unknown - if possible - of both original and new
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
@@ -83,19 +84,20 @@ namespace ToSic.Eav.Persistence
                 keys.Add(Attributes.EntityFieldGuid);
                 keys.Add(Attributes.EntityFieldIsPublished);
 
+                // TODO: NOTE this looks wrong - as it would null-error if origAttributes were null
                 // tmp store original IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
-                AddIsPublishedAttribute(origAttribs, original?.IsPublished);
+                AddIsPublishedAttribute(origAttribsOrNull, original?.IsPublished);
                 // tmp store update IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
                 AddIsPublishedAttribute(newAttribs, update.IsPublished);
 
-                if (originalWasSaved) origAttribs = KeepOnlyKnownKeys(origAttribs, keys);
+                if (originalWasSaved) origAttribsOrNull = KeepOnlyKnownKeys(origAttribsOrNull, keys);
                 newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
             }
 
             // optionally remove new things which already exist
             if (originalWasSaved && saveOptions.SkipExistingAttributes)
                 newAttribs = KeepOnlyKnownKeys(newAttribs, newAttribs.Keys
-                    .Where(k => !origAttribs.Keys.Any(k.EqualsInsensitive)).ToList());
+                    .Where(k => !origAttribsOrNull.Keys.Any(k.EqualsInsensitive)).ToList());
 
             #endregion
 
@@ -112,16 +114,16 @@ namespace ToSic.Eav.Persistence
                         "primary language must exist in languages, cannot continue preparation to save with unclear language setup");
 
 
-            if (hasLanguages && !saveOptions.PreserveUnknownLanguages && (saveOptions.Languages?.Any() ?? false))
+            if (hasLanguages && !saveOptions.PreserveUnknownLanguages && saveOptions.Languages?.Any() == true)
             {
-                if (originalWasSaved) StripUnknownLanguages(origAttribs, saveOptions);
-                StripUnknownLanguages(newAttribs, saveOptions);
+                if (originalWasSaved) origAttribsOrNull = StripUnknownLanguages(origAttribsOrNull, saveOptions);
+                newAttribs = StripUnknownLanguages(newAttribs, saveOptions);
             }
 
             #endregion
 
             // now merge into new target
-            var mergedAttribs = origAttribs ?? newAttribs;
+            var mergedAttribs = origAttribsOrNull ?? newAttribs;
             if (original != null)
                 foreach (var newAttrib in newAttribs)
                     mergedAttribs[newAttrib.Key] = saveOptions.PreserveExistingLanguages &&
@@ -160,13 +162,16 @@ namespace ToSic.Eav.Persistence
         /// <remarks>
         /// this expects that saveOptions contain Languages & PrimaryLanguage, and that this is reliable
         /// </remarks>
-        private void StripUnknownLanguages(Dictionary<string, IAttribute> allFields, SaveOptions saveOptions) => Log.Do(() =>
+        private IDictionary<string, IAttribute> StripUnknownLanguages(IDictionary<string, IAttribute> allFields, SaveOptions saveOptions) => Log.Func(() =>
         {
             var languages = saveOptions.Languages;
 
-            foreach (var field in allFields)
+            var modified = allFields.ToDictionary(
+                    pair => pair.Key,
+                    field =>
+                //foreach (var field in allFields)
             {
-                var values = new List<IValue>();       // new empty values list
+                var values = new List<IValue>(); // new empty values list
 
                 // when we go through the values, we should always take the primary language first
                 // this is detectable by having either no language, or having the primary language
@@ -177,13 +182,17 @@ namespace ToSic.Eav.Persistence
                     var newLangs = value.Languages?
                         .Where(l => languages.Any(sysLang => sysLang.Matches(l.Key)))
                         .ToImmutableList();
-                    // only keep this value, if it is either the first (so contains primary or null-language) or that it still has a remaining language assignment
+                    // only keep this value, if it is either the first (so contains primary or null-language)
+                    // ...or that it still has a remaining language assignment
                     if (values.Any() && !(newLangs?.Any() ?? false)) continue;
-                    //value.Languages = newLangs;
                     values.Add(value.Clone(newLangs));
                 }
-                field.Value.Values = values;
-            }
+
+                //field.Value.Values = values;
+                return _multiBuilder.Attribute.Clone(field.Value, values);
+            }, InvariantCultureIgnoreCase);
+
+            return modified;
         });
 
         private static IList<IValue> ValuesOrderedForProcessing(IList<IValue> values, SaveOptions saveOptions)
@@ -251,18 +260,17 @@ namespace ToSic.Eav.Persistence
         private DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
         private DimensionBuilder _langBuilder;
 
-        private Dictionary<string, IAttribute> KeepOnlyKnownKeys(Dictionary<string, IAttribute> orig, List<string> keys)
+        private IDictionary<string, IAttribute> KeepOnlyKnownKeys(IDictionary<string, IAttribute> orig, List<string> keys) => Log.Func(() =>
         {
-            var callLog = Log.Fn<Dictionary<string, IAttribute>>("keep only known keys");
             var lowerKeys = keys.Select(k => k.ToLowerInvariant()).ToList();
             var result = orig
                 .Where(a => lowerKeys.Contains(a.Key.ToLowerInvariant()))
                 .ToDictionary(a => a.Key, a => a.Value);
-            return callLog.Return(result, $"{result.Count}");
-        }
+            return (result, $"{result.Count}");
+        });
 
-        private (/*IEntity Entity,*/ Dictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)
-            CorrectPublishedAndGuidImports(/*IEntity newE,*/ Dictionary<string, IAttribute> values, bool logDetails
+        private (/*IEntity Entity,*/ IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)
+            CorrectPublishedAndGuidImports(/*IEntity newE,*/ IDictionary<string, IAttribute> values, bool logDetails
             ) => Log.Func(enabled: logDetails, func: l =>
         {
             // check IsPublished

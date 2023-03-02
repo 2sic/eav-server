@@ -24,6 +24,12 @@ namespace ToSic.Eav.Data
             Values = values ?? new List<IValue>();
         }
 
+        [PrivateApi]
+        public IAttribute CloneWithNewValues(IList<IValue> values)
+        {
+            return new Attribute<T>(Name, Type, values);
+        }
+
         /// <inheritdoc/>
         public IList<IValue> Values { get; set; }
 
