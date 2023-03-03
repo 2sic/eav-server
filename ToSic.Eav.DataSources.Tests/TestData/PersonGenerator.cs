@@ -85,7 +85,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
         {
             if (!convert) return original;
 
-            var attribute = MultiBuilder.Attribute.CreateTyped(name,  ValueTypes.String, new List<IValue>
+            var attribute = MultiBuilder.Attribute.TestCreateTyped(name,  ValueTypes.String, new List<IValue>
             {
                 MultiBuilder.Value.Build4Test(ValueTypes.String, PriPrefix + original, new List<ILanguage> { Clone(LangPri)}),
                 MultiBuilder.Value.Build4Test(ValueTypes.String, EnPrefix + original, new List<ILanguage> { Clone(LangEn)}),
@@ -102,7 +102,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
         {
             if (!convert) return isMale ? BioMaleNoLangLast : BioFemaleNoLangFirst;
 
-            var attribute = MultiBuilder.Attribute.CreateTyped(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
+            var attribute = MultiBuilder.Attribute.TestCreateTyped(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
             {
                 MultiBuilder.Value.Build4Test(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { Clone(LangEn)}),
                 MultiBuilder.Value.Build4Test(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
@@ -117,7 +117,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
         private object MaybeMakeMlNonString<T>(bool convert, string name, ValueTypes type, T original) =>
             !convert
                 ? (object) original
-                : MultiBuilder.Attribute.CreateTyped(name, type, new List<IValue>
+                : MultiBuilder.Attribute.TestCreateTyped(name, type, new List<IValue>
                 {
                     MultiBuilder.Value.Build4Test(type, original, DimensionBuilder.NoLanguages),
                 });

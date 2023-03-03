@@ -153,15 +153,15 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private Entity _prodEn;
         private Entity GetProdEn() 
         {
-            var title = Builder.Attribute.CreateTyped(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
+            var title = Builder.Attribute.TestCreateTyped(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
             {
                 Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn)}),
             });
-            var teaser = Builder.Attribute.CreateTyped("Teaser", ValueTypes.String, new List<IValue>
+            var teaser = Builder.Attribute.TestCreateTyped("Teaser", ValueTypes.String, new List<IValue>
             {
                 Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { Clone(langEn)}),
             });
-            var file = Builder.Attribute.CreateTyped("File", ValueTypes.String, new List<IValue>
+            var file = Builder.Attribute.TestCreateTyped("File", ValueTypes.String, new List<IValue>
             {
                 Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn) }),
             });
@@ -181,7 +181,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private Entity GetProductEntityMl()
         {
-            var title = Builder.Attribute.CreateTyped(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
+            var title = Builder.Attribute.TestCreateTyped(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
             {
                 Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn) }),
                 Builder.Value.Build4Test(ValueTypes.String, "Title DE",
@@ -189,7 +189,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 Builder.Value.Build4Test(ValueTypes.String, "titre FR", new List<ILanguage> { Clone(langFr)})
             });
 
-            var teaser = Builder.Attribute.CreateTyped("Teaser", ValueTypes.String, new List<IValue>
+            var teaser = Builder.Attribute.TestCreateTyped("Teaser", ValueTypes.String, new List<IValue>
             {
                 Builder.Value.Build4Test(ValueTypes.String, "teaser de de", new List<ILanguage> {Clone(langDeDe) }),
                 Builder.Value.Build4Test(ValueTypes.String, "teaser de CH", new List<ILanguage> {Clone(langDeCh)}),
@@ -197,7 +197,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 // special test: leave EN (primary) at end of list, as this could happen in real life
                 Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {Clone(langEn)}),
             });
-            var file = Builder.Attribute.CreateTyped("File", ValueTypes.String, new List<IValue>
+            var file = Builder.Attribute.TestCreateTyped("File", ValueTypes.String, new List<IValue>
             {
                 Builder.Value.Build4Test(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
                 Builder.Value.Build4Test(ValueTypes.String, "File de de",
