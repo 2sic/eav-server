@@ -156,7 +156,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                         // increase version
                         dbEnt.Version++;
-                        //newEnt = _builder.Entity.ResetIdentifiers(newEnt, version: dbEnt.Version);
+                        //newEnt = _factory.Entity.ResetIdentifiers(newEnt, version: dbEnt.Version);
                         newEnt = _builder.Entity.Clone(newEnt, id: resetId, version: dbEnt.Version);
 
                         // prepare export for save json OR versioning later on
@@ -289,7 +289,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 publishedId: newEnt.EntityId, // set this, in case we'll create a new one
                 id: existingDraftId ?? 0  // set to the draft OR 0 = new
             ) as Entity;
-            //var clone = _builder.Entity.ResetIdentifiers(newEnt,
+            //var clone = _factory.Entity.ResetIdentifiers(newEnt,
             //    publishedId: newEnt.EntityId, // set this, in case we'll create a new one
             //    newId: existingDraftId ?? 0  // set to the draft OR 0 = new
             //) as Entity;

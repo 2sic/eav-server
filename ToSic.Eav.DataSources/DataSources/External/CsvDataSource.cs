@@ -119,18 +119,18 @@ namespace ToSic.Eav.DataSources
 
 
         [PrivateApi]
-        public CsvDataSource(MyServices services, IDataBuilder dataBuilder, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv")
+        public CsvDataSource(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv")
         {
             ConnectServices(
                 _user = user,
                 _serverPaths = serverPaths,
-                _dataBuilder = dataBuilder
+                _dataFactory = dataFactory
             );
             Provide(GetList);
         }
         private readonly IUser _user;
         private readonly IServerPaths _serverPaths;
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
 
 
         private ImmutableArray<IEntity> GetList() => Log.Func(() =>
@@ -217,7 +217,7 @@ namespace ToSic.Eav.DataSources
                             $"{commonErrorsIdTitle}"), "err");
                 }
 
-                _dataBuilder.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName);
+                _dataFactory.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName);
 
                 // Parse data
                 while (parser.Read())
@@ -239,7 +239,7 @@ namespace ToSic.Eav.DataSources
                     for (var i = 0; i < headers.Length; i++)
                         entityValues.Add(headers[i], (i < fields.Length) ? fields[i] : null);
 
-                    entityList.Add(_dataBuilder.Create(values: entityValues, id: entityId));
+                    entityList.Add(_dataFactory.Create(values: entityValues, id: entityId));
                 }
             }
 

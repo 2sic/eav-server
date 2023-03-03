@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Apps: DataSource
 	{
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
 
         #region Configuration-properties (no config)
 
@@ -84,10 +84,10 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Apps")
+        public Apps(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.Apps")
         {
             ConnectServices(
-                _dataBuilder = dataBuilder.Configure(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
+                _dataFactory = dataFactory.Configure(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
             );
 
             _appGenerator = services.AppGenerator;
@@ -140,7 +140,7 @@ namespace ToSic.Eav.DataSources.Sys
                 if (error != null)
                     appEnt["Error"] = error;
 
-                var result = _dataBuilder.Create(appEnt, id: app.Key, guid: guid ?? Guid.Empty);
+                var result = _dataFactory.Create(appEnt, id: app.Key, guid: guid ?? Guid.Empty);
                 return result;
 
             }).ToImmutableList();

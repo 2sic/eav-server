@@ -99,7 +99,7 @@
 //                {
 //                    /* ignore */
 //                }
-//                var e = DataBuilder.Entity(ContentTypeUtil.BuildDictionary(t),
+//                var e = DataFactory.Entity(ContentTypeUtil.BuildDictionary(t),
 //                    appId: AppState.AppId,
 //                    id: t.Id,
 //                    titleField: ContentTypeType.Name.ToString(),

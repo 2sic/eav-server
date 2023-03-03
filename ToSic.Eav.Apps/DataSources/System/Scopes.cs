@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Scopes : DataSource
     {
-        private readonly IDataBuilder _scopesDataBuilder;
+        private readonly IDataFactory _scopesFactory;
 
         #region Configuration-properties (no config)
 
@@ -40,12 +40,12 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Scopes(MyServices services, IAppStates appStates, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Scopes(MyServices services, IAppStates appStates, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _appStates = appStates,
                 // Note: these are really the scopes of the current app, so we set the AppId
-                _scopesDataBuilder = dataBuilder.Configure(appId: AppId, typeName: "Scope")
+                _scopesFactory = dataFactory.Configure(appId: AppId, typeName: "Scope")
             );
             Provide(GetList);
         }
@@ -59,7 +59,7 @@ namespace ToSic.Eav.DataSources.Sys
 
             var scopes = _appStates.Get(appId).ContentTypes.GetAllScopesWithLabels();
 
-            var scopeBuilder = _scopesDataBuilder;
+            var scopeBuilder = _scopesFactory;
             var list = scopes
                 .Select(s => scopeBuilder.Create(new Dictionary<string, object>
                     {

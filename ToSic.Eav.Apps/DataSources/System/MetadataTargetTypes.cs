@@ -31,12 +31,12 @@ namespace ToSic.Eav.DataSources.Sys
 
     public class MetadataTargetTypes : DataSource
     {
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
 
-        public MetadataTargetTypes(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
+        public MetadataTargetTypes(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
         {
             ConnectServices(
-                _dataBuilder = dataBuilder.Configure(appId: 0, titleField: Data.Attributes.TitleNiceName, typeName: "MetadataTargetTypes")
+                _dataFactory = dataFactory.Configure(appId: 0, titleField: Data.Attributes.TitleNiceName, typeName: "MetadataTargetTypes")
             );
             Provide(GetList);
         }
@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources.Sys
                 .ToList();
 
             var list = publicTargetTypes
-                .Select(set => _dataBuilder.Create(
+                .Select(set => _dataFactory.Create(
                     new Dictionary<string, object>
                     {
                         { Data.Attributes.TitleNiceName, set.Title },

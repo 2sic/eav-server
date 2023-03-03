@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Zones: DataSource
 	{
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
 
         #region Configuration-properties (no config)
 
@@ -50,12 +50,12 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Zones DS
         /// </summary>
         [PrivateApi]
-		public Zones(MyServices services, IZoneMapper zoneMapper, IAppStates appStates, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.Zones")
+		public Zones(MyServices services, IZoneMapper zoneMapper, IAppStates appStates, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.Zones")
         {
             ConnectServices(
                 _zoneMapper = zoneMapper,
                 _appStates = appStates,
-                _dataBuilder = dataBuilder.Configure(appId: 0, titleField: ZoneType.Name.ToString(), typeName: ZoneContentTypeName)
+                _dataFactory = dataFactory.Configure(appId: 0, titleField: ZoneType.Name.ToString(), typeName: ZoneContentTypeName)
             );
             Provide(GetList);
         }
@@ -84,7 +84,7 @@ namespace ToSic.Eav.DataSources.Sys
                     {ZoneType.AppCount.ToString(), zone.Apps.Count}
                 };
 
-                return _dataBuilder.Create(znData, id: zone.ZoneId);
+                return _dataFactory.Create(znData, id: zone.ZoneId);
             });
             var results = list.ToImmutableArray();
             return (results, $"{results.Length}");

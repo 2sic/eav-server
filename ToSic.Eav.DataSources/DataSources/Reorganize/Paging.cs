@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources
 
     public sealed class Paging: DataSource
 	{
-        private readonly IDataBuilder _pagingBuilder;
+        private readonly IDataFactory _pagingFactory;
 
         #region Configuration-properties (no config)
 
@@ -77,10 +77,10 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public Paging(MyServices services, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.Paging")
+		public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.Paging")
         {
             ConnectServices(
-                _pagingBuilder = dataBuilder.Configure(typeName: "Paging")
+                _pagingFactory = dataFactory.Configure(typeName: "Paging")
             );
             Provide(GetList);
             Provide("Paging", GetPaging);
@@ -124,7 +124,7 @@ namespace ToSic.Eav.DataSources
                 { "PageCount", pageCount }
             };
 
-            var entity = _pagingBuilder.Create(paging, id: PageNumber);
+            var entity = _pagingFactory.Create(paging, id: PageNumber);
 
             // Assemble list of this for the stream
             var list = new List<IEntity> { entity };

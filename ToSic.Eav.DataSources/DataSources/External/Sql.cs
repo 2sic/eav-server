@@ -144,16 +144,16 @@ namespace ToSic.Eav.DataSources
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
 		[PrivateApi]
-		public Sql(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.ExtSql")
+		public Sql(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.ExtSql")
         {
             ConnectServices(
-                _dataBuilder = dataBuilder
+                _dataFactory = dataFactory
             );
             SqlServices = services;
             Provide(GetList);
         }
         [PrivateApi] protected readonly MyServices SqlServices;
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
 
         #endregion
 
@@ -321,7 +321,7 @@ namespace ToSic.Eav.DataSources
 			                             ?? columNames.FirstOrDefault();
 			            Log.A($"will use '{casedTitle}' as title field");
 
-                        _dataBuilder.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle);
+                        _dataFactory.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle);
 
                         #endregion
 
@@ -338,7 +338,7 @@ namespace ToSic.Eav.DataSources
 								var value = reader[c];
                                 return Convert.IsDBNull(value) ? null : value;
                             });
-                            var entity = _dataBuilder.Create(values, id: entityId);
+                            var entity = _dataFactory.Create(values, id: entityId);
 			                list.Add(entity);
 			            }
 

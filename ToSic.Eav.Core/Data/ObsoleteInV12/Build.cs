@@ -30,7 +30,7 @@
 //        /// <param name="modified"></param>
 //        /// <returns></returns>
 //        [PrivateApi]
-//        [Obsolete("Use the IDataBuilder for this - will be removed in 2sxc 12")]
+//        [Obsolete("Use the IDataFactory for this - will be removed in 2sxc 12")]
 //        public static IEntity Entity(
 //            Dictionary<string, object> values = null,
 //            string noParamOrder = Parameters.Protector,
@@ -60,7 +60,7 @@
 //        /// <param name="appId">optional app id for this item, defaults to the current app</param>
 //        /// <returns></returns>
 //        [PublicApi]
-//        [Obsolete("Use the IDataBuilder for this - will be removed in 2sxc 12")]
+//        [Obsolete("Use the IDataFactory for this - will be removed in 2sxc 12")]
 //        public static IEnumerable<IEntity> Entity(IEnumerable<Dictionary<string, object>> itemValues,
 //            string noParamOrder = Parameters.Protector,
 //            int appId = 0,
@@ -79,7 +79,7 @@
 //        ///// <param name="appId"></param>
 //        ///// <returns></returns>
 //        //[PrivateApi]
-//        //[Obsolete("Use the IDataBuilder for this - will be removed in 2sxc 12")]
+//        //[Obsolete("Use the IDataFactory for this - will be removed in 2sxc 12")]
 //        //public static Entity FakeEntity(int appId)
 //        //    => new Entity(
 //        //        appId,

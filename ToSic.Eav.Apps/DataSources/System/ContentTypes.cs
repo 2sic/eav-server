@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class ContentTypes: DataSource
 	{
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
 
         #region Configuration-properties (no config)
 
@@ -84,11 +84,11 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new ContentTypes DS
         /// </summary>
         [PrivateApi]
-        public ContentTypes(MyServices services, IAppStates appStates, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
+        public ContentTypes(MyServices services, IAppStates appStates, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
         {
             ConnectServices(
                 _appStates = appStates,
-                _dataBuilder = dataBuilder.Configure(appId: OfAppId, typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString())
+                _dataFactory = dataFactory.Configure(appId: OfAppId, typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString())
             );
             Provide(GetList);
 		}
@@ -117,7 +117,7 @@ namespace ToSic.Eav.DataSources.Sys
                     /* ignore */
                 }
 
-                return _dataBuilder.Create(ContentTypeUtil.BuildDictionary(t), id: t.Id, guid: guid ?? Guid.Empty);
+                return _dataFactory.Create(ContentTypeUtil.BuildDictionary(t), id: t.Id, guid: guid ?? Guid.Empty);
             });
 
             var result = list.ToImmutableArray();

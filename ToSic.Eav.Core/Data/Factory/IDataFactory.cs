@@ -11,10 +11,10 @@ namespace ToSic.Eav.Data.Factory
     /// In many cases it will also take care of auto increasing the id and more.
     /// </summary>
     /// <remarks>
-    /// * Added in v15 to replace the previous IDataBuilder which is now internal
+    /// * Added in v15 to replace the previous IDataFactory which is now internal
     /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("in development for v15 - should be final soon")]
-    public interface IDataBuilder
+    public interface IDataFactory
     {
         /// <summary>
         /// The App-ID which will be assigned to the generated entities.
@@ -58,12 +58,12 @@ namespace ToSic.Eav.Data.Factory
         /// <param name="idAutoIncrementZero">Default is `true`</param>
         /// <param name="createFromNewOptions">Optional special options which create-raw might use</param>
         /// <returns>Itself, to make call chaining easier</returns>
-        IDataBuilder Configure(
+        IDataFactory Configure(
             string noParamOrder = Parameters.Protector,
             int appId = default,
             string typeName = default,
             string titleField = default,
-            int idSeed = DataBuilder.DefaultIdSeed,
+            int idSeed = DataFactory.DefaultIdSeed,
             bool idAutoIncrementZero = true,
             CreateFromNewOptions createFromNewOptions = default
         );

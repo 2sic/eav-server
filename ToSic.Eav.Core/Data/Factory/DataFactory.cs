@@ -11,7 +11,7 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Data.Factory
 {
     [PrivateApi("Still experimental/hide implementation")]
-    public class DataBuilder : ServiceBase, IDataBuilder
+    public class DataFactory : ServiceBase, IDataFactory
     {
         #region Constants
 
@@ -29,7 +29,7 @@ namespace ToSic.Eav.Data.Factory
         /// <summary>
         /// Constructor for DI
         /// </summary>
-        public DataBuilder(MultiBuilder builder) : base("Ds.DatBld")
+        public DataFactory(MultiBuilder builder) : base("Ds.DatBld")
         {
             ConnectServices(
                 _builder = builder
@@ -69,7 +69,7 @@ namespace ToSic.Eav.Data.Factory
 
         #region Configure
         /// <inheritdoc />
-        public IDataBuilder Configure(
+        public IDataFactory Configure(
             string noParamOrder = Parameters.Protector,
             int appId = default,
             string typeName = default,
@@ -82,11 +82,11 @@ namespace ToSic.Eav.Data.Factory
             // Ensure parameters are named
             Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(Configure));
 
-            // Prevent the developer from re-using the DataBuilder
+            // Prevent the developer from re-using the DataFactory
             if (_alreadyConfigured)
                 throw new Exception(
                     $"{nameof(Configure)} was already called - you cannot call it twice. " +
-                    $"To get another {nameof(IDataBuilder)}, use Dependency Injection and/or a Generator<{nameof(IDataBuilder)}>.");
+                    $"To get another {nameof(IDataFactory)}, use Dependency Injection and/or a Generator<{nameof(IDataFactory)}>.");
             _alreadyConfigured = true;
 
             // Store settings

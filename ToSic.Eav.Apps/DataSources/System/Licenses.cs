@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Licenses : DataSource
     {
-        private readonly IDataBuilder _builder;
+        private readonly IDataFactory _factory;
 
         #region Configuration-properties (no config)
 
@@ -38,11 +38,11 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Licenses(MyServices services, ILicenseService licenseService, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Licenses(MyServices services, ILicenseService licenseService, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _licenseService = licenseService,
-                _builder = dataBuilder.Configure(typeName: "License")
+                _factory = dataFactory.Configure(typeName: "License")
             );
             Provide(GetList);
         }
@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources.Sys
             // Don't parse configuration as there is nothing to configure
             // Configuration.Parse();
 
-            var list = _builder.Build(_licenseService.All.OrderBy(l => l.License?.Priority ?? 0));
+            var list = _factory.Build(_licenseService.All.OrderBy(l => l.License?.Priority ?? 0));
             
             return (list, $"{list.Count}");
         });

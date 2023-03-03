@@ -51,16 +51,16 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public Attributes(IAppStates appStates, MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Attrib")
+		public Attributes(IAppStates appStates, MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.Attrib")
         {
             ConnectServices(
                 _appStates = appStates,
-                _dataBuilder = dataBuilder.Configure(titleField: AttributeType.Title.ToString(), typeName: AttribContentTypeName)
+                _dataFactory = dataFactory.Configure(titleField: AttributeType.Title.ToString(), typeName: AttribContentTypeName)
             );
             Provide(GetList);
 		}
         private readonly IAppStates _appStates;
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
 
         private ImmutableArray<IEntity> GetList()
 	    {
@@ -104,7 +104,7 @@ namespace ToSic.Eav.DataSources.Sys
                         list.Insert(0, AsDic(sysField.Key, ValueTypeHelpers.Get(sysField.Value), false, 0, true));
 
             // if it didn't work yet, maybe try from stream items
-            return list?.Select(attribData => _dataBuilder.Create(attribData)).ToImmutableArray()
+            return list?.Select(attribData => _dataFactory.Create(attribData)).ToImmutableArray()
                    ?? ImmutableArray<IEntity>.Empty;
         }
 

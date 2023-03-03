@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
         [TestMethod]
         public void JustAttachChildrenMappedFromParent()
         {
-            var builder = GetService<IDataBuilder>();
+            var builder = GetService<IDataFactory>();
 
             var parentsRaw = new NewItemWithOneParentAndManyChildren(1, Guid.Empty, 0, new List<int> { 101, 102 });
             var parents = builder.Prepare(parentsRaw);

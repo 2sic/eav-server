@@ -33,18 +33,18 @@ namespace ToSic.Eav.DataSources.Sys
         #endregion
 
 
-        private readonly IDataBuilder _builder;
+        private readonly IDataFactory _factory;
 
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Features(MyServices services, IFeaturesInternal featuresService, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Features(MyServices services, IFeaturesInternal featuresService, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _featuresService = featuresService,
-                _builder = dataBuilder.Configure(typeName: "Feature")
+                _factory = dataFactory.Configure(typeName: "Feature")
             );
             Provide(GetList);
         }
@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources.Sys
             // Don't parse configuration as there is nothing to configure
             // Configuration.Parse();
 
-            var list = _builder.Build(_featuresService.All.OrderBy(f => f.NameId));
+            var list = _factory.Build(_featuresService.All.OrderBy(f => f.NameId));
 
             return (list, $"{list.Count}");
         });

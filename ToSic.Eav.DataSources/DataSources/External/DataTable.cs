@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
     [PublicApi_Stable_ForUseInYourCode]
 	public class DataTable : ExternalData
 	{
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
         // help Link: https://r.2sxc.org/DsDataTable
 		#region Configuration-properties
 
@@ -81,10 +81,10 @@ namespace ToSic.Eav.DataSources
         /// Initializes a new instance of the DataTableDataSource class
         /// </summary>
         [PrivateApi]
-        public DataTable(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.ExtTbl")
+        public DataTable(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.ExtTbl")
         {
             ConnectServices(
-                _dataBuilder = dataBuilder
+                _dataFactory = dataFactory
             );
             Provide(GetEntities);
         }
@@ -137,7 +137,7 @@ namespace ToSic.Eav.DataSources
             if (!source.Columns.Contains(titleField))
                 throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-            _dataBuilder.Configure(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField);
+            _dataFactory.Configure(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField);
             
             // Populate a new Dictionary with EntityModels
             var result = new List<IEntity>();
@@ -151,7 +151,7 @@ namespace ToSic.Eav.DataSources
                     StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
                 var mod = (string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?) ?? DateTime.MinValue;
 
-                var entity = _dataBuilder.Create(values, id: entityId, modified: mod);
+                var entity = _dataFactory.Create(values, id: entityId, modified: mod);
                 result.Add(entity);
             }
 

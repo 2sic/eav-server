@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSources.Sys
 
     public sealed class QueryInfo : DataSource
     {
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
         private readonly LazySvc<DataSourceFactory> _dataSourceFactory;
         public QueryBuilder QueryBuilder { get; }
         private readonly LazySvc<QueryManager> _queryManagerLazy;
@@ -68,14 +68,14 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Attributes DS
         /// </summary>
         public QueryInfo(MyServices services, LazySvc<DataSourceFactory> dataSourceFactory,
-            LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, IDataBuilder dataBuilder) : base(
+            LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, IDataFactory dataFactory) : base(
             services, $"{DataSourceConstants.LogPrefix}.EavQIn")
         {
             ConnectServices(
                 QueryBuilder = queryBuilder,
                 _queryManagerLazy = queryManagerLazy,
                 _dataSourceFactory = dataSourceFactory,
-                _dataBuilder = dataBuilder.Configure(titleField: StreamsType.Name.ToString(),
+                _dataFactory = dataFactory.Configure(titleField: StreamsType.Name.ToString(),
                     typeName: QueryStreamsContentType)
             );
             Provide(GetStreams);
@@ -87,7 +87,7 @@ namespace ToSic.Eav.DataSources.Sys
             CustomConfigurationParse();
 
             var result = _query?.Out.OrderBy(stream => stream.Key).Select(stream
-                                 => _dataBuilder.Create(new Dictionary<string, object>
+                                 => _dataFactory.Create(new Dictionary<string, object>
                                  {
                                      {StreamsType.Name.ToString(), stream.Key}
                                  }))

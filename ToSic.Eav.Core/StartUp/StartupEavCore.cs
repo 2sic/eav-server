@@ -25,7 +25,7 @@ namespace ToSic.Eav.StartUp
         public static IServiceCollection AddEavCore(this IServiceCollection services)
         {
             // Data Builder & Converters
-            services.TryAddTransient<IDataBuilder, DataBuilder>(); // v15.03
+            services.TryAddTransient<IDataFactory, DataFactory>(); // v15.03
             services.TryAddTransient<MultiBuilder>();
             services.TryAddTransient<DimensionBuilder>();
             services.TryAddTransient<AttributeBuilder>();
