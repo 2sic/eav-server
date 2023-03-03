@@ -47,5 +47,11 @@ namespace ToSic.Eav.Data
         IEntity ICanBeEntity.Entity => this;
 
         #endregion
+
+        #region ToString to improve debugging experience
+
+        public override string ToString() => $"{GetType()} =id:{EntityId}/{EntityGuid}";
+
+        #endregion
     }
 }
