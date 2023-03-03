@@ -31,20 +31,20 @@ namespace ToSic.Eav.Apps.ImportExport
         public Import(LazySvc<AppManager> appManagerLazy, 
             IImportExportEnvironment importExportEnvironment,
             LazySvc<EntitySaver> entitySaverLazy,
-            MultiBuilder multiBuilder
+            DataBuilder dataBuilder
             ) : base("Eav.Import")
         {
             ConnectServices(
                 _appManagerLazy = appManagerLazy,
                 _importExportEnvironment = importExportEnvironment,
                 _entitySaver = entitySaverLazy,
-                _multiBuilder = multiBuilder
+                _dataBuilder = dataBuilder
             );
         }
         private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly IImportExportEnvironment _importExportEnvironment;
         private readonly LazySvc<EntitySaver> _entitySaver;
-        private readonly MultiBuilder _multiBuilder;
+        private readonly DataBuilder _dataBuilder;
 
 
         public Import Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes)
@@ -194,7 +194,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private List<IEntity> MetadataWithResetIds(IMetadataOf metadata)
         {
             return metadata.Concat(metadata.Permissions.Select(p => p.Entity))
-                .Select(e => _multiBuilder.Entity.Clone(e, id: 0, repositoryId: 0, guid: Guid.NewGuid()))
+                .Select(e => _dataBuilder.Entity.Clone(e, id: 0, repositoryId: 0, guid: Guid.NewGuid()))
                 .ToList();
         }
 
@@ -212,7 +212,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var newAttributes = contentType.Attributes.Select(a =>
                     {
                         var attributeMetadata = MetadataWithResetIds(a.Metadata);
-                        return _multiBuilder.TypeAttributeBuilder.Clone(a, metadataItems: attributeMetadata);
+                        return _dataBuilder.TypeAttributeBuilder.Clone(a, metadataItems: attributeMetadata);
                     })
                     .ToList();
 
@@ -230,7 +230,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 //foreach (var metadata in contentType.Metadata)
                 //    metadata.ResetEntityId();
 
-                var newType = _multiBuilder.ContentType.Clone(contentType, metadataItems: ctMetadata,
+                var newType = _dataBuilder.ContentType.Clone(contentType, metadataItems: ctMetadata,
                     attributes: newAttributes);
                 return (newType, "existing not found, only reset IDs");
             }
@@ -252,7 +252,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                     if (newAttribute.Metadata.Permissions.Any())
                         newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
-                    return _multiBuilder.TypeAttributeBuilder.Clone(newAttribute, metadataItems: newMetaList);
+                    return _dataBuilder.TypeAttributeBuilder.Clone(newAttribute, metadataItems: newMetaList);
                 })
                 .ToList();
 
@@ -281,7 +281,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 .ToList();
             merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
 
-            var newContentType = _multiBuilder.ContentType.Clone(contentType, metadataItems: merged, attributes: mergedAttributes);
+            var newContentType = _dataBuilder.ContentType.Clone(contentType, metadataItems: merged, attributes: mergedAttributes);
             // contentType.Metadata.Use(merged);
 
             return (newContentType, "done");
@@ -295,7 +295,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 //metadataToUse = newMd;
                 // Important to reset, otherwise the save process assumes it already exists in the DB
                 // NOTE: clone would be ok
-                return _multiBuilder.Entity.Clone(newMd, guid: Guid.NewGuid(), id: 0);
+                return _dataBuilder.Entity.Clone(newMd, guid: Guid.NewGuid(), id: 0);
                 //return _entityBuilder.ResetIdentifiers(newMd, newGuid: Guid.NewGuid(), newId: 0);
                 //metadataToUse.ResetEntityId();
                 //metadataToUse.SetGuid(Guid.NewGuid());
@@ -339,7 +339,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Simplest case - nothing existing to update: return update-entity unchanged
             if (existingEntities == null || !existingEntities.Any())
-                return (_multiBuilder.Entity.Clone(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
+                return (_dataBuilder.Entity.Clone(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
 
             Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information,
                 $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));

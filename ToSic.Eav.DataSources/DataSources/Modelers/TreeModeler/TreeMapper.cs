@@ -22,13 +22,13 @@ namespace ToSic.Eav.DataSources
 
 
         #endregion
-        private readonly MultiBuilder _builder;
+        private readonly DataBuilder _builder;
 
         /// <summary>
         /// Constructor for DI
         /// </summary>
         /// <param name="builder"></param>
-        public TreeMapper(MultiBuilder builder): base("DS.TreeMp")
+        public TreeMapper(DataBuilder builder): base("DS.TreeMp")
         {
             _builder = builder;
             Debug = false;

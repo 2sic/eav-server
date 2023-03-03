@@ -131,7 +131,7 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
 
         public Sql GenerateSqlDataSource(string connection, string query, string typeName)
         {
-            return CreateDataSource<Sql>(new LookUpTestData(GetService<MultiBuilder>()).AppSetAndRes())
+            return CreateDataSource<Sql>(new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes())
                 .Setup(connection, query, typeName);
         }
     }

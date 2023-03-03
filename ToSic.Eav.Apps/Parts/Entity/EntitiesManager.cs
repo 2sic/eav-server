@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.Parts
             LazySvc<EntitySaver> entitySaverLazy,
             AppsCacheSwitch appsCache, // Note: Singleton
             LazySvc<JsonSerializer> jsonSerializer,
-            LazySvc<MultiBuilder> multiBuilder,
+            LazySvc<DataBuilder> multiBuilder,
             Generator<ExportListXml> exportListXmlGenerator
             ) : base("App.EntMan")
         {
@@ -68,8 +68,8 @@ namespace ToSic.Eav.Apps.Parts
         private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false));
         private Import _import;
 
-        private readonly LazySvc<MultiBuilder> _multiBuilder;
-        private MultiBuilder Builder => _multiBuilder.Value;
+        private readonly LazySvc<DataBuilder> _multiBuilder;
+        private DataBuilder Builder => _multiBuilder.Value;
 
         #endregion
 

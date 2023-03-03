@@ -17,10 +17,10 @@ namespace ToSic.Eav.DataSourceTests.TestData
         public DataTablePerson(TestBaseEavDataSource parent) : base(parent)
         {
             _parent = parent;
-            _multiBuilder = GetService<MultiBuilder>();
+            _dataBuilder = GetService<DataBuilder>();
         }
 
-        private readonly MultiBuilder _multiBuilder;
+        private readonly DataBuilder _dataBuilder;
 
         private static readonly Dictionary<int, DataTable> CachedDs = new Dictionary<int, DataTable>();
 
@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                 new DataColumn(PersonSpecs.FieldModifiedInternal, typeof(DateTime)),
             });
 
-            new PersonGenerator(_multiBuilder).GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId)
+            new PersonGenerator(_dataBuilder).GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId)
                 .ForEach(person => dataTable.Rows.Add(person.Id,
                     person.FullName,
                     person.First,
@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                     person.CityOrNull,
                     person.Modified));
 
-            var source = _parent.CreateDataSource<DataTable>(new LookUpTestData(_multiBuilder).AppSetAndRes())
+            var source = _parent.CreateDataSource<DataTable>(new LookUpTestData(_dataBuilder).AppSetAndRes())
                 .Setup(dataTable, PersonSpecs.PersonTypeName, 
                     titleField: PersonSpecs.FieldFullName, 
                     modifiedField: PersonSpecs.FieldModifiedInternal)

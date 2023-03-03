@@ -39,7 +39,7 @@ namespace ToSic.Eav.Api.Api01
         /// Used for DI - must always call Init to use
         /// </summary>
         public SimpleDataController(
-            MultiBuilder builder,
+            DataBuilder builder,
             LazySvc<AppManager> appManagerLazy,
             LazySvc<DbDataController> dbDataLazy,
             IZoneMapper zoneMapper,
@@ -60,7 +60,7 @@ namespace ToSic.Eav.Api.Api01
         private readonly IZoneMapper _zoneMapper;
         private readonly IContextOfSite _ctx;
         private readonly Generator<AppPermissionCheck> _appPermissionCheckGenerator;
-        private readonly MultiBuilder _builder;
+        private readonly DataBuilder _builder;
 
 
         private DbDataController _context;

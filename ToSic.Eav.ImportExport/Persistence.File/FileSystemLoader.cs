@@ -23,17 +23,17 @@ namespace ToSic.Eav.Persistence.File
     public partial class FileSystemLoader: ServiceBase, IContentTypeLoader
     {
         private readonly Generator<JsonSerializer> _jsonSerializerGenerator;
-        private readonly MultiBuilder _multiBuilder;
+        private readonly DataBuilder _dataBuilder;
         public int AppId = -999;
 
         /// <summary>
         /// Empty constructor for DI
         /// </summary>
-        public FileSystemLoader(Generator<JsonSerializer> jsonSerializerGenerator, MultiBuilder multiBuilder) : base($"{EavLogs.Eav}.FsLoad")
+        public FileSystemLoader(Generator<JsonSerializer> jsonSerializerGenerator, DataBuilder dataBuilder) : base($"{EavLogs.Eav}.FsLoad")
         {
             ConnectServices(
                 _jsonSerializerGenerator = jsonSerializerGenerator,
-                _multiBuilder = multiBuilder
+                _dataBuilder = dataBuilder
             );
         }
 
@@ -200,7 +200,7 @@ namespace ToSic.Eav.Persistence.File
                 var ct = ser.DeserializeContentType(json);
 
                 infoIfError = "couldn't set source/parent";
-                ct = _multiBuilder.ContentType.Clone(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: Constants.PresetContentTypeFakeParent, repoAddress: path);
+                ct = _dataBuilder.ContentType.Clone(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: Constants.PresetContentTypeFakeParent, repoAddress: path);
                 return ct;
             }
             catch (IOException e)
@@ -293,7 +293,7 @@ namespace ToSic.Eav.Persistence.File
                 var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
 
                 var newContentTypes = contentTypes
-                    .Select(ct => _multiBuilder.ContentType.Clone(ct, id: ++TypeIdSeed,
+                    .Select(ct => _dataBuilder.ContentType.Clone(ct, id: ++TypeIdSeed,
                         repoType: RepoType, repoAddress: path,
                         parentTypeId: Constants.PresetContentTypeFakeParent,
                         configZoneId: Constants.PresetZoneId,
@@ -328,7 +328,7 @@ namespace ToSic.Eav.Persistence.File
                     .Select(e =>
                     {
                         var newId = ++EntityIdSeed;
-                        return _multiBuilder.Entity.Clone(e, id: newId, repositoryId: newId);
+                        return _dataBuilder.Entity.Clone(e, id: newId, repositoryId: newId);
                     })
                     .ToList();
                 //entities.ForEach(e => e.ResetEntityIdAll(++EntityIdSeed));

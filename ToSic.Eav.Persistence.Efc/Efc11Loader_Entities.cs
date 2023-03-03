@@ -130,7 +130,7 @@ namespace ToSic.Eav.Persistence.Efc
                 //fromJson.Created = e.Created;
                 //fromJson.Modified = e.Modified;
                 //fromJson.Owner = e.Owner;
-                var clonedExtended = _multiBuilder.Entity.Clone(fromJson,
+                var clonedExtended = _dataBuilder.Entity.Clone(fromJson,
                     isPublished: e.IsPublished,
                     created: e.Created,
                     modified: e.Modified,
@@ -146,7 +146,7 @@ namespace ToSic.Eav.Persistence.Efc
             // Prepare relationships to add to AttributeGenerator
             var emptyValueList = new List<(string StaticName, IValue)>();
             var preparedRelationships = relatedEntities.TryGetValue(e.EntityId, out var rawRels)
-                ? rawRels.Select(r => (r.StaticName, _multiBuilder.Value.BuildRelationship(r.Children, app))).ToList()
+                ? rawRels.Select(r => (r.StaticName, _dataBuilder.Value.BuildRelationship(r.Children, app))).ToList()
                 : emptyValueList;
 
             var attributeValuesLookup = !attributes.TryGetValue(e.EntityId, out var attribValues)
@@ -162,7 +162,7 @@ namespace ToSic.Eav.Persistence.Efc
                     .SelectMany(a =>
                     {
                         var results = a.Values
-                            .Select(v => _multiBuilder.Value.Build(a.CtAttribute.Type, v.Value, v.Languages))
+                            .Select(v => _dataBuilder.Value.Build(a.CtAttribute.Type, v.Value, v.Languages))
                             .ToList();
                         var final = DataRepair.FixIncorrectLanguageDefinitions(results, primaryLanguage);
                         return final.Select(r => (a.Name, r));
@@ -174,8 +174,8 @@ namespace ToSic.Eav.Persistence.Efc
                 .ToLookup(x => x.Item1, x => x.Item2, InvariantCultureIgnoreCase);
 
             // Get all Attributes of that Content-Type
-            var newAttributes = _multiBuilder.Attribute.GenerateAttributesOfContentType(contentType, mergedValueLookups);
-            var newEntity = _multiBuilder.Entity.EntityFromRepository(
+            var newAttributes = _dataBuilder.Attribute.GenerateAttributesOfContentType(contentType, mergedValueLookups);
+            var newEntity = _dataBuilder.Entity.EntityFromRepository(
                 appId: app.AppId,
                 entityGuid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,
                 metadataFor: e.MetadataFor, 

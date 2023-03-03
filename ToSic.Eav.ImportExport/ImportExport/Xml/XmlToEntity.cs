@@ -23,15 +23,15 @@ namespace ToSic.Eav.ImportExport.Xml
             public List<DimensionDefinition> PrioritizedDimensions = new List<DimensionDefinition>();
         }
 
-        public XmlToEntity(IAppStates appStates, MultiBuilder multiBuilder) : base("Imp.XmlEnt")
+        public XmlToEntity(IAppStates appStates, DataBuilder dataBuilder) : base("Imp.XmlEnt")
         {
             ConnectServices(
-                _multiBuilder = multiBuilder
+                _dataBuilder = dataBuilder
             );
             _presetApp = appStates.GetPresetApp();
         }
 
-        private readonly MultiBuilder _multiBuilder;
+        private readonly DataBuilder _dataBuilder;
         private readonly AppState _presetApp;
 
         public XmlToEntity Init(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
@@ -169,7 +169,7 @@ namespace ToSic.Eav.ImportExport.Xml
 
                 // construct value elements
                 var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
-                        => _multiBuilder.Value.Build(
+                        => _dataBuilder.Value.Build(
                             ValueTypeHelpers.Get(
                                 tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value ??
                                 throw new NullReferenceException("can't build attribute with unknown value-type")
@@ -180,7 +180,7 @@ namespace ToSic.Eav.ImportExport.Xml
                     .ToList();
 
                 // construct the attribute with these value elements
-                var newAttr = _multiBuilder.Attribute.CreateTyped(
+                var newAttr = _dataBuilder.Attribute.CreateTyped(
                     sourceAttrib.StaticName,
                     ValueTypeHelpers.Get(tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value),
                     currentAttributesImportValues);
@@ -209,13 +209,13 @@ namespace ToSic.Eav.ImportExport.Xml
                 var newTypeRepoType = xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True"
                     ? RepositoryTypes.Folder
                     : RepositoryTypes.Sql;
-                typeForEntity = _multiBuilder.ContentType.Create(appId: AppId,
+                typeForEntity = _dataBuilder.ContentType.Create(appId: AppId,
                     id: 0, name: typeName, nameId: null, scope: null, repositoryType: newTypeRepoType);
             }
 		    var targetEntity = // globalType != null
-		        // ? _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, typedValues: finalAttributes)
+		        // ? _dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, typedValues: finalAttributes)
                 // If not yet a known type, create a temporary pointer ContentType
-		        /*:*/ _multiBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity,
+		        /*:*/ _dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity,
                     attributes: finalAttributes.ToImmutableInvariant(),
                     metadataFor: metadataForFor);
 		    //if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);

@@ -6,13 +6,13 @@ namespace ToSic.Eav.DataSourceTests.TestData
 {
     public class PersonsDataSource: DataSources.DataSource
     {
-        public PersonsDataSource(MyServices services, MultiBuilder multiBuilder): base(services, "TST.Person")
+        public PersonsDataSource(MyServices services, DataBuilder dataBuilder): base(services, "TST.Person")
         {
-            _multiBuilder = multiBuilder;
+            _dataBuilder = dataBuilder;
             Provide(GetPersons);
         }
 
-        private MultiBuilder _multiBuilder;
+        private DataBuilder _dataBuilder;
 
         public PersonsDataSource Init(int itemsToGenerate = 10, int firstId = 1001, bool multiLanguage = false)
         {
@@ -27,8 +27,8 @@ namespace ToSic.Eav.DataSourceTests.TestData
 
         private IImmutableList<IEntity> GetPersons()
         {
-            var persons = new PersonGenerator(_multiBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
-            var list = new PersonGenerator(_multiBuilder).Person2Entity(persons, _multiLanguage);
+            var persons = new PersonGenerator(_dataBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
+            var list = new PersonGenerator(_dataBuilder).Person2Entity(persons, _multiLanguage);
             return list.ToImmutableArray();
         }
     }

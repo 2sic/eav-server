@@ -8,13 +8,13 @@ namespace ToSic.Eav.Core.Tests.LookUp
 {
     public class LookUpTestData
     {
-        private readonly MultiBuilder _builder;
+        private readonly DataBuilder _builder;
         public const string KeyAppSettings = "AppSettings";
         public const string KeyAppResources = "AppResources";
 
         private const int AppIdX = -1;
 
-        public LookUpTestData(MultiBuilder builder)
+        public LookUpTestData(DataBuilder builder)
         {
             _builder = builder;
         }

@@ -81,7 +81,7 @@ namespace ToSic.Eav.Repository.Efc
             Generator<JsonSerializer> jsonSerializerGenerator,
             ILogStore logStore,
             LazySvc<Compressor> compressor,
-            MultiBuilder builder
+            DataBuilder builder
             ) : base("Db.Data")
         {
             ConnectServices(
@@ -97,7 +97,7 @@ namespace ToSic.Eav.Repository.Efc
             SqlDb.AlternateSaveHandler += SaveChanges;
         }
 
-        private readonly MultiBuilder _builder;
+        private readonly DataBuilder _builder;
         private readonly LazySvc<Efc11Loader> _efcLoaderLazy;
         private readonly LazySvc<IUser> _userLazy;
         private readonly AppsCacheSwitch _appsCache;

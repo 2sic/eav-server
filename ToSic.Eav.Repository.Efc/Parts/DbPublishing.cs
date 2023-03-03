@@ -10,8 +10,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     internal class DbPublishing : BllCommandBase
     {
-        private readonly MultiBuilder _builder;
-        public DbPublishing(DbDataController c, MultiBuilder builder) : base(c, "Db.Publ")
+        private readonly DataBuilder _builder;
+        public DbPublishing(DbDataController c, DataBuilder builder) : base(c, "Db.Publ")
         {
             _builder = builder;
         }

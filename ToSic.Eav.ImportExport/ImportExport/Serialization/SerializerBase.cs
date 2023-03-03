@@ -19,13 +19,13 @@ namespace ToSic.Eav.Serialization
 
         public class MyServices: MyServicesBase
         {
-            public MultiBuilder MultiBuilder { get; }
+            public DataBuilder DataBuilder { get; }
 
-            public MyServices(ITargetTypes metadataTargets, MultiBuilder multiBuilder, IAppStates appStates)
+            public MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppStates appStates)
             {
                 ConnectServices(
                     MetadataTargets = metadataTargets,
-                    MultiBuilder = multiBuilder,
+                    DataBuilder = dataBuilder,
                     AppStates = appStates
                 );
             }
@@ -112,7 +112,7 @@ namespace ToSic.Eav.Serialization
 
         protected IContentType GetTransientContentType(string name, string nameId)
         {
-            var defaultTransient = Services.MultiBuilder.ContentType.Transient(AppId, name, nameId);
+            var defaultTransient = Services.DataBuilder.ContentType.Transient(AppId, name, nameId);
             return ContentTypeProvider?.LazyTypeGenerator(AppId, name, nameId, defaultTransient)
                    ?? defaultTransient;
         }

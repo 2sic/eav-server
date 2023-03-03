@@ -18,11 +18,11 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public partial class QueryManager: PartOf<AppManager>
     {
-        private readonly LazySvc<MultiBuilder> _builder;
+        private readonly LazySvc<DataBuilder> _builder;
 
         public QueryManager(
             LazySvc<SystemManager> systemManagerLazy,
-            LazySvc<MultiBuilder> builder,
+            LazySvc<DataBuilder> builder,
             LazySvc<ValueBuilder> valueBuilder,
             LazySvc<JsonSerializer> jsonSerializer,
             LazySvc<Eav.DataSources.Queries.QueryManager> queryManager

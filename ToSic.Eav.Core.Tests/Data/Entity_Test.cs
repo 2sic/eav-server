@@ -14,7 +14,7 @@ namespace ToSic.Eav.Core.Tests.Data
         [TestMethod]
         public void Entity_CreateSimpleUnpersistedEntity()
         {
-            var entDaniel = new SampleData(GetService<MultiBuilder>()).TestEntityDaniel();
+            var entDaniel = new SampleData(GetService<DataBuilder>()).TestEntityDaniel();
 
             Assert.AreEqual(1, entDaniel.EntityId);
             Assert.AreEqual(Guid.Empty, entDaniel.EntityGuid);
@@ -28,7 +28,7 @@ namespace ToSic.Eav.Core.Tests.Data
         [TestMethod]
         public void Entity_EntityRelationship()
         {
-            var entityBuilder = GetService<MultiBuilder>();
+            var entityBuilder = GetService<DataBuilder>();
             var sampleData = new SampleData(entityBuilder);
             var dan = sampleData.TestEntityDaniel();
             var relDtoL = new EntityRelationship(dan, sampleData.TestEntityLeonie());

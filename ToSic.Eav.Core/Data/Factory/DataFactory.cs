@@ -29,13 +29,13 @@ namespace ToSic.Eav.Data.Factory
         /// <summary>
         /// Constructor for DI
         /// </summary>
-        public DataFactory(MultiBuilder builder) : base("Ds.DatBld")
+        public DataFactory(DataBuilder builder) : base("Ds.DatBld")
         {
             ConnectServices(
                 _builder = builder
             );
         }
-        private readonly MultiBuilder _builder;
+        private readonly DataBuilder _builder;
 
         #endregion
 

@@ -5,9 +5,9 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Builder
 {
-    public class MultiBuilder: ServiceBase
+    public class DataBuilder: ServiceBase
     {
-        public MultiBuilder(
+        public DataBuilder(
             LazySvc<EntityBuilder> entityBuilder,
             LazySvc<AttributeBuilderForImport> attributeImport,
             LazySvc<AttributeBuilder> attributeBuilder,

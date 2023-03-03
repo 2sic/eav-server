@@ -17,10 +17,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public MergeEntitiesTests()
         {
             _entitySaver = GetService<EntitySaver>();
-            Builder = GetService<MultiBuilder>();
+            Builder = GetService<DataBuilder>();
         }
         private readonly EntitySaver _entitySaver;
-        protected MultiBuilder Builder { get; }
+        protected DataBuilder Builder { get; }
 
 
 

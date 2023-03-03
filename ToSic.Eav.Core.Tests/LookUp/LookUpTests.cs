@@ -32,7 +32,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void ValueProvider_EntityValueProvider()
         {
-            ILookUp valProv = new LookUpInEntity("no-name", new SampleData(GetService<MultiBuilder>()).TestEntityDaniel(), null);
+            ILookUp valProv = new LookUpInEntity("no-name", new SampleData(GetService<DataBuilder>()).TestEntityDaniel(), null);
 
             Assert.AreNotEqual(string.Empty, valProv.Get("FirstName"), "Has first name");
             Assert.AreNotEqual(string.Empty, valProv.Get("EntityId"), "Has entity id");
@@ -50,7 +50,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void ValueProvider_EntityValueProvider_DateTimeFormat()
         {
-            ILookUp valProv = new LookUpInEntity("no-name", new SampleData(GetService<MultiBuilder>()).TestEntityDaniel(), null);
+            ILookUp valProv = new LookUpInEntity("no-name", new SampleData(GetService<DataBuilder>()).TestEntityDaniel(), null);
             
             Assert.AreEqual(DateTime.Parse("2019-11-06T01:00:05Z"), DateTime.Parse(valProv.Get("AnyDate")));
             Assert.AreEqual("TestType", valProv.Get("EntityType"));

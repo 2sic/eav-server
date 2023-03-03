@@ -15,15 +15,15 @@ namespace ToSic.Eav.Persistence
     public class EntitySaver : ServiceBase
     {
         public EntitySaver(
-            MultiBuilder multiBuilder
+            DataBuilder dataBuilder
         ) : base("Dta.Saver")
         {
             ConnectServices(
-                _multiBuilder = multiBuilder
+                _dataBuilder = dataBuilder
             );
         }
 
-        private readonly MultiBuilder _multiBuilder;
+        private readonly DataBuilder _dataBuilder;
 
 
         /// <summary>
@@ -66,8 +66,8 @@ namespace ToSic.Eav.Persistence
 
             #region Step 2: clean up unwanted attributes from both lists
 
-            var origAttribsOrNull = _multiBuilder.Attribute.ListDeepCloneOrNull(original?.Attributes);
-            var newAttribs = _multiBuilder.Attribute.ListDeepCloneOrNull(update.Attributes);
+            var origAttribsOrNull = _dataBuilder.Attribute.ListDeepCloneOrNull(original?.Attributes);
+            var newAttribs = _dataBuilder.Attribute.ListDeepCloneOrNull(update.Attributes);
 
             l.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribsOrNull?.Count}, newAtts⋮{newAttribs.Count}");
 
@@ -132,9 +132,9 @@ namespace ToSic.Eav.Persistence
                         : newAttrib.Value;
 
             var preCleaned = CorrectPublishedAndGuidImports(mergedAttribs, logDetails);
-            var clone = _multiBuilder.Entity.Clone(idProvidingEntity, id: newId, guid: preCleaned.NewGuid,
+            var clone = _dataBuilder.Entity.Clone(idProvidingEntity, id: newId, guid: preCleaned.NewGuid,
                 type: newType,
-                attributes: _multiBuilder.Attribute.Create(preCleaned.Attributes),
+                attributes: _dataBuilder.Attribute.Create(preCleaned.Attributes),
                 isPublished: preCleaned.NewIsPublished);
             //var result = CorrectPublishedAndGuidImports(clone, clone.Attributes, logDetails); // as Entity;
             return (clone, "ok");
@@ -149,8 +149,8 @@ namespace ToSic.Eav.Persistence
 
         private IAttribute CreateIsPublishedAttribute(bool isPublished)
         {
-            var values = new List<IValue> { _multiBuilder.Value.Build(ValueTypes.Boolean, isPublished) };
-            var attribute = _multiBuilder.Attribute.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
+            var values = new List<IValue> { _dataBuilder.Value.Build(ValueTypes.Boolean, isPublished) };
+            var attribute = _dataBuilder.Attribute.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
             // #immutable
             //attribute.Values = values;
             return attribute;
@@ -191,7 +191,7 @@ namespace ToSic.Eav.Persistence
                     }
 
                     //field.Value.Values = values;
-                    return _multiBuilder.Attribute.Clone(field.Value, values.ToImmutableList());
+                    return _dataBuilder.Attribute.Clone(field.Value, values.ToImmutableList());
                 }, InvariantCultureIgnoreCase);
 
             return modified;
@@ -253,14 +253,14 @@ namespace ToSic.Eav.Persistence
                     // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
                     //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
                     var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
-                    var val = _multiBuilder.Value.Clone(orgVal, languagesToUse);
+                    var val = _dataBuilder.Value.Clone(orgVal, languagesToUse);
                     return val;
                 })
                 .Where(val => val != null)
                 .ToImmutableList();
 
             // everything in the update will be kept, and optionally some stuff in the original may be preserved
-            var result = _multiBuilder.Attribute.Clone(update, values);
+            var result = _dataBuilder.Attribute.Clone(update, values);
 
             return result;
         });
@@ -314,7 +314,7 @@ namespace ToSic.Eav.Persistence
                     //newE.SetGuid(eGuid);
             }
 
-            //var cloned = _multiBuilder.Entity.ResetIdentifiers(newE, newGuid: newGuid, isPublished: newIsPublished);
+            //var cloned = _dataBuilder.Entity.ResetIdentifiers(newE, newGuid: newGuid, isPublished: newIsPublished);
 
             return ((/*newEnt,*/ values, newGuid, newIsPublished), "ok");
         });

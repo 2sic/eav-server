@@ -18,7 +18,7 @@ namespace ToSic.Eav.Persistence.File
     {
         #region Constructor and DI
 
-        public Runtime(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, MultiBuilder builder) : base("Eav.RunTme")
+        public Runtime(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, DataBuilder builder) : base("Eav.RunTme")
         {
             _serviceProvider = sp;
             ConnectServices(
@@ -30,7 +30,7 @@ namespace ToSic.Eav.Persistence.File
         }
 
         private readonly IServiceProvider _serviceProvider;
-        private readonly MultiBuilder _builder;
+        private readonly DataBuilder _builder;
         private readonly Generator<FileSystemLoader> _fslGenerator;
         public static ILog LoadLog = null;
 

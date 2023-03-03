@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.Parts
         #region Constructor / DI
 
         public AppInitializer(
-            LazySvc<MultiBuilder> builder,
+            LazySvc<DataBuilder> builder,
             Generator<IRepositoryLoader> repositoryLoaderGenerator,
             Generator<AppManager> appManagerGenerator,
             SystemManager systemManager,
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Apps.Parts
             );
         }
 
-        private readonly LazySvc<MultiBuilder> _builder;
+        private readonly LazySvc<DataBuilder> _builder;
         private readonly Generator<AppManager> _appManagerGenerator;
         private readonly Generator<IRepositoryLoader> _repositoryLoaderGenerator;
         private readonly IAppStates _appStates;

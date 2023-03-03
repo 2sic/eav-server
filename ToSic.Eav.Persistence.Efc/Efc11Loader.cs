@@ -25,7 +25,7 @@ namespace ToSic.Eav.Persistence.Efc
             IAppStates appStates,
             ILogStore logStore,
             LazySvc<IFeaturesInternal> featuresService,
-            MultiBuilder multiBuilder,
+            DataBuilder dataBuilder,
             Generator<IDataDeserializer> dataDeserializer,
             Generator<IAppRepositoryLoader> appFileContentTypesLoader) : base("Db.Efc11")
         {
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Persistence.Efc
                 _appStates = appStates,
                 _logStore = logStore,
                 _featuresService = featuresService,
-                _multiBuilder = multiBuilder,
+                _dataBuilder = dataBuilder,
                 _dataDeserializer = dataDeserializer,
                 _appFileContentTypesLoader = appFileContentTypesLoader
             );
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Persistence.Efc
         private readonly IAppStates _appStates;
         private readonly ILogStore _logStore;
         private readonly LazySvc<IFeaturesInternal> _featuresService;
-        private readonly MultiBuilder _multiBuilder;
+        private readonly DataBuilder _dataBuilder;
 
         #endregion
     }

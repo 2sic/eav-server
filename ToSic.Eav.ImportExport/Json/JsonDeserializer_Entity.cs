@@ -54,7 +54,7 @@ namespace ToSic.Eav.ImportExport.Json
             var contentType = GetContentType(jEnt.Type.Id)
                               ?? (allowDynamic || skipUnknownType
                                   ? GetTransientContentType(jEnt.Type.Name, jEnt.Type.Id) 
-                                  // Services.MultiBuilder.ContentType.Transient(AppId, jEnt.Type.Name, jEnt.Type.Id)
+                                  // Services.DataBuilder.ContentType.Transient(AppId, jEnt.Type.Name, jEnt.Type.Id)
                                   : throw new FormatException(
                                       "type not found for deserialization and dynamic not allowed " +
                                       $"- cannot continue with {jEnt.Type.Id}")
@@ -71,7 +71,7 @@ namespace ToSic.Eav.ImportExport.Json
                 .ToList();
 
             // build attributes - based on type definition
-            IImmutableDictionary<string, IAttribute> attributes = Services.MultiBuilder.Attribute.EmptyList();
+            IImmutableDictionary<string, IAttribute> attributes = Services.DataBuilder.Attribute.EmptyList();
             if (contentType.IsDynamic)
             {
                 if (allowDynamic)
@@ -89,7 +89,7 @@ namespace ToSic.Eav.ImportExport.Json
 
 
             l.A("build entity");
-            var newEntity = Services.MultiBuilder.Entity.EntityFromRepository(
+            var newEntity = Services.DataBuilder.Entity.EntityFromRepository(
                 appId: AppId, entityGuid: jEnt.Guid, entityId: jEnt.Id, repositoryId: jEnt.Id,
                 attributes: attributes,
                 metadataFor: target, type: contentType,
@@ -145,7 +145,7 @@ namespace ToSic.Eav.ImportExport.Json
         {
             if (list == null) return null;
 
-            var builder = Services.MultiBuilder;
+            var builder = Services.DataBuilder;
             var newAttributes = list.ToDictionary(
                 a => a.Key,
                 attrib => builder.Attribute.CreateTyped(attrib.Key, type,
@@ -165,7 +165,7 @@ namespace ToSic.Eav.ImportExport.Json
             a => 
             {
                 var values = GetValues(a, jAtts, relationshipsSource);
-                return Services.MultiBuilder.Attribute.CreateTyped(a.Name, a.Type, values);
+                return Services.DataBuilder.Attribute.CreateTyped(a.Name, a.Type, values);
             },
             InvariantCultureIgnoreCase));
 
@@ -179,7 +179,7 @@ namespace ToSic.Eav.ImportExport.Json
                 case ValueTypes.Entity:
                     if (!jAtts.Entity?.ContainsKey(a.Name) ?? true)
                         return new List<IValue>(); // just keep the empty definition, as that's fine
-                    return jAtts.Entity[a.Name].Select(v => Services.MultiBuilder.Value.Build(
+                    return jAtts.Entity[a.Name].Select(v => Services.DataBuilder.Value.Build(
                             a.Type,
                             v.Value,
                             // 2023-02-24 2dm #immutable
@@ -206,7 +206,7 @@ namespace ToSic.Eav.ImportExport.Json
         {
             if (!list?.ContainsKey(attrDef.Name) ?? true) return new List<IValue>();
             return list[attrDef.Name]
-                .Select(v => Services.MultiBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
+                .Select(v => Services.DataBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
                 .ToList();
 
         }
@@ -215,7 +215,7 @@ namespace ToSic.Eav.ImportExport.Json
         //{
         //    if (!list?.ContainsKey(attrDef.Name) ?? true) return new List<IValue>();
         //    return target.Values = list[attrDef.Name]
-        //        .Select(v => Services.MultiBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
+        //        .Select(v => Services.DataBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
         //        .ToList();
 
         //}

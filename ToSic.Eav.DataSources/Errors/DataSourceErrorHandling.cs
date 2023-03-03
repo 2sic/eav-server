@@ -16,11 +16,11 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constructor - to find out if it's used anywhere
         /// </summary>
-        public DataSourceErrorHandling(MultiBuilder builder)
+        public DataSourceErrorHandling(DataBuilder builder)
         {
             _builder = builder;
         }
-        private readonly MultiBuilder _builder;
+        private readonly DataBuilder _builder;
 
         public static string ErrorType = "Error";
         public static string ErrorTitle = "Error";

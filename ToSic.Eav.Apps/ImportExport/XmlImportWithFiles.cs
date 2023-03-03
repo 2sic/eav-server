@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	{
         public class MyServices: MyServicesBase
         {
-            public readonly LazySvc<MultiBuilder> MultiBuilder;
+            public readonly LazySvc<DataBuilder> MultiBuilder;
             public LazySvc<ContentTypeAttributeBuilder> CtAttribBuilder { get; }
             internal readonly LazySvc<Import> ImporterLazy;
             internal readonly LazySvc<DbDataController> DbDataForNewApp;
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 IAppStates appStates,
                 LazySvc<XmlToEntity> xmlToEntity,
                 LazySvc<ContentTypeAttributeBuilder> ctAttribBuilder,
-                LazySvc<MultiBuilder> multiBuilder)
+                LazySvc<DataBuilder> multiBuilder)
             {
                 ConnectServices(
                     CtAttribBuilder = ctAttribBuilder,

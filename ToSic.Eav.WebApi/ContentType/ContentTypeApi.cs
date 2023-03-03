@@ -32,7 +32,7 @@ namespace ToSic.Eav.WebApi
             LazySvc<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
             LazySvc<IConvertToEavLight> convertToEavLight, 
-            LazySvc<MultiBuilder> multiBuilder,
+            LazySvc<DataBuilder> multiBuilder,
             IAppStates appStates) : base("Api.EavCTC")
         {
             ConnectServices(
@@ -46,7 +46,7 @@ namespace ToSic.Eav.WebApi
             );
         }
 
-        private readonly LazySvc<MultiBuilder> _multiBuilder;
+        private readonly LazySvc<DataBuilder> _multiBuilder;
         private readonly LazySvc<AppRuntime> _appRuntimeLazy;
         private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly LazySvc<DbDataController> _dbLazy;

@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
             });
             AddSemirandomTrivial(dataTable, itemsToGenerate, firstId);
 
-            var source = _parent.CreateDataSource<DataTable>(new LookUpTestData(GetService<MultiBuilder>()).AppSetAndRes())
+            var source = _parent.CreateDataSource<DataTable>(new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes())
                 .Setup(dataTable, "Person", modifiedField: PersonSpecs.FieldModifiedInternal)
                 //.Init(LookUpTestData.AppSetAndRes())
                 ;

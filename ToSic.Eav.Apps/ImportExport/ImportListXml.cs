@@ -25,13 +25,13 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public partial class ImportListXml: ServiceBase 
     {
-        private readonly MultiBuilder _builder;
+        private readonly DataBuilder _builder;
 
         #region Dependency Injection
 
         private readonly LazySvc<Import> _importerLazy;
 
-        public ImportListXml(LazySvc<AttributeBuilderForImport> lazyAttributeBuilder, LazySvc<Import> importerLazy, MultiBuilder builder) : base("App.ImpVtT")
+        public ImportListXml(LazySvc<AttributeBuilderForImport> lazyAttributeBuilder, LazySvc<Import> importerLazy, DataBuilder builder) : base("App.ImpVtT")
         {
             ConnectServices(
                 AttributeBuilder = lazyAttributeBuilder,

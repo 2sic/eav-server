@@ -107,7 +107,7 @@ namespace ToSic.Eav.Persistence.Efc
                     //set.Description,
                     Attributes = set.ToSicEavAttributesInSets
                         .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
-                        .Select(a => _multiBuilder.TypeAttributeBuilder
+                        .Select(a => _dataBuilder.TypeAttributeBuilder
                             .Create(appId: appId,
                                 name: a.Attribute.StaticName,
                                 type: ValueTypeHelpers.Get(a.Attribute.Type),
@@ -136,7 +136,7 @@ namespace ToSic.Eav.Persistence.Efc
                 .ToDictionary(
                     s => s.AttributeSetId,
                     s => s.ToSicEavAttributesInSets.Select(a
-                        => _multiBuilder.TypeAttributeBuilder.Create(
+                        => _dataBuilder.TypeAttributeBuilder.Create(
                             appId: appId,
                             name: a.Attribute.StaticName,
                             type: ValueTypeHelpers.Get(a.Attribute.Type),
@@ -160,7 +160,7 @@ namespace ToSic.Eav.Persistence.Efc
                     .Cast<IContentTypeAttribute>()
                     .ToList();
 
-                return _multiBuilder.ContentType.Create(
+                return _dataBuilder.ContentType.Create(
                     appId: appId, 
                     name: set.Name,
                     nameId: set.StaticName, 

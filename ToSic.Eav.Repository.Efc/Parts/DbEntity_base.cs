@@ -6,12 +6,12 @@ namespace ToSic.Eav.Repository.Efc.Parts
     public partial class DbEntity: BllCommandBase
     {
 
-        public DbEntity(DbDataController db, MultiBuilder builder) : base(db, "Db.Enty")
+        public DbEntity(DbDataController db, DataBuilder builder) : base(db, "Db.Enty")
         {
             _builder = builder;
             Serializer = db.JsonSerializerGenerator.New();
         }
         private JsonSerializer Serializer { get; }
-        private readonly MultiBuilder _builder;
+        private readonly DataBuilder _builder;
     }
 }

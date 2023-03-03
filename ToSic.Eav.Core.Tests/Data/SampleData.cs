@@ -8,10 +8,10 @@ namespace ToSic.Eav.Core.Tests.Data
 {
     public class SampleData
     {
-        private readonly MultiBuilder _builder;
+        private readonly DataBuilder _builder;
         public const int AppId = -1;
 
-        public SampleData(MultiBuilder builder)
+        public SampleData(DataBuilder builder)
         {
             _builder = builder;
         }
