@@ -146,7 +146,7 @@ namespace ToSic.Eav.Metadata
         public long CacheTimestamp { get; private set; }
 
         [PrivateApi]
-        protected bool RequiresReload() => _constantList == null && GetMetadataSource()?.CacheChanged(CacheTimestamp) == true;
+        private bool RequiresReload() => _constantList == null && GetMetadataSource()?.CacheChanged(CacheTimestamp) == true;
 
         /// <summary>
         /// Load the metadata from the provider

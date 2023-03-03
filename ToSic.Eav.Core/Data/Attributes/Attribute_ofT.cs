@@ -156,5 +156,10 @@ namespace ToSic.Eav.Data
             return valuesHavingDimensions;
         }
 
+        #region ToString to improve debugging experience
+
+        public override string ToString() => $"{GetType()} ={GetTypedValue()?.Serialized}";
+
+        #endregion
     }
 }
