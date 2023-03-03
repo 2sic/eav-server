@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Data.Build
+namespace ToSic.Eav.Data.Builder
 {
     public class EntityPartsBuilder
     {

@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using ToSic.Eav.Data.New;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data.Build
+namespace ToSic.Eav.Data.Factory
 {
     /// <summary>
     /// A data builder which will generate items for a specific type.

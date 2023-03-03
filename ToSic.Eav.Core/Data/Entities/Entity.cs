@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
-using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Factory;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
 
