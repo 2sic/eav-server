@@ -22,7 +22,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         internal Attribute(string name, ValueTypes type, IImmutableList<IValue> values = null) : base(name, type)
         {
-            Values = values ?? new List<IValue>().ToImmutableList();
+            _values = values ?? new List<IValue>().ToImmutableList();
         }
 
         [PrivateApi]
@@ -32,7 +32,8 @@ namespace ToSic.Eav.Data
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IValue> Values { get; }
+        public IEnumerable<IValue> Values => _values;
+        private readonly IImmutableList<IValue> _values;
 
         /// <inheritdoc/>
         public T TypedContents

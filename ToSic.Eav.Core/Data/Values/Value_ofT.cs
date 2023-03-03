@@ -22,14 +22,15 @@ namespace ToSic.Eav.Data
         public Value(T typedContents, IImmutableList<ILanguage> languages)
         {
             TypedContents = typedContents;
-            Languages = languages;
+            _languages = languages;
         }
 
         public T TypedContents { get; }
 
 
         /// <inheritdoc />
-        public IReadOnlyCollection<ILanguage> Languages { get; }
+        public IEnumerable<ILanguage> Languages => _languages;
+        private readonly IImmutableList<ILanguage> _languages;
 
         /// <inheritdoc />
         public object SerializableObject

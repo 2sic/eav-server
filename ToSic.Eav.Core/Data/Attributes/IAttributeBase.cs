@@ -18,18 +18,12 @@ namespace ToSic.Eav.Data
 		/// </summary>
 		string Name { get; }
 
-        // Removed 2023-03-02 2dm - keep comment in till 2023q3 because it is technically a breaking change
-        ///// <summary>
-        ///// Type of the Attribute like 'string', 'decimal' etc.
-        ///// </summary>
-        //string Type { get; }
-
         /// <summary>
         /// The official type, as a controlled (enum) value.
         /// </summary>
         /// <remarks>
         /// This property `Type` used to be a string containing the same thing as now `Type.ToString()` does.
-        /// It was changed (breaking change) in v15
+        /// It was changed in v15 (breaking change)
         /// </remarks>
         ValueTypes Type { get; }
 

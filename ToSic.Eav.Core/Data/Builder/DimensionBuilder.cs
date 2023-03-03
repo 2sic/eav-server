@@ -22,7 +22,7 @@ namespace ToSic.Eav.Data.Builder
         public static IImmutableList<ILanguage> NoLanguages = new List<ILanguage>().ToImmutableList();// new ImmutableArray<ILanguage>();
 
 
-        public ImmutableList<ILanguage> Merge(IReadOnlyCollection<ILanguage> languages, List<ILanguage> updates)
+        public ImmutableList<ILanguage> Merge(IEnumerable<ILanguage> languages, List<ILanguage> updates)
         {
             languages = languages.ToList();
             languages = languages

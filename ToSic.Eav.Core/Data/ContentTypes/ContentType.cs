@@ -57,7 +57,7 @@ namespace ToSic.Eav.Data
             Decorators = decorators;
             Metadata = ctMetadata;
             Scope = scope;
-            Attributes = attributes;
+            _attributes = attributes;
 
             // Temporary properties which are only to specify saving rules
             // Should be moved elsewhere...
@@ -94,7 +94,8 @@ namespace ToSic.Eav.Data
         public int ContentTypeId => Id;
 
         /// <inheritdoc />
-        public IEnumerable<IContentTypeAttribute> Attributes { get; }
+        public IEnumerable<IContentTypeAttribute> Attributes => _attributes;
+        private readonly IImmutableList<IContentTypeAttribute> _attributes;
 
         /// <inheritdoc />
         public RepositoryTypes RepositoryType { get; }
@@ -137,6 +138,7 @@ namespace ToSic.Eav.Data
         IMetadataOf IHasMetadata.Metadata => Metadata;
 
 
+        // TODO: #immutable
         /// <inheritdoc />
         public List<IDecorator<IContentType>> Decorators { get; }
 

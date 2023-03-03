@@ -56,7 +56,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 return XmlConstants.NullMarker;
 
             // Option 2: Exact match (non-shared) on no other languages
-            if (valueItem.Languages.Count == 0 || valueItem.Languages.Count == 1)
+            if (!valueItem.Languages.Any() || valueItem.Languages.Count() == 1)
                 return ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks);
 
             // Option 4 - language is assigned - either shared or Read-only

@@ -34,7 +34,7 @@ namespace ToSic.Eav.Data
             int publishedId = default)
             : base(appId, entityId, guid, contentType, partsBuilder, rawValues: null, titleFieldName, created: created, modified: modified, owner: owner, metadataFor: metadataFor)
         {
-            Attributes = values;
+            _attributes = values;
             RepositoryId = repositoryId;
             Version = version;
             IsPublished = isPublished;

@@ -28,11 +28,6 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public string Name { get; }
 
-        // Removed 2023-03-02 2dm - keep comment in till 2023q3 because it is technically a breaking change
-        ///// <inheritdoc />
-        //public string Type => ControlledType.ToString();
-
-
         [PrivateApi]
         public ValueTypes Type { get; }
     }

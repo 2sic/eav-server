@@ -242,7 +242,7 @@ namespace ToSic.Eav.Persistence
                             // special case: if the original set had named languages, and the new set has no language set (undefined = primary)
                             // to detect this, we must check if we're on primary, and there may be a "undefined" language assignment
                             if (!(valLang.Key == saveOptions.PrimaryLanguage &&
-                                  update.Values.Any(v => v.Languages?.Count == 0)))
+                                  update.Values.Any(v => v.Languages?.Count() == 0)))
                                 remainingLanguages.Add(valLang);
                     }
 
