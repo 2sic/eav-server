@@ -87,8 +87,7 @@ namespace ToSic.Eav.Persistence.File
 
         #region Queries & Configuration
 
-        public IList<IEntity> Entities(string folder, int idSeed, List<IEntity> relationshipsList = null
-        ) => Log.Func(l =>
+        public IList<IEntity> Entities(string folder, int idSeed, DirectEntitiesSource relationships) => Log.Func(l =>
         {
             // #1. check that folder exists
             var subPath = System.IO.Path.Combine(Path, folder);
@@ -98,10 +97,10 @@ namespace ToSic.Eav.Persistence.File
             // #2. WIP - Allow relationships between loaded items
             // If we are loading from a larger context, then we have a reference to a list
             // which will be repopulated later, so only create a new one if there is none
-            var hasOwnRelationshipList = relationshipsList == null;
-            l.A("hasOwnRelationshipList: " + hasOwnRelationshipList);
-            relationshipsList = relationshipsList ?? new List<IEntity>();
-            var relationshipsSource = new DirectEntitiesSource(relationshipsList);
+            //var hasOwnRelationshipList = relationships == null;
+            //l.A("hasOwnRelationshipList: " + hasOwnRelationshipList);
+            //relationships = relationships ?? new List<IEntity>();
+            var relationshipsSource = relationships;// new DirectEntitiesSource(relationships);
 
             // #3A. special case for entities in bundles.
             if (folder == FsDataConstants.BundlesFolder)
@@ -111,8 +110,8 @@ namespace ToSic.Eav.Persistence.File
                 l.A($"Found {entitiesInBundle.Count} Entities in Bundles");
 
                 // #3A.2 put all found entities into the source
-                if (hasOwnRelationshipList)
-                    relationshipsList.AddRange(entitiesInBundle);
+                //if (hasOwnRelationshipList)
+                //    relationships.AddRange(entitiesInBundle);
 
                 return (entitiesInBundle, $"{entitiesInBundle.Count}");
             }
@@ -133,8 +132,8 @@ namespace ToSic.Eav.Persistence.File
             l.A("found " + entities.Count + " entities in " + folder + " folder");
 
             // #3.3 put all found entities into the source
-            if (hasOwnRelationshipList)
-                relationshipsList.AddRange(entities);
+            //if (hasOwnRelationshipList)
+            //    relationships.AddRange(entities);
 
             return (entities, $"{entities.Count}");
         });
@@ -315,7 +314,7 @@ namespace ToSic.Eav.Persistence.File
         /// Build entities from bundle json
         /// </summary>
         /// <returns></returns>
-        private List<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource = null
+        private List<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource
         ) => Log.Func($"path: {path}", l =>
         {
             l.A($"Build entities from bundle json: {path}.");
@@ -324,7 +323,6 @@ namespace ToSic.Eav.Persistence.File
                 // WIP - Allow relationships between loaded items
                 // If we are loading from a larger context, then we have a reference to a list
                 // which will be repopulated later, so only create a new one if there is none
-                relationshipSource = relationshipSource ?? new DirectEntitiesSource(new List<IEntity>());
                 var entities = ser.GetEntitiesFromBundles(bundleJson, relationshipSource);
                 entities = entities
                     .Select(e =>

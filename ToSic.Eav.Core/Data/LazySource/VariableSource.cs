@@ -4,7 +4,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data
 {
-    public class LazyEntitiesSource<TSource>: ICacheExpiring, ICacheDependent where TSource : class, ICacheExpiring
+    public class VariableSource<TSource>: ICacheExpiring, ICacheDependent where TSource : class, ICacheExpiring
     {
         public DirectEntitiesSource SourceDirect { get; }
         public TSource SourceApp { get; }
@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data
 
         public bool UseSource { get; set; } = true;
 
-        public LazyEntitiesSource(DirectEntitiesSource sourceDirect = default, TSource sourceApp = default, Func<TSource> sourceDeferred = default)
+        public VariableSource(DirectEntitiesSource sourceDirect = default, TSource sourceApp = default, Func<TSource> sourceDeferred = default)
         {
             SourceDirect = sourceDirect;
             SourceApp = sourceApp;
@@ -22,13 +22,8 @@ namespace ToSic.Eav.Data
         public TSource MainSource => _mainSource.Get(() => SourceApp ?? SourceDeferred?.Invoke());
         private readonly GetOnce<TSource> _mainSource = new GetOnce<TSource>();
 
-        public ICacheExpiring ExpirySource => _expirySourceReal.Get(() => SourceDirect as ICacheExpiring ?? MainSource);
+        public ICacheExpiring ExpirySource => _expirySourceReal.Get(() => (ICacheExpiring)SourceDirect ?? MainSource);
         private readonly GetOnce<ICacheExpiring> _expirySourceReal = new GetOnce<ICacheExpiring>();
-
-        //public List<IEntity> GetList()
-        //{
-        //    if (SourceItems != null) return SourceItems;
-        //}
 
         /// <summary>
         /// The cache has a very "old" timestamp, so it's never newer than a dependent

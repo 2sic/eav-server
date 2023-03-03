@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps
         /// </summary>
         [PrivateApi("internal use only")]
         // #removeUnusedPreloadOfMetaTypes
-        public void InitMetadata(/*ImmutableDictionary<int, string> metadataTypes*/)
+        public void InitMetadata()
         {
             if (!Loading)
                 throw new Exception("Trying to init metadata, but App is not in loading state.");

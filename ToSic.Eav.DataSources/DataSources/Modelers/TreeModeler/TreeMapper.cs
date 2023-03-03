@@ -114,7 +114,9 @@ namespace ToSic.Eav.DataSources
         ) => Log.Func($"{debug} {newFieldName} pointing to {lookupIds}", () =>
         {
             // Find referencing entities (children or parents) - but only if we have a valid reference
-            var related = lookupIds.SelectMany(lookupId => lookup[lookupId]).ToList();
+            var related = lookupIds
+                .SelectMany(lookupId => lookup[lookupId])
+                .ToImmutableList();
 
             // Create Guid List of children (note 2dm - not sure why..., as the guids may be Guid.Empty)
             // but changing it if numeric actually fails, maybe a guid is numeric?
@@ -122,7 +124,7 @@ namespace ToSic.Eav.DataSources
                 ? related.Select(e => e.EntityId).ToList() as object
                 : related.Select(e => e.EntityGuid).ToList();
             var newAttribute = _builder.AttributeImport.CreateAttribute(attributes, newFieldName, childGuids, ValueTypes.Entity,
-                null, allEntitiesForRelationships: new DirectEntitiesSource(related));
+                null, allEntitiesForRelationships: new ImmutableEntitiesSource(related));
             attributes = _builder.AttributeImport.UpdateAttribute(attributes, newAttribute);
 
             // Log

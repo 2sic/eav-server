@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
@@ -33,15 +34,15 @@ namespace ToSic.Eav.Metadata
         /// <param name="items">A direct list of items to use as metadata - instead of lazy-loading from a source. If specified, auto-sync will be disabled.</param>
         /// <param name="appSource"></param>
         /// <param name="deferredSource"></param>
-        public MetadataOf(int targetType, T key, string title, List<IEntity> items = default, IHasMetadataSource appSource = default, Func<IHasMetadataSource> deferredSource = default)
+        public MetadataOf(int targetType, T key, string title, IReadOnlyCollection<IEntity> items = default, IHasMetadataSource appSource = default, Func<IHasMetadataSource> deferredSource = default)
         {
             _targetType = targetType;
             Key = key;
             _metadataTitle = title;
-            Source = new LazyEntitiesSource<IHasMetadataSource>(items == null ? null : new DirectEntitiesSource(items), appSource, deferredSource);
+            Source = new VariableSource<IHasMetadataSource>(items == null ? null : new ImmutableEntitiesSource(items.ToImmutableList()), appSource, deferredSource);
         }
 
-        protected LazyEntitiesSource<IHasMetadataSource> Source { get; }
+        protected VariableSource<IHasMetadataSource> Source { get; }
 
         #endregion
 

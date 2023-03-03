@@ -14,10 +14,10 @@ namespace ToSic.Eav.Data.Build
             Func<Guid, string, IMetadataOf> getMetadataOf = null)
         {
             _getRm = getRelationshipManager ?? throw new ArgumentNullException(nameof(getRelationshipManager));
-            GetMetadataOf = getMetadataOf ?? DefGetMetadataOf;
+            GetMetadataOf = getMetadataOf ?? EmptyGetMetadataOf;
         }
 
-        private IMetadataOf DefGetMetadataOf(Guid guid, string title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title);
+        private IMetadataOf EmptyGetMetadataOf(Guid guid, string title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title);
 
         public static Func<Guid, string, IMetadataOf> CreateMetadataOfAppSources(IHasMetadataSource appSource)
             => (guid, title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title,
