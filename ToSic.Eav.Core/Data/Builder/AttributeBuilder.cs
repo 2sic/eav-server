@@ -25,35 +25,6 @@ namespace ToSic.Eav.Data.Builder
         public IAttribute Clone(IAttribute original, IImmutableList<IValue> values) 
             => original.CloneWithNewValues(values);
 
-        ///// <summary>
-        ///// Create a reference / relationship attribute on an entity being constructed (at DB load)
-        ///// </summary>
-        //public void BuildReferenceAttribute(IEntity newEntity, string attribName, IEnumerable<int?> references, IEntitiesSource app)
-        //{
-        //    var attrib = newEntity.Attributes[attribName];
-        //    attrib.Values = new List<IValue> { ValueBuilder.Build(attrib.Type, references, null, app) };
-        //}
-
-        //public IDictionary<string, IAttribute> ListRemoveOne(IDictionary<string, IAttribute> list, string keyToDrop)
-        //    => list.Where(a => !a.Key.EqualsInsensitive(keyToDrop))
-        //        .ToDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
-
-        //public IDictionary<string, IAttribute> ListAddOne(IDictionary<string, IAttribute> list, string name, IAttribute fieldToAdd) 
-        //    => new Dictionary<string, IAttribute>(list, InvariantCultureIgnoreCase) { { name, fieldToAdd } };
-
-        //public IDictionary<string, IAttribute> ListUpdateOne(IDictionary<string, IAttribute> list, IAttribute field,
-        //    IList<IValue> values)
-        //{
-        //    var copy = new Dictionary<string, IAttribute>(list, InvariantCultureIgnoreCase)
-        //    {
-        //        [field.Name] = CloneUpdateOne(field, values)
-        //    };
-        //    return copy;
-        //}
-
-
-
-
         // Note: ATM it makes a deep clone, but once everything is #immutable that won't be necessary any more
         public IImmutableDictionary<string, IAttribute> ListDeepCloneOrNull(IDictionary<string, IAttribute> attributes) 
             => attributes?.ToImmutableDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);

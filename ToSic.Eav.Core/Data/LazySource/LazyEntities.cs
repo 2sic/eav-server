@@ -19,11 +19,40 @@ namespace ToSic.Eav.Data
     public class LazyEntities : IEnumerable<IEntity>, ICacheDependent, IRelatedEntitiesValue
     {
         /// <summary>
+        /// Initializes a new instance of the EntityRelationship class.
+        /// </summary>
+        /// <param name="allEntities">DataSource to retrieve child entities</param>
+        /// <param name="identifiers">List of IDs to initialize with</param>
+        [PrivateApi]
+        internal LazyEntities(IEntitiesSource allEntities, IList identifiers)
+        {
+            _lookupList = allEntities;
+            switch (identifiers)
+            {
+                case null:
+                    _preferGuid = false;
+                    _entityIds = EntityIdsEmpty;
+                    break;
+                case List<int?> intList:
+                    _preferGuid = false;
+                    _entityIds = intList;
+                    break;
+                case List<Guid?> guids:
+                    _preferGuid = true;
+                    Guids = guids;
+                    break;
+                default:
+                    throw new Exception("relationship identifiers must be int? or guid?, anything else won't work");
+            }
+        }
+
+        /// <summary>
         /// Blank value, just for marking the list as empty
         /// </summary>
         private static readonly List<int?> EntityIdsEmpty = new List<int?>();
-
+        private readonly IEntitiesSource _lookupList;
         private readonly bool _preferGuid;
+        private List<int?> _entityIds;
 
         /// <summary>
         /// List of Child EntityIds - int-based.
@@ -40,8 +69,6 @@ namespace ToSic.Eav.Data
         /// </summary>
         public IList Identifiers => _preferGuid ? Guids as IList : EntityIds;
 
-
-        private List<int?> _entityIds;
 
         /// <summary>
         /// List of Child EntityIds - int-based.
@@ -73,46 +100,10 @@ namespace ToSic.Eav.Data
             return this.Select(e => e?.EntityGuid).ToList();
         }
 
-        [PrivateApi]
-        internal void AttachLookupList(IEntitiesSource lookupList)
-        {
-            _lookupList = lookupList
-                ?? throw new ArgumentNullException(nameof(lookupList), "Trying to resolve relationship guids, which requires a full list of the app-items, but didn't receive it.");
-            _entities = null; // reset possibly cached list of entities from before, so it will be rebuilt
-        }
-
-        private IEntitiesSource _lookupList;
         private List<IEntity> _entities;
 
 
-        /// <summary>
-        /// Initializes a new instance of the EntityRelationship class.
-        /// </summary>
-        /// <param name="allEntities">DataSource to retrieve child entities</param>
-        /// <param name="identifiers">List of IDs to initialize with</param>
-        [PrivateApi]
-        internal LazyEntities(IEntitiesSource allEntities, IList identifiers)
-        {
-            _lookupList = allEntities;
-            switch (identifiers)
-            {
-                case null:
-                    _preferGuid = false;
-                    _entityIds = EntityIdsEmpty;
-                    break;
-                case List<int?> intList:
-                    _preferGuid = false;
-                    _entityIds = intList;
-                    break;
-                case List<Guid?> guids:
-                    _preferGuid = true;
-                    Guids = guids;
-                    break;
-                default:
-                    throw new Exception("relationship identifiers must be int? or guid?, anything else won't work");
-            }
 
-        }
 
         // todo: unclear when this is actually needed / used? - maybe just for debug?
         [PrivateApi]

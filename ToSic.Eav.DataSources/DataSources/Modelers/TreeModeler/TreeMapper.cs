@@ -96,7 +96,7 @@ namespace ToSic.Eav.DataSources
             {
                 var target = setNeedsBundle.set.Entity;
                 var attributes = target.Attributes.ToEditable();
-                attributes = AddRelationships(attributes, newField, lookup, setNeedsBundle.NeedsIds, useNumber,
+                attributes = AddRelationships(attributes, newField, lookup, setNeedsBundle.NeedsIds,
                     $"Entity: {target.EntityId}/{target.EntityGuid}");
                 return new NewEntitySet<TNewEntity>(setNeedsBundle.set.Original,
                     _builder.Entity.Clone(target, attributes: _builder.Attribute.Create(attributes)));
@@ -109,7 +109,6 @@ namespace ToSic.Eav.DataSources
             string newFieldName,
             ILookup<TKey, IEntity> lookup,
             List<TKey> lookupIds,
-            bool keyIsNumeric,
             string debug
         ) => Log.Func($"{debug} {newFieldName} pointing to {lookupIds}", () =>
         {

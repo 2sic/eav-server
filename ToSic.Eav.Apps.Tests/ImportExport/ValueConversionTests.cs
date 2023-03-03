@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
 
         #endregion
 
-        private int AppId = 78;
+        //private int AppId = 78;
         public Guid ItemGuid = new Guid("cdf540dd-d012-4e7e-b828-7aa0efc5d81f");
 
         private const string NonLinkType = "whatever";

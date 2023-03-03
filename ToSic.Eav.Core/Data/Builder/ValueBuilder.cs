@@ -23,15 +23,14 @@ namespace ToSic.Eav.Data.Builder
             => languages == null ? original : original.Clone(languages);
 
 
-        public IValue BuildRelationship(List<int?> references, IEntitiesSource app)
-        {
-            return new Value<IEnumerable<IEntity>>(new LazyEntities(app, references), DimensionBuilder.NoLanguages);
-        }
+        public IValue BuildRelationship(List<int?> references, IEntitiesSource app) 
+            => BuildRelationship(new LazyEntities(app, references));
 
-        public IValue BuildRelationship(IEnumerable<IEntity> directList)
-        {
-            return new Value<IEnumerable<IEntity>>(directList, DimensionBuilder.NoLanguages);
-        }
+        public IValue BuildRelationship(IEnumerable<IEntity> directList) 
+            => new Value<IEnumerable<IEntity>>(directList, DimensionBuilder.NoLanguages);
+
+        public IValue CloneRelationship(IRelatedEntitiesValue value, IEntitiesSource app) 
+            => BuildRelationship(new LazyEntities(app, value.Identifiers));
 
         /// <summary>
         /// Creates a Typed Value Model

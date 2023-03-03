@@ -11,12 +11,9 @@ namespace ToSic.Eav.Apps
     [PrivateApi("don't publish this - too internal, special, complicated")]
     public class AppRelationshipManager: SynchronizedList<EntityRelationship>
     {
-        readonly AppState _upstreamApp;
         public AppRelationshipManager(AppState upstream) : base(upstream, () => Rebuild(upstream))
         {
-            _upstreamApp = upstream;
         }
-
 
         private static ImmutableArray<EntityRelationship> Rebuild(AppState appState)
         {
@@ -27,26 +24,19 @@ namespace ToSic.Eav.Apps
             var cache = new List<EntityRelationship>();
             var index = appState.Index;
             foreach (var entity in appState.List)
-                foreach (var attribute in entity.Attributes
-                             .Select(a => a.Value)
-                             .Where(a => a is IAttribute<IEnumerable<IEntity>>)
-                             .Cast<IAttribute<IEnumerable<IEntity>>>()
-                )
-                foreach (var val in ((LazyEntities)attribute.Typed[0].TypedContents).EntityIds.Where(e => e != null))
+            {
+                var lazyEntityValues = entity.Attributes
+                        .Select(a => a.Value)
+                        .Where(a => a is IAttribute<IEnumerable<IEntity>>)
+                        .Cast<IAttribute<IEnumerable<IEntity>>>()
+                        .Select(a => (LazyEntities)a.Typed[0].TypedContents)
+                        .Where(tc => tc != null);
+                foreach (var value in lazyEntityValues)
+                foreach (var val in value.EntityIds.Where(e => e != null))
                     Add(index, cache, entity.EntityId, val);
+            }
 
             return cache.ToImmutableArray();
-        }
-
-        [PrivateApi]
-        public void AttachRelationshipResolver(IEntity entity)
-        {
-            foreach (var attrib in entity.Attributes
-                         .Select(a => a.Value)
-                         .Where(a => a is IAttribute<IEnumerable<IEntity>>)
-                         .Cast<IAttribute<IEnumerable<IEntity>>>()
-                    )
-                (attrib?.TypedContents as LazyEntities)?.AttachLookupList(_upstreamApp);
         }
 
         private static void Add(IReadOnlyDictionary<int, IEntity> lookup, List<EntityRelationship> list, int parent, int? child)

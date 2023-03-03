@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Internal;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Generics;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
@@ -13,6 +15,7 @@ using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
+using ToSic.Lib.Documentation;
 using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -79,12 +82,6 @@ namespace ToSic.Eav.Apps.Parts
             newEntities = newEntities
                 .Select(e => Builder.Entity.Clone(e, id: 0, repositoryId: 0))
                 .ToList();
-            //newEntities.ForEach(e =>
-            //{
-            //    e.ResetEntityId();
-            //    if (Parent.Read.Entities.Get(e.EntityGuid) != null)
-            //        throw new ArgumentException("Can't import this item - an item with the same guid already exists");
-            //});
             Save(newEntities);
         }
 
@@ -105,15 +102,6 @@ namespace ToSic.Eav.Apps.Parts
             // Inner call which will be executed with the Lock of the AppState
             List<int> InnerSaveInLock()
             {
-                // ensure the type-definitions are real, not just placeholders
-                //foreach (var entity in entities)
-                //    if (entity is Entity e2
-                //        && !e2.Type.IsDynamic // it's not dynamic
-                //        && e2.Type.Attributes == null) // it doesn't have attributes, so it must have been in-memory
-                //    {
-                //        var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
-                //        if (newType != null) e2.UpdateType(newType); // try to update, but leave if not found
-                //    }
 
                 // Try to reset the content-type if not specified
                 entities = entities.Select(entity =>
@@ -135,7 +123,7 @@ namespace ToSic.Eav.Apps.Parts
                 }).ToList();
 
                 // attach relationship resolver - important when saving data which doesn't yet have the guid
-                entities.ForEach(appState.Relationships.AttachRelationshipResolver);
+                entities = AttachRelationshipResolver(entities, appState);
 
                 List<int> intIds = null;
                 var dc = Parent.DataController;
@@ -152,6 +140,47 @@ namespace ToSic.Eav.Apps.Parts
 
             return (ids, $"ids:{ids.Count}");
         });
+
+        [PrivateApi]
+        public List<IEntity> AttachRelationshipResolver(List<IEntity> entities, AppState appState)
+        {
+            var updated = entities.Select(e =>
+            {
+                // Check if we have any relationships to update
+                var relationshipAttributes = e.Attributes
+                    .Select(a => a.Value)
+                    .Where(a => a is IAttribute<IEnumerable<IEntity>>)
+                    .Cast<IAttribute<IEnumerable<IEntity>>>()
+                    .Select(a => new
+                    {
+                        Attribute = a,
+                        TypedContents = a.TypedContents as IRelatedEntitiesValue,
+                    })
+                    .Where(set => set.TypedContents != null && set.TypedContents.Identifiers?.Any() == true)
+                    .ToList();
+                if (!relationshipAttributes.Any())
+                    return e;
+
+                // Create new attributes with updated relationship
+                var relationshipsUpdated = relationshipAttributes
+                    .Select(a =>
+                    {
+                        var newLazyEntities = Builder.Value.CloneRelationship(a.TypedContents, appState);
+                        return Builder.Attribute.Clone(a.Attribute,
+                            new List<IValue> { newLazyEntities }.ToImmutableList());
+                    })
+                    .ToList();
+
+                // Assemble the attributes (replace the relationships)
+                var attributes = e.Attributes.ToEditable();
+                foreach (var updatedRel in relationshipsUpdated)
+                    Builder.AttributeImport.UpdateAttribute(attributes, updatedRel);
+
+                // return cloned entity
+                return Builder.Entity.Clone(e, attributes: Builder.Attribute.Create(attributes));
+            }).ToList();
+            return updated;
+        }
 
 
         /// <summary>
@@ -174,7 +203,7 @@ namespace ToSic.Eav.Apps.Parts
                 {
                     if (!toClear.Any(tc => tc.Name.EqualsInsensitive(pair.Key)))
                         return pair.Value;
-                    var empty = _multiBuilder.Value.Attribute.CloneUpdateOne(pair.Value, new List<IValue>());
+                    var empty = Builder.Attribute.CloneUpdateOne(pair.Value, new List<IValue>());
                     Log.A("Cleared " + pair.Key);
                     return empty;
                 }, InvariantCultureIgnoreCase);

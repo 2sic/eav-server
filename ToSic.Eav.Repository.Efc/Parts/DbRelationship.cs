@@ -241,32 +241,32 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     if (attribDef == null || attribDef.Type != ValueTypes.Entity.ToString()) continue;
 
                     // check if there is anything at all (type doesn't matter yet)
-                    var list = attribute.Values?.FirstOrDefault()?.ObjectContents;
-                    switch (list)
+                    var valContents = attribute.Values?.FirstOrDefault()?.ObjectContents;
+                    switch (valContents)
                     {
                         case null:
                             continue;
                         case IRelatedEntitiesValue entities:
-                            list = entities.Identifiers;
+                            valContents = entities.Identifiers;
                             break;
                         case Guid guid:
-                            list = new List<Guid> { guid };
+                            valContents = new List<Guid> { guid };
                             break;
                         case int i:
-                            list = new List<int> { i };
+                            valContents = new List<int> { i };
                             break;
                     }
 
-                    if (list is List<Guid> || list is List<Guid?>)
+                    if (valContents is List<Guid> || valContents is List<Guid?>)
                     {
-                        var guidList = (list as List<Guid>)?.Select(p => (Guid?)p) ??
-                                       ((List<Guid?>)list).Select(p => p);
+                        var guidList = (valContents as List<Guid>)?.Select(p => (Guid?)p) ??
+                                       ((List<Guid?>)valContents).Select(p => p);
                         AddToQueue(attribDef.AttributeId, guidList.ToList(), dbEntity.EntityId,
                             !so.PreserveUntouchedAttributes);
                     }
-                    else if (list is List<int> || list is List<int?>)
+                    else if (valContents is List<int> || valContents is List<int?>)
                     {
-                        var entityIds = list as List<int?> ?? ((List<int>)list).Select(v => (int?)v).ToList();
+                        var entityIds = valContents as List<int?> ?? ((List<int>)valContents).Select(v => (int?)v).ToList();
                         AddToQueue(attribDef.AttributeId, entityIds, dbEntity.EntityId,
                             !so.PreserveUntouchedAttributes);
                     }
