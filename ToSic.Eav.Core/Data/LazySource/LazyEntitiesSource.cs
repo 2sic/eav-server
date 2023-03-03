@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Caching;
+using ToSic.Eav.Data.LazySource;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data
 {
     public class LazyEntitiesSource<TSource>: ICacheExpiring, ICacheDependent where TSource : class, ICacheExpiring
     {
-        private readonly ICacheExpiring _expirySource;
+        public UnLazyEntities UnLazySource { get; }
         public List<IEntity> SourceItems { get; }
         public TSource SourceApp { get; }
         public Func<TSource> SourceDeferred { get; }
 
         public bool UseSource { get; set; } = true;
 
-        public LazyEntitiesSource(List<IEntity> items = default, ICacheExpiring expirySource = default, TSource sourceApp = default, Func<TSource> sourceDeferred = default)
+        public LazyEntitiesSource(UnLazyEntities unLazySource = default, TSource sourceApp = default, Func<TSource> sourceDeferred = default)
         {
-            SourceItems = items;
-            _expirySource = expirySource;
+            UnLazySource = unLazySource;
             SourceApp = sourceApp;
             SourceDeferred = sourceDeferred;
         }
@@ -25,7 +25,7 @@ namespace ToSic.Eav.Data
         public TSource MainSource => _mainSource.Get(() => SourceApp ?? SourceDeferred?.Invoke());
         private readonly GetOnce<TSource> _mainSource = new GetOnce<TSource>();
 
-        public ICacheExpiring ExpirySource => _expirySourceReal.Get(() => _expirySource ?? MainSource);
+        public ICacheExpiring ExpirySource => _expirySourceReal.Get(() => UnLazySource as ICacheExpiring ?? MainSource);
         private readonly GetOnce<ICacheExpiring> _expirySourceReal = new GetOnce<ICacheExpiring>();
 
         //public List<IEntity> GetList()
@@ -33,7 +33,10 @@ namespace ToSic.Eav.Data
         //    if (SourceItems != null) return SourceItems;
         //}
 
-        public long CacheTimestamp { get; private set; }
+        /// <summary>
+        /// The cache has a very "old" timestamp, so it's never newer than a dependent
+        /// </summary>
+        public long CacheTimestamp => 0;
 
         public bool CacheChanged(long newCacheTimeStamp) => newCacheTimeStamp < CacheTimestamp || CacheChanged();
 

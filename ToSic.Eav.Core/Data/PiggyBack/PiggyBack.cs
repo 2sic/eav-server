@@ -34,8 +34,7 @@ namespace ToSic.Eav.Data.PiggyBack
         public TData GetOrGenerate<TData>(ICacheExpiring parent, string key, Func<TData> create)
         {
             // Check if exists and timestamp still ok, return that
-            if (
-                _cache.TryGetValue(key, out var result)
+            if (_cache.TryGetValue(key, out var result)
                 && result is Timestamped<TData> typed
                 && typed.CacheTimestamp == parent.CacheTimestamp
             ) return typed.Value;
