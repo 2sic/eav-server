@@ -44,9 +44,10 @@ namespace ToSic.Eav.Metadata
 
             // This is the implementation with a constant list, where no more lookups ever happen.
             _constantList = items;
-            _appMetadataSource = appSource;
-            _metaSourceRemote = deferredSource;
+            Source = new LazyEntitiesSource<IHasMetadataSource>(items == null ? null : new DirectEntitiesSource(items), appSource, deferredSource);
         }
+
+        protected LazyEntitiesSource<IHasMetadataSource> Source { get; }
 
         #endregion
 
@@ -103,7 +104,7 @@ namespace ToSic.Eav.Metadata
                 if (_constantList != null) return _constantList;
                 //_debugAllEntry++;
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-                _loadAllInLock.Go(() => _allCached == null || RequiresReload(), LoadFromProviderInsideLock);
+                _loadAllInLock.Do(() => _allCached == null || RequiresReload(), () => LoadFromProviderInsideLock());
                 //_debugAllReturn++;
                 return _allCached;
             }
@@ -146,19 +147,22 @@ namespace ToSic.Eav.Metadata
         public long CacheTimestamp { get; private set; }
 
         [PrivateApi]
-        private bool RequiresReload() => _constantList == null && GetMetadataSource()?.CacheChanged(CacheTimestamp) == true;
+        private bool RequiresReload() => Source.CacheChanged(CacheTimestamp);
 
         /// <summary>
         /// Load the metadata from the provider
         /// Must be virtual, because the inheriting <see cref="ContentTypeMetadata"/> needs to overwrite this. 
         /// </summary>
         [PrivateApi]
-        protected virtual void LoadFromProviderInsideLock()
+        protected virtual void LoadFromProviderInsideLock(IList<IEntity> additions = default)
         {
             //_debugLoadFromProvider++;
             var mdProvider = GetMetadataSource();
-            var list = mdProvider?.GetMetadata(_targetType, Key).ToList() ?? new List<IEntity>();
-            Use(list);
+            var mdOfKey = mdProvider?.GetMetadata(_targetType, Key) ?? new List<IEntity>();
+            //_debugUse++;
+            _allCached = mdOfKey.Concat(additions ?? new List<IEntity>()).ToList();
+            _metadataWithoutPermissions = null;
+            _permissions = null;
             if (mdProvider != null) CacheTimestamp = mdProvider.CacheTimestamp;
         }
 
@@ -167,28 +171,9 @@ namespace ToSic.Eav.Metadata
         /// </summary>
         /// <returns></returns>
         [PrivateApi]
-        protected IMetadataSource GetMetadataSource() => _mdsGetOnce.Get(() => (_appMetadataSource ?? _metaSourceRemote?.Invoke())?.MetadataSource);
+        protected IMetadataSource GetMetadataSource() => _mdsGetOnce.Get(() => Source.MainSource?.MetadataSource);
         private readonly GetOnce<IMetadataSource> _mdsGetOnce = new GetOnce<IMetadataSource>();
-        /// <summary>
-        /// The source (usually an app) which can provide all the metadata once needed
-        /// </summary>
-        private readonly IHasMetadataSource _appMetadataSource;
-        private readonly Func<IHasMetadataSource> _metaSourceRemote;
 
-
-        /// <summary>
-        /// Set the local cache to a list of items to use as Metadata.
-        /// </summary>
-        /// <param name="items"></param>
-        [PrivateApi]
-        protected void Use(List<IEntity> items)
-        {
-            //_debugUse++;
-            // Set the local cache to a list of items, and reset the dependent objects so they will be rebuilt if accessed.
-            _allCached = items;
-            _metadataWithoutPermissions = null;
-            _permissions = null;
-        }
 
         #region GetBestValue
 
@@ -233,7 +218,7 @@ namespace ToSic.Eav.Metadata
 
         public IAppIdentity Context(string type) => GetMetadataSource();
         public (int TargetType, List<IEntity> list, IHasMetadataSource appSource, Func<IHasMetadataSource> deferredSource) GetCloneSpecs() 
-            => (_targetType, _constantList, _appMetadataSource, _metaSourceRemote);
+            => (_targetType, Source.SourceDirect?.List?.ToList(), /*_constantList,*/ Source.SourceApp /*_appMetadataSource*/, Source.SourceDeferred /*_metaSourceRemote*/);
 
         #endregion
 
