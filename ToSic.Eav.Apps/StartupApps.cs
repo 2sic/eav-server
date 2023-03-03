@@ -108,7 +108,7 @@ namespace ToSic.Eav.Apps
         /// <remarks>
         /// All calls in here MUST use TryAddTransient, and never without the Try
         /// </remarks>
-        public static IServiceCollection AddFallbackAppServices(this IServiceCollection services)
+        public static IServiceCollection AddAppFallbackServices(this IServiceCollection services)
         {
             services.TryAddTransient<IEnvironmentLogger, EnvironmentLoggerUnknown>();
             services.TryAddTransient<XmlExporter, XmlExporterUnknown>();

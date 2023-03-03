@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Security;
@@ -35,11 +36,12 @@ namespace ToSic.Eav.Metadata
                 if (_permissions == null || RequiresReload())
                     _permissions = AllWithHidden
                         .Where(Permission.IsPermission)
-                        .Select(e => new Permission(e));
+                        .Select(e => new Permission(e))
+                        .ToImmutableList();
                 return _permissions;
             }
         }
-        private IEnumerable<Permission> _permissions;
+        private ImmutableList<Permission> _permissions;
 
 
 
