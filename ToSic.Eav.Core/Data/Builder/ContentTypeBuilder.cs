@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.Metadata;
@@ -73,7 +75,7 @@ namespace ToSic.Eav.Data.Builder
                 decorators: decorators,
                 ctMetadata: metadata,
                 isAlwaysShared: isAlwaysShared,
-                attributes: attributes,
+                attributes: attributes.ToImmutableList(),
                 isDynamic: isDynamic,
                 repositoryType: repositoryType,
                 repositoryAddress: repositoryAddress,
@@ -142,7 +144,7 @@ namespace ToSic.Eav.Data.Builder
                 scope: scope ?? original.Scope,
 
                 // Contents
-                attributes: attributes ?? original.Attributes,
+                attributes: attributes ?? original.Attributes.ToList(),
 
                 // Specs (2)
                 isAlwaysShared: isAlwaysShared ?? original.AlwaysShareConfiguration,

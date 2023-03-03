@@ -97,7 +97,7 @@ namespace ToSic.Eav.Data.Builder
             }
         }
 
-        public IImmutableList<IValue> Replace(IReadOnlyList<IValue> values, IValue oldValue, IValue newValue)
+        public IImmutableList<IValue> Replace(IEnumerable<IValue> values, IValue oldValue, IValue newValue)
         {
             var editable = values.ToList();
             // note: should preserve order

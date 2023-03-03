@@ -59,9 +59,9 @@ namespace ToSic.Eav.Data
 
 
         /// <summary>
-        /// Dictionary with all Attribute Definitions
+        /// All Attribute Definitions
         /// </summary>
-        IList<IContentTypeAttribute> Attributes { get; /*set;*/ } // removed set 2022-02-26 2dm #immutable
+        IEnumerable<IContentTypeAttribute> Attributes { get; /*set;*/ } // removed set 2022-02-26 2dm #immutable
 
         /// <summary>
         /// A simple indexer to get an attribute

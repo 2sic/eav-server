@@ -124,7 +124,7 @@ namespace ToSic.Eav.WebApi
                 UsesSharedDef = ancestorDecorator != null,
                 SharedDefId = ancestorDecorator?.Id,
                 Items = count,
-                Fields = t.Attributes.Count,
+                Fields = t.Attributes.Count(),
                 Metadata = (ser as ConvertToEavLight)?.CreateListOfSubEntities(t.Metadata,
                     SubEntitySerialization.AllTrue()),
                 Properties = properties,

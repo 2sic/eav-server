@@ -88,7 +88,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                         if (logDetails)
                             Log.A(Log.Try(() =>
-                                $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count}, dim⋮{toSicEavValuesDimensions?.Count}"));
+                                $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count()}, dim⋮{toSicEavValuesDimensions?.Count}"));
 
                         var newVal = new ToSicEavValues
                         {

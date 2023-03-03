@@ -32,7 +32,7 @@ namespace ToSic.Eav.Data
         }
 
         /// <inheritdoc/>
-        public IImmutableList<IValue> Values { get; }
+        public IEnumerable<IValue> Values { get; }
 
         /// <inheritdoc/>
         public T TypedContents
@@ -65,7 +65,7 @@ namespace ToSic.Eav.Data
         }
 
         /// <inheritdoc/>
-        public IList<IValue<T>> Typed => Values.Cast<IValue<T>>().ToList();
+        public IEnumerable<IValue<T>> Typed => Values.Cast<IValue<T>>().ToList();
 
         /// <inheritdoc/>
         public T this[int languageId] => GetInternal(new[] { languageId }, FindHavingDimensions);
@@ -111,7 +111,7 @@ namespace ToSic.Eav.Data
         private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
         {
             // Value with Dimensions specified
-            if (keys != null && keys.Length > 0 && Values != null && Values.Count > 0)
+            if (keys != null && keys.Length > 0 && Values != null && Values.Any())
             {
                 // try match all specified Dimensions
                 // note that as of now, the dimensions are always just 1 language, not more

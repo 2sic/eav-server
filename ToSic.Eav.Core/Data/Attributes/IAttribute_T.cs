@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// </remarks>
 	/// <typeparam name="T">Type of the Value</typeparam>
 	[PublicApi_Stable_ForUseInYourCode]
-	public interface IAttribute<T> : IAttribute
+	public interface IAttribute<out T> : IAttribute
 	{
 		/// <summary>
 		/// Gets the typed first/default value
@@ -21,7 +21,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Gets the typed Value Objects - so the same as Values, but with the correct type
         /// </summary>
-		IList<IValue<T>> Typed { get; }
+        IEnumerable<IValue<T>> Typed { get; }
 
         /// <summary>
         /// Gets the Value for the specified Language/Dimension using the ID accessor. Usually not needed. Typed.

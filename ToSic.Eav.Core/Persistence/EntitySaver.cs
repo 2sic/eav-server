@@ -197,7 +197,7 @@ namespace ToSic.Eav.Persistence
             return modified;
         });
 
-        private static IList<IValue> ValuesOrderedForProcessing(IReadOnlyList<IValue> values, SaveOptions saveOptions)
+        private static IList<IValue> ValuesOrderedForProcessing(IEnumerable<IValue> values, SaveOptions saveOptions)
         {
             var valuesWithPrimaryFirst = values
                 .OrderBy(v =>

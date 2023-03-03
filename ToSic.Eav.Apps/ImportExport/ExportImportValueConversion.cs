@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Option 1: nothing (no value found at all)
             // create a special "null" entry, so the re-import will also null this
-            if (attrib == null || attrib.Values.Count == 0)
+            if (attrib == null || !attrib.Values.Any())
                 return XmlConstants.NullMarker;
 
             // now try to find the exact value-item for this language

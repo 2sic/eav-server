@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi.Sys
             {
                 Log.A("getting content-type stats");
                 var attribs = typ.Attributes;
-                msg += P($"attribs: {attribs.Count}\n");
+                msg += P($"attribs: {attribs.Count()}\n");
                 msg += "<table id='table'>"
                     + HeadFields( "#", "Id", "Name", "Type", "Input", "IsTitle", "Metadata", "Permissions" )
                     + "<tbody>";

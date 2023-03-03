@@ -20,8 +20,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 .Where(a => a.AttributeSetId == contentTypeId)
                 .ToList();
 
+            var ctAttribList = contentType.Attributes.ToList();
             attributeList = attributeList
-                .OrderBy(a => contentType.Attributes
+                .OrderBy(a => ctAttribList
                     .IndexOf(contentType.Attributes
                         .First(ia => ia.Name == a.Attribute.StaticName)))
                 .ToList();

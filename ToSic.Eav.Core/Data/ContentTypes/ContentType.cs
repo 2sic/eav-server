@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.Json.Serialization;
 using ToSic.Eav.Metadata;
@@ -34,7 +35,7 @@ namespace ToSic.Eav.Data
             string name,
             string nameId,
             string scope,
-            IList<IContentTypeAttribute> attributes,
+            IImmutableList<IContentTypeAttribute> attributes,
             bool isAlwaysShared,
             bool? onSaveSortAttributes,
             string onSaveUseParentStaticName,
@@ -93,7 +94,7 @@ namespace ToSic.Eav.Data
         public int ContentTypeId => Id;
 
         /// <inheritdoc />
-        public IList<IContentTypeAttribute> Attributes { get; }
+        public IEnumerable<IContentTypeAttribute> Attributes { get; }
 
         /// <inheritdoc />
         public RepositoryTypes RepositoryType { get; }

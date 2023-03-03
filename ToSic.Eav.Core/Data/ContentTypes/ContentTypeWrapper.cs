@@ -62,7 +62,7 @@ namespace ToSic.Eav.Data
         [Obsolete("Deprecated in V13, please use Id instead.")]
         public int ContentTypeId => GetContents().Id;
 
-        public IList<IContentTypeAttribute> Attributes => GetContents().Attributes;
+        public IEnumerable<IContentTypeAttribute> Attributes => GetContents().Attributes;
 
         public IContentTypeAttribute this[string fieldName] => GetContents()[fieldName];
 
