@@ -41,9 +41,6 @@ namespace ToSic.Eav.Metadata
             _targetType = targetType;
             Key = key;
             _metadataTitle = title;
-
-            // This is the implementation with a constant list, where no more lookups ever happen.
-            _constantList = items;
             Source = new LazyEntitiesSource<IHasMetadataSource>(items == null ? null : new DirectEntitiesSource(items), appSource, deferredSource);
         }
 
@@ -78,12 +75,6 @@ namespace ToSic.Eav.Metadata
         #endregion
 
         /// <summary>
-        /// This is a constant / stable list of entities.
-        /// When it is defined, no items are retrieved from the sources, since this is all that's ever used. 
-        /// </summary>
-        private readonly List<IEntity> _constantList;
-
-        /// <summary>
         /// Type-information of the thing we're describing. This is used to retrieve metadata from the correct sub-list of pre-indexed metadata
         /// </summary>
         private readonly int _targetType;
@@ -101,7 +92,6 @@ namespace ToSic.Eav.Metadata
         public List<IEntity> AllWithHidden {
             get
             {
-                if (_constantList != null) return _constantList;
                 //_debugAllEntry++;
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
                 _loadAllInLock.Do(() => _allCached == null || RequiresReload(), () => LoadFromProviderInsideLock());
@@ -158,12 +148,15 @@ namespace ToSic.Eav.Metadata
         {
             //_debugLoadFromProvider++;
             var mdProvider = GetMetadataSource();
-            var mdOfKey = mdProvider?.GetMetadata(_targetType, Key) ?? new List<IEntity>();
+            var mdOfKey = Source.SourceDirect?.List
+                          ?? mdProvider?.GetMetadata(_targetType, Key)
+                          ?? new List<IEntity>();
             //_debugUse++;
             _allCached = mdOfKey.Concat(additions ?? new List<IEntity>()).ToList();
             _metadataWithoutPermissions = null;
             _permissions = null;
-            if (mdProvider != null) CacheTimestamp = mdProvider.CacheTimestamp;
+            if (mdProvider != null)
+                CacheTimestamp = mdProvider.CacheTimestamp;
         }
 
         /// <summary>
@@ -218,7 +211,7 @@ namespace ToSic.Eav.Metadata
 
         public IAppIdentity Context(string type) => GetMetadataSource();
         public (int TargetType, List<IEntity> list, IHasMetadataSource appSource, Func<IHasMetadataSource> deferredSource) GetCloneSpecs() 
-            => (_targetType, Source.SourceDirect?.List?.ToList(), /*_constantList,*/ Source.SourceApp /*_appMetadataSource*/, Source.SourceDeferred /*_metaSourceRemote*/);
+            => (_targetType, Source.SourceDirect?.List?.ToList(), Source.SourceApp, Source.SourceDeferred);
 
         #endregion
 

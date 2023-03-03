@@ -33,7 +33,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// The cache has a very "old" timestamp, so it's never newer than a dependent
         /// </summary>
-        public long CacheTimestamp => 0;
+        public long CacheTimestamp => ExpirySource?.CacheTimestamp ?? 0;
 
         public bool CacheChanged(long dependentTimeStamp) => ExpirySource?.CacheChanged(dependentTimeStamp) == true;
 
