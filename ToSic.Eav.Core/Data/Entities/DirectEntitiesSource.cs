@@ -22,9 +22,9 @@ namespace ToSic.Eav.Data
         /// The SharePoint Datasource can't figure out easily whether items have been changed
         /// Return false for cache changed to prevent reloading the cache unnecessarily
         /// </summary>
-        /// <param name="newCacheTimeStamp"></param>
+        /// <param name="dependentTimeStamp"></param>
         /// <returns></returns>
-        public bool CacheChanged(long newCacheTimeStamp)
+        public bool CacheChanged(long dependentTimeStamp)
         {
             return false;
         }

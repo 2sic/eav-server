@@ -144,7 +144,7 @@ namespace ToSic.Eav.Configuration
         [PrivateApi]
         public long CacheTimestamp { get; private set; }
 
-        public bool CacheChanged(long newCacheTimeStamp) => CacheTimestamp != newCacheTimeStamp;
+        public bool CacheChanged(long dependentTimeStamp) => CacheTimestamp != dependentTimeStamp;
 
         // Custom event for LightSpeed
         [PrivateApi] 

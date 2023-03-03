@@ -17,7 +17,7 @@ namespace ToSic.Eav.Data.LazySource
         public long CacheTimestamp { get; }
         public bool CacheChanged() => false;
 
-        public bool CacheChanged(long newCacheTimeStamp) => false;
+        public bool CacheChanged(long dependentTimeStamp) => false;
 
         public IEnumerable<IEntity> List => Source;
     }

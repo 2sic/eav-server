@@ -34,10 +34,10 @@ namespace ToSic.Eav.DataSources
                 : DateTime.Now.Ticks; // if no relevant up-stream, just return now!
 
         /// <inheritdoc />
-        public virtual bool CacheChanged(long newCacheTimeStamp) =>
+        public virtual bool CacheChanged(long dependentTimeStamp) =>
             !In.ContainsKey(Constants.DefaultStreamName)
             || In[Constants.DefaultStreamName].Source == null
-            || In[Constants.DefaultStreamName].Source.CacheChanged(newCacheTimeStamp);
+            || In[Constants.DefaultStreamName].Source.CacheChanged(dependentTimeStamp);
 
         #endregion
 

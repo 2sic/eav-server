@@ -23,6 +23,6 @@ namespace ToSic.Eav.DataSources
 
         public long CacheTimestamp => _cacheInfoProvider.CacheTimestamp;
 
-        public bool CacheChanged(long newCacheTimeStamp) => DataSource.CacheChanged(newCacheTimeStamp);
+        public bool CacheChanged(long dependentTimeStamp) => DataSource.CacheChanged(dependentTimeStamp);
     }
 }

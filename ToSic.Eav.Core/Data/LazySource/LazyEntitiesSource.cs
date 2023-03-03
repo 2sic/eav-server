@@ -38,7 +38,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         public long CacheTimestamp => 0;
 
-        public bool CacheChanged(long newCacheTimeStamp) => newCacheTimeStamp < CacheTimestamp || CacheChanged();
+        public bool CacheChanged(long dependentTimeStamp) => dependentTimeStamp < CacheTimestamp || CacheChanged();
 
         public bool CacheChanged() => SourceItems != null && ExpirySource?.CacheChanged(CacheTimestamp) == true;
     }

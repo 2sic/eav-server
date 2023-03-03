@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources
         public override long CacheTimestamp => AppState.CacheTimestamp;
 
 	    /// <inheritdoc />
-	    public override bool CacheChanged(long newCacheTimeStamp) => AppState.CacheChanged(newCacheTimeStamp);
+	    public override bool CacheChanged(long dependentTimeStamp) => AppState.CacheChanged(dependentTimeStamp);
 
 	    /// <inheritdoc />
 	    public override string CacheFullKey => CachePartialKey;
