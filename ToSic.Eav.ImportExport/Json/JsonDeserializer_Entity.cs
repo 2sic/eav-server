@@ -71,7 +71,7 @@ namespace ToSic.Eav.ImportExport.Json
                 .ToList();
 
             // build attributes - based on type definition
-            IImmutableDictionary<string, IAttribute> attributes = Services.DataBuilder.Attribute.EmptyList();
+            IImmutableDictionary<string, IAttribute> attributes = Services.DataBuilder.Attribute.Empty();
             if (contentType.IsDynamic)
             {
                 if (allowDynamic)
@@ -148,7 +148,7 @@ namespace ToSic.Eav.ImportExport.Json
             var builder = Services.DataBuilder;
             var newAttributes = list.ToDictionary(
                 a => a.Key,
-                attrib => builder.Attribute.CreateTyped(attrib.Key, type,
+                attrib => builder.Attribute.Create(attrib.Key, type,
                     attrib.Value.Select(v =>
                             builder.Value.Build(type, v.Value, RecreateLanguageList(v.Key),
                                 relationshipsSource))
@@ -165,7 +165,7 @@ namespace ToSic.Eav.ImportExport.Json
             a => 
             {
                 var values = GetValues(a, jAtts, relationshipsSource);
-                return Services.DataBuilder.Attribute.CreateTyped(a.Name, a.Type, values);
+                return Services.DataBuilder.Attribute.Create(a.Name, a.Type, values);
             },
             InvariantCultureIgnoreCase));
 

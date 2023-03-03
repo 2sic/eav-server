@@ -174,7 +174,7 @@ namespace ToSic.Eav.Apps.Parts
                 // Assemble the attributes (replace the relationships)
                 var attributes = e.Attributes.ToEditable();
                 foreach (var updatedRel in relationshipsUpdated)
-                    Builder.AttributeImport.UpdateAttribute(attributes, updatedRel);
+                    Builder.Attribute.Replace(attributes, updatedRel);
 
                 // return cloned entity
                 return Builder.Entity.Clone(e, attributes: Builder.Attribute.Create(attributes));
@@ -203,7 +203,7 @@ namespace ToSic.Eav.Apps.Parts
                 {
                     if (!toClear.Any(tc => tc.Name.EqualsInsensitive(pair.Key)))
                         return pair.Value;
-                    var empty = Builder.Attribute.CloneUpdateOne(pair.Value, new List<IValue>());
+                    var empty = Builder.Attribute.Clone(pair.Value, new List<IValue>().ToImmutableList());
                     Log.A("Cleared " + pair.Key);
                     return empty;
                 }, InvariantCultureIgnoreCase);

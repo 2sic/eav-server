@@ -104,8 +104,8 @@
 
 
         // Virtual Table Export - Placeholders/codes
-        public const string Null = "[]";
-        public const string Empty = "[\"\"]";
+        public const string NullMarker = "[]";
+        public const string EmptyMarker = "[\"\"]";
         public const string ReadOnly = "ro";
         public const string ReadWrite = "rw";
 

@@ -180,7 +180,7 @@ namespace ToSic.Eav.ImportExport.Xml
                     .ToList();
 
                 // construct the attribute with these value elements
-                var newAttr = _dataBuilder.Attribute.CreateTyped(
+                var newAttr = _dataBuilder.Attribute.Create(
                     sourceAttrib.StaticName,
                     ValueTypeHelpers.Get(tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value),
                     currentAttributesImportValues);

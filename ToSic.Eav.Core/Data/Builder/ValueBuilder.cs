@@ -5,19 +5,25 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Builder
 {
     [PrivateApi]
-    public class ValueBuilder
+    public class ValueBuilder: ServiceBase
     {
         // WIP - constructor should never be called because we should use DI
-        public ValueBuilder(DimensionBuilder dimensionBuilder)
+        public ValueBuilder(DimensionBuilder dimensionBuilder, LazySvc<IValueConverter> valueConverter): base("Eav.ValBld")
         {
-            LanguageBuilder = dimensionBuilder;
+            _languageBuilder = dimensionBuilder;
+            _valueConverter = valueConverter;
         }
-        private DimensionBuilder LanguageBuilder { get; }
+
+        private DimensionBuilder _languageBuilder;
+        private readonly LazySvc<IValueConverter> _valueConverter;
 
         public IValue Clone(IValue original, IImmutableList<ILanguage> languages = null) 
             => languages == null ? original : original.Clone(languages);
@@ -91,6 +97,19 @@ namespace ToSic.Eav.Data.Builder
             }
         }
 
+        public IImmutableList<IValue> Replace(IReadOnlyList<IValue> values, IValue oldValue, IValue newValue)
+        {
+            var editable = values.ToList();
+            // note: should preserve order
+            var index = editable.IndexOf(oldValue);
+            if (index == -1)
+                editable.Add(newValue);
+            else
+                editable[index] = newValue;
+            return editable.ToImmutableList();
+        }
+
+
         private LazyEntities GetLazyEntitiesForRelationship(object value, IEntitiesSource fullLookupList)
         {
             var entityIds = (value as IEnumerable<int?>)?.ToList()
@@ -134,5 +153,17 @@ namespace ToSic.Eav.Data.Builder
             => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null), DimensionBuilder.NoLanguages);
 
         internal IImmutableList<IValue> NewEmptyRelationshipValues => new List<IValue> { NewEmptyRelationship }.ToImmutableList();
+
+
+        public object PreConvertReferences(object value, ValueTypes valueType, bool resolveHyperlink) => Log.Func(() =>
+        {
+            if (resolveHyperlink && valueType == ValueTypes.Hyperlink && value is string stringValue)
+            {
+                var converted = _valueConverter.Value.ToReference(stringValue);
+                return (converted, $"Resolve hyperlink for '{stringValue}' - New value: '{converted}'");
+            }
+            return (value, "unmodified");
+        });
+
     }
 }

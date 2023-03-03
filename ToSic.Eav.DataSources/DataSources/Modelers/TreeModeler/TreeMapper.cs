@@ -118,7 +118,7 @@ namespace ToSic.Eav.DataSources
                 .ToImmutableList();
 
             var relAttr = _builder.Attribute.CreateOneWayRelationship(newFieldName, related);
-            attributes = _builder.AttributeImport.UpdateAttribute(attributes, relAttr);
+            attributes = _builder.Attribute.Replace(attributes, relAttr);
 
             // Log
             return (attributes, $"added {related.Count} items");

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Generics;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
@@ -7,27 +6,28 @@ namespace ToSic.Eav.Data.Builder
 {
     public class DataBuilder: ServiceBase
     {
+
         public DataBuilder(
             LazySvc<EntityBuilder> entityBuilder,
-            LazySvc<AttributeBuilderForImport> attributeImport,
             LazySvc<AttributeBuilder> attributeBuilder,
             LazySvc<ValueBuilder> valueBuilder,
             LazySvc<ContentTypeBuilder> contentTypeBuilder,
-            LazySvc<ContentTypeAttributeBuilder> typeAttributeBuilder): base(EavLogs.Eav + "MltBld")
+            LazySvc<ContentTypeAttributeBuilder> typeAttributeBuilder,
+            LazySvc<DimensionBuilder> languageBuilder): base(EavLogs.Eav + "MltBld")
         {
             ConnectServices(
                 _entityBuilder = entityBuilder,
-                _attributeImport = attributeImport,
                 _contentTypeBuilder = contentTypeBuilder,
                 _attributeBuilder = attributeBuilder,
                 _valueBuilder = valueBuilder,
-                _typeAttributeBuilder = typeAttributeBuilder
+                _typeAttributeBuilder = typeAttributeBuilder,
+                _languageBuilder = languageBuilder
             );
         }
+        private readonly LazySvc<DimensionBuilder> _languageBuilder;
         private readonly LazySvc<ContentTypeAttributeBuilder> _typeAttributeBuilder;
         private readonly LazySvc<AttributeBuilder> _attributeBuilder;
         private readonly LazySvc<EntityBuilder> _entityBuilder;
-        private readonly LazySvc<AttributeBuilderForImport> _attributeImport;
         private readonly LazySvc<ValueBuilder> _valueBuilder;
         private readonly LazySvc<ContentTypeBuilder> _contentTypeBuilder;
 
@@ -35,12 +35,12 @@ namespace ToSic.Eav.Data.Builder
         public EntityBuilder Entity => _entityBuilder.Value;
 
         public AttributeBuilder Attribute => _attributeBuilder.Value;
-        public AttributeBuilderForImport AttributeImport => _attributeImport.Value;
 
         public ValueBuilder Value => _valueBuilder.Value;
 
         public ContentTypeAttributeBuilder TypeAttributeBuilder => _typeAttributeBuilder.Value;
 
+        public DimensionBuilder Language => _languageBuilder.Value;
 
         /// <summary>
         /// Does a full-clone while also cloning (separating) attributes and relationships...?
@@ -49,10 +49,10 @@ namespace ToSic.Eav.Data.Builder
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
+        // TODO: PROBABLY OBSOLETE
         public IEntity FullClone(IEntity entity)
         {
-            return Entity.Clone(entity,
-                attributes: Attribute.ListDeepCloneOrNull(entity.Attributes.ToEditable()));
+            return Entity.Clone(entity);
         }
         
 
@@ -63,6 +63,8 @@ namespace ToSic.Eav.Data.Builder
                 contentType: ContentType.Transient("FakeEntity"),
                 titleField: Attributes.TitleNiceName
             );
+
+
 
     }
 }

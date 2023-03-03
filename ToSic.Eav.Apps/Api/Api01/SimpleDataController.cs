@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
@@ -109,11 +110,11 @@ namespace ToSic.Eav.Api.Api01
         ///     entity ids. 
         /// </param>
         /// <param name="target"></param>
-        /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in values</exception>
+        /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in attributes</exception>
         public IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null
         ) => Log.Func($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}", l =>
         {
-            if (multiValues == null) return (null, "values were null");
+            if (multiValues == null) return (null, "attributes were null");
 
             // ensure the type really exists
             var type = _appManager.Read.ContentTypes.Get(contentTypeName);
@@ -144,7 +145,7 @@ namespace ToSic.Eav.Api.Api01
                 values.Add(Attributes.EntityFieldGuid, Guid.NewGuid());
             }
 
-            // Get owner form value dictionary (and remove it from values) because we need to provided it in entity constructor.
+            // Get owner form value dictionary (and remove it from attributes) because we need to provided it in entity constructor.
             string owner = null;
             if (values.ContainsKey(Attributes.EntityFieldOwner))
             {
@@ -160,9 +161,9 @@ namespace ToSic.Eav.Api.Api01
             // Figure out publishing before converting to IAttribute
             var publishing = FigureOutPublishing(type, values, existingIsPublished);
 
-            // Prepare values to add
+            // Prepare attributes to add
             var preparedValues = ConvertEntityRelations(values);
-            var preparedIAttributes = _builder.Attribute.ToIAttribute(preparedValues);
+            var preparedIAttributes = _builder.Attribute.Create(preparedValues);
             var attributes = BuildNewEntityValues(type, preparedIAttributes, _defaultLanguageCode);
 
             var newEntity = _builder.Entity.Create(appId: _appId, guid: eGuid, contentType: type,
@@ -183,7 +184,7 @@ namespace ToSic.Eav.Api.Api01
         ///     name and value. To set references to other entities, set the attribute value to a list of 
         ///     entity ids. 
         /// </param>
-        /// <exception cref="ArgumentException">Attribute in values does not exit</exception>
+        /// <exception cref="ArgumentException">Attribute in attributes does not exit</exception>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values) => Log.Do($"update i:{entityId}", () =>
         {
@@ -233,11 +234,11 @@ namespace ToSic.Eav.Api.Api01
             IContentType contentType,
             IDictionary<string, object> values,
             bool? existingIsPublished
-        ) => Log.Func($"..., ..., values: {values?.Count}", l =>
+        ) => Log.Func($"..., ..., attributes: {values?.Count}", l =>
         {
             (bool ShouldPublish, bool DraftShouldBranch)? publishAndBranch = null;
             if (values?.Any() != true)
-                return (publishAndBranch, "no values to process");
+                return (publishAndBranch, "no attributes to process");
 
             // On update, by default preserve IsPublished state
             var isPublished = existingIsPublished ?? true;
@@ -270,24 +271,27 @@ namespace ToSic.Eav.Api.Api01
 
         private IDictionary<string, IAttribute> BuildNewEntityValues(
             IContentType contentType,
-            IDictionary<string, IAttribute> values,
+            IImmutableDictionary<string, IAttribute> attributes,
             string valuesLanguage
-        ) => Log.Func($"..., ..., values: {values?.Count}, {valuesLanguage}", l =>
+        ) => Log.Func($"..., ..., attributes: {attributes?.Count}, {valuesLanguage}", l =>
         {
-            if (values?.Any() != true)
+            if (attributes?.Any() != true)
                 return (new Dictionary<string, IAttribute>(), "null/empty");
 
-            var attributes = values.Select(keyValuePair =>
+            var tempMutable = _builder.Attribute.Mutable(attributes);
+
+            var updated = attributes.Select(keyValuePair =>
                 {
                     // Handle content-type attributes
-                    var attribute = contentType[keyValuePair.Key];
-                    if (attribute != null && keyValuePair.Value != null)
+                    var ctAttribute = contentType[keyValuePair.Key];
+                    if (ctAttribute != null && keyValuePair.Value != null)
                     {
+                        tempMutable.TryGetValue(ctAttribute.Name, out var attribute);
                         var preConverted =
-                            _builder.AttributeImport.PreConvertReferences(keyValuePair.Value, attribute.Type, true);
-                        var newAttribute = _builder.AttributeImport.CreateAttribute(values, attribute.Name, preConverted,
-                            attribute.Type, valuesLanguage);
-                        l.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({attribute.Type})");
+                            _builder.Value.PreConvertReferences(keyValuePair.Value, ctAttribute.Type, true);
+                        var newAttribute = _builder.Attribute.CreateOrUpdate(attribute, ctAttribute.Name, preConverted,
+                            ctAttribute.Type, valuesLanguage);
+                        l.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({ctAttribute.Type})");
                         return new
                         {
                             keyValuePair.Key,
@@ -299,7 +303,7 @@ namespace ToSic.Eav.Api.Api01
                 })
                 .Where(x => x != null)
                 .ToDictionary(pair => pair.Key, pair => pair.Attribute, InvariantCultureIgnoreCase);
-            return (attributes, "done");
+            return (updated, "done");
         });
 
         #region Permission Checks

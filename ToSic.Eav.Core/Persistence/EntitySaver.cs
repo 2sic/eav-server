@@ -66,8 +66,8 @@ namespace ToSic.Eav.Persistence
 
             #region Step 2: clean up unwanted attributes from both lists
 
-            var origAttribsOrNull = _dataBuilder.Attribute.ListDeepCloneOrNull(original?.Attributes);
-            var newAttribs = _dataBuilder.Attribute.ListDeepCloneOrNull(update.Attributes);
+            var origAttribsOrNull = _dataBuilder.Attribute.Mutable(original?.Attributes);
+            var newAttribs = _dataBuilder.Attribute.Mutable(update.Attributes);
 
             l.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribsOrNull?.Count}, newAtts⋮{newAttribs.Count}");
 
@@ -150,7 +150,7 @@ namespace ToSic.Eav.Persistence
         private IAttribute CreateIsPublishedAttribute(bool isPublished)
         {
             var values = new List<IValue> { _dataBuilder.Value.Build(ValueTypes.Boolean, isPublished) };
-            var attribute = _dataBuilder.Attribute.CreateTyped(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
+            var attribute = _dataBuilder.Attribute.Create(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
             // #immutable
             //attribute.Values = values;
             return attribute;
@@ -252,8 +252,8 @@ namespace ToSic.Eav.Persistence
                     // Add the value with the remaining languages / relationships
                     // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
                     //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
-                    var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
-                    var val = _dataBuilder.Value.Clone(orgVal, languagesToUse);
+                    //var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
+                    var val = _dataBuilder.Value.Clone(orgVal, remainingLanguages.ToImmutableList());
                     return val;
                 })
                 .Where(val => val != null)

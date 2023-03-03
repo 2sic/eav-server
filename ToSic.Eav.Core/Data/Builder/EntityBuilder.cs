@@ -57,7 +57,7 @@ namespace ToSic.Eav.Data.Builder
                 partsBuilder: partsBuilder, 
                 contentType: contentType,
                 rawValues: null,
-                values: attributes ?? Attribute.EmptyList(),
+                values: attributes ?? Attribute.Empty(),
                 guid: guid,
                 titleFieldName: titleField,
                 created: created,
@@ -120,7 +120,7 @@ namespace ToSic.Eav.Data.Builder
                 entityId: entityId,
                 guid: entityGuid,
                 contentType: type,
-                attributes: Attribute.GenerateAttributesOfContentType(type, null),
+                attributes: Attribute.Create(type, null),
                 created: DateTime.MinValue,
                 modified: DateTime.Now, 
                 owner: "");

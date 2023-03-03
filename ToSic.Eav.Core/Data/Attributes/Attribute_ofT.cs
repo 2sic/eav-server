@@ -20,7 +20,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create an attribute object - usually when building up the data-model for caching.
         /// </summary>
-        public Attribute(string name, ValueTypes type, IImmutableList<IValue> values = null) : base(name, type)
+        internal Attribute(string name, ValueTypes type, IImmutableList<IValue> values = null) : base(name, type)
         {
             Values = values ?? new List<IValue>().ToImmutableList();
         }

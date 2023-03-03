@@ -113,7 +113,7 @@ namespace ToSic.Eav.DataSources
                 {
                     // Case 2: Check if we should take none at all
                     if (noFieldNames && modeIsKeepAttributes)
-                        return _entityBuilder.Clone(e, attributes: _entityBuilder.Attribute.EmptyList());
+                        return _entityBuilder.Clone(e, attributes: _entityBuilder.Attribute.Empty());
 
                     // Case 3 - not all fields, keep/drop the ones we don't want
                     var attributes = e.Attributes

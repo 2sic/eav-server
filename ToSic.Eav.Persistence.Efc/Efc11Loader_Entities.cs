@@ -174,7 +174,7 @@ namespace ToSic.Eav.Persistence.Efc
                 .ToLookup(x => x.Item1, x => x.Item2, InvariantCultureIgnoreCase);
 
             // Get all Attributes of that Content-Type
-            var newAttributes = _dataBuilder.Attribute.GenerateAttributesOfContentType(contentType, mergedValueLookups);
+            var newAttributes = _dataBuilder.Attribute.Create(contentType, mergedValueLookups);
             var newEntity = _dataBuilder.Entity.EntityFromRepository(
                 appId: app.AppId,
                 entityGuid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,

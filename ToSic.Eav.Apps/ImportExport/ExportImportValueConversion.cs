@@ -47,13 +47,13 @@ namespace ToSic.Eav.Apps.ImportExport
             // Option 1: nothing (no value found at all)
             // create a special "null" entry, so the re-import will also null this
             if (attrib == null || attrib.Values.Count == 0)
-                return XmlConstants.Null;
+                return XmlConstants.NullMarker;
 
             // now try to find the exact value-item for this language
             var valueItem = GetExactAssignedValue(attrib, language, languageFallback);
 
             if (valueItem == null)
-                return XmlConstants.Null;
+                return XmlConstants.NullMarker;
 
             // Option 2: Exact match (non-shared) on no other languages
             if (valueItem.Languages.Count == 0 || valueItem.Languages.Count == 1)
@@ -111,9 +111,9 @@ namespace ToSic.Eav.Apps.ImportExport
         internal string ResolveValue(Guid itemGuid, ValueTypes attrType, string value, bool resolveLinks)
         {
             if (value == null)
-                return XmlConstants.Null;
+                return XmlConstants.NullMarker;
             if (value == string.Empty)
-                return XmlConstants.Empty;
+                return XmlConstants.EmptyMarker;
             if (resolveLinks)
                 return ResolveHyperlinksFromSite(itemGuid, value, attrType);
             return value;
