@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
-using ToSic.Eav.Plumbing;
-using ToSic.Eav.Security;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 
@@ -21,7 +18,7 @@ namespace ToSic.Eav.Metadata
     /// * Since v15.04 fully #immutable
     /// </remarks>
     [PrivateApi] // changed 2020-12-09 v11.11 from [PublicApi_Stable_ForUseInYourCode] - as this is a kind of lazy-metadata, we should change it to that
-    public class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamped
+    public partial class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamped
     {
 
         #region Constructors
@@ -84,121 +81,6 @@ namespace ToSic.Eav.Metadata
         /// </summary>
         protected T Key { get; }
 
-        /// <summary>
-        /// All entities is internal - because it contains everything
-        /// including permissions-metadata
-        /// </summary>
-        [PrivateApi]
-        public List<IEntity> AllWithHidden {
-            get
-            {
-                //_debugAllEntry++;
-                // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-                _loadAllInLock.Do(() => _allCached == null || RequiresReload(), () => LoadFromProviderInsideLock());
-                //_debugAllReturn++;
-                return _allCached;
-            }
-        }
-        private List<IEntity> _allCached;
-        private readonly TryLockTryDo _loadAllInLock = new TryLockTryDo();
-
-        /// <summary>
-        /// All "normal" metadata entities - so it hides the system-entities
-        /// like permissions. This is the default view of metadata given by an item
-        /// </summary>
-        private List<IEntity> MetadataWithoutPermissions
-        {
-            get
-            {
-                // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-                if (_metadataWithoutPermissions == null || RequiresReload())
-                    _metadataWithoutPermissions = AllWithHidden
-                        .Where(md => !Permission.IsPermission(md))
-                        .ToList();
-                return _metadataWithoutPermissions;
-            }
-        }
-        private List<IEntity> _metadataWithoutPermissions;
-
-        /// <inheritdoc />
-        public IEnumerable<Permission> Permissions
-        {
-            get
-            {
-                if (_permissions == null || RequiresReload())
-                    _permissions = AllWithHidden
-                        .Where(Permission.IsPermission)
-                        .Select(e => new Permission(e));
-                return _permissions;
-            }
-        }
-        private IEnumerable<Permission> _permissions;
-
-        public long CacheTimestamp { get; private set; }
-
-        [PrivateApi]
-        private bool RequiresReload() => Source.CacheChanged(CacheTimestamp);
-
-        /// <summary>
-        /// Load the metadata from the provider
-        /// Must be virtual, because the inheriting <see cref="ContentTypeMetadata"/> needs to overwrite this. 
-        /// </summary>
-        [PrivateApi]
-        protected virtual void LoadFromProviderInsideLock(IList<IEntity> additions = default)
-        {
-            //_debugLoadFromProvider++;
-            var mdProvider = GetMetadataSource();
-            var mdOfKey = Source.SourceDirect?.List
-                          ?? mdProvider?.GetMetadata(_targetType, Key)
-                          ?? new List<IEntity>();
-            //_debugUse++;
-            _allCached = mdOfKey.Concat(additions ?? new List<IEntity>()).ToList();
-            _metadataWithoutPermissions = null;
-            _permissions = null;
-            if (mdProvider != null)
-                CacheTimestamp = mdProvider.CacheTimestamp;
-        }
-
-        /// <summary>
-        /// Find the source of metadata. It may already be set, or it may not be available at all.
-        /// </summary>
-        /// <returns></returns>
-        [PrivateApi]
-        protected IMetadataSource GetMetadataSource() => _mdsGetOnce.Get(() => Source.MainSource?.MetadataSource);
-        private readonly GetOnce<IMetadataSource> _mdsGetOnce = new GetOnce<IMetadataSource>();
-
-
-        #region GetBestValue
-
-        /// <inheritdoc />
-        public TVal GetBestValue<TVal>(string name, string typeName = null)
-        {
-            var list = typeName == null ? MetadataWithoutPermissions : OfType(typeName);
-            var found = list.FirstOrDefault(md => md.Attributes.ContainsKey(name));
-            return found == null ? default : found.GetBestValue<TVal>(name, null);
-        }
-
-        /// <inheritdoc />
-        public TVal GetBestValue<TVal>(string name, string[] typeNames)
-        {
-            foreach (var type in typeNames)
-            {
-                var result = GetBestValue<TVal>(name, type);
-                if (!EqualityComparer<TVal>.Default.Equals(result, default))
-                    return result;
-            }
-            return default;
-        }
-        #endregion
-
-        #region Type Specific Data
-
-        public bool HasType(string typeName) => this.Any(e => e.Type.Is(typeName));
-
-        public IEnumerable<IEntity> OfType(string typeName) => MetadataWithoutPermissions.OfType(typeName);
-
-        #endregion
-
         #region Target
 
         public ITarget Target => _target.Get(() => new Target(_targetType, _metadataTitle, Key));
@@ -213,15 +95,6 @@ namespace ToSic.Eav.Metadata
         public (int TargetType, List<IEntity> list, IHasMetadataSource appSource, Func<IHasMetadataSource> deferredSource) GetCloneSpecs() 
             => (_targetType, Source.SourceDirect?.List?.ToList(), Source.SourceApp, Source.SourceDeferred);
 
-        #endregion
-
-
-        #region enumerators
-        [PrivateApi]
-        public IEnumerator<IEntity> GetEnumerator() => new EntityEnumerator(MetadataWithoutPermissions);
-
-        [PrivateApi]
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         #endregion
     }
 }
