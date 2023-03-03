@@ -115,14 +115,10 @@ namespace ToSic.Eav.Configuration
         public bool ReloadFeatures() => SetFeaturesStored(LoadFeaturesStored());
 
 
-        private bool SetFeaturesStored(FeatureListStored stored = null)
-        {
-            Features.Stored = stored ?? new FeatureListStored();
-            Features.CacheTimestamp = DateTime.Now.Ticks;
-            return true;
-        }
+        private bool SetFeaturesStored(FeatureListStored stored = null) 
+            => Features.UpdateFeatureList(stored ?? new FeatureListStored());
 
-        
+
         /// <summary>
         /// Load features stored from 'features.json'.
         /// When old format is detected, it is converted to new format.

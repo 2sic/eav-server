@@ -36,8 +36,9 @@ namespace ToSic.Eav.Configuration
         bool IsEnabled(params FeatureDefinition[] features);
 
 
-        FeatureListStored Stored { get; set; }
-        new long CacheTimestamp { get; set; }
+        FeatureListStored Stored { get; }
         event EventHandler FeaturesChanged;
+
+        bool UpdateFeatureList(FeatureListStored newList);
     }
 }
