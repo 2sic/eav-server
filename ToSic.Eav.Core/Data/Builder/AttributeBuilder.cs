@@ -63,6 +63,12 @@ namespace ToSic.Eav.Data.Builder
         public IAttribute CloneUpdateOne(IAttribute original, IList<IValue> values = null)
             => CreateTyped(original.Name, original.Type, values ?? original.Values.ToList());
 
+        public IAttribute<IEnumerable<IEntity>> CreateOneWayRelationship(string name, IImmutableList<IEntity> relationships)
+        {
+            return new Attribute<IEnumerable<IEntity>>(name, ValueTypes.Entity,
+                new List<IValue> { ValueBuilder.BuildRelationship(relationships) }.ToImmutableList());
+        }
+
         /// <summary>
         /// Get Attribute for specified Typ
         /// </summary>

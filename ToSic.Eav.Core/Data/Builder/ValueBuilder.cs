@@ -92,17 +92,17 @@ namespace ToSic.Eav.Data.Builder
             }
         }
 
-        private LazyEntities GetLazyEntitiesForRelationship(object value, IEntitiesSource fullEntityListForLookup)
+        private LazyEntities GetLazyEntitiesForRelationship(object value, IEntitiesSource fullLookupList)
         {
             var entityIds = (value as IEnumerable<int?>)?.ToList()
                             ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
             if (entityIds != null)
-                return new LazyEntities(fullEntityListForLookup, entityIds);
-            if (value is IEnumerable<IEntity> relList)
-                return new LazyEntities(fullEntityListForLookup, ((LazyEntities)relList).Identifiers);
+                return new LazyEntities(fullLookupList, entityIds);
+            if (value is IRelatedEntitiesValue relList)
+                return new LazyEntities(fullLookupList, relList.Identifiers);
             if (value is List<Guid?> guids)
-                return new LazyEntities(fullEntityListForLookup, guids);
-            return new LazyEntities(fullEntityListForLookup, GuidCsvToList(value));
+                return new LazyEntities(fullLookupList, guids);
+            return new LazyEntities(fullLookupList, GuidCsvToList(value));
         }
 
 

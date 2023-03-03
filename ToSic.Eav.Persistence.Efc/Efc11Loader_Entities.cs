@@ -149,9 +149,6 @@ namespace ToSic.Eav.Persistence.Efc
                 ? rawRels.Select(r => (r.StaticName, _multiBuilder.Value.BuildRelationship(r.Children, app))).ToList()
                 : emptyValueList;
 
-            var ctAttribDic = contentType.Attributes
-                .ToDictionary(a => a.Name, a => a, InvariantCultureIgnoreCase);
-
             var attributeValuesLookup = !attributes.TryGetValue(e.EntityId, out var attribValues)
                 ? emptyValueList
                 : attribValues

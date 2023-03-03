@@ -118,14 +118,8 @@ namespace ToSic.Eav.DataSources
                 .SelectMany(lookupId => lookup[lookupId])
                 .ToImmutableList();
 
-            // Create Guid List of children (note 2dm - not sure why..., as the guids may be Guid.Empty)
-            // but changing it if numeric actually fails, maybe a guid is numeric?
-            var childGuids = keyIsNumeric // typeof(TKey).IsNumeric()
-                ? related.Select(e => e.EntityId).ToList() as object
-                : related.Select(e => e.EntityGuid).ToList();
-            var newAttribute = _builder.AttributeImport.CreateAttribute(attributes, newFieldName, childGuids, ValueTypes.Entity,
-                null, allEntitiesForRelationships: new ImmutableEntitiesSource(related));
-            attributes = _builder.AttributeImport.UpdateAttribute(attributes, newAttribute);
+            var relAttr = _builder.Attribute.CreateOneWayRelationship(newFieldName, related);
+            attributes = _builder.AttributeImport.UpdateAttribute(attributes, relAttr);
 
             // Log
             return (attributes, $"added {related.Count} items");
