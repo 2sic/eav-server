@@ -19,13 +19,18 @@ namespace ToSic.Eav.Data.Builder
         }
         private DimensionBuilder LanguageBuilder { get; }
 
-        public IValue Clone(IValue original, ValueTypes type, IImmutableList<ILanguage> languages = null) 
-            => Build(type, original.ObjectContents, languages ?? original.Languages.ToImmutableList());
+        public IValue Clone(IValue original, IImmutableList<ILanguage> languages = null) 
+            => languages == null ? original : original.Clone(languages);
 
 
         public IValue BuildRelationship(List<int?> references, IEntitiesSource app)
         {
             return new Value<IEnumerable<IEntity>>(new LazyEntities(app, references), DimensionBuilder.NoLanguages);
+        }
+
+        public IValue BuildRelationship(IEnumerable<IEntity> directList)
+        {
+            return new Value<IEnumerable<IEntity>>(directList, DimensionBuilder.NoLanguages);
         }
 
         /// <summary>

@@ -22,11 +22,11 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// The parent item, which has a reference to the child
         /// </summary>
-		public IEntity Parent { get; internal set; }
+		public IEntity Parent { get; }
 
         /// <summary>
         /// The child item, which is referenced by the parent
         /// </summary>
-		public IEntity Child { get; internal set; }
+		public IEntity Child { get; }
 	}
 }

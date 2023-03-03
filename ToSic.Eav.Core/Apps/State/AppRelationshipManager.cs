@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps
             // will have multiple lookups - first to find the json, then to add to relationship index
 
             var cache = new List<EntityRelationship>();
-            Dictionary<int, IEntity> index = appState.Index;
+            var index = appState.Index;
             foreach (var entity in appState.List)
                 foreach (var attribute in entity.Attributes
                              .Select(a => a.Value)
@@ -41,10 +41,11 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public void AttachRelationshipResolver(IEntity entity)
         {
-            foreach (var attrib in entity.Attributes.Select(a => a.Value)
-                .Where(a => a is IAttribute<IEnumerable<IEntity>>)
-                .Cast<IAttribute<IEnumerable<IEntity>>>()
-            )
+            foreach (var attrib in entity.Attributes
+                         .Select(a => a.Value)
+                         .Where(a => a is IAttribute<IEnumerable<IEntity>>)
+                         .Cast<IAttribute<IEnumerable<IEntity>>>()
+                    )
                 (attrib?.TypedContents as LazyEntities)?.AttachLookupList(_upstreamApp);
         }
 

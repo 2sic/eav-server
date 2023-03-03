@@ -71,7 +71,7 @@ namespace ToSic.Eav.ImportExport.Json
                         attribs.Boolean = ToTypedDictionary<bool?>(gList);
                         break;
                     case ValueTypes.Entity:
-                        attribs.Entity = ToTypedDictionaryEntity(gList, false);
+                        attribs.Entity = ToTypedDictionaryEntity(gList);
                         break;
                     case ValueTypes.Empty:
                     case ValueTypes.Undefined:
@@ -105,8 +105,7 @@ namespace ToSic.Eav.ImportExport.Json
         /// this is a special helper to create typed entities-dictionaries
         /// </summary>
         /// <returns></returns>
-        private Dictionary<string, Dictionary<string, List<Guid?>>> 
-            ToTypedDictionaryEntity(List<IAttribute> gList, bool fullObjects)
+        private Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(List<IAttribute> gList)
         {
             // the following is a bit complex for the following reason
             // 1. either the relationship is guid based, and in that case, 

@@ -253,7 +253,7 @@ namespace ToSic.Eav.Persistence
                     // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
                     //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
                     var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
-                    var val = _multiBuilder.Value.Clone(orgVal, original.Type, languagesToUse);
+                    var val = _multiBuilder.Value.Clone(orgVal, languagesToUse);
                     return val;
                 })
                 .Where(val => val != null)

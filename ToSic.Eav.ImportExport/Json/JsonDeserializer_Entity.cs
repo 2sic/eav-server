@@ -164,56 +164,8 @@ namespace ToSic.Eav.ImportExport.Json
             a => a.Name, 
             a => 
             {
-
-                // TODO: FINISH THIS - GET VALUES BEFORE CREATING THE TYPE
                 var values = GetValues(a, jAtts, relationshipsSource);
-                var newAtt = Services.MultiBuilder.Attribute.CreateTyped(a.Name, a.Type, values);
-                //switch (a.ControlledType)
-                //{
-                //    case ValueTypes.Boolean:
-                //        BuildValues(jAtts.Boolean, a, newAtt);
-                //        break;
-                //    case ValueTypes.DateTime:
-                //        BuildValues(jAtts.DateTime, a, newAtt);
-                //        break;
-                //    case ValueTypes.Entity:
-                //        if (!jAtts.Entity?.ContainsKey(a.Name) ?? true)
-                //            break; // just keep the empty definition, as that's fine
-                //        newAtt.Values = jAtts.Entity[a.Name]
-                //            .Select(v => Services.MultiBuilder.Value.Build(
-                //                a.Type,
-                //                v.Value,
-                //                // 2023-02-24 2dm #immutable
-                //                //RecreateLanguageList(v.Key),
-                //                DimensionBuilder.NoLanguages,
-                //                relationshipsSource ?? LazyRelationshipLookupList))
-                //            .ToList();
-                //        break;
-                //    case ValueTypes.Hyperlink:
-                //        BuildValues(jAtts.Hyperlink, a, newAtt);
-                //        break;
-                //    case ValueTypes.Number:
-                //        BuildValues(jAtts.Number, a, newAtt);
-                //        break;
-                //    case ValueTypes.String:
-                //        BuildValues(jAtts.String, a, newAtt);
-                //        break;
-                //    case ValueTypes.Custom:
-                //        BuildValues(jAtts.Custom, a, newAtt);
-                //        break;
-                //    case ValueTypes.Json:
-                //        BuildValues(jAtts.Json, a, newAtt);
-                //        break;
-                //    // ReSharper disable RedundantCaseLabel
-                //    case ValueTypes.Empty:
-                //    case ValueTypes.Undefined:
-                //        // ReSharper restore RedundantCaseLabel
-                //        break;
-                //    default:
-                //        throw new ArgumentOutOfRangeException();
-                //}
-
-                return newAtt;
+                return Services.MultiBuilder.Attribute.CreateTyped(a.Name, a.Type, values);
             },
             InvariantCultureIgnoreCase));
 

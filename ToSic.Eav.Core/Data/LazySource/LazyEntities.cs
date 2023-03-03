@@ -16,7 +16,7 @@ namespace ToSic.Eav.Data
     ///   it won't actually query the cache if the IDs are already known.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class LazyEntities : IEnumerable<IEntity>, ICacheDependent
+    public class LazyEntities : IEnumerable<IEntity>, ICacheDependent, IRelatedEntitiesValue
     {
         /// <summary>
         /// Blank value, just for marking the list as empty

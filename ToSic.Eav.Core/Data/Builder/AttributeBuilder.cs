@@ -56,20 +56,12 @@ namespace ToSic.Eav.Data.Builder
 
         // Note: ATM it makes a deep clone, but once everything is #immutable that won't be necessary any more
         public IImmutableDictionary<string, IAttribute> ListDeepCloneOrNull(IDictionary<string, IAttribute> attributes) 
-            => attributes?.ToImmutableDictionary(pair => pair.Key, pair => CloneUpdateOne(pair.Value), InvariantCultureIgnoreCase);
+            => attributes?.ToImmutableDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
         public IDictionary<string, IAttribute> ListDeepCloneOrNull(IReadOnlyDictionary<string, IAttribute> attributes) 
-            => attributes?.ToDictionary(pair => pair.Key, pair => CloneUpdateOne(pair.Value), InvariantCultureIgnoreCase);
+            => attributes?.ToDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
 
         public IAttribute CloneUpdateOne(IAttribute original, IList<IValue> values = null)
-            => CreateTyped(original.Name, original.Type,
-                values ?? original.Values
-                    .Select(v => ValueBuilder.Clone(v, original.Type))
-                    .ToList()
-            );
-
-        [PrivateApi]
-        public IAttribute CreateTyped(string name, string type, IList<IValue> values = null)
-            => CreateTyped(name, ValueTypeHelpers.Get(type), values);
+            => CreateTyped(original.Name, original.Type, values ?? original.Values.ToList());
 
         /// <summary>
         /// Get Attribute for specified Typ
