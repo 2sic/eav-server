@@ -246,8 +246,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                     {
                         case null:
                             continue;
-                        case IEnumerable<IEntity> entities:
-                            list = ((LazyEntities)entities).Identifiers;
+                        case IRelatedEntitiesValue entities:
+                            list = entities.Identifiers;
                             break;
                         case Guid guid:
                             list = new List<Guid> { guid };
