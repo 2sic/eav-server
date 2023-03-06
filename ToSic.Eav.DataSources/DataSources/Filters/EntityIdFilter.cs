@@ -59,23 +59,23 @@ namespace ToSic.Eav.DataSources
 
         private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
-            var entityIds = CustomConfigurationParse();
+            var entityIdsOrError = CustomConfigurationParse();
+            if (entityIdsOrError.IsError)
+                return entityIdsOrError.ErrorResult;
 
-            // if CustomConfiguration resulted in an error, report now
-            if (!ErrorStream.IsDefaultOrEmpty)
-                return (ErrorStream, "error");
+            var entityIds = entityIdsOrError.Result;
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
-            var result = entityIds.Select(eid => originals.One(eid)).Where(e => e != null).ToImmutableArray();
+            var result = entityIds.Select(eid => source.List.One(eid)).Where(e => e != null).ToImmutableList();
 
-            l.A(l.Try(() => $"get ids:[{string.Join(",", entityIds)}] found:{result.Length}"));
+            l.A(l.Try(() => $"get ids:[{string.Join(",", entityIds)}] found:{result.Count}"));
             return (result, "ok");
         });
 
         [PrivateApi]
-        private int[] CustomConfigurationParse() => Log.Func(() =>
+        private ResultOrError<int[]> CustomConfigurationParse() => Log.Func(() =>
         {
             Configuration.Parse();
 
@@ -86,7 +86,7 @@ namespace ToSic.Eav.DataSources
                 var configEntityIds = EntityIds;
                 // check if we have anything to work with
                 if (string.IsNullOrWhiteSpace(configEntityIds))
-                    return (Array.Empty<int>(), "empty");
+                    return (new ResultOrError<int[]>(true, Array.Empty<int>()), "empty");
 
                 var preCleanedIds = configEntityIds
                     .Split(',')
@@ -95,12 +95,13 @@ namespace ToSic.Eav.DataSources
                 foreach (var strEntityId in preCleanedIds)
                     if (int.TryParse(strEntityId, out var entityIdToAdd))
                         lstEntityIds.Add(entityIdToAdd);
-                return (lstEntityIds.Distinct().ToArray(), EntityIds);
+                return (new ResultOrError<int[]>(true, lstEntityIds.Distinct().ToArray()), EntityIds);
             }
             catch (Exception ex)
             {
-                SetError("Can't find IDs", "Unable to load EntityIds from Configuration. Unexpected Exception.", ex);
-                return (null, "error");
+                return (new ResultOrError<int[]>(false, Array.Empty<int>(),
+                    () => CreateError("Can't find IDs", "Unable to load EntityIds from Configuration. Unexpected Exception.",
+                        ex)), "error");
             }
 
             #endregion

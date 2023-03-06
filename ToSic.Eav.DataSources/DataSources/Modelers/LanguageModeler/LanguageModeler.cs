@@ -84,17 +84,17 @@ namespace ToSic.Eav.DataSources
 
             var fieldMapErrors = string.Join(";", mapErrors);
             if (!string.IsNullOrWhiteSpace(fieldMapErrors))
-                return (SetError("Field Map Error", fieldMapErrors), "error");
+                return CreateErrorResult("Field Map Error", fieldMapErrors);
 
             #endregion
 
             l.A($"Field Map created - has {fieldMap.Length} parts");
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
             var result = new List<IEntity>();
-            foreach (var entity in originals)
+            foreach (var entity in source.List)
             {
                 var attributes = _dataBuilder.Attribute.Mutable(entity.Attributes);
 
@@ -157,8 +157,8 @@ namespace ToSic.Eav.DataSources
                 result.Add(modifiedEntity);
             }
 
-            var immutableResults = result.ToImmutableArray();
-            return (immutableResults, $"{immutableResults.Length}");
+            var immutableResults = result.ToImmutableList();
+            return (immutableResults, $"{immutableResults.Count}");
         });
     }
 

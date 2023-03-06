@@ -140,18 +140,18 @@ namespace ToSic.Eav.DataSources
             if (!string.IsNullOrEmpty(typeName))
                 newType = _dataBuilder.ContentType.Transient(AppId, typeName, typeName);
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
-            var result = originals
+            var result = source.List
                 .Select(entity =>
                 {
                     var values = CreateDic(entity);
                     return _dataBuilder.Entity.Clone(entity, attributes: _dataBuilder.Attribute.Create(values), type: newType);
                 })
-                .ToImmutableArray();
+                .ToImmutableList();
 
-            return (result, $"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
+            return (result, $"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Count}");
         });
 
 

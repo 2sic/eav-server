@@ -133,36 +133,33 @@ namespace ToSic.Eav.DataSources
         private readonly IDataFactory _dataFactory;
 
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(() =>
+        private IEnumerable<IEntity> GetList() => Log.Func(l =>
         {
             Configuration.Parse();
 
             var entityList = new List<IEntity>();
 
             var csvPath = GetServerPath(FilePath);
-            Log.A($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
+            l.A($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
 
             if (string.IsNullOrWhiteSpace(csvPath))
-                return (SetError("No Path Given", "There was no path for loading the CSV file."),
-                    "error");
+                return CreateErrorResult("No Path Given", "There was no path for loading the CSV file.");
 
             var pathPart = Path.GetDirectoryName(csvPath);
             if (!Directory.Exists(pathPart))
             {
-                Log.A($"Didn't find path '{pathPart}'");
-                return (SetError("Path not found",
+                l.A($"Didn't find path '{pathPart}'");
+                return CreateErrorResult("Path not found",
                         _user?.IsSystemAdmin == true
                             ? $"Path for Super User only: '{pathPart}'"
-                            : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights."),
-                    "error");
+                            : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights.");
             }
 
             if (!File.Exists(csvPath))
-                return (SetError("CSV File Not Found",
+                return CreateErrorResult("CSV File Not Found",
                         _user?.IsSystemAdmin == true
                             ? $"Path for Super User only: '{csvPath}'"
-                            : "For security reasons the path isn't mentioned here. You'll find it in the Insights."),
-                    "error");
+                            : "For security reasons the path isn't mentioned here. You'll find it in the Insights.");
 
             const string commonErrorsIdTitle =
                 "A common mistake is to use the wrong delimiter (comma / semi-colon) in which case this may also fail. ";
@@ -196,10 +193,10 @@ namespace ToSic.Eav.DataSources
                         idColumnIndex = Array.FindIndex(headers,
                             name => name.Equals(IdColumnName, StringComparison.InvariantCultureIgnoreCase));
                     if (idColumnIndex == -1)
-                        return (SetError("ID Column not found",
+                        return CreateErrorResult("ID Column not found",
                             $"ID column '{IdColumnName}' specified cannot be found in the file. " +
                             $"The Headers: '{string.Join(",", headers)}'. " +
-                            $"{commonErrorsIdTitle}"), "err");
+                            $"{commonErrorsIdTitle}");
                 }
 
                 if (string.IsNullOrEmpty(TitleColumnName))
@@ -211,10 +208,10 @@ namespace ToSic.Eav.DataSources
                                    ?? headers.FirstOrDefault(colName =>
                                        colName.Equals(TitleColumnName, StringComparison.InvariantCultureIgnoreCase));
                     if (titleColName == null)
-                        return (SetError("Title column not found",
+                        return CreateErrorResult("Title column not found",
                             $"Title column '{TitleColumnName}' cannot be found in the file. " +
                             $"The Headers: '{string.Join(",", headers)}'. " +
-                            $"{commonErrorsIdTitle}"), "err");
+                            $"{commonErrorsIdTitle}");
                 }
 
                 _dataFactory.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName);
@@ -231,8 +228,8 @@ namespace ToSic.Eav.DataSources
                     // check if id can be parsed from the current row
                     else if (!int.TryParse(fields[idColumnIndex], out entityId))
                     {
-                        return (SetError(ErrorIdNaN,
-                            $"Row {parser.Row}: ID field '{headers[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'."), "err");
+                        return CreateErrorResult(ErrorIdNaN,
+                            $"Row {parser.Row}: ID field '{headers[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'.");
                     }
 
                     var entityValues = new Dictionary<string, object>();
@@ -243,7 +240,7 @@ namespace ToSic.Eav.DataSources
                 }
             }
 
-            return (entityList.ToImmutableArray(), $"{entityList.Count}");
+            return (entityList.ToImmutableList(), $"{entityList.Count}");
         });
     }
 }

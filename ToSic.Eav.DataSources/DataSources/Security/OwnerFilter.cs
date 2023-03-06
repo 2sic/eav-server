@@ -55,12 +55,12 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             if (string.IsNullOrWhiteSpace(Identity))
-                return (ImmutableArray<IEntity>.Empty, "no identity");
+                return (EmptyList, "no identity");
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
-            return (originals.Where(e => e.Owner == Identity).ToImmutableArray(), "ok");
+            return (source.List.Where(e => e.Owner == Identity).ToImmutableList(), "ok");
         });
 
     }

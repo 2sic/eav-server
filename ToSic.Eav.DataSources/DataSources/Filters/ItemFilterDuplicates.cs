@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
@@ -45,14 +46,14 @@ namespace ToSic.Eav.DataSources
         private IImmutableList<IEntity> GetUnique() => Log.Func(() =>
         {
             if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
-                return (ImmutableArray<IEntity>.Empty, "no in stream with name");
+                return (EmptyList, "no in stream with name");
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
-            var result = originals
+            var result = source.List
                 .Distinct()
-                .ToImmutableArray();
+                .ToImmutableList();
 
             return (result, "ok");
         });
@@ -65,16 +66,16 @@ namespace ToSic.Eav.DataSources
         private IImmutableList<IEntity> GetDuplicates() => Log.Func(() =>
         {
             if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
-                return (ImmutableArray<IEntity>.Empty, "no in-stream with name");
+                return (EmptyList, "no in-stream with name");
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
-            var result = originals
+            var result = source.List
                 .GroupBy(s => s)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
-                .ToImmutableArray();
+                .ToImmutableList();
 
             return (result, "ok");
         });

@@ -30,14 +30,14 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Make sure we have an In - otherwise error
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
             var typeName = ContentTypeName;
             if (string.IsNullOrWhiteSpace(typeName)) typeName = null;
             l.A($"Content Type Name: {typeName}");
 
-            var relationships = SpecificGet(originals, typeName);
+            var relationships = SpecificGet(source.List, typeName);
 
             return (relationships.ToImmutableList(), "ok");
         });

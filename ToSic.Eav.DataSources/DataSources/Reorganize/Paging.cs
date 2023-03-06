@@ -92,14 +92,14 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1) * PageSize;
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
-            var result = originals
+            var result = source.List
                 .Skip(itemsToSkip)
                 .Take(PageSize)
-                .ToImmutableArray();
-            l.A($"get page:{PageNumber} with size{PageSize} found:{result.Length}");
+                .ToImmutableList();
+            l.A($"get page:{PageNumber} with size{PageSize} found:{result.Count}");
             return (result, "ok");
         });
 
@@ -108,10 +108,10 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Calculate any additional stuff
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
-            var itemCount = originals.Count;
+            var itemCount = source.List.Count;
             var pageCount = Math.Ceiling((decimal)itemCount / PageSize);
 
             // Assemble the entity
@@ -128,7 +128,7 @@ namespace ToSic.Eav.DataSources
 
             // Assemble list of this for the stream
             var list = new List<IEntity> { entity };
-            return (list.ToImmutableArray(), "ok");
+            return (list.ToImmutableList(), "ok");
         });
 
     }

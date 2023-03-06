@@ -86,14 +86,14 @@ namespace ToSic.Eav.DataSources
         private const char FieldCreate = 'c';
         private const char FieldNormal = 'x';
 
-		private IImmutableList<IEntity> GetValueSort() => Log.Func(() =>
+		private IImmutableList<IEntity> GetValueSort() => Log.Func(l =>
         {
 			// todo: maybe do something about languages?
 			// todo: test decimal / number types
 
 			Configuration.Parse();
 
-            Log.A("will apply value-sort");
+            l.A("will apply value-sort");
 			var sortAttributes = Attributes.Split(',').Select(s => s.Trim()).ToArray();
 			var sortDirections = Directions.Split(',').Select(s => s.Trim()).ToArray();
 			var descendingCodes = new[] { "desc","d","0",">" };
@@ -101,12 +101,12 @@ namespace ToSic.Eav.DataSources
 			// Languages check - not fully implemented yet, only supports "default" / "current"
             LanguageList = _valLanguages.PrepareLanguageList(Languages);
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
             // check if no list parameters specified
-		    if (sortAttributes.Length == 1 && string.IsNullOrWhiteSpace(sortAttributes[0]))
-		        return (originals, "no params");
+            if (sortAttributes.Length == 1 && string.IsNullOrWhiteSpace(sortAttributes[0]))
+		        return (source.List, "no params");
 
 			// 2022-03-09 2dm
 			// Previously we had some code which extracted "unsortable" items
@@ -114,7 +114,7 @@ namespace ToSic.Eav.DataSources
 			// Now I plan to change it back so it won't optimize this
 			// And let LINQ handle null as before/after
 			// Plan is to leave this original code and comment in till ca. middle of 2022, in case something breaks
-            var results = originals;
+            var results = source.List;
             // only keep entities that have the expected attributes (but don't test for id/title, as all have these)
             //var valueAttrs = sortAttributes.Where(v => !Data.Attributes.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
 			//var results = valueAttrs.Length == 0
@@ -130,7 +130,7 @@ namespace ToSic.Eav.DataSources
 
 			// if list is blank, then it didn't find the attribute to sort by - so just return unsorted
 			// note 2020-10-07 this may have been a bug previously, returning an empty list instead
-            if (!results.Any()) return (originals, "sort-attribute not found in data");
+            if (!results.Any()) return (source.List, "sort-attribute not found in data");
 
             // Keep entities which cannot sort by the required values (removed previously from results)
             //var unsortable = originals.Where(e => !results.Contains(e)).ToImmutableArray();
@@ -160,17 +160,16 @@ namespace ToSic.Eav.DataSources
                     : isAscending ? ordered.ThenBy(getValue) : ordered.ThenByDescending(getValue);
             }
 
-			ImmutableArray<IEntity> final;
+			IImmutableList<IEntity> final;
 			try
-			{
-				final = ordered?.ToImmutableArray() ?? ImmutableArray<IEntity>.Empty;
-			}
+            {
+                final = ordered?.ToImmutableList() ?? EmptyList;
+            }
 			catch (Exception e)
             {
-				return (SetError("Error sorting", "Sorting failed - see exception in insights", e), "error");
+				return CreateErrorResult("Error sorting", "Sorting failed - see exception in insights", e);
             }
 
-            //final = final/*.AddRange(unsortable)*/.ToImmutableArray(); 
             return (final, "ok");
 		});
 
@@ -185,21 +184,5 @@ namespace ToSic.Eav.DataSources
 				default: return e => e.GetBestValue(fieldName, languages);
             }
         }
-
-		//private object GetPropertyToSort(IEntity e, string a, char special)
-		//{
-		//	// get either the special id or title, if title or normal field, then use language [0] = default
-  //          return special == FieldId
-  //              ? e.EntityId
-  //              : special == FieldMod
-  //                  ? e.Modified
-  //                  : special == FieldCreate
-  //                      ? e.Created
-  //                      : special == FieldTitle
-  //                          ? e.GetBestTitle(LanguageList)
-  //                          : e.GetBestValue(a, LanguageList);
-  //          // note 2020-11-17 changed it from the line below to the above, to support languages    
-  //          //: (special == 't' ? e.Title : e[a])[0];
-  //      }
-	}
+    }
 }

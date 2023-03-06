@@ -83,8 +83,8 @@ namespace ToSic.Eav.DataSources
         {
             Configuration.Parse();
 
-            if (!GetRequiredInList(out var sourceList))
-                return (sourceList, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
             var raw = AttributeNames;
             // note: since 2sxc 11.13 we have lines for attributes
@@ -106,9 +106,9 @@ namespace ToSic.Eav.DataSources
 
             // Case #1 if we don't change anything, short-circuit and return original
             if (noFieldNames && !modeIsKeepAttributes)
-                return (sourceList, $"keep original {sourceList.Count}");
+                return (source.List, $"keep original {source.List.Count}");
 
-            var result = sourceList
+            var result = source.List
                 .Select(e =>
                 {
                     // Case 2: Check if we should take none at all
@@ -121,7 +121,6 @@ namespace ToSic.Eav.DataSources
                         .ToImmutableDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
                     return _entityBuilder.Clone(e, attributes: attributes);
                 })
-                .Cast<IEntity>()
                 .ToImmutableList();
 
             return (result, $"modified {result.Count}");

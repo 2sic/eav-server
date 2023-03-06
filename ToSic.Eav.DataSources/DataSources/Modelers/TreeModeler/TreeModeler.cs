@@ -100,23 +100,23 @@ namespace ToSic.Eav.DataSources
         {
             Configuration.Parse();
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
             switch (Identifier)
             {
                 case "EntityGuid":
                     var resultGuid = _treeMapper.AddRelationships<Guid>(
-                        originals, Identifier, ParentReferenceField,
+                        source.List, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
                     return (resultGuid, $"Guid: {resultGuid.Count}");
                 case "EntityId":
                     var resultInt = _treeMapper.AddRelationships<int>(
-                        originals, Identifier, ParentReferenceField,
+                        source.List, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
                     return (resultInt, $"int: {resultInt.Count}");
                 default:
-                    return (SetError("Invalid Identifier", "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute."), "error");
+                    return CreateErrorResult("Invalid Identifier", "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute.");
             }
         });
 

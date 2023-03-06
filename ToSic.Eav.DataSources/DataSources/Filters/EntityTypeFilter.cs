@@ -65,8 +65,8 @@ namespace ToSic.Eav.DataSources
             l.A($"get list with type:{TypeName}");
 
             // Get original from In-Stream
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = GetRequiredInList();
+            if (source.IsError) return source.ErrorResult;
 
             try
             {
@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources
                 var foundType = appState?.GetContentType(TypeName);
                 if (foundType != null) // maybe it doesn't find it!
                 {
-                    var result = originals.OfType(foundType).ToList();
+                    var result = source.List.OfType(foundType).ToList();
                     // 2dm 2023-01-22 #maybeSupportIncludeParentApps
                     //if (IncludeParentApps)
                     //{
@@ -87,7 +87,7 @@ namespace ToSic.Eav.DataSources
                     //        parent = parent.AppState.ParentApp;
                     //    }
                     //}
-                    return (result.ToImmutableArray(), "fast");
+                    return (result.ToImmutableList(), "fast");
                 }
             }
             catch (Exception ex)
@@ -102,7 +102,7 @@ namespace ToSic.Eav.DataSources
             //if (!GetRequiredInList(out var originals2))
             //    return (originals2, "error");
 
-            return (originals.OfType(TypeName).ToImmutableArray(), "slower");
+            return (source.List.OfType(TypeName).ToImmutableList(), "slower");
         });
 
     }

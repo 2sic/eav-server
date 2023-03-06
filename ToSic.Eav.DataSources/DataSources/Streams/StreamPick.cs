@@ -73,18 +73,18 @@ namespace ToSic.Eav.DataSources
             var name = StreamName;
             l.A($"StreamName to Look for: '{name}'");
             if (string.IsNullOrWhiteSpace(StreamName))
-                return (ImmutableArray<IEntity>.Empty, "no name");
+                return (ImmutableList<IEntity>.Empty, "no name");
 
             name = name.ToLowerInvariant();
             var foundStream = In.FirstOrDefault(pair => pair.Key.ToLowerInvariant() == name);
 
             if (!string.IsNullOrEmpty(foundStream.Key))
-                return (foundStream.Value.List.ToImmutableArray(), "ok");
+                return (foundStream.Value.List.ToImmutableList(), "ok");
 
             // Error not found
             var msg = $"StreamPick can't find stream by the name '{StreamName}'";
             l.A(msg);
-            return (ErrorHandler.CreateErrorList(source: this, title: "Can't find Stream", message: $"Trying to pick the stream '{StreamName}' but it doesn't exist on the In."), "error");
+            return CreateErrorResult(title: "Can't find Stream", message: $"Trying to pick the stream '{StreamName}' but it doesn't exist on the In.");
 
         });
 

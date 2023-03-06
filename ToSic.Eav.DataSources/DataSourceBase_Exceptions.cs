@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 
@@ -36,7 +37,9 @@ namespace ToSic.Eav.DataSources
         /// Introduced in 2sxc 11.13
         /// </remarks>
         [PublicApi]
-        protected ImmutableArray<IEntity> ErrorStream;
+        protected IImmutableList<IEntity> ErrorStream;
+
+        protected GetStream GetErrors() => new GetStream(isError: ErrorStream?.Any() == true, getError: () => ErrorStream);
 
         /// <summary>
         /// This will generate an Error Stream and return it as well as place it in the ErrorStream.
@@ -49,12 +52,18 @@ namespace ToSic.Eav.DataSources
         /// Introduced in 2sxc 11.13
         /// </remarks>
         [PublicApi]
-        protected ImmutableArray<IEntity> SetError(string title, string message, Exception ex = null)
+        protected IImmutableList<IEntity> SetError(string title, string message, Exception ex = null)
         {
             var result = ErrorHandler.CreateErrorList(source: this, title: title, message: message, exception: ex);
             ErrorStream = result;
             return result;
         }
+
+        protected IImmutableList<IEntity> CreateError(string title, string message, Exception ex = null) 
+            => ErrorHandler.CreateErrorList(source: this, title: title, message: message, exception: ex);
+
+        protected (IImmutableList<IEntity> ErrorList, string message) CreateErrorResult(string title, string message, Exception ex = null)
+            => (CreateError(title, message, ex), "error");
 
         /// <summary>
         /// Get a required Stream from In.
@@ -86,8 +95,8 @@ namespace ToSic.Eav.DataSources
         /// Introduced in 2sxc 11.13
         /// </remarks>
         [PublicApi]
-        protected bool GetRequiredInList(out IImmutableList<IEntity> list) 
-            => GetRequiredInList(Constants.DefaultStreamName, out list);
+        protected GetStream GetRequiredInList() 
+            => GetInStream(Constants.DefaultStreamName);
 
         /// <summary>
         /// Get a required Stream from In.
@@ -120,24 +129,23 @@ namespace ToSic.Eav.DataSources
         /// Introduced in 2sxc 11.13
         /// </remarks>
         [PublicApi]
-        protected bool GetRequiredInList(string name, out IImmutableList<IEntity> list)
+        protected GetStream GetInStream(string name)
         {
-            if (In.ContainsKey(name))
-            {
-                var stream = In[name];
-                if (stream != null)
-                {
-                    list = stream.List.ToImmutableList();
-                    if (list != null) return true;
-                    list = SetError($"Stream '{name}' is Null", $"The Stream '{name}' exists, but the List is null");
-                    return false;
-                }
-
-                list = SetError($"Stream '{name}' is Null", $"The Stream '{name}' was found on In, but it's null");
-                return false;
-            }
-            list = SetError($"Stream '{name}' not found", $"This DataSource needs the stream '{name}' on the In to work, but it couldn't find it.");
-            return false;
+            if (!In.ContainsKey(name))
+                return new GetStream(isError: true,
+                    getError: () => ErrorHandler.CreateErrorList(source: this, title: $"Stream '{name}' not found",
+                        message: $"This DataSource needs the stream '{name}' on the In to work, but it couldn't find it."));
+            var stream = In[name];
+            if (stream == null)
+                return new GetStream(isError: true, 
+                    getError: () => ErrorHandler.CreateErrorList(source: this, title: $"Stream '{name}' is Null", message: $"The Stream '{name}' was found on In, but it's null"));
+            
+            var list = stream.List?.ToImmutableList();
+            if (list == null)
+                return new GetStream(isError: true,
+                    getError: () => ErrorHandler.CreateErrorList(source: this, title: $"Stream '{name}' is Null",
+                        message: $"The Stream '{name}' exists, but the List is null"));
+            return new GetStream(isError: false, getList: () => list);
         }
     }
 }
