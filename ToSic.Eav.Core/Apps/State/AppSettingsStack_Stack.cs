@@ -22,11 +22,9 @@ namespace ToSic.Eav.Apps
         public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target)
             => GetStack(target, null);
 
-        public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity viewPart)
+        public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity viewPart
+        ) => Log.Func($"target: {target.Target}, Has View: {viewPart != null}", l =>
         {
-            var wrapLog = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(target.Target.ToString());
-
-            Log.A($"Has View: {viewPart != null}");
             // "View" Settings/Resources - always add, no matter if null, so the key always exists
             var sources = new List<KeyValuePair<string, IPropertyLookup>>
             {
@@ -35,38 +33,34 @@ namespace ToSic.Eav.Apps
 
             // All in the App and below
             sources.AddRange(GetOrGenerate(target).FullStack(Log));
-            return wrapLog.Return(sources,$"Has {sources.Count}");
-        }
+            return (sources, $"Has {sources.Count}");
+        });
 
         public const string PiggyBackId = "app-stack-";
 
-        private AppStateStackCache GetOrGenerate(AppThingsIdentifiers target)
-        {
-            var wrapLog = Log.Fn<AppStateStackCache>(target.Target.ToString());
-            return wrapLog.Return(Owner.PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target)));
-        }
+        private AppStateStackCache GetOrGenerate(AppThingsIdentifiers target) => Log.Func(target.Target.ToString(),
+            () => Owner.PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target))
+        );
 
-        private AppStateStackCache Get(AppThingsIdentifiers target)
+        private AppStateStackCache Get(AppThingsIdentifiers target) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<AppStateStackCache>();
-
             // Site should be skipped on the global zone
-            Log.A($"Owner: {Owner.Show()}");
+            l.A($"Owner: {Owner.Show()}");
             var site = Owner.ZoneId == Constants.DefaultZoneId ? null : _appStates.GetPrimaryApp(Owner.ZoneId, Log);
-            Log.A($"Site: {site?.Show()}");
+            l.A($"Site: {site?.Show()}");
             var global = _appStates.Get(Constants.GlobalIdentity);
-            Log.A($"Global: {global?.Show()}");
+            l.A($"Global: {global?.Show()}");
             var preset = _appStates.GetPresetApp();
-            Log.A($"Preset: {preset?.Show()}");
+            l.A($"Preset: {preset?.Show()}");
 
             // Find the ancestor, but only use it if it's not the preset
             var appAncestor = Owner.ParentApp.AppState;
             var ancestorIfNotPreset = appAncestor == null || appAncestor.AppId == Constants.PresetAppId ? null : appAncestor;
-            Log.A($"Ancestor: {appAncestor?.Show()} - use: {ancestorIfNotPreset} (won't use if ancestor is preset App {Constants.PresetAppId}");
+            l.A($"Ancestor: {appAncestor?.Show()} - use: {ancestorIfNotPreset} (won't use if ancestor is preset App {Constants.PresetAppId}");
 
             var stackCache = new AppStateStackCache(Owner, ancestorIfNotPreset, site, global, preset, target);
 
-            return wrapLog.Return(stackCache, "created");
-        }
+            return (stackCache, "created");
+        });
     }
 }

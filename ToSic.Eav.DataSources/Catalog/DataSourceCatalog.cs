@@ -21,22 +21,20 @@ namespace ToSic.Eav.DataSources.Catalog
         /// </summary>
         /// <param name="dsInfo"></param>
         /// <returns></returns>
-        public ICollection<string> GetOutStreamNames(DataSourceInfo dsInfo)
+        public ICollection<string> GetOutStreamNames(DataSourceInfo dsInfo) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<ICollection<string>>();
-
             try
             {
                 // This MUST use Build (not GetService<>) since that will also create objects which are not registered
                 var dataSourceInstance = ServiceProvider.Build<IDataSource>(dsInfo.Type);
 
                 // skip this if out-connections cannot be queried
-                return wrapLog.Return(dataSourceInstance.Out.Keys);
+                return (dataSourceInstance.Out.Keys, "ok");
             }
             catch
             {
-                return wrapLog.ReturnNull("error");
+                return (null, "error");
             }
-        }
+        });
     }
 }

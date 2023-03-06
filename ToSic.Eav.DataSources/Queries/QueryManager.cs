@@ -33,28 +33,29 @@ namespace ToSic.Eav.DataSources.Queries
             );
         }
 
-	    /// <summary>
-		/// Get an Entity Describing a Query
-		/// </summary>
-		/// <param name="entityId">EntityId</param>
-		/// <param name="dataSource">DataSource to load Entity from</param>
-		internal IEntity GetQueryEntity(int entityId, AppState dataSource)
+        /// <summary>
+        /// Get an Entity Describing a Query
+        /// </summary>
+        /// <param name="entityId">EntityId</param>
+        /// <param name="dataSource">DataSource to load Entity from</param>
+        internal IEntity GetQueryEntity(int entityId, AppState dataSource) => Log.Func($"{entityId}", l =>
         {
             var wrapLog = Log.Fn<IEntity>($"{entityId}");
-			try
-			{
-			    var queryEntity = dataSource.List.FindRepoId(entityId);
+            try
+            {
+                var queryEntity = dataSource.List.FindRepoId(entityId);
                 if (queryEntity.Type.NameId != Constants.QueryTypeName)
                     throw new ArgumentException("Entity is not an DataQuery Entity", nameof(entityId));
-			    return wrapLog.ReturnAsOk(queryEntity);
-			}
-			catch (Exception)
+                return (queryEntity);
+            }
+            catch (Exception ex)
             {
-                wrapLog.ReturnNull("error");
-				throw new ArgumentException($"Could not load Query-Entity with ID {entityId}.", nameof(entityId));
-			}
+                l.Ex(new ArgumentException($"Could not load Query-Entity with ID {entityId}.", nameof(entityId)));
+                l.Ex(ex);
+                throw;
+            }
 
-		}
+        });
 
         /// <summary>
         /// Assembles a list of all queries / Queries configured for this app. 
@@ -62,38 +63,37 @@ namespace ToSic.Eav.DataSources.Queries
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
         /// <returns></returns>
-	    internal Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine valuesCollectionProvider, bool showDrafts)
+        internal Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine valuesCollectionProvider, bool showDrafts
+        ) => Log.Func($"..., ..., {showDrafts}", () =>
         {
-            var wrapLog = Log.Fn<Dictionary<string, IQuery>>($"..., ..., {showDrafts}");
-	        var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
-	        foreach (var entQuery in AllQueryItems(app))
-	        {
-	            var delayedQuery = _queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider, showDrafts, null);
+            var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
+            foreach (var entQuery in AllQueryItems(app))
+            {
+                var delayedQuery = _queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider,
+                    showDrafts, null);
                 // make sure it doesn't break if two queries have the same name...
-	            var name = entQuery.GetBestTitle(); //.Title[0].ToString();
-	            if (!dict.ContainsKey(name))
-	                dict[name] = delayedQuery;
-	        }
+                var name = entQuery.GetBestTitle();
+                if (!dict.ContainsKey(name))
+                    dict[name] = delayedQuery;
+            }
 
-            return wrapLog.ReturnAsOk(dict);
-        }
+            return (dict);
+        });
 
-	    internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app)
+        internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             // TODO
             var appState = _appStates.Value.Get(app);
             var result = QueryEntities(appState);
-            return wrapLog.ReturnAsOk(result);
-        }
+            return (result, "ok");
+        });
 
-        internal IEntity FindQuery(IAppIdentity appIdentity, string nameOrGuid)
+        internal IEntity FindQuery(IAppIdentity appIdentity, string nameOrGuid) => Log.Func(nameOrGuid, () =>
         {
-            var wrapLog = Log.Fn<IEntity>(nameOrGuid);
             var all = AllQueryItems(appIdentity);
             var result = FindByNameOrGuid(all, nameOrGuid);
-            return wrapLog.Return(result, result == null ? "null" : "ok");
-        }
+            return (result, result == null ? "null" : "ok");
+        });
 
         public static IImmutableList<IEntity> QueryEntities(AppState appState)
             => appState.List.OfType(Constants.QueryTypeName).ToImmutableList();

@@ -22,13 +22,13 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="entities"></param>
         /// <param name="assignmentObjectTypeId"></param>
         /// <returns></returns>
-        private List<IEntity> BuildEntities(List<XElement> entities, int assignmentObjectTypeId)
+        private List<IEntity> BuildEntities(List<XElement> entities, int assignmentObjectTypeId
+        ) => Log.Func($"for {entities?.Count}; type {assignmentObjectTypeId}", () =>
         {
-            var wrap = Log.Fn<List<IEntity>>($"for {entities?.Count}; type {assignmentObjectTypeId}");
-            if(entities == null) return new List<IEntity>();
-	        var result = entities.Select(e => BuildEntity(e, assignmentObjectTypeId)).ToList();
-            return wrap.Return(result, $"found {result.Count}");
-        }
+            if (entities == null) return (new List<IEntity>(), "empty");
+            var result = entities.Select(e => BuildEntity(e, assignmentObjectTypeId)).ToList();
+            return (result, $"found {result.Count}");
+        });
 
 
 	    /// <summary>

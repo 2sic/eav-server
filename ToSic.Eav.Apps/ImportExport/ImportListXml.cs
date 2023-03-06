@@ -296,10 +296,9 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Save the data in memory to the repository.
         /// </summary>
         /// <returns>True if succeeded</returns>
-        public bool PersistImportToRepository()
+        public void PersistImportToRepository() => Log.Do(timer: true, action: () =>
         {
-            var callLog = Log.Fn<bool>(timer: true);
-            if (ErrorLog.HasErrors) return callLog.ReturnFalse();
+            if (ErrorLog.HasErrors) return "stop, errors";
 
             Timer.Start();
             if (_deleteSetting == ImportDeleteUnmentionedItems.All)
@@ -314,9 +313,9 @@ namespace ToSic.Eav.Apps.ImportExport
 
             Timer.Stop();
             TimeForDbImport = Timer.ElapsedMilliseconds;
-            return callLog.ReturnTrue("ok");
-        }
-        
+            return "ok";
+        });
+
     }
 
 

@@ -42,25 +42,24 @@ namespace ToSic.Eav.Apps
         /// Get the stack of Settings which applies to this app
         /// </summary>
         /// <returns></returns>
-        internal List<KeyValuePair<string, IPropertyLookup>> FullStack(ILog buildLog)
+        internal List<KeyValuePair<string, IPropertyLookup>> FullStack(ILog buildLog) => buildLog.Func(l =>
         {
-            var wrapLog = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup>>>();
             if (_fullStackSynched != null)
             {
                 if (_fullStackSynched.CacheChanged())
-                    buildLog.A("Cache changed, will rebuild");
+                    l.A("Cache changed, will rebuild");
                 else
-                    return wrapLog.Return(_fullStackSynched.Value, "existing");
+                    return (_fullStackSynched.Value, "existing");
             }
+
             _fullStackSynched = BuildCachedStack(buildLog);
-            return wrapLog.Return(_fullStackSynched.Value, "created");
-        }
+            return (_fullStackSynched.Value, "created");
+        });
 
         private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> _fullStackSynched;
 
-        private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack(ILog buildLog)
+        private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack(ILog buildLog) => buildLog.Func(()=>
         {
-            var wrapLog = buildLog.Fn<SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>>();
             var cacheExpiry = GetMultiSourceCacheExpiry();
             // 2022-03-11 2dm - we're currently including the build log
             // we assume it won't remain in memory, but there is a small risk of a memory leak here
@@ -69,8 +68,8 @@ namespace ToSic.Eav.Apps
             var cachedStack = new SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>(cacheExpiry, 
                 () => RebuildStack(buildLog));
 
-            return wrapLog.Return(cachedStack, "built");
-        }
+            return (cachedStack, "built");
+        });
 
         private CacheExpiringMultiSource GetMultiSourceCacheExpiry()
         {
@@ -82,12 +81,10 @@ namespace ToSic.Eav.Apps
         }
 
 
-        private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(ILog buildLog = null)
+        private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(ILog buildLog = null) => buildLog.Func(l =>
         {
-            var wrapLog = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup>>>();
-
-            void LogSource(string name, AppStateMetadata state) 
-                => wrapLog.A($"{name}: {state != null}; MD: {state?.MetadataItem?.EntityId}; CustomItem: {state?.CustomItem?.EntityId}; ScopeAny: {state?.SystemItem?.EntityId};");
+            void LogSource(string name, AppStateMetadata state)
+                => l.A($"{name}: {state != null}; MD: {state?.MetadataItem?.EntityId}; CustomItem: {state?.CustomItem?.EntityId}; ScopeAny: {state?.SystemItem?.EntityId};");
 
             var thingType = Target.Target;
             var appStack = Owner.ThingInApp(thingType);
@@ -137,8 +134,8 @@ namespace ToSic.Eav.Apps
 
             // System Presets
             sources.Add(new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, preset.SystemItem));
-            return wrapLog.ReturnAsOk(sources);
-        }
+            return (sources, "ok");
+        });
 
         #endregion
     }
