@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         internal static string GenerateTitle(string title) => "Error: " + title;
 
-        public ImmutableArray<IEntity> CreateErrorList(
+        public IImmutableList<IEntity> CreateErrorList(
             string noParamOrder = Parameters.Protector,
             IDataSource source = null, 
             string title = null, 
@@ -71,9 +71,9 @@ namespace ToSic.Eav.DataSources
 
             source?.Log?.Ex(exception);
 
-            // Construct the IEntity and return as ImmutableArray
+            // Construct the IEntity and return as Immutable
             var entity = CreateErrorEntity(source, streamName, title, message);
-            return new[] { entity }.ToImmutableArray();
+            return new[] { entity }.ToImmutableList();
         }
 
     }

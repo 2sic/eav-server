@@ -31,7 +31,7 @@ namespace ToSic.Eav.Data
                     var key = !string.IsNullOrWhiteSpace(ep.Key) ? ep.Key : $"auto-named-{++pairCount}";
                     return new KeyValuePair<string, IPropertyLookup>(key, ep.Value);
                 })
-                .ToImmutableArray();
+                .ToImmutableList();
 
             return this;
         }

@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSources.Sys
         private readonly IAppStates _appStates;
 
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        private IEnumerable<IEntity> GetList() => Log.Func(l =>
         {
             // Get cache, which manages a list of zones
             var zones = _appStates.Zones;
@@ -86,8 +86,8 @@ namespace ToSic.Eav.DataSources.Sys
 
                 return _dataFactory.Create(znData, id: zone.ZoneId);
             });
-            var results = list.ToImmutableArray();
-            return (results, $"{results.Length}");
+            var results = list.ToImmutableList();
+            return (results, $"{results.Count}");
         });
 
     }

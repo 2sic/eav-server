@@ -132,7 +132,7 @@ namespace ToSic.Eav.DataSources.Caching
 
         /// <inheritdoc />
         public void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true)
-            => Set(CacheKey(dataStream), dataStream.List.ToImmutableArray(),
+            => Set(CacheKey(dataStream), dataStream.List.ToImmutableList(),
                 dataStream.Caching.CacheTimestamp, durationInSeconds, slidingExpiration);
 
         #endregion

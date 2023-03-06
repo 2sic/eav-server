@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
     public class ImmutableEntitiesSource : DirectEntitiesSource
     {
         public ImmutableEntitiesSource(IImmutableList<IEntity> entities = null)
-            : base(entities ?? new ImmutableArray<IEntity>())
+            : base(entities ?? ImmutableList<IEntity>.Empty)
         {
         }
     }

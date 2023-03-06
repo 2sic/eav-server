@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.DataSources
             Provide(GetList);
         }
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(() =>
+        private IEnumerable<IEntity> GetList() => Log.Func(() =>
         {
             var appState = _appStates.Get(this);
             
@@ -37,7 +38,7 @@ namespace ToSic.Eav.DataSources
                     parent = parent.AppState.ParentApp;
                 }
 
-                return merge.Out.First().Value.List.ToImmutableArray();
+                return merge.Out.First().Value.List.ToImmutableList();
         });
     }
 }

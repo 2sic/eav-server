@@ -28,9 +28,9 @@ namespace ToSic.Eav.WebApi.Sys
             {
                 Log.A("getting content-type stats");
                 var entities = type == "all"
-                    ? appRead.Entities.All.ToImmutableArray()
-                    : appRead.Entities.Get(type).ToImmutableArray();
-                msg += P($"entities: {entities.Length}\n");
+                    ? appRead.Entities.All.ToImmutableList()
+                    : appRead.Entities.Get(type).ToImmutableList();
+                msg += P($"entities: {entities.Count}\n");
                 msg += "<table id='table'>"
                     + HeadFields("#", "Id", Eav.Data.Attributes.GuidNiceName, Eav.Data.Attributes.TitleNiceName, "Type", "Modified", "Owner", "Version", "Metadata", "Permissions")
                     + "<tbody>";

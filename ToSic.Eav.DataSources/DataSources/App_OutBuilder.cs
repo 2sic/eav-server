@@ -80,7 +80,7 @@ namespace ToSic.Eav.DataSources
                         $"Name={typeName}&Drafts={showDrafts}"),
                     this,
                     typeName,
-                    () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableArray(),
+                    () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableList(),
                     true,
                     contentType.Scope);
                 _out.Add(typeName, deferredStream);

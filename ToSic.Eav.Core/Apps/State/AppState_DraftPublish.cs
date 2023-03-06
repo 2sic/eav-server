@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
         [PrivateApi("this is an optimization feature which shouldn't be used by others")]
         public SynchronizedList<IEntity> ListPublished
             => _listPublished ?? (_listPublished = new SynchronizedEntityList(this,
-                   () => List.Where(e => e.IsPublished).ToImmutableArray()));
+                   () => List.Where(e => e.IsPublished).ToImmutableList()));
 
         private SynchronizedEntityList _listPublished;
 
@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps
         public SynchronizedList<IEntity> ListNotHavingDrafts
             => _listNotHavingDrafts ?? (_listNotHavingDrafts =
                    new SynchronizedEntityList(this,
-                       () => List.Where(e => e.GetDraft() == null).ToImmutableArray()));
+                       () => List.Where(e => e.GetDraft() == null).ToImmutableList()));
 
         private SynchronizedEntityList _listNotHavingDrafts;
 

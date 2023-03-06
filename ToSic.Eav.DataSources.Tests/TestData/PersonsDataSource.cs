@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
             Provide(GetPersons);
         }
 
-        private DataBuilder _dataBuilder;
+        private readonly DataBuilder _dataBuilder;
 
         public PersonsDataSource Init(int itemsToGenerate = 10, int firstId = 1001, bool multiLanguage = false)
         {
@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
         {
             var persons = new PersonGenerator(_dataBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
             var list = new PersonGenerator(_dataBuilder).Person2Entity(persons, _multiLanguage);
-            return list.ToImmutableArray();
+            return list.ToImmutableList();
         }
     }
 }

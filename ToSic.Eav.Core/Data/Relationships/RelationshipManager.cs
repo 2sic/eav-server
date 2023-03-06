@@ -49,7 +49,7 @@ namespace ToSic.Eav.Data
             if (_childRelationships != null) return _childRelationships.List;
 
             IImmutableList<EntityRelationship> GetChildrenInternal() 
-                => AllRelationships.Where(r => r.Parent == _entity).ToImmutableArray();
+                => AllRelationships.Where(r => r.Parent == _entity).ToImmutableList();
 
             if (_app == null) return GetChildrenInternal();
             _childRelationships = new SynchronizedList<EntityRelationship>(_app, GetChildrenInternal);
@@ -68,7 +68,7 @@ namespace ToSic.Eav.Data
         {
             if (_parentRelationships != null) return _parentRelationships.List;
 
-            IImmutableList<EntityRelationship> GetParents() => AllRelationships.Where(r => r.Child == _entity).ToImmutableArray();
+            IImmutableList<EntityRelationship> GetParents() => AllRelationships.Where(r => r.Child == _entity).ToImmutableList();
 
             if (_app == null) return GetParents();
             _parentRelationships = new SynchronizedList<EntityRelationship>(_app, GetParents);

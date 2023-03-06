@@ -24,7 +24,7 @@ namespace ToSic.Eav.Data
                 // Must de-duplicate sources. EG AppSystem and AppAncestorSystem could be the same entity
                 // And in that case future lookups could result in endless loops
                 .DistinctBy(src => src.Value)
-                .ToImmutableArray();
+                .ToImmutableList();
             return real;
         }
 

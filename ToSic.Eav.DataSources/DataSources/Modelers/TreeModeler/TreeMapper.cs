@@ -85,7 +85,7 @@ namespace ToSic.Eav.DataSources
 
             var result = withKeys.Select(set => set.Entity);
             
-            return result.ToImmutableArray();
+            return result.ToImmutableList();
         });
 
 

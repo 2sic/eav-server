@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources.Sys
             Provide(GetList);
         }
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             var publicTargetTypes = Enum.GetValues(typeof(TargetTypes))
                 .Cast<TargetTypes>()
@@ -74,9 +74,9 @@ namespace ToSic.Eav.DataSources.Sys
                     },
                     id: (int)set.TargetType
                     )
-                ).ToImmutableArray();
+                ).ToImmutableList();
             
-            return (list, $"{list.Length} items");
+            return (list, $"{list.Count} items");
         });
     }
 }

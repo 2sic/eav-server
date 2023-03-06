@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             listCache.DefaultDuration = 1;
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
-            listCache.Set(ds.CacheFullKey, ds.ListForTests().ToImmutableArray(), ds.CacheTimestamp);
+            listCache.Set(ds.CacheFullKey, ds.ListForTests().ToImmutableList(), ds.CacheTimestamp);
             Assert.IsTrue(listCache.Has(ds.CacheFullKey), "Should have it in cache now");
 
             Thread.Sleep(400);

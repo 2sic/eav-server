@@ -82,7 +82,7 @@ namespace ToSic.Eav.DataSources.Sys
             Provide("Attributes", GetAttributes);
         }
 
-        private ImmutableArray<IEntity> GetStreams() => Log.Func(l =>
+        private IEnumerable<IEntity> GetStreams() => Log.Func(l =>
         {
             CustomConfigurationParse();
 
@@ -91,12 +91,12 @@ namespace ToSic.Eav.DataSources.Sys
                                  {
                                      {StreamsType.Name.ToString(), stream.Key}
                                  }))
-                             .ToImmutableArray()
-                         ?? ImmutableArray<IEntity>.Empty;
-            return (result, $"{result.Length}");
+                             .ToImmutableList()
+                         ?? EmptyList;
+            return (result, $"{result.Count}");
         });
 
-        private IImmutableList<IEntity> GetAttributes() => Log.Func(l => 
+        private IEnumerable<IEntity> GetAttributes() => Log.Func(l => 
         {
             CustomConfigurationParse();
 

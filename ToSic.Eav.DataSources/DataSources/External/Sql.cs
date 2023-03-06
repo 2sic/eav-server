@@ -238,7 +238,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-	    private ImmutableArray<IEntity> GetList()
+	    private IEnumerable<IEntity> GetList()
 		{
             CustomConfigurationParse();
 
@@ -354,7 +354,7 @@ namespace ToSic.Eav.DataSources
 			}
 
 		    Log.A($"found:{list.Count}");
-			return list.ToImmutableArray();
+			return list.ToImmutableList();
 		}
 	}
 }

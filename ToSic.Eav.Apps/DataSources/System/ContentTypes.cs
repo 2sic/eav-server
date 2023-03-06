@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
@@ -94,7 +95,7 @@ namespace ToSic.Eav.DataSources.Sys
 		}
         private readonly IAppStates _appStates;
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             Configuration.Parse();
 
@@ -120,8 +121,8 @@ namespace ToSic.Eav.DataSources.Sys
                 return _dataFactory.Create(ContentTypeUtil.BuildDictionary(t), id: t.Id, guid: guid ?? Guid.Empty);
             });
 
-            var result = list.ToImmutableArray();
-            return (result, $"{result.Length}");
+            var result = list.ToImmutableList();
+            return (result, $"{result.Count}");
         });
     }
 }

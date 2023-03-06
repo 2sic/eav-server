@@ -19,7 +19,7 @@ namespace ToSic.Eav.Data.Builder
 
         // Note: can't be a new ImmutableArray<ILanguage>() because that causes problems!
         // Not sure why, but it complains that it can't tolist it
-        public static IImmutableList<ILanguage> NoLanguages = new List<ILanguage>().ToImmutableList();// new ImmutableArray<ILanguage>();
+        public static IImmutableList<ILanguage> NoLanguages = ImmutableList<ILanguage>.Empty; // new List<ILanguage>().ToImmutableList();// new ImmutableArray<ILanguage>();
 
 
         public ImmutableList<ILanguage> Merge(IEnumerable<ILanguage> languages, List<ILanguage> updates)

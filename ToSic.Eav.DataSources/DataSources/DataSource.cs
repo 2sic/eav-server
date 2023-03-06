@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constant empty list of entities - for common scenarios where we just need to return no hits.
         /// </summary>
-        protected static IImmutableList<IEntity> EmptyList = new ImmutableArray<IEntity>();
+        public static IImmutableList<IEntity> EmptyList = ImmutableList<IEntity>.Empty;
 
         /// <summary>
         /// Constructor - must be without parameters, otherwise the DI can't construct it.

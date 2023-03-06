@@ -21,8 +21,8 @@ namespace ToSic.Eav.Apps
         {
             // todo: check if feature is enabled #SharedAppFeatureEnabled
             var buildFn = ParentApp.InheritEntities
-                ? () => Index.Values.Concat(ParentApp.Entities).ToImmutableArray()
-                : (Func<IImmutableList<IEntity>>)(() => Index.Values.ToImmutableArray());
+                ? () => Index.Values.Concat(ParentApp.Entities).ToImmutableList()
+                : (Func<IImmutableList<IEntity>>)(() => Index.Values.ToImmutableList());
 
             var syncList = new SynchronizedEntityList(this, buildFn);
 

@@ -116,19 +116,19 @@ namespace ToSic.Eav.DataSources
             return this;
         }
 
-        private ImmutableArray<IEntity> GetEntities() => Log.Func(l =>
+        private IEnumerable<IEntity> GetEntities() => Log.Func(l =>
         {
             Configuration.Parse();
 
             l.A($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
             var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
-            return (result, $"ok: {result.Length}");
+            return (result, $"ok: {result.Count}");
         });
 
         /// <summary>
         /// Convert a DataTable to a Dictionary of EntityModels
         /// </summary>
-        private ImmutableArray<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null
+        private IImmutableList<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null
         ) => Log.Func(() =>
         {
             // Validate Columns
@@ -155,8 +155,8 @@ namespace ToSic.Eav.DataSources
                 result.Add(entity);
             }
 
-            var final = result.ToImmutableArray();
-            return (final, $"{final.Length}");
+            var final = result.ToImmutableList();
+            return (final, $"{final.Count}");
         });
     }
 }

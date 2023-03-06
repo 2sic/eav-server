@@ -62,16 +62,16 @@ namespace ToSic.Eav.DataSources.Sys
         private readonly IAppStates _appStates;
         private readonly IDataFactory _dataFactory;
 
-        private ImmutableArray<IEntity> GetList()
+        private IEnumerable<IEntity> GetList()
 	    {
             Configuration.Parse();
 
             // try to load the content-type - if it fails, return empty list
-            if (string.IsNullOrWhiteSpace(ContentTypeName)) return ImmutableArray<IEntity>.Empty;
+            if (string.IsNullOrWhiteSpace(ContentTypeName)) return EmptyList;
 
 	        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(Constants.DefaultStreamName);
 	        var optionalList = useStream
-	            ? In[Constants.DefaultStreamName]?.List.ToImmutableArray()
+	            ? In[Constants.DefaultStreamName]?.List.ToImmutableList()
 	            : null;
 
 	        var type = useStream 
@@ -104,8 +104,8 @@ namespace ToSic.Eav.DataSources.Sys
                         list.Insert(0, AsDic(sysField.Key, ValueTypeHelpers.Get(sysField.Value), false, 0, true));
 
             // if it didn't work yet, maybe try from stream items
-            return list?.Select(attribData => _dataFactory.Create(attribData)).ToImmutableArray()
-                   ?? ImmutableArray<IEntity>.Empty;
+            return list?.Select(attribData => _dataFactory.Create(attribData)).ToList()
+                   ?? new List<IEntity>();
         }
 
         private static Dictionary<string, object> AsDic(string name, ValueTypes type, bool isTitle, int sortOrder,

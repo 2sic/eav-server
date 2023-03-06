@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
         {
         }
 
-        private static ImmutableArray<EntityRelationship> Rebuild(AppState appState)
+        private static ImmutableList<EntityRelationship> Rebuild(AppState appState)
         {
             // todo: could be optimized (minor)
             // atm guid-relationships (like in json-objects) 
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps
                     Add(index, cache, entity.EntityId, val);
             }
 
-            return cache.ToImmutableArray();
+            return cache.ToImmutableList();
         }
 
         private static void Add(IReadOnlyDictionary<int, IEntity> lookup, List<EntityRelationship> list, int parent, int? child)

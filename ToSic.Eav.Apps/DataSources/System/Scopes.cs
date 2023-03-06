@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources.Sys
         }
         private readonly IAppStates _appStates;
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             Configuration.Parse();
 
@@ -67,9 +67,9 @@ namespace ToSic.Eav.DataSources.Sys
                         { Data.Attributes.TitleNiceName, s.Value },
                     }
                 ))
-                .ToImmutableArray();
+                .ToImmutableList();
 
-            return (list, $"{list.Length}");
+            return (list, $"{list.Count}");
         });
     }
 }

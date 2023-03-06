@@ -53,14 +53,14 @@ namespace ToSic.Eav.DataSources
             Provide(XorStream, GetXor);
 		}
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(() =>
+        private IList<IEntity> GetList() => Log.Func(() =>
         {
             var streams = GetValidInStreams();
             var result = streams
                 .SelectMany(stm => stm)
-                .ToImmutableArray();
+                .ToImmutableList();
 
-            return (result, result.Length.ToString());
+            return (result, result.Count.ToString());
         });
 
         private List<IEnumerable<IEntity>> GetValidInStreams() => Log.Func(() =>
@@ -78,22 +78,22 @@ namespace ToSic.Eav.DataSources
         
         private List<IEnumerable<IEntity>> _validInStreams;
 
-        private ImmutableArray<IEntity> GetDistinct() => Log.Func(() =>
+        private IList<IEntity> GetDistinct() => Log.Func(() =>
         {
-            var result = List.Distinct().ToImmutableArray();
-            return (result, result.Length.ToString());
+            var result = List.Distinct().ToImmutableList();
+            return (result, result.Count.ToString());
         });
 
-        private ImmutableArray<IEntity> GetAnd() => Log.Func(() =>
+        private IList<IEntity> GetAnd() => Log.Func(() =>
         {
             var streams = GetValidInStreams();
             var streamCount = streams.Count;
             var first = streams.FirstOrDefault();
             var firstList = first?.ToList(); // must be separate, because we 
             if (streamCount == 0 || firstList == null || !firstList.Any())
-                return (ImmutableArray.Create<IEntity>(), "no real In");
+                return (ImmutableList<IEntity>.Empty, "no real In");
 
-            if (streamCount == 1) return (firstList.ToImmutableArray(), "Just 1 In");
+            if (streamCount == 1) return (firstList.ToImmutableList(), "Just 1 In");
 
             var others = streams
                 .Skip(1)
@@ -103,20 +103,20 @@ namespace ToSic.Eav.DataSources
 
             var final = firstList
                 .Where(e => itemsInOthers.Contains(e))
-                .ToImmutableArray();
+                .ToImmutableList();
 
-            return (final, final.Length.ToString());
+            return (final, final.Count.ToString());
         });
 
-        private ImmutableArray<IEntity> GetXor() => Log.Func(() =>
+        private IList<IEntity> GetXor() => Log.Func(() =>
         {
             var result = List
                 .GroupBy(e => e)
                 .Where(g => g.Count() == 1)
                 .Select(g => g.First())
-                .ToImmutableArray();
+                .ToImmutableList();
 
-            return (result, result.Length.ToString());
+            return (result, result.Count.ToString());
         });
 
     }
