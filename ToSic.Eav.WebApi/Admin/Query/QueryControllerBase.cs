@@ -130,7 +130,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// </summary>
         protected QueryRunDto DebugStream(int appId, int id, int top, LookUpEngine lookUps, string from, string streamName)
         {
-            IDataSource GetSubStream(Tuple<IDataSource, Dictionary<string, IDataSource>> builtQuery)
+            IDataSource GetSubStream((IDataSource, Dictionary<string, IDataSource>) builtQuery)
             {
                 // Find the DataSource
                 if (!builtQuery.Item2.ContainsKey(from))
@@ -153,7 +153,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         }
 
         protected QueryRunDto RunDevInternal(int appId, int id, LookUpEngine lookUps, int top,
-            Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup
+            Func<(IDataSource Main, Dictionary<string, IDataSource> DataSources), IDataSource> partLookup
         ) => Log.Func($"a#{appId}, {nameof(id)}:{id}, top: {top}", () =>
         {
             // Get the query, run it and track how much time this took

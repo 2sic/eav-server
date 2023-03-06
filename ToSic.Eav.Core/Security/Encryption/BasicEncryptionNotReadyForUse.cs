@@ -65,14 +65,6 @@ namespace ToSic.Eav.Security.Encryption
             return Encoding.UTF8.GetString(plainBytes);
         }
 
-        //public Tuple<string, string> InitSymmetricEncryptionKeyIV()
-        //{
-        //    var key = GetEncodedRandomString(32); // 256
-        //    Aes cipher = CreateCipher(key);
-        //    var IVBase64 = Convert.ToBase64String(cipher.IV);
-        //    return (key, IVBase64);
-        //}
-
 
         //private string GetEncodedRandomString(int length)
         //{

@@ -60,7 +60,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             return this;
         }
 
-        public Tuple<string, string> ExportContent(IUser user,
+        public (string FileContents, string FileName) ExportContent(IUser user,
             string language,
             string defaultLanguage,
             string contentType,
@@ -99,7 +99,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 $"{(exportSelection == ExportSelection.Blank ? "Template" : "Data")} " +
                 $"{DateTime.Now:yyyyMMddHHmmss}.xml";
 
-            return new Tuple<string, string>(fileContent, fileName);
+            return ((fileContent, fileName), "ok");
         });
 
         [HttpGet]

@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps.Parts
             var metaDataIds = new List<int>();
             foreach (var id in ids) CollectMetaDataIdsRecursively(id, ref metaDataIds);
 
-            var deleteIds = ids.ToList<int>();
+            var deleteIds = ids.ToList();
             if (metaDataIds.Any()) deleteIds.AddRange(metaDataIds);
 
             // check if we can delete entities with metadata, or throw exception
@@ -57,14 +57,14 @@ namespace ToSic.Eav.Apps.Parts
             metaDataIds.AddRange(childrenMetaDataIds);
         }
 
-        private Dictionary<int, Tuple<bool, string>> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant, int? parentId = null, string parentField = null)
+        private Dictionary<int, (bool, string)> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant, int? parentId = null, string parentField = null)
         {
             var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(ids, parentId, parentField);
 
             foreach (var canDelete in canDeleteList)
-                if (!canDelete.Value.Item1 && !force && !skipIfCant)
+                if (!canDelete.Value.HasMessages && !force && !skipIfCant)
                 {
-                    var msg = $"Can't delete Item {canDelete.Key}. It is used by others. {canDelete.Value.Item2}";
+                    var msg = $"Can't delete Item {canDelete.Key}. It is used by others. {canDelete.Value.Messages}";
                     Log.A(msg);
                     throw new InvalidOperationException(msg);
                 }
@@ -82,12 +82,12 @@ namespace ToSic.Eav.Apps.Parts
             }
         }
 
-        internal Tuple<bool, string> CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(int entityId, int? parentId = null, string parentField = null) 
+        internal (bool HasMessages, string Messages) CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(int entityId, int? parentId = null, string parentField = null) 
             => CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(new[] {entityId}, parentId, parentField).First().Value;
 
-        private Dictionary<int, Tuple<bool, string>> CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(int[] ids, int? parentId = null, string parentField = null)
+        private Dictionary<int, (bool HasMessages, string Messages)> CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(int[] ids, int? parentId = null, string parentField = null)
         {
-            var canDeleteList = new Dictionary<int, Tuple<bool, string>>();
+            var canDeleteList = new Dictionary<int, (bool HasMessages, string Messages)>();
 
             var relationships = Parent.Read.AppState.Relationships;
 
@@ -131,7 +131,7 @@ namespace ToSic.Eav.Apps.Parts
                 //if (entity.MetadataFor?.IsMetadata ?? false)
                 //    messages.Add($"Entity is metadata of other entity.");
 
-                canDeleteList.Add(entityId, Tuple.Create(!messages.Any(), string.Join(" ", messages)));
+                canDeleteList.Add(entityId, (!messages.Any(), string.Join(" ", messages)));
             }
 
             if (canDeleteList.Count != ids.Length)

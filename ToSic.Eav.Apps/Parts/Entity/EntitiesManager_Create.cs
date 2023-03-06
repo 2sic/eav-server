@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Parts
 {
     public partial class EntitiesManager
     {
-        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null
+        public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null
         ) => Log.Func($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}", () =>
         {
             var newEnt = Builder.Entity.Create(appId: Parent.AppId, guid: Guid.NewGuid(),
@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.Parts
             //if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
             var eid = Save(newEnt);
             var guid = Parent.DataController.Entities.TempLastSaveGuid;
-            return (new Tuple<int, Guid>(eid, guid), $"id:{eid}, guid:{guid}");
+            return ((eid, guid), $"id:{eid}, guid:{guid}");
         });
 
         

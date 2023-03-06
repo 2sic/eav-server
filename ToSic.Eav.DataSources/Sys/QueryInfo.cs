@@ -139,7 +139,7 @@ namespace ToSic.Eav.DataSources.Sys
 
             var builtQuery = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log),
                 false, Configuration.LookUpEngine);
-            _query = builtQuery.Item1;
+            _query = builtQuery.Main;
         });
 
         private IDataSource _query;

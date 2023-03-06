@@ -81,7 +81,7 @@ namespace ToSic.Eav.DataSources.Queries
         //public const string ConfigKeyPipelineSettings = "pipelinesettings";
 
 
-	    public Tuple<IDataSource, Dictionary<string, IDataSource>> BuildQuery(QueryDefinition queryDef,
+	    public (IDataSource Main, Dictionary<string, IDataSource> DataSources) BuildQuery(QueryDefinition queryDef,
             ILookUpEngine lookUpEngineToClone,
             List<ILookUp> overrideLookUps,
             bool showDrafts
@@ -168,8 +168,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        #endregion
 
 	        InitWirings(queryDef, dataSources);
-			var result = new Tuple<IDataSource, Dictionary<string, IDataSource>>(outTarget, dataSources);
-			return (result, $"parts:{parts.Count}");
+			return ((outTarget, dataSources), $"parts:{parts.Count}");
 	    });
 
 	    /// <summary>
@@ -251,7 +250,7 @@ namespace ToSic.Eav.DataSources.Queries
 		}
 
 
-        public Tuple<IDataSource, Dictionary<string, IDataSource>> GetDataSourceForTesting(
+        public (IDataSource Main, Dictionary<string, IDataSource> DataSources) GetDataSourceForTesting(
             QueryDefinition queryDef,
             bool showDrafts,
             ILookUpEngine lookUps = null

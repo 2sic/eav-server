@@ -30,11 +30,11 @@ namespace ToSic.Eav.WebApi.ImportExport
 
         #endregion
 
-        public Tuple<bool, List<Message>> InstallPackage(int zoneId, int appId, bool isApp, string packageUrl)
+        public (bool, List<Message>) InstallPackage(int zoneId, int appId, bool isApp, string packageUrl
+        ) => Log.Func($"{nameof(zoneId)}:{zoneId}, {nameof(appId)}:{appId}, {nameof(isApp)}:{isApp}, url:{packageUrl}", l =>
         {
-            var callLog = Log.Fn<Tuple<bool, List<Message>>>($"{nameof(zoneId)}:{zoneId}, {nameof(appId)}:{appId}, {nameof(isApp)}:{isApp}, url:{packageUrl}");
-            Log.A("install package:" + packageUrl);
-            if(!_user.IsSiteAdmin) throw new Exception("must be admin");
+            l.A("install package:" + packageUrl);
+            if (!_user.IsSiteAdmin) throw new Exception("must be admin");
             bool success;
 
             var importer = _zipImportFromUrl;
@@ -49,8 +49,8 @@ namespace ToSic.Eav.WebApi.ImportExport
                 throw new Exception("An error occurred while installing the app: " + ex.Message, ex);
             }
 
-            return callLog.Return(new Tuple<bool, List<Message>>(success, importer.Messages), success.ToString());
-        }
+            return ((success, importer.Messages), success.ToString());
+        });
 
 
     }

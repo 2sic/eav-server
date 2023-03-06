@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Parts.Tools;
 using ToSic.Eav.Data;
@@ -40,7 +39,7 @@ namespace ToSic.Eav.Apps.Parts
         public void FieldListReplaceIfModified(IEntity target, string[] fields, int index, int?[] replacement,
             bool asDraft)
             => FieldListUpdate(target, fields, asDraft,
-                lists => lists.Replace(index, replacement.Select(r => new Tuple<bool, int?>(true, r)).ToArray()
+                lists => lists.Replace(index, replacement.Select(r => (true, r)).ToArray()
                 ));
 
         private static List<int?> FieldListIdsWithNulls(IEnumerable<IEntity> list)

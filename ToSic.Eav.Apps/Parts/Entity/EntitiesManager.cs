@@ -187,13 +187,13 @@ namespace ToSic.Eav.Apps.Parts
         /// WIP - clear attributes which shouldn't be saved at all
         /// </summary>
         /// <param name="entity"></param>
-        private IImmutableDictionary<string, IAttribute> AttributesWithEmptyEphemerals(IEntity entity) => Log.Func(() =>
+        private IImmutableDictionary<string, IAttribute> AttributesWithEmptyEphemerals(IEntity entity) => Log.Func(l =>
         {
-            var attributes = entity.Type?.Attributes;
+            var attributes = entity.Type?.Attributes?.ToList();
             if (attributes == null || !attributes.Any()) return (null, "no attributes");
 
-            var toClear = attributes.Where(a =>
-                    a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
+            var toClear = attributes
+                .Where(a => a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
                 .ToList();
 
             if (!toClear.Any()) return (null, "no ephemeral attributes");
@@ -204,7 +204,7 @@ namespace ToSic.Eav.Apps.Parts
                     if (!toClear.Any(tc => tc.Name.EqualsInsensitive(pair.Key)))
                         return pair.Value;
                     var empty = Builder.Attribute.Clone(pair.Value, new List<IValue>().ToImmutableList());
-                    Log.A("Cleared " + pair.Key);
+                    l.A("Cleared " + pair.Key);
                     return empty;
                 }, InvariantCultureIgnoreCase);
 

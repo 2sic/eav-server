@@ -110,7 +110,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
         /// <param name="index"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public DicNameObj Replace(int index, Tuple<bool, int?>[] values) => Log.Func($"index: {index}", () =>
+        public DicNameObj Replace(int index, (bool, int?)[] values) => Log.Func($"index: {index}", () =>
         {
             if (index == -1)
                 throw new Exception("Sort order is never -1 any more; deprecated");
