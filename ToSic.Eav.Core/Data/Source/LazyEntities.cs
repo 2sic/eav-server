@@ -5,7 +5,7 @@ using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data.Source
 {
     /// <summary>
     /// Delivers entities which are needed. <br/>

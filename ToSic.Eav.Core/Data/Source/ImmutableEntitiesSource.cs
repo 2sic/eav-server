@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data.Source
 {
     /// <summary>
     /// An entities source which directly delivers the given entities.

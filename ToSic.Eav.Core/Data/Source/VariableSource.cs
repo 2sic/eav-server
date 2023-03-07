@@ -2,7 +2,7 @@
 using ToSic.Eav.Caching;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data.Source
 {
     public class VariableSource<TSource>: ICacheExpiring, ICacheDependent where TSource : class, ICacheExpiring
     {
