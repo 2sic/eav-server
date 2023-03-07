@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSources
         {
             var entityIdsOrError = CustomConfigurationParse();
             if (entityIdsOrError.IsError)
-                return entityIdsOrError.ErrorResult;
+                return (entityIdsOrError.Errors, "error");
 
             var entityIds = entityIdsOrError.Result;
 
@@ -100,7 +100,7 @@ namespace ToSic.Eav.DataSources
             catch (Exception ex)
             {
                 return (new ResultOrError<int[]>(false, Array.Empty<int>(),
-                    () => Error.Create(title: "Can't find IDs", message: "Unable to load EntityIds from Configuration. Unexpected Exception.",
+                    Error.Create(title: "Can't find IDs", message: "Unable to load EntityIds from Configuration. Unexpected Exception.",
                         exception: ex)), "error");
             }
 

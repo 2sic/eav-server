@@ -211,21 +211,18 @@ namespace ToSic.Eav.DataSources
             if (compType == CompareType.Auto)
             {
                 var getId = GetFieldValue(CompareType.Id, null);
-                if (getId.IsError) return getId.ErrorResult;
+                if (getId.IsError) return (getId.Errors, "error");
                 var getTitle = GetFieldValue(CompareType.Title, null);
-                if (getTitle.IsError) return getTitle.ErrorResult;
+                if (getTitle.IsError) return (getTitle.Errors, "error");
                 comparisonOnRelatedItem = CompareTwo(getId.Result, getTitle.Result);
 
             }
             else
             {
                 var getValue = GetFieldValue(compType, compAttr);
-                if (getValue.IsError) return getValue.ErrorResult;
+                if (getValue.IsError) return (getValue.Errors, "error");
                 comparisonOnRelatedItem = CompareOne(getValue.Result);
             }
-
-            //if (comparisonOnRelatedItem == null)
-            //    return (ErrorStream, "error");
 
             var filterList = Separator == DefaultSeparator
                 ? new[] { filter }
@@ -236,7 +233,7 @@ namespace ToSic.Eav.DataSources
 
             // pick the correct list-comparison - atm ca. 6 options
             var modeCompareOrError = PickMode(strMode, relationship, comparisonOnRelatedItem, filterList);
-            if (modeCompareOrError.IsError) return modeCompareOrError.ErrorResult;
+            if (modeCompareOrError.IsError) return (modeCompareOrError.Errors, "error");
             var modeCompare = modeCompareOrError.Result;
 
             var finalCompare = useNot
@@ -309,7 +306,7 @@ namespace ToSic.Eav.DataSources
                 default:
                     return (
                         new ResultOrError<Func<IEntity, bool>>(false, null,
-                            () => Error.Create(source: this, title: "Mode unknown", message: $"The mode '{modeToPick}' is invalid")), "error, unknown compare mode");
+                            Error.Create(source: this, title: "Mode unknown", message: $"The mode '{modeToPick}' is invalid")), "error, unknown compare mode");
                     //SetError("Mode unknown", $"The mode '{modeToPick}' is invalid");
                     //return (null, "error, unknown compare mode");
             }
@@ -361,7 +358,7 @@ namespace ToSic.Eav.DataSources
                 // ReSharper disable once RedundantCaseLabel
                 case CompareType.Auto:
                 default:
-                    return new ResultOrError<Func<IEntity, string>>(false, null, () =>
+                    return new ResultOrError<Func<IEntity, string>>(false, null, 
                         Error.Create(title: "Problem with CompareType", message: $"The CompareType '{type}' is unexpected."));
             }
         });
