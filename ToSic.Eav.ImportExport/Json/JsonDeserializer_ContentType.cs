@@ -30,14 +30,9 @@ namespace ToSic.Eav.ImportExport.Json
         });
 
         public IContentType ConvertContentType(JsonContentTypeSet json) => Log.Func(l =>
-        {
-            var useOwnRelationships = AppPackageOrNull == null;
-            var allEntities = useOwnRelationships ? new List<IEntity>() : null;
-
-            return DirectEntitiesSource.Using(relationships =>
+            DirectEntitiesSource.Using(relationships =>
             {
-                // new in v1.2 2sxc 12
-                var relationshipsSource = useOwnRelationships ? relationships.Source /*new DirectEntitiesSource(allEntities)*/ : null;
+                var relationshipsSource = AppPackageOrNull as IEntitiesSource ?? relationships.Source;
 
                 IEntity ConvertPart(JsonEntity e) =>
                     Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
@@ -45,7 +40,7 @@ namespace ToSic.Eav.ImportExport.Json
                 try
                 {
                     var directEntities = json.Entities?.Select(ConvertPart).ToList() ?? new List<IEntity>();
-                    allEntities?.AddRange(directEntities);
+                    relationships.List?.AddRange(directEntities);
 
                     // Verify that it has a Json ContentType
                     var jsonType = json.ContentType ?? throw new Exception(
@@ -60,7 +55,7 @@ namespace ToSic.Eav.ImportExport.Json
                             var attDef = Services.DataBuilder.TypeAttributeBuilder
                                 .Create(appId: AppId, name: jsonAttr.Name, type: ValueTypeHelpers.Get(jsonAttr.Type),
                                     isTitle: jsonAttr.IsTitle, sortOrder: pos, metadataItems: mdEntities);
-                            allEntities?.AddRange(mdEntities);
+                            relationships.List?.AddRange(mdEntities);
                             //((IMetadataInternals)attDef.Metadata).Use(mdEntities);
                             return (IContentTypeAttribute)attDef;
                         })
@@ -69,7 +64,7 @@ namespace ToSic.Eav.ImportExport.Json
                     // Prepare Content-Type Metadata
                     l.A("deserialize metadata");
                     var ctMeta = jsonType.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
-                    allEntities?.AddRange(ctMeta);
+                    relationships.List?.AddRange(ctMeta);
 
                     // Create the Content Type
                     var type = Services.DataBuilder.ContentType.Create(
@@ -88,10 +83,6 @@ namespace ToSic.Eav.ImportExport.Json
                         metadataItems: ctMeta
                     );
 
-                    //type.Metadata.Use(ctMeta);
-
-                    //type.Attributes = attribs;
-
                     // new in 1.2 2sxc v12 - build relation relationships manager
                     return (type, $"converted {type.Name} with {attribs.Count} attributes");
                 }
@@ -99,8 +90,7 @@ namespace ToSic.Eav.ImportExport.Json
                 {
                     throw l.Ex(e);
                 }
-            });
-        });
+            }));
 
     }
 }
