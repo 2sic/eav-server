@@ -72,7 +72,7 @@ namespace ToSic.Eav.Data.Builder
                 nameId: nameId,
                 id: id,
                 scope: scope,
-                decorators: decorators,
+                decorators: decorators.ToImmutableList(),
                 ctMetadata: metadata,
                 isAlwaysShared: isAlwaysShared,
                 attributes: attributes.ToImmutableList(),

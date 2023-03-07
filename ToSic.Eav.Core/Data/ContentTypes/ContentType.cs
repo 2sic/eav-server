@@ -43,7 +43,7 @@ namespace ToSic.Eav.Data
             string repositoryAddress,
             bool isDynamic,
             ContentTypeMetadata ctMetadata,
-            List<IDecorator<IContentType>> decorators
+            IImmutableList<IDecorator<IContentType>> decorators
         )
         {
             AppId = appId;
@@ -137,10 +137,8 @@ namespace ToSic.Eav.Data
 
         IMetadataOf IHasMetadata.Metadata => Metadata;
 
-
-        // TODO: #immutable
-        /// <inheritdoc />
-        public List<IDecorator<IContentType>> Decorators { get; }
+        // Decorators - note that ATM we don't seem to use them
+        public IImmutableList<IDecorator<IContentType>> Decorators { get; }
 
 
         #endregion
