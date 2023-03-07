@@ -1,9 +1,11 @@
 ﻿using System;
 using ToSic.Eav.Caching;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data.Source
 {
+    [PrivateApi("keep secret for now, only used in Metadata and it's not sure if we should re-use this")]
     public class VariableSource<TSource>: ICacheExpiring, ICacheDependent where TSource : class, ICacheExpiring
     {
         public DirectEntitiesSource SourceDirect { get; }
