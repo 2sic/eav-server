@@ -6,21 +6,39 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// Root class for app runtime objects
     /// </summary>
-    public abstract class AppRuntimeBase : AppBase<AppRuntimeServices>
+    public abstract class AppRuntimeBase : AppBase<AppRuntimeBase.MyServices>
     {
 
         #region Constructor / DI
 
+        public class MyServices : MyServicesBase
+        {
+            public DataSourceFactory DataSourceFactory { get; }
+            public IAppStates AppStates { get; }
+            public ZoneRuntime ZoneRuntime { get; }
+
+            public MyServices(
+                DataSourceFactory dataSourceFactory,
+                IAppStates appStates,
+                ZoneRuntime zoneRuntime
+            ) => ConnectServices(
+                DataSourceFactory = dataSourceFactory,
+                AppStates = appStates,
+                ZoneRuntime = zoneRuntime
+            );
+        }
+
+
         public bool ShowDrafts { get; private set; }
 
-        protected AppRuntimeBase(AppRuntimeServices services, string logName): base(services, logName)
+        protected AppRuntimeBase(MyServices services, string logName): base(services, logName)
         {
             //ConnectServices(
             //    Deps = services
             //);
         }
         //protected readonly AppRuntimeServices Deps;
-        protected AppRuntimeBase(MyServicesBase<AppRuntimeServices> services, string logName): base(services, logName)
+        protected AppRuntimeBase(MyServicesBase<MyServices> services, string logName): base(services, logName)
         {
         }
 

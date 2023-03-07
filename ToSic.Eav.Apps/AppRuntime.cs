@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps
         private readonly LazySvc<ContentTypeRuntime> _contentTypeRuntime;
         private readonly LazySvc<QueryRuntime> _queryRuntime;
 
-        public AppRuntime(AppRuntimeServices services,
+        public AppRuntime(MyServices services,
             LazySvc<EntityRuntime> entityRuntime,
             LazySvc<MetadataRuntime> metadataRuntime,
             LazySvc<ContentTypeRuntime> contentTypeRuntime,

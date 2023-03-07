@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
     /// name, folder, data, metadata etc.
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public partial class App: AppBase<App.AppServices>, IApp
+    public partial class App: AppBase<App.MyServices>, IApp
     {
         #region Constructor / DI
 
@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps
         /// Helper class, so inheriting stuff doesn't need to update the constructor all the time
         /// </summary>
         [PrivateApi]
-        public class AppServices: MyServicesBase
+        public class MyServices: MyServicesBase
         {
             public Generator<Query> QueryGenerator { get; }
             public LazySvc<QueryManager> QueryManager { get; }
@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps
             internal readonly IAppStates AppStates;
             internal readonly DataSourceFactory DataSourceFactory;
 
-            public AppServices(IZoneMapper zoneMapper,
+            public MyServices(IZoneMapper zoneMapper,
                 ISite site,
                 IAppStates appStates,
                 DataSourceFactory dataSourceFactory,
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="services">All the dependencies of this app, managed by this app</param>
         /// <param name="logName">must be null by default, because of DI</param>
-        public App(AppServices services, string logName = null): base(services, logName ?? "Eav.App")
+        public App(MyServices services, string logName = null): base(services, logName ?? "Eav.App")
         {
             //Deps = services.SetLog(Log);
             _dsFactory = services.DataSourceFactory;

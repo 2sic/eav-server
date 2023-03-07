@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ContextOfSite>();
 
             // Runtimes and Managers
-            services.TryAddTransient<AppRuntimeServices>();
+            services.TryAddTransient<AppRuntimeBase.MyServices>();
             services.TryAddTransient<AppRuntime>();
             services.TryAddTransient<AppManager>();
             services.TryAddTransient<AppManager.MyServices>();
@@ -53,7 +53,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ZipFromUrlImport>();
 
             // App Dependencies
-            services.TryAddTransient<App.AppServices>();
+            services.TryAddTransient<App.MyServices>();
 
             // Context
             services.TryAddTransient<IContextOfApp, ContextOfApp>();

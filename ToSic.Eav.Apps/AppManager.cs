@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps
     {
         #region Constructors
 
-        public class MyServices: MyServicesBase<AppRuntimeServices>
+        public new class MyServices: MyServicesBase<AppRuntimeBase.MyServices>
         {
             public LazySvc<AppRuntime> AppRuntime { get; }
             public LazySvc<DbDataController> DbDataController { get; }
@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps
             public LazySvc<QueryManager> QueryManager { get; }
             public LazySvc<ContentTypeManager> ContentTypeManager { get; }
 
-            public MyServices(AppRuntimeServices parentServices,
+            public MyServices(AppRuntimeBase.MyServices parentServices,
                 LazySvc<AppRuntime> appRuntime,
                 LazySvc<DbDataController> dbDataController,
                 LazySvc<EntitiesManager> entitiesManager,

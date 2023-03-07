@@ -4,8 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Catalog;
+using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
@@ -13,9 +15,10 @@ using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Dto;
+using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using Connection = ToSic.Eav.DataSources.Queries.Connection;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using SystemJsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Admin.Query
 {
@@ -23,15 +26,58 @@ namespace ToSic.Eav.WebApi.Admin.Query
     /// <summary>
     /// Web API Controller for the Pipeline Designer UI
     /// </summary>
-    public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerServices> where TImplementation : QueryControllerBase<TImplementation>
+    public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerBase<TImplementation>.MyServices> where TImplementation : QueryControllerBase<TImplementation>
     {
-        protected QueryControllerBase(QueryControllerServices services, string logName) : base(services, logName)
+
+        #region Constructor / DI / Services
+
+        public class MyServices : MyServicesBase
+        {
+            public LazySvc<AppManager> AppManagerLazy { get; }
+            /// <summary>
+            /// The lazy reader should only be used in the Definition - it's important that it's a new object
+            /// when used, to ensure it has the changes previously saved
+            /// </summary>
+            public LazySvc<AppRuntime> AppReaderLazy { get; }
+            public QueryBuilder QueryBuilder { get; }
+            public LazySvc<ConvertToEavLight> EntToDicLazy { get; }
+            public LazySvc<QueryInfo> QueryInfoLazy { get; }
+            public LazySvc<DataSourceCatalog> DataSourceCatalogLazy { get; }
+            public Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> JsonSerializer { get; }
+            public Generator<PassThrough> PassThrough { get; }
+
+            public MyServices(LazySvc<AppManager> appManagerLazy,
+                LazySvc<AppRuntime> appReaderLazy,
+                QueryBuilder queryBuilder,
+                LazySvc<ConvertToEavLight> entToDicLazy,
+                LazySvc<QueryInfo> queryInfoLazy,
+                LazySvc<DataSourceCatalog> dataSourceCatalogLazy,
+                Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> jsonSerializer,
+                Generator<PassThrough> passThrough)
+            {
+                ConnectServices(
+                    AppManagerLazy = appManagerLazy,
+                    AppReaderLazy = appReaderLazy,
+                    QueryBuilder = queryBuilder,
+                    EntToDicLazy = entToDicLazy,
+                    QueryInfoLazy = queryInfoLazy,
+                    DataSourceCatalogLazy = dataSourceCatalogLazy,
+                    JsonSerializer = jsonSerializer,
+                    PassThrough = passThrough
+                );
+            }
+        }
+
+
+
+        protected QueryControllerBase(MyServices services, string logName) : base(services, logName)
         {
             QueryBuilder = services.QueryBuilder;
         }
         private AppManager _appManager;
         private QueryBuilder QueryBuilder { get; }
 
+        #endregion
 
         public TImplementation Init(int appId)
         {
@@ -117,7 +163,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             // Update Pipeline Entity with new Wirings etc.
             var wiringString = data.Pipeline[Constants.QueryStreamWiringAttributeName]?.ToString() ?? "";
             var wirings =
-                JsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
+                SystemJsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
                 ?? new List<Connection>();
 
             _appManager.Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
