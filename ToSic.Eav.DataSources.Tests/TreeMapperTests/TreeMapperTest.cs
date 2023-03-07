@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
 
             const string childrenField = "Children";
             var result = mapper.AddOneRelationship(childrenField,
-                new List<(NewEntitySet<string>, List<int>)> { (new NewEntitySet<string>("dummy", parents.Entity), parentsRaw.ChildrenIds) },
+                new List<(EntityPair<string>, List<int>)> { (new EntityPair<string>("dummy", parents.Entity), parentsRaw.ChildrenIds) },
                 children.Select(c => (c.Entity, c.Entity.EntityId)).ToList()
             );
             var updatedParents = result.First();

@@ -122,14 +122,14 @@ namespace ToSic.Eav.Data.Build
         /// </summary>
         /// <param name="withNewEntity"></param>
         /// <returns></returns>
-        NewEntitySet<T> Prepare<T>(IHasNewEntity<T> withNewEntity) where T : INewEntity;
+        EntityPair<T> Prepare<T>(IHasNewEntity<T> withNewEntity) where T : INewEntity;
 
         /// <summary>
         /// For objects which themselves are <see cref="INewEntity"/>
         /// </summary>
         /// <param name="newEntity"></param>
         /// <returns></returns>
-        NewEntitySet<T> Prepare<T>(T newEntity) where T : INewEntity;
+        EntityPair<T> Prepare<T>(T newEntity) where T : INewEntity;
 
         #endregion
 
@@ -145,7 +145,7 @@ namespace ToSic.Eav.Data.Build
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        IList<NewEntitySet<T>> Prepare<T>(IEnumerable<IHasNewEntity<T>> data) where T : INewEntity;
+        IList<EntityPair<T>> Prepare<T>(IEnumerable<IHasNewEntity<T>> data) where T : INewEntity;
 
         /// <summary>
         /// This will create IEntity but return it in a dictionary mapped to the original.
@@ -157,7 +157,7 @@ namespace ToSic.Eav.Data.Build
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        IList<NewEntitySet<T>> Prepare<T>(IEnumerable<T> list) where T: INewEntity;
+        IList<EntityPair<T>> Prepare<T>(IEnumerable<T> list) where T: INewEntity;
 
         #endregion
 

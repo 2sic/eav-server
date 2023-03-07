@@ -34,9 +34,9 @@ namespace ToSic.Eav.DataSources
             Debug = false;
         }
 
-        public IList<NewEntitySet<TRaw>> AddOneRelationship<TRaw, TKey>(
+        public IList<EntityPair<TRaw>> AddOneRelationship<TRaw, TKey>(
             string fieldName,
-            List<(NewEntitySet<TRaw> Set, List<TKey> Ids)> needs,
+            List<(EntityPair<TRaw> Set, List<TKey> Ids)> needs,
             List<(IEntity Entity, TKey Id)> lookup
         )
         {
@@ -63,18 +63,18 @@ namespace ToSic.Eav.DataSources
                 {
                     var ownId = GetTypedKeyOrDefault<TKey>(e, parentIdField);
                     var relatedId = GetTypedKeyOrDefault<TKey>(e, childToParentRefField);
-                    return new NewEntitySet<(TKey OwnId, TKey RelatedId)>((ownId, relatedId), e);
+                    return new EntityPair<(TKey OwnId, TKey RelatedId)>((ownId, relatedId), e);
                 })
                 .ToList();
 
             // Assign parents to children
             withKeys = AddRelationshipField(newParentField, 
-                withKeys.Select(s => (s, new List<TKey> { s.Original.RelatedId })).ToList(), 
-                withKeys.ToLookup(s => s.Original.OwnId,  s => s.Entity));
+                withKeys.Select(s => (s, new List<TKey> { s.Partner.RelatedId })).ToList(), 
+                withKeys.ToLookup(s => s.Partner.OwnId,  s => s.Entity));
 
             withKeys = AddRelationshipField(newChildrenField, 
-                withKeys.Select(s => (s, new List<TKey> { s.Original.OwnId })).ToList(),
-                withKeys.ToLookup(s => s.Original.RelatedId, s => s.Entity));
+                withKeys.Select(s => (s, new List<TKey> { s.Partner.OwnId })).ToList(),
+                withKeys.ToLookup(s => s.Partner.RelatedId, s => s.Entity));
 
 
             var result = withKeys.Select(set => set.Entity);
@@ -83,7 +83,7 @@ namespace ToSic.Eav.DataSources
         });
 
 
-        private List<NewEntitySet<TNewEntity>> AddRelationshipField<TNewEntity, TKey>(string newField, List<(NewEntitySet<TNewEntity> set, List<TKey> NeedsIds)> list, ILookup<TKey, IEntity> lookup = null)
+        private List<EntityPair<TNewEntity>> AddRelationshipField<TNewEntity, TKey>(string newField, List<(EntityPair<TNewEntity> set, List<TKey> NeedsIds)> list, ILookup<TKey, IEntity> lookup = null)
         {
             var useNumber = typeof(TKey).IsNumeric();
             var result = list.Select(setNeedsBundle =>
@@ -92,7 +92,7 @@ namespace ToSic.Eav.DataSources
                 var attributes = target.Attributes.ToEditable();
                 attributes = AddRelationships(attributes, newField, lookup, setNeedsBundle.NeedsIds,
                     $"Entity: {target.EntityId}/{target.EntityGuid}");
-                return new NewEntitySet<TNewEntity>(setNeedsBundle.set.Original,
+                return new EntityPair<TNewEntity>(setNeedsBundle.set.Partner,
                     _builder.Entity.Clone(target, attributes: _builder.Attribute.Create(attributes)));
             });
             return result.ToList();

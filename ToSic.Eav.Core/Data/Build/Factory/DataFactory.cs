@@ -109,12 +109,12 @@ namespace ToSic.Eav.Data.Build
         #region Prepare One
 
         /// <inheritdoc />
-        public NewEntitySet<T> Prepare<T>(IHasNewEntity<T> withNewEntity) where T: INewEntity
+        public EntityPair<T> Prepare<T>(IHasNewEntity<T> withNewEntity) where T: INewEntity
             => Prepare<T>(withNewEntity.NewEntity);
 
         /// <inheritdoc />
-        public NewEntitySet<T> Prepare<T>(T newEntity) where T : INewEntity
-            => new NewEntitySet<T>(newEntity, Create(
+        public EntityPair<T> Prepare<T>(T newEntity) where T : INewEntity
+            => new EntityPair<T>(newEntity, Create(
                 newEntity.GetProperties(CreateFromNewOptions),
                 id: newEntity.Id,
                 guid: newEntity.Guid,
@@ -128,11 +128,11 @@ namespace ToSic.Eav.Data.Build
         #region Prepare Many
 
         /// <inheritdoc />
-        public IList<NewEntitySet<T>> Prepare<T>(IEnumerable<IHasNewEntity<T>> data) where T: INewEntity
+        public IList<EntityPair<T>> Prepare<T>(IEnumerable<IHasNewEntity<T>> data) where T: INewEntity
             => data.Select(Prepare).ToList();
 
         /// <inheritdoc />
-        public IList<NewEntitySet<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list) where TNewEntity : INewEntity
+        public IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list) where TNewEntity : INewEntity
         {
             var all = list.Select(n =>
                 {
@@ -142,14 +142,14 @@ namespace ToSic.Eav.Data.Build
                     try
                     {
                         newEntity = Create(n);
-                        return new NewEntitySet<TNewEntity>(n, newEntity);
+                        return new EntityPair<TNewEntity>(n, newEntity);
                     }
                     catch
                     {
                         /* ignore */
                     }
 
-                    return new NewEntitySet<TNewEntity>(n, newEntity);
+                    return new EntityPair<TNewEntity>(n, newEntity);
                 })
                 .ToList();
             return all;
