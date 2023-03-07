@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Lib.DI;
 using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
@@ -14,7 +13,7 @@ using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.Services;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
-using System.Net.Mime;
+using ToSic.Eav.Data.Build;
 
 namespace ToSic.Eav.Apps.ImportExport
 {

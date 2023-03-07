@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Factory;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 using ToSic.Testing.Shared;
 using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Data.Builder
+namespace ToSic.Eav.Data.Build
 {
     /// <summary>
     /// Builder to create / clone <see cref="IContentTypeAttribute"/> definitions.

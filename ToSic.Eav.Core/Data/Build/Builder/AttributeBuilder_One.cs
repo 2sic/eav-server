@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Generics;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
-using static System.StringComparer;
 
-namespace ToSic.Eav.Data.Builder
+namespace ToSic.Eav.Data.Build
 {
     public partial class AttributeBuilder
     {

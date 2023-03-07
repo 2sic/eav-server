@@ -1,8 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Configuration.Licenses;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Factory;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -55,7 +54,7 @@ namespace ToSic.Eav.DataSources.Sys
             // Don't parse configuration as there is nothing to configure
             // Configuration.Parse();
 
-            var list = _factory.Build(_licenseService.All.OrderBy(l => l.License?.Priority ?? 0));
+            var list = _factory.Create(_licenseService.All.OrderBy(l => l.License?.Priority ?? 0));
             
             return (list, $"{list.Count}");
         });

@@ -4,16 +4,16 @@ using System.Collections.Immutable;
 using ToSic.Eav.Data.New;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data.Build
 {
     /// <summary>
     /// A data builder which will generate items for a specific type.
     /// In many cases it will also take care of auto increasing the id and more.
     /// </summary>
     /// <remarks>
-    /// * Added in v15 to replace the previous IDataFactory which is now internal
+    /// * Added in v15 to replace the previous IDataBuilder
     /// </remarks>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("in development for v15 - should be final soon")]
+    [PublicApi]
     public interface IDataFactory
     {
         /// <summary>
@@ -68,38 +68,52 @@ namespace ToSic.Eav.Data
             CreateFromNewOptions createFromNewOptions = default
         );
 
-        #region Build / Finalize
+        #region Simple Create
 
         /// <summary>
-        /// Build a complete stream of <see cref="INewEntity"/>s.
-        /// This is the method to use when you don't plan on doing any post-processing.
-        ///
-        /// If you need post-processing, call `Prepare` instead and finish using `Finalize`.
+        /// Create a single entity based on values passed in.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
+        /// <param name="values"></param>
+        /// <param name="id"></param>
+        /// <param name="guid"></param>
+        /// <param name="created"></param>
+        /// <param name="modified"></param>
         /// <returns></returns>
-        IImmutableList<IEntity> Build<T>(IEnumerable<T> list) where T : INewEntity;
-
-        /// <summary>
-        /// Build a complete stream of <see cref="INewEntity"/>s.
-        /// This is the method to use when you don't plan on doing any post-processing.
-        ///
-        /// If you need post-processing, call `Prepare` instead and finish using `Finalize`.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        IImmutableList<IEntity> Build<T>(IEnumerable<IHasNewEntity<T>> list) where T: INewEntity;
-
-        /// <summary>
-        /// Finalize the work of building something, using prepared materials.
-        /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        IImmutableList<IEntity> Finalize(IEnumerable<ICanBeEntity> list);
+        IEntity Create(Dictionary<string, object> values,
+            int id = default,
+            Guid guid = default,
+            DateTime created = default,
+            DateTime modified = default);
 
         #endregion
+
+
+        #region Create List
+
+        /// <summary>
+        /// Create a complete list of <see cref="INewEntity"/>s.
+        /// This is the method to use when you don't plan on doing any post-processing.
+        ///
+        /// If you need post-processing, call `Prepare` instead and finish using `WrapUp`.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : INewEntity;
+
+        /// <summary>
+        /// Build a complete stream of <see cref="INewEntity"/>s.
+        /// This is the method to use when you don't plan on doing any post-processing.
+        ///
+        /// If you need post-processing, call `Prepare` instead and finish using `WrapUp`.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        IImmutableList<IEntity> Create<T>(IEnumerable<IHasNewEntity<T>> list) where T: INewEntity;
+
+        #endregion
+
 
         #region Prepare One
 
@@ -129,7 +143,7 @@ namespace ToSic.Eav.Data
         /// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
         IList<NewEntitySet<T>> Prepare<T>(IEnumerable<IHasNewEntity<T>> data) where T : INewEntity;
 
@@ -147,14 +161,16 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        IEntity Create(Dictionary<string, object> values,
-            int id = default,
-            Guid guid = default,
-            DateTime created = default,
-            DateTime modified = default);
+        #region WrapUp
 
+        /// <summary>
+        /// Finalize the work of building something, using prepared materials.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> list);
 
-
+        #endregion
 
     }
 }

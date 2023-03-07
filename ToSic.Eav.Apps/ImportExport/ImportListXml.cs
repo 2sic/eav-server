@@ -5,8 +5,7 @@ using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps.ImportExport.ImportHelpers;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
-using ToSic.Eav.Generics;
+using ToSic.Eav.Data.Build;
 using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
@@ -14,7 +13,6 @@ using ToSic.Eav.ImportExport.Xml;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.Services;
-using static System.StringComparer;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 

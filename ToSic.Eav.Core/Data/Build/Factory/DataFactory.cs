@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Data.Builder;
 using ToSic.Eav.Data.New;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Data.Factory
+namespace ToSic.Eav.Data.Build
 {
     [PrivateApi("Still experimental/hide implementation")]
     public class DataFactory : ServiceBase, IDataFactory
@@ -94,15 +93,15 @@ namespace ToSic.Eav.Data.Factory
         #region Build / Finalize
 
         /// <inheritdoc />
-        public IImmutableList<IEntity> Build<T>(IEnumerable<T> list) where T : INewEntity
-            => Finalize(Prepare(list));
+        public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : INewEntity
+            => WrapUp(Prepare(list));
 
         /// <inheritdoc />
-        public IImmutableList<IEntity> Build<T>(IEnumerable<IHasNewEntity<T>> list) where T : INewEntity
-            => Finalize(Prepare(list));
+        public IImmutableList<IEntity> Create<T>(IEnumerable<IHasNewEntity<T>> list) where T : INewEntity
+            => WrapUp(Prepare(list));
 
         /// <inheritdoc />
-        public IImmutableList<IEntity> Finalize(IEnumerable<ICanBeEntity> list)
+        public IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> list)
             => list.Select(set => set.Entity).ToImmutableList();
 
         #endregion

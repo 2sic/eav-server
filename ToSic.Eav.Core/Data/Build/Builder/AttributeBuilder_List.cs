@@ -4,7 +4,7 @@ using System.Linq;
 using ToSic.Eav.Generics;
 using static System.StringComparer;
 
-namespace ToSic.Eav.Data.Builder
+namespace ToSic.Eav.Data.Build
 {
     public partial class AttributeBuilder
     {

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Builder;
+﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.ImportExport.Json;
 
 namespace ToSic.Eav.Repository.Efc.Parts

@@ -6,7 +6,7 @@ using ToSic.Eav.Metadata;
 
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
 
-namespace ToSic.Eav.Data.Builder
+namespace ToSic.Eav.Data.Build
 {
     /// <summary>
     /// This is a helper environment to build entities based on different needs

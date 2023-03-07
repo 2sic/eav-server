@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 
 namespace ToSic.Eav.DataSourceTests.TestData
 {

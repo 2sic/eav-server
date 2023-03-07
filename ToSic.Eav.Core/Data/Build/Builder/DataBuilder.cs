@@ -2,7 +2,7 @@
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Data.Builder
+namespace ToSic.Eav.Data.Build
 {
     public class DataBuilder: ServiceBase
     {

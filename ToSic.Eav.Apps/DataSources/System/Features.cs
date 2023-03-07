@@ -1,8 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Configuration;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Factory;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -57,7 +56,7 @@ namespace ToSic.Eav.DataSources.Sys
             // Don't parse configuration as there is nothing to configure
             // Configuration.Parse();
 
-            var list = _factory.Build(_featuresService.All.OrderBy(f => f.NameId));
+            var list = _factory.Create(_featuresService.All.OrderBy(f => f.NameId));
 
             return (list, $"{list.Count}");
         });

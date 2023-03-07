@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Data.Builder
+namespace ToSic.Eav.Data.Build
 {
     public class DimensionBuilder
     {
