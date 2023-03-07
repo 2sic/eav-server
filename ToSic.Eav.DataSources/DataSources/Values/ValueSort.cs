@@ -101,7 +101,7 @@ namespace ToSic.Eav.DataSources
 			// Languages check - not fully implemented yet, only supports "default" / "current"
             LanguageList = _valLanguages.PrepareLanguageList(Languages);
 
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             // check if no list parameters specified
@@ -167,7 +167,7 @@ namespace ToSic.Eav.DataSources
             }
 			catch (Exception e)
             {
-				return CreateErrorResult("Error sorting", "Sorting failed - see exception in insights", e);
+				return ErrorResult(title: "Error sorting", message: "Sorting failed - see exception in insights", exception: e);
             }
 
             return (final, "ok");

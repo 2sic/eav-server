@@ -5,23 +5,23 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.DataSources
 {
-    public class GetStream
+    public class ListOrError
     {
-        public GetStream(bool isError, Func<IImmutableList<IEntity>> getList = null, Func<IImmutableList<IEntity>> getError = null)
+        public ListOrError(bool isError, IImmutableList<IEntity> getList = null, IImmutableList<IEntity> getError = null)
         {
             _getList = getList;
             _getError = getError;
             IsError = isError;
         }
-        private readonly Func<IImmutableList<IEntity>> _getList;
-        private readonly Func<IImmutableList<IEntity>> _getError;
+        private readonly IImmutableList<IEntity> _getList;
+        private readonly IImmutableList<IEntity> _getError;
 
         public bool IsError { get; }
 
-        public IImmutableList<IEntity> List => _list.Get(() => _getList?.Invoke() ?? DataSource.EmptyList);
+        public IImmutableList<IEntity> List => _list.Get(() => _getList ?? DataSource.EmptyList);
         private readonly GetOnce<IImmutableList<IEntity>> _list = new GetOnce<IImmutableList<IEntity>>();
 
-        public IImmutableList<IEntity> Errors => _errors.Get(() => _getError?.Invoke() ?? DataSource.EmptyList);
+        public IImmutableList<IEntity> Errors => _errors.Get(() => _getError ?? DataSource.EmptyList);
         private readonly GetOnce<IImmutableList<IEntity>> _errors = new GetOnce<IImmutableList<IEntity>>();
 
         public (IImmutableList<IEntity> Errors, string message) ErrorResult => (Errors, "error");

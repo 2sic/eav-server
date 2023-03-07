@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources.Debug
                             SourceOut = outStm.Key;
 
                 var firstItem = Stream.List?.FirstOrDefault();
-                Error = firstItem?.Type?.Name == DataSourceErrorHandling.ErrorType;
+                Error = firstItem?.Type?.Name == DataSourceErrorHelper.ErrorContentType;
                 if (Error) ErrorData = firstItem; // errorConverter.Convert(firstItem);
             }
             catch

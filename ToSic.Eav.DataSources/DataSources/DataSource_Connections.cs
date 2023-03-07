@@ -7,10 +7,11 @@ namespace ToSic.Eav.DataSources
 {
     public abstract partial class DataSource
     {
-        #region Experimental new Connections
+        #region Connections
 
         internal Connections Connections => _connections ?? (_connections = new Connections(this));
         private Connections _connections;
+
         #endregion
 
         /// <inheritdoc />
@@ -51,7 +52,7 @@ namespace ToSic.Eav.DataSources
         }
 
         /// <inheritdoc />
-        public IEnumerable<IEntity> List => GetStream().List; // Out[Constants.DefaultStreamName].List;
+        public IEnumerable<IEntity> List => GetStream().List;
 
 
         #region various Attach-In commands
@@ -82,7 +83,7 @@ namespace ToSic.Eav.DataSources
         
         private void ConnectIn(Connection connection)
         {
-            var connStream = new ConnectionStream(connection, ErrorHandler);
+            var connStream = new ConnectionStream(connection, Error);
             if (In.ContainsKey(connection.TargetStream)) In.Remove(connection.TargetStream);
             In.Add(connection.TargetStream, connStream);
             Connections.AddIn(connection);

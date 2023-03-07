@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSources
             l.A($"get list with type:{TypeName}");
 
             // Get original from In-Stream
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             try

@@ -20,8 +20,8 @@ namespace ToSic.Eav.DataSourceTests
             AreEqual(1, stream.List.Count());
             var firstAndOnly = stream.List.FirstOrDefault();
             IsNotNull(firstAndOnly);
-            AreEqual(DataSourceErrorHandling.ErrorType, firstAndOnly.Type.Name);
-            AreEqual(DataSourceErrorHandling.GenerateTitle(errTitle), firstAndOnly.GetBestTitle());
+            AreEqual(DataSourceErrorHelper.ErrorContentType, firstAndOnly.Type.Name);
+            AreEqual(DataSourceErrorHelper.GenerateTitle(errTitle), firstAndOnly.GetBestTitle());
         }
 
     }

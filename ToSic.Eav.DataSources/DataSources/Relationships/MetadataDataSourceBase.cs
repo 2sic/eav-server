@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Make sure we have an In - otherwise error
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             var typeName = ContentTypeName;

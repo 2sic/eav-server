@@ -178,14 +178,14 @@ namespace ToSic.Eav.DataSources
                 strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
 
             if (!AllCompareModes.Contains(strMode))
-                return CreateErrorResult("CompareMode unknown", $"CompareMode other '{strMode}' is unknown.");
+                return ErrorResult(title: "CompareMode unknown", message: $"CompareMode other '{strMode}' is unknown.");
 
             //if (!Enum.TryParse<CompareModes>(strMode, true, out var mode))
             //    return (SetError("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."), "error");
 
             var childParent = ChildOrParent;
             if (!_directionPossibleValues.Contains(childParent, StringComparer.CurrentCultureIgnoreCase))
-                return CreateErrorResult("Can only compare Children", $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'");
+                return ErrorResult(title: "Can only compare Children", message: $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'");
 
             //var lang = Languages.ToLowerInvariant();
             //if (lang != "default")
@@ -195,7 +195,7 @@ namespace ToSic.Eav.DataSources
             var lowAttribName = compAttr.ToLowerInvariant();
             l.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{strMode}', child/parent:'{childParent}'");
 
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             var compType = lowAttribName == Attributes.EntityFieldAutoSelect
@@ -207,12 +207,25 @@ namespace ToSic.Eav.DataSources
                         : CompareType.Any;
 
             // pick the correct value-comparison
-            var comparisonOnRelatedItem = compType == CompareType.Auto
-                ? CompareTwo(GetFieldValue(CompareType.Id, null), GetFieldValue(CompareType.Title, null))
-                : CompareOne(GetFieldValue(compType, compAttr));
+            Func<IEntity, string, bool> comparisonOnRelatedItem;
+            if (compType == CompareType.Auto)
+            {
+                var getId = GetFieldValue(CompareType.Id, null);
+                if (getId.IsError) return getId.ErrorResult;
+                var getTitle = GetFieldValue(CompareType.Title, null);
+                if (getTitle.IsError) return getTitle.ErrorResult;
+                comparisonOnRelatedItem = CompareTwo(getId.Result, getTitle.Result);
 
-            if (comparisonOnRelatedItem == null)
-                return (ErrorStream, "error");
+            }
+            else
+            {
+                var getValue = GetFieldValue(compType, compAttr);
+                if (getValue.IsError) return getValue.ErrorResult;
+                comparisonOnRelatedItem = CompareOne(getValue.Result);
+            }
+
+            //if (comparisonOnRelatedItem == null)
+            //    return (ErrorStream, "error");
 
             var filterList = Separator == DefaultSeparator
                 ? new[] { filter }
@@ -238,7 +251,7 @@ namespace ToSic.Eav.DataSources
             }
             catch (Exception ex)
             {
-                return CreateErrorResult("Error comparing Relationships", "Unknown error, check details in Insights logs", ex);
+                return ErrorResult(title: "Error comparing Relationships", message: "Unknown error, check details in Insights logs", exception: ex);
             }
         });
 
@@ -296,7 +309,7 @@ namespace ToSic.Eav.DataSources
                 default:
                     return (
                         new ResultOrError<Func<IEntity, bool>>(false, null,
-                            () => ErrorHandler.CreateErrorList(source: this, title: "Mode unknown", message: $"The mode '{modeToPick}' is invalid")), "error, unknown compare mode");
+                            () => Error.Create(source: this, title: "Mode unknown", message: $"The mode '{modeToPick}' is invalid")), "error, unknown compare mode");
                     //SetError("Mode unknown", $"The mode '{modeToPick}' is invalid");
                     //return (null, "error, unknown compare mode");
             }
@@ -319,13 +332,13 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private Func<IEntity, string> GetFieldValue(CompareType type, string fieldName)
+        private ResultOrError<Func<IEntity, string>> GetFieldValue(CompareType type, string fieldName) => Log.Func(l =>
         {
             switch (type)
             {
                 case CompareType.Any:
-                    Log.A($"will compare on a normal attribute:{fieldName}");
-                    return e =>
+                    l.A($"compare on a normal attribute:{fieldName}");
+                    return new ResultOrError<Func<IEntity, string>>(true, e =>
                     {
                         try
                         {
@@ -338,20 +351,20 @@ namespace ToSic.Eav.DataSources
                                                 "Probably comparing an attribute on the related entity that doesn't exist. " +
                                                 $"Was trying to compare the attribute '{fieldName}'");
                         }
-                    };
+                    });
                 case CompareType.Id:
-                    Log.A("will compare on ID");
-                    return e => e?.EntityId.ToString();
+                    l.A("will compare on ID");
+                    return new ResultOrError<Func<IEntity, string>>(true, e => e?.EntityId.ToString());
                 case CompareType.Title:
-                    Log.A("will compare on title");
-                    return e => e?.GetBestTitle()?.ToLowerInvariant();
+                    l.A("will compare on title");
+                    return new ResultOrError<Func<IEntity, string>>(true, e => e?.GetBestTitle()?.ToLowerInvariant());
                 // ReSharper disable once RedundantCaseLabel
                 case CompareType.Auto:
                 default:
-                    SetError("Problem with CompareType", $"The CompareType '{type}' is unexpected.");
-                    return null;
+                    return new ResultOrError<Func<IEntity, string>>(false, null, () =>
+                        Error.Create(title: "Problem with CompareType", message: $"The CompareType '{type}' is unexpected."));
             }
-        }
+        });
 
     }
 }

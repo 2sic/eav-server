@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
 
             services.TryAddTransient<DataSourceCatalog>();
             services.TryAddTransient<DataSourceFactory>();
-            services.TryAddTransient<DataSourceErrorHandling>();
+            services.TryAddTransient<DataSourceErrorHelper>();
 
             services.TryAddTransient<IAppRoot, AppRoot>();
 

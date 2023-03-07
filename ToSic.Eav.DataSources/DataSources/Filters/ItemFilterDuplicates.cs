@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSources
             if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
                 return (EmptyList, "no in stream with name");
 
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             var result = source.List
@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSources
             if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
                 return (EmptyList, "no in-stream with name");
 
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             var result = source.List

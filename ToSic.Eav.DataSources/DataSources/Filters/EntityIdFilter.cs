@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSources
 
             var entityIds = entityIdsOrError.Result;
 
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             var result = entityIds.Select(eid => source.List.One(eid)).Where(e => e != null).ToImmutableList();
@@ -100,8 +100,8 @@ namespace ToSic.Eav.DataSources
             catch (Exception ex)
             {
                 return (new ResultOrError<int[]>(false, Array.Empty<int>(),
-                    () => CreateError("Can't find IDs", "Unable to load EntityIds from Configuration. Unexpected Exception.",
-                        ex)), "error");
+                    () => Error.Create(title: "Can't find IDs", message: "Unable to load EntityIds from Configuration. Unexpected Exception.",
+                        exception: ex)), "error");
             }
 
             #endregion

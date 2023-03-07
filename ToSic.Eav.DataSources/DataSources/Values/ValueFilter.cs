@@ -120,7 +120,7 @@ namespace ToSic.Eav.DataSources
             var languages = _valueLanguageService.PrepareLanguageList(Languages);
 
             // Get the In-list and stop if error orempty
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
             if (!source.List.Any()) return (source.List, "empty");
 
@@ -159,12 +159,12 @@ namespace ToSic.Eav.DataSources
             // then lazy-entities are marked as LazyEntity or similar, and NOT "Entity"
             //if (netTypeName.Contains(Constants.DataTypeEntity)) netTypeName = Constants.DataTypeEntity;
 
-            var compMaker = new ValueComparison((title, message) => SetError(title, message), Log);
+            IImmutableList<IEntity> innerErrors = null;
+            var compMaker = new ValueComparison((title, message) => innerErrors = Error.Create(title: title, message: message), Log);
             var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value);
 
-            var errors = GetErrors();
-            return errors.IsError 
-                ? errors.ErrorResult 
+            return innerErrors?.Any() == true
+                ? (innerErrors, "error") 
                 : (GetFilteredWithLinq(source.List, compare), "ok");
 
             // Note: the alternate GetFilteredWithLoop has more logging, activate in serious cases
@@ -182,11 +182,11 @@ namespace ToSic.Eav.DataSources
             }
             catch (Exception ex)
             {
-                return CreateErrorResult("Unexpected Error",
-                    "Experienced error while executing the filter LINQ. " +
-                    "Probably something with type-mismatch or the same field using different types or null. " +
-                    "The exception was logged to Insights.",
-                    ex);
+                return ErrorResult(title: "Unexpected Error",
+                    message: "Experienced error while executing the filter LINQ. " +
+                             "Probably something with type-mismatch or the same field using different types or null. " +
+                             "The exception was logged to Insights.",
+                    exception: ex);
             }
         });
 

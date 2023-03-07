@@ -128,7 +128,7 @@ namespace ToSic.Eav.DataSources
         {
             // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
             if (_listDelegate == null)
-                return (Source.ErrorHandler.CreateErrorList(source: Source,
+                return (Source.Error.Create(source: Source,
                         title: "Error loading Stream",
                         message: "Can't load stream - no delegate found to supply it").ToImmutableList(),
                     "error");
@@ -141,13 +141,13 @@ namespace ToSic.Eav.DataSources
             catch (InvalidOperationException invEx) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
             {
                 return (
-                    Source.ErrorHandler.CreateErrorList(source: Source, title: "InvalidOperationException",
+                    Source.Error.Create(source: Source, title: "InvalidOperationException",
                         message: "See details", exception: invEx).ToImmutableList(),
                     "error");
             }
             catch (Exception ex)
             {
-                return (Source.ErrorHandler.CreateErrorList(source: Source, exception: ex,
+                return (Source.Error.Create(source: Source, exception: ex,
                         title: "Error getting Stream / reading underlying list",
                         message: $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}").ToImmutableList(),
                     "error");

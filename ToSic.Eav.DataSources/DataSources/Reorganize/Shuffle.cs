@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSources
         {
             Configuration.Parse();
 
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             return (ShuffleInternal(source.List.ToList(), Take), "ok");

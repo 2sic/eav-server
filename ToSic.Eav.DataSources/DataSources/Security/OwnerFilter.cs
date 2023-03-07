@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSources
             if (string.IsNullOrWhiteSpace(Identity))
                 return (EmptyList, "no identity");
 
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             return (source.List.Where(e => e.Owner == Identity).ToImmutableList(), "ok");

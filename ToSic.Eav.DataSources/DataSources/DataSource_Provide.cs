@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
@@ -22,18 +19,9 @@ namespace ToSic.Eav.DataSources
         protected void Provide(GetImmutableListDelegate getList)
             => Provide(Constants.DefaultStreamName, getList);
 
-        //[PrivateApi]
-        //protected void Provide(GetImmutableArrayDelegate getList)
-        //    => Provide(Constants.DefaultStreamName, getList);
-
         [PrivateApi]
         protected void Provide(string name, GetImmutableListDelegate getList)
             => Out.Add(name, new DataStream(this, name, getList));
-
-        //[PrivateApi]
-        //protected void Provide(string name, GetImmutableArrayDelegate getList)
-        //    => Out.Add(name, new DataStream(this, name, getList));
-
 
         #endregion
 

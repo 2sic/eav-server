@@ -92,7 +92,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1) * PageSize;
 
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             var result = source.List
@@ -108,7 +108,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Calculate any additional stuff
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             var itemCount = source.List.Count;

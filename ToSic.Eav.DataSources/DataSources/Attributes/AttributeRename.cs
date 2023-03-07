@@ -140,7 +140,7 @@ namespace ToSic.Eav.DataSources
             if (!string.IsNullOrEmpty(typeName))
                 newType = _dataBuilder.ContentType.Transient(AppId, typeName, typeName);
 
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             var result = source.List

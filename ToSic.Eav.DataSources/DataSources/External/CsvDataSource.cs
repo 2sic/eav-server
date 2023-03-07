@@ -143,21 +143,21 @@ namespace ToSic.Eav.DataSources
             l.A($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
 
             if (string.IsNullOrWhiteSpace(csvPath))
-                return CreateErrorResult("No Path Given", "There was no path for loading the CSV file.");
+                return ErrorResult(title: "No Path Given", message: "There was no path for loading the CSV file.");
 
             var pathPart = Path.GetDirectoryName(csvPath);
             if (!Directory.Exists(pathPart))
             {
                 l.A($"Didn't find path '{pathPart}'");
-                return CreateErrorResult("Path not found",
-                        _user?.IsSystemAdmin == true
+                return ErrorResult(title: "Path not found",
+                        message: _user?.IsSystemAdmin == true
                             ? $"Path for Super User only: '{pathPart}'"
                             : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights.");
             }
 
             if (!File.Exists(csvPath))
-                return CreateErrorResult("CSV File Not Found",
-                        _user?.IsSystemAdmin == true
+                return ErrorResult(title: "CSV File Not Found",
+                        message: _user?.IsSystemAdmin == true
                             ? $"Path for Super User only: '{csvPath}'"
                             : "For security reasons the path isn't mentioned here. You'll find it in the Insights.");
 
@@ -193,10 +193,10 @@ namespace ToSic.Eav.DataSources
                         idColumnIndex = Array.FindIndex(headers,
                             name => name.Equals(IdColumnName, StringComparison.InvariantCultureIgnoreCase));
                     if (idColumnIndex == -1)
-                        return CreateErrorResult("ID Column not found",
-                            $"ID column '{IdColumnName}' specified cannot be found in the file. " +
-                            $"The Headers: '{string.Join(",", headers)}'. " +
-                            $"{commonErrorsIdTitle}");
+                        return ErrorResult(title: "ID Column not found",
+                            message: $"ID column '{IdColumnName}' specified cannot be found in the file. " +
+                                     $"The Headers: '{string.Join(",", headers)}'. " +
+                                     $"{commonErrorsIdTitle}");
                 }
 
                 if (string.IsNullOrEmpty(TitleColumnName))
@@ -208,10 +208,10 @@ namespace ToSic.Eav.DataSources
                                    ?? headers.FirstOrDefault(colName =>
                                        colName.Equals(TitleColumnName, StringComparison.InvariantCultureIgnoreCase));
                     if (titleColName == null)
-                        return CreateErrorResult("Title column not found",
-                            $"Title column '{TitleColumnName}' cannot be found in the file. " +
-                            $"The Headers: '{string.Join(",", headers)}'. " +
-                            $"{commonErrorsIdTitle}");
+                        return ErrorResult(title: "Title column not found",
+                            message: $"Title column '{TitleColumnName}' cannot be found in the file. " +
+                                     $"The Headers: '{string.Join(",", headers)}'. " +
+                                     $"{commonErrorsIdTitle}");
                 }
 
                 _dataFactory.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName);
@@ -228,8 +228,8 @@ namespace ToSic.Eav.DataSources
                     // check if id can be parsed from the current row
                     else if (!int.TryParse(fields[idColumnIndex], out entityId))
                     {
-                        return CreateErrorResult(ErrorIdNaN,
-                            $"Row {parser.Row}: ID field '{headers[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'.");
+                        return ErrorResult(title: ErrorIdNaN,
+                            message: $"Row {parser.Row}: ID field '{headers[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'.");
                     }
 
                     var entityValues = new Dictionary<string, object>();

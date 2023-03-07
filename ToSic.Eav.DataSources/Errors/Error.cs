@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
@@ -42,11 +41,11 @@ namespace ToSic.Eav.DataSources
         public Error(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Error")
             => Provide(GenerateExceptionStream);
 
-        private IEnumerable<IEntity> GenerateExceptionStream() => Log.Func(l =>
+        private IImmutableList<IEntity> GenerateExceptionStream() => Log.Func(l =>
         {
             l.A("This is a fake Error / Exception");
             l.A("The Error DataSource creates an exception on purpose, to test exception functionality in Visual Query");
-            return (CreateError(Title, Message), "fake error");
+            return (Error.Create(title: Title, message: Message), "fake error");
         });
     }
 }

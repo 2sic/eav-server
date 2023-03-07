@@ -84,13 +84,13 @@ namespace ToSic.Eav.DataSources
 
             var fieldMapErrors = string.Join(";", mapErrors);
             if (!string.IsNullOrWhiteSpace(fieldMapErrors))
-                return CreateErrorResult("Field Map Error", fieldMapErrors);
+                return ErrorResult(title: "Field Map Error", message: fieldMapErrors);
 
             #endregion
 
             l.A($"Field Map created - has {fieldMap.Length} parts");
 
-            var source = GetRequiredInList();
+            var source = GetInStream();
             if (source.IsError) return source.ErrorResult;
 
             var result = new List<IEntity>();

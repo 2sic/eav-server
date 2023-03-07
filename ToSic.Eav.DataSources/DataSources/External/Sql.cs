@@ -246,7 +246,7 @@ namespace ToSic.Eav.DataSources
 
             // Check if SQL contains forbidden terms
             if (ForbiddenTermsInSelect.IsMatch(SelectCommand))
-                return ErrorHandler.CreateErrorList(source: this, title: ErrorTitleForbiddenSql,
+                return Error.Create(source: this, title: ErrorTitleForbiddenSql,
                     message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue.");
 
 
@@ -263,14 +263,14 @@ namespace ToSic.Eav.DataSources
                 }
 			    catch(Exception ex)
                 {
-                    return ErrorHandler.CreateErrorList(source: this, exception: ex,
+                    return Error.Create(source: this, exception: ex,
                         title: "Can't find Connection String Name",
                         message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message.");
 			    }
 
             // make sure we have one - often it's empty, if the query hasn't been configured yet
             if (string.IsNullOrWhiteSpace(ConnectionString))
-                return ErrorHandler.CreateErrorList(source: this, title: "Connection Problem",
+                return Error.Create(source: this, title: "Connection Problem",
                     message: "The ConnectionString property is empty / has not been initialized");
 
 			var list = new List<IEntity>();
@@ -293,7 +293,7 @@ namespace ToSic.Eav.DataSources
                     }
                     catch(Exception ex)
                     {
-                        return ErrorHandler.CreateErrorList(source: this, exception: ex,
+                        return Error.Create(source: this, exception: ex,
                             title: "Can't read from Database",
                             message: "Something failed trying to read from the Database.");
                     }

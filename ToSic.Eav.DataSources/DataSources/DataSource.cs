@@ -57,11 +57,11 @@ namespace ToSic.Eav.DataSources
         public Guid Guid { get; set; }
 
 
-        #region Properties which the Factory must add
+        #region Error Handling
 
-        [PrivateApi]
-        public DataSourceErrorHandling ErrorHandler => _errorHandler.Get(() => base.Services.ErrorHandler.Value);
-        private readonly GetOnce<DataSourceErrorHandling> _errorHandler = new GetOnce<DataSourceErrorHandling>();
+        [PublicApi]
+        public DataSourceErrorHelper Error => _errorHandler.Get(() => Services.ErrorHandler.Value);
+        private readonly GetOnce<DataSourceErrorHelper> _errorHandler = new GetOnce<DataSourceErrorHelper>();
 
         #endregion
 
