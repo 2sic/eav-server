@@ -31,13 +31,13 @@ namespace ToSic.Eav.Data.Build
 
 
         public IValue BuildRelationship(List<int?> references, IEntitiesSource app) 
-            => BuildRelationship(new LazyEntities(app, references));
+            => BuildRelationship(new LazyEntitiesSource(app, references));
 
         public IValue BuildRelationship(IEnumerable<IEntity> directList) 
             => new Value<IEnumerable<IEntity>>(directList, DimensionBuilder.NoLanguages);
 
         public IValue CloneRelationship(IRelatedEntitiesValue value, IEntitiesSource app) 
-            => BuildRelationship(new LazyEntities(app, value.Identifiers));
+            => BuildRelationship(new LazyEntitiesSource(app, value.Identifiers));
 
         /// <summary>
         /// Creates a Typed Value Model
@@ -111,17 +111,17 @@ namespace ToSic.Eav.Data.Build
         }
 
 
-        private LazyEntities GetLazyEntitiesForRelationship(object value, IEntitiesSource fullLookupList)
+        private LazyEntitiesSource GetLazyEntitiesForRelationship(object value, IEntitiesSource fullLookupList)
         {
             var entityIds = (value as IEnumerable<int?>)?.ToList()
                             ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
             if (entityIds != null)
-                return new LazyEntities(fullLookupList, entityIds);
+                return new LazyEntitiesSource(fullLookupList, entityIds);
             if (value is IRelatedEntitiesValue relList)
-                return new LazyEntities(fullLookupList, relList.Identifiers);
+                return new LazyEntitiesSource(fullLookupList, relList.Identifiers);
             if (value is List<Guid?> guids)
-                return new LazyEntities(fullLookupList, guids);
-            return new LazyEntities(fullLookupList, GuidCsvToList(value));
+                return new LazyEntitiesSource(fullLookupList, guids);
+            return new LazyEntitiesSource(fullLookupList, GuidCsvToList(value));
         }
 
 
@@ -151,7 +151,7 @@ namespace ToSic.Eav.Data.Build
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
         private Value<IEnumerable<IEntity>> NewEmptyRelationship
-            => new Value<IEnumerable<IEntity>>(new LazyEntities(null, identifiers: null), DimensionBuilder.NoLanguages);
+            => new Value<IEnumerable<IEntity>>(new LazyEntitiesSource(null, identifiers: null), DimensionBuilder.NoLanguages);
 
         internal IImmutableList<IValue> NewEmptyRelationshipValues => new List<IValue> { NewEmptyRelationship }.ToImmutableList();
 

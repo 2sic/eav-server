@@ -30,7 +30,7 @@ namespace ToSic.Eav.Apps
                         .Select(a => a.Value)
                         .Where(a => a is IAttribute<IEnumerable<IEntity>>)
                         .Cast<IAttribute<IEnumerable<IEntity>>>()
-                        .Select(a => (LazyEntities)a.Typed.First().TypedContents)
+                        .Select(a => (LazyEntitiesSource)a.Typed.First().TypedContents)
                         .Where(tc => tc != null);
                 foreach (var value in lazyEntityValues)
                 foreach (var val in value.EntityIds.Where(e => e != null))

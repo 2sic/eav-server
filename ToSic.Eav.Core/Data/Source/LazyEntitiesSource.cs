@@ -16,7 +16,7 @@ namespace ToSic.Eav.Data.Source
     ///   it won't actually query the cache if the IDs are already known.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class LazyEntities : IEnumerable<IEntity>, ICacheDependent, IRelatedEntitiesValue
+    public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelatedEntitiesValue
     {
         /// <summary>
         /// Initializes a new instance of the EntityRelationship class.
@@ -24,7 +24,7 @@ namespace ToSic.Eav.Data.Source
         /// <param name="allEntities">DataSource to retrieve child entities</param>
         /// <param name="identifiers">List of IDs to initialize with</param>
         [PrivateApi]
-        internal LazyEntities(IEntitiesSource allEntities, IList identifiers)
+        internal LazyEntitiesSource(IEntitiesSource allEntities, IList identifiers)
         {
             _lookupList = allEntities;
             switch (identifiers)

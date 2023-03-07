@@ -117,7 +117,7 @@ namespace ToSic.Eav.ImportExport.Json
             // so it tries to get the guids first, and otherwise uses the items
             var entities = ToTypedDictionary<IEnumerable<IEntity>>(gList)
                 .ToDictionary(a => a.Key, a => a.Value
-                    .ToDictionary(b => b.Key, b => ((LazyEntities)b.Value).ResolveGuids()));
+                    .ToDictionary(b => b.Key, b => ((LazyEntitiesSource)b.Value).ResolveGuids()));
             return entities;
         }
 
