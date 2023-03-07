@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using ToSic.Eav.Data.New;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data.Factory
+namespace ToSic.Eav.Data
 {
     /// <summary>
     /// A data builder which will generate items for a specific type.
@@ -63,7 +63,7 @@ namespace ToSic.Eav.Data.Factory
             int appId = default,
             string typeName = default,
             string titleField = default,
-            int idSeed = DataFactory.DefaultIdSeed,
+            int idSeed = DataConstants.DataFactoryDefaultIdSeed,
             bool idAutoIncrementZero = true,
             CreateFromNewOptions createFromNewOptions = default
         );

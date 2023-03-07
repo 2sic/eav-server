@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.Json.Serialization;
+using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSources.Debug
 {
@@ -41,7 +42,7 @@ namespace ToSic.Eav.DataSources.Debug
                             SourceOut = outStm.Key;
 
                 var firstItem = Stream.List?.FirstOrDefault();
-                Error = firstItem?.Type?.Name == DataSourceErrorHelper.ErrorContentType;
+                Error = firstItem?.Type?.Name == DataConstants.ErrorTypeName;
                 if (Error) ErrorData = firstItem; // errorConverter.Convert(firstItem);
             }
             catch

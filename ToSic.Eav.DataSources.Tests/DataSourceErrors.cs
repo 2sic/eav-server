@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
@@ -20,7 +21,7 @@ namespace ToSic.Eav.DataSourceTests
             AreEqual(1, stream.List.Count());
             var firstAndOnly = stream.List.FirstOrDefault();
             IsNotNull(firstAndOnly);
-            AreEqual(DataSourceErrorHelper.ErrorContentType, firstAndOnly.Type.Name);
+            AreEqual(DataConstants.ErrorTypeName, firstAndOnly.Type.Name);
             AreEqual(DataSourceErrorHelper.GenerateTitle(errTitle), firstAndOnly.GetBestTitle());
         }
 

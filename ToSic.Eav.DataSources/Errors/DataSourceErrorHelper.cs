@@ -27,9 +27,6 @@ namespace ToSic.Eav.DataSources
         }
         private readonly DataBuilder _builder;
 
-        public static string ErrorContentType = "Error";
-        public static string ErrorTitleField = "Error";
-
 
         /// <summary>
         /// Create a stream containing an error entity.
@@ -80,7 +77,7 @@ namespace ToSic.Eav.DataSources
         {
             var values = new Dictionary<string, object>
             {
-                {ErrorTitleField, GenerateTitle(title)},
+                { DataConstants.ErrorTitleField, GenerateTitle(title)},
                 {"SourceName", source?.Name},
                 {"SourceLabel", source?.Label },
                 {"SourceGuid", source?.Guid },
@@ -96,10 +93,10 @@ namespace ToSic.Eav.DataSources
 
             // Don't use the default data builder here, as it needs DI and this object
             // will often be created late when DI is already destroyed
-            var errorEntity = _builder.Entity.Create(appId: DataFactory.DefaultAppId, entityId: DataFactory.DefaultEntityId,
-                contentType: _builder.ContentType.Transient(ErrorContentType),
+            var errorEntity = _builder.Entity.Create(appId: DataConstants.ErrorAppId, entityId: DataConstants.ErrorEntityId,
+                contentType: _builder.ContentType.Transient(DataConstants.ErrorTypeName),
                 attributes: _builder.Attribute.Create(values),
-                titleField: ErrorTitleField);
+                titleField: DataConstants.ErrorTitleField);
             return errorEntity;
         }
 

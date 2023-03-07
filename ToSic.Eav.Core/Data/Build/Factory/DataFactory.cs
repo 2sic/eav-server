@@ -13,16 +13,6 @@ namespace ToSic.Eav.Data.Factory
     [PrivateApi("Still experimental/hide implementation")]
     public class DataFactory : ServiceBase, IDataFactory
     {
-        #region Constants
-
-        public const int DefaultAppId = 0;
-
-        public const int DefaultEntityId = 0;
-
-        public const string DefaultTypeName = "unspecified";
-
-        #endregion
-
         #region Constructor / DI
 
 
@@ -43,7 +33,7 @@ namespace ToSic.Eav.Data.Factory
         #region Properties to configure Builder / Defaults
 
         /// <inheritdoc />
-        public int AppId { get; private set; } = DefaultAppId;
+        public int AppId { get; private set; } = DataConstants.DataFactoryDefaultAppId;
 
         /// <inheritdoc />
         public string TitleField { get; private set; } = Attributes.TitleNiceName;
@@ -57,7 +47,6 @@ namespace ToSic.Eav.Data.Factory
         /// <inheritdoc />
         public bool IdAutoIncrementZero { get; private set; }
 
-        public const int DefaultIdSeed = 1;
 
         public DateTime Created { get; } = DateTime.Now;
         public DateTime Modified { get; } = DateTime.Now;
@@ -74,7 +63,7 @@ namespace ToSic.Eav.Data.Factory
             int appId = default,
             string typeName = default,
             string titleField = default,
-            int idSeed = DefaultIdSeed,
+            int idSeed = DataConstants.DataFactoryDefaultIdSeed,
             bool idAutoIncrementZero = true,
             CreateFromNewOptions createFromNewOptions = default
         )
@@ -93,7 +82,7 @@ namespace ToSic.Eav.Data.Factory
             AppId = appId;
             TitleField = titleField.UseFallbackIfNoValue(Attributes.TitleNiceName);
             IdCounter = idSeed;
-            ContentType = _builder.ContentType.Transient(typeName ?? DefaultTypeName);
+            ContentType = _builder.ContentType.Transient(typeName ?? DataConstants.DataFactoryDefaultTypeName);
             IdAutoIncrementZero = idAutoIncrementZero;
 
             CreateFromNewOptions = createFromNewOptions ?? new CreateFromNewOptions();
