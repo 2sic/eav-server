@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources.Sys
         private readonly IAppStates _appStates;
         private readonly IDataFactory _dataFactory;
 
-        private IEnumerable<IEntity> GetList()
+        private IImmutableList<IEntity> GetList()
 	    {
             Configuration.Parse();
 
@@ -104,8 +104,8 @@ namespace ToSic.Eav.DataSources.Sys
                         list.Insert(0, AsDic(sysField.Key, ValueTypeHelpers.Get(sysField.Value), false, 0, true));
 
             // if it didn't work yet, maybe try from stream items
-            return list?.Select(attribData => _dataFactory.Create(attribData)).ToList()
-                   ?? new List<IEntity>();
+            return list?.Select(attribData => _dataFactory.Create(attribData)).ToImmutableList()
+                   ?? EmptyList;
         }
 
         private static Dictionary<string, object> AsDic(string name, ValueTypes type, bool isTitle, int sortOrder,

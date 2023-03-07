@@ -116,7 +116,7 @@ namespace ToSic.Eav.DataSources
             return this;
         }
 
-        private IEnumerable<IEntity> GetEntities() => Log.Func(l =>
+        private IImmutableList<IEntity> GetEntities() => Log.Func(l =>
         {
             Configuration.Parse();
 

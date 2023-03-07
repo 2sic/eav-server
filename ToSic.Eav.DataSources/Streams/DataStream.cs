@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class DataStream : IDataStream, IHasLog
     {
-        private readonly GetImmutableListDelegate _listDelegate;
+        private readonly Func<IImmutableList<IEntity>> _listDelegate;
 
         #region Self-Caching and Results-Persistence Properties / Features
 
@@ -59,7 +59,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="name">Name of this Stream</param>
         /// <param name="listDelegate">Function which gets Entities</param>
         /// <param name="enableAutoCaching"></param>
-        public DataStream(IDataSource source, string name, GetIEnumerableDelegate listDelegate = null, bool enableAutoCaching = false)
+        public DataStream(IDataSource source, string name, Func<IEnumerable<IEntity>> listDelegate = null, bool enableAutoCaching = false)
             : this(source, name, ConvertDelegate(listDelegate), enableAutoCaching) { }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="name">Name of this Stream</param>
         /// <param name="listDelegate">Function which gets Entities</param>
         /// <param name="enableAutoCaching"></param>
-        public DataStream(IDataSource source, string name, GetImmutableListDelegate listDelegate = null, bool enableAutoCaching = false)
+        public DataStream(IDataSource source, string name, Func<IImmutableList<IEntity>> listDelegate = null, bool enableAutoCaching = false)
         {
             Source = source;
             Name = name;
@@ -77,7 +77,7 @@ namespace ToSic.Eav.DataSources
             AutoCaching = enableAutoCaching;
         }
 
-        private static GetImmutableListDelegate ConvertDelegate(GetIEnumerableDelegate original)
+        private static Func<IImmutableList<IEntity>> ConvertDelegate(Func<IEnumerable<IEntity>> original)
         {
             if (original == null) return null;
             return () =>

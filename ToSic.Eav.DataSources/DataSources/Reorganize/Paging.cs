@@ -83,7 +83,7 @@ namespace ToSic.Eav.DataSources
                 _pagingFactory = dataFactory.Configure(typeName: "Paging")
             );
             Provide(GetList);
-            Provide("Paging", GetPaging);
+            Provide(GetPaging, "Paging");
 		}
 
 

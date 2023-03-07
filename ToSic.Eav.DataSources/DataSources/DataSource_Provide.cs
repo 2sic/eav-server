@@ -1,4 +1,8 @@
-﻿using ToSic.Lib.Documentation;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using ToSic.Eav.Data;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
@@ -6,21 +10,27 @@ namespace ToSic.Eav.DataSources
     {
         #region Various provide-out commands - all PrivateApi
 
-        [PrivateApi]
-        protected void Provide(GetIEnumerableDelegate getList)
-            => Provide(Constants.DefaultStreamName, getList);
-
-        [PrivateApi]
-        protected void Provide(string name, GetIEnumerableDelegate getList)
+        /// <summary>
+        /// Provide a function to get the data which this DataSource offers.
+        ///
+        /// This is the more generic `IEnumerable` implementation.
+        /// We recommend using the IImmutableList overload as it allows the system to optimize more.
+        /// </summary>
+        /// <param name="getList">The function which will get the list.</param>
+        /// <param name="name">_(optional)_ stream name, defaults to `Default`</param>
+        [PublicApi]
+        protected void Provide(Func<IEnumerable<IEntity>> getList, string name = Constants.DefaultStreamName)
             => Out.Add(name, new DataStream(this, name, getList));
 
-
-        [PrivateApi]
-        protected void Provide(GetImmutableListDelegate getList)
-            => Provide(Constants.DefaultStreamName, getList);
-
-        [PrivateApi]
-        protected void Provide(string name, GetImmutableListDelegate getList)
+        /// <summary>
+        /// Provide a function to get the data which this DataSource offers.
+        ///
+        /// This is the `ImmutableList` implementation, which is recommended.
+        /// </summary>
+        /// <param name="getList">The function which will get the list.</param>
+        /// <param name="name">_(optional)_ stream name, defaults to `Default`</param>
+        [PublicApi]
+        protected void Provide(Func<IImmutableList<IEntity>> getList, string name = Constants.DefaultStreamName)
             => Out.Add(name, new DataStream(this, name, getList));
 
         #endregion

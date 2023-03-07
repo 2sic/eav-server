@@ -238,16 +238,16 @@ namespace ToSic.Eav.DataSources
         }
 
 
-	    private IEnumerable<IEntity> GetList()
+	    private IImmutableList<IEntity> GetList() => Log.Func(l =>
 		{
             CustomConfigurationParse();
 
-            Log.A($"get from sql:{SelectCommand}");
+            l.A($"get from sql:{SelectCommand}");
 
             // Check if SQL contains forbidden terms
             if (ForbiddenTermsInSelect.IsMatch(SelectCommand))
-                return Error.Create(source: this, title: ErrorTitleForbiddenSql,
-                    message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue.");
+                return (Error.Create(source: this, title: ErrorTitleForbiddenSql,
+                    message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue."), "error");
 
 
             // Load ConnectionString by Name (if specified)
@@ -263,15 +263,15 @@ namespace ToSic.Eav.DataSources
                 }
 			    catch(Exception ex)
                 {
-                    return Error.Create(source: this, exception: ex,
+                    return (Error.Create(source: this, exception: ex,
                         title: "Can't find Connection String Name",
-                        message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message.");
+                        message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message."), "error");
 			    }
 
             // make sure we have one - often it's empty, if the query hasn't been configured yet
             if (string.IsNullOrWhiteSpace(ConnectionString))
-                return Error.Create(source: this, title: "Connection Problem",
-                    message: "The ConnectionString property is empty / has not been initialized");
+                return (Error.Create(source: this, title: "Connection Problem",
+                    message: "The ConnectionString property is empty / has not been initialized"), "error");
 
 			var list = new List<IEntity>();
             using (var connection = new SqlConnection(ConnectionString))
@@ -293,9 +293,9 @@ namespace ToSic.Eav.DataSources
                     }
                     catch(Exception ex)
                     {
-                        return Error.Create(source: this, exception: ex,
+                        return (Error.Create(source: this, exception: ex,
                             title: "Can't read from Database",
-                            message: "Something failed trying to read from the Database.");
+                            message: "Something failed trying to read from the Database."), "error");
                     }
 
                     var casedTitle = TitleField;
@@ -312,14 +312,14 @@ namespace ToSic.Eav.DataSources
 			            if (!columNames.Contains(casedEntityId))
 			                casedEntityId = columNames.FirstOrDefault(c =>
 			                    string.Equals(c, casedEntityId, InvariantCultureIgnoreCase));
-			            Log.A($"will used '{casedEntityId}' as entity field (null if not found)");
+			            l.A($"will used '{casedEntityId}' as entity field (null if not found)");
 
 			            // try alternate casing - new: just take first column if the defined one isn't found - worst case it doesn't have a title
 			            if (!columNames.Contains(casedTitle))
 			                casedTitle = columNames.FirstOrDefault(c =>
 			                                 string.Equals(c, casedTitle, InvariantCultureIgnoreCase))
 			                             ?? columNames.FirstOrDefault();
-			            Log.A($"will use '{casedTitle}' as title field");
+			            l.A($"will use '{casedTitle}' as title field");
 
                         _dataFactory.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle);
 
@@ -353,8 +353,7 @@ namespace ToSic.Eav.DataSources
 			    }
 			}
 
-		    Log.A($"found:{list.Count}");
-			return list.ToImmutableList();
-		}
+			return (list.ToImmutableList(), $"found:{list.Count}");
+		});
 	}
 }

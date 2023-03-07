@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSources.Sys
         private readonly IAppStates _appStates;
 
 
-        private IEnumerable<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             // Get cache, which manages a list of zones
             var zones = _appStates.Zones;

@@ -133,7 +133,7 @@ namespace ToSic.Eav.DataSources
         private readonly IDataFactory _dataFactory;
 
 
-        private IEnumerable<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             Configuration.Parse();
 
@@ -176,7 +176,7 @@ namespace ToSic.Eav.DataSources
             {
                 const int idColumnNotDetermined = -999;
                 var idColumnIndex = idColumnNotDetermined;
-                string titleColName = null;
+                string titleColName;
 
 
                 // Parse header - must happen after the first read

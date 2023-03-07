@@ -79,10 +79,10 @@ namespace ToSic.Eav.DataSources.Sys
                     typeName: QueryStreamsContentType)
             );
             Provide(GetStreams);
-            Provide("Attributes", GetAttributes);
+            Provide(GetAttributes, "Attributes");
         }
 
-        private IEnumerable<IEntity> GetStreams() => Log.Func(l =>
+        private IImmutableList<IEntity> GetStreams() => Log.Func(l =>
         {
             CustomConfigurationParse();
 
@@ -96,7 +96,7 @@ namespace ToSic.Eav.DataSources.Sys
             return (result, $"{result.Count}");
         });
 
-        private IEnumerable<IEntity> GetAttributes() => Log.Func(l => 
+        private IImmutableList<IEntity> GetAttributes() => Log.Func(l => 
         {
             CustomConfigurationParse();
 

@@ -48,12 +48,12 @@ namespace ToSic.Eav.DataSources
 		public StreamMerge(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.StMrge")
 		{
             Provide(GetList);
-            Provide(DistinctStream, GetDistinct);
-            Provide(AndStream, GetAnd);
-            Provide(XorStream, GetXor);
+            Provide(GetDistinct, DistinctStream);
+            Provide(GetAnd, AndStream);
+            Provide(GetXor, XorStream);
 		}
 
-        private IList<IEntity> GetList() => Log.Func(() =>
+        private IImmutableList<IEntity> GetList() => Log.Func(() =>
         {
             var streams = GetValidInStreams();
             var result = streams
@@ -78,13 +78,13 @@ namespace ToSic.Eav.DataSources
         
         private List<IEnumerable<IEntity>> _validInStreams;
 
-        private IList<IEntity> GetDistinct() => Log.Func(() =>
+        private IImmutableList<IEntity> GetDistinct() => Log.Func(() =>
         {
             var result = List.Distinct().ToImmutableList();
             return (result, result.Count.ToString());
         });
 
-        private IList<IEntity> GetAnd() => Log.Func(() =>
+        private IImmutableList<IEntity> GetAnd() => Log.Func(() =>
         {
             var streams = GetValidInStreams();
             var streamCount = streams.Count;
@@ -108,7 +108,7 @@ namespace ToSic.Eav.DataSources
             return (final, final.Count.ToString());
         });
 
-        private IList<IEntity> GetXor() => Log.Func(() =>
+        private IImmutableList<IEntity> GetXor() => Log.Func(() =>
         {
             var result = List
                 .GroupBy(e => e)

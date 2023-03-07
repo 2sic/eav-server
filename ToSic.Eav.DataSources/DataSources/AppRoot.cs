@@ -19,8 +19,8 @@ namespace ToSic.Eav.DataSources
         {
             _appStates = appStates;
             Provide(() => AppState.List);
-            Provide(Constants.PublishedStreamName, () => AppState.ListPublished.List);
-            Provide(Constants.DraftsStreamName, () => AppState.ListNotHavingDrafts.List);
+            Provide(() => AppState.ListPublished.List, Constants.PublishedStreamName);
+            Provide(() => AppState.ListNotHavingDrafts.List, Constants.DraftsStreamName);
 		}
         private readonly IAppStates _appStates;
 

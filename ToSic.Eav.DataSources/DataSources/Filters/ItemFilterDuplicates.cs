@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources
 		public ItemFilterDuplicates(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.Duplic")
         {
             Provide(GetUnique);
-            Provide(DuplicatesStreamName, GetDuplicates);
+            Provide(GetDuplicates, DuplicatesStreamName);
 		}
 
         /// <summary>
