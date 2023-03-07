@@ -147,7 +147,7 @@ namespace ToSic.Eav.DataSources
             }
 			catch (Exception e)
             {
-				return ErrorResult(title: "Error sorting", message: "Sorting failed - see exception in insights", exception: e);
+				return (Error.Create(title: "Error sorting", message: "Sorting failed - see exception in insights", exception: e), "error");
             }
 
             return (final, "ok");

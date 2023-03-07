@@ -178,14 +178,14 @@ namespace ToSic.Eav.DataSources
                 strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
 
             if (!AllCompareModes.Contains(strMode))
-                return ErrorResult(title: "CompareMode unknown", message: $"CompareMode other '{strMode}' is unknown.");
+                return (Error.Create(title: "CompareMode unknown", message: $"CompareMode other '{strMode}' is unknown."), "error");
 
             //if (!Enum.TryParse<CompareModes>(strMode, true, out var mode))
             //    return (SetError("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."), "error");
 
             var childParent = ChildOrParent;
             if (!_directionPossibleValues.Contains(childParent, StringComparer.CurrentCultureIgnoreCase))
-                return ErrorResult(title: "Can only compare Children", message: $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'");
+                return (Error.Create(title: "Can only compare Children", message: $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'"), "error");
 
             //var lang = Languages.ToLowerInvariant();
             //if (lang != "default")
@@ -251,7 +251,7 @@ namespace ToSic.Eav.DataSources
             }
             catch (Exception ex)
             {
-                return ErrorResult(title: "Error comparing Relationships", message: "Unknown error, check details in Insights logs", exception: ex);
+                return (Error.Create(title: "Error comparing Relationships", message: "Unknown error, check details in Insights logs", exception: ex), "error");
             }
         });
 

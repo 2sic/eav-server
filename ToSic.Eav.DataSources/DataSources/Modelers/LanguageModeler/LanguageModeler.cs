@@ -84,7 +84,7 @@ namespace ToSic.Eav.DataSources
 
             var fieldMapErrors = string.Join(";", mapErrors);
             if (!string.IsNullOrWhiteSpace(fieldMapErrors))
-                return ErrorResult(title: "Field Map Error", message: fieldMapErrors);
+                return (Error.Create(title: "Field Map Error", message: fieldMapErrors), "error");
 
             #endregion
 

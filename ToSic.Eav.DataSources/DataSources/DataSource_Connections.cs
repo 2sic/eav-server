@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 
@@ -15,15 +16,22 @@ namespace ToSic.Eav.DataSources
         #endregion
 
         /// <inheritdoc />
+        [PublicApi]
         public IDictionary<string, IDataStream> In { get; internal set; } = new Dictionary<string, IDataStream>();
 
         /// <inheritdoc />
+        [PublicApi]
+        public IImmutableList<IEntity> TryGetIn(string name = Constants.DefaultStreamName) => !In.ContainsKey(name) ? null : In[name]?.List?.ToImmutableList();
+
+        /// <inheritdoc />
+        [PublicApi]
         public virtual IDictionary<string, IDataStream> Out { get; protected internal set; } = new StreamDictionary();
 
         /// <inheritdoc />
         public IDataStream this[string outName] => GetStream(outName);
 
         /// <inheritdoc />
+        [PublicApi]
         public IDataStream GetStream(string name = null, string noParamOrder = Parameters.Protector, bool nullIfNotFound = false, bool emptyIfNotFound = false)
         {
             Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(GetStream), $"{nameof(nullIfNotFound)}");
@@ -52,6 +60,7 @@ namespace ToSic.Eav.DataSources
         }
 
         /// <inheritdoc />
+        [PublicApi]
         public IEnumerable<IEntity> List => GetStream().List;
 
 

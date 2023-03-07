@@ -84,7 +84,7 @@ namespace ToSic.Eav.DataSources
             // Error not found
             var msg = $"StreamPick can't find stream by the name '{StreamName}'";
             l.A(msg);
-            return ErrorResult(title: "Can't find Stream", message: $"Trying to pick the stream '{StreamName}' but it doesn't exist on the In.");
+            return (Error.Create(title: "Can't find Stream", message: $"Trying to pick the stream '{StreamName}' but it doesn't exist on the In."), "error");
 
         });
 

@@ -182,11 +182,11 @@ namespace ToSic.Eav.DataSources
             }
             catch (Exception ex)
             {
-                return ErrorResult(title: "Unexpected Error",
+                return (Error.Create(title: "Unexpected Error",
                     message: "Experienced error while executing the filter LINQ. " +
                              "Probably something with type-mismatch or the same field using different types or null. " +
                              "The exception was logged to Insights.",
-                    exception: ex);
+                    exception: ex), "error");
             }
         });
 

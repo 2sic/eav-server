@@ -116,7 +116,11 @@ namespace ToSic.Eav.DataSources
                         NewChildrenField, NewParentField);
                     return (resultInt, $"int: {resultInt.Count}");
                 default:
-                    return ErrorResult(title: "Invalid Identifier", message: "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute.");
+                    return (Error.Create(
+                            title: "Invalid Identifier",
+                            message:
+                            "TreeBuilder only supports EntityGuid or EntityId as parent identifier attribute."),
+                        "error");
             }
         });
 
