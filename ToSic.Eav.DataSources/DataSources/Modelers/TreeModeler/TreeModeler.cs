@@ -106,12 +106,12 @@ namespace ToSic.Eav.DataSources
             switch (Identifier)
             {
                 case "EntityGuid":
-                    var resultGuid = _treeMapper.AddRelationships<Guid>(
+                    var resultGuid = _treeMapper.AddParentChild<Guid>(
                         source, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
                     return (resultGuid, $"Guid: {resultGuid.Count}");
                 case "EntityId":
-                    var resultInt = _treeMapper.AddRelationships<int>(
+                    var resultInt = _treeMapper.AddParentChild<int>(
                         source, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
                     return (resultInt, $"int: {resultInt.Count}");

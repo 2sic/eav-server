@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using ToSic.Lib.DI;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build
 {
     public class DataBuilder: ServiceBase
     {
-
+        [PrivateApi]
         public DataBuilder(
             LazySvc<EntityBuilder> entityBuilder,
             LazySvc<AttributeBuilder> attributeBuilder,
@@ -42,19 +43,6 @@ namespace ToSic.Eav.Data.Build
 
         public DimensionBuilder Language => _languageBuilder.Value;
 
-        /// <summary>
-        /// Does a full-clone while also cloning (separating) attributes and relationships...?
-        /// Note that relationships are not 100% clear if it's a full clone
-        /// ATM only used by the tree builder which generate ephemeral data
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        // TODO: PROBABLY OBSOLETE
-        public IEntity FullClone(IEntity entity)
-        {
-            return Entity.Clone(entity);
-        }
-        
 
         public IEntity FakeEntity(int appId)
             => _entityBuilder.Value.Create(

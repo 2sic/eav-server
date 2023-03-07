@@ -141,10 +141,8 @@ namespace ToSic.Eav.Data.Build
                     // Todo: improve this, so if anything fails, we have a clear info which item failed
                     try
                     {
-                        // WIP - this isn't nice ATM, but it's important
-                        // so the resulting object has Multi-language attributes
-                        // Should be improved ASAP
-                        newEntity = _builder.FullClone(Create(n));
+                        newEntity = Create(n);
+                        return new NewEntitySet<TNewEntity>(n, newEntity);
                     }
                     catch
                     {

@@ -37,21 +37,15 @@ namespace ToSic.Eav.DataSources
         public IList<NewEntitySet<TRaw>> AddOneRelationship<TRaw, TKey>(
             string fieldName,
             List<(NewEntitySet<TRaw> Set, List<TKey> Ids)> needs,
-            List<(IEntity Entity, TKey Id)> lookup,
-            bool cloneFirst = true
+            List<(IEntity Entity, TKey Id)> lookup
         )
         {
-            // WIP - for now the clone is very important, because it changes the attribute-model on generated entities from light to not-light
-            // otherwise adding relationship attributes fails for now
-            if (cloneFirst)
-                needs = needs.Select(n => (new NewEntitySet<TRaw>(n.Set.Original, _builder.FullClone(n.Set.Entity)), n.Ids)).ToList();
-            
             var properLookup = lookup.ToLookup(i => i.Id, i => i.Entity);
 
             return AddRelationshipField(fieldName, needs, properLookup);
         }
 
-        public IImmutableList<IEntity> AddRelationships<TKey>(
+        public IImmutableList<IEntity> AddParentChild<TKey>(
             IEnumerable<IEntity> originals,
             string parentIdField,
             string childToParentRefField,
@@ -61,7 +55,7 @@ namespace ToSic.Eav.DataSources
             // Make sure we have field names in case they were not provided & full-clone entities/relationships
             newParentField = newParentField ?? DefaultParentFieldName;
             newChildrenField = newChildrenField ?? DefaultChildrenFieldName;
-            var clones = originals.Select(e => _builder.FullClone(e)).ToList();
+            var clones = originals.ToList();
 
             // Prepare - figure out the parent IDs and Reference to Parent ID
             var withKeys = clones

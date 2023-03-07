@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public interface ITreeMapper
     {
-        IImmutableList<IEntity> AddRelationships<TKey>(
+        IImmutableList<IEntity> AddParentChild<TKey>(
             IEnumerable<IEntity> originals,
             string parentIdField,
             string childToParentRefField,
@@ -20,8 +20,7 @@ namespace ToSic.Eav.DataSources
         IList<NewEntitySet<TNewEntity>> AddOneRelationship<TNewEntity, TKey>(
             string fieldName,
             List<(NewEntitySet<TNewEntity> Set, List<TKey> Ids)> needs,
-            List<(IEntity Entity, TKey Id)> lookup,
-            bool cloneFirst = true
+            List<(IEntity Entity, TKey Id)> lookup
         );
     }
 }
