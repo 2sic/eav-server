@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.New;
+using ToSic.Eav.Data.Process;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Configuration.Licenses

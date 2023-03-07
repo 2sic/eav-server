@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Generics;
 
-namespace ToSic.Eav.Data.New
+namespace ToSic.Eav.Data.Process
 {
     public class NewEntity: NewEntityBase
     {

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.New
+﻿namespace ToSic.Eav.Data.Process
 {
     /// <summary>
     /// Special object to carry an IEntity and another object which belong together.
