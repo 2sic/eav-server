@@ -49,8 +49,8 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Make sure we have an In - otherwise error
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
             var fieldName = FieldName;
             if (string.IsNullOrWhiteSpace(fieldName)) fieldName = null;
@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources
 
             var find = InnerGet(fieldName, typeName);
 
-            var relationships = source.List
+            var relationships = source
                 .SelectMany(o => find(o));
 
             if (FilterDuplicates)

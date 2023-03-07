@@ -195,8 +195,8 @@ namespace ToSic.Eav.DataSources
             var lowAttribName = compAttr.ToLowerInvariant();
             l.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{strMode}', child/parent:'{childParent}'");
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
             var compType = lowAttribName == Attributes.EntityFieldAutoSelect
                 ? CompareType.Auto
@@ -245,7 +245,7 @@ namespace ToSic.Eav.DataSources
 
             try
             {
-                var results = source.List.Where(finalCompare).ToImmutableList();
+                var results = source.Where(finalCompare).ToImmutableList();
 
                 return (results, $"{results.Count}");
             }

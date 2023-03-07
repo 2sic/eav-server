@@ -100,19 +100,19 @@ namespace ToSic.Eav.DataSources
         {
             Configuration.Parse();
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
             switch (Identifier)
             {
                 case "EntityGuid":
                     var resultGuid = _treeMapper.AddRelationships<Guid>(
-                        source.List, Identifier, ParentReferenceField,
+                        source, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
                     return (resultGuid, $"Guid: {resultGuid.Count}");
                 case "EntityId":
                     var resultInt = _treeMapper.AddRelationships<int>(
-                        source.List, Identifier, ParentReferenceField,
+                        source, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
                     return (resultInt, $"int: {resultInt.Count}");
                 default:

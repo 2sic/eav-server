@@ -83,8 +83,8 @@ namespace ToSic.Eav.DataSources
         {
             Configuration.Parse();
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
             var raw = AttributeNames;
             // note: since 2sxc 11.13 we have lines for attributes
@@ -106,9 +106,9 @@ namespace ToSic.Eav.DataSources
 
             // Case #1 if we don't change anything, short-circuit and return original
             if (noFieldNames && !modeIsKeepAttributes)
-                return (source.List, $"keep original {source.List.Count}");
+                return (source, $"keep original {source.Count}");
 
-            var result = source.List
+            var result = source
                 .Select(e =>
                 {
                     // Case 2: Check if we should take none at all

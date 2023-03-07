@@ -120,9 +120,9 @@ namespace ToSic.Eav.DataSources
             var languages = _valueLanguageService.PrepareLanguageList(Languages);
 
             // Get the In-list and stop if error orempty
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
-            if (!source.List.Any()) return (source.List, "empty");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (!source.Any()) return (source, "empty");
 
             var op = Operator.ToLowerInvariant();
 
@@ -130,16 +130,16 @@ namespace ToSic.Eav.DataSources
             if (op == CompareOperators.OpNone)
                 return (EmptyList, CompareOperators.OpNone);
             if (op == CompareOperators.OpAll)
-                return (ApplyTake(source.List).ToImmutableList(), CompareOperators.OpAll);
+                return (ApplyTake(source).ToImmutableList(), CompareOperators.OpAll);
 
             // Case 3: Real filter
             // Find first Entity which has this property being not null to detect type
             var (isSpecial, fieldType) = Attributes.InternalOnlyIsSpecialEntityProperty(fieldName);
             var firstEntity = isSpecial
-                ? source.List.FirstOrDefault()
-                : source.List.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName) && x.Value(fieldName) != null)
+                ? source.FirstOrDefault()
+                : source.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName) && x.Value(fieldName) != null)
                   // 2022-03-09 2dm If none is found with a real value, get the first that has this attribute
-                  ?? source.List.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName));
+                  ?? source.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName));
 
             // if I can't find any, return empty list
             if (firstEntity == null)
@@ -165,7 +165,7 @@ namespace ToSic.Eav.DataSources
 
             return innerErrors?.Any() == true
                 ? (innerErrors, "error") 
-                : (GetFilteredWithLinq(source.List, compare), "ok");
+                : (GetFilteredWithLinq(source, compare), "ok");
 
             // Note: the alternate GetFilteredWithLoop has more logging, activate in serious cases
             // Note that the code might not be 100% identical, but it should help find issues

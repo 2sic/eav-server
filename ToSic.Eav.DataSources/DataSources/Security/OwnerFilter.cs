@@ -57,10 +57,10 @@ namespace ToSic.Eav.DataSources
             if (string.IsNullOrWhiteSpace(Identity))
                 return (EmptyList, "no identity");
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
-            return (source.List.Where(e => e.Owner == Identity).ToImmutableList(), "ok");
+            return (source.Where(e => e.Owner == Identity).ToImmutableList(), "ok");
         });
 
     }

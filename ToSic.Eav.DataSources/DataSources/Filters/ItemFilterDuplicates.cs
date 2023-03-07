@@ -48,10 +48,10 @@ namespace ToSic.Eav.DataSources
             if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
                 return (EmptyList, "no in stream with name");
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
-            var result = source.List
+            var result = source
                 .Distinct()
                 .ToImmutableList();
 
@@ -68,10 +68,10 @@ namespace ToSic.Eav.DataSources
             if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
                 return (EmptyList, "no in-stream with name");
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
-            var result = source.List
+            var result = source
                 .GroupBy(s => s)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)

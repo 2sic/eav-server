@@ -30,14 +30,14 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Make sure we have an In - otherwise error
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
             var typeName = ContentTypeName;
             if (string.IsNullOrWhiteSpace(typeName)) typeName = null;
             l.A($"Content Type Name: {typeName}");
 
-            var relationships = SpecificGet(source.List, typeName);
+            var relationships = SpecificGet(source, typeName);
 
             return (relationships.ToImmutableList(), "ok");
         });

@@ -90,11 +90,11 @@ namespace ToSic.Eav.DataSources
 
             l.A($"Field Map created - has {fieldMap.Length} parts");
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
             var result = new List<IEntity>();
-            foreach (var entity in source.List)
+            foreach (var entity in source)
             {
                 var attributes = _dataBuilder.Attribute.Mutable(entity.Attributes);
 

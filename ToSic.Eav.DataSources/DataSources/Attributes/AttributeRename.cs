@@ -140,10 +140,10 @@ namespace ToSic.Eav.DataSources
             if (!string.IsNullOrEmpty(typeName))
                 newType = _dataBuilder.ContentType.Transient(AppId, typeName, typeName);
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
-            var result = source.List
+            var result = source
                 .Select(entity =>
                 {
                     var values = CreateDic(entity);

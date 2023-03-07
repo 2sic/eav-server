@@ -61,10 +61,10 @@ namespace ToSic.Eav.DataSources
         {
             Configuration.Parse();
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
-            return (ShuffleInternal(source.List.ToList(), Take), "ok");
+            return (ShuffleInternal(source.ToList(), Take), "ok");
         });
 
         #region Shuffle based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446

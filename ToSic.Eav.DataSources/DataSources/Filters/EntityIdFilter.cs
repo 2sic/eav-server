@@ -65,10 +65,10 @@ namespace ToSic.Eav.DataSources
 
             var entityIds = entityIdsOrError.Result;
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
-            var result = entityIds.Select(eid => source.List.One(eid)).Where(e => e != null).ToImmutableList();
+            var result = entityIds.Select(eid => source.One(eid)).Where(e => e != null).ToImmutableList();
 
             l.A(l.Try(() => $"get ids:[{string.Join(",", entityIds)}] found:{result.Count}"));
             return (result, "ok");

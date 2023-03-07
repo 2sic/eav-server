@@ -101,36 +101,16 @@ namespace ToSic.Eav.DataSources
 			// Languages check - not fully implemented yet, only supports "default" / "current"
             LanguageList = _valLanguages.PrepareLanguageList(Languages);
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
             // check if no list parameters specified
             if (sortAttributes.Length == 1 && string.IsNullOrWhiteSpace(sortAttributes[0]))
-		        return (source.List, "no params");
+		        return (source, "no params");
 
-			// 2022-03-09 2dm
-			// Previously we had some code which extracted "unsortable" items
-			// Based on the fact that they didn't have certain properties which were to be sorted on
-			// Now I plan to change it back so it won't optimize this
-			// And let LINQ handle null as before/after
-			// Plan is to leave this original code and comment in till ca. middle of 2022, in case something breaks
-            var results = source.List;
-            // only keep entities that have the expected attributes (but don't test for id/title, as all have these)
-            //var valueAttrs = sortAttributes.Where(v => !Data.Attributes.InternalOnlyIsSpecialEntityProperty(v)).ToArray();
-			//var results = valueAttrs.Length == 0
-			//	? originals
-			//	: originals
-			//		.Where(e =>
-   //                 {
-			//			if(e.Attributes.Keys.Where(valueAttrs.Contains).Count() != valueAttrs.Length) return false;
-			//			var allNotNull = valueAttrs.All(va => e.GetBestValue(va, LanguageList) != null);
-			//			return allNotNull;
-   //                 })
-			//		.ToImmutableArray();
-
-			// if list is blank, then it didn't find the attribute to sort by - so just return unsorted
+            // if list is blank, then it didn't find the attribute to sort by - so just return unsorted
 			// note 2020-10-07 this may have been a bug previously, returning an empty list instead
-            if (!results.Any()) return (source.List, "sort-attribute not found in data");
+            if (!source.Any()) return (source, "sort-attribute not found in data");
 
             // Keep entities which cannot sort by the required values (removed previously from results)
             //var unsortable = originals.Where(e => !results.Contains(e)).ToImmutableArray();
@@ -155,7 +135,7 @@ namespace ToSic.Eav.DataSources
 
                 ordered = ordered == null
                     // First sort - no ordered data yet
-                    ? isAscending ? results.OrderBy(getValue) : results.OrderByDescending(getValue)
+                    ? isAscending ? source.OrderBy(getValue) : source.OrderByDescending(getValue)
                     // Following sorts, extend previous sort
                     : isAscending ? ordered.ThenBy(getValue) : ordered.ThenByDescending(getValue);
             }

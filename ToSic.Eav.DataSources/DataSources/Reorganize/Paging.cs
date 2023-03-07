@@ -92,10 +92,10 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1) * PageSize;
 
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
-            var result = source.List
+            var result = source
                 .Skip(itemsToSkip)
                 .Take(PageSize)
                 .ToImmutableList();
@@ -108,10 +108,10 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Calculate any additional stuff
-            var source = GetInStream();
-            if (source.IsError) return source.ErrorResult;
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(this), "error");
 
-            var itemCount = source.List.Count;
+            var itemCount = source.Count;
             var pageCount = Math.Ceiling((decimal)itemCount / PageSize);
 
             // Assemble the entity
