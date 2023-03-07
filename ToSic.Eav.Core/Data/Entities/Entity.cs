@@ -18,8 +18,6 @@ namespace ToSic.Eav.Data
             int entityId,
             IContentType contentType,
             EntityPartsBuilder partsBuilder,
-            //bool useLightMode,
-            IImmutableDictionary<string, object> rawValues,
             IImmutableDictionary<string, IAttribute> values,
             string titleFieldName,
             DateTime? created, DateTime? modified,
@@ -39,7 +37,7 @@ namespace ToSic.Eav.Data
             IsPublished = isPublished;
             PlaceDraftInBranch = placeDraftInBranch;
             PublishedEntityId = publishedId;
-            _getMetadataOf = partsBuilder.GetMetadataOf;
+            _getMetadataOf = partsBuilder.GetMetadataOfDelegate;
         }
 
         #region CanBeEntity

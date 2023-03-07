@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Metadata;
 
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
@@ -49,14 +47,11 @@ namespace ToSic.Eav.Data.Build
             version = version == default ? 1 : version;
 
             // Prepare the Parts-builder in case it wasn't provided
-            partsBuilder = partsBuilder ?? new EntityPartsBuilder(
-                e => new RelationshipManager(e, null, null)
-            );
+            partsBuilder = partsBuilder ?? new EntityPartsBuilder();
 
             return new Entity(appId, entityId, repositoryId: repositoryId,
                 partsBuilder: partsBuilder, 
                 contentType: contentType,
-                rawValues: null,
                 values: attributes ?? Attribute.Empty(),
                 guid: guid,
                 titleFieldName: titleField,
@@ -68,47 +63,6 @@ namespace ToSic.Eav.Data.Build
                 metadataFor: metadataFor,
                 placeDraftInBranch: placeDraftInBranch,
                 publishedId: publishedId);
-        }
-        
-
-        /// <summary>
-        /// Create a new Entity from a data store (usually SQL backend)
-        /// </summary>
-        public Entity EntityFromRepository(
-            int appId,
-            Guid entityGuid,
-            int entityId, 
-            int repositoryId, 
-            ITarget metadataFor, 
-            IContentType type, 
-            bool isPublished, 
-            AppState source,
-            DateTime created,
-            DateTime modified,
-            string owner,
-            int version,
-            string titleField = default,
-            IImmutableDictionary<string, IAttribute> attributes = default,
-            List<IEntity> metadataItems = default
-            )
-        {
-            var partsBuilder = new EntityPartsBuilder(
-                entity => new RelationshipManager(entity, source, null),
-                getMetadataOf: metadataItems != default
-                    ? EntityPartsBuilder.CreateMetadataOfItems(metadataItems)
-                    : EntityPartsBuilder.CreateMetadataOfAppSources(source)
-            );
-
-            return Create(
-                appId: appId,
-                attributes: attributes,
-                guid: entityGuid, entityId: entityId, repositoryId: repositoryId,
-                contentType: type, titleField: titleField,
-                created: created, modified: modified,
-                owner: owner, version: version, isPublished: isPublished,
-                metadataFor: metadataFor,
-                partsBuilder: partsBuilder
-            );
         }
 
         /// <summary>
@@ -145,7 +99,7 @@ namespace ToSic.Eav.Data.Build
             int? version = default,
             ITarget target = default,
 
-            // publishing Instructions
+            // publishing Instructions - should go elsewhere
             bool? placeDraftInBranch = default,
             int? publishedId = default
             )
@@ -154,7 +108,7 @@ namespace ToSic.Eav.Data.Build
 
             var entityPartsBuilder = new EntityPartsBuilder(
                 ent => new RelationshipManager(ent, originalEntity?.Relationships as RelationshipManager),
-                getMetadataOf: (id == default && guid == default)
+                getMetadataOf: id == default && guid == default
                     // If identifiers don't change, it will provide the identical metadata
                     ? EntityPartsBuilder.ReUseMetadataFunc<Guid>(original.Metadata)
                     // If they do change, we need to create a derived clone

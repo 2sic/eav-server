@@ -89,14 +89,23 @@ namespace ToSic.Eav.ImportExport.Json
 
 
             l.A("build entity");
-            var newEntity = Services.DataBuilder.Entity.EntityFromRepository(
-                appId: AppId, entityGuid: jEnt.Guid, entityId: jEnt.Id, repositoryId: jEnt.Id,
+            var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: AppPackageOrNull, metadata: mdItems);
+            var newEntity = Services.DataBuilder.Entity.Create(
+                appId: AppId,
+                guid: jEnt.Guid,
+                entityId: jEnt.Id,
+                repositoryId: jEnt.Id,
                 attributes: attributes,
-                metadataFor: target, type: contentType,
+                metadataFor: target,
+                contentType: contentType,
                 isPublished: true,
-                source: AppPackageOrNull, metadataItems: mdItems,
-                created: DateTime.MinValue, modified: DateTime.Now,
-                owner: jEnt.Owner, version: jEnt.Version);
+                //source: AppPackageOrNull,
+                //metadataItems: mdItems,
+                partsBuilder: partsBuilder,
+                created: DateTime.MinValue,
+                modified: DateTime.Now,
+                owner: jEnt.Owner,
+                version: jEnt.Version);
 
 
             return (newEntity, l.Try(() => $"'{newEntity?.GetBestTitle()}'", "can't get title"));

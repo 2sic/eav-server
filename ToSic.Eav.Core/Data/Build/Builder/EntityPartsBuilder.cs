@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data.Build
@@ -7,23 +8,39 @@ namespace ToSic.Eav.Data.Build
     public class EntityPartsBuilder
     {
         private readonly Func<IEntityLight, IRelationshipManager> _getRm;
-        internal readonly Func<Guid, string, IMetadataOf> GetMetadataOf;
+        internal readonly Func<Guid, string, IMetadataOf> GetMetadataOfDelegate;
 
         public EntityPartsBuilder(
-            Func<IEntityLight, IRelationshipManager> getRelationshipManager,
-            Func<Guid, string, IMetadataOf> getMetadataOf = null)
+            Func<IEntityLight, IRelationshipManager> getRelationshipManager = default,
+            Func<Guid, string, IMetadataOf> getMetadataOf = default)
         {
-            _getRm = getRelationshipManager ?? throw new ArgumentNullException(nameof(getRelationshipManager));
-            GetMetadataOf = getMetadataOf ?? EmptyGetMetadataOf;
+            _getRm = getRelationshipManager ?? (e => new RelationshipManager(e, null, null));
+            GetMetadataOfDelegate = getMetadataOf ?? EmptyGetMetadataOf;
         }
 
-        private IMetadataOf EmptyGetMetadataOf(Guid guid, string title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title);
+        /// <summary>
+        /// Will generate a Parts-Builder for entities which belong to an App.
+        /// Eg. entities being loaded into the App-State
+        /// or entities which are JSON loaded and will be placed in an App state.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        public static EntityPartsBuilder ForAppAndOptionalMetadata(AppState source = default, List<IEntity> metadata = default) =>
+            new EntityPartsBuilder(
+                entity => new RelationshipManager(entity, source),
+                getMetadataOf: metadata != default
+                    ? CreateMetadataOfItems(metadata)
+                    : CreateMetadataOfAppSources(source)
+            );
 
-        public static Func<Guid, string, IMetadataOf> CreateMetadataOfAppSources(IHasMetadataSource appSource)
+        private static IMetadataOf EmptyGetMetadataOf(Guid guid, string title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title);
+
+        private static Func<Guid, string, IMetadataOf> CreateMetadataOfAppSources(IHasMetadataSource appSource)
             => (guid, title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title,
                 appSource: appSource);
 
-        public static Func<Guid, string, IMetadataOf> CreateMetadataOfItems(List<IEntity> items)
+        private static Func<Guid, string, IMetadataOf> CreateMetadataOfItems(List<IEntity> items)
             => (guid, title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, items: items);
 
         public static Func<TKey, string, IMetadataOf> ReUseMetadataFunc<TKey>(IMetadataOf original) 
@@ -42,6 +59,6 @@ namespace ToSic.Eav.Data.Build
                 deferredSource: deferredSource ?? specs.deferredSource);
         }
 
-        public IRelationshipManager RelationshipManager(IEntityLight entity) => _getRm(entity);
+        internal IRelationshipManager RelationshipManager(IEntityLight entity) => _getRm(entity);
     }
 }

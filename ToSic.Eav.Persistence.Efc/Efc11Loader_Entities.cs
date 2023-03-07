@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Efc.Intermediate;
@@ -175,15 +176,16 @@ namespace ToSic.Eav.Persistence.Efc
 
             // Get all Attributes of that Content-Type
             var newAttributes = _dataBuilder.Attribute.Create(contentType, mergedValueLookups);
-            var newEntity = _dataBuilder.Entity.EntityFromRepository(
+            var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: app, metadata: null);
+            var newEntity = _dataBuilder.Entity.Create(
                 appId: app.AppId,
-                entityGuid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,
+                guid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,
                 metadataFor: e.MetadataFor, 
-                type: contentType, isPublished: e.IsPublished, 
-                source: app, 
+                contentType: contentType, isPublished: e.IsPublished,
                 created: e.Created, modified: e.Modified, 
                 owner: e.Owner, version: e.Version, 
-                attributes: newAttributes);
+                attributes: newAttributes,
+                partsBuilder: partsBuilder);
 
             return newEntity;
         }

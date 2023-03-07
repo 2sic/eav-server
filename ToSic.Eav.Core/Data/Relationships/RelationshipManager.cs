@@ -24,7 +24,7 @@ namespace ToSic.Eav.Data
 		/// <summary>
 		/// Initializes a new instance of the RelationshipManager class.
 		/// </summary>
-		internal RelationshipManager(IEntityLight entity, AppState app, IEnumerable<EntityRelationship> fallbackRels)
+		internal RelationshipManager(IEntityLight entity, AppState app, IEnumerable<EntityRelationship> fallbackRels = null)
         {
 			_entity = entity;
             _app = app;
