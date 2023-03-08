@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data.Process;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
+using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Build
 {
@@ -52,6 +54,8 @@ namespace ToSic.Eav.Data.Build
 
         private CreateFromNewOptions CreateFromNewOptions { get; set; }
 
+        public ILookup<string, IEntity> LookupWip { get; set; }
+
         #endregion
 
 
@@ -64,6 +68,7 @@ namespace ToSic.Eav.Data.Build
             string titleField = default,
             int idSeed = DataConstants.DataFactoryDefaultIdSeed,
             bool idAutoIncrementZero = true,
+            //ILookup<string, IEntity> lookup = default,
             CreateFromNewOptions createFromNewOptions = default
         )
         {
@@ -85,6 +90,9 @@ namespace ToSic.Eav.Data.Build
             IdAutoIncrementZero = idAutoIncrementZero;
 
             CreateFromNewOptions = createFromNewOptions ?? new CreateFromNewOptions();
+
+            LookupWip = Enumerable.Empty<IEntity>().ToLookup(x => "", x => x);
+
             return this;
         }
         private bool _alreadyConfigured;
@@ -157,6 +165,8 @@ namespace ToSic.Eav.Data.Build
 
         #endregion
 
+        #region Create
+
         /// <inheritdoc />
         public IEntity Create(Dictionary<string, object> values,
             int id = default,
@@ -164,11 +174,24 @@ namespace ToSic.Eav.Data.Build
             DateTime created = default,
             DateTime modified = default)
         {
+            // pre-process RawRelationships
+            values = values ?? new Dictionary<string, object>();
+            var valuesWithRelationships = values.ToDictionary(
+                v => v.Key,
+                v =>
+                {
+                    if (!(v.Value is RawRelationship rawRelationship)) return v.Value;
+                    var lookupSource =
+                        new LookUpEntitiesSource<string>(rawRelationship.Keys.ToImmutableList(), LookupWip);
+                    var relAttr = _builder.Attribute.CreateOneWayRelationship(v.Key, lookupSource);
+                    return relAttr;
+                }, InvariantCultureIgnoreCase);
+
             var ent = _builder.Entity.Create(
                 appId: AppId,
                 entityId: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
                 contentType: ContentType,
-                attributes: _builder.Attribute.Create(values),
+                attributes: _builder.Attribute.Create(/*values*/valuesWithRelationships),
                 titleField: TitleField,
                 guid: guid,
                 created: created == default ? Created : created,
@@ -176,6 +199,8 @@ namespace ToSic.Eav.Data.Build
             );
             return ent;
         }
+
+        #endregion
 
         #region Create internal
 
@@ -186,6 +211,20 @@ namespace ToSic.Eav.Data.Build
             created: rawEntity.Created,
             modified: rawEntity.Modified
         );
+
+        #endregion
+
+        #region Relationships
+
+        public ILookup<string, IEntity> GenerateLookup(params IEnumerable<EntityPair<IRawEntity>>[] lists)
+        {
+            var pairs = lists.SelectMany(list =>
+                list.SelectMany(pair =>
+                    ((pair.Partner as IHasRelationshipKeys)?.RelationshipKeys ?? new List<string>())
+                    .Select(rk => new EntityPair<string>(pair.Entity, rk))
+                ));
+            return pairs.ToLookup(pair => pair.Partner, pair => pair.Entity);
+        }
 
         #endregion
     }
