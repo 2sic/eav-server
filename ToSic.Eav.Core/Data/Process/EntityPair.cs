@@ -12,7 +12,7 @@
     /// <typeparam name="TPartner"></typeparam>
     public class EntityPair<TPartner>: ICanBeEntity
     {
-        public EntityPair(TPartner partner, IEntity entity)
+        public EntityPair(IEntity entity, TPartner partner)
         {
             Partner = partner;
             Entity = entity;
@@ -21,5 +21,8 @@
         public TPartner Partner { get; }
 
         public IEntity Entity { get; }
+
+        public EntitySet<TPartner, TAssistant> Extend<TAssistant>(TAssistant partner2)
+            => new EntitySet<TPartner, TAssistant>(Entity, Partner, partner2);
     }
 }
