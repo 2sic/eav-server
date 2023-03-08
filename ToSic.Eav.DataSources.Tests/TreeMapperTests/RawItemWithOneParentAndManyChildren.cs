@@ -4,9 +4,9 @@ using ToSic.Eav.Data.Process;
 
 namespace ToSic.Eav.DataSourceTests.TreeMapperTests
 {
-    internal class NewItemWithOneParentAndManyChildren: INewEntity
+    internal class RawItemWithOneParentAndManyChildren: IRawEntity
     {
-        public NewItemWithOneParentAndManyChildren(int id, Guid guid, int parentId, List<int> childrenIds)
+        public RawItemWithOneParentAndManyChildren(int id, Guid guid, int parentId, List<int> childrenIds)
         {
             Id = id;
             Guid = guid;

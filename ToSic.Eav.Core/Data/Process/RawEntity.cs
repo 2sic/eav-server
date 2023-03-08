@@ -4,13 +4,13 @@ using ToSic.Eav.Generics;
 
 namespace ToSic.Eav.Data.Process
 {
-    public class NewEntity: NewEntityBase
+    public class RawEntity: RawEntityBase
     {
-        public NewEntity()
+        public RawEntity()
         {
         }
 
-        public NewEntity(Dictionary<string, object> values)
+        public RawEntity(Dictionary<string, object> values)
         {
             _values = values;
         }

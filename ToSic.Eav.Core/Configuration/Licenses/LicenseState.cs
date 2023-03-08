@@ -22,7 +22,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
-    public class LicenseState: IHasNewEntity<INewEntity>
+    public class LicenseState: IHasRawEntity<IRawEntity>
     {
         public LicenseState() { }
 
@@ -63,7 +63,7 @@ namespace ToSic.Eav.Configuration.Licenses
         /// root definition does.
         /// But basically it should be the License + State information.
         /// </summary>
-        public INewEntity NewEntity => _newEntity.Get(() => new NewEntity
+        public IRawEntity RawEntity => _newEntity.Get(() => new RawEntity
         {
             Guid = License.Guid,
             Values = new Dictionary<string, object>
@@ -94,7 +94,7 @@ namespace ToSic.Eav.Configuration.Licenses
                 { nameof(Owner), Owner }
             },
         });
-        private readonly GetOnce<INewEntity> _newEntity = new GetOnce<INewEntity>();
+        private readonly GetOnce<IRawEntity> _newEntity = new GetOnce<IRawEntity>();
 
         #endregion
 

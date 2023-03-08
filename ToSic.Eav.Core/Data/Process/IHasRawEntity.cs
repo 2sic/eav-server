@@ -3,8 +3,8 @@
 namespace ToSic.Eav.Data.Process
 {
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP for DataSources")]
-    public interface IHasNewEntity<out T> where T: INewEntity
+    public interface IHasRawEntity<out T> where T: IRawEntity
     {
-        T NewEntity { get; }
+        T RawEntity { get; }
     }
 }

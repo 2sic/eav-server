@@ -93,11 +93,11 @@ namespace ToSic.Eav.Data.Build
         #region Build / Finalize
 
         /// <inheritdoc />
-        public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : INewEntity
+        public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : IRawEntity
             => WrapUp(Prepare(list));
 
         /// <inheritdoc />
-        public IImmutableList<IEntity> Create<T>(IEnumerable<IHasNewEntity<T>> list) where T : INewEntity
+        public IImmutableList<IEntity> Create<T>(IEnumerable<IHasRawEntity<T>> list) where T : IRawEntity
             => WrapUp(Prepare(list));
 
         /// <inheritdoc />
@@ -109,11 +109,11 @@ namespace ToSic.Eav.Data.Build
         #region Prepare One
 
         /// <inheritdoc />
-        public EntityPair<T> Prepare<T>(IHasNewEntity<T> withNewEntity) where T: INewEntity
-            => Prepare<T>(withNewEntity.NewEntity);
+        public EntityPair<T> Prepare<T>(IHasRawEntity<T> withRawEntity) where T: IRawEntity
+            => Prepare<T>(withRawEntity.RawEntity);
 
         /// <inheritdoc />
-        public EntityPair<T> Prepare<T>(T newEntity) where T : INewEntity
+        public EntityPair<T> Prepare<T>(T newEntity) where T : IRawEntity
             => new EntityPair<T>(Create(
                 newEntity.GetProperties(CreateFromNewOptions),
                 id: newEntity.Id,
@@ -128,11 +128,11 @@ namespace ToSic.Eav.Data.Build
         #region Prepare Many
 
         /// <inheritdoc />
-        public IList<EntityPair<T>> Prepare<T>(IEnumerable<IHasNewEntity<T>> data) where T: INewEntity
+        public IList<EntityPair<T>> Prepare<T>(IEnumerable<IHasRawEntity<T>> data) where T: IRawEntity
             => data.Select(Prepare).ToList();
 
         /// <inheritdoc />
-        public IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list) where TNewEntity : INewEntity
+        public IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list) where TNewEntity : IRawEntity
         {
             var all = list.Select(n =>
                 {
@@ -179,12 +179,12 @@ namespace ToSic.Eav.Data.Build
 
         #region Create internal
 
-        private IEntity Create(INewEntity newEntity) => Create(
-            newEntity.GetProperties(CreateFromNewOptions),
-            id: newEntity.Id, 
-            guid: newEntity.Guid,
-            created: newEntity.Created,
-            modified: newEntity.Modified
+        private IEntity Create(IRawEntity rawEntity) => Create(
+            rawEntity.GetProperties(CreateFromNewOptions),
+            id: rawEntity.Id, 
+            guid: rawEntity.Guid,
+            created: rawEntity.Created,
+            modified: rawEntity.Modified
         );
 
         #endregion

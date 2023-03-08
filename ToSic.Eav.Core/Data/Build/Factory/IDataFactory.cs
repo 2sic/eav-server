@@ -91,7 +91,7 @@ namespace ToSic.Eav.Data.Build
         #region Create List
 
         /// <summary>
-        /// Create a complete list of <see cref="INewEntity"/>s.
+        /// Create a complete list of <see cref="IRawEntity"/>s.
         /// This is the method to use when you don't plan on doing any post-processing.
         ///
         /// If you need post-processing, call `Prepare` instead and finish using `WrapUp`.
@@ -99,10 +99,10 @@ namespace ToSic.Eav.Data.Build
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : INewEntity;
+        IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : IRawEntity;
 
         /// <summary>
-        /// Build a complete stream of <see cref="INewEntity"/>s.
+        /// Build a complete stream of <see cref="IRawEntity"/>s.
         /// This is the method to use when you don't plan on doing any post-processing.
         ///
         /// If you need post-processing, call `Prepare` instead and finish using `WrapUp`.
@@ -110,7 +110,7 @@ namespace ToSic.Eav.Data.Build
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        IImmutableList<IEntity> Create<T>(IEnumerable<IHasNewEntity<T>> list) where T: INewEntity;
+        IImmutableList<IEntity> Create<T>(IEnumerable<IHasRawEntity<T>> list) where T: IRawEntity;
 
         #endregion
 
@@ -118,18 +118,18 @@ namespace ToSic.Eav.Data.Build
         #region Prepare One
 
         /// <summary>
-        /// For objects which delegate the <see cref="INewEntity"/> to a property.
+        /// For objects which delegate the <see cref="IRawEntity"/> to a property.
         /// </summary>
-        /// <param name="withNewEntity"></param>
+        /// <param name="withRawEntity"></param>
         /// <returns></returns>
-        EntityPair<T> Prepare<T>(IHasNewEntity<T> withNewEntity) where T : INewEntity;
+        EntityPair<T> Prepare<T>(IHasRawEntity<T> withRawEntity) where T : IRawEntity;
 
         /// <summary>
-        /// For objects which themselves are <see cref="INewEntity"/>
+        /// For objects which themselves are <see cref="IRawEntity"/>
         /// </summary>
         /// <param name="newEntity"></param>
         /// <returns></returns>
-        EntityPair<T> Prepare<T>(T newEntity) where T : INewEntity;
+        EntityPair<T> Prepare<T>(T newEntity) where T : IRawEntity;
 
         #endregion
 
@@ -145,7 +145,7 @@ namespace ToSic.Eav.Data.Build
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        IList<EntityPair<T>> Prepare<T>(IEnumerable<IHasNewEntity<T>> data) where T : INewEntity;
+        IList<EntityPair<T>> Prepare<T>(IEnumerable<IHasRawEntity<T>> data) where T : IRawEntity;
 
         /// <summary>
         /// This will create IEntity but return it in a dictionary mapped to the original.
@@ -157,7 +157,7 @@ namespace ToSic.Eav.Data.Build
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        IList<EntityPair<T>> Prepare<T>(IEnumerable<T> list) where T: INewEntity;
+        IList<EntityPair<T>> Prepare<T>(IEnumerable<T> list) where T: IRawEntity;
 
         #endregion
 

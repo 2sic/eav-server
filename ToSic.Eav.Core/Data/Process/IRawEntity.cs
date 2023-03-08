@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data.Process
     /// Typically used for external data DataSources which get something and pass it to an Entity Builder.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP for DataSources")]
-    public interface INewEntity
+    public interface IRawEntity
     {
         /// <summary>
         /// The ID to use.

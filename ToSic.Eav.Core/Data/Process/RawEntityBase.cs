@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data.Process
     /// You can inherit this class, but you can also just re-implement the interface yourself.
     /// Whatever works better for you.
     /// </summary>
-    public abstract class NewEntityBase: INewEntity
+    public abstract class RawEntityBase: IRawEntity
     {
         public virtual int Id { get; set; }
         public virtual Guid Guid { get; set; } = Guid.Empty;

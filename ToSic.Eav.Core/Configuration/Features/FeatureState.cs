@@ -15,7 +15,7 @@ namespace ToSic.Eav.Configuration
     /// Note that this is also used as a DTO for the edit-UI, so don't just rename fields or anything.
     /// </summary>
     [PrivateApi("no good reason to publish this")]
-    public class FeatureState: IHasNewEntity<INewEntity>, IHasIdentityNameId
+    public class FeatureState: IHasRawEntity<IRawEntity>, IHasIdentityNameId
     {
         /// <summary>
         /// Feature Definition can be null, if a feature was activated with an unknown ID
@@ -105,7 +105,7 @@ namespace ToSic.Eav.Configuration
 
         #region IHasNewEntity
 
-        public INewEntity NewEntity => _newEntity.Get(() => new NewEntity
+        public IRawEntity RawEntity => _newEntity.Get(() => new RawEntity
         {
             Guid = Guid,
             Values = new Dictionary<string, object>
@@ -130,7 +130,7 @@ namespace ToSic.Eav.Configuration
                 { nameof(IsPublic), IsPublic },
             }
         });
-        private readonly GetOnce<INewEntity> _newEntity = new GetOnce<INewEntity>();
+        private readonly GetOnce<IRawEntity> _newEntity = new GetOnce<IRawEntity>();
 
         #endregion
     }
