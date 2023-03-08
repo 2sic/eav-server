@@ -35,6 +35,8 @@ namespace ToSic.Eav.Data.Build
 
         public IValue BuildRelationship(IEnumerable<IEntity> directList) 
             => new Value<IEnumerable<IEntity>>(directList, DimensionBuilder.NoLanguages);
+        //public IValue BuildRelationship<TKey>(IImmutableList<TKey> keys, Lookup<TKey, IEntity> lookup) 
+        //    => new Value<IEnumerable<IEntity>>(new LookUpEntitiesSource<TKey>(keys, lookup) , DimensionBuilder.NoLanguages);
 
         public IValue CloneRelationship(IRelatedEntitiesValue value, IEntitiesSource app) 
             => BuildRelationship(new LazyEntitiesSource(app, value.Identifiers));

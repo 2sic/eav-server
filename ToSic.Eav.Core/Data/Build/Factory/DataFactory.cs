@@ -114,13 +114,13 @@ namespace ToSic.Eav.Data.Build
 
         /// <inheritdoc />
         public EntityPair<T> Prepare<T>(T newEntity) where T : INewEntity
-            => new EntityPair<T>(newEntity, Create(
+            => new EntityPair<T>(Create(
                 newEntity.GetProperties(CreateFromNewOptions),
                 id: newEntity.Id,
                 guid: newEntity.Guid,
                 created: newEntity.Created,
                 modified: newEntity.Modified
-            ));
+            ), newEntity);
 
         #endregion
 
@@ -142,14 +142,14 @@ namespace ToSic.Eav.Data.Build
                     try
                     {
                         newEntity = Create(n);
-                        return new EntityPair<TNewEntity>(n, newEntity);
+                        return new EntityPair<TNewEntity>(newEntity, n);
                     }
                     catch
                     {
                         /* ignore */
                     }
 
-                    return new EntityPair<TNewEntity>(n, newEntity);
+                    return new EntityPair<TNewEntity>(newEntity, n);
                 })
                 .ToList();
             return all;

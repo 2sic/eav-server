@@ -84,5 +84,10 @@ namespace ToSic.Eav.Data.Build
                 new List<IValue> { ValueBuilder.BuildRelationship(relationships) }.ToImmutableList());
         }
 
+        public IAttribute<IEnumerable<IEntity>> CreateOneWayRelationship(string name, IEnumerable<IEntity> directSource)
+        {
+            return new Attribute<IEnumerable<IEntity>>(name, ValueTypes.Entity,
+                new List<IValue> { ValueBuilder.BuildRelationship(directSource) }.ToImmutableList());
+        }
     }
 }
