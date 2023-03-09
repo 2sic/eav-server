@@ -11,17 +11,6 @@ namespace ToSic.Eav.DataSources
 {
     public partial class TreeMapper
     {
-        public IList<EntityPair<TRaw>> AddOneRelationship<TRaw, TKey>(
-            string fieldName,
-            List<(EntityPair<TRaw> Set, List<TKey> Ids)> needs,
-            List<(IEntity Entity, TKey Id)> lookup
-        )
-        {
-            var properLookup = lookup.ToLookup(i => i.Id, i => i.Entity);
-
-            return AddRelationshipField(fieldName, needs, properLookup);
-        }
-
 
         private List<EntityPair<TNewEntity>> AddRelationshipField<TNewEntity, TKey>(string newField, List<(EntityPair<TNewEntity> set, List<TKey> NeedsIds)> list, ILookup<TKey, IEntity> lookup = null)
         {

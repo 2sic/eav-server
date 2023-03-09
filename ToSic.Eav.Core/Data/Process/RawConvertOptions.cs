@@ -7,11 +7,11 @@ using ToSic.Eav.Plumbing;
 namespace ToSic.Eav.Data.Process
 {
     /// <summary>
-    /// Options which may be needed to create raw entities.
+    /// Options which may be needed to create new <see cref="IEntity"/>s from <see cref="IRawEntity"/>.
     /// </summary>
-    public class CreateFromNewOptions
+    public class RawConvertOptions
     {
-        public CreateFromNewOptions(
+        public RawConvertOptions(
             string noParamOrder = Parameters.Protector,
             IEnumerable<string> addKeys = default
             )

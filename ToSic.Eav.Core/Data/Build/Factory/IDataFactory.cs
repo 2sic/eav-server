@@ -63,7 +63,7 @@ namespace ToSic.Eav.Data.Build
         /// <param name="idSeed">Default is `1`</param>
         /// <param name="idAutoIncrementZero">Default is `true`</param>
         /// <param name="relationships"></param>
-        /// <param name="createFromNewOptions">Optional special options which create-raw might use</param>
+        /// <param name="rawConvertOptions">Optional special options which create-raw might use</param>
         /// <returns>Itself, to make call chaining easier</returns>
         IDataFactory Configure(string noParamOrder = "Rule: All params must be named (https://r.2sxc.org/named-params)",
             int appId = default,
@@ -72,7 +72,7 @@ namespace ToSic.Eav.Data.Build
             int idSeed = 1,
             bool idAutoIncrementZero = default,
             ILookup<object, IEntity> relationships = default,
-            CreateFromNewOptions createFromNewOptions = default);
+            RawConvertOptions rawConvertOptions = default);
 
         #region Simple Create
 
@@ -90,6 +90,13 @@ namespace ToSic.Eav.Data.Build
             Guid guid = default,
             DateTime created = default,
             DateTime modified = default);
+
+        /// <summary>
+        /// Create an entity from a single <see cref="IRawEntity"/>
+        /// </summary>
+        /// <param name="rawEntity"></param>
+        /// <returns></returns>
+        IEntity Create(IRawEntity rawEntity);
 
         #endregion
 

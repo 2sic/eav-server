@@ -24,6 +24,6 @@ namespace ToSic.Eav.Data.Process
         private Dictionary<string, object> _values;
 
 
-        public override Dictionary<string, object> GetProperties(CreateFromNewOptions options) => _values;
+        public override Dictionary<string, object> GetProperties(RawConvertOptions options) => _values;
     }
 }

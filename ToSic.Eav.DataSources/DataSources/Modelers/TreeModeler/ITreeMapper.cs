@@ -17,10 +17,5 @@ namespace ToSic.Eav.DataSources
             string newParentField = default
         );
 
-        IList<EntityPair<TNewEntity>> AddOneRelationship<TNewEntity, TKey>(
-            string fieldName,
-            List<(EntityPair<TNewEntity> Set, List<TKey> Ids)> needs,
-            List<(IEntity Entity, TKey Id)> lookup
-        );
     }
 }

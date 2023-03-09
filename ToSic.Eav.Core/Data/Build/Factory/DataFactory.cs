@@ -53,11 +53,11 @@ namespace ToSic.Eav.Data.Build
         public DateTime Created { get; } = DateTime.Now;
         public DateTime Modified { get; } = DateTime.Now;
 
-        private CreateFromNewOptions CreateFromNewOptions { get; set; }
+        private RawConvertOptions RawConvertOptions { get; set; } = new RawConvertOptions();
 
         public ILookup<object, IEntity> Relationships => _nonLazyRelationships ?? _lazyRelationships;
         private ILookup<object, IEntity> _nonLazyRelationships;
-        private LazyLookup<object, IEntity> _lazyRelationships;
+        private LazyLookup<object, IEntity> _lazyRelationships = new LazyLookup<object, IEntity>();
         #endregion
 
 
@@ -71,7 +71,7 @@ namespace ToSic.Eav.Data.Build
             int idSeed = DataConstants.DataFactoryDefaultIdSeed,
             bool idAutoIncrementZero = true,
             ILookup<object, IEntity> relationships = default,
-            CreateFromNewOptions createFromNewOptions = default
+            RawConvertOptions rawConvertOptions = default
         )
         {
             // Ensure parameters are named
@@ -91,16 +91,16 @@ namespace ToSic.Eav.Data.Build
             ContentType = _builder.ContentType.Transient(typeName ?? DataConstants.DataFactoryDefaultTypeName);
             IdAutoIncrementZero = idAutoIncrementZero;
 
-            CreateFromNewOptions = createFromNewOptions ?? new CreateFromNewOptions();
+            if (rawConvertOptions != null) RawConvertOptions = rawConvertOptions;
 
             // Determine what relationships source to use
             // If we got a lazy, use that and mark as lazy
             // If we got a normal one, preserve it as it should be the master and not use the lazy ones
             // which must be created anyway to avoid errors in later code
-            var relationshipsAsLazy = relationships as LazyLookup<object, IEntity>;
-            _lazyRelationships = relationshipsAsLazy ?? new LazyLookup<object, IEntity>();
-            if (relationshipsAsLazy == null && relationships != null)
-                _nonLazyRelationships = relationships;
+            if (relationships is LazyLookup<object, IEntity> relationshipsAsLazy)
+                _lazyRelationships = relationshipsAsLazy;
+            else
+                _nonLazyRelationships = relationships;  // will be null or a real value
 
             return this;
         }
@@ -150,7 +150,7 @@ namespace ToSic.Eav.Data.Build
 
         /// <inheritdoc />
         public EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity
-            => new EntityPair<T>(CreateFromRaw(rawEntity), rawEntity);
+            => new EntityPair<T>(Create(rawEntity), rawEntity);
 
         #endregion
 
@@ -171,7 +171,7 @@ namespace ToSic.Eav.Data.Build
                     // Todo: improve this, so if anything fails, we have a clear info which item failed
                     try
                     {
-                        newEntity = CreateFromRaw(n);
+                        newEntity = Create(n);
                         return new EntityPair<TNewEntity>(newEntity, n);
                     }
                     catch
@@ -233,8 +233,8 @@ namespace ToSic.Eav.Data.Build
         /// </summary>
         /// <param name="rawEntity"></param>
         /// <returns></returns>
-        private IEntity CreateFromRaw(IRawEntity rawEntity) => Create(
-            rawEntity.GetProperties(CreateFromNewOptions),
+        public IEntity Create(IRawEntity rawEntity) => Create(
+            rawEntity.GetProperties(RawConvertOptions),
             id: rawEntity.Id,
             guid: rawEntity.Guid,
             created: rawEntity.Created,

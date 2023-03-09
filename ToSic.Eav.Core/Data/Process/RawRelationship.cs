@@ -5,14 +5,15 @@ namespace ToSic.Eav.Data.Process
 {
     public class RawRelationship : IRawRelationship
     {
-        public RawRelationship(IEnumerable<object> keys)
+        public RawRelationship(
+            string noParamOrder = Parameters.Protector,
+            object key = default,
+            IEnumerable<object> keys = default)
         {
-            Keys = keys?.ToList() ?? new List<object>();
-        }
-
-        public RawRelationship(object key)
-        {
-            Keys = new List<object> { key };
+            Parameters.Protect(noParamOrder);
+            Keys = keys?.ToList()
+                   ?? (key == null ? null : new List<object> { key })
+                   ?? new List<object>();
         }
 
         public List<object> Keys { get; }

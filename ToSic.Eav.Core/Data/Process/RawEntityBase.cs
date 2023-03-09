@@ -16,6 +16,6 @@ namespace ToSic.Eav.Data.Process
         public virtual Guid Guid { get; set; } = Guid.Empty;
         public virtual DateTime Created { get; set; } = DateTime.Now;
         public virtual DateTime Modified { get; set; } = DateTime.Now;
-        public abstract Dictionary<string, object> GetProperties(CreateFromNewOptions options);
+        public abstract Dictionary<string, object> GetProperties(RawConvertOptions options);
     }
 }
