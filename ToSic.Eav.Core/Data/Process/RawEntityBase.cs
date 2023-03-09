@@ -10,12 +10,13 @@ namespace ToSic.Eav.Data.Process
     /// You can inherit this class, but you can also just re-implement the interface yourself.
     /// Whatever works better for you.
     /// </summary>
-    public abstract class RawEntityBase: IRawEntity
+    public abstract class RawEntityBase: IRawEntity, IHasRelationshipKeys
     {
         public virtual int Id { get; set; }
         public virtual Guid Guid { get; set; } = Guid.Empty;
         public virtual DateTime Created { get; set; } = DateTime.Now;
         public virtual DateTime Modified { get; set; } = DateTime.Now;
         public abstract Dictionary<string, object> GetProperties(RawConvertOptions options);
+        public virtual IEnumerable<object> RelationshipKeys => new List<object>();
     }
 }

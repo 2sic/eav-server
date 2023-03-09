@@ -34,6 +34,6 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
             { "Children", new RawRelationship(keys: ChildrenIds?.Cast<object>() ?? new List<object>())},
         };
 
-        public List<object> RelationshipKeys => new List<object> { Id };
+        public IEnumerable<object> RelationshipKeys => new List<object> { Id };
     }
 }
