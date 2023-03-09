@@ -6,9 +6,9 @@ using ToSic.Eav.Data.Process;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
-using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Build
 {
@@ -58,6 +58,9 @@ namespace ToSic.Eav.Data.Build
         public ILookup<object, IEntity> Relationships => _nonLazyRelationships ?? _lazyRelationships;
         private ILookup<object, IEntity> _nonLazyRelationships;
         private LazyLookup<object, IEntity> _lazyRelationships = new LazyLookup<object, IEntity>();
+
+        private RawRelationshipsConverter RelsConverter => _relsConverter.Get(() => new RawRelationshipsConverter(_builder, Log));
+        private readonly GetOnce<RawRelationshipsConverter> _relsConverter = new GetOnce<RawRelationshipsConverter>();
         #endregion
 
 
@@ -122,19 +125,7 @@ namespace ToSic.Eav.Data.Build
         {
             // Pre-process relationship keys, so they are added to the lookup
             var list = rawList.ToList();
-            var itemsWithKeys = list
-                .Where(item => item is IEntityPair<IRawEntity>)
-                .Cast<IEntityPair<IRawEntity>>()
-                .Select(pair => new EntityPair<IHasRelationshipKeys>(pair.Entity, pair.Partner as IHasRelationshipKeys))
-                .Where(x => x.Partner?.RelationshipKeys?.Any() == true)
-                .ToList();
-            var keyMap = itemsWithKeys
-                .SelectMany(pair => pair.Partner.RelationshipKeys
-                    .Select(rk => new KeyValuePair<object, IEntity>(rk, pair.Entity)))
-                .ToList();
-            if (keyMap.Any()) _lazyRelationships.Add(keyMap);
-
-            l.A($"Found {nameof(itemsWithKeys)} {itemsWithKeys.Count()}");
+            RelsConverter.AddRelationshipsToLookup(list, _lazyRelationships, RawConvertOptions);
 
             // Return entities as Immutable list
             return list.Select(set => set.Entity).ToImmutableList();
@@ -198,13 +189,13 @@ namespace ToSic.Eav.Data.Build
         {
             // pre-process RawRelationships
             values = values ?? new Dictionary<string, object>();
-            var valuesWithRelationships = PreConvertRelationships(values);
+            var valuesWithRelationships = RelsConverter.RelationshipsToAttributes(values, Relationships);
 
             var ent = _builder.Entity.Create(
                 appId: AppId,
                 entityId: id == 0 && IdAutoIncrementZero ? IdCounter++ : id,
                 contentType: ContentType,
-                attributes: _builder.Attribute.Create(/*values*/valuesWithRelationships),
+                attributes: _builder.Attribute.Create(valuesWithRelationships),
                 titleField: TitleField,
                 guid: guid,
                 created: created == default ? Created : created,
@@ -213,20 +204,6 @@ namespace ToSic.Eav.Data.Build
             return ent;
         }
 
-        private Dictionary<string, object> PreConvertRelationships(Dictionary<string, object> values)
-        {
-            var valuesWithRelationships = values.ToDictionary(
-                v => v.Key,
-                v =>
-                {
-                    if (!(v.Value is RawRelationship rawRelationship)) return v.Value;
-                    var lookupSource =
-                        new LookUpEntitiesSource<object>(rawRelationship.Keys, Relationships);
-                    var relAttr = _builder.Attribute.CreateOneWayRelationship(v.Key, lookupSource);
-                    return relAttr;
-                }, InvariantCultureIgnoreCase);
-            return valuesWithRelationships;
-        }
 
         /// <summary>
         /// Internal create from raw
@@ -234,7 +211,7 @@ namespace ToSic.Eav.Data.Build
         /// <param name="rawEntity"></param>
         /// <returns></returns>
         public IEntity Create(IRawEntity rawEntity) => Create(
-            rawEntity.GetProperties(RawConvertOptions),
+            rawEntity.Attributes(RawConvertOptions),
             id: rawEntity.Id,
             guid: rawEntity.Guid,
             created: rawEntity.Created,

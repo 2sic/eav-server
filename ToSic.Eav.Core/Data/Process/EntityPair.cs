@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Process
+﻿using ToSic.Lib.Documentation;
+
+namespace ToSic.Eav.Data.Process
 {
     /// <summary>
     /// Special object to carry an IEntity and another object which belong together.
@@ -6,10 +8,11 @@
     /// This is mainly used in scenarios where you create new Entities and must keep the original tied to the Entity
     /// because you may still need the original later on for further processing. 
     /// </summary>
+    /// <typeparam name="TPartner"></typeparam>
     /// <remarks>
     /// Added in 15.04
     /// </remarks>
-    /// <typeparam name="TPartner"></typeparam>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public class EntityPair<TPartner>: IEntityPair<TPartner>
     {
         public EntityPair(IEntity entity, TPartner partner)
@@ -21,8 +24,5 @@
         public TPartner Partner { get; }
 
         public IEntity Entity { get; }
-
-        public EntitySet<TPartner, TAssistant> Extend<TAssistant>(TAssistant partner2)
-            => new EntitySet<TPartner, TAssistant>(Entity, Partner, partner2);
     }
 }

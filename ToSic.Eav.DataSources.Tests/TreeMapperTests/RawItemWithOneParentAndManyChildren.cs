@@ -28,12 +28,12 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
 
         public List<int> ChildrenIds { get; }
 
-        public Dictionary<string, object> GetProperties(RawConvertOptions options) => new Dictionary<string, object>
+        public Dictionary<string, object> Attributes(RawConvertOptions options) => new Dictionary<string, object>
         {
             { nameof(Title), Title },
             { "Children", new RawRelationship(keys: ChildrenIds?.Cast<object>() ?? new List<object>())},
         };
 
-        public IEnumerable<object> RelationshipKeys => new List<object> { Id };
+        public IEnumerable<object> RelationshipKeys(RawConvertOptions options) => new List<object> { Id };
     }
 }

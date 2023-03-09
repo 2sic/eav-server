@@ -1,9 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Generics;
+using ToSic.Lib.Documentation;
+using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Process
 {
+    /// <summary>
+    /// A ready-to-use <see cref="IRawEntity"/> which receives all the data in the constructor.
+    ///
+    /// Use this for scenarios where you don't want to create your own IRawEntity but wish to return this kind of typed object.
+    /// Typical use case is when you implement <see cref="IHasRawEntity{T}"/>
+    /// </summary>
+    /// <remarks>
+    /// Added in 15.04
+    /// </remarks>
+    [PublicApi]
     public class RawEntity: RawEntityBase
     {
         public RawEntity()
@@ -18,12 +29,12 @@ namespace ToSic.Eav.Data.Process
         public Dictionary<string, object> Values
         {
             // ReSharper disable once ConvertToNullCoalescingCompoundAssignment
-            get => _values ?? (_values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
+            get => _values ?? (_values = new Dictionary<string, object>(InvariantCultureIgnoreCase));
             set => _values = value?.ToInvariant() ?? _values;
         }
         private Dictionary<string, object> _values;
 
-
-        public override Dictionary<string, object> GetProperties(RawConvertOptions options) => _values;
+        /// <inheritdoc />
+        public override Dictionary<string, object> Attributes(RawConvertOptions options) => _values;
     }
 }

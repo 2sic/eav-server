@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Documentation;
+using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Process
 {
     /// <summary>
     /// Options which may be needed to create new <see cref="IEntity"/>s from <see cref="IRawEntity"/>.
     /// </summary>
+    /// <remarks>
+    /// Added in 15.04
+    /// </remarks>
+    [PublicApi]
     public class RawConvertOptions
     {
         public RawConvertOptions(
@@ -18,7 +24,7 @@ namespace ToSic.Eav.Data.Process
         {
             KeysToAdd = (addKeys ?? Array.Empty<string>())
                 .Where(s => s.HasValue())
-                .ToImmutableHashSet(StringComparer.InvariantCultureIgnoreCase);
+                .ToImmutableHashSet(InvariantCultureIgnoreCase);
         }
 
         /// <summary>
