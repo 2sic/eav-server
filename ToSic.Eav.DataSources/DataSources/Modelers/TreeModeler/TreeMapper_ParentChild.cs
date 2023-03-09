@@ -23,27 +23,27 @@ namespace ToSic.Eav.DataSources
             newParentField = newParentField ?? DefaultParentFieldName;
             newChildrenField = newChildrenField ?? DefaultChildrenFieldName;
             lookup = lookup ?? new LazyLookup<object, IEntity>();
-            var list = originals.ToList();
 
             // Prepare - figure out the parent IDs and Reference to Parent ID
-            var withKeys = list
+            var withKeys = originals
                 .Select(e =>
                 {
-                    var ownId = GetObjKeyOrDefault(e, parentIdField);
-                    var relatedId = GetObjKeyOrDefault(e, childToParentRefField);
+                    var ownId = GetKey(e, parentIdField);
+                    var relatedId = GetKey(e, childToParentRefField);
                     return new EntityPair<(object OwnId, object RelatedId)>(e, (ownId, relatedId));
                 })
                 .ToList();
 
-            // Create list of Entities with their new Attributes
-            var parentNeedsChildren = withKeys.Select(pair => new EntityPair<List<IAttribute>>(pair.Entity, 
-                new List<IAttribute>
+            var result = withKeys.Select(pair =>
+            {
+                var newAttributes = new List<IAttribute>
                 {
-                    _builder.Attribute.CreateOneWayRelationship(newParentField, new List<object> { pair.Partner.RelatedId }, lookup),
-                    _builder.Attribute.CreateOneWayRelationship(newChildrenField, new List<object> { "Needs:" + pair.Partner.OwnId }, lookup)
-                }
-                )).ToList();
-            var result = AddRelationshipFieldNew(parentNeedsChildren);
+                    _builder.Attribute.CreateRelationship(newParentField, new List<object> { pair.Partner.RelatedId }, lookup),
+                    _builder.Attribute.CreateRelationship(newChildrenField, new List<object> { "Needs:" + pair.Partner.OwnId }, lookup)
+                };
+                var attributes = _builder.Attribute.Replace(pair.Entity.Attributes, newAttributes);
+                return _builder.Entity.Clone(pair.Entity, attributes: _builder.Attribute.Create(attributes));
+            }).ToList();
 
             // Add lookup to own id
             lookup.Add(withKeys.Select(pair => new KeyValuePair<object, IEntity>(pair.Partner.OwnId, pair.Entity)));
@@ -53,15 +53,14 @@ namespace ToSic.Eav.DataSources
             return result.ToImmutableList();
         });
 
-        private IEnumerable<IEntity> AddRelationshipFieldNew(IEnumerable<EntityPair<List<IAttribute>>> list) =>
-            list.Select(pair =>
-            {
-                var attributes = _builder.Attribute.Replace(pair.Entity.Attributes, pair.Partner);
-                return _builder.Entity.Clone(pair.Entity, attributes: _builder.Attribute.Create(attributes));
-            }).ToList();
-
-
-        private object GetObjKeyOrDefault(IEntity e, string attribute) => Log.Func(enabled: Debug, func: l =>
+        /// <summary>
+        /// Gets the key for the specified field.
+        /// It converts it to a `string` because that ensures that we'll always find it no matter how it was converted / extended with prefixes.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="attribute"></param>
+        /// <returns></returns>
+        private object GetKey(IEntity e, string attribute) => Log.Func(enabled: Debug, func: l =>
         {
             try
             {

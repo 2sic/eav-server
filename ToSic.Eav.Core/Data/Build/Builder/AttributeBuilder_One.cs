@@ -79,21 +79,21 @@ namespace ToSic.Eav.Data.Build
         public IAttribute Clone(IAttribute original, IImmutableList<IValue> values)
             => original.CloneWithNewValues(values);
 
-        public IAttribute<IEnumerable<IEntity>> CreateOneWayRelationship(string name, IImmutableList<IEntity> relationships)
+        public IAttribute<IEnumerable<IEntity>> CreateRelationship(string name, IImmutableList<IEntity> relationships)
         {
             return new Attribute<IEnumerable<IEntity>>(name, ValueTypes.Entity,
                 new List<IValue> { ValueBuilder.BuildRelationship(relationships) }.ToImmutableList());
         }
 
-        public IAttribute<IEnumerable<IEntity>> CreateOneWayRelationship(string name, IEnumerable<IEntity> directSource)
+        public IAttribute<IEnumerable<IEntity>> CreateRelationship(string name, IEnumerable<IEntity> directSource)
         {
             return new Attribute<IEnumerable<IEntity>>(name, ValueTypes.Entity,
                 new List<IValue> { ValueBuilder.BuildRelationship(directSource) }.ToImmutableList());
         }
-        public IAttribute<IEnumerable<IEntity>> CreateOneWayRelationship(string name, IEnumerable<object> keys, ILookup<object, IEntity> lookup)
+        public IAttribute<IEnumerable<IEntity>> CreateRelationship(string name, IEnumerable<object> keys, ILookup<object, IEntity> lookup)
         {
             var lookupSource = new LookUpEntitiesSource<object>(keys, lookup);
-            return CreateOneWayRelationship(name, lookupSource);
+            return CreateRelationship(name, lookupSource);
         }
     }
 }
