@@ -1,6 +1,8 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -103,15 +105,16 @@ namespace ToSic.Eav.DataSources
             var source = TryGetIn();
             if (source is null) return (Error.TryGetInFailed(this), "error");
 
+            var tm = (TreeMapper)_treeMapper;
             switch (Identifier)
             {
                 case "EntityGuid":
-                    var resultGuid = _treeMapper.AddParentChild<Guid>(
+                    var resultGuid = tm.AddParentChild(
                         source, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
                     return (resultGuid, $"Guid: {resultGuid.Count}");
                 case "EntityId":
-                    var resultInt = _treeMapper.AddParentChild<int>(
+                    var resultInt = tm.AddParentChild(
                         source, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
                     return (resultInt, $"int: {resultInt.Count}");

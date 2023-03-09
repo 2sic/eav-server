@@ -172,9 +172,10 @@ namespace ToSic.Eav.Apps.Parts
                     .ToList();
 
                 // Assemble the attributes (replace the relationships)
-                var attributes = e.Attributes.ToEditable();
-                attributes = relationshipsUpdated.Aggregate(attributes,
-                    (current, updatedRel) => Builder.Attribute.Replace(current, updatedRel));
+                //var attributes = e.Attributes.ToEditable();
+                var attributes = Builder.Attribute.Replace(e.Attributes, relationshipsUpdated);
+                //relationshipsUpdated.Aggregate(attributes,
+                //    (current, updatedRel) => Builder.Attribute.Replace(current, updatedRel));
 
                 // return cloned entity
                 return Builder.Entity.Clone(e, attributes: Builder.Attribute.Create(attributes));

@@ -78,10 +78,20 @@ namespace ToSic.Eav.Data.Build
 
         public IDictionary<string, IAttribute> Replace(IDictionary<string, IAttribute> target, IAttribute newAttribute)
         {
-            return new Dictionary<string, IAttribute>(target, InvariantCultureIgnoreCase)
-            {
-                [newAttribute.Name] = newAttribute
-            };
+            // ReSharper disable once UseObjectOrCollectionInitializer
+            var result = new Dictionary<string, IAttribute>(target, InvariantCultureIgnoreCase);
+            // Do this in a separate step, so it lands at the end of the list
+            result[newAttribute.Name] = newAttribute;
+            return result;
+        }
+        public IDictionary<string, IAttribute> Replace(IReadOnlyDictionary<string, IAttribute> target, IEnumerable<IAttribute> newAttributes)
+        {
+            // ReSharper disable once UseObjectOrCollectionInitializer
+            var result = target.ToDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
+            // Do this in a separate step, so it lands at the end of the list
+            foreach (var newAttribute in newAttributes)
+                result[newAttribute.Name] = newAttribute;
+            return result;
         }
 
         #endregion

@@ -4,68 +4,70 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Process;
-using ToSic.Eav.Plumbing;
+using ToSic.Eav.Data.Source;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSources
 {
     public partial class TreeMapper
     {
-        public IImmutableList<IEntity> AddParentChild<TKey>(
+        public IImmutableList<IEntity> AddParentChild(
             IEnumerable<IEntity> originals,
             string parentIdField,
             string childToParentRefField,
             string newChildrenField = default,
-            string newParentField = default) => Log.Func(l =>
+            string newParentField = default,
+            LazyLookup<object, IEntity> lookup = default) => Log.Func(l =>
         {
             // Make sure we have field names in case they were not provided & full-clone entities/relationships
             newParentField = newParentField ?? DefaultParentFieldName;
             newChildrenField = newChildrenField ?? DefaultChildrenFieldName;
-            var clones = originals.ToList();
+            lookup = lookup ?? new LazyLookup<object, IEntity>();
+            var list = originals.ToList();
 
             // Prepare - figure out the parent IDs and Reference to Parent ID
-            var withKeys = clones
+            var withKeys = list
                 .Select(e =>
                 {
-                    var ownId = GetTypedKeyOrDefault<TKey>(e, parentIdField);
-                    var relatedId = GetTypedKeyOrDefault<TKey>(e, childToParentRefField);
-                    return new EntityPair<(TKey OwnId, TKey RelatedId)>(e, (ownId, relatedId));
+                    var ownId = GetObjKeyOrDefault(e, parentIdField);
+                    var relatedId = GetObjKeyOrDefault(e, childToParentRefField);
+                    return new EntityPair<(object OwnId, object RelatedId)>(e, (ownId, relatedId));
                 })
                 .ToList();
 
-            // Assign parents to children
-            withKeys = AddRelationshipField(newParentField,
-                withKeys.Select(s => (s, new List<TKey> { s.Partner.RelatedId })).ToList(),
-                withKeys.ToLookup(s => s.Partner.OwnId, s => s.Entity));
+            // Create list of Entities with their new Attributes
+            var parentNeedsChildren = withKeys.Select(pair => new EntityPair<List<IAttribute>>(pair.Entity, 
+                new List<IAttribute>
+                {
+                    _builder.Attribute.CreateOneWayRelationship(newParentField, new List<object> { pair.Partner.RelatedId }, lookup),
+                    _builder.Attribute.CreateOneWayRelationship(newChildrenField, new List<object> { "Needs:" + pair.Partner.OwnId }, lookup)
+                }
+                )).ToList();
+            var result = AddRelationshipFieldNew(parentNeedsChildren);
 
-            withKeys = AddRelationshipField(newChildrenField,
-                withKeys.Select(s => (s, new List<TKey> { s.Partner.OwnId })).ToList(),
-                withKeys.ToLookup(s => s.Partner.RelatedId, s => s.Entity));
-
-
-            var result = withKeys.Select(set => set.Entity);
+            // Add lookup to own id
+            lookup.Add(withKeys.Select(pair => new KeyValuePair<object, IEntity>(pair.Partner.OwnId, pair.Entity)));
+            // Add list of "Needs:ParentId" so that the parents can find it
+            lookup.Add(withKeys.Select(pair => new KeyValuePair<object, IEntity>("Needs:" + pair.Partner.RelatedId, pair.Entity)));
 
             return result.ToImmutableList();
         });
 
-        private TRelationshipKey GetTypedKeyOrDefault<TRelationshipKey>(IEntity e, string attribute) => Log.Func(enabled: Debug, func: l =>
+        private IEnumerable<IEntity> AddRelationshipFieldNew(IEnumerable<EntityPair<List<IAttribute>>> list) =>
+            list.Select(pair =>
+            {
+                var attributes = _builder.Attribute.Replace(pair.Entity.Attributes, pair.Partner);
+                return _builder.Entity.Clone(pair.Entity, attributes: _builder.Attribute.Create(attributes));
+            }).ToList();
+
+
+        private object GetObjKeyOrDefault(IEntity e, string attribute) => Log.Func(enabled: Debug, func: l =>
         {
             try
             {
                 var val = e.GetBestValue(attribute, Array.Empty<string>());
-
                 l.A(Debug, $"Entity: {e.EntityId}[{attribute}]={val} ({val.GetType().Name})");
-
-                if (val is TRelationshipKey val1)
-                    return val1;
-                if (typeof(TRelationshipKey) == typeof(Guid) && Guid.TryParse(val.ToString(), out var guid))
-                    return (TRelationshipKey)(object)guid;
-
-                if (typeof(TRelationshipKey).IsNumeric() && val.IsNumeric())
-                    return val.TryConvert<TRelationshipKey>(true).Value;
-
-                // Fallback, hope for the best
-                return val.TryConvert<TRelationshipKey>().Value;
+                return val.ToString();
             }
             catch (Exception ex)
             {

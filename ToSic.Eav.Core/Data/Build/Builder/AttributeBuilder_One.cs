@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data.Source;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -88,6 +89,11 @@ namespace ToSic.Eav.Data.Build
         {
             return new Attribute<IEnumerable<IEntity>>(name, ValueTypes.Entity,
                 new List<IValue> { ValueBuilder.BuildRelationship(directSource) }.ToImmutableList());
+        }
+        public IAttribute<IEnumerable<IEntity>> CreateOneWayRelationship(string name, IEnumerable<object> keys, ILookup<object, IEntity> lookup)
+        {
+            var lookupSource = new LookUpEntitiesSource<object>(keys, lookup);
+            return CreateOneWayRelationship(name, lookupSource);
         }
     }
 }
