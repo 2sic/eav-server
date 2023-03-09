@@ -11,10 +11,10 @@ namespace ToSic.Eav.Data.Source
         public IImmutableList<TKey> Keys { get; }
         public ILookup<TKey, IEntity> Lookup { get; }
 
-        public LookUpEntitiesSource(IImmutableList<TKey> keys, ILookup<TKey, IEntity> lookup)
+        public LookUpEntitiesSource(IEnumerable<TKey> keys, ILookup<TKey, IEntity> lookup)
         {
-            Keys = keys;
-            Lookup = lookup;
+            Keys = keys?.ToImmutableList() ?? throw new ArgumentNullException(nameof(keys));
+            Lookup = lookup ?? throw new ArgumentNullException(nameof(lookup));
         }
 
         public long CacheTimestamp { get; } = DateTime.Now.Ticks;

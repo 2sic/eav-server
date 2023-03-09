@@ -10,7 +10,7 @@
     /// Added in 15.04
     /// </remarks>
     /// <typeparam name="TPartner"></typeparam>
-    public class EntityPair<TPartner>: ICanBeEntity
+    public class EntityPair<TPartner>: IEntityPair<TPartner>
     {
         public EntityPair(IEntity entity, TPartner partner)
         {

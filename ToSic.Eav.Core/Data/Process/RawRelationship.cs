@@ -1,19 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ToSic.Eav.Data.Process
 {
-    public class RawRelationship /* <TKey> */: IRawRelationship
+    public class RawRelationship : IRawRelationship
     {
-        public RawRelationship(List</*TKey*/string> keys)
+        public RawRelationship(IEnumerable<object> keys)
         {
-            Keys = keys;
+            Keys = keys?.ToList() ?? new List<object>();
         }
 
-        public RawRelationship( /*TKey*/ string key)
+        public RawRelationship(object key)
         {
-            Keys = new List</*TKey*/string> { key };
+            Keys = new List<object> { key };
         }
 
-        public List</*TKey*/string> Keys { get; }
+        public List<object> Keys { get; }
     }
 }

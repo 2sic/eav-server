@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using ToSic.Eav.Data.Process;
 using ToSic.Lib.Documentation;
 
@@ -47,6 +48,11 @@ namespace ToSic.Eav.Data.Build
         IContentType ContentType { get; }
 
         /// <summary>
+        /// TODO:
+        /// </summary>
+        ILookup<object, IEntity> Relationships { get; }
+
+        /// <summary>
         /// Initial configuration call to setup all the parameters for this builder.
         /// It must be called before building anything. 
         /// </summary>
@@ -56,17 +62,17 @@ namespace ToSic.Eav.Data.Build
         /// <param name="titleField">The field name to use as title, defaults to `Title`</param>
         /// <param name="idSeed">Default is `1`</param>
         /// <param name="idAutoIncrementZero">Default is `true`</param>
+        /// <param name="relationships"></param>
         /// <param name="createFromNewOptions">Optional special options which create-raw might use</param>
         /// <returns>Itself, to make call chaining easier</returns>
-        IDataFactory Configure(
-            string noParamOrder = Parameters.Protector,
+        IDataFactory Configure(string noParamOrder = "Rule: All params must be named (https://r.2sxc.org/named-params)",
             int appId = default,
             string typeName = default,
             string titleField = default,
-            int idSeed = DataConstants.DataFactoryDefaultIdSeed,
-            bool idAutoIncrementZero = true,
-            CreateFromNewOptions createFromNewOptions = default
-        );
+            int idSeed = 1,
+            bool idAutoIncrementZero = default,
+            ILookup<object, IEntity> relationships = default,
+            CreateFromNewOptions createFromNewOptions = default);
 
         #region Simple Create
 
@@ -127,9 +133,9 @@ namespace ToSic.Eav.Data.Build
         /// <summary>
         /// For objects which themselves are <see cref="IRawEntity"/>
         /// </summary>
-        /// <param name="newEntity"></param>
+        /// <param name="rawEntity"></param>
         /// <returns></returns>
-        EntityPair<T> Prepare<T>(T newEntity) where T : IRawEntity;
+        EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity;
 
         #endregion
 
@@ -166,9 +172,9 @@ namespace ToSic.Eav.Data.Build
         /// <summary>
         /// Finalize the work of building something, using prepared materials.
         /// </summary>
-        /// <param name="list"></param>
+        /// <param name="rawList"></param>
         /// <returns></returns>
-        IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> list);
+        IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList);
 
         #endregion
 

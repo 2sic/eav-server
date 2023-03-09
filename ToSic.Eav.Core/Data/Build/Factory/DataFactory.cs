@@ -6,6 +6,7 @@ using ToSic.Eav.Data.Process;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static System.StringComparer;
 
@@ -54,8 +55,9 @@ namespace ToSic.Eav.Data.Build
 
         private CreateFromNewOptions CreateFromNewOptions { get; set; }
 
-        public ILookup<string, IEntity> LookupWip { get; set; }
-
+        public ILookup<object, IEntity> Relationships => _nonLazyRelationships ?? _lazyRelationships;
+        private ILookup<object, IEntity> _nonLazyRelationships;
+        private LazyLookup<object, IEntity> _lazyRelationships;
         #endregion
 
 
@@ -68,7 +70,7 @@ namespace ToSic.Eav.Data.Build
             string titleField = default,
             int idSeed = DataConstants.DataFactoryDefaultIdSeed,
             bool idAutoIncrementZero = true,
-            //ILookup<string, IEntity> lookup = default,
+            ILookup<object, IEntity> relationships = default,
             CreateFromNewOptions createFromNewOptions = default
         )
         {
@@ -91,7 +93,14 @@ namespace ToSic.Eav.Data.Build
 
             CreateFromNewOptions = createFromNewOptions ?? new CreateFromNewOptions();
 
-            LookupWip = Enumerable.Empty<IEntity>().ToLookup(x => "", x => x);
+            // Determine what relationships source to use
+            // If we got a lazy, use that and mark as lazy
+            // If we got a normal one, preserve it as it should be the master and not use the lazy ones
+            // which must be created anyway to avoid errors in later code
+            var relationshipsAsLazy = relationships as LazyLookup<object, IEntity>;
+            _lazyRelationships = relationshipsAsLazy ?? new LazyLookup<object, IEntity>();
+            if (relationshipsAsLazy == null && relationships != null)
+                _nonLazyRelationships = relationships;
 
             return this;
         }
@@ -109,8 +118,27 @@ namespace ToSic.Eav.Data.Build
             => WrapUp(Prepare(list));
 
         /// <inheritdoc />
-        public IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> list)
-            => list.Select(set => set.Entity).ToImmutableList();
+        public IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList) => Log.Func(l =>
+        {
+            // Pre-process relationship keys, so they are added to the lookup
+            var list = rawList.ToList();
+            var itemsWithKeys = list
+                .Where(item => item is IEntityPair<IRawEntity>)
+                .Cast<IEntityPair<IRawEntity>>()
+                .Select(pair => new EntityPair<IHasRelationshipKeys>(pair.Entity, pair.Partner as IHasRelationshipKeys))
+                .Where(x => x.Partner?.RelationshipKeys?.Any() == true)
+                .ToList();
+            var keyMap = itemsWithKeys
+                .SelectMany(pair => pair.Partner.RelationshipKeys
+                    .Select(rk => new KeyValuePair<object, IEntity>(rk, pair.Entity)))
+                .ToList();
+            if (keyMap.Any()) _lazyRelationships.Add(keyMap);
+
+            l.A($"Found {nameof(itemsWithKeys)} {itemsWithKeys.Count()}");
+
+            // Return entities as Immutable list
+            return list.Select(set => set.Entity).ToImmutableList();
+        });
 
         #endregion
 
@@ -121,14 +149,8 @@ namespace ToSic.Eav.Data.Build
             => Prepare<T>(withRawEntity.RawEntity);
 
         /// <inheritdoc />
-        public EntityPair<T> Prepare<T>(T newEntity) where T : IRawEntity
-            => new EntityPair<T>(Create(
-                newEntity.GetProperties(CreateFromNewOptions),
-                id: newEntity.Id,
-                guid: newEntity.Guid,
-                created: newEntity.Created,
-                modified: newEntity.Modified
-            ), newEntity);
+        public EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity
+            => new EntityPair<T>(CreateFromRaw(rawEntity), rawEntity);
 
         #endregion
 
@@ -149,7 +171,7 @@ namespace ToSic.Eav.Data.Build
                     // Todo: improve this, so if anything fails, we have a clear info which item failed
                     try
                     {
-                        newEntity = Create(n);
+                        newEntity = CreateFromRaw(n);
                         return new EntityPair<TNewEntity>(newEntity, n);
                     }
                     catch
@@ -176,16 +198,7 @@ namespace ToSic.Eav.Data.Build
         {
             // pre-process RawRelationships
             values = values ?? new Dictionary<string, object>();
-            var valuesWithRelationships = values.ToDictionary(
-                v => v.Key,
-                v =>
-                {
-                    if (!(v.Value is RawRelationship rawRelationship)) return v.Value;
-                    var lookupSource =
-                        new LookUpEntitiesSource<string>(rawRelationship.Keys.ToImmutableList(), LookupWip);
-                    var relAttr = _builder.Attribute.CreateOneWayRelationship(v.Key, lookupSource);
-                    return relAttr;
-                }, InvariantCultureIgnoreCase);
+            var valuesWithRelationships = PreConvertRelationships(values);
 
             var ent = _builder.Entity.Create(
                 appId: AppId,
@@ -200,13 +213,29 @@ namespace ToSic.Eav.Data.Build
             return ent;
         }
 
-        #endregion
+        private Dictionary<string, object> PreConvertRelationships(Dictionary<string, object> values)
+        {
+            var valuesWithRelationships = values.ToDictionary(
+                v => v.Key,
+                v =>
+                {
+                    if (!(v.Value is RawRelationship rawRelationship)) return v.Value;
+                    var lookupSource =
+                        new LookUpEntitiesSource<object>(rawRelationship.Keys, Relationships);
+                    var relAttr = _builder.Attribute.CreateOneWayRelationship(v.Key, lookupSource);
+                    return relAttr;
+                }, InvariantCultureIgnoreCase);
+            return valuesWithRelationships;
+        }
 
-        #region Create internal
-
-        private IEntity Create(IRawEntity rawEntity) => Create(
+        /// <summary>
+        /// Internal create from raw
+        /// </summary>
+        /// <param name="rawEntity"></param>
+        /// <returns></returns>
+        private IEntity CreateFromRaw(IRawEntity rawEntity) => Create(
             rawEntity.GetProperties(CreateFromNewOptions),
-            id: rawEntity.Id, 
+            id: rawEntity.Id,
             guid: rawEntity.Guid,
             created: rawEntity.Created,
             modified: rawEntity.Modified
@@ -216,15 +245,6 @@ namespace ToSic.Eav.Data.Build
 
         #region Relationships
 
-        public ILookup<string, IEntity> GenerateLookup(params IEnumerable<EntityPair<IRawEntity>>[] lists)
-        {
-            var pairs = lists.SelectMany(list =>
-                list.SelectMany(pair =>
-                    ((pair.Partner as IHasRelationshipKeys)?.RelationshipKeys ?? new List<string>())
-                    .Select(rk => new EntityPair<string>(pair.Entity, rk))
-                ));
-            return pairs.ToLookup(pair => pair.Partner, pair => pair.Entity);
-        }
 
         #endregion
     }
