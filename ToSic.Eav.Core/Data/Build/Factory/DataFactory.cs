@@ -110,7 +110,7 @@ namespace ToSic.Eav.Data.Build
         private bool _alreadyConfigured;
         #endregion
 
-        #region Build / Finalize
+        #region Create IRawEntity / WrapUp
 
         /// <inheritdoc />
         public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : IRawEntity
@@ -133,11 +133,13 @@ namespace ToSic.Eav.Data.Build
 
         #endregion
 
+        // TODO: Prepare 
+
         #region Prepare One
 
         /// <inheritdoc />
         public EntityPair<T> Prepare<T>(IHasRawEntity<T> withRawEntity) where T: IRawEntity
-            => Prepare<T>(withRawEntity.RawEntity);
+            => Prepare(withRawEntity.RawEntity);
 
         /// <inheritdoc />
         public EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity
@@ -178,7 +180,7 @@ namespace ToSic.Eav.Data.Build
 
         #endregion
 
-        #region Create
+        #region Create basic Dictionary
 
         /// <inheritdoc />
         public IEntity Create(Dictionary<string, object> values,
@@ -220,9 +222,5 @@ namespace ToSic.Eav.Data.Build
 
         #endregion
 
-        #region Relationships
-
-
-        #endregion
     }
 }

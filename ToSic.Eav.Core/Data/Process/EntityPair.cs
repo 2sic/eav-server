@@ -21,8 +21,15 @@ namespace ToSic.Eav.Data.Process
             Entity = entity;
         }
 
+        /// <summary>
+        /// The partner object.
+        /// For example an <see cref="IRawEntity"/> which was used to create this entity.
+        /// </summary>
         public TPartner Partner { get; }
 
+        /// <summary>
+        /// The entity.
+        /// </summary>
         public IEntity Entity { get; }
     }
 }
