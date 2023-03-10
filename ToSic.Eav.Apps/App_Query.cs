@@ -36,23 +36,26 @@ namespace ToSic.Eav.Apps
             if (Query.ContainsKey(name) && Query[name] is Query query)
                 return query;
 
-            if (name.StartsWith(GlobalQueryPrefix))
-                return GetParentOrGlobalQuery(name.Substring(GlobalQueryPrefix.Length - 1),
-                    $"Query with prefix {GlobalQueryPrefix} couldn't be found.");
+            // #dropGlobalQueryPrefixWithUnknownPurpose - delete code 2023 Q3
+            //if (name.StartsWith(GlobalQueryPrefix))
+            //    return GetParentOrGlobalQuery(name.Substring(GlobalQueryPrefix.Length - 1),
+            //        $"Query with prefix {GlobalQueryPrefix} couldn't be found.");
 
-            if (name.StartsWith(SystemQueryPrefixPreV15) || name.StartsWith(SystemQueryPrefix))
-                return GetParentOrGlobalQuery(name, "Global EAV Query not Found!");
-
-            return GetParentOrGlobalQuery(name, null);
-        }
-
-        private Query GetParentOrGlobalQuery(string name, string errorOnNotFound)
-        {
+            // Try to find query definition - while also checking parent apps
             var qEntity = Services.QueryManager.Value.FindQuery(AppState, name, recurseParents: 3);
-
-            if (qEntity == null && errorOnNotFound != null) throw new Exception(errorOnNotFound);
+            if (qEntity == null && name.StartsWith(SystemQueryPrefixPreV15) || name.StartsWith(SystemQueryPrefix))
+                throw new Exception("Global EAV Query not Found!");
 
             return Services.QueryGenerator.New().Init(ZoneId, AppId, qEntity, ConfigurationProvider, ShowDrafts, null);
         }
+
+        // #dropGlobalQueryPrefixWithUnknownPurpose - delete code 2023 Q3
+        ///// <summary>
+        ///// Unsure what this is for, and if there are actually any queries that match this!
+        ///// it appears to not be part of the name (seems to get removed) but a key to look in parents - probably drop
+        ///// </summary>
+        //// TODO: DROP FUNCTIONALITY, SEE IF anyone is affected - I assume it was internal only, a long time ago.
+        //public const string GlobalQueryPrefix = "Global.";
+
     }
 }
