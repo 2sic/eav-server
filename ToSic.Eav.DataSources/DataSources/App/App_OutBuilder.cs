@@ -6,6 +6,7 @@ using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.DataSources
 {
@@ -66,7 +67,7 @@ namespace ToSic.Eav.DataSources
             // because the "real" source already applies filters like published
             var appState = AppState;
             var listOfTypes = appState.ContentTypes;
-            var showDrafts = GetShowDraftStatus();
+            var showDrafts = ShowDrafts;
             var typeList = "";
             foreach (var contentType in listOfTypes)
             {
@@ -77,7 +78,7 @@ namespace ToSic.Eav.DataSources
 
                 var deferredStream = new DataStreamWithCustomCaching(
                     () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState,
-                        $"Name={typeName}&Drafts={showDrafts}"),
+                        $"Name={typeName}&Drafts={showDrafts}&{nameof(WithAncestors)}={WithAncestors}"),
                     this,
                     typeName,
                     () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableList(),
@@ -93,7 +94,8 @@ namespace ToSic.Eav.DataSources
         /// Ask the current configuration system if the current user should see drafts
         /// </summary>
         /// <returns></returns>
-        private bool GetShowDraftStatus()
+        // TODO: VERIFY THIS is the right way to do it - and there is not a better/global available way?
+        private bool ShowDrafts => _showDrafts.Get(() =>
         {
             var lookupShowDrafts = Configuration.Parse(new Dictionary<string, string>
             {
@@ -104,14 +106,15 @@ namespace ToSic.Eav.DataSources
             });
             if (!bool.TryParse(lookupShowDrafts.First().Value, out var showDrafts)) showDrafts = false;
             return showDrafts;
-        }
+        });
+        private readonly GetOnce<bool> _showDrafts = new GetOnce<bool>();
 
         /// <summary>
         /// Build an EntityTypeFilter for this content-type to provide as a stream
         /// </summary>
         private EntityTypeFilter BuildTypeStream(IDataSource upstreamDataSource, string typeName) => Log.Func($"..., ..., {typeName}", () =>
         {
-            var ds = _services.DataSourceFactory.Value.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,
+            var ds = _services.DataSourceFactory.GetDataSource<EntityTypeFilter>(this, upstreamDataSource,
                 Configuration.LookUpEngine);
             ds.TypeName = typeName;
             ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source

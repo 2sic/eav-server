@@ -2,9 +2,9 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Metadata;
-using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
@@ -61,19 +61,41 @@ namespace ToSic.Eav.DataSources
 				RequiresRebuildOfOut = true;
 			}
 		}
-		#endregion
+
+        /// <summary>
+        /// This is a very internal setting, not to be used publicly for now.
+        /// It will cause the App to not just return its data, but also data from its ancestors.
+        /// EG global data.
+        /// We're still evaluating impact on performance, confusion of developers etc.
+        /// </summary>
+        /// <remarks>
+        /// Added in v15.04
+        /// </remarks>
+        [PrivateApi("WIP and not sure if this should ever become public")]
+        [Configuration(Fallback = false)]
+        public bool WithAncestors
+        {
+            get => Configuration.GetThis(false);
+            set
+            {
+                Configuration.SetThis(value);
+                RequiresRebuildOfOut = true;
+            }
+        }
+
+        #endregion
 
         #region Constructor / DI
 
 
 		public new class MyServices: MyServicesBase<DataSource.MyServices>
         {
-            public LazySvc<DataSourceFactory> DataSourceFactory { get; }
+            public DataSourceFactory DataSourceFactory { get; }
             public IAppStates AppStates { get; }
 
             public MyServices(DataSource.MyServices parentServices,
                 IAppStates appStates,
-				LazySvc<DataSourceFactory> dataSourceFactory) : base(parentServices)
+				DataSourceFactory dataSourceFactory) : base(parentServices)
             {
                 ConnectServices(
                     AppStates = appStates,
@@ -103,16 +125,39 @@ namespace ToSic.Eav.DataSources
         /// this is needed when a zone/app change
         /// </summary>
         private void AttachOtherDataSource()
-		{
+        {
+            // If something is done badly, we can easily get recursions
+            if (_attachOtherDataSourceRunning) throw new Exception("We have an unexpected recursion!");
+            _attachOtherDataSourceRunning = true;
 			// all not-set properties will auto-initialize
 			if (ZoneSwitch != 0)
 				ZoneId = ZoneSwitch;
 		    if (AppSwitch != 0)
 				AppId = AppSwitch;
 
-		    var newDs = _services.DataSourceFactory.Value.GetPublishing(this, configProvider: Configuration.LookUpEngine, showDrafts:GetShowDraftStatus());
-            Attach(DataSourceConstants.DefaultStreamName, newDs);
-		}
+		    IDataSource appDs;
+
+            
+            // WIP / new
+            if (WithAncestors)
+            {
+                Log.A("Will use Ancestors accessor with all ancestors");
+                // Important: only pass the identity in, never pass this source in, or you'll get infinite recursions
+                var appStack = _services.DataSourceFactory.GetDataSource<AppWithParents>(new AppIdentity(this), null, lookUps: Configuration.LookUpEngine);
+                appStack.AppId = AppId;
+                appStack.ZoneId = ZoneId;
+                appStack.ShowDrafts = ShowDrafts;
+                appDs = appStack;
+            }
+            else
+                appDs = _services.DataSourceFactory.GetPublishing(this,
+                    configProvider: Configuration.LookUpEngine, showDrafts: ShowDrafts);
+
+            Attach(DataSourceConstants.DefaultStreamName, appDs);
+            _attachOtherDataSourceRunning = false;
+        }
+
+        private bool _attachOtherDataSourceRunning = false;
 
 		[PrivateApi]
 		[Obsolete("Will probably be removed in v14")]

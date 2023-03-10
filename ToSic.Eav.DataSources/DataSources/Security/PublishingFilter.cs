@@ -2,6 +2,7 @@
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -18,7 +19,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Eye, 
         Type = DataSourceType.Security, 
         GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
-        In = new []{ DataSourceConstants.PublishedStreamName + "*", DataSourceConstants.DefaultStreamName + "*",  DataSourceConstants.DraftsStreamName + "*" },
+        In = new []{ PublishedStreamName + "*", DefaultStreamName + "*",  DraftsStreamName + "*" },
         DynamicOut = false, 
         HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
 
@@ -29,7 +30,7 @@ namespace ToSic.Eav.DataSources
 		/// <summary>
 		/// Indicates whether to show drafts or only Published Entities. 
 		/// </summary>
-		[Configuration(Fallback = false)]
+		[Configuration(Fallback = QueryConstants.ShowDraftsDefault)]
 		public bool ShowDrafts
 		{
 			get => Configuration.GetThis(QueryConstants.ShowDraftsDefault);
@@ -42,7 +43,7 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new PublishingFilter
 		/// </summary>
 		[PrivateApi]
-		public PublishingFilter(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Publsh")
+		public PublishingFilter(MyServices services) : base(services, $"{LogPrefix}.Publsh")
         {
             Provide(PublishingFilterList);
        }
@@ -52,9 +53,7 @@ namespace ToSic.Eav.DataSources
 	    {
             Configuration.Parse();
             Log.A($"get incl. draft:{ShowDrafts}");
-	        var outStreamName = ShowDrafts 
-                ? DataSourceConstants.DraftsStreamName 
-                : DataSourceConstants.PublishedStreamName;
+	        var outStreamName = ShowDrafts ? DraftsStreamName : PublishedStreamName;
 	        return In[outStreamName].List.ToImmutableList();
 	    }
 
