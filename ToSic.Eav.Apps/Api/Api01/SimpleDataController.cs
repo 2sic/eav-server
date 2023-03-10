@@ -12,6 +12,7 @@ using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.Plumbing.Linq;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Permissions;
@@ -162,7 +163,7 @@ namespace ToSic.Eav.Api.Api01
             var publishing = FigureOutPublishing(type, values, existingIsPublished);
 
             // Prepare attributes to add
-            var preparedValues = ConvertEntityRelations(values);
+            var preparedValues = ConvertRelationsToGuidNullArray(values);
             var preparedIAttributes = _builder.Attribute.Create(preparedValues);
             var attributes = BuildNewEntityValues(type, preparedIAttributes, _defaultLanguageCode);
 
@@ -209,7 +210,7 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(Guid entityGuid) => Delete(_context.Entities.GetMostCurrentDbEntity(entityGuid).EntityId);
 
 
-        private IDictionary<string, object> ConvertEntityRelations(IDictionary<string, object> values) => Log.Func(() =>
+        private IDictionary<string, object> ConvertRelationsToGuidNullArray(IDictionary<string, object> values) => Log.Func(() =>
         {
             var result = new Dictionary<string, object>();
             foreach (var value in values)
@@ -237,7 +238,7 @@ namespace ToSic.Eav.Api.Api01
         ) => Log.Func($"..., ..., attributes: {values?.Count}", l =>
         {
             (bool ShouldPublish, bool DraftShouldBranch)? publishAndBranch = null;
-            if (values?.Any() != true)
+            if (/*global::ToSic.Eav.Plumbing.Linq.IEnumerableExtensions.SafeAny(values) &&*/ values?.Any() != true)
                 return (publishAndBranch, "no attributes to process");
 
             // On update, by default preserve IsPublished state
@@ -275,23 +276,25 @@ namespace ToSic.Eav.Api.Api01
             string valuesLanguage
         ) => Log.Func($"..., ..., attributes: {attributes?.Count}, {valuesLanguage}", l =>
         {
-            if (attributes?.Any() != true)
+            if (attributes.SafeNone())
                 return (new Dictionary<string, IAttribute>(), "null/empty");
 
-            var tempMutable = _builder.Attribute.Mutable(attributes);
+            //var tempMutable = _builder.Attribute.Mutable(attributes);
 
             var updated = attributes.Select(keyValuePair =>
                 {
                     // Handle content-type attributes
-                    var ctAttribute = contentType[keyValuePair.Key];
-                    if (ctAttribute != null && keyValuePair.Value != null)
+                    var ctAttr = contentType[keyValuePair.Key];
+                    if (ctAttr != null && keyValuePair.Value != null)
                     {
-                        tempMutable.TryGetValue(ctAttribute.Name, out var attribute);
+                        attributes.TryGetValue(ctAttr.Name, out var attribute);
+                        var firstValue = keyValuePair.Value.Values?.FirstOrDefault()?.ObjectContents;
+                        if (firstValue == null) return null;
                         var preConverted =
-                            _builder.Value.PreConvertReferences(keyValuePair.Value, ctAttribute.Type, true);
-                        var newAttribute = _builder.Attribute.CreateOrUpdate(attribute, ctAttribute.Name, preConverted,
-                            ctAttribute.Type, valuesLanguage);
-                        l.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({ctAttribute.Type})");
+                            _builder.Value.PreConvertReferences(firstValue, ctAttr.Type, true);
+                        var newAttribute = _builder.Attribute.CreateOrUpdate(attribute, ctAttr.Name, preConverted,
+                            ctAttr.Type, valuesLanguage);
+                        l.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({ctAttr.Type})");
                         return new
                         {
                             keyValuePair.Key,
