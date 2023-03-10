@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var ds3 = new DataTablePerson(this).Generate(53, 5300);
             var dsBuild = GetService<DataSourceFactory>();
             var streamPick = dsBuild.GetDataSource<StreamPick>(new AppIdentity(1, 1), null, ds1.Configuration.LookUpEngine);
-            streamPick.AttachForTests(Constants.DefaultStreamName, ds1);
+            streamPick.AttachForTests(DataSourceConstants.DefaultStreamName, ds1);
             streamPick.AttachForTests(MoreStream, ds2);
             streamPick.AttachForTests("Lots", ds3);
             return streamPick;

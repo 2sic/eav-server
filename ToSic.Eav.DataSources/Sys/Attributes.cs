@@ -69,9 +69,9 @@ namespace ToSic.Eav.DataSources.Sys
             // try to load the content-type - if it fails, return empty list
             if (string.IsNullOrWhiteSpace(ContentTypeName)) return EmptyList;
 
-	        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(Constants.DefaultStreamName);
+	        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(DataSourceConstants.DefaultStreamName);
 	        var optionalList = useStream
-	            ? In[Constants.DefaultStreamName]?.List.ToImmutableList()
+	            ? In[DataSourceConstants.DefaultStreamName]?.List.ToImmutableList()
 	            : null;
 
 	        var type = useStream 

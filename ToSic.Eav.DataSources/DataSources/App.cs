@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
         DynamicOut = true,
-        In = new []{Constants.DefaultStreamName},
+        In = new []{DataSourceConstants.DefaultStreamName},
 		ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://r.2sxc.org/DsApp")]
     public partial class App : DataSource
@@ -111,7 +111,7 @@ namespace ToSic.Eav.DataSources
 				AppId = AppSwitch;
 
 		    var newDs = _services.DataSourceFactory.Value.GetPublishing(this, configProvider: Configuration.LookUpEngine, showDrafts:GetShowDraftStatus());
-            Attach(Constants.DefaultStreamName, newDs);
+            Attach(DataSourceConstants.DefaultStreamName, newDs);
 		}
 
 		[PrivateApi]

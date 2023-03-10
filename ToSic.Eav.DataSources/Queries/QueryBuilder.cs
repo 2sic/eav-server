@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.LookUp;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
@@ -138,7 +139,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 	            var partConfig = new LookUpEngine(templateConfig, Log);
                 // add / set item part configuration
-	            partConfig.Add(new LookUpInMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, _cultureResolver.SafeLanguagePriorityCodes()));
+	            partConfig.Add(new LookUpInQueryMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, _cultureResolver.SafeLanguagePriorityCodes()));
 
 	            // if show-draft in overridden, add that to the settings
 	            partConfig.AddOverride(new LookUpInDictionary(DataSource.MyConfiguration, itemSettingsShowDrafts));

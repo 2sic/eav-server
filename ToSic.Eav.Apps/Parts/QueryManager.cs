@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
+using Connection = ToSic.Eav.DataSources.Queries.Connection;
+using Connections = ToSic.Eav.DataSources.Queries.Connections;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -136,7 +139,7 @@ namespace ToSic.Eav.Apps.Parts
                 // Add new DataSource
                 else
                 {
-                    var newSpecs = Parent.Entities.Create(Constants.QueryPartTypeName, dataSource,
+                    var newSpecs = Parent.Entities.Create(DataSourceConstants.QueryPartTypeName, dataSource,
                         new Target((int)TargetTypes.Entity, null, keyGuid: queryEntityGuid));
                     newDataSources.Add(originalIdentity, newSpecs.EntityGuid);
                 }
@@ -196,7 +199,7 @@ namespace ToSic.Eav.Apps.Parts
                     $"DataSource \"{wireInfo.To}\" has multiple In-Streams with Name \"{wireInfo.In}\". Each In-Stream must have an unique Name and can have only one connection.");
 
             // add to new object...then send to save/update
-            values[Constants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
+            values[DataSourceConstants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
             Parent.Entities.UpdateParts(id, values);
         }
 

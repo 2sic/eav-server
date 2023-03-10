@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources.Queries
             try
             {
                 var queryEntity = dataSource.List.FindRepoId(entityId);
-                if (queryEntity.Type.NameId != Constants.QueryTypeName)
+                if (queryEntity.Type.NameId != QueryTypeName)
                     throw new ArgumentException("Entity is not an DataQuery Entity", nameof(entityId));
                 return (queryEntity);
             }
@@ -109,7 +109,7 @@ namespace ToSic.Eav.DataSources.Queries
         // todo: move to query-read or helper
 
         private static IImmutableList<IEntity> QueryEntities(AppState appState)
-            => appState.List.OfType(Constants.QueryTypeName).ToImmutableList();
+            => appState.List.OfType(QueryTypeName).ToImmutableList();
 
 
         // todo: move to query-read or helper, or make private

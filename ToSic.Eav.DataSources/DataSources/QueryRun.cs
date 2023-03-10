@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.LookUp;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
@@ -88,7 +89,7 @@ namespace ToSic.Eav.DataSources
             var metadataLookUp =
                 (Configuration.LookUpEngine.FindSource(MyConfiguration)
                     as LookUpInLookUps)
-                ?.Providers.FirstOrDefault(p => p is LookUpInMetadata) as LookUpInMetadata;
+                ?.Providers.FirstOrDefault(p => p is LookUpInQueryMetadata) as LookUpInQueryMetadata;
 
             // if found, initialize and get the metadata entity attached
             metadataLookUp?.Initialize();

@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Parents,
         Type = DataSourceType.Lookup,
         GlobalName = "915217e5-7957-4303-a19c-a15505f2ad1d", 
-        In = new[] { Constants.DefaultStreamNameRequired },
+        In = new[] { DataSourceConstants.DefaultStreamNameRequired },
         DynamicOut = false,
         ExpectsDataOfType = "a72cb2f4-52bb-41e6-9281-10e69aeb0310",
         HelpLink = "https://r.2sxc.org/DsParents")]

@@ -52,12 +52,12 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Check if there is a default-stream in with content - if yes, try to return that
-            if (In.HasStreamWithItems(Constants.DefaultStreamName))
-                return (In[Constants.DefaultStreamName], "found default");
+            if (In.HasStreamWithItems(DataSourceConstants.DefaultStreamName))
+                return (In[DataSourceConstants.DefaultStreamName], "found default");
 
             // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
             var streamList = In
-                .Where(x => x.Key != Constants.DefaultStreamName)
+                .Where(x => x.Key != DataSourceConstants.DefaultStreamName)
                 .OrderBy(x => x.Key);
 
             foreach (var stream in streamList)

@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Logic, 
         GlobalName = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { Constants.DefaultStreamName },
+        In = new[] { DataSourceConstants.DefaultStreamName },
 	    HelpLink = "https://r.2sxc.org/DsFilterDuplicates")]
 
     public sealed class ItemFilterDuplicates: DataSource
@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private IImmutableList<IEntity> GetUnique() => Log.Func(() =>
         {
-            if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
+            if (!In.HasStreamWithItems(DataSourceConstants.DefaultStreamName)) 
                 return (EmptyList, "no in stream with name");
 
             var source = TryGetIn();
@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private IImmutableList<IEntity> GetDuplicates() => Log.Func(() =>
         {
-            if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
+            if (!In.HasStreamWithItems(DataSourceConstants.DefaultStreamName)) 
                 return (EmptyList, "no in-stream with name");
 
             var source = TryGetIn();

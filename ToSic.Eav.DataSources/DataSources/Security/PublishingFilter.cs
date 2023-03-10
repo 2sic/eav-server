@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Eye, 
         Type = DataSourceType.Security, 
         GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
-        In = new []{ Constants.PublishedStreamName + "*", Constants.DefaultStreamName + "*",  Constants.DraftsStreamName + "*" },
+        In = new []{ DataSourceConstants.PublishedStreamName + "*", DataSourceConstants.DefaultStreamName + "*",  DataSourceConstants.DraftsStreamName + "*" },
         DynamicOut = false, 
         HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
 
@@ -53,8 +53,8 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
             Log.A($"get incl. draft:{ShowDrafts}");
 	        var outStreamName = ShowDrafts 
-                ? Constants.DraftsStreamName 
-                : Constants.PublishedStreamName;
+                ? DataSourceConstants.DraftsStreamName 
+                : DataSourceConstants.PublishedStreamName;
 	        return In[outStreamName].List.ToImmutableList();
 	    }
 

@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Sort,
         GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { Constants.DefaultStreamNameRequired },
+        In = new[] { DataSourceConstants.DefaultStreamNameRequired },
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueSort",
         HelpLink = "https://r.2sxc.org/DsValueSort")]
 

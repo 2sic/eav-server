@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="streamName">In-name of the stream</param>
         /// <param name="dataSource">The data source - will use it's default out</param>
         /// <param name="sourceName">The stream name on the source, will default to "Default"</param>
-        void Attach(string streamName, IDataSource dataSource, string sourceName = Constants.DefaultStreamName);
+        void Attach(string streamName, IDataSource dataSource, string sourceName = DataSourceConstants.DefaultStreamName);
 
         /// <summary>
         /// Add a single named stream to the In
@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources
         /// Introduced in 2sxc 11.13
         /// </remarks>
         [PublicApi]
-        IImmutableList<IEntity> TryGetIn(string name = Constants.DefaultStreamName);
+        IImmutableList<IEntity> TryGetIn(string name = DataSourceConstants.DefaultStreamName);
 
     }
 }

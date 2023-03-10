@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.FilterList,
         Type = DataSourceType.Filter,
         GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
-        In = new[] { Constants.DefaultStreamNameRequired, Constants.FallbackStreamName },
+        In = new[] { DataSourceConstants.DefaultStreamNameRequired, DataSourceConstants.FallbackStreamName },
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://r.2sxc.org/DsValueFilter")]
@@ -107,8 +107,8 @@ namespace ToSic.Eav.DataSources
             var res = GetValueFilter();
             return res.Any()
                 ? (res, "found")
-                : In.HasStreamWithItems(Constants.FallbackStreamName)
-                    ? (In[Constants.FallbackStreamName].List.ToImmutableList(), "fallback")
+                : In.HasStreamWithItems(DataSourceConstants.FallbackStreamName)
+                    ? (In[DataSourceConstants.FallbackStreamName].List.ToImmutableList(), "fallback")
                     : (res, "final");
         });
 

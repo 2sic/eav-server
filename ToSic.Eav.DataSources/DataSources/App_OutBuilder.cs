@@ -48,19 +48,19 @@ namespace ToSic.Eav.DataSources
             try
             {
                 // auto-attach to cache of current system?
-                if (!In.ContainsKey(Constants.DefaultStreamName))
+                if (!In.ContainsKey(DataSourceConstants.DefaultStreamName))
                     AttachOtherDataSource();
-                upstream = In[Constants.DefaultStreamName];
+                upstream = In[DataSourceConstants.DefaultStreamName];
             }
             catch (KeyNotFoundException)
             {
                 throw new Exception(
-                    $"Trouble with the App DataSource - must have a Default In-Stream with name {Constants.DefaultStreamName}. It has {In.Count} In-Streams.");
+                    $"Trouble with the App DataSource - must have a Default In-Stream with name {DataSourceConstants.DefaultStreamName}. It has {In.Count} In-Streams.");
             }
 
             var upstreamDataSource = upstream.Source;
             _out.Clear();
-            _out.Add(Constants.DefaultStreamName, upstreamDataSource.Out[Constants.DefaultStreamName]);
+            _out.Add(DataSourceConstants.DefaultStreamName, upstreamDataSource.Out[DataSourceConstants.DefaultStreamName]);
 
             // now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
             // because the "real" source already applies filters like published
@@ -71,7 +71,7 @@ namespace ToSic.Eav.DataSources
             foreach (var contentType in listOfTypes)
             {
                 var typeName = contentType.Name;
-                if (typeName == Constants.DefaultStreamName || typeName.StartsWith("@") || _out.ContainsKey(typeName))
+                if (typeName == DataSourceConstants.DefaultStreamName || typeName.StartsWith("@") || _out.ContainsKey(typeName))
                     continue;
                 typeList += typeName + ",";
 

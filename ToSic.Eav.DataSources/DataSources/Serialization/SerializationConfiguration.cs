@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Modify, 
         GlobalName = "2952e680-4aaa-4a12-adf7-325cb2854358",
         DynamicOut = true,
-        In = new []{Constants.DefaultStreamName},
+        In = new []{DataSourceConstants.DefaultStreamName},
 	    ExpectsDataOfType = "5c84cd3f-f853-40b3-81cf-dee6a07dc411",
         HelpLink = "https://r.2sxc.org/DsSerializationConfiguration")]
 
@@ -222,7 +222,7 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-        private IImmutableList<IEntity> GetList(string inStreamName = Constants.DefaultStreamName) => Log.Func(() =>
+        private IImmutableList<IEntity> GetList(string inStreamName = DataSourceConstants.DefaultStreamName) => Log.Func(() =>
         {
             Configuration.Parse();
             var original = In[inStreamName].List.ToImmutableList();

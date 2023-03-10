@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Share,
         Type = DataSourceType.Filter,
         GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
-        In = new[] { Constants.DefaultStreamNameRequired, Constants.FallbackStreamName },
+        In = new[] { DataSourceConstants.DefaultStreamNameRequired, DataSourceConstants.FallbackStreamName },
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
         HelpLink = "https://r.2sxc.org/DsRelationshipFilter")]
@@ -156,8 +156,8 @@ namespace ToSic.Eav.DataSources
         private IImmutableList<IEntity> GetRelationshipsOrFallback() => Log.Func(() =>
         {
             var res = GetEntities();
-            if (!res.Any() && In.HasStreamWithItems(Constants.FallbackStreamName))
-                return (In[Constants.FallbackStreamName].List.ToImmutableList(), "fallback");
+            if (!res.Any() && In.HasStreamWithItems(DataSourceConstants.FallbackStreamName))
+                return (In[DataSourceConstants.FallbackStreamName].List.ToImmutableList(), "fallback");
 
             return (res, "ok");
         });

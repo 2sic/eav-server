@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources.Sys
             set => Configuration.SetThis(value);
         }
 
-        [Configuration(Fallback = Constants.DefaultStreamName)]
+        [Configuration(Fallback = DataSourceConstants.DefaultStreamName)]
         public string StreamName
         {
             get => Configuration.GetThis();
@@ -108,8 +108,8 @@ namespace ToSic.Eav.DataSources.Sys
                 return (EmptyList, "can't find stream name in query");
 
             var attribInfo = _dataSourceFactory.Value.GetDataSource<Attributes>(_query);
-            if (StreamName != Constants.DefaultStreamName)
-                attribInfo.Attach(Constants.DefaultStreamName, _query, StreamName);
+            if (StreamName != DataSourceConstants.DefaultStreamName)
+                attribInfo.Attach(DataSourceConstants.DefaultStreamName, _query, StreamName);
 
             var results = attribInfo.List.ToImmutableList();
             return (results, $"{results.Count}");

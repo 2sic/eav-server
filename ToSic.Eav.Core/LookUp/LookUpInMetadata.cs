@@ -11,7 +11,7 @@ namespace ToSic.Eav.LookUp
     /// As of now it's hardwired to look up Metadata of Entities. <br/>
     /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
+    [PrivateApi("used to be public, but it's not clear why anybody should use it. ATM not used in our code base - was only used for Queries, and that has a renamed copy LookUpInQueryMetadata")]
 	public class LookUpInMetadata : LookUpInEntity
 	{
 	    private readonly IMetadataSource _metaDataSource;
@@ -56,7 +56,7 @@ namespace ToSic.Eav.LookUp
                      _metaDataSource.GetMetadata(TargetTypes.Entity, _objectToProvideSettingsTo);
 
             // make sure we get the settings, but not the pipeline-parts, which may also be assigned
-			Data = md.FirstOrDefault(e => e.Type.NameId != Constants.QueryPartTypeName);
+			Data = md.FirstOrDefault();
 			_initialized = true;
 		}
         private bool _initialized;

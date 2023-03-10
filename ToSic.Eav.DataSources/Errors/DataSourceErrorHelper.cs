@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources
             string message = default,
             Exception exception = default,
             IDataSource source = default, 
-            string streamName = Constants.DefaultStreamName
+            string streamName = DataSourceConstants.DefaultStreamName
             )
         {
             Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(Create), "various");
@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources
             return new[] { entity }.ToImmutableList();
         }
 
-        public IImmutableList<IEntity> TryGetInFailed(IDataTarget target, string streamName = Constants.DefaultStreamName)
+        public IImmutableList<IEntity> TryGetInFailed(IDataTarget target, string streamName = DataSourceConstants.DefaultStreamName)
         {
             var source = target as IDataSource;
             if (!target.In.ContainsKey(streamName))

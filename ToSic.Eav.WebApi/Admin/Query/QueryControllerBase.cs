@@ -103,7 +103,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             #region Deserialize some Entity-Values
 
             query.Pipeline = qDef.Entity.AsDictionary();
-            query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
+            query.Pipeline[DataSourceConstants.QueryStreamWiringAttributeName] = qDef.Connections;
 
             var converter = Services.EntToDicLazy.Value;
             converter.Type.Serialize = true;
@@ -161,7 +161,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 .ToList();
 
             // Update Pipeline Entity with new Wirings etc.
-            var wiringString = data.Pipeline[Constants.QueryStreamWiringAttributeName]?.ToString() ?? "";
+            var wiringString = data.Pipeline[DataSourceConstants.QueryStreamWiringAttributeName]?.ToString() ?? "";
             var wirings =
                 SystemJsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
                 ?? new List<Connection>();

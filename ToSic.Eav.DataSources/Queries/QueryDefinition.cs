@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources.Queries
                 //Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
 
                 var temp = Entity.Metadata
-                    .Where(m => m.Type.Is(Constants.QueryPartTypeName))
+                    .Where(m => m.Type.Is(DataSourceConstants.QueryPartTypeName))
                     .ToList();
                 
                 //Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// The connections as they are serialized in the Entity
         /// </summary>
         [PrivateApi]
-        private string ConnectionsRaw => Get(Constants.QueryStreamWiringAttributeName, "");
+        private string ConnectionsRaw => Get(DataSourceConstants.QueryStreamWiringAttributeName, "");
 
     }
 }

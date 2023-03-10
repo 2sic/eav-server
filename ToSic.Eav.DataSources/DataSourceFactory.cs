@@ -96,7 +96,7 @@ namespace ToSic.Eav.DataSources
             var ds = GetDataSource<T>(source, null, source.Configuration.LookUpEngine);
             if (!(ds is IDataTarget target))
                 throw new Exception("error, ds not target; wip");
-            target.Attach(Constants.DefaultStreamName, upstream);
+            target.Attach(DataSourceConstants.DefaultStreamName, upstream);
             return ds;
         }
 

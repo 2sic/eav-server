@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The stream name to lookup.
         /// </summary>
-        [Configuration(Fallback = Constants.DefaultStreamName)]
+        [Configuration(Fallback = DataSourceConstants.DefaultStreamName)]
         public string StreamName
         {
             get => Configuration.GetThis();
