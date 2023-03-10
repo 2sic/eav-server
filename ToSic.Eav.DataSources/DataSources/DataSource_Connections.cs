@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
+using static System.StringComparer;
 
 namespace ToSic.Eav.DataSources
 {
@@ -10,6 +11,7 @@ namespace ToSic.Eav.DataSources
     {
         #region Connections
 
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         internal Connections Connections => _connections ?? (_connections = new Connections(this));
         private Connections _connections;
 
@@ -17,7 +19,7 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc />
         [PublicApi]
-        public IDictionary<string, IDataStream> In { get; internal set; } = new Dictionary<string, IDataStream>();
+        public IDictionary<string, IDataStream> In { get; protected set; } = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
 
         /// <inheritdoc />
         [PublicApi]
@@ -76,21 +78,15 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc />
         [PublicApi]
-        public void Attach(string streamName, IDataSource dataSource, string sourceName = Constants.DefaultStreamName)
-        {
-            var connection = new Connection(dataSource, sourceName, this, streamName);
-            ConnectIn(connection);
-        }
+        public void Attach(string streamName, IDataSource dataSource, string sourceName = Constants.DefaultStreamName) 
+            => Attach(new Connection(dataSource, sourceName, this, streamName));
 
         /// <inheritdoc />
         [PublicApi]
-        public void Attach(string streamName, IDataStream dataStream)
-        {
-            var connection = new Connection(dataStream, this, streamName);
-            ConnectIn(connection);
-        }
-        
-        private void ConnectIn(Connection connection)
+        public void Attach(string streamName, IDataStream dataStream) 
+            => Attach(new Connection(dataStream, this, streamName));
+
+        private void Attach(Connection connection)
         {
             var connStream = new ConnectionStream(connection, Error);
             if (In.ContainsKey(connection.TargetStream)) In.Remove(connection.TargetStream);
