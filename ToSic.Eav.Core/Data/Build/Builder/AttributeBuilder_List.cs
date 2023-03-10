@@ -32,7 +32,7 @@ namespace ToSic.Eav.Data.Build
         public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, IAttribute> attributes)
             => attributes?.ToImmutableInvariant() ?? Empty();
 
-        public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, object> attributes)
+        public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, object> attributes, IImmutableList<ILanguage> languages = null)
         {
             if (attributes == null)
                 return Empty();
@@ -40,7 +40,7 @@ namespace ToSic.Eav.Data.Build
             if (attributes.All(x => x.Value is IAttribute))
                 return attributes.ToImmutableDictionary(pair => pair.Key, pair => pair.Value as IAttribute, InvariantCultureIgnoreCase);
 
-            return CreateDetailed(attributes).ToImmutableInvariant();
+            return CreateDetailed(attributes, languages).ToImmutableInvariant();
         }
 
 
@@ -49,7 +49,7 @@ namespace ToSic.Eav.Data.Build
         /// <summary>
         /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
         /// </summary>
-        private Dictionary<string, IAttribute> CreateDetailed(IDictionary<string, object> objAttributes) =>
+        private Dictionary<string, IAttribute> CreateDetailed(IDictionary<string, object> objAttributes, IImmutableList<ILanguage> languages = null) =>
             objAttributes.ToDictionary(pair => pair.Key, oAttrib =>
             {
                 // in case the object is already an IAttribute, use that, don't rebuild it
@@ -61,7 +61,7 @@ namespace ToSic.Eav.Data.Build
                 var valuesModelList = new List<IValue>();
                 if (oAttrib.Value != null)
                 {
-                    var valueModel = ValueBuilder.Build(attributeType, oAttrib.Value);
+                    var valueModel = ValueBuilder.Build(attributeType, oAttrib.Value, languages);
                     valuesModelList.Add(valueModel);
                 }
 
