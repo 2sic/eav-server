@@ -114,7 +114,7 @@ namespace ToSic.Eav.Persistence
                         "primary language must exist in languages, cannot continue preparation to save with unclear language setup");
 
 
-            if (hasLanguages && !saveOptions.PreserveUnknownLanguages && saveOptions.Languages?.Any() == true)
+            if (hasLanguages && !saveOptions.PreserveUnknownLanguages && saveOptions.Languages.SafeAny())
             {
                 if (originalWasSaved) origAttribsOrNull = StripUnknownLanguages(origAttribsOrNull, saveOptions);
                 newAttribs = StripUnknownLanguages(newAttribs, saveOptions);

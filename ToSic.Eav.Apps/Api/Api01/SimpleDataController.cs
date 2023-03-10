@@ -12,7 +12,6 @@ using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.Plumbing.Linq;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Permissions;
@@ -238,7 +237,7 @@ namespace ToSic.Eav.Api.Api01
         ) => Log.Func($"..., ..., attributes: {values?.Count}", l =>
         {
             (bool ShouldPublish, bool DraftShouldBranch)? publishAndBranch = null;
-            if (/*global::ToSic.Eav.Plumbing.Linq.IEnumerableExtensions.SafeAny(values) &&*/ values?.Any() != true)
+            if (/*global::ToSic.Eav.Plumbing.Linq.IEnumerableExtensions.SafeAny(values) &&*/ values.SafeNone())
                 return (publishAndBranch, "no attributes to process");
 
             // On update, by default preserve IsPublished state

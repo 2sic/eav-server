@@ -133,8 +133,6 @@ namespace ToSic.Eav.Data.Build
 
         #endregion
 
-        // TODO: Prepare 
-
         #region Prepare One
 
         /// <inheritdoc />

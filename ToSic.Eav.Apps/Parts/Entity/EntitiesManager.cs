@@ -156,7 +156,7 @@ namespace ToSic.Eav.Apps.Parts
                         Attribute = a,
                         TypedContents = a.TypedContents as IRelatedEntitiesValue,
                     })
-                    .Where(set => set.TypedContents != null && set.TypedContents.Identifiers?.Any() == true)
+                    .Where(set => set.TypedContents?.Identifiers?.Any() == true)
                     .ToList();
                 if (!relationshipAttributes.Any())
                     return e;

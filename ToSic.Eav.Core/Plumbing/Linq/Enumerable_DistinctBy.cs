@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ToSic.Eav.Plumbing.Linq
+namespace ToSic.Eav.Plumbing
 {
     /// <summary>
     /// Taken from https://github.com/morelinq/MoreLINQ/blob/master/MoreLinq/DistinctBy.cs
     /// </summary>
-    public static partial class IEnumerableExtensions
+    public static partial class EnumerableExtensions
     {
         // Note: seems .net 6 already has this
 #if !NET6_0_OR_GREATER

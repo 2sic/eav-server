@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data.Process;
 using ToSic.Eav.Data.Source;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
@@ -43,7 +44,7 @@ namespace ToSic.Eav.Data.Build
                 {
                     var partner = pair.Partner as IHasRelationshipKeys;
                     var relKeys = partner?.RelationshipKeys(options)?.ToList();
-                    return relKeys?.Any() != true ? null : new EntityPair<List<object>>(pair.Entity, relKeys);
+                    return relKeys.SafeAny() ? new EntityPair<List<object>>(pair.Entity, relKeys) : null;
                 })
                 .Where(x => x!=null)
                 .ToList();

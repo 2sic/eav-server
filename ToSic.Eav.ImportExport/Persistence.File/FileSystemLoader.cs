@@ -18,6 +18,7 @@ using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 using static ToSic.Eav.ImportExport.ImpExpConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Persistence.File
 {
@@ -253,7 +254,7 @@ namespace ToSic.Eav.Persistence.File
 
         public List<IContentType> ContentTypesInBundles() => Log.Func(l =>
         {
-            if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.ContentTypes?.Any() == true) != true))
+            if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.ContentTypes.SafeAny()) != true))
                 return new List<IContentType>();
 
             var contentTypes = JsonBundleBundles
@@ -267,7 +268,7 @@ namespace ToSic.Eav.Persistence.File
 
         public List<IEntity> EntitiesInBundles(IEntitiesSource relationshipSource) => Log.Func(l =>
         {
-            if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.Entities?.Any() == true) != true))
+            if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.Entities.SafeAny()) != true))
                 return (new List<IEntity>(), "no bundles have entities, return none");
 
             var entities = JsonBundleBundles

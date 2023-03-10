@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -163,7 +164,7 @@ namespace ToSic.Eav.DataSources
             var compMaker = new ValueComparison((title, message) => innerErrors = Error.Create(title: title, message: message), Log);
             var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value);
 
-            return innerErrors?.Any() == true
+            return innerErrors.SafeAny()
                 ? (innerErrors, "error") 
                 : (GetFilteredWithLinq(source, compare), "ok");
 

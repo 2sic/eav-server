@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data.Source;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -32,7 +33,7 @@ namespace ToSic.Eav.Data.Build
                     // in this case, so relationships created here were always empty
                     // Could break something, but I don't think it will
                     return new Attribute<IEnumerable<IEntity>>(name, type,
-                        imValues?.Any() == true ? imValues : ValueBuilder.NewEmptyRelationshipValues);
+                        imValues.SafeAny() ? imValues : ValueBuilder.NewEmptyRelationshipValues);
                 // ReSharper disable RedundantCaseLabel
                 case ValueTypes.String:
                 case ValueTypes.Hyperlink:
