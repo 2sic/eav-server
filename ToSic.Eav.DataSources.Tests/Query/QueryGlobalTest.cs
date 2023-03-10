@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Testing.Shared;
@@ -40,7 +41,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         [TestMethod]
         public void ReviewGlobalZonesQuery()
         {
-            var queryName = "Eav.Queries.Global.Zones";
+            var queryName = $"{DataSourceConstants.GlobalEavQueryPrefix}Zones";
             var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, queryName);
             Assert.AreEqual(queryName, queryEnt.Value<string>("Name"), "should find zones");
 
@@ -51,7 +52,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         [TestMethod]
         public void UseGlobalZonesQuery()
         {
-            var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, "Eav.Queries.Global.Zones");
+            var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, $"{DataSourceConstants.GlobalEavQueryPrefix}Zones");
 
             var qDef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests, null);
 

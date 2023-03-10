@@ -6,10 +6,12 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 using static System.StringComparison;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -24,7 +26,7 @@ namespace ToSic.Eav.DataSources.Queries
         private readonly Generator<Query> _queryGenerator;
         public DataSourceFactory DataSourceFactory { get; }
 
-        public QueryManager(DataSourceFactory dataSourceFactory, Generator<Query> queryGenerator, LazySvc<IAppStates> appStates) : base($"{DataSourceConstants.LogPrefix}.QryMan")
+        public QueryManager(DataSourceFactory dataSourceFactory, Generator<Query> queryGenerator, LazySvc<IAppStates> appStates) : base($"{LogPrefix}.QryMan")
         {
             ConnectServices(
                 DataSourceFactory = dataSourceFactory,
@@ -80,30 +82,41 @@ namespace ToSic.Eav.DataSources.Queries
             return (dict);
         });
 
-        internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app) => Log.Func(() =>
+        internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app, int recurseParents = 0) => Log.Func($"App: {app.AppId}, recurse: {recurseParents}", l =>
         {
             // TODO
-            var appState = _appStates.Value.Get(app);
+            var appState = app as AppState ?? _appStates.Value.Get(app);
             var result = QueryEntities(appState);
+            if (recurseParents <= 0) return (result, "ok, no recursions");
+            l.A($"Try to recurse parents {recurseParents}");
+            if (appState.ParentApp?.AppState == null) return (result, "no more parents to recurse on");
+            var resultFromParents = AllQueryItems(appState.ParentApp.AppState, recurseParents -1);
+            result = result.Concat(resultFromParents).ToImmutableList();
             return (result, "ok");
         });
 
-        internal IEntity FindQuery(IAppIdentity appIdentity, string nameOrGuid) => Log.Func(nameOrGuid, () =>
+        internal IEntity FindQuery(IAppIdentity appIdentity, string nameOrGuid, int recurseParents = 0) => Log.Func($"{nameOrGuid}, recurse: {recurseParents}", () =>
         {
-            var all = AllQueryItems(appIdentity);
+            if (nameOrGuid.IsEmptyOrWs()) return (null, "null - no name");
+            var all = AllQueryItems(appIdentity, recurseParents);
             var result = FindByNameOrGuid(all, nameOrGuid);
+            // If nothing found and we have an old name, try the new name
+            if (result == null && nameOrGuid.StartsWith(GlobalEavQueryPrefix))
+                result = FindByNameOrGuid(all, nameOrGuid.Replace(GlobalEavQueryPrefix, GlobalEavQueryPrefix15));
             return (result, result == null ? "null" : "ok");
         });
 
-        public static IImmutableList<IEntity> QueryEntities(AppState appState)
+        // todo: move to query-read or helper
+
+        private static IImmutableList<IEntity> QueryEntities(AppState appState)
             => appState.List.OfType(Constants.QueryTypeName).ToImmutableList();
 
-        //public static IEntity FindByName(IImmutableList<IEntity> queries, string name) 
-        //    => queries.FirstOrDefault(e => e.Value<string>("Name") == name);
 
-        public static IEntity FindByNameOrGuid(IImmutableList<IEntity> queries, string nameOrGuid) =>
+        // todo: move to query-read or helper, or make private
+
+        private static IEntity FindByNameOrGuid(IImmutableList<IEntity> queries, string nameOrGuid) =>
             queries.FirstOrDefault(
-                q => string.Equals(q.Value<string>("Name"), nameOrGuid, InvariantCultureIgnoreCase)
-                     || string.Equals(q.EntityGuid.ToString(), nameOrGuid, InvariantCultureIgnoreCase));
+                q => q.Value<string>("Name").EqualsInsensitive(nameOrGuid)
+                     || q.EntityGuid.ToString().EqualsInsensitive(nameOrGuid));
     }
 }

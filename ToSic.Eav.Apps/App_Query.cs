@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 
 namespace ToSic.Eav.Apps
 {
@@ -36,32 +36,23 @@ namespace ToSic.Eav.Apps
             if (Query.ContainsKey(name) && Query[name] is Query query)
                 return query;
 
-            if (name.StartsWith(DataSourceConstants.GlobalQueryPrefix))
-                return GetParentOrGlobalQuery(name.Substring(DataSourceConstants.GlobalQueryPrefix.Length - 1),
-                    $"Query with prefix {DataSourceConstants.GlobalQueryPrefix} couldn't be found.");
+            if (name.StartsWith(GlobalQueryPrefix))
+                return GetParentOrGlobalQuery(name.Substring(GlobalQueryPrefix.Length - 1),
+                    $"Query with prefix {GlobalQueryPrefix} couldn't be found.");
 
-            if (name.StartsWith(DataSourceConstants.GlobalEavQueryPrefix))
+            if (name.StartsWith(GlobalEavQueryPrefix) || name.StartsWith(GlobalEavQueryPrefix15))
                 return GetParentOrGlobalQuery(name, "Global EAV Query not Found!");
 
             return GetParentOrGlobalQuery(name, null);
-
-            // not found
-            //return null;
         }
 
         private Query GetParentOrGlobalQuery(string name, string errorOnNotFound)
         {
-            // try parent
-            var parentAppState = AppState.ParentApp?.AppState;
-            var qent = parentAppState == null ? null : Services.QueryManager.Value.FindQuery(parentAppState, name);
+            var qEntity = Services.QueryManager.Value.FindQuery(AppState, name, recurseParents: 3);
 
-            // for inherited app, parent-app is master shared app, so we need parent-parent-app to check the global queries
-            if (qent == null && parentAppState.ParentApp?.AppState != null)
-                qent = Services.QueryManager.Value.FindQuery(parentAppState.ParentApp.AppState, name);
+            if (qEntity == null && errorOnNotFound != null) throw new Exception(errorOnNotFound);
 
-            if (qent == null && errorOnNotFound != null) throw new Exception(errorOnNotFound);
-
-            return Services.QueryGenerator.New().Init(ZoneId, AppId, qent, ConfigurationProvider, ShowDrafts, null);
+            return Services.QueryGenerator.New().Init(ZoneId, AppId, qEntity, ConfigurationProvider, ShowDrafts, null);
         }
     }
 }

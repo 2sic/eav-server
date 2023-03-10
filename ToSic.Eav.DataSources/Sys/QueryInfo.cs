@@ -129,9 +129,10 @@ namespace ToSic.Eav.DataSources.Sys
                 return;
 
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
-            var found = qName.StartsWith(DataSourceConstants.GlobalEavQueryPrefix)
-                ? QueryManager.FindQuery(Constants.PresetIdentity, qName)
-                : QueryManager.FindQuery(this, qName);
+            var found = QueryManager.FindQuery(this, qName, recurseParents: 3);
+                //qName.StartsWith(DataSourceConstants.GlobalEavQueryPrefix)
+                //? QueryManager.FindQuery(Constants.PresetIdentity, qName)
+                //: QueryManager.FindQuery(this, qName);
 
             if (found == null)
                 throw new Exception($"Can't build information about query - couldn't find query '{qName}'");

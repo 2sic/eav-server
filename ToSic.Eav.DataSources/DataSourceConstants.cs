@@ -17,10 +17,12 @@
         /// </summary>
         public const string GlobalEavQueryPrefix = "Eav.Queries.Global.";
 
-        public const string GlobalEavQueryPrefix15 = "Global:";
+        public const string GlobalEavQueryPrefix15 = "System:";
 
         /// <summary>
         /// Unsure what this is for, and if there are actually any queries that match this!
+        ///
+        /// it appears to not be part of the name (seems to get removed) but a key to look in parents - probably drop
         /// </summary>
         public const string GlobalQueryPrefix = "Global.";
     }
