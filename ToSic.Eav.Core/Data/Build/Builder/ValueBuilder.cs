@@ -160,6 +160,8 @@ namespace ToSic.Eav.Data.Build
 
         public object PreConvertReferences(object value, ValueTypes valueType, bool resolveHyperlink) => Log.Func(() =>
         {
+            if (value is IAttribute)
+                throw new ArgumentException($"Value must be a simple value but it's an {nameof(IAttribute)}");
             if (resolveHyperlink && valueType == ValueTypes.Hyperlink && value is string stringValue)
             {
                 var converted = _valueConverter.Value.ToReference(stringValue);
