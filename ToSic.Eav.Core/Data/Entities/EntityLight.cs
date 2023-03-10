@@ -173,6 +173,8 @@ namespace ToSic.Eav.Data
                     return OwnerId;
                 case Attributes.EntityFieldModified:
                     return Modified;
+                case Attributes.EntityAppId:
+                    return AppId;
                 default:
                     return null;
             }
