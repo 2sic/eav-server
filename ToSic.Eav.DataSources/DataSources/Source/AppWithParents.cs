@@ -25,19 +25,19 @@ namespace ToSic.Eav.DataSources
             var appState = _appStates.Get(this);
             
             // note: using ShowDrafts = false, fix this if this DS ever becomes usable in VisualQuery
-            var initialSource = _dataSourceFactory.GetPublishing(appState); //, true);
+            var initialSource = _dataSourceFactory.GetPublishing(appState);
 
             var merge = _dataSourceFactory.GetDataSource<StreamMerge>(initialSource);
             // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-                var parent = appState.ParentApp;
-                while (parent?.AppState != null)
-                {
-                    var next = _dataSourceFactory.GetPublishing(parent.AppState);
-                    merge.In.Add("App" + parent.AppState.NameId, next.Out.First().Value);
-                    parent = parent.AppState.ParentApp;
-                }
+            var parent = appState.ParentApp;
+            while (parent?.AppState != null)
+            {
+                var next = _dataSourceFactory.GetPublishing(parent.AppState);
+                merge.In.Add("App" + parent.AppState.NameId, next.Out.First().Value);
+                parent = parent.AppState.ParentApp;
+            }
 
-                return merge.Out.First().Value.List.ToImmutableList();
+            return merge.Out.First().Value.List.ToImmutableList();
         });
     }
 }
