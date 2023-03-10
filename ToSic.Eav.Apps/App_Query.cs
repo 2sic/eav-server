@@ -40,7 +40,7 @@ namespace ToSic.Eav.Apps
                 return GetParentOrGlobalQuery(name.Substring(GlobalQueryPrefix.Length - 1),
                     $"Query with prefix {GlobalQueryPrefix} couldn't be found.");
 
-            if (name.StartsWith(GlobalEavQueryPrefix) || name.StartsWith(GlobalEavQueryPrefix15))
+            if (name.StartsWith(SystemQueryPrefixPreV15) || name.StartsWith(SystemQueryPrefix))
                 return GetParentOrGlobalQuery(name, "Global EAV Query not Found!");
 
             return GetParentOrGlobalQuery(name, null);

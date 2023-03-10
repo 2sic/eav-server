@@ -101,8 +101,8 @@ namespace ToSic.Eav.DataSources.Queries
             var all = AllQueryItems(appIdentity, recurseParents);
             var result = FindByNameOrGuid(all, nameOrGuid);
             // If nothing found and we have an old name, try the new name
-            if (result == null && nameOrGuid.StartsWith(GlobalEavQueryPrefix))
-                result = FindByNameOrGuid(all, nameOrGuid.Replace(GlobalEavQueryPrefix, GlobalEavQueryPrefix15));
+            if (result == null && nameOrGuid.StartsWith(SystemQueryPrefixPreV15))
+                result = FindByNameOrGuid(all, nameOrGuid.Replace(SystemQueryPrefixPreV15, SystemQueryPrefix));
             return (result, result == null ? "null" : "ok");
         });
 

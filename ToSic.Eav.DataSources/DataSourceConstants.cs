@@ -15,9 +15,9 @@
         /// <summary>
         /// Global queries must start with this prefix
         /// </summary>
-        public const string GlobalEavQueryPrefix = "Eav.Queries.Global.";
+        public const string SystemQueryPrefixPreV15 = "Eav.Queries.Global.";
 
-        public const string GlobalEavQueryPrefix15 = "System:";
+        public const string SystemQueryPrefix = "System.";
 
         /// <summary>
         /// Unsure what this is for, and if there are actually any queries that match this!
