@@ -5,13 +5,15 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class DataSourceConstants
     {
+        /// <summary>
+        /// Prefix to use for all internal data sources.
+        /// </summary>
         public const string LogPrefix = "DS";
-        public static readonly string RootDataSource = typeof(IAppRoot).AssemblyQualifiedName;
 
         #region Version Change Constants
 
-        internal const string V3To4DataSourceDllOld = ", ToSic.Eav";
-        internal const string V3To4DataSourceDllNew = ", ToSic.Eav.DataSources";
+        [PrivateApi] internal const string V3To4DataSourceDllOld = ", ToSic.Eav";
+        [PrivateApi] internal const string V3To4DataSourceDllNew = ", ToSic.Eav.DataSources";
 
         #endregion
 

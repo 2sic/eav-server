@@ -151,7 +151,7 @@ namespace ToSic.Eav.DataSources.Queries
                 var assemblyAndType = dataQueryPart.DataSourceType;
 
                 var appIdentity = _appStates.IdentityOfApp(queryDef.AppId);
-                var dataSource = _dataSourceFactory.GetDataSource(assemblyAndType, appIdentity, lookUps: partConfig);
+                var dataSource = _dataSourceFactory.Create(assemblyAndType, appIdentity, lookUps: partConfig);
 	            dataSource.Guid = dataQueryPart.Guid;
 
                 try

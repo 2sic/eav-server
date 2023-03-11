@@ -3,6 +3,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Catalog;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources.Queries
 {
@@ -43,8 +44,8 @@ namespace ToSic.Eav.DataSources.Queries
         /// <returns></returns>
         private string RewriteOldAssemblyNames(string assemblyAndType)
         {
-            var newName = assemblyAndType.EndsWith(DataSourceConstants.V3To4DataSourceDllOld)
-                ? assemblyAndType.Replace(DataSourceConstants.V3To4DataSourceDllOld, DataSourceConstants.V3To4DataSourceDllNew)
+            var newName = assemblyAndType.EndsWith(V3To4DataSourceDllOld)
+                ? assemblyAndType.Replace(V3To4DataSourceDllOld, V3To4DataSourceDllNew)
                 : assemblyAndType;
 
             // find the new name in the catalog

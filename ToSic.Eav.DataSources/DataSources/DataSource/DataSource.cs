@@ -48,10 +48,10 @@ namespace ToSic.Eav.DataSources
         public string Label { get; set; }
 
         /// <inheritdoc />
-        public virtual int AppId { get; set; }
+        public virtual int AppId { get; protected internal set; }
 
         /// <inheritdoc />
-        public virtual int ZoneId { get; set; }
+        public virtual int ZoneId { get; protected internal set; }
 
         /// <inheritdoc />
         public Guid Guid { get; set; }

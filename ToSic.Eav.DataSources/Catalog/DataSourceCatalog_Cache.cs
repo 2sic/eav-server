@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Plumbing;
 
@@ -21,12 +20,8 @@ namespace ToSic.Eav.DataSources.Catalog
         /// <param name="name"></param>
         /// <returns></returns>
         private static DataSourceInfo FindInCache(string name) =>
-            Cache.FirstOrDefault(dst =>
-                string.Equals(dst.Name, name,
-                    StringComparison.InvariantCultureIgnoreCase))
-            ?? Cache.FirstOrDefault(dst =>
-                dst.VisualQuery?.PreviousNames.Any(pn => string.Equals(pn, name,
-                    StringComparison.InvariantCultureIgnoreCase)) ?? false);
+            Cache.FirstOrDefault(dst => dst.Name.EqualsInsensitive(name))
+            ?? Cache.FirstOrDefault(dst => dst.VisualQuery?.PreviousNames.Any(pn => pn.EqualsInsensitive(name)) ?? false);
 
     }
 }
