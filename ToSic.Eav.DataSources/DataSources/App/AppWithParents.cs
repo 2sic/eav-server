@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources
             // note: using ShowDrafts = false, fix this if this DS ever becomes usable in VisualQuery
             var initialSource = _dataSourceFactory.GetPublishing(appState, showDrafts: ShowDrafts);
 
-            var merge = _dataSourceFactory.GetDataSource<StreamMerge>(initialSource);
+            var merge = _dataSourceFactory.Create<StreamMerge>(upstream: initialSource);
             // 2dm 2023-01-22 #maybeSupportIncludeParentApps
             var parent = appState.ParentApp;
             var countRecursions = 0;

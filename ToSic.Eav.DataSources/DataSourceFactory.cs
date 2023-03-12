@@ -31,32 +31,6 @@ namespace ToSic.Eav.DataSources
 
         #region GetDataSource 
 
-        ///// <summary>
-        ///// Get DataSource for specified sourceName/Type
-        ///// </summary>
-        ///// <param name="assemblyAndType">Full Qualified Type/Interface Name</param>
-        ///// <param name="appIdentity"></param>
-        ///// <param name="upstream">In-Connection</param>
-        ///// <param name="lookUps">Provides configuration values if needed</param>
-        ///// <returns>A single DataSource</returns>
-        //public IDataSource Create(string assemblyAndType, IAppIdentity appIdentity, IDataSource upstream = null, ILookUpEngine lookUps = null
-        //) => Log.Func($"name: {assemblyAndType}", () =>
-        //{
-        //    // try to find with assembly name, or otherwise with GlobalName / previous names
-        //    var type = DataSourceCatalog.FindType(assemblyAndType);
-
-        //    // still not found? must return an Error DataSource
-        //    if (type == null)
-        //    {
-        //        var errDs = _errDsGenerator.New();
-        //        errDs.Title = "DataSource not found";
-        //        errDs.Message = $"DataSource '{assemblyAndType}' is not installed on Server. You should probably install it in the CMS.";
-        //        return errDs;
-        //    }
-        //    var result = Create(type, appIdentity, upstream, lookUps);
-        //    return result;
-        //});
-
         /// <summary>
         /// Get DataSource for specified sourceName/Type
         /// </summary>
@@ -67,7 +41,7 @@ namespace ToSic.Eav.DataSources
         /// <returns>A single DataSource</returns>
         public IDataSource Create(Type type, IAppIdentity appIdentity, IDataSource upstream, ILookUpEngine lookUps) => Log.Func(() =>
         {
-            var newDs = _serviceProvider.Build<DataSource>(type, Log);
+            var newDs = _serviceProvider.Build<IDataSource>(type, Log);
             return newDs.Init(appIdentity: appIdentity, upstream: upstream, lookUp: lookUps);
         });
 
@@ -76,8 +50,6 @@ namespace ToSic.Eav.DataSources
 
         #region GetDataSource Typed
 
-        public TDataSource GetDataSource<TDataSource>(IDataSource upstream) where TDataSource : IDataSource
-            => GetDataSource<TDataSource>(upstream, upstream, upstream.Configuration.LookUpEngine);
 
         /// <summary>
         /// Experimental 12.10
@@ -85,26 +57,32 @@ namespace ToSic.Eav.DataSources
         /// <typeparam name="TDataSource"></typeparam>
         /// <param name="upstream"></param>
         /// <returns></returns>
-        [PrivateApi("internal, experimental")]
-        public TDataSource GetDataSource<TDataSource>(IDataStream upstream) where TDataSource : IDataSource
+        [PrivateApi("internal, experimental, only used in tests ATM")]
+        public TDataSource Create<TDataSource>(IDataStream upstream) where TDataSource : IDataSource
         {
             if (upstream.Source == null)
                 throw new Exception("Unexpected source - stream without a real source. can't process; wip");
             var source = upstream.Source;
-            var ds = GetDataSource<TDataSource>(source, null, source.Configuration.LookUpEngine);
+            var ds = Create<TDataSource>(appIdentity: source, configLookUp: source.Configuration.LookUpEngine);
             if (!(ds is IDataTarget target))
                 throw new Exception("error, ds not target; wip");
             target.Attach(DataSourceConstants.DefaultStreamName, upstream);
             return ds;
         }
 
-        public TDataSource GetDataSource<TDataSource>(IAppIdentity appIdentity, IDataSource upstream, ILookUpEngine lookUps = null) where TDataSource : IDataSource => Log.Func(() =>
+        public TDataSource Create<TDataSource>(
+            string noParamOrder = Parameters.Protector,
+            IDataSource upstream = default,
+            IAppIdentity appIdentity = default,
+            ILookUpEngine configLookUp = default) where TDataSource : IDataSource => Log.Func(() =>
         {
-            if (upstream == null && lookUps == null)
-                throw new Exception($"Can't get GetDataSource<T> because both {nameof(upstream)} and {nameof(lookUps)} are null.");
+            if (upstream == null && appIdentity == null)
+                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(upstream)} and {nameof(appIdentity)} no not be null.");
+            if (upstream == null && configLookUp == null)
+                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(upstream)} and {nameof(configLookUp)} no not be null.");
 
             var newDs = _serviceProvider.Build<TDataSource>(Log);
-            return newDs.Init(appIdentity: appIdentity, upstream: upstream, lookUp: lookUps ?? upstream.Configuration.LookUpEngine);
+            return newDs.Init(appIdentity: appIdentity, upstream: upstream, lookUp: configLookUp);
         });
 
         #endregion
@@ -116,18 +94,18 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         /// <param name="appIdentity"></param>
         /// <param name="showDrafts">Indicates whether Draft Entities should be returned</param>
-        /// <param name="configProvider"></param>
+        /// <param name="configLookUp"></param>
         /// <returns>A single DataSource</returns>
         public IDataSource GetPublishing(
             IAppIdentity appIdentity,
             bool showDrafts = false,
-            ILookUpEngine configProvider = null) => Log.Func( $"#{appIdentity.Show()}, draft:{showDrafts}, config:{configProvider != null}", () =>
+            ILookUpEngine configLookUp = null) => Log.Func( $"#{appIdentity.Show()}, draft:{showDrafts}, config:{configLookUp != null}", () =>
         {
-            configProvider = configProvider ?? _lookupResolveLazy.Value.GetLookUpEngine(0);
+            configLookUp = configLookUp ?? _lookupResolveLazy.Value.GetLookUpEngine(0);
 
-            var appRoot = GetDataSource<IAppRoot>(appIdentity, null, configProvider);
+            var appRoot = Create<IAppRoot>(appIdentity: appIdentity, configLookUp: configLookUp);
 
-            var publishingFilter = GetDataSource<PublishingFilter>(appIdentity, appRoot, configProvider);
+            var publishingFilter = Create<PublishingFilter>(upstream: appRoot, configLookUp: configLookUp);
             publishingFilter.ShowDrafts = showDrafts;
 
             return publishingFilter;

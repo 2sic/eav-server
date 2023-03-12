@@ -58,7 +58,7 @@ namespace ToSic.Eav.Apps.Parts
         // , bool includeParentApps = false
         )
         {
-            var typeFilter = _dataSourceFactory.Value.GetDataSource<EntityTypeFilter>(Parent.Data); // need to go to cache, to include published & unpublished
+            var typeFilter = _dataSourceFactory.Value.Create<EntityTypeFilter>(upstream: Parent.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
             // 2dm 2023-01-22 #maybeSupportIncludeParentApps
             //if (includeParentApps) typeFilter.IncludeParentApps = true;
@@ -66,8 +66,8 @@ namespace ToSic.Eav.Apps.Parts
         }
         public IEnumerable<IEntity> GetWithParentAppsExperimental(string contentTypeName) => Log.Func(() =>
         {
-            var merged = _dataSourceFactory.Value.GetDataSource<AppWithParents>(Parent.Data);
-            var typeFilter = _dataSourceFactory.Value.GetDataSource<EntityTypeFilter>(merged);
+            var merged = _dataSourceFactory.Value.Create<AppWithParents>(upstream: Parent.Data);
+            var typeFilter = _dataSourceFactory.Value.Create<EntityTypeFilter>(upstream: merged);
             typeFilter.TypeName = contentTypeName;
             return typeFilter.List;
         });

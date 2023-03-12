@@ -61,7 +61,7 @@ namespace ToSic.Eav.Apps
             // Note: ModulePermissionController does not work when indexing, return false for search
             var initialSource = _dsFactory.GetPublishing(this, ShowDrafts, ConfigurationProvider);
 
-            var appDataWithCreate = _dsFactory.GetDataSource<AppData>(initialSource);
+            var appDataWithCreate = _dsFactory.Create<AppData>(upstream: initialSource);
 
             return appDataWithCreate;
         });

@@ -129,11 +129,10 @@ namespace ToSic.Eav.DataSources
             // If something is done badly, we can easily get recursions
             if (_attachOtherDataSourceRunning) throw new Exception("We have an unexpected recursion!");
             _attachOtherDataSourceRunning = true;
-			// all not-set properties will auto-initialize
-			if (ZoneSwitch != 0)
-				ZoneId = ZoneSwitch;
-		    if (AppSwitch != 0)
-				AppId = AppSwitch;
+			// If we have zone/app switch, set not (they don't get updated if only the config is modified)
+			// All not-set properties will use defaults 
+			if (ZoneSwitch != 0) ZoneId = ZoneSwitch;
+		    if (AppSwitch != 0) AppId = AppSwitch;
 
 		    IDataSource appDs;
 
@@ -143,7 +142,7 @@ namespace ToSic.Eav.DataSources
             {
                 Log.A("Will use Ancestors accessor with all ancestors");
                 // Important: only pass the identity in, never pass this source in, or you'll get infinite recursions
-                var appStack = _services.DataSourceFactory.GetDataSource<AppWithParents>(new AppIdentity(this), null, lookUps: Configuration.LookUpEngine);
+                var appStack = _services.DataSourceFactory.Create<AppWithParents>(appIdentity: new AppIdentity(this), configLookUp: Configuration.LookUpEngine);
                 appStack.AppId = AppId;
                 appStack.ZoneId = ZoneId;
                 appStack.ShowDrafts = ShowDrafts;
@@ -151,7 +150,7 @@ namespace ToSic.Eav.DataSources
             }
             else
                 appDs = _services.DataSourceFactory.GetPublishing(this,
-                    configProvider: Configuration.LookUpEngine, showDrafts: ShowDrafts);
+                    configLookUp: Configuration.LookUpEngine, showDrafts: ShowDrafts);
 
             Attach(DataSourceConstants.DefaultStreamName, appDs);
             _attachOtherDataSourceRunning = false;

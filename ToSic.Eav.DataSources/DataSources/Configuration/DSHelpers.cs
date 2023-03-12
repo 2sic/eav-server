@@ -29,12 +29,14 @@ namespace ToSic.Eav.DataSources
 
             if (dataSource is DataSource realDs)
             {
+                appIdentity = appIdentity ?? upstream;
                 realDs.ZoneId = appIdentity.ZoneId;
                 realDs.AppId = appIdentity.AppId;
             }
 
             if (upstream != null) (dataSource as IDataTarget)?.Attach(upstream);
 
+            lookUp = lookUp ?? dataSource?.Configuration?.LookUpEngine;
             if (lookUp != null && dataSource.Configuration is DataSourceConfiguration dsConfig)
                 dsConfig.LookUpEngine = lookUp;
             return dataSource;
