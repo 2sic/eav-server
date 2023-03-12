@@ -12,13 +12,13 @@ namespace ToSic.Eav.DataSources
         public override int AppId
         {
             get => _appId == 0 ? base.AppId : _appId;
-            set => _appId = value;
+            protected internal set => _appId = value;
         }
 
         public override int ZoneId
         {
             get => _zoneId == 0 ? base.ZoneId : _zoneId;
-            set => _zoneId = value;
+            protected internal set => _zoneId = value;
         }
 
         /// <summary>

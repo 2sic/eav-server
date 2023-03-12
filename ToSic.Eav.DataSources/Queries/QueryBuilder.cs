@@ -123,9 +123,16 @@ namespace ToSic.Eav.DataSources.Queries
 
             #endregion
 
-	        #region init all DataQueryParts
+            #region Load Parameters needed for all parts
 
-	        l.A($"add parts to pipe#{queryDef.Entity.EntityId} ");
+            var appIdentity = _appStates.IdentityOfApp(queryDef.AppId);
+            var dimensions = _cultureResolver.SafeLanguagePriorityCodes();
+
+            #endregion
+
+            #region init all DataQueryParts
+
+            l.A($"add parts to pipe#{queryDef.Entity.EntityId} ");
 	        var dataSources = new Dictionary<string, IDataSource>();
             var parts = queryDef.Parts;
             l.A($"parts:{parts.Count}");
@@ -139,19 +146,17 @@ namespace ToSic.Eav.DataSources.Queries
 
 	            var partConfig = new LookUpEngine(templateConfig, Log);
                 // add / set item part configuration
-	            partConfig.Add(new LookUpInQueryMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, _cultureResolver.SafeLanguagePriorityCodes()));
+	            partConfig.Add(new LookUpInQueryMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, dimensions));
 
 	            // if show-draft in overridden, add that to the settings
 	            partConfig.AddOverride(new LookUpInDictionary(DataSource.MyConfiguration, itemSettingsShowDrafts));
 
                 #endregion
 
-
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
-                var assemblyAndType = dataQueryPart.DataSourceType;
+                var dsType = dataQueryPart.DataSourceType;
 
-                var appIdentity = _appStates.IdentityOfApp(queryDef.AppId);
-                var dataSource = _dataSourceFactory.Create(assemblyAndType, appIdentity, lookUps: partConfig);
+                var dataSource = _dataSourceFactory.Create(dsType, appIdentity, upstream: null, lookUps: partConfig);
 	            dataSource.Guid = dataQueryPart.Guid;
 
                 try
@@ -161,7 +166,7 @@ namespace ToSic.Eav.DataSources.Queries
 
                 var partGuidStr = dataQueryPart.Guid.ToString();
 
-                l.A($"add '{assemblyAndType}' as part#{dataQueryPart.Id}({partGuidStr.Substring(0, 6)}...)");
+                l.A($"add '{dsType.FullName}' as part#{dataQueryPart.Id}({partGuidStr.Substring(0, 6)}...)");
 	            dataSources.Add(partGuidStr, dataSource);
 	        }
 	        dataSources.Add("Out", outTarget);

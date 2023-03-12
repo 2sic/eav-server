@@ -29,29 +29,30 @@ namespace ToSic.Eav.DataSources.Queries
         /// The .net type which the data source has for this part. <br/>
         /// Will automatically resolve old names to new names as specified in the DataSources <see cref="VisualQueryAttribute"/>
         /// </summary>
-        public string DataSourceType => _dataSourceType ?? (_dataSourceType = RewriteOldAssemblyNames(DataSourceTypeInConfig));
-        private string _dataSourceType;
+        public string DataSourceTypeIdentifier => _dstName ?? (_dstName = DataSourceCatalog.Find(GetCorrectedTypeName()));
+        private string _dstName;
+
+        public Type DataSourceType => _dsType ?? (_dsType = DataSourceCatalog.FindTypeByGuidOrName(GetCorrectedTypeName()));
+        private Type _dsType;
         
         private string DataSourceTypeInConfig
             => Get<string>(QueryConstants.PartAssemblyAndType, null)
                ?? throw new Exception("Tried to get DataSource Type of a query part, but didn't find anything");
 
 
+
         /// <summary>
         /// Check if a Query part has an old assembly name, and if yes, correct it to the new name
         /// </summary>
-        /// <param name="assemblyAndType"></param>
         /// <returns></returns>
-        private string RewriteOldAssemblyNames(string assemblyAndType)
+        private string GetCorrectedTypeName()
         {
+            var assemblyAndType = DataSourceTypeInConfig;
+            // Correct old stored names (ca. before 2sxc 4 to new)
             var newName = assemblyAndType.EndsWith(V3To4DataSourceDllOld)
                 ? assemblyAndType.Replace(V3To4DataSourceDllOld, V3To4DataSourceDllNew)
                 : assemblyAndType;
-
-            // find the new name in the catalog
-            return DataSourceCatalog.Find(newName);
+            return newName;
         }
-
-
     }
 }

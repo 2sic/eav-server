@@ -21,8 +21,18 @@ namespace ToSic.Eav.DataSources.Catalog
             var newName = longName.Substring(0, second);
             return newName;
         }
+        internal static Type FindTypeByGuidOrName(string name)
+        {
+            // New 11.12.x If the type is identified by a GUID, that's what we should return
+            var typeInfo = FindInCache(name);
+            if (typeInfo?.Name != null) return typeInfo.Type;
 
-        internal static Type FindType(string name)
+            // Old mechanism which checks real types etc but probably is never needed any more
+            return FindType(name);
+        }
+
+        // Note: only public because we're still supporting a very old API in a 2sxc code
+        public static Type FindType(string name)
         {
             // first try to just find the type, but check if it's marked [Obsolete]
             var type = Type.GetType(name);

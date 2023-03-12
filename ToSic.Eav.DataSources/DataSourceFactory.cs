@@ -1,6 +1,5 @@
 ﻿using System;
 using ToSic.Eav.Apps;
-using ToSic.Eav.DataSources.Catalog;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
@@ -32,31 +31,31 @@ namespace ToSic.Eav.DataSources
 
         #region GetDataSource 
 
-        /// <summary>
-        /// Get DataSource for specified sourceName/Type
-        /// </summary>
-        /// <param name="assemblyAndType">Full Qualified Type/Interface Name</param>
-        /// <param name="appIdentity"></param>
-        /// <param name="upstream">In-Connection</param>
-        /// <param name="lookUps">Provides configuration values if needed</param>
-        /// <returns>A single DataSource</returns>
-        public IDataSource Create(string assemblyAndType, IAppIdentity appIdentity, IDataSource upstream = null, ILookUpEngine lookUps = null
-        ) => Log.Func($"name: {assemblyAndType}", () =>
-        {
-            // try to find with assembly name, or otherwise with GlobalName / previous names
-            var type = DataSourceCatalog.FindType(assemblyAndType);
+        ///// <summary>
+        ///// Get DataSource for specified sourceName/Type
+        ///// </summary>
+        ///// <param name="assemblyAndType">Full Qualified Type/Interface Name</param>
+        ///// <param name="appIdentity"></param>
+        ///// <param name="upstream">In-Connection</param>
+        ///// <param name="lookUps">Provides configuration values if needed</param>
+        ///// <returns>A single DataSource</returns>
+        //public IDataSource Create(string assemblyAndType, IAppIdentity appIdentity, IDataSource upstream = null, ILookUpEngine lookUps = null
+        //) => Log.Func($"name: {assemblyAndType}", () =>
+        //{
+        //    // try to find with assembly name, or otherwise with GlobalName / previous names
+        //    var type = DataSourceCatalog.FindType(assemblyAndType);
 
-            // still not found? must return an Error DataSource
-            if (type == null)
-            {
-                var errDs = _errDsGenerator.New();
-                errDs.Title = "DataSource not found";
-                errDs.Message = $"DataSource '{assemblyAndType}' is not installed on Server. You should probably install it in the CMS.";
-                return errDs;
-            }
-            var result = Create(type, appIdentity, upstream, lookUps);
-            return result;
-        });
+        //    // still not found? must return an Error DataSource
+        //    if (type == null)
+        //    {
+        //        var errDs = _errDsGenerator.New();
+        //        errDs.Title = "DataSource not found";
+        //        errDs.Message = $"DataSource '{assemblyAndType}' is not installed on Server. You should probably install it in the CMS.";
+        //        return errDs;
+        //    }
+        //    var result = Create(type, appIdentity, upstream, lookUps);
+        //    return result;
+        //});
 
         /// <summary>
         /// Get DataSource for specified sourceName/Type
@@ -66,18 +65,16 @@ namespace ToSic.Eav.DataSources
         /// <param name="upstream">In-Connection</param>
         /// <param name="lookUps">Provides configuration values if needed</param>
         /// <returns>A single DataSource</returns>
-        private IDataSource Create(Type type, IAppIdentity appIdentity, IDataSource upstream, ILookUpEngine lookUps) => Log.Func(() =>
+        public IDataSource Create(Type type, IAppIdentity appIdentity, IDataSource upstream, ILookUpEngine lookUps) => Log.Func(() =>
         {
             var newDs = _serviceProvider.Build<DataSource>(type, Log);
             return newDs.Init(appIdentity: appIdentity, upstream: upstream, lookUp: lookUps);
-            //ConfigureNewDataSource(newSource: newDs, appIdentity: appIdentity, upstream: upstream, configLookUp: lookUps);
-            //return newDs;
         });
 
 
         #endregion
 
-        #region GetDataSource Typed (preferred)
+        #region GetDataSource Typed
 
         public TDataSource GetDataSource<TDataSource>(IDataSource upstream) where TDataSource : IDataSource
             => GetDataSource<TDataSource>(upstream, upstream, upstream.Configuration.LookUpEngine);
