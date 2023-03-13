@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -21,7 +22,7 @@ namespace ToSic.Eav.Serialization
         private static readonly JsonSerializerOptions DefaultOptions = new JsonSerializerOptions
         {
             AllowTrailingCommas = true,
-            Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter(), new ObjectToInferredTypesConverter() },
+            Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter(), new ObjectToInferredTypesConverter(), new ExceptionConverter<Exception>() },
             //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             IncludeFields = true,
             // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions

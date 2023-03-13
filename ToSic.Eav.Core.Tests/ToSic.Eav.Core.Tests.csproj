@@ -123,6 +123,7 @@
     <Compile Include="PlumbingTests\ObjectExtensionTests\ConvertOrFallback.cs" />
     <Compile Include="PlumbingTests\AnonymousTypeTests.cs" />
     <Compile Include="PlumbingTests\SubStringTests.cs" />
+    <Compile Include="Serialization\ExceptionConverterTests.cs" />
     <Compile Include="Signature\KeyPairForTesting.cs" />
     <Compile Include="Signature\SignatureDataSha256.cs" />
     <Compile Include="Signature\SignatureHashSha1.cs" />
