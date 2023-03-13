@@ -8,7 +8,7 @@ namespace ToSic.Testing.Shared
     public static class DataSourceFactoryTestExtensions
     {
         public static TDataSource TestCreate<TDataSource>(
-            this DataSourceFactory dsf,
+            this IDataSourceFactory dsf,
             string noParamOrder = Parameters.Protector,
             IDataSource upstream = default,
             IAppIdentity appIdentity = default,

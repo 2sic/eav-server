@@ -8,7 +8,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
 {
-    public class DataSourceFactory: ServiceBase
+    public class DataSourceFactory: ServiceBase, IDataSourceFactory
     {
         #region Constructor / DI
 
@@ -28,15 +28,7 @@ namespace ToSic.Eav.DataSources
 
         #region GetDataSource
 
-        /// <summary>
-        /// Get DataSource for specified sourceName/Type
-        /// </summary>
-        /// <param name="type">the .net type of this data-source</param>
-        /// <param name="noParamOrder"></param>
-        /// <param name="appIdentity"></param>
-        /// <param name="source">In-Connection</param>
-        /// <param name="configSource">Provides configuration values if needed</param>
-        /// <returns>A single DataSource</returns>
+        /// <inheritdoc />
         public IDataSource Create(
             Type type,
             string noParamOrder = Parameters.Protector,
@@ -73,6 +65,7 @@ namespace ToSic.Eav.DataSources
             return ds;
         }
 
+        /// <inheritdoc />
         public TDataSource Create<TDataSource>(
             string noParamOrder = Parameters.Protector,
             IDataSource source = default,
@@ -92,14 +85,7 @@ namespace ToSic.Eav.DataSources
 
         #region Get Root Data Source with Publishing
 
-        /// <summary>
-        /// Gets a DataSource with Query having PublishingFilter, ICache and IRootSource.
-        /// </summary>
-        /// <param name="noParamOrder"></param>
-        /// <param name="appIdentity"></param>
-        /// <param name="showDrafts">Indicates whether Draft Entities should be returned</param>
-        /// <param name="configSource"></param>
-        /// <returns>A single DataSource</returns>
+        /// <inheritdoc />
         public IDataSource CreateDefault(
             IAppIdentity appIdentity,
             string noParamOrder = Parameters.Protector,

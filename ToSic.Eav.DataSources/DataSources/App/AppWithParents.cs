@@ -32,11 +32,11 @@ namespace ToSic.Eav.DataSources
 
 
         private readonly IAppStates _appStates;
-        private readonly DataSourceFactory _dataSourceFactory;
+        private readonly IDataSourceFactory _dataSourceFactory;
         private int _appId;
         private int _zoneId;
 
-        public AppWithParents(MyServices services, DataSourceFactory dataSourceFactory, IAppStates appStates) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
+        public AppWithParents(MyServices services, IDataSourceFactory dataSourceFactory, IAppStates appStates) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
         {
             ConnectServices(
                 _dataSourceFactory = dataSourceFactory,

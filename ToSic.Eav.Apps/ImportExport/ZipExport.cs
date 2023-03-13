@@ -39,7 +39,7 @@ namespace ToSic.Eav.Apps.ImportExport
         #region DI Constructor
 
         public ZipExport(AppRuntime appRuntime,
-            DataSourceFactory dataSourceFactory,
+            IDataSourceFactory dataSourceFactory,
             XmlExporter xmlExporter,
             Generator<FileManager> fileManagerGenerator,
             IGlobalConfiguration globalConfiguration): base(EavLogs.Eav + ".ZipExp")
@@ -56,7 +56,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly XmlExporter _xmlExporter;
         private readonly IGlobalConfiguration _globalConfiguration;
         private AppRuntime AppRuntime { get; }
-        public DataSourceFactory DataSourceFactory { get; }
+        public IDataSourceFactory DataSourceFactory { get; }
 
         public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, string physicalPathGlobal)
         {

@@ -13,12 +13,12 @@ namespace ToSic.Eav.Apps.Parts
 
         public class MyServices : MyServicesBase
         {
-            public DataSourceFactory DataSourceFactory { get; }
+            public IDataSourceFactory DataSourceFactory { get; }
             public IAppStates AppStates { get; }
             public ZoneRuntime ZoneRuntime { get; }
 
             public MyServices(
-                DataSourceFactory dataSourceFactory,
+                IDataSourceFactory dataSourceFactory,
                 IAppStates appStates,
                 ZoneRuntime zoneRuntime
             ) => ConnectServices(

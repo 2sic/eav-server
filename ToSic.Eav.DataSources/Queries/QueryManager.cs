@@ -23,9 +23,9 @@ namespace ToSic.Eav.DataSources.Queries
 	{
         private readonly LazySvc<IAppStates> _appStates;
         private readonly Generator<Query> _queryGenerator;
-        public DataSourceFactory DataSourceFactory { get; }
+        public IDataSourceFactory DataSourceFactory { get; }
 
-        public QueryManager(DataSourceFactory dataSourceFactory, Generator<Query> queryGenerator, LazySvc<IAppStates> appStates) : base($"{LogPrefix}.QryMan")
+        public QueryManager(IDataSourceFactory dataSourceFactory, Generator<Query> queryGenerator, LazySvc<IAppStates> appStates) : base($"{LogPrefix}.QryMan")
         {
             ConnectServices(
                 DataSourceFactory = dataSourceFactory,

@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.Queries
 	{
         private readonly IContextResolverUserPermissions _userPermissions;
         private readonly Generator<PassThrough> _passThrough;
-        private readonly DataSourceFactory _dataSourceFactory;
+        private readonly IDataSourceFactory _dataSourceFactory;
         private readonly IZoneCultureResolver _cultureResolver;
         private readonly IAppStates _appStates;
 
@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// Never call this constructor from your code, as it re-configures the DataSourceFactory it gets
 		/// </remarks>
         public QueryBuilder(
-            DataSourceFactory dataSourceFactory, 
+            IDataSourceFactory dataSourceFactory, 
             IZoneCultureResolver cultureResolver,
 			Generator<PassThrough> passThrough,
             IAppStates appStates,

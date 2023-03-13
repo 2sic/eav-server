@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources.Sys
     public sealed class QueryInfo : DataSource
     {
         private readonly IDataFactory _dataFactory;
-        private readonly LazySvc<DataSourceFactory> _dataSourceFactory;
+        private readonly LazySvc<IDataSourceFactory> _dataSourceFactory;
         public QueryBuilder QueryBuilder { get; }
         private readonly LazySvc<QueryManager> _queryManagerLazy;
         private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value);
@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-        public QueryInfo(MyServices services, LazySvc<DataSourceFactory> dataSourceFactory,
+        public QueryInfo(MyServices services, LazySvc<IDataSourceFactory> dataSourceFactory,
             LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, IDataFactory dataFactory) : base(
             services, $"{DataSourceConstants.LogPrefix}.EavQIn")
         {

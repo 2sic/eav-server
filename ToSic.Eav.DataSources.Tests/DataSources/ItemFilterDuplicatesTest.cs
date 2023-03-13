@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             if(attach < 1) throw new Exception("attach must be at least 1");
             var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
-            var dsf = GetService<DataSourceFactory>();
+            var dsf = GetService<IDataSourceFactory>();
             var sf = dsf.TestCreate<StreamMerge>(appIdentity: new AppIdentity(0, 0), upstream: ds);
 
             for (int i = 1; i < attach; i++)

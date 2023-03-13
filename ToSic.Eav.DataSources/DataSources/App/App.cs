@@ -92,12 +92,12 @@ namespace ToSic.Eav.DataSources
 		public new class MyServices: MyServicesBase<DataSource.MyServices>
         {
             public IContextResolverUserPermissions UserPermissions { get; }
-            public DataSourceFactory DataSourceFactory { get; }
+            public IDataSourceFactory DataSourceFactory { get; }
             public IAppStates AppStates { get; }
 
             public MyServices(DataSource.MyServices parentServices,
                 IAppStates appStates,
-				DataSourceFactory dataSourceFactory,
+				IDataSourceFactory dataSourceFactory,
                 IContextResolverUserPermissions userPermissions) : base(parentServices)
             {
                 ConnectServices(

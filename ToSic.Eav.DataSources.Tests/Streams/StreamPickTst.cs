@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var ds1 = new DataTablePerson(this).Generate(DefaultStreamSize, 1000);
             var ds2 = new DataTablePerson(this).Generate(MoreStreamSize, 2700);
             var ds3 = new DataTablePerson(this).Generate(53, 5300);
-            var dsBuild = GetService<DataSourceFactory>();
+            var dsBuild = GetService<IDataSourceFactory>();
             var streamPick = dsBuild.TestCreate<StreamPick>(appIdentity: new AppIdentity(1, 1), configLookUp: ds1.Configuration.LookUpEngine);
             streamPick.AttachForTests(DataSourceConstants.DefaultStreamName, ds1);
             streamPick.AttachForTests(MoreStream, ds2);

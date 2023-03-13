@@ -30,12 +30,12 @@ namespace ToSic.Eav.Apps
             internal readonly IZoneMapper ZoneMapper;
             internal readonly ISite Site;
             internal readonly IAppStates AppStates;
-            internal readonly DataSourceFactory DataSourceFactory;
+            internal readonly IDataSourceFactory DataSourceFactory;
 
             public MyServices(IZoneMapper zoneMapper,
                 ISite site,
                 IAppStates appStates,
-                DataSourceFactory dataSourceFactory,
+                IDataSourceFactory dataSourceFactory,
                 LazySvc<QueryManager> queryManager,
                 Generator<Query> queryGenerator)
             {
@@ -61,7 +61,7 @@ namespace ToSic.Eav.Apps
             
             Site = services.Site;
         }
-        private readonly DataSourceFactory _dsFactory;
+        private readonly IDataSourceFactory _dsFactory;
 
 
         #endregion
