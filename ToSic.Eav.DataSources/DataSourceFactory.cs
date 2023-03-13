@@ -12,18 +12,15 @@ namespace ToSic.Eav.DataSources
     {
         #region Constructor / DI
 
-        private readonly Generator<Error> _errDsGenerator;
         private readonly IServiceProvider _serviceProvider;
         private readonly LazySvc<ILookUpEngineResolver> _lookupResolveLazy;
         
         public DataSourceFactory(IServiceProvider serviceProvider,
-            LazySvc<ILookUpEngineResolver> lookupResolveLazy,
-            Generator<Error> errDsGenerator) : base($"{DataSourceConstants.LogPrefix}.Factry")
+            LazySvc<ILookUpEngineResolver> lookupResolveLazy) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
             ConnectServices(
                 _serviceProvider = serviceProvider,
-                _lookupResolveLazy = lookupResolveLazy,
-                _errDsGenerator = errDsGenerator
+                _lookupResolveLazy = lookupResolveLazy
             );
         }
 
@@ -98,6 +95,7 @@ namespace ToSic.Eav.DataSources
         /// <returns>A single DataSource</returns>
         public IDataSource GetPublishing(
             IAppIdentity appIdentity,
+            // TODO: FIGURE out way to not usually specify this, so it's not retrieved everywhere but automatically in GetLookupEngine if not specified
             bool showDrafts = false,
             ILookUpEngine configLookUp = null) => Log.Func( $"#{appIdentity.Show()}, draft:{showDrafts}, config:{configLookUp != null}", () =>
         {
