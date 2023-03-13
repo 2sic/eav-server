@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.ImportExport;
@@ -44,13 +45,15 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Constructor & DI
 
-        protected XmlExporter(XmlSerializer xmlSerializer, IAppStates appStates, string logPrefix) : base(logPrefix + "XmlExp")
+        protected XmlExporter(XmlSerializer xmlSerializer, IAppStates appStates, IContextResolver contextResolver, string logPrefix) : base(logPrefix + "XmlExp")
         {
             ConnectServices(
                 AppStates = appStates,
-                Serializer = xmlSerializer
+                Serializer = xmlSerializer,
+                ContextResolver = contextResolver
             );
         }
+        protected IContextResolver ContextResolver { get; }
         public XmlSerializer Serializer { get; }
         protected readonly IAppStates AppStates;
 
@@ -73,7 +76,19 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
         /// </summary>
         /// <returns></returns>
-        public abstract XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds);
+        public virtual XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
+        {
+            ContextResolver.SetApp(new AppIdentity(zoneId, appId));
+            var appCtx = ContextResolver.App();//appId);
+            //var appState = AppStates.Get(new AppIdentity(zoneId, appId));
+            //AdamManager.Init(appCtx, Constants.CompatibilityLevel10);
+            Constructor(zoneId, appRuntime, /*appState*/appCtx.AppState.NameId, appExport, attrSetIds, entityIds);
+
+            // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
+            InitExportXDocument(/*_site*/appCtx.Site.DefaultCultureCode, EavSystemInfo.VersionString);
+
+            return this;
+        }
 
         private void EnsureThisIsInitialized()
         {

@@ -71,7 +71,7 @@ namespace ToSic.Eav.Context
                 AppIdentity = appIdentity;
         });
 
-        public void ResetApp(int appId) => ResetApp(AppServices.AppStates.IdentityOfApp(appId));
+        //public void ResetApp(int appId) => ResetApp(AppServices.AppStates.IdentityOfApp(appId));
 
         protected virtual IAppIdentity AppIdentity
         {
