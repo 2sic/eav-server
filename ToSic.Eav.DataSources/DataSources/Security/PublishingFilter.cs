@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Context;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -25,15 +26,16 @@ namespace ToSic.Eav.DataSources
 
     public class PublishingFilter : DataSource
 	{
+
         #region Configuration-properties
 
 		/// <summary>
 		/// Indicates whether to show drafts or only Published Entities. 
 		/// </summary>
-		[Configuration(Fallback = QueryConstants.ShowDraftsDefault)]
-		public bool ShowDrafts
+		[Configuration(Fallback = null)]
+		public bool? ShowDrafts
 		{
-			get => Configuration.GetThis(QueryConstants.ShowDraftsDefault);
+			get => Configuration.GetThis<bool?>(null);
             set => Configuration.SetThis(value);
         }
 		#endregion
@@ -43,17 +45,23 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new PublishingFilter
 		/// </summary>
 		[PrivateApi]
-		public PublishingFilter(MyServices services) : base(services, $"{LogPrefix}.Publsh")
+		public PublishingFilter(MyServices services, IContextResolverUserPermissions userPermissions) : base(services, $"{LogPrefix}.Publsh")
         {
+            ConnectServices(
+                _userPermissions = userPermissions
+            );
             Provide(PublishingFilterList);
-       }
+        }
+        private readonly IContextResolverUserPermissions _userPermissions;
 
 
-	    private IImmutableList<IEntity> PublishingFilterList()
+        private IImmutableList<IEntity> PublishingFilterList()
 	    {
             Configuration.Parse();
-            Log.A($"get incl. draft:{ShowDrafts}");
-	        var outStreamName = ShowDrafts ? DraftsStreamName : PublishedStreamName;
+            var showDraftsInSettings = ShowDrafts;
+			var finalShowDrafts = ShowDrafts ?? _userPermissions.UserPermissions()?.UserMayEdit ?? QueryConstants.ShowDraftsDefault;
+            Log.A($"get incl. draft:'{showDraftsInSettings}' = '{finalShowDrafts}'");
+	        var outStreamName = finalShowDrafts ? DraftsStreamName : PublishedStreamName;
 	        return In[outStreamName].List.ToImmutableList();
 	    }
 

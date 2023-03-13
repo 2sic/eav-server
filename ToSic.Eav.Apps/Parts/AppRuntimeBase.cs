@@ -53,7 +53,7 @@ namespace ToSic.Eav.Apps.Parts
 
         #region Data & Cache
 
-        public IDataSource Data => _data ?? (_data = Services.DataSourceFactory.GetPublishing(appIdentity: this, showDrafts: ShowDrafts));
+        public IDataSource Data => _data ?? (_data = Services.DataSourceFactory.CreateDefault(appIdentity: this, showDrafts: ShowDrafts));
         private IDataSource _data;
         
 

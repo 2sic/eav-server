@@ -49,15 +49,15 @@ namespace ToSic.Eav.DataSources
         {
             var appState = _appStates.Get(this);
             
-            var initialSource = _dataSourceFactory.GetPublishing(appIdentity: appState);
+            var initialSource = _dataSourceFactory.CreateDefault(appIdentity: appState);
 
-            var merge = _dataSourceFactory.Create<StreamMerge>(upstream: initialSource);
+            var merge = _dataSourceFactory.Create<StreamMerge>(source: initialSource);
             // 2dm 2023-01-22 #maybeSupportIncludeParentApps
             var parent = appState.ParentApp;
             var countRecursions = 0;
             while (parent?.AppState != null && countRecursions++ < 5)
             {
-                var next = _dataSourceFactory.GetPublishing(appIdentity: parent.AppState);
+                var next = _dataSourceFactory.CreateDefault(appIdentity: parent.AppState);
                 merge.In.Add("App" + parent.AppState.NameId, next.Out.First().Value);
                 parent = parent.AppState.ParentApp;
             }

@@ -107,7 +107,7 @@ namespace ToSic.Eav.DataSources.Sys
             if (!_query.Out.ContainsKey(StreamName))
                 return (EmptyList, "can't find stream name in query");
 
-            var attribInfo = _dataSourceFactory.Value.Create<Attributes>(upstream: _query);
+            var attribInfo = _dataSourceFactory.Value.Create<Attributes>(source: _query);
             if (StreamName != DataSourceConstants.DefaultStreamName)
                 attribInfo.Attach(DataSourceConstants.DefaultStreamName, _query, StreamName);
 
@@ -138,7 +138,7 @@ namespace ToSic.Eav.DataSources.Sys
                 throw new Exception($"Can't build information about query - couldn't find query '{qName}'");
 
             var builtQuery = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log),
-                false, Configuration.LookUpEngine);
+                lookUps: Configuration.LookUpEngine);
             _query = builtQuery.Main;
         });
 

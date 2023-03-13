@@ -146,13 +146,13 @@ namespace ToSic.Eav.DataSources
             {
                 Log.A("Will use Ancestors accessor with all ancestors");
                 // Important: only pass the identity in, never pass this source in, or you'll get infinite recursions
-                var appStack = _services.DataSourceFactory.Create<AppWithParents>(appIdentity: new AppIdentity(this), configLookUp: Configuration.LookUpEngine);
+                var appStack = _services.DataSourceFactory.Create<AppWithParents>(appIdentity: new AppIdentity(this), configSource: Configuration.LookUpEngine);
                 appStack.AppId = AppId;
                 appStack.ZoneId = ZoneId;
                 appDs = appStack;
             }
             else
-                appDs = _services.DataSourceFactory.GetPublishing(appIdentity: this, configLookUp: Configuration.LookUpEngine);
+                appDs = _services.DataSourceFactory.CreateDefault(appIdentity: this, configSource: Configuration.LookUpEngine);
 
             Attach(DataSourceConstants.DefaultStreamName, appDs);
             _attachOtherDataSourceRunning = false;

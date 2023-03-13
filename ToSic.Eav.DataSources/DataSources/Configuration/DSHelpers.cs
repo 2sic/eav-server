@@ -6,11 +6,11 @@ namespace ToSic.Eav.DataSources
 {
     internal static class DSHelpers
     {
-        public static T Init<T>(this T dataSource, ILookUpEngine lookUp) where T : IDataSource
+        public static T Init<T>(this T thisDs, ILookUpEngine configSource) where T : IDataSource
         {
-            if (lookUp != null && dataSource.Configuration is DataSourceConfiguration dsConfig)
-                dsConfig.LookUpEngine = lookUp;
-            return dataSource;
+            if (configSource != null && thisDs.Configuration is DataSourceConfiguration dsConfig)
+                dsConfig.LookUpEngine = configSource;
+            return thisDs;
         }
 
         /// <summary>
@@ -19,11 +19,11 @@ namespace ToSic.Eav.DataSources
         /// <param name="thisDs">The new data source</param>
         /// <param name="appIdentity">app identifier</param>
         /// <param name="source">upstream data source - for auto-attaching</param>
-        /// <param name="lookUp">optional configuration provider - for auto-attaching</param>
+        /// <param name="configSource">optional configuration provider - for auto-attaching</param>
         public static T Init<T>(this T thisDs,
             IAppIdentity appIdentity,
             IDataSource source = default,
-            ILookUpEngine lookUp = default) where T : IDataSource
+            ILookUpEngine configSource = default) where T : IDataSource
         {
             if (thisDs == null) throw new ArgumentNullException(nameof(thisDs));
 
@@ -36,9 +36,9 @@ namespace ToSic.Eav.DataSources
 
             if (source != null) (thisDs as IDataTarget)?.Attach(source);
 
-            lookUp = lookUp ?? source?.Configuration?.LookUpEngine;
-            if (lookUp != null && thisDs.Configuration is DataSourceConfiguration dsConfig)
-                dsConfig.LookUpEngine = lookUp;
+            configSource = configSource ?? source?.Configuration?.LookUpEngine;
+            if (configSource != null && thisDs.Configuration is DataSourceConfiguration dsConfig)
+                dsConfig.LookUpEngine = configSource;
             return thisDs;
         }
     }

@@ -96,7 +96,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         public void Query_Run_And_Run_Materialized()
         {
             var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
-            var query = _queryBuilder.GetDataSourceForTesting(qdef, false).Main;
+            var query = _queryBuilder.GetDataSourceForTesting(qdef).Main;
             var countDef = query.ListForTests().Count();
             Assert.IsTrue(countDef > 0, "result > 0");
             Assert.AreEqual(basicCount, countDef);
@@ -106,7 +106,7 @@ namespace ToSic.Eav.DataSourceTests.Query
             var eDef2 = ser.Deserialize(strQuery, true);
             // TODO: #42
             var qdef2 = new QueryDefinition(eDef2, 0, null);
-            var query2 = _queryBuilder.GetDataSourceForTesting(qdef2, false).Main;
+            var query2 = _queryBuilder.GetDataSourceForTesting(qdef2).Main;
             var countDef2 = query2.ListForTests().Count();
             Assert.AreEqual(countDef2, countDef, "countdefs should be same");
         }

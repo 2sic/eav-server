@@ -204,7 +204,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         {
             // Get the query, run it and track how much time this took
             var qDef = QueryBuilder.GetQueryDefinition(appId, id);
-            var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, true, lookUps);
+            var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, lookUps: lookUps);
             var outSource = builtQuery.Item1;
 
 

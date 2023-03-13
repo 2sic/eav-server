@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSources.Queries
             try
             {
                 var app = _appStates.IdentityOfApp(appId);
-                var source = _dataSourceFactory.GetPublishing(appIdentity: app);
+                var source = _dataSourceFactory.CreateDefault(appIdentity: app);
                 var appEntities = source.List;
 
                 // use findRepo, as it uses the cache, which gives the list of all items
@@ -77,44 +77,28 @@ namespace ToSic.Eav.DataSources.Queries
             }
         });
 
-        // 2023-02-10 2dm removed/changed to MyConfig because it would conflict with the new Settings lookup
-        // https://github.com/2sic/2sxc/issues/3001
-        // Remove this comment 2023 Q2
-        //public const string ConfigKeyPartSettings = "settings";
 
-        // 2023-02-10 2dm - removing the #PipelineSettings
-        //public const string ConfigKeyPipelineSettings = "pipelinesettings";
-
-
-	    public (IDataSource Main, Dictionary<string, IDataSource> DataSources) BuildQuery(QueryDefinition queryDef,
+        public (IDataSource Main, Dictionary<string, IDataSource> DataSources) BuildQuery(QueryDefinition queryDef,
             ILookUpEngine lookUpEngineToClone,
-            List<ILookUp> overrideLookUps,
-            bool? showDrafts = null
-        ) => Log.Func($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}, drafts:{showDrafts}", l =>
+            List<ILookUp> overrideLookUps
+        ) => Log.Func($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}", l =>
         {
 	        #region prepare shared / global value providers
             
-			// 2023-02-10 2dm - removing the #PipelineSettings - clean up 2023 Q2
-			// I believe this was an old feature which was never used, and super-seeded by Params
-	        // the query settings which apply to the whole query
-	        //var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity, _cultureResolver.SafeLanguagePriorityCodes());
-
             // centralizing building of the primary configuration template for each part
             var templateConfig = new LookUpEngine(lookUpEngineToClone, Log);
 
-            var showDraftsFinal = showDrafts ?? _userPermissions.UserPermissions().UserMayEdit;
+            var showDrafts = _userPermissions.UserPermissions().UserMayEdit;
             if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
-                paramsLookup.Properties[QueryConstants.ParamsShowDraftKey] = showDraftsFinal.ToString();
+                paramsLookup.Properties[QueryConstants.ParamsShowDraftKey] = showDrafts.ToString();
 
-            // 2023-02-10 2dm - removing the #PipelineSettings
-            //templateConfig.Add(querySettingsLookUp);        // add [pipelinesettings:...]
             templateConfig.Add(queryDef.ParamsLookUp);      // Add [params:...]
             templateConfig.AddOverride(overrideLookUps);    // add override
 
-
+            // 2023-03-13 2dm - #removedQueryPartShowDrafts - it's available on [Params:ShowDrafts] and I don't think every source needs it too
             // provide global settings for ShowDrafts, ATM just if showdrafts are to be used
-            var itemSettingsShowDrafts = new Dictionary<string, string>(InvariantCultureIgnoreCase)
-                {{QueryConstants.ParamsShowDraftKey, showDrafts.ToString()}};
+            //var itemSettingsShowDrafts = new Dictionary<string, string>(InvariantCultureIgnoreCase)
+            //    {{QueryConstants.ParamsShowDraftKey, showDrafts.ToString()}};
 
             #endregion
 
@@ -153,15 +137,16 @@ namespace ToSic.Eav.DataSources.Queries
                 // add / set item part configuration
 	            partConfig.Add(new LookUpInQueryMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, dimensions));
 
-	            // if show-draft in overridden, add that to the settings
-	            partConfig.AddOverride(new LookUpInDictionary(DataSource.MyConfiguration, itemSettingsShowDrafts));
+                // 2023-03-13 2dm - #removedQueryPartShowDrafts
+                // if show-draft in overridden, add that to the settings
+                //partConfig.AddOverride(new LookUpInDictionary(DataSource.MyConfiguration, itemSettingsShowDrafts));
 
                 #endregion
 
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
                 var dsType = dataQueryPart.DataSourceType;
 
-                var dataSource = _dataSourceFactory.Create(dsType, appIdentity, upstream: null, lookUps: partConfig);
+                var dataSource = _dataSourceFactory.Create(type: dsType, appIdentity: appIdentity, source: null, configSource: partConfig);
 	            dataSource.Guid = dataQueryPart.Guid;
 
                 try
@@ -263,12 +248,11 @@ namespace ToSic.Eav.DataSources.Queries
 
         public (IDataSource Main, Dictionary<string, IDataSource> DataSources) GetDataSourceForTesting(
             QueryDefinition queryDef,
-            bool showDrafts,
             ILookUpEngine lookUps = null
-        ) => Log.Func($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}", () =>
+        ) => Log.Func($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId})", () =>
         {
             var testValueProviders = queryDef.TestParameterLookUps;
-            return BuildQuery(queryDef, lookUps, testValueProviders, showDrafts);
+            return BuildQuery(queryDef, lookUps, testValueProviders);
         });
 
 

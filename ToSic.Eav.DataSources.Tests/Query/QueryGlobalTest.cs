@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSourceTests.Query
             var qDef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests, null);
 
             var fac = _queryBuilder;
-            var query = fac.GetDataSourceForTesting(qDef, false).Main;
+            var query = fac.GetDataSourceForTesting(qDef).Main;
 
             var list = query.ListForTests();
             Assert.IsTrue(list.Count() > 1, "should find a few portals in the eav-testing-DB");
