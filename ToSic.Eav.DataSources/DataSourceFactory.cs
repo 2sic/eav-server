@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
         public IDataSource Create(Type type, IAppIdentity appIdentity, IDataSource upstream, ILookUpEngine lookUps) => Log.Func(() =>
         {
             var newDs = _serviceProvider.Build<IDataSource>(type, Log);
-            return newDs.Init(appIdentity: appIdentity, upstream: upstream, lookUp: lookUps);
+            return newDs.Init(appIdentity: appIdentity, source: upstream, lookUp: lookUps);
         });
 
 
@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSources
                 throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(upstream)} and {nameof(configLookUp)} no not be null.");
 
             var newDs = _serviceProvider.Build<TDataSource>(Log);
-            return newDs.Init(appIdentity: appIdentity, upstream: upstream, lookUp: configLookUp);
+            return newDs.Init(appIdentity: appIdentity, source: upstream, lookUp: configLookUp);
         });
 
         #endregion
