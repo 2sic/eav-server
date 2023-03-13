@@ -5,12 +5,6 @@ namespace ToSic.Eav.Context
 {
     public interface IContextOfSite: IHasLog
     {
-        ///// <summary>
-        ///// ContextOfSiteDependencies handed around, so it's part of the context being passed around
-        ///// </summary>
-        //[PrivateApi]
-        //ContextOfSite.ContextOfSiteDependencies SiteDeps { get; }
-
         /// <summary>
         /// The website the current request is running in
         /// </summary>

@@ -75,12 +75,12 @@ namespace ToSic.Eav.DataSourceTests
             if(attach < 1) throw new Exception("attach must be at least 1");
             var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
             var dsf = GetService<DataSourceFactory>();
-            var sf = dsf.Create<StreamMerge>(appIdentity: new AppIdentity(0, 0), upstream: ds);
+            var sf = dsf.TestCreate<StreamMerge>(appIdentity: new AppIdentity(0, 0), upstream: ds);
 
             for (int i = 1; i < attach; i++)
                 sf.InForTests().Add("another" + i, ds.Out.First().Value);
 
-            var unique = dsf.Create<ItemFilterDuplicates>(appIdentity: new AppIdentity(0, 0), upstream: sf);
+            var unique = dsf.TestCreate<ItemFilterDuplicates>(appIdentity: new AppIdentity(0, 0), upstream: sf);
             return unique;
         }
     }

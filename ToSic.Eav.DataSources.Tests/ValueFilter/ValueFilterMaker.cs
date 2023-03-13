@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSourceTests
                 ? new DataTablePerson(Parent).Generate(itemsToGenerate) as IDataSource
                 : Parent.CreateDataSource<PersonsDataSource>(new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes())
                     .Init(itemsToGenerate, multiLanguage: multiLanguage);
-            var filtered = Parent.DataSourceFactory.Create<ValueSort>(upstream: ds);
+            var filtered = Parent.DataSourceFactory.TestCreate<ValueSort>(upstream: ds);
             return filtered;
         }
 
