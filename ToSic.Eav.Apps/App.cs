@@ -57,12 +57,10 @@ namespace ToSic.Eav.Apps
         /// <param name="logName">must be null by default, because of DI</param>
         public App(MyServices services, string logName = null): base(services, logName ?? "Eav.App")
         {
-            //Deps = services.SetLog(Log);
             _dsFactory = services.DataSourceFactory;
             
             Site = services.Site;
         }
-        //private readonly AppServices Deps;
         private readonly DataSourceFactory _dsFactory;
 
 
@@ -83,9 +81,6 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public string AppGuid => NameId;
 
-        /// <inheritdoc />
-        public bool ShowDrafts { get; private set; }
-
         protected internal App Init(IAppIdentity appIdentity, Func<App, IAppDataConfiguration> buildConfiguration)
         {
             // Env / Tenant must be re-checked here
@@ -100,12 +95,10 @@ namespace ToSic.Eav.Apps
             if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
                 appIdentity = new AppIdentity(Site.ZoneId, appIdentity.AppId);
 
-            Init(appIdentity);
+            base.Init(appIdentity);
             Log.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
             // Look up name in cache
-            // 2020-11-25 changed to use State.Get. before it was this...
-            //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
             NameId = Services.AppStates.Get(this).NameId;
 
             InitializeResourcesSettingsAndMetadata();

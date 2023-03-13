@@ -10,7 +10,6 @@ using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
-using static System.StringComparison;
 using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -48,7 +47,7 @@ namespace ToSic.Eav.DataSources.Queries
                 var queryEntity = dataSource.List.FindRepoId(entityId);
                 if (queryEntity.Type.NameId != QueryTypeName)
                     throw new ArgumentException("Entity is not an DataQuery Entity", nameof(entityId));
-                return (queryEntity);
+                return wrapLog.Return(queryEntity);
             }
             catch (Exception ex)
             {
@@ -65,20 +64,17 @@ namespace ToSic.Eav.DataSources.Queries
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
         /// <returns></returns>
-        internal Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine valuesCollectionProvider, bool showDrafts
-        ) => Log.Func($"..., ..., {showDrafts}", () =>
+        internal Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine lookUps) => Log.Func(() =>
         {
             var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
             foreach (var entQuery in AllQueryItems(app))
             {
-                var delayedQuery = _queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider,
-                    showDrafts, null);
+                var delayedQuery = _queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, lookUps);
                 // make sure it doesn't break if two queries have the same name...
                 var name = entQuery.GetBestTitle();
                 if (!dict.ContainsKey(name))
                     dict[name] = delayedQuery;
             }
-
             return (dict);
         });
 

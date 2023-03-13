@@ -199,7 +199,7 @@ namespace ToSic.Eav.WebApi
             var hasAncestor = type.HasAncestor();
             var ancestorDecorator = type.GetDecorator<IAncestor>();
 
-            var appInputTypes = _appRuntimeLazy.Value.Init(_appId, true).ContentTypes.GetInputTypes();
+            var appInputTypes = _appRuntimeLazy.Value.Init(_appId/*, true*/).ContentTypes.GetInputTypes();
 
             var ser = _convertToEavLight.Value;
             return fields.Select(a =>

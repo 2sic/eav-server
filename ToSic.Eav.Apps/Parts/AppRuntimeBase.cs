@@ -29,20 +29,17 @@ namespace ToSic.Eav.Apps.Parts
         }
 
 
-        public bool ShowDrafts { get; private set; }
+        public bool? ShowDrafts { get; private set; }
 
         protected AppRuntimeBase(MyServices services, string logName): base(services, logName)
         {
-            //ConnectServices(
-            //    Deps = services
-            //);
         }
         //protected readonly AppRuntimeServices Deps;
         protected AppRuntimeBase(MyServicesBase<MyServices> services, string logName): base(services, logName)
         {
         }
 
-        internal void InitInternal(IAppIdentity app, bool showDrafts)
+        internal void InitInternal(IAppIdentity app, bool? showDrafts)
         {
             Init(app);
             // re-use data of parent if it's constructed from an app-manager
@@ -56,7 +53,7 @@ namespace ToSic.Eav.Apps.Parts
 
         #region Data & Cache
 
-        public IDataSource Data => _data ?? (_data = Services.DataSourceFactory.GetPublishing(this, showDrafts: ShowDrafts));
+        public IDataSource Data => _data ?? (_data = Services.DataSourceFactory.GetPublishing(appIdentity: this, showDrafts: ShowDrafts));
         private IDataSource _data;
         
 
@@ -77,9 +74,14 @@ namespace ToSic.Eav.Apps.Parts
 
     public static class AppRuntimeExtensions
     {
-        public static T InitQ<T>(this T parent, IAppIdentity app, bool showDrafts) where T : AppRuntimeBase
+        public static T InitQ<T>(this T parent, IAppIdentity app, bool? showDrafts) where T : AppRuntimeBase
         {
             parent.InitInternal(app, showDrafts);
+            return parent;
+        }
+        public static T InitQ<T>(this T parent, IAppIdentity app) where T : AppRuntimeBase
+        {
+            parent.InitInternal(app, null);
             return parent;
         }
     }

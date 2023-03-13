@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources
             // because the "real" source already applies filters like published
             var appState = AppState;
             var listOfTypes = appState.ContentTypes;
-            var showDrafts = ShowDrafts;
+            var showDraftsForCacheKey = _services.UserPermissions.UserPermissions().UserMayEdit; // ShowDrafts;
             var typeList = "";
             foreach (var contentType in listOfTypes)
             {
@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources
 
                 var deferredStream = new DataStreamWithCustomCaching(
                     () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState,
-                        $"Name={typeName}&Drafts={showDrafts}&{nameof(WithAncestors)}={WithAncestors}"),
+                        $"Name={typeName}&Drafts={showDraftsForCacheKey}&{nameof(WithAncestors)}={WithAncestors}"),
                     this,
                     typeName,
                     () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableList(),
@@ -87,27 +87,27 @@ namespace ToSic.Eav.DataSources
                 _out.Add(typeName, deferredStream);
             }
 
-            l.A($"Added with drafts:{showDrafts} streams: {typeList}");
+            l.A($"Added with drafts:{showDraftsForCacheKey} streams: {typeList}");
         });
 
-        /// <summary>
-        /// Ask the current configuration system if the current user should see drafts
-        /// </summary>
-        /// <returns></returns>
-        // TODO: VERIFY THIS is the right way to do it - and there is not a better/global available way?
-        private bool ShowDrafts => _showDrafts.Get(() =>
-        {
-            var lookupShowDrafts = Configuration.Parse(new Dictionary<string, string>
-            {
-                {
-                    QueryConstants.ParamsShowDraftKey,
-                    $"[{QueryConstants.ParamsLookup}:{QueryConstants.ParamsShowDraftKey}||[{LookUpConstants.InstanceContext}:{QueryConstants.ParamsShowDraftKey}||false]]"
-                }
-            });
-            if (!bool.TryParse(lookupShowDrafts.First().Value, out var showDrafts)) showDrafts = false;
-            return showDrafts;
-        });
-        private readonly GetOnce<bool> _showDrafts = new GetOnce<bool>();
+        ///// <summary>
+        ///// Ask the current configuration system if the current user should see drafts
+        ///// </summary>
+        ///// <returns></returns>
+        //// TODO: VERIFY THIS is the right way to do it - and there is not a better/global available way?
+        //private bool ShowDrafts => _showDrafts.Get(() =>
+        //{
+        //    var lookupShowDrafts = Configuration.Parse(new Dictionary<string, string>
+        //    {
+        //        {
+        //            QueryConstants.ParamsShowDraftKey,
+        //            $"[{QueryConstants.ParamsLookup}:{QueryConstants.ParamsShowDraftKey}||[{LookUpConstants.InstanceContext}:{QueryConstants.ParamsShowDraftKey}||false]]"
+        //        }
+        //    });
+        //    if (!bool.TryParse(lookupShowDrafts.First().Value, out var showDrafts)) showDrafts = false;
+        //    return showDrafts;
+        //});
+        //private readonly GetOnce<bool> _showDrafts = new GetOnce<bool>();
 
         /// <summary>
         /// Build an EntityTypeFilter for this content-type to provide as a stream

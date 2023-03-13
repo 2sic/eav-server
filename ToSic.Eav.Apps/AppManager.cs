@@ -62,16 +62,16 @@ namespace ToSic.Eav.Apps
         public AppManager(MyServices services) : this(services, "Eav.AppMan")
         { }
 
-        public new AppManager Init(IAppIdentity app) => this.InitQ(app, true);
+        public new AppManager Init(IAppIdentity app) => this.InitQ(app);
 
-        public AppManager Init(int appId) => this.InitQ(Services.AppStates.IdentityOfApp(appId), true);
+        public AppManager Init(int appId) => this.InitQ(Services.AppStates.IdentityOfApp(appId));
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.
         /// It's important because the app-manager must be able to help initialize an app, when it's not yet in the cache
         /// </summary>
         /// <returns></returns>
-        public AppManager InitWithState(AppState appState, bool showDrafts)
+        public AppManager InitWithState(AppState appState, bool? showDrafts = null)
         {
             AppState = appState;
             return this.InitQ(appState, showDrafts);

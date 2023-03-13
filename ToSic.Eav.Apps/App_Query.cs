@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps
 
                 if (ConfigurationProvider == null)
                     throw new Exception("Can't use app-queries, because the necessary configuration provider hasn't been initialized. Call InitData first.");
-                return _queries = Services.QueryManager.Value.AllQueries(this, ConfigurationProvider, ShowDrafts);
+                return _queries = Services.QueryManager.Value.AllQueries(this, ConfigurationProvider);
             }
         }
         private IDictionary<string, IQuery> _queries;
@@ -31,7 +31,6 @@ namespace ToSic.Eav.Apps
         public Query GetQuery(string name)
         {
             // Try to find the local query, abort if not found
-            // Doing this first starting in v13 (previously this happened last)
             // Not final implementation, but goal is to properly cascade from AppState to parent
             if (Query.ContainsKey(name) && Query[name] is Query query)
                 return query;
@@ -46,7 +45,7 @@ namespace ToSic.Eav.Apps
             if (qEntity == null && name.StartsWith(SystemQueryPrefixPreV15) || name.StartsWith(SystemQueryPrefix))
                 throw new Exception("Global EAV Query not Found!");
 
-            return Services.QueryGenerator.New().Init(ZoneId, AppId, qEntity, ConfigurationProvider, ShowDrafts, null);
+            return Services.QueryGenerator.New().Init(ZoneId, AppId, qEntity, ConfigurationProvider);
         }
 
         // #dropGlobalQueryPrefixWithUnknownPurpose - delete code 2023 Q3

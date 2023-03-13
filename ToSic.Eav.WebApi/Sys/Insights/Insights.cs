@@ -64,7 +64,7 @@ namespace ToSic.Eav.WebApi.Sys
         }
 
 
-        private AppRuntime AppRt(int? appId) => _appRuntimeGenerator.New().Init(appId.Value, true);
+        private AppRuntime AppRt(int? appId) => _appRuntimeGenerator.New().Init(appId.Value);
 
         private AppState AppState(int? appId) => _appStates.Get(appId.Value);
 

@@ -55,9 +55,6 @@ namespace ToSic.Eav.Apps.Parts
 
         private AppState AppState { get; set; }
 
-        private AppState PresetApp => _presetApp ?? (_presetApp = _appStates.GetPresetApp());
-        private AppState _presetApp;
-
         /// <summary>
         /// The App Manager must be re-created during initialization
         /// So we don't inject into into this class, but instead create it on demand
@@ -193,7 +190,7 @@ namespace ToSic.Eav.Apps.Parts
             // discuss w/2dm if you think you want to change this
             var ct = inAppType
                 ? AppManager.Read.ContentTypes.Get(setName)
-                : PresetApp.GetContentType(setName);
+                : _appStates.GetPresetApp().GetContentType(setName);
             return ct;
         }
 

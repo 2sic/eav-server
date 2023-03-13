@@ -18,6 +18,7 @@ namespace ToSic.Eav.DataSources.Queries
 	/// </summary>
 	public class QueryBuilder: ServiceBase
 	{
+        private readonly IContextResolverUserPermissions _userPermissions;
         private readonly Generator<PassThrough> _passThrough;
         private readonly DataSourceFactory _dataSourceFactory;
         private readonly IZoneCultureResolver _cultureResolver;
@@ -35,14 +36,17 @@ namespace ToSic.Eav.DataSources.Queries
             DataSourceFactory dataSourceFactory, 
             IZoneCultureResolver cultureResolver,
 			Generator<PassThrough> passThrough,
-            IAppStates appStates) : base("DS.PipeFt")
+            IAppStates appStates,
+            IContextResolverUserPermissions userPermissions
+            ) : base("DS.PipeFt")
         {
             ConnectServices(
                 _cultureResolver = cultureResolver,
                 _appStates = appStates,
                 _dataSourceFactory = dataSourceFactory,
                 _dataSourceFactory,
-                _passThrough = passThrough
+                _passThrough = passThrough,
+                _userPermissions = userPermissions
             );
         }
 
@@ -59,7 +63,7 @@ namespace ToSic.Eav.DataSources.Queries
             try
             {
                 var app = _appStates.IdentityOfApp(appId);
-                var source = _dataSourceFactory.GetPublishing(app);
+                var source = _dataSourceFactory.GetPublishing(appIdentity: app);
                 var appEntities = source.List;
 
                 // use findRepo, as it uses the cache, which gives the list of all items
@@ -85,7 +89,7 @@ namespace ToSic.Eav.DataSources.Queries
 	    public (IDataSource Main, Dictionary<string, IDataSource> DataSources) BuildQuery(QueryDefinition queryDef,
             ILookUpEngine lookUpEngineToClone,
             List<ILookUp> overrideLookUps,
-            bool showDrafts
+            bool? showDrafts = null
         ) => Log.Func($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}, drafts:{showDrafts}", l =>
         {
 	        #region prepare shared / global value providers
@@ -98,8 +102,9 @@ namespace ToSic.Eav.DataSources.Queries
             // centralizing building of the primary configuration template for each part
             var templateConfig = new LookUpEngine(lookUpEngineToClone, Log);
 
+            var showDraftsFinal = showDrafts ?? _userPermissions.UserPermissions().UserMayEdit;
             if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
-                paramsLookup.Properties[QueryConstants.ParamsShowDraftKey] = showDrafts.ToString();
+                paramsLookup.Properties[QueryConstants.ParamsShowDraftKey] = showDraftsFinal.ToString();
 
             // 2023-02-10 2dm - removing the #PipelineSettings
             //templateConfig.Add(querySettingsLookUp);        // add [pipelinesettings:...]

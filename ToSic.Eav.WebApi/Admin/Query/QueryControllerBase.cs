@@ -97,7 +97,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             if (!id.HasValue) return (query, "no id, empty");
 
-            var reader = Services.AppReaderLazy.Value.Init(appId, false);
+            var reader = Services.AppReaderLazy.Value.Init(appId/*, false*/);
             var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values

@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Context;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
@@ -10,17 +11,21 @@ namespace ToSic.Eav.DataSources
 {
     public class DataSourceFactory: ServiceBase
     {
+        private readonly IContextResolverUserPermissions _userPermissionsContext;
+
         #region Constructor / DI
 
         private readonly IServiceProvider _serviceProvider;
         private readonly LazySvc<ILookUpEngineResolver> _lookupResolveLazy;
         
         public DataSourceFactory(IServiceProvider serviceProvider,
-            LazySvc<ILookUpEngineResolver> lookupResolveLazy) : base($"{DataSourceConstants.LogPrefix}.Factry")
+            LazySvc<ILookUpEngineResolver> lookupResolveLazy,
+            IContextResolverUserPermissions userPermissionsContext) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
             ConnectServices(
                 _serviceProvider = serviceProvider,
-                _lookupResolveLazy = lookupResolveLazy
+                _lookupResolveLazy = lookupResolveLazy,
+                _userPermissionsContext = userPermissionsContext
             );
         }
 
@@ -96,18 +101,22 @@ namespace ToSic.Eav.DataSources
         public IDataSource GetPublishing(
             IAppIdentity appIdentity,
             // TODO: FIGURE out way to not usually specify this, so it's not retrieved everywhere but automatically in GetLookupEngine if not specified
-            bool showDrafts = false,
-            ILookUpEngine configLookUp = null) => Log.Func( $"#{appIdentity.Show()}, draft:{showDrafts}, config:{configLookUp != null}", () =>
+            bool? showDrafts = default, 
+            ILookUpEngine configLookUp = null) 
         {
+            var l = Log.Fn<IDataSource>($"#{appIdentity.Show()}, draft:{showDrafts}, config:{configLookUp != null}");
             configLookUp = configLookUp ?? _lookupResolveLazy.Value.GetLookUpEngine(0);
 
             var appRoot = Create<IAppRoot>(appIdentity: appIdentity, configLookUp: configLookUp);
 
             var publishingFilter = Create<PublishingFilter>(upstream: appRoot, configLookUp: configLookUp);
-            publishingFilter.ShowDrafts = showDrafts;
 
-            return publishingFilter;
-        });
+            // TODO: PROBABLY NOT PROVIDE SHOW DRAFTS ANY MORE???
+            var showDraftsFinal = showDrafts ?? _userPermissionsContext.UserPermissions().UserMayEdit;
+            publishingFilter.ShowDrafts = showDraftsFinal;
+
+            return l.Return(publishingFilter, "ok");
+        }
 
         #endregion
     }

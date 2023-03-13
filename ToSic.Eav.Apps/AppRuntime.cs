@@ -33,19 +33,17 @@ namespace ToSic.Eav.Apps
             );
         }
 
-
-        /// <summary>
-        /// Simple Override - to track if the init is being called everywhere
-        /// </summary>
-        public AppRuntime Init(int appId, bool showDrafts) 
+        public AppRuntime Init(int appId, bool? showDrafts) 
             => this.InitQ(Services.AppStates.IdentityOfApp(appId), showDrafts);
+        public AppRuntime Init(int appId) 
+            => this.InitQ(Services.AppStates.IdentityOfApp(appId));
 
         /// <summary>
         /// This is a very special overload to inject an app state without reloading.
         /// It's important because the app-manager must be able to help initialize an app, when it's not yet in the cache
         /// </summary>
         /// <returns></returns>
-        protected internal AppRuntime InitWithState(AppState appState, bool showDrafts)
+        protected internal AppRuntime InitWithState(AppState appState, bool? showDrafts)
         {
             AppState = appState;
             return this.InitQ(appState, showDrafts);

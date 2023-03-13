@@ -13,7 +13,8 @@ namespace ToSic.Eav.Apps
         /// If this instance is allowed to show draft items
         /// This is usually dependent on the current users permissions
         /// </summary>
-        bool ShowDrafts { get; }
+        bool? ShowDrafts { get; }
+
 
         /// <summary>
         /// Configuration used to query data - will deliver url-parameters and other important configuration values.

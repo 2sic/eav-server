@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Context;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
@@ -90,16 +91,19 @@ namespace ToSic.Eav.DataSources
 
 		public new class MyServices: MyServicesBase<DataSource.MyServices>
         {
+            public IContextResolverUserPermissions UserPermissions { get; }
             public DataSourceFactory DataSourceFactory { get; }
             public IAppStates AppStates { get; }
 
             public MyServices(DataSource.MyServices parentServices,
                 IAppStates appStates,
-				DataSourceFactory dataSourceFactory) : base(parentServices)
+				DataSourceFactory dataSourceFactory,
+                IContextResolverUserPermissions userPermissions) : base(parentServices)
             {
                 ConnectServices(
                     AppStates = appStates,
-                    DataSourceFactory = dataSourceFactory
+                    DataSourceFactory = dataSourceFactory,
+                    UserPermissions = userPermissions
                 );
             }
         }
@@ -145,12 +149,10 @@ namespace ToSic.Eav.DataSources
                 var appStack = _services.DataSourceFactory.Create<AppWithParents>(appIdentity: new AppIdentity(this), configLookUp: Configuration.LookUpEngine);
                 appStack.AppId = AppId;
                 appStack.ZoneId = ZoneId;
-                appStack.ShowDrafts = ShowDrafts;
                 appDs = appStack;
             }
             else
-                appDs = _services.DataSourceFactory.GetPublishing(this,
-                    configLookUp: Configuration.LookUpEngine, showDrafts: ShowDrafts);
+                appDs = _services.DataSourceFactory.GetPublishing(appIdentity: this, configLookUp: Configuration.LookUpEngine);
 
             Attach(DataSourceConstants.DefaultStreamName, appDs);
             _attachOtherDataSourceRunning = false;

@@ -66,10 +66,10 @@ namespace ToSic.Eav.Apps.ImportExport
             _physicalAppPath = physicalAppPath;
             _physicalPathGlobal = physicalPathGlobal;
             ConnectServices(
-                FileManager = _fileManagerGenerator.New().SetFolder(_physicalAppPath), // new FileManager(_physicalAppPath),
-                FileManagerGlobal = _fileManagerGenerator.New().SetFolder(physicalPathGlobal) // new FileManager(physicalPathGlobal)
+                FileManager = _fileManagerGenerator.New().SetFolder(_physicalAppPath),
+                FileManagerGlobal = _fileManagerGenerator.New().SetFolder(physicalPathGlobal)
             );
-            AppRuntime.InitQ(new AppIdentity(_zoneId, _appId), true);
+            AppRuntime.InitQ(new AppIdentity(_zoneId, _appId)/*, true*/);
             return this;
         }
         #endregion
@@ -222,7 +222,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            var runtime = AppRuntime.InitQ(new AppIdentity(_zoneId, _appId), true);
+            var runtime = AppRuntime.InitQ(new AppIdentity(_zoneId, _appId)/*, true*/);
             var attributeSets = runtime.ContentTypes.All.OfScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
@@ -244,7 +244,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // 2022-01-04 2dm - new code, simplified
             // Get all entities except Attribute/Field Metadata, which is exported in a different way
-            var entities = DataSourceFactory.GetPublishing(runtime, false).List
+            var entities = DataSourceFactory.GetPublishing(appIdentity: runtime, showDrafts: false).List
                     .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
 
             if (!includeContentGroups)

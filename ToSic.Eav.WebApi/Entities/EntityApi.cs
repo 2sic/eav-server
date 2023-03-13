@@ -44,9 +44,14 @@ namespace ToSic.Eav.WebApi
         public AppRuntime AppRead;
 
 
-        public EntityApi Init(int appId, bool showDrafts, ILog parentLog = null)
+        public EntityApi Init(int appId, bool? showDrafts)
         {
             AppRead = _appRuntime.Init(appId, showDrafts);
+            return this;
+        }
+        public EntityApi Init(int appId)
+        {
+            AppRead = _appRuntime.Init(appId);
             return this;
         }
 
@@ -193,7 +198,7 @@ namespace ToSic.Eav.WebApi
             var permCheck = _multiPermissionsTypes.New().Init(context, app, contentType);
             if (!permCheck.EnsureAll(requiredGrants, out var error))
                 throw HttpException.PermissionDenied(error);
-            return Init(app.AppId, true);
+            return Init(app.AppId/*, true*/);
         }
 
         public List<Dictionary<string, object>> GetEntitiesForAdmin(string contentType, bool excludeAncestor = false)

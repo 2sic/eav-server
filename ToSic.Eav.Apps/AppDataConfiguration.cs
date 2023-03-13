@@ -4,13 +4,13 @@ namespace ToSic.Eav.Apps
 {
     public class AppDataConfiguration: IAppDataConfiguration
     {
-        public AppDataConfiguration(bool showDrafts, ILookUpEngine configuration)
+        public AppDataConfiguration(ILookUpEngine configuration, bool? showDrafts = null)
         {
             ShowDrafts = showDrafts;
             Configuration = configuration;
         }
 
-        public bool ShowDrafts { get; }
+        public bool? ShowDrafts { get; }
 
 
         public ILookUpEngine Configuration { get; }

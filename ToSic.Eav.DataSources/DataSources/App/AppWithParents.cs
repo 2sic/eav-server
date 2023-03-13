@@ -2,7 +2,6 @@
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSources
@@ -21,15 +20,15 @@ namespace ToSic.Eav.DataSources
             protected internal set => _zoneId = value;
         }
 
-        /// <summary>
-        /// Indicates whether to show drafts or only Published Entities. 
-        /// </summary>
-        [Configuration(Fallback = QueryConstants.ShowDraftsDefault)]
-        public bool ShowDrafts
-        {
-            get => Configuration.GetThis(QueryConstants.ShowDraftsDefault);
-            set => Configuration.SetThis(value);
-        }
+        ///// <summary>
+        ///// Indicates whether to show drafts or only Published Entities. 
+        ///// </summary>
+        //[Configuration(Fallback = QueryConstants.ShowDraftsDefault)]
+        //public bool ShowDrafts
+        //{
+        //    get => Configuration.GetThis(QueryConstants.ShowDraftsDefault);
+        //    set => Configuration.SetThis(value);
+        //}
 
 
         private readonly IAppStates _appStates;
@@ -50,8 +49,7 @@ namespace ToSic.Eav.DataSources
         {
             var appState = _appStates.Get(this);
             
-            // note: using ShowDrafts = false, fix this if this DS ever becomes usable in VisualQuery
-            var initialSource = _dataSourceFactory.GetPublishing(appState, showDrafts: ShowDrafts);
+            var initialSource = _dataSourceFactory.GetPublishing(appIdentity: appState);
 
             var merge = _dataSourceFactory.Create<StreamMerge>(upstream: initialSource);
             // 2dm 2023-01-22 #maybeSupportIncludeParentApps
@@ -59,7 +57,7 @@ namespace ToSic.Eav.DataSources
             var countRecursions = 0;
             while (parent?.AppState != null && countRecursions++ < 5)
             {
-                var next = _dataSourceFactory.GetPublishing(parent.AppState, showDrafts: ShowDrafts);
+                var next = _dataSourceFactory.GetPublishing(appIdentity: parent.AppState);
                 merge.In.Add("App" + parent.AppState.NameId, next.Out.First().Value);
                 parent = parent.AppState.ParentApp;
             }
