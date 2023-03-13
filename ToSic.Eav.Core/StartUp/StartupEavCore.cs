@@ -104,6 +104,8 @@ namespace ToSic.Eav.StartUp
 
             services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
             services.TryAddTransient<IUser, UserUnknown>();
+            services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
+            services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
             services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
             services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
             services.TryAddTransient<IAppRepositoryLoader, AppRepositoryLoaderUnknown>();
