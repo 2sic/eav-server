@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Internal;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Generics;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -156,7 +154,7 @@ namespace ToSic.Eav.Apps.Parts
                         Attribute = a,
                         TypedContents = a.TypedContents as IRelatedEntitiesValue,
                     })
-                    .Where(set => set.TypedContents?.Identifiers?.Any() == true)
+                    .Where(set => set.TypedContents?.Identifiers?.Count > 0)
                     .ToList();
                 if (!relationshipAttributes.Any())
                     return e;
