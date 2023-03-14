@@ -60,7 +60,6 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Constant empty list of entities - for common scenarios where we just need to return empty results.
         /// </summary>
-        [PrivateApi]
         public static IImmutableList<IEntity> EmptyList = ImmutableList<IEntity>.Empty;
 
         #endregion

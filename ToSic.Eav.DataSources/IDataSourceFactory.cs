@@ -23,8 +23,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         /// <param name="type">the .net type of this data-source</param>
         /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-        /// <param name="source">optional source to attach as `in` on the newly created data source. If provided, it can also provide <see cref="appIdentity"/> and <see cref="configSource"/></param>
-        /// <param name="appIdentity">optional identity, usually necessary if not <see cref="source"/> was specified</param>
+        /// <param name="source">optional source to attach as `in` on the newly created data source. If provided, it can also provide `appIdentity` and `configSource`</param>
+        /// <param name="appIdentity">optional identity, usually necessary if `source` was not specified</param>
         /// <param name="configSource">optional configuration lookup if needed</param>
         /// <returns>A single DataSource</returns>
         /// <remarks>
@@ -42,8 +42,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         /// <typeparam name="TDataSource">The type of the data source to be created.</typeparam>
         /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-        /// <param name="source">optional source to attach as `in` on the newly created data source. If provided, it can also provide <see cref="appIdentity"/> and <see cref="configSource"/></param>
-        /// <param name="appIdentity">optional identity, usually necessary if not <see cref="source"/> was specified</param>
+        /// <param name="source">optional source to attach as `in` on the newly created data source. If provided, it can also provide `appIdentity` and `configSource`</param>
+        /// <param name="appIdentity">optional identity, usually necessary if not `source` was specified</param>
         /// <param name="configSource">optional configuration lookup if needed</param>
         /// <returns></returns>
         TDataSource Create<TDataSource>(
