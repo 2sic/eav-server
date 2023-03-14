@@ -86,10 +86,13 @@ namespace ToSic.Eav.DataSources
             #region get the configEntity
 
             // go through the metadata-source to find it, since it's usually only used in LookUps
-            var metadataLookUp =
-                (Configuration.LookUpEngine.FindSource(MyConfiguration)
-                    as LookUpInLookUps)
-                ?.Providers.FirstOrDefault(p => p is LookUpInQueryMetadata) as LookUpInQueryMetadata;
+            // the LookUp Root is either a LookUpInQueryMetadata, or a group of lookups which has one inside it
+            // It's a LookUpInLookUps if the QueryBuilder overwrote it with SaveDraft infos...
+            // which we're not sure yet 2023-03-14 2dm if it's in use anywhere
+            var lookUpRoot = Configuration.LookUpEngine.FindSource(MyConfiguration);
+            var metadataLookUp = lookUpRoot as LookUpInQueryMetadata
+                                 ?? (lookUpRoot as LookUpInLookUps)
+                                 ?.Providers.FirstOrDefault(p => p is LookUpInQueryMetadata) as LookUpInQueryMetadata;
 
             // if found, initialize and get the metadata entity attached
             metadataLookUp?.Initialize();
