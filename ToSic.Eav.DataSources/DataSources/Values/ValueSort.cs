@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -20,7 +21,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Sort,
         GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { DataSourceConstants.DefaultStreamNameRequired },
+        In = new[] { QueryConstants.InStreamDefaultRequired },
 	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueSort",
         HelpLink = "https://r.2sxc.org/DsValueSort")]
 
@@ -64,7 +65,7 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new ValueSort
 		/// </summary>
 		[PrivateApi]
-		public ValueSort(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.ValSrt")
+		public ValueSort(ValueLanguages valLanguages, MyServices services) : base(services, $"{LogPrefix}.ValSrt")
         {
             ConnectServices(
                 _valLanguages = valLanguages

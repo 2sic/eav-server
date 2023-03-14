@@ -7,6 +7,7 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Documentation;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys
@@ -51,7 +52,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-		public Attributes(IAppStates appStates, MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.Attrib")
+		public Attributes(IAppStates appStates, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib")
         {
             ConnectServices(
                 _appStates = appStates,
@@ -69,9 +70,9 @@ namespace ToSic.Eav.DataSources.Sys
             // try to load the content-type - if it fails, return empty list
             if (string.IsNullOrWhiteSpace(ContentTypeName)) return EmptyList;
 
-	        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(DataSourceConstants.DefaultStreamName);
+	        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(StreamDefaultName);
 	        var optionalList = useStream
-	            ? In[DataSourceConstants.DefaultStreamName]?.List.ToImmutableList()
+	            ? In[StreamDefaultName]?.List.ToImmutableList()
 	            : null;
 
 	        var type = useStream 

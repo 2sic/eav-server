@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSourceTests
         public static void AttachForTests(this IDataTarget target, IDataSource source) => target.Attach(source);
 
         public static void AttachForTests(this IDataTarget target, string streamName, IDataSource dataSource,
-            string sourceName = DataSourceConstants.DefaultStreamName)
+            string sourceName = DataSourceConstants.StreamDefaultName)
             => target.Attach(streamName, dataSource, sourceName);
 
         public static void AttachForTests(this IDataTarget target, string streamName, IDataStream dataStream)

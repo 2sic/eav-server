@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc />
         [PublicApi]
-        public IImmutableList<IEntity> TryGetIn(string name = DataSourceConstants.DefaultStreamName) => !In.ContainsKey(name) ? null : In[name]?.List?.ToImmutableList();
+        public IImmutableList<IEntity> TryGetIn(string name = DataSourceConstants.StreamDefaultName) => !In.ContainsKey(name) ? null : In[name]?.List?.ToImmutableList();
 
         /// <inheritdoc />
         [PublicApi]
@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
             Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(GetStream), $"{nameof(nullIfNotFound)}");
 
             // Check if streamName was not provided
-            if (string.IsNullOrEmpty(name)) name = DataSourceConstants.DefaultStreamName;
+            if (string.IsNullOrEmpty(name)) name = DataSourceConstants.StreamDefaultName;
 
             // Simple case - just get it
             if (Out.ContainsKey(name)) return Out[name];
@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc />
         [PublicApi]
-        public void Attach(string streamName, IDataSource dataSource, string sourceName = DataSourceConstants.DefaultStreamName) 
+        public void Attach(string streamName, IDataSource dataSource, string sourceName = DataSourceConstants.StreamDefaultName) 
             => Attach(new Connection(dataSource, sourceName, this, streamName));
 
         /// <inheritdoc />

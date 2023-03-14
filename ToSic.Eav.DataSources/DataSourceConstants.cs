@@ -1,61 +1,67 @@
-﻿using ToSic.Lib.Documentation;
+﻿using System.Collections.Immutable;
+using ToSic.Eav.Data;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
-    [PrivateApi]
+    /// <summary>
+    /// Various constants typically used in/for DataSources.
+    /// </summary>
+    [PublicApi]
     public class DataSourceConstants
     {
         /// <summary>
-        /// Prefix to use for all internal data sources.
+        /// Prefix to use for all built-in data sources.
         /// </summary>
-        public const string LogPrefix = "DS";
+        [PrivateApi]
+        internal const string LogPrefix = "DS";
 
-        #region Version Change Constants
+        #region Version Change Constants (internal)
 
         [PrivateApi] internal const string V3To4DataSourceDllOld = ", ToSic.Eav";
         [PrivateApi] internal const string V3To4DataSourceDllNew = ", ToSic.Eav.DataSources";
 
-        #endregion
-
         /// <summary>
         /// Global queries must start with this prefix
         /// </summary>
-        public const string SystemQueryPrefixPreV15 = "Eav.Queries.Global.";
+        [PrivateApi] internal const string SystemQueryPrefixPreV15 = "Eav.Queries.Global.";
+        [PrivateApi] internal const string SystemQueryPrefix = "System.";
 
-        public const string SystemQueryPrefix = "System.";
+        #endregion
 
-        #region Stream names
+        #region Stream names - all public
 
         /// <summary>
         /// Default In-/Out-Stream Name
         /// </summary>
-        public const string DefaultStreamName = "Default";
+        public const string StreamDefaultName = "Default";
 
 
-        public const string DefaultStreamNameRequired = "Default" + "*";
-        public const string FallbackStreamName = "Fallback";
+        /// <summary>
+        /// Very common stream name for fallback streams.
+        /// </summary>
+        public const string StreamFallbackName = "Fallback";
 
 
-        /// <summary>PublishedEntities Stream Name</summary>
-        public const string PublishedStreamName = "Published";
+        /// <summary>
+        /// PublishedEntities Stream Name
+        /// </summary>
+        internal const string StreamPublishedName = "Published";
 
-        /// <summary>Draft-Entities Stream Name</summary>
-        public const string DraftsStreamName = "Drafts";
+        /// <summary>
+        /// Draft-Entities Stream Name
+        /// </summary>
+        internal const string StreamDraftsName = "Drafts";
 
         #endregion
 
-        #region Query terms - used for DataSources but also the App project which has a Query Manager
-
-        /// <summary>content type name of the query AttributeSet</summary>
-        public static readonly string QueryTypeName = "DataPipeline";
-
-        /// <summary>content-type name of the queryPart AttributeSet</summary>
-        public static readonly string QueryPartTypeName = "DataPipelinePart";
+        #region Empty Lists
 
         /// <summary>
-        /// Attribute Name on the query-Entity describing the Stream-Wiring
+        /// Constant empty list of entities - for common scenarios where we just need to return empty results.
         /// </summary>
-        public const string QueryStreamWiringAttributeName = "StreamWiring";
+        [PrivateApi]
+        public static IImmutableList<IEntity> EmptyList = ImmutableList<IEntity>.Empty;
 
         #endregion
     }

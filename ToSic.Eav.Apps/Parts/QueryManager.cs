@@ -139,7 +139,7 @@ namespace ToSic.Eav.Apps.Parts
                 // Add new DataSource
                 else
                 {
-                    var newSpecs = Parent.Entities.Create(DataSourceConstants.QueryPartTypeName, dataSource,
+                    var newSpecs = Parent.Entities.Create(QueryConstants.QueryPartTypeName, dataSource,
                         new Target((int)TargetTypes.Entity, null, keyGuid: queryEntityGuid));
                     newDataSources.Add(originalIdentity, newSpecs.EntityGuid);
                 }
@@ -199,7 +199,7 @@ namespace ToSic.Eav.Apps.Parts
                     $"DataSource \"{wireInfo.To}\" has multiple In-Streams with Name \"{wireInfo.In}\". Each In-Stream must have an unique Name and can have only one connection.");
 
             // add to new object...then send to save/update
-            values[DataSourceConstants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
+            values[QueryConstants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
             Parent.Entities.UpdateParts(id, values);
         }
 

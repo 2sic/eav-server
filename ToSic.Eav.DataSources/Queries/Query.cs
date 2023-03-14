@@ -98,7 +98,7 @@ namespace ToSic.Eav.DataSources.Queries
             var resolvedParams = Configuration.LookUpEngine.LookUp(Definition.Params);
 
             // now provide an override source for this
-            var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, resolvedParams);
+            var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsSourceName, resolvedParams);
             var queryInfos = QueryBuilder.BuildQuery(Definition, Configuration.LookUpEngine,
                 new List<ILookUp> { paramsOverride });
             _source = queryInfos.Item1;

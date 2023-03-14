@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -35,7 +36,7 @@ namespace ToSic.Eav.DataSources.LookUp
         {
             if (_initialized) return;
             // make sure we get the settings, but not the pipeline-parts, which may also be assigned
-			Data = _parent.Metadata.FirstOrDefault(e => e.Type.NameId != DataSourceConstants.QueryPartTypeName);
+			Data = _parent.Metadata.FirstOrDefault(e => e.Type.NameId != QueryConstants.QueryPartTypeName);
 			_initialized = true;
 		}
         private bool _initialized;

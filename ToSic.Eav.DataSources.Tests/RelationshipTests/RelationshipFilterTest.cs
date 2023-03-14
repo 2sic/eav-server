@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         public void DS_RelFil_NoConfigFallback()
         {
             var relFilt = BuildRelationshipFilter(RelationshipTestSpecs.Company);
-            relFilt.AttachForTests(DataSourceConstants.FallbackStreamName, relFilt.InForTests()[DataSourceConstants.DefaultStreamName]);
+            relFilt.AttachForTests(DataSourceConstants.StreamFallbackName, relFilt.InForTests()[DataSourceConstants.StreamDefaultName]);
 
             var result = relFilt.ListForTests().ToList();
 

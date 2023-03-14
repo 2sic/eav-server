@@ -47,8 +47,8 @@ namespace ToSic.Eav.DataSourceTests
             var items = 5;
             var sf = GenerateShuffleDS(items);
 
-            var origSeqSorted = AreAllItemsSorted(sf.InForTests()[DataSourceConstants.DefaultStreamName]);
-            var seqConsistent = AreAllItemsSorted(sf.Out[DataSourceConstants.DefaultStreamName]);
+            var origSeqSorted = AreAllItemsSorted(sf.InForTests()[DataSourceConstants.StreamDefaultName]);
+            var seqConsistent = AreAllItemsSorted(sf.Out[DataSourceConstants.StreamDefaultName]);
 
             // after checking all, it should NOT be consistent
             Assert.IsTrue(origSeqSorted, "original sequence SHOULD be sorted");

@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Eye, 
         Type = DataSourceType.Security, 
         GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
-        In = new []{ PublishedStreamName + "*", DefaultStreamName + "*",  DraftsStreamName + "*" },
+        In = new []{ StreamPublishedName + "*", StreamDefaultName + "*",  StreamDraftsName + "*" },
         DynamicOut = false, 
         HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
 
@@ -59,9 +59,9 @@ namespace ToSic.Eav.DataSources
 	    {
             Configuration.Parse();
             var showDraftsInSettings = ShowDrafts;
-			var finalShowDrafts = ShowDrafts ?? _userPermissions.UserPermissions()?.UserMayEdit ?? QueryConstants.ShowDraftsDefault;
+			var finalShowDrafts = ShowDrafts ?? _userPermissions.UserPermissions()?.UserMayEdit ?? QueryConstants.ParamsShowDraftsDefault;
             Log.A($"get incl. draft:'{showDraftsInSettings}' = '{finalShowDrafts}'");
-	        var outStreamName = finalShowDrafts ? DraftsStreamName : PublishedStreamName;
+	        var outStreamName = finalShowDrafts ? StreamDraftsName : StreamPublishedName;
 	        return In[outStreamName].List.ToImmutableList();
 	    }
 

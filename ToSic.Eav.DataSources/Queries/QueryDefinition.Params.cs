@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// The <see cref="ILookUp"/> for the params of this query - based on the Params.
         /// </summary>
         /// <returns>Always returns a valid ILookup, even if no params found. </returns>
-        public ILookUp ParamsLookUp => _paraLookUp ?? (_paraLookUp = new LookUpInDictionary(QueryConstants.ParamsLookup, Params));
+        public ILookUp ParamsLookUp => _paraLookUp ?? (_paraLookUp = new LookUpInDictionary(QueryConstants.ParamsSourceName, Params));
         private ILookUp _paraLookUp;
 
         /// <summary>

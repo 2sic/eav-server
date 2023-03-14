@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
         },
         Type = DataSourceType.Modify,
         ExpectsDataOfType = "7b4fce73-9c29-4517-af14-0a704da5b958",
-        In = new[] { DataSourceConstants.DefaultStreamName + "*" },
+        In = new[] { DataSourceConstants.StreamDefaultName + "*" },
         HelpLink = "https://r.2sxc.org/DsLanguageModeler")]
     [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
     public sealed class LanguageModeler : DataSource

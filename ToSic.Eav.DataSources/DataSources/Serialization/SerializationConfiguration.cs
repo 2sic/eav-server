@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Modify, 
         GlobalName = "2952e680-4aaa-4a12-adf7-325cb2854358",
         DynamicOut = true,
-        In = new []{DataSourceConstants.DefaultStreamName},
+        In = new []{DataSourceConstants.StreamDefaultName},
 	    ExpectsDataOfType = "5c84cd3f-f853-40b3-81cf-dee6a07dc411",
         HelpLink = "https://r.2sxc.org/DsSerializationConfiguration")]
 
@@ -32,8 +32,8 @@ namespace ToSic.Eav.DataSources
 	{
         #region Constants
 
-        public static string KeepAll = "*";
-        public static string KeepNone = "-";
+        [PrivateApi("not sure how to document, doesn't seem to be in use")] public static string KeepAll = "*";
+        [PrivateApi("not sure how to document, doesn't seem to be in use")] public static string KeepNone = "-";
 
         #endregion
         #region Configuration-properties
@@ -222,7 +222,7 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-        private IImmutableList<IEntity> GetList(string inStreamName = DataSourceConstants.DefaultStreamName) => Log.Func(() =>
+        private IImmutableList<IEntity> GetList(string inStreamName = DataSourceConstants.StreamDefaultName) => Log.Func(() =>
         {
             Configuration.Parse();
             var original = In[inStreamName].List.ToImmutableList();

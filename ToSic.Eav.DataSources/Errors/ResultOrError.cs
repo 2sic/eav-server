@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources
 {
@@ -11,7 +12,7 @@ namespace ToSic.Eav.DataSources
 
         public ResultOrError(bool isOk, T result, IImmutableList<IEntity> errors = null)
         {
-            Errors = errors?? DataSource.EmptyList;
+            Errors = errors?? EmptyList;
             IsOk = isOk;
             Result = result;
         }

@@ -3,6 +3,7 @@ using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -36,7 +37,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public StreamFallback(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.FallBk")
+		public StreamFallback(MyServices services) : base(services, $"{LogPrefix}.FallBk")
 		{
 			Provide(GetStreamFallback);
 		}
@@ -52,12 +53,12 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Check if there is a default-stream in with content - if yes, try to return that
-            if (In.HasStreamWithItems(DataSourceConstants.DefaultStreamName))
-                return (In[DataSourceConstants.DefaultStreamName], "found default");
+            if (In.HasStreamWithItems(StreamDefaultName))
+                return (In[StreamDefaultName], "found default");
 
             // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
             var streamList = In
-                .Where(x => x.Key != DataSourceConstants.DefaultStreamName)
+                .Where(x => x.Key != StreamDefaultName)
                 .OrderBy(x => x.Key);
 
             foreach (var stream in streamList)

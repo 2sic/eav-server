@@ -8,6 +8,7 @@ using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys
@@ -54,7 +55,7 @@ namespace ToSic.Eav.DataSources.Sys
             set => Configuration.SetThis(value);
         }
 
-        [Configuration(Fallback = DataSourceConstants.DefaultStreamName)]
+        [Configuration(Fallback = StreamDefaultName)]
         public string StreamName
         {
             get => Configuration.GetThis();
@@ -69,7 +70,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// </summary>
         public QueryInfo(MyServices services, LazySvc<IDataSourceFactory> dataSourceFactory,
             LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, IDataFactory dataFactory) : base(
-            services, $"{DataSourceConstants.LogPrefix}.EavQIn")
+            services, $"{LogPrefix}.EavQIn")
         {
             ConnectServices(
                 QueryBuilder = queryBuilder,
@@ -108,8 +109,8 @@ namespace ToSic.Eav.DataSources.Sys
                 return (EmptyList, "can't find stream name in query");
 
             var attribInfo = _dataSourceFactory.Value.Create<Attributes>(source: _query);
-            if (StreamName != DataSourceConstants.DefaultStreamName)
-                attribInfo.Attach(DataSourceConstants.DefaultStreamName, _query, StreamName);
+            if (StreamName != StreamDefaultName)
+                attribInfo.Attach(StreamDefaultName, _query, StreamName);
 
             var results = attribInfo.List.ToImmutableList();
             return (results, $"{results.Count}");

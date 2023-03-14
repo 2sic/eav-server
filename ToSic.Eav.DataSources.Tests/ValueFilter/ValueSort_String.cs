@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var vf = _testDataGeneratedOutsideTimer;
             var listOut = vf.ListForTests().ToList();
-            var listIn = vf.InForTests()[DataSourceConstants.DefaultStreamName].ListForTests().ToList();
+            var listIn = vf.InForTests()[DataSourceConstants.StreamDefaultName].ListForTests().ToList();
             CollectionAssert.AreEqual(listOut, listIn, "Lists should be the same if no criteria applied");
         }
 

@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
         DynamicOut = true,
-        In = new []{DataSourceConstants.DefaultStreamName},
+        In = new []{DataSourceConstants.StreamDefaultName},
 		ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://r.2sxc.org/DsApp")]
     public partial class App : DataSource
@@ -154,7 +154,7 @@ namespace ToSic.Eav.DataSources
             else
                 appDs = _services.DataSourceFactory.CreateDefault(appIdentity: this, configSource: Configuration.LookUpEngine);
 
-            Attach(DataSourceConstants.DefaultStreamName, appDs);
+            Attach(DataSourceConstants.StreamDefaultName, appDs);
             _attachOtherDataSourceRunning = false;
         }
 

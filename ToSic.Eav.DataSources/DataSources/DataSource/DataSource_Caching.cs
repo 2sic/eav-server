@@ -29,15 +29,15 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc />
         public virtual long CacheTimestamp
-            => In.ContainsKey(DataSourceConstants.DefaultStreamName) && In[DataSourceConstants.DefaultStreamName].Source != null
-                ? In[DataSourceConstants.DefaultStreamName].Source.CacheTimestamp
+            => In.ContainsKey(DataSourceConstants.StreamDefaultName) && In[DataSourceConstants.StreamDefaultName].Source != null
+                ? In[DataSourceConstants.StreamDefaultName].Source.CacheTimestamp
                 : DateTime.Now.Ticks; // if no relevant up-stream, just return now!
 
         /// <inheritdoc />
         public virtual bool CacheChanged(long dependentTimeStamp) =>
-            !In.ContainsKey(DataSourceConstants.DefaultStreamName)
-            || In[DataSourceConstants.DefaultStreamName].Source == null
-            || In[DataSourceConstants.DefaultStreamName].Source.CacheChanged(dependentTimeStamp);
+            !In.ContainsKey(DataSourceConstants.StreamDefaultName)
+            || In[DataSourceConstants.StreamDefaultName].Source == null
+            || In[DataSourceConstants.StreamDefaultName].Source.CacheChanged(dependentTimeStamp);
 
         #endregion
 

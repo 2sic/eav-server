@@ -10,6 +10,7 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
@@ -84,7 +85,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Apps DS
         /// </summary>
         [PrivateApi]
-        public Apps(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.Apps")
+        public Apps(MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Apps")
         {
             ConnectServices(
                 _dataFactory = dataFactory.Configure(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())

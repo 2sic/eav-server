@@ -7,6 +7,7 @@ using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -22,7 +23,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.FilterList,
         Type = DataSourceType.Filter,
         GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
-        In = new[] { DataSourceConstants.DefaultStreamNameRequired, DataSourceConstants.FallbackStreamName },
+        In = new[] { QueryConstants.InStreamDefaultRequired, StreamFallbackName },
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://r.2sxc.org/DsValueFilter")]
@@ -88,7 +89,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new ValueFilter
         /// </summary>
         [PrivateApi]
-        public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.ValFil")
+        public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{LogPrefix}.ValFil")
         {
             ConnectServices(
                 _valueLanguageService = valLanguages
@@ -107,8 +108,8 @@ namespace ToSic.Eav.DataSources
             var res = GetValueFilter();
             return res.Any()
                 ? (res, "found")
-                : In.HasStreamWithItems(DataSourceConstants.FallbackStreamName)
-                    ? (In[DataSourceConstants.FallbackStreamName].List.ToImmutableList(), "fallback")
+                : In.HasStreamWithItems(StreamFallbackName)
+                    ? (In[StreamFallbackName].List.ToImmutableList(), "fallback")
                     : (res, "final");
         });
 
@@ -120,7 +121,7 @@ namespace ToSic.Eav.DataSources
 
             var languages = _valueLanguageService.PrepareLanguageList(Languages);
 
-            // Get the In-list and stop if error orempty
+            // Get the In-list and stop if error or empty
             var source = TryGetIn();
             if (source is null) return (Error.TryGetInFailed(this), "error");
             if (!source.Any()) return (source, "empty");

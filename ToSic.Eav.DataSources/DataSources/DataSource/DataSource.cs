@@ -8,19 +8,26 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.DataSources
 {
     /// <summary>
-    /// The base class, which should always be inherited. Already implements things like Get One / Get many, Caching and a lot more.
+    /// The base class for all DataSources, especially custom DataSources.
+    /// It must always be inherited.
+    /// It provides a lot of core functionality to get configurations, ensure caching and more.
+    ///
+    /// Important: in most cases you will inherit the <see cref="ExternalData"/> DataSource for custom data sources.
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
+    /// <remarks>
+    /// Had a major, breaking update in v15.
+    /// Consult the guide to upgrade your custom data sources.
+    /// </remarks>
+    [PublicApi]
     public abstract partial class DataSource : ServiceBase<DataSource.MyServices>, IDataSource, IDataTarget
     {
-        /// <summary>
-        /// Constant empty list of entities - for common scenarios where we just need to return no hits.
-        /// </summary>
-        public static IImmutableList<IEntity> EmptyList = ImmutableList<IEntity>.Empty;
 
         /// <summary>
-        /// Constructor - must be without parameters, otherwise the DI can't construct it.
+        /// Default Constructor, _protected_.
+        /// To inherit this, make sure your new class also gets the `MyServices` in it's constructor and passes it to here.
         /// </summary>
+        /// <param name="services">All the services a DataSource needs. Uses the MyServices convention TODO: DOCUMENT</param>
+        /// <param name="logName">Your own log name, such as `My.CsvDs`</param>
         protected DataSource(MyServices services, string logName) : base(services, logName)
         {
             AutoLoadAllConfigMasks();

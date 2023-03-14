@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -160,7 +161,7 @@ namespace ToSic.Eav.DataSources
         public void PurgeList(bool cascade = false) => Log.Do(message: $"PurgeList on Stream: {Name}, {nameof(cascade)}:{cascade}", action: l =>
         {
             l.A("kill the very local temp cache");
-            _list = DataSource.EmptyList;
+            _list = EmptyList;
             _listLoaded = false;
             l.A("kill in list-cache");
             new ListCache(Log).Remove(this);

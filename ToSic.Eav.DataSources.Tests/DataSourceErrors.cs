@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSourceTests
         /// <param name="source"></param>
         /// <param name="errTitle"></param>
         /// <param name="streamName"></param>
-        public static void VerifyStreamIsError(IDataSource source, string errTitle, string streamName = DataSourceConstants.DefaultStreamName)
+        public static void VerifyStreamIsError(IDataSource source, string errTitle, string streamName = DataSourceConstants.StreamDefaultName)
         {
             IsNotNull(source);
             var stream = source[streamName];

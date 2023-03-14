@@ -90,7 +90,7 @@ namespace ToSic.Eav.DataSources.Queries
 
             var showDrafts = _userPermissions.UserPermissions().UserMayEdit;
             if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
-                paramsLookup.Properties[QueryConstants.ParamsShowDraftKey] = showDrafts.ToString();
+                paramsLookup.Properties[QueryConstants.ParamsShowDraftsKey] = showDrafts.ToString();
 
             templateConfig.Add(queryDef.ParamsLookUp);      // Add [params:...]
             templateConfig.AddOverride(overrideLookUps);    // add override

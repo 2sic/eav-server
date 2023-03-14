@@ -46,9 +46,9 @@ namespace ToSic.Eav.Apps.Parts
             };
             var queryAttributes = query.Entity.Attributes.ToEditable();
             var newWiringAttribute =
-                _builder.Value.Attribute.Clone(queryAttributes[DataSourceConstants.QueryStreamWiringAttributeName],
+                _builder.Value.Attribute.Clone(queryAttributes[QueryConstants.QueryStreamWiringAttributeName],
                     newWiringValues.ToImmutableList());
-            queryAttributes[DataSourceConstants.QueryStreamWiringAttributeName] = newWiringAttribute;
+            queryAttributes[QueryConstants.QueryStreamWiringAttributeName] = newWiringAttribute;
 
             var newQuery = _builder.Value.Entity.Clone(query.Entity, id: 0, guid: newQueryGuid, attributes: _builder.Value.Attribute.Create(queryAttributes));
 
