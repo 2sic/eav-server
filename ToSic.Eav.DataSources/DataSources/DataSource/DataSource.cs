@@ -38,6 +38,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Load all [Configuration] attributes and ensure we have the config masks.
         /// </summary>
+        [PrivateApi]
         private void AutoLoadAllConfigMasks()
         {
             // Load all config masks which are defined on attributes
@@ -49,7 +50,7 @@ namespace ToSic.Eav.DataSources
         /// <inheritdoc />
         public string Name => GetType().Name;
 
-        [PrivateApi("experimental")]
+        [PrivateApi("internal use only - for labeling data sources in queries to show in debugging")]
         public string Label { get; set; }
 
         /// <inheritdoc />
