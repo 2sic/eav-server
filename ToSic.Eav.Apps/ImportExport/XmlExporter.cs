@@ -82,6 +82,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var appCtx = ContextResolver.App();//appId);
             //var appState = AppStates.Get(new AppIdentity(zoneId, appId));
             //AdamManager.Init(appCtx, Constants.CompatibilityLevel10);
+            PostContextInit(appCtx);
             Constructor(zoneId, appRuntime, /*appState*/appCtx.AppState.NameId, appExport, attrSetIds, entityIds);
 
             // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
@@ -89,6 +90,12 @@ namespace ToSic.Eav.Apps.ImportExport
 
             return this;
         }
+
+        /// <summary>
+        /// Post context init the caller must be able to init Adam, which is not part of this project, so we're handling it as a callback
+        /// </summary>
+        /// <param name="appContext"></param>
+        protected abstract void PostContextInit(IContextOfApp appContext);
 
         private void EnsureThisIsInitialized()
         {
