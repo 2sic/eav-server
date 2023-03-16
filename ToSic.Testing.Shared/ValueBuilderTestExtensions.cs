@@ -11,20 +11,14 @@ namespace ToSic.Testing.Shared
         /// <summary>
         /// Test accessor to reduce use-count of the real code
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="value"></param>
-        /// <param name="languages"></param>
-        /// <param name="fullEntityListForLookup"></param>
         /// <returns></returns>
-        public static IValue Build4Test(this ValueBuilder vBuilder, ValueTypes type, object value, IList<ILanguage> languages,
-            IEntitiesSource fullEntityListForLookup = null)
+        public static IValue Build4Test(this ValueBuilder vBuilder, ValueTypes type, object value, IList<ILanguage> languages)
         {
-            return vBuilder.Build(type, value, languages?.ToImmutableList(), fullEntityListForLookup);
+            return vBuilder.Build(type, value, languages?.ToImmutableList());
         }
-        public static IValue Build4Test(this ValueBuilder vBuilder, ValueTypes type, object value, IImmutableList<ILanguage> languages,
-            IEntitiesSource fullEntityListForLookup = null)
+        public static IValue Build4Test(this ValueBuilder vBuilder, ValueTypes type, object value, IImmutableList<ILanguage> languages)
         {
-            return vBuilder.Build(type, value, languages, fullEntityListForLookup);
+            return vBuilder.Build(type, value, languages);
         }
 
     }

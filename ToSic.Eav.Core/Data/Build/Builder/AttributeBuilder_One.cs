@@ -83,13 +83,13 @@ namespace ToSic.Eav.Data.Build
         public IAttribute<IEnumerable<IEntity>> CreateRelationship(string name, IImmutableList<IEntity> relationships)
         {
             return new Attribute<IEnumerable<IEntity>>(name, ValueTypes.Entity,
-                new List<IValue> { ValueBuilder.BuildRelationship(relationships) }.ToImmutableList());
+                new List<IValue> { ValueBuilder.Relationship(relationships) }.ToImmutableList());
         }
 
         public IAttribute<IEnumerable<IEntity>> CreateRelationship(string name, IEnumerable<IEntity> directSource)
         {
             return new Attribute<IEnumerable<IEntity>>(name, ValueTypes.Entity,
-                new List<IValue> { ValueBuilder.BuildRelationship(directSource) }.ToImmutableList());
+                new List<IValue> { ValueBuilder.Relationship(directSource) }.ToImmutableList());
         }
         public IAttribute<IEnumerable<IEntity>> CreateRelationship(string name, IEnumerable<object> keys, ILookup<object, IEntity> lookup)
         {

@@ -126,9 +126,6 @@ namespace ToSic.Eav.DataSources
                             var currentAttribute = attributes[entry.OriginalField];
                             var value = currentAttribute.Values.FirstOrDefault()?.ObjectContents;
                             // Remove first, in case the new name replaces an old one
-                            // #immutableTodo
-                            //attributes.Remove(entry.OriginalField);
-                            // Now add the resulting new attribute
                             var temp = _dataBuilder.Attribute.CreateOrUpdate(currentAttribute, map.Target, value, newAttribute.Type, entry.Language);
                             attributes = _dataBuilder.Attribute.Replace(attributes, temp);
                         }

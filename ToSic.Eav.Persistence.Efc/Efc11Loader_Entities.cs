@@ -147,7 +147,7 @@ namespace ToSic.Eav.Persistence.Efc
             // Prepare relationships to add to AttributeGenerator
             var emptyValueList = new List<(string StaticName, IValue)>();
             var preparedRelationships = relatedEntities.TryGetValue(e.EntityId, out var rawRels)
-                ? rawRels.Select(r => (r.StaticName, _dataBuilder.Value.BuildRelationship(r.Children, app))).ToList()
+                ? rawRels.Select(r => (r.StaticName, _dataBuilder.Value.Relationship(r.Children, app))).ToList()
                 : emptyValueList;
 
             var attributeValuesLookup = !attributes.TryGetValue(e.EntityId, out var attribValues)
@@ -156,7 +156,7 @@ namespace ToSic.Eav.Persistence.Efc
                     .Select(a => new
                     {
                         a.Name,
-                        CtAttribute = contentType[a.Name],// ctAttribDic.TryGetValue(a.Name, out var attrib) ? attrib : null,
+                        CtAttribute = contentType[a.Name],
                         a.Values
                     })
                     .Where(set => set.CtAttribute != null)

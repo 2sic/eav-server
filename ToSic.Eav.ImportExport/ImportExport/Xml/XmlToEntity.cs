@@ -244,8 +244,6 @@ namespace ToSic.Eav.ImportExport.Xml
             var dimensionsToAdd = new List<ILanguage>();
             if (_envLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
             {
-                // 2023-02-24 2dm #immutable
-                //dimensionsToAdd.Add(new Language { Key = envLang.EnvironmentKey, ReadOnly = readOnly });
                 dimensionsToAdd.Add(new Language(envLang.EnvironmentKey, readOnly));
                 logText += "built dimension-list";
             }

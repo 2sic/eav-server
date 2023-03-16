@@ -149,7 +149,8 @@ namespace ToSic.Eav.Persistence
 
         private IAttribute CreateIsPublishedAttribute(bool isPublished)
         {
-            var values = new List<IValue> { _dataBuilder.Value.Build(ValueTypes.Boolean, isPublished) };
+            //var values = new List<IValue> { _dataBuilder.Value.Build(ValueTypes.Boolean, isPublished) };
+            var values = new List<IValue> { _dataBuilder.Value.Bool(isPublished) };
             var attribute = _dataBuilder.Attribute.Create(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
             // #immutable
             //attribute.Values = values;
@@ -253,7 +254,7 @@ namespace ToSic.Eav.Persistence
                     // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
                     //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
                     //var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
-                    var val = _dataBuilder.Value.Clone(orgVal, remainingLanguages.ToImmutableList());
+                    var val = _dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableList());
                     return val;
                 })
                 .Where(val => val != null)

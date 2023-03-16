@@ -163,7 +163,7 @@ namespace ToSic.Eav.Apps.Parts
                 var relationshipsUpdated = relationshipAttributes
                     .Select(a =>
                     {
-                        var newLazyEntities = Builder.Value.CloneRelationship(a.TypedContents, appState);
+                        var newLazyEntities = Builder.Value.Relationship(a.TypedContents, appState);
                         return Builder.Attribute.Clone(a.Attribute,
                             new List<IValue> { newLazyEntities }.ToImmutableList());
                     })

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Data.Build;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
@@ -19,10 +20,10 @@ namespace ToSic.Eav.Data
         /// <remarks>
         /// * completely #immutable since v15.04
         /// </remarks>
-        public Value(T typedContents, IImmutableList<ILanguage> languages)
+        internal Value(T typedContents, IImmutableList<ILanguage> languages = null)
         {
             TypedContents = typedContents;
-            _languages = languages;
+            _languages = languages ?? DimensionBuilder.NoLanguages;
         }
 
         public T TypedContents { get; }

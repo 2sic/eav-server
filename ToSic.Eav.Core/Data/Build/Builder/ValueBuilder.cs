@@ -1,45 +1,97 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
-using ToSic.Eav.Data.Source;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
+using static System.Globalization.CultureInfo;
+using DateTime = System.DateTime;
 
 namespace ToSic.Eav.Data.Build
 {
     [PrivateApi]
-    public class ValueBuilder: ServiceBase
+    public partial class ValueBuilder: ServiceBase
     {
-        // WIP - constructor should never be called because we should use DI
-        public ValueBuilder(DimensionBuilder dimensionBuilder, LazySvc<IValueConverter> valueConverter): base("Eav.ValBld")
+        #region Constructor
+
+        public ValueBuilder(LazySvc<IValueConverter> valueConverter): base("Eav.ValBld")
         {
-            _languageBuilder = dimensionBuilder;
             _valueConverter = valueConverter;
         }
 
-        private DimensionBuilder _languageBuilder;
         private readonly LazySvc<IValueConverter> _valueConverter;
 
-        public IValue Clone(IValue original, IImmutableList<ILanguage> languages = null) 
+        #endregion
+
+        /// <summary>
+        /// Create/clone a value based on an original which will supply most of the values.
+        /// </summary>
+        /// <returns></returns>
+        public IValue CreateFrom(IValue original,
+            string noParamOrder = Eav.Parameters.Protector,
+            IImmutableList<ILanguage> languages = null)
             => languages == null ? original : original.Clone(languages);
 
+        #region Simple Values: Bool, DateTime, Number, String
 
-        public IValue BuildRelationship(List<int?> references, IEntitiesSource app) 
-            => BuildRelationship(new LazyEntitiesSource(app, references));
+        public IValue<bool?> Bool(bool? value, IImmutableList<ILanguage> languages = null) => 
+            new Value<bool?>(value, languages);
 
-        public IValue BuildRelationship(IEnumerable<IEntity> directList) 
-            => new Value<IEnumerable<IEntity>>(directList, DimensionBuilder.NoLanguages);
-        //public IValue BuildRelationship<TKey>(IImmutableList<TKey> keys, Lookup<TKey, IEntity> lookup) 
-        //    => new Value<IEnumerable<IEntity>>(new LookUpEntitiesSource<TKey>(keys, lookup) , DimensionBuilder.NoLanguages);
+        public IValue<bool?> Bool(object value, IImmutableList<ILanguage> languages = null) => 
+            Bool(value as bool? ?? (bool.TryParse(value as string, out var typed) ? typed : new bool?()), languages);
 
-        public IValue CloneRelationship(IRelatedEntitiesValue value, IEntitiesSource app) 
-            => BuildRelationship(new LazyEntitiesSource(app, value.Identifiers));
+        public IValue<DateTime?> DateTime(DateTime? value, IImmutableList<ILanguage> languages = null) =>
+            new Value<DateTime?>(value, languages);
+
+        public IValue<DateTime?> DateTime(object value, IImmutableList<ILanguage> languages = null) =>
+            DateTime(value as DateTime? ?? (System.DateTime.TryParse(value as string, InvariantCulture, DateTimeStyles.None, out var typed) ? typed : new DateTime?()), languages);
+
+        public IValue<string> String(string value, IImmutableList<ILanguage> languages = null) =>
+            new Value<string>(value, languages);
+
+        public IValue<string> String(object value, IImmutableList<ILanguage> languages = null) =>
+            new Value<string>(value as string, languages);
+
+        public IValue<decimal?> Number(decimal? value, IImmutableList<ILanguage> languages = null)
+            => new Value<decimal?>(value, languages);
+        //public IValue<decimal?> Number(int? value, IImmutableList<ILanguage> languages = null)
+        //    => new Value<decimal?>(value, languages);
+
+        public IValue<decimal?> Number(object value, IImmutableList<ILanguage> languages = null)
+        {
+            var newDec = value as decimal?;
+            if (newDec != null || value is null || (value is string s && s.IsEmptyOrWs()))
+                return Number(newDec, languages);
+            try
+            {
+                return Number(Convert.ToDecimal(value, InvariantCulture), languages);
+            }
+            catch
+            {
+               return Number(null, languages);
+            }
+        }
+
+        #endregion
+
+        #region Relationships
+
+
+        #endregion
+
+        public IValue<T> Create<T>(T value, IImmutableList<ILanguage> languages = null)
+        {
+            var type = typeof(T).UnboxIfNullable();
+            if (type == typeof(bool)) return (IValue<T>)Bool(value as bool?, languages);
+            if (type == typeof(DateTime)) return (IValue<T>)DateTime(value as DateTime?, languages);
+            if (type.IsNumeric()) return (IValue<T>)Number(value as decimal?, languages);
+            // Note: Entities not supported in this build-call
+            return (IValue<T>)String(value as string, languages);
+        }
 
         /// <summary>
         /// Creates a Typed Value Model
@@ -47,7 +99,7 @@ namespace ToSic.Eav.Data.Build
         /// <returns>
         /// An IValue, which is actually an IValue<string>, IValue<decimal>, IValue<IEnumerable<IEntity>> etc.
         /// </returns>
-        public IValue Build(ValueTypes type, object value, IImmutableList<ILanguage> languages = null, IEntitiesSource fullEntityListForLookup = null)
+        public IValue Build(ValueTypes type, object value, IImmutableList<ILanguage> languages = null)
         {
             var langs = languages ?? DimensionBuilder.NoLanguages;
             var stringValue = value as string;
@@ -55,43 +107,20 @@ namespace ToSic.Eav.Data.Build
             {
                 switch (type)
                 {
-                    case ValueTypes.Boolean:
-                        return new Value<bool?>(value as bool? ?? (bool.TryParse(stringValue, out var typedBoolean)
-                            ? typedBoolean
-                            : new bool?()), langs);
-                    case ValueTypes.DateTime:
-                        return new Value<DateTime?>(value as DateTime? ?? (DateTime.TryParse(stringValue, CultureInfo.InvariantCulture,
-                                                     DateTimeStyles.None, out var typedDateTime)
-                                                     ? typedDateTime
-                                                     : new DateTime?()), langs);
-
-                    case ValueTypes.Number:
-                        decimal? newDec = null;
-                        if (value != null && !(value is string s && string.IsNullOrEmpty(s)))
-                        {
-                            // only try converting if it's not an empty string
-                            try
-                            {
-                                newDec = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
-                            }
-                            catch { /* ignored */ }
-                        }
-
-                        return new Value<decimal?>(newDec, langs);
-
-                    case ValueTypes.Entity:
-                        var rel = GetLazyEntitiesForRelationship(value, fullEntityListForLookup);
-                        return new Value<IEnumerable<IEntity>>(rel, DimensionBuilder.NoLanguages);
+                    case ValueTypes.Boolean: return Bool(value, langs);
+                    case ValueTypes.DateTime: return DateTime(value, langs);
+                    case ValueTypes.Number: return Number(value, langs);
+                    case ValueTypes.Entity: return RelationshipWip(value, null);
                     // ReSharper disable RedundantCaseLabel
-                    case ValueTypes.String:  // most common case
-                    case ValueTypes.Empty:   // empty - should actually not contain anything!
-                    case ValueTypes.Custom:  // custom value, currently just parsed as string for manual processing as needed
+                    case ValueTypes.String:     // most common case
+                    case ValueTypes.Empty:      // empty - should actually not contain anything!
+                    case ValueTypes.Custom:     // custom value, currently just parsed as string for manual processing as needed
                     case ValueTypes.Json:
-                    case ValueTypes.Hyperlink:// special case, handled as string
-                    case ValueTypes.Undefined:// backup case, where it's not known...
-                    // ReSharper restore RedundantCaseLabel
+                    case ValueTypes.Hyperlink:  // special case, handled as string
+                    case ValueTypes.Undefined:  // backup case, where it's not known...
                     default:
-                        return new Value<string>(stringValue, langs);
+                        return String(stringValue, langs);// new Value<string>(stringValue, langs);
+                    // ReSharper restore RedundantCaseLabel
                 }
             }
             catch
@@ -99,6 +128,7 @@ namespace ToSic.Eav.Data.Build
                 return new Value<string>(stringValue, langs);
             }
         }
+
 
         public IImmutableList<IValue> Replace(IEnumerable<IValue> values, IValue oldValue, IValue newValue)
         {
@@ -112,50 +142,6 @@ namespace ToSic.Eav.Data.Build
             return editable.ToImmutableList();
         }
 
-
-        private LazyEntitiesSource GetLazyEntitiesForRelationship(object value, IEntitiesSource fullLookupList)
-        {
-            var entityIds = (value as IEnumerable<int?>)?.ToList()
-                            ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
-            if (entityIds != null)
-                return new LazyEntitiesSource(fullLookupList, entityIds);
-            if (value is IRelatedEntitiesValue relList)
-                return new LazyEntitiesSource(fullLookupList, relList.Identifiers);
-            if (value is List<Guid?> guids)
-                return new LazyEntitiesSource(fullLookupList, guids);
-            return new LazyEntitiesSource(fullLookupList, GuidCsvToList(value));
-        }
-
-
-        private static List<Guid?> GuidCsvToList(object value)
-        {
-            var entityIdEnum = value as IEnumerable; // note: strings are also enum!
-            if (value is string stringValue && stringValue.HasValue())
-                entityIdEnum = stringValue.Split(',').ToList();
-            // this is the case when we get a CSV-string with GUIDs
-            var entityGuids = entityIdEnum?.Cast<object>().Select(x =>
-            {
-                var v = x?.ToString().Trim();
-                // this is the case when an export contains a list with nulls as a special code
-                if (v == null || v == Constants.EmptyRelationship)
-                    return new Guid?();
-                var guid = Guid.Parse(v);
-                return guid == Guid.Empty ? new Guid?() : guid;
-            }).ToList() ?? new List<Guid?>();
-            return entityGuids;
-        }
-
-
-
-        /// <summary>
-        /// Generate a new empty relationship. This is important, because it's used often to create empty relationships...
-        /// ...and then it must be a new object every time, 
-        /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
-        /// </summary>
-        private Value<IEnumerable<IEntity>> NewEmptyRelationship
-            => new Value<IEnumerable<IEntity>>(new LazyEntitiesSource(null, identifiers: null), DimensionBuilder.NoLanguages);
-
-        internal IImmutableList<IValue> NewEmptyRelationshipValues => new List<IValue> { NewEmptyRelationship }.ToImmutableList();
 
 
         public object PreConvertReferences(object value, ValueTypes valueType, bool resolveHyperlink) => Log.Func(() =>

@@ -132,16 +132,17 @@ namespace ToSic.Eav.ImportExport.Json
 
         private IImmutableDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null) => Log.Func(() =>
         {
+            var bld = Services.DataBuilder.Value;
             var attribs = new Dictionary<string, IAttribute>[]
             {
-                BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, null),
-                BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, null),
-                BuildAttrib(jAtts.Custom, ValueTypes.Custom, null),
-                BuildAttrib(jAtts.Json, ValueTypes.Json, null),
-                BuildAttrib(jAtts.Entity, ValueTypes.Entity, relationshipsSource),
-                BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, null),
-                BuildAttrib(jAtts.Number, ValueTypes.Number, null),
-                BuildAttrib(jAtts.String, ValueTypes.String, null)
+                BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, (v, l) => bld.DateTime(v, l)),
+                BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, (v, l) => bld.Bool(v, l)),
+                BuildAttrib(jAtts.Custom, ValueTypes.Custom, (v, l) => bld.String(v, l)),
+                BuildAttrib(jAtts.Json, ValueTypes.Json, (v, l) => bld.String(v, l)),
+                BuildAttrib(jAtts.Entity, ValueTypes.Entity, (v, l) => bld.Relationship(v, relationshipsSource)),
+                BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, (v, l) => bld.String(v, l)),
+                BuildAttrib(jAtts.Number, ValueTypes.Number, (v, l) => bld.Number(v, l)),
+                BuildAttrib(jAtts.String, ValueTypes.String, (v, l) => bld.String(v, l))
             };
             var final = attribs
                 .Where(dic => dic != null)
@@ -151,7 +152,10 @@ namespace ToSic.Eav.ImportExport.Json
             return final;
         });
 
-        private Dictionary<string, IAttribute> BuildAttrib<T>(Dictionary<string, Dictionary<string, T>> list, ValueTypes type, IEntitiesSource relationshipsSource)
+        private Dictionary<string, IAttribute> BuildAttrib<T>(
+            Dictionary<string, Dictionary<string, T>> list,
+            ValueTypes type,
+            Func<T, IImmutableList<ILanguage>, IValue> valueBuilder)
         {
             if (list == null) return null;
 
@@ -159,9 +163,8 @@ namespace ToSic.Eav.ImportExport.Json
             var newAttributes = list.ToDictionary(
                 a => a.Key,
                 attrib => builder.Attribute.Create(attrib.Key, type,
-                    attrib.Value.Select(v =>
-                            builder.Value.Build(type, v.Value, RecreateLanguageList(v.Key),
-                                relationshipsSource))
+                    attrib.Value
+                        .Select(v => valueBuilder(v.Value, RecreateLanguageList(v.Key)))
                         .ToList()),
                 InvariantCultureIgnoreCase);
 
@@ -189,12 +192,9 @@ namespace ToSic.Eav.ImportExport.Json
                 case ValueTypes.Entity:
                     if (!jAtts.Entity?.ContainsKey(a.Name) ?? true)
                         return new List<IValue>(); // just keep the empty definition, as that's fine
-                    return jAtts.Entity[a.Name].Select(v => Services.DataBuilder.Value.Build(
-                            a.Type,
+                    return jAtts.Entity[a.Name]
+                        .Select(v => Services.DataBuilder.Value.Relationship(
                             v.Value,
-                            // 2023-02-24 2dm #immutable
-                            //RecreateLanguageList(v.Key),
-                            DimensionBuilder.NoLanguages,
                             relationshipsSource ?? LazyRelationshipLookupList))
                         .ToList();
                 case ValueTypes.Hyperlink: return BuildValues(jAtts.Hyperlink, a);
@@ -216,9 +216,9 @@ namespace ToSic.Eav.ImportExport.Json
         {
             if (!list?.ContainsKey(attrDef.Name) ?? true) return new List<IValue>();
             return list[attrDef.Name]
-                .Select(v => Services.DataBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
+                //.Select(v => Services.DataBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
+                .Select(v => Services.DataBuilder.Value.Create(v.Value, RecreateLanguageList(v.Key)) as IValue)
                 .ToList();
-
         }
 
         //private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IContentTypeAttribute attrDef, IAttribute target)

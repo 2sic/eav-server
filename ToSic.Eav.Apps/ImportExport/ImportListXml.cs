@@ -258,7 +258,7 @@ namespace ToSic.Eav.Apps.ImportExport
                                          ?? new List<ILanguage>();
                     valueLanguages.Add(new Language(nodeLang, valueReadOnly));
                     // update languages on valExisting
-                    var updatedValue2 = _builder.Value.Clone(valExisting, _builder.Language.Merge(valExisting.Languages, valueLanguages));
+                    var updatedValue2 = _builder.Value.CreateFrom(valExisting, languages: _builder.Language.Merge(valExisting.Languages, valueLanguages));
                     //var updatedValue2 = AttributeBuilder.Value.UpdateLanguages(valExisting, valueLanguages);
                     // TODO: update/replace value in existingEnt[attribute.Name]
                     var values2 = _builder.Value.Replace(attrExisting.Values, valExisting, updatedValue2);
