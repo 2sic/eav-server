@@ -10,23 +10,37 @@ namespace ToSic.Eav.DataSources
     /// It manages all the properties which the data source will want to look up, as well as
     /// the LookUp engine which will perform the token resolution
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode] 
-    public partial interface IDataSourceConfiguration
+    [PublicApi] 
+    public interface IDataSourceConfiguration
     {
-        // 2022-02-14 2dm disabled, as all DataSources will need recompiling - Remove 2023 Q2
+        /// <summary>
+        /// Get a configuration value for a specific property.
+        /// Just use `GetThis()` and the method name (which is the key) is added automatically by the compiler.
+        /// </summary>
+        /// <param name="key">The configuration key. Do not set this; it's auto-added by the compiler.</param>
+        /// <returns></returns>
+        /// <remarks>Added in v15.04</remarks>
+        string GetThis([CallerMemberName] string key = default);
 
+        /// <summary>
+        /// Get a configuration value for a specific property, or the fallback.
+        /// Just use `GetThis(5)` and the method name (which is the key) is added automatically by the compiler.
+        /// </summary>
+        /// <typeparam name="T">The data type of the result. Usually optional, because the fallback has this type so it's auto detected.</typeparam>
+        /// <param name="fallback">Fallback value if the configuration is missing or can't be parsed into the expected data format.</param>
+        /// <param name="key">The configuration key. Do not set this; it's auto-added by the compiler.</param>
+        /// <returns>The configuration value or the fallback.</returns>
+        /// <remarks>Added in v15.04</remarks>
+        T GetThis<T>(T fallback, [CallerMemberName] string key = default);
 
-        [PrivateApi("Still WIP v15")]
-        string GetThis([CallerMemberName] string cName = default);
-
-        [PrivateApi("Still WIP v15")]
-        T GetThis<T>(T fallback, [CallerMemberName] string cName = default);
-
-        [PrivateApi("Still WIP v15")]
-        void SetThis(string value, [CallerMemberName] string cName = default);
-
-        [PrivateApi("Still WIP v15")]
-        void SetThis<T>(T value, [CallerMemberName] string cName = default);
+        /// <summary>
+        /// Set a configuration value for a specific property.
+        /// Just use `SetThis(value)` and the method name (which is the key) is added automatically by the compiler.
+        /// </summary>
+        /// <param name="value">The new value</param>
+        /// <param name="key">The configuration key. Do not set this; it's auto-added by the compiler.</param>
+        /// <remarks>Added in v15.04</remarks>
+        void SetThis<T>(T value, [CallerMemberName] string key = default);
 
 
         /// <summary>
@@ -59,6 +73,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The internal look up engine which manages value sources and will resolve the tokens
         /// </summary>
+        [PrivateApi]
         ILookUpEngine LookUpEngine { get; }
     }
 }
