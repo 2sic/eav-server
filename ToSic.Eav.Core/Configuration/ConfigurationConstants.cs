@@ -31,10 +31,6 @@ namespace ToSic.Eav.Configuration
             SystemType = "SettingsSystem",
             Target = AppThingsToStack.Settings
         };
-
-        public static string WebResourcesNode = "WebResources";
-        public static string WebResourceEnabledField = "Enabled";
-        public static string WebResourceHtmlField = "Html";
     }
 
     public enum AppThingsToStack
