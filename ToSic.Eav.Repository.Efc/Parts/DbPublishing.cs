@@ -59,7 +59,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 {
                     l.A($"Must convert back to entity, to then modify the EntityId. The json: {json}");
                     // update the content-id
-                    var cloneWithPublishedId = _builder.Entity.Clone(draftToPublishForJson, id: publishedId);
+                    var cloneWithPublishedId = _builder.Entity.CreateFrom(draftToPublishForJson, id: publishedId);
                     //draftToPublishForJson.ResetEntityId(publishedId);
 
                     var serializer = DbContext.JsonSerializerGenerator.New();

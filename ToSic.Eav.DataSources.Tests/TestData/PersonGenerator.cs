@@ -78,8 +78,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
         }
 
         // todo: should be non-static some day, when the test-code isn't static any more
-        private static ILanguage Clone(ILanguage orig) => new DimensionBuilder().Clone(orig);
-        private static ILanguage Clone(ILanguage orig, bool readOnly) => new DimensionBuilder().Clone(orig, readOnly);
+        private static ILanguage Clone(ILanguage orig, bool readOnly) => new DimensionBuilder().CreateFrom(orig, readOnly);
 
         private object MaybeMakeMl(bool convert, string name, string original)
         {
@@ -87,14 +86,14 @@ namespace ToSic.Eav.DataSourceTests.TestData
 
             var attribute = DataBuilder.Attribute.TestCreateTyped(name,  ValueTypes.String, new List<IValue>
             {
-                DataBuilder.Value.Build4Test(ValueTypes.String, PriPrefix + original, new List<ILanguage> { Clone(LangPri)}),
-                DataBuilder.Value.Build4Test(ValueTypes.String, EnPrefix + original, new List<ILanguage> { Clone(LangEn)}),
+                DataBuilder.Value.Build4Test(ValueTypes.String, PriPrefix + original, new List<ILanguage> { LangPri}),
+                DataBuilder.Value.Build4Test(ValueTypes.String, EnPrefix + original, new List<ILanguage> { LangEn}),
                 DataBuilder.Value.Build4Test(ValueTypes.String, DeMult + original, new List<ILanguage>
                     {
-                        Clone(LangDeDe), 
+                        LangDeDe, 
                         Clone(LangDeCh, true)
                     }),
-                DataBuilder.Value.Build4Test(ValueTypes.String, FrPrefix + original, new List<ILanguage> { Clone(LangFr)})
+                DataBuilder.Value.Build4Test(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr })
             });
             return attribute;
         }
@@ -104,10 +103,10 @@ namespace ToSic.Eav.DataSourceTests.TestData
 
             var attribute = DataBuilder.Attribute.TestCreateTyped(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
             {
-                DataBuilder.Value.Build4Test(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { Clone(LangEn)}),
+                DataBuilder.Value.Build4Test(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { LangEn }),
                 DataBuilder.Value.Build4Test(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
                     {
-                        Clone(LangDeDe), 
+                        LangDeDe, 
                         Clone(LangDeCh, true)
                     }),
                 //ValueBuilder.Build(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr.Copy()})

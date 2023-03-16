@@ -132,7 +132,7 @@ namespace ToSic.Eav.Persistence
                         : newAttrib.Value;
 
             var preCleaned = CorrectPublishedAndGuidImports(mergedAttribs, logDetails);
-            var clone = _dataBuilder.Entity.Clone(idProvidingEntity, id: newId, guid: preCleaned.NewGuid,
+            var clone = _dataBuilder.Entity.CreateFrom(idProvidingEntity, id: newId, guid: preCleaned.NewGuid,
                 type: newType,
                 attributes: _dataBuilder.Attribute.Create(preCleaned.Attributes),
                 isPublished: preCleaned.NewIsPublished);
@@ -192,7 +192,7 @@ namespace ToSic.Eav.Persistence
                     }
 
                     //field.Value.Values = values;
-                    return _dataBuilder.Attribute.Clone(field.Value, values.ToImmutableList());
+                    return _dataBuilder.Attribute.CreateFrom(field.Value, values.ToImmutableList());
                 }, InvariantCultureIgnoreCase);
 
             return modified;
@@ -261,7 +261,7 @@ namespace ToSic.Eav.Persistence
                 .ToImmutableList();
 
             // everything in the update will be kept, and optionally some stuff in the original may be preserved
-            var result = _dataBuilder.Attribute.Clone(update, values);
+            var result = _dataBuilder.Attribute.CreateFrom(update, values);
 
             return result;
         });

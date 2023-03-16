@@ -131,7 +131,7 @@ namespace ToSic.Eav.Persistence.Efc
                 //fromJson.Created = e.Created;
                 //fromJson.Modified = e.Modified;
                 //fromJson.Owner = e.Owner;
-                var clonedExtended = _dataBuilder.Entity.Clone(fromJson,
+                var clonedExtended = _dataBuilder.Entity.CreateFrom(fromJson,
                     isPublished: e.IsPublished,
                     created: e.Created,
                     modified: e.Modified,

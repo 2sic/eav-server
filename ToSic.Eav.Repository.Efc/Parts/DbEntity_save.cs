@@ -100,7 +100,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
                         dbEnt = CreateDbRecord(newEnt, changeLogId, contentTypeId);
                         // update the ID - for versioning and/or json persistence
-                        newEnt = _builder.Entity.Clone(newEnt, id: dbEnt.EntityId);
+                        newEnt = _builder.Entity.CreateFrom(newEnt, id: dbEnt.EntityId);
                         //newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated
 
                         // prepare export for save json OR versioning later on
@@ -157,7 +157,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                         // increase version
                         dbEnt.Version++;
                         //newEnt = _factory.Entity.ResetIdentifiers(newEnt, version: dbEnt.Version);
-                        newEnt = _builder.Entity.Clone(newEnt, id: resetId, version: dbEnt.Version);
+                        newEnt = _builder.Entity.CreateFrom(newEnt, id: resetId, version: dbEnt.Version);
 
                         // prepare export for save json OR versioning later on
                         jsonExport = Serializer.Serialize(newEnt);
@@ -285,7 +285,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             }
 
             if (logDetails) l.A("original is published, so we'll draft in a branch");
-            var clone = _builder.Entity.Clone(newEnt,
+            var clone = _builder.Entity.CreateFrom(newEnt,
                 publishedId: newEnt.EntityId, // set this, in case we'll create a new one
                 id: existingDraftId ?? 0  // set to the draft OR 0 = new
             ) as Entity;

@@ -78,7 +78,7 @@ namespace ToSic.Eav.Apps.Parts
                 throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
 
             newEntities = newEntities
-                .Select(e => Builder.Entity.Clone(e, id: 0, repositoryId: 0))
+                .Select(e => Builder.Entity.CreateFrom(e, id: 0, repositoryId: 0))
                 .ToList();
             Save(newEntities);
         }
@@ -110,14 +110,14 @@ namespace ToSic.Eav.Apps.Parts
                     var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
                     if (newType == null) return entity;
 
-                    return Builder.Entity.Clone(entity, type: newType);
+                    return Builder.Entity.CreateFrom(entity, type: newType);
                 }).ToList();
 
                 // Clear Ephemeral attributes which shouldn't be saved (new in v12)
                 entities = entities.Select(entity =>
                 {
                     var attributes = AttributesWithEmptyEphemerals(entity);
-                    return attributes == null ? entity : Builder.Entity.Clone(entity, attributes: attributes);
+                    return attributes == null ? entity : Builder.Entity.CreateFrom(entity, attributes: attributes);
                 }).ToList();
 
                 // attach relationship resolver - important when saving data which doesn't yet have the guid
@@ -163,9 +163,8 @@ namespace ToSic.Eav.Apps.Parts
                 var relationshipsUpdated = relationshipAttributes
                     .Select(a =>
                     {
-                        var newLazyEntities = Builder.Value.Relationship(a.TypedContents, appState);
-                        return Builder.Attribute.Clone(a.Attribute,
-                            new List<IValue> { newLazyEntities }.ToImmutableList());
+                        var newLazyEntities = Builder.Value.Relationships(a.TypedContents, appState);
+                        return Builder.Attribute.CreateFrom(a.Attribute, newLazyEntities);
                     })
                     .ToList();
 
@@ -176,7 +175,7 @@ namespace ToSic.Eav.Apps.Parts
                 //    (current, updatedRel) => Builder.Attribute.Replace(current, updatedRel));
 
                 // return cloned entity
-                return Builder.Entity.Clone(e, attributes: Builder.Attribute.Create(attributes));
+                return Builder.Entity.CreateFrom(e, attributes: Builder.Attribute.Create(attributes));
             }).ToList();
             return updated;
         }
@@ -202,7 +201,7 @@ namespace ToSic.Eav.Apps.Parts
                 {
                     if (!toClear.Any(tc => tc.Name.EqualsInsensitive(pair.Key)))
                         return pair.Value;
-                    var empty = Builder.Attribute.Clone(pair.Value, new List<IValue>().ToImmutableList());
+                    var empty = Builder.Attribute.CreateFrom(pair.Value, new List<IValue>().ToImmutableList());
                     l.A("Cleared " + pair.Key);
                     return empty;
                 }, InvariantCultureIgnoreCase);

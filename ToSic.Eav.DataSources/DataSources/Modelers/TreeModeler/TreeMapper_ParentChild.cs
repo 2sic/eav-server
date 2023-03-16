@@ -38,11 +38,11 @@ namespace ToSic.Eav.DataSources
             {
                 var newAttributes = new List<IAttribute>
                 {
-                    _builder.Attribute.CreateRelationship(newParentField, new List<object> { pair.Partner.RelatedId }, lookup),
-                    _builder.Attribute.CreateRelationship(newChildrenField, new List<object> { "Needs:" + pair.Partner.OwnId }, lookup)
+                    _builder.Attribute.Relationship(newParentField, new List<object> { pair.Partner.RelatedId }, lookup),
+                    _builder.Attribute.Relationship(newChildrenField, new List<object> { "Needs:" + pair.Partner.OwnId }, lookup)
                 };
                 var attributes = _builder.Attribute.Replace(pair.Entity.Attributes, newAttributes);
-                return _builder.Entity.Clone(pair.Entity, attributes: _builder.Attribute.Create(attributes));
+                return _builder.Entity.CreateFrom(pair.Entity, attributes: _builder.Attribute.Create(attributes));
             }).ToList();
 
             // Add lookup to own id

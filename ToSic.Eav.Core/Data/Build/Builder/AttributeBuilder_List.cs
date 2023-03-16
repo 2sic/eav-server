@@ -32,24 +32,14 @@ namespace ToSic.Eav.Data.Build
         public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, IAttribute> attributes)
             => attributes?.ToImmutableInvariant() ?? Empty();
 
-        public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, object> attributes, IImmutableList<ILanguage> languages = null)
-        {
-            if (attributes == null)
-                return Empty();
-
-            if (attributes.All(x => x.Value is IAttribute))
-                return attributes.ToImmutableDictionary(pair => pair.Key, pair => pair.Value as IAttribute, InvariantCultureIgnoreCase);
-
-            return CreateDetailed(attributes, languages).ToImmutableInvariant();
-        }
-
-
+        public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, object> attributes, IImmutableList<ILanguage> languages = null) => 
+            attributes == null ? Empty() : CreateInternal(attributes, languages).ToImmutableInvariant();
 
 
         /// <summary>
         /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
         /// </summary>
-        private Dictionary<string, IAttribute> CreateDetailed(IDictionary<string, object> objAttributes, IImmutableList<ILanguage> languages = null) =>
+        private Dictionary<string, IAttribute> CreateInternal(IDictionary<string, object> objAttributes, IImmutableList<ILanguage> languages = null) =>
             objAttributes.ToDictionary(pair => pair.Key, oAttrib =>
             {
                 // in case the object is already an IAttribute, use that, don't rebuild it

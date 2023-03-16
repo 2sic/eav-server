@@ -112,7 +112,7 @@ namespace ToSic.Eav.WebApi
                     ? bundle.Entity.EntityGuid
                     : Guid.NewGuid();
                 if (hasEntity && !useEntityGuid)
-                    bundle.Entity = _entityBuilder.Clone(bundle.Entity, guid: bundle.Header.Guid);
+                    bundle.Entity = _entityBuilder.CreateFrom(bundle.Entity, guid: bundle.Header.Guid);
                 //bundle.Entity = _entityBuilder.ResetIdentifiers(bundle.Entity, newGuid: bundle.Header.Guid);
                 //(bundle.Entity as Entity).SetGuid(bundle.Header.Guid);
             }
@@ -139,7 +139,7 @@ namespace ToSic.Eav.WebApi
             if (!p.DuplicateEntity.HasValue) return found;
 
             // TODO: 2023-02-25 seems that EntityId is reset, but RepositoryId isn't - not sure why or if this is correct
-            var copy = _entityBuilder.Clone(found, id: 0, guid: Guid.Empty);
+            var copy = _entityBuilder.CreateFrom(found, id: 0, guid: Guid.Empty);
             //copy.SetGuid(Guid.Empty);
             //copy.ResetEntityId();
             return copy;

@@ -28,7 +28,7 @@ namespace ToSic.Eav.Data.Build
                     if (!(v.Value is RawRelationship rawRelationship)) return v.Value;
                     var lookupSource =
                         new LookUpEntitiesSource<object>(rawRelationship.Keys, relationships);
-                    var relAttr = _builder.Attribute.CreateRelationship(v.Key, lookupSource);
+                    var relAttr = _builder.Attribute.Relationship(v.Key, lookupSource);
                     return relAttr;
                 }, StringComparer.InvariantCultureIgnoreCase);
             return l.Return(valuesWithRelationships, $"{valuesWithRelationships.Count}");

@@ -209,7 +209,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             .Add(new Language(nodeLang, valueReadOnly)));
                         var newValues = _builder.Value.Replace(entityValue.Attribute.Values,
                             entityValue.Value, updatedValue);
-                        var newAttribute = _builder.Attribute.Clone(entityValue.Attribute, newValues);
+                        var newAttribute = _builder.Attribute.CreateFrom(entityValue.Attribute, newValues);
                         entityAttributes = _builder.Attribute.Replace(entityAttributes, newAttribute);
                         //entityValue.Attribute.Values = dummy - fix;
                         //entityValue.Attribute.Values.Remove(entityValue.Value);
@@ -262,7 +262,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     //var updatedValue2 = AttributeBuilder.Value.UpdateLanguages(valExisting, valueLanguages);
                     // TODO: update/replace value in existingEnt[attribute.Name]
                     var values2 = _builder.Value.Replace(attrExisting.Values, valExisting, updatedValue2);
-                    var attribute2 = _builder.Attribute.Clone(attrExisting, values2);
+                    var attribute2 = _builder.Attribute.CreateFrom(attrExisting, values2);
                     entityAttributes = _builder.Attribute.Replace(entityAttributes, attribute2);
 
 
@@ -278,7 +278,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     // note: I'm not sure if this should ever happen, if the same entity already exists
                     // in the ImportEntities list. But because there is a check if it's already in there
                     // which was from 2017 or before, I'll leave it in for now
-                    var entityClone = _builder.Entity.Clone(entityInImportQueue, attributes: _builder.Attribute.Create(entityAttributes));
+                    var entityClone = _builder.Entity.CreateFrom(entityInImportQueue, attributes: _builder.Attribute.Create(entityAttributes));
                     ImportEntities.Remove(entityInImportQueue);
                     ImportEntities.Add(entityClone as Entity);
                 }

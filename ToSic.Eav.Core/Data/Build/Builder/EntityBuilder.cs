@@ -83,7 +83,7 @@ namespace ToSic.Eav.Data.Build
         /// Create a new Entity based on an Entity and Attributes
         /// Used in the Attribute-Filter, which generates a new entity with less properties
         /// </summary>
-        public IEntity Clone(
+        public IEntity CreateFrom(
             IEntity original,
             string noParamOrder = Parameters.Protector,
             int? appId = default,

@@ -34,7 +34,7 @@ namespace ToSic.Eav.Data.Build
 
 
 
-        public IContentTypeAttribute Clone(
+        public IContentTypeAttribute CreateFrom(
             IContentTypeAttribute original,
             int? appId = default,
             string name = default,

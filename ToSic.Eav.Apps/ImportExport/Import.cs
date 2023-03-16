@@ -193,7 +193,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private List<IEntity> MetadataWithResetIds(IMetadataOf metadata)
         {
             return metadata.Concat(metadata.Permissions.Select(p => p.Entity))
-                .Select(e => _dataBuilder.Entity.Clone(e, id: 0, repositoryId: 0, guid: Guid.NewGuid()))
+                .Select(e => _dataBuilder.Entity.CreateFrom(e, id: 0, repositoryId: 0, guid: Guid.NewGuid()))
                 .ToList();
         }
 
@@ -211,7 +211,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 var newAttributes = contentType.Attributes.Select(a =>
                     {
                         var attributeMetadata = MetadataWithResetIds(a.Metadata);
-                        return _dataBuilder.TypeAttributeBuilder.Clone(a, metadataItems: attributeMetadata);
+                        return _dataBuilder.TypeAttributeBuilder.CreateFrom(a, metadataItems: attributeMetadata);
                     })
                     .ToList();
 
@@ -229,7 +229,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 //foreach (var metadata in contentType.Metadata)
                 //    metadata.ResetEntityId();
 
-                var newType = _dataBuilder.ContentType.Clone(contentType, metadataItems: ctMetadata,
+                var newType = _dataBuilder.ContentType.CreateFrom(contentType, metadataItems: ctMetadata,
                     attributes: newAttributes);
                 return (newType, "existing not found, only reset IDs");
             }
@@ -251,7 +251,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                     if (newAttribute.Metadata.Permissions.Any())
                         newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
-                    return _dataBuilder.TypeAttributeBuilder.Clone(newAttribute, metadataItems: newMetaList);
+                    return _dataBuilder.TypeAttributeBuilder.CreateFrom(newAttribute, metadataItems: newMetaList);
                 })
                 .ToList();
 
@@ -280,7 +280,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 .ToList();
             merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
 
-            var newContentType = _dataBuilder.ContentType.Clone(contentType, metadataItems: merged, attributes: mergedAttributes);
+            var newContentType = _dataBuilder.ContentType.CreateFrom(contentType, metadataItems: merged, attributes: mergedAttributes);
             // contentType.Metadata.Use(merged);
 
             return (newContentType, "done");
@@ -294,7 +294,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 //metadataToUse = newMd;
                 // Important to reset, otherwise the save process assumes it already exists in the DB
                 // NOTE: clone would be ok
-                return _dataBuilder.Entity.Clone(newMd, guid: Guid.NewGuid(), id: 0);
+                return _dataBuilder.Entity.CreateFrom(newMd, guid: Guid.NewGuid(), id: 0);
                 //return _entityBuilder.ResetIdentifiers(newMd, newGuid: Guid.NewGuid(), newId: 0);
                 //metadataToUse.ResetEntityId();
                 //metadataToUse.SetGuid(Guid.NewGuid());
@@ -338,7 +338,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Simplest case - nothing existing to update: return update-entity unchanged
             if (existingEntities == null || !existingEntities.Any())
-                return (_dataBuilder.Entity.Clone(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
+                return (_dataBuilder.Entity.CreateFrom(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
 
             Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information,
                 $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));

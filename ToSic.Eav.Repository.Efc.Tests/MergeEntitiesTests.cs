@@ -26,8 +26,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         private DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
         private DimensionBuilder _langBuilder;
-        private ILanguage Clone(ILanguage orig) => LanguageBuilder.Clone(orig);
-        private ILanguage Clone(ILanguage orig, bool readOnly) => LanguageBuilder.Clone(orig, readOnly);
+        private ILanguage Clone(ILanguage orig, bool readOnly) => LanguageBuilder.CreateFrom(orig, readOnly);
 
         // Todo
         // finish implementing ML-handling and test every possible case
@@ -155,15 +154,15 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var title = Builder.Attribute.TestCreateTyped(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
             {
-                Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn)}),
+                Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn}),
             });
             var teaser = Builder.Attribute.TestCreateTyped("Teaser", ValueTypes.String, new List<IValue>
             {
-                Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { Clone(langEn)}),
+                Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { langEn }),
             });
             var file = Builder.Attribute.TestCreateTyped("File", ValueTypes.String, new List<IValue>
             {
-                Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn) }),
+                Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn }),
             });
 
             return Builder.Entity.TestCreate(appId: AppId, entityId: 3006, contentType: Builder.ContentType.Transient("Product"), values: new Dictionary<string, object>
@@ -183,29 +182,29 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var title = Builder.Attribute.TestCreateTyped(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
             {
-                Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { Clone(langEn) }),
+                Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn }),
                 Builder.Value.Build4Test(ValueTypes.String, "Title DE",
-                    new List<ILanguage> { Clone(langDeDe), Clone(langDeCh, true)}),
-                Builder.Value.Build4Test(ValueTypes.String, "titre FR", new List<ILanguage> { Clone(langFr)})
+                    new List<ILanguage> { langDeDe, Clone(langDeCh, true)}),
+                Builder.Value.Build4Test(ValueTypes.String, "titre FR", new List<ILanguage> { langFr })
             });
 
             var teaser = Builder.Attribute.TestCreateTyped("Teaser", ValueTypes.String, new List<IValue>
             {
-                Builder.Value.Build4Test(ValueTypes.String, "teaser de de", new List<ILanguage> {Clone(langDeDe) }),
-                Builder.Value.Build4Test(ValueTypes.String, "teaser de CH", new List<ILanguage> {Clone(langDeCh)}),
+                Builder.Value.Build4Test(ValueTypes.String, "teaser de de", new List<ILanguage> {langDeDe }),
+                Builder.Value.Build4Test(ValueTypes.String, "teaser de CH", new List<ILanguage> {langDeCh }),
                 Builder.Value.Build4Test(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
                 // special test: leave EN (primary) at end of list, as this could happen in real life
-                Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {Clone(langEn)}),
+                Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn }),
             });
             var file = Builder.Attribute.TestCreateTyped("File", ValueTypes.String, new List<IValue>
             {
-                Builder.Value.Build4Test(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
+                Builder.Value.Build4Test(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
                 Builder.Value.Build4Test(ValueTypes.String, "File de de",
-                    new List<ILanguage> { Clone(langDeDe), Clone(langFr) }),
-                Builder.Value.Build4Test(ValueTypes.String, "File FR", new List<ILanguage> {Clone(langFr)}),
+                    new List<ILanguage> { langDeDe, langFr }),
+                Builder.Value.Build4Test(ValueTypes.String, "File FR", new List<ILanguage> {langFr }),
                 // special test - empty language item
                 Builder.Value.Build4Test(ValueTypes.String, "File without language!", DimensionBuilder.NoLanguages.ToList()),
-                Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { Clone(langEn), Clone(langDeCh)}),
+                Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
             });
 
             return Builder.Entity.TestCreate(appId: AppId, entityId: 430, contentType: Builder.ContentType.Transient("Product"), values: new Dictionary<string, object>

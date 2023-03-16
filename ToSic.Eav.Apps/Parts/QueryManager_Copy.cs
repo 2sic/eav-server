@@ -46,11 +46,11 @@ namespace ToSic.Eav.Apps.Parts
             };
             var queryAttributes = query.Entity.Attributes.ToEditable();
             var newWiringAttribute =
-                _builder.Value.Attribute.Clone(queryAttributes[QueryConstants.QueryStreamWiringAttributeName],
+                _builder.Value.Attribute.CreateFrom(queryAttributes[QueryConstants.QueryStreamWiringAttributeName],
                     newWiringValues.ToImmutableList());
             queryAttributes[QueryConstants.QueryStreamWiringAttributeName] = newWiringAttribute;
 
-            var newQuery = _builder.Value.Entity.Clone(query.Entity, id: 0, guid: newQueryGuid, attributes: _builder.Value.Attribute.Create(queryAttributes));
+            var newQuery = _builder.Value.Entity.CreateFrom(query.Entity, id: 0, guid: newQueryGuid, attributes: _builder.Value.Attribute.Create(queryAttributes));
 
             //var newQuery = CopyAndResetIds(query.Entity, Guid.NewGuid());
 
@@ -90,7 +90,7 @@ namespace ToSic.Eav.Apps.Parts
             var newSer = Serializer.Value.Serialize(original);
             var newEnt = Serializer.Value.Deserialize(newSer);
 
-            newEnt = _builder.Value.Entity.Clone(newEnt, guid: newGuid, id: 0,
+            newEnt = _builder.Value.Entity.CreateFrom(newEnt, guid: newGuid, id: 0,
                 target: newMetadataTarget == null
                     ? null
                     : new Target(original.MetadataFor, keyGuid: newMetadataTarget.Value)

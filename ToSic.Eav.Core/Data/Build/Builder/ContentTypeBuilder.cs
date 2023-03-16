@@ -85,7 +85,7 @@ namespace ToSic.Eav.Data.Build
             );
         }
 
-        public IContentType Clone(
+        public IContentType CreateFrom(
             IContentType original,
             // Basic identifiers (5)
             int? appId = default,

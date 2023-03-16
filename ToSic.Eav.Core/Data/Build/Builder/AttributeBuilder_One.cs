@@ -41,9 +41,9 @@ namespace ToSic.Eav.Data.Build
                 case ValueTypes.Json:
                 case ValueTypes.Undefined:
                 case ValueTypes.Empty:
-                // ReSharper restore RedundantCaseLabel
                 default:
                     return new Attribute<string>(name, type, imValues);
+                // ReSharper restore RedundantCaseLabel
             }
         }
 
@@ -77,24 +77,16 @@ namespace ToSic.Eav.Data.Build
 
 
 
-        public IAttribute Clone(IAttribute original, IImmutableList<IValue> values)
+        public IAttribute CreateFrom(IAttribute original, IImmutableList<IValue> values)
             => original.CloneWithNewValues(values);
 
-        public IAttribute<IEnumerable<IEntity>> CreateRelationship(string name, IImmutableList<IEntity> relationships)
-        {
-            return new Attribute<IEnumerable<IEntity>>(name, ValueTypes.Entity,
-                new List<IValue> { ValueBuilder.Relationship(relationships) }.ToImmutableList());
-        }
+        //public IAttribute<IEnumerable<IEntity>> Relationship(string name, IImmutableList<IEntity> relationships) => 
+        //    new Attribute<IEnumerable<IEntity>>(name, ValueTypes.Entity, ValueBuilder.Relationships(relationships));
 
-        public IAttribute<IEnumerable<IEntity>> CreateRelationship(string name, IEnumerable<IEntity> directSource)
-        {
-            return new Attribute<IEnumerable<IEntity>>(name, ValueTypes.Entity,
-                new List<IValue> { ValueBuilder.Relationship(directSource) }.ToImmutableList());
-        }
-        public IAttribute<IEnumerable<IEntity>> CreateRelationship(string name, IEnumerable<object> keys, ILookup<object, IEntity> lookup)
-        {
-            var lookupSource = new LookUpEntitiesSource<object>(keys, lookup);
-            return CreateRelationship(name, lookupSource);
-        }
+        public IAttribute<IEnumerable<IEntity>> Relationship(string name, IEnumerable<IEntity> directSource) => 
+            new Attribute<IEnumerable<IEntity>>(name, ValueTypes.Entity, ValueBuilder.Relationships(directSource));
+
+        public IAttribute<IEnumerable<IEntity>> Relationship(string name, IEnumerable<object> keys, ILookup<object, IEntity> lookup) => 
+            Relationship(name, new LookUpEntitiesSource<object>(keys, lookup));
     }
 }

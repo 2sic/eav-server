@@ -16,8 +16,11 @@ namespace ToSic.Eav.Data.Build
         public IValue Relationship(IEnumerable<IEntity> directList)
             => new Value<IEnumerable<IEntity>>(directList);
 
-        public IValue Relationship(IRelatedEntitiesValue value, IEntitiesSource app)
-            => Relationship(new LazyEntitiesSource(app, value.Identifiers));
+        public IImmutableList<IValue> Relationships(IEnumerable<IEntity> directList)
+            => new List<IValue> { new Value<IEnumerable<IEntity>>(directList) }.ToImmutableList();
+
+        public IImmutableList<IValue> Relationships(IRelatedEntitiesValue value, IEntitiesSource app)
+            => Relationships(new LazyEntitiesSource(app, value.Identifiers));
 
         public IValue Relationship(List<Guid?> guids, IEntitiesSource fullLookupList) => 
             new Value<IEnumerable<IEntity>>(new LazyEntitiesSource(fullLookupList, guids));

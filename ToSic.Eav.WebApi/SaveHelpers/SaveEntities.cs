@@ -36,7 +36,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
             var entitiesToImport = itemsToImport
                 // TODO: NOTE: here a clone should work
-                .Select(bundle => _entityBuilder.Clone(bundle.Entity,
+                .Select(bundle => _entityBuilder.CreateFrom(bundle.Entity,
                     guid: bundle.Header.Guid,
                     isPublished: enforceDraft ? (bool?)false : null,
                     placeDraftInBranch: enforceDraft ? (bool?)true : null) as IEntity

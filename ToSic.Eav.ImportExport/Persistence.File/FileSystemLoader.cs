@@ -202,7 +202,7 @@ namespace ToSic.Eav.Persistence.File
                 var ct = ser.DeserializeContentType(json);
 
                 infoIfError = "couldn't set source/parent";
-                ct = _dataBuilder.ContentType.Clone(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: Constants.PresetContentTypeFakeParent, repoAddress: path);
+                ct = _dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: Constants.PresetContentTypeFakeParent, repoAddress: path);
                 return ct;
             }
             catch (IOException e)
@@ -295,7 +295,7 @@ namespace ToSic.Eav.Persistence.File
                 var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
 
                 var newContentTypes = contentTypes
-                    .Select(ct => _dataBuilder.ContentType.Clone(ct, id: ++TypeIdSeed,
+                    .Select(ct => _dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed,
                         repoType: RepoType, repoAddress: path,
                         parentTypeId: Constants.PresetContentTypeFakeParent,
                         configZoneId: Constants.PresetZoneId,
@@ -330,7 +330,7 @@ namespace ToSic.Eav.Persistence.File
                     .Select(e =>
                     {
                         var newId = ++EntityIdSeed;
-                        return _dataBuilder.Entity.Clone(e, id: newId, repositoryId: newId);
+                        return _dataBuilder.Entity.CreateFrom(e, id: newId, repositoryId: newId);
                     })
                     .ToList();
                 //entities.ForEach(e => e.ResetEntityIdAll(++EntityIdSeed));
