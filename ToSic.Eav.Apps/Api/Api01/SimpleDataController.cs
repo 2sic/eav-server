@@ -136,8 +136,9 @@ namespace ToSic.Eav.Api.Api01
             bool? existingIsPublished
         ) => Log.Func($"{type.Name}, {values?.Count}, target: {targetOrNull != null}", l =>
         {
-            // ensure it's case insensitive...
-            values = values.ToInvariant();
+            // We're going to make changes to the dictionary, so we MUST copy it first, so we don't affect upstream code
+            // also ensure it's case insensitive...
+            values = values.ToInvariantCopy();
 
             if (!values.ContainsKey(Attributes.EntityFieldGuid))
             {
