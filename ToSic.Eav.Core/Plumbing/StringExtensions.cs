@@ -58,5 +58,18 @@ namespace ToSic.Eav.Plumbing
             => value ?? NullKey;
 
         private const string NullKey = "\0";
+
+
+        // https://stackoverflow.com/questions/2571716/find-nth-occurrence-of-a-character-in-a-string
+        public static int GetNthIndex(this string s, char t, int n)
+        {
+            if (s.IsEmpty()) return -1;
+            var count = 0;
+            for (var i = 0; i < s.Length; i++)
+                if (s[i] == t)
+                    if (++count == n)
+                        return i;
+            return -1;
+        }
     }
 }

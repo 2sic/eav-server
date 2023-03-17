@@ -32,7 +32,10 @@ namespace ToSic.Eav.Generics
             // Bypass if it's already doing this
             if (Equals(original.Comparer, InvariantCultureIgnoreCase) || Equals(original.Comparer, OrdinalIgnoreCase))
                 return original;
-            return new Dictionary<string, T>(original, InvariantCultureIgnoreCase);
+            return original.ToInvariantCopy();
         }
+
+        public static Dictionary<string, T> ToInvariantCopy<T>(this IDictionary<string, T> original) 
+            => new Dictionary<string, T>(original, InvariantCultureIgnoreCase);
     }
 }
