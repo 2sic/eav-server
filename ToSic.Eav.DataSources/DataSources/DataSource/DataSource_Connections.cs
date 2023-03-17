@@ -88,9 +88,7 @@ namespace ToSic.Eav.DataSources
 
         private void Attach(Connection connection)
         {
-            var connStream = new ConnectionStream(connection, Error);
-            if (In.ContainsKey(connection.TargetStream)) In.Remove(connection.TargetStream);
-            In.Add(connection.TargetStream, connStream);
+            In[connection.TargetStream] = new ConnectionStream(connection, Error);
             Connections.AddIn(connection);
         }
         
