@@ -155,7 +155,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     if (value == XmlConstants.EmptyMarker)
                     {
                         entityAttributes.TryGetValue(valName, out var existingAttr);
-                        var emptyAttribute = _builder.Attribute.CreateOrUpdate(existingAttr, valName, "", ctAttribute.Type, nodeLang);
+                        var emptyAttribute = _builder.Attribute.CreateOrUpdate(originalOrNull: existingAttr, name: valName, value: "", type: ctAttribute.Type, language: nodeLang);
                         entityAttributes = _builder.Attribute.Replace(entityAttributes, emptyAttribute);
                         continue;
                     }
@@ -171,7 +171,7 @@ namespace ToSic.Eav.Apps.ImportExport
                         {
                             entityAttributes.TryGetValue(valName, out var existingAttr2);
                             var preConverted = _builder.Value.PreConvertReferences(value, ctAttribute.Type, ResolveLinks);
-                            var valRefAttribute = _builder.Attribute.CreateOrUpdate(existingAttr2, valName, preConverted, valType, nodeLang);
+                            var valRefAttribute = _builder.Attribute.CreateOrUpdate(originalOrNull: existingAttr2, name: valName, value: preConverted, type: valType, language: nodeLang);
                             entityAttributes = _builder.Attribute.Replace(entityAttributes, valRefAttribute);
 
                         }

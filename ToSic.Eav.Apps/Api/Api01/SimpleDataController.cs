@@ -288,12 +288,13 @@ namespace ToSic.Eav.Api.Api01
                     if (ctAttr != null && keyValuePair.Value != null)
                     {
                         attributes.TryGetValue(ctAttr.Name, out var attribute);
-                        var firstValue = keyValuePair.Value.Values?.FirstOrDefault()?.ObjectContents;
-                        if (firstValue == null) return null;
+                        var firstValue = keyValuePair.Value.Values?.FirstOrDefault();
+                        var firstValContents = firstValue?.ObjectContents;
+                        if (firstValContents == null) return null;
                         var preConverted =
-                            _builder.Value.PreConvertReferences(firstValue, ctAttr.Type, true);
-                        var newAttribute = _builder.Attribute.CreateOrUpdate(attribute, ctAttr.Name, preConverted,
-                            ctAttr.Type, valuesLanguage);
+                            _builder.Value.PreConvertReferences(firstValContents, ctAttr.Type, true);
+                        var newAttribute = _builder.Attribute.CreateOrUpdate(originalOrNull: attribute, name: ctAttr.Name, value: preConverted,
+                            type: ctAttr.Type, valueToReplace: firstValue, language: valuesLanguage);
                         l.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({ctAttr.Type})");
                         return new
                         {

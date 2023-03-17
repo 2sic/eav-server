@@ -57,7 +57,8 @@ namespace ToSic.Eav.Data.Build
             string name,
             object value,
             ValueTypes type,
-            string language = null,
+            IValue valueToReplace = default,
+            string language = default,
             bool languageReadOnly = false
         ) => Log.Func($"..., {name}, {value} ({type}), {language}, ...", l =>
         {
@@ -70,7 +71,7 @@ namespace ToSic.Eav.Data.Build
 
             // maybe: test if the new model has the same type as the attribute we're adding to
             // ca: if(attrib.ControlledType != valueModel.)
-            var updatedValueList = ValueBuilder.Replace(originalOrNull.Values, null, valueWithLanguages);
+            var updatedValueList = ValueBuilder.Replace(originalOrNull.Values, valueToReplace, valueWithLanguages);
             return originalOrNull.CloneWithNewValues(updatedValueList);
         });
 
