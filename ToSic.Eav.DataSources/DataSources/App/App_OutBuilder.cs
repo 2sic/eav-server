@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
-using ToSic.Eav.LookUp;
-using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.DataSources
 {
@@ -67,7 +63,7 @@ namespace ToSic.Eav.DataSources
             // because the "real" source already applies filters like published
             var appState = AppState;
             var listOfTypes = appState.ContentTypes;
-            var showDraftsForCacheKey = _services.UserPermissions.UserPermissions().UserMayEdit; // ShowDrafts;
+            var showDraftsForCacheKey = _services.UserPermissions.UserPermissions().UserMayEdit;
             var typeList = "";
             foreach (var contentType in listOfTypes)
             {

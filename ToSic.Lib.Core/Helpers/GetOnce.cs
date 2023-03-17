@@ -33,9 +33,12 @@ namespace ToSic.Lib.Helpers
         public TResult Get(Func<TResult> generator)
         {
             if (IsValueCreated) return _value;
-            IsValueCreated = true;
             // Important: don't use try/catch, because the parent should be able to decide if try/catch is appropriate
-            return _value = generator();
+
+            // TODO: WIP - MUST BE MOVED UNDER THE GENERATOR, but ATM still work in progress
+            _value = generator();
+            IsValueCreated = true;
+            return _value;
         }
 
         /// <summary>

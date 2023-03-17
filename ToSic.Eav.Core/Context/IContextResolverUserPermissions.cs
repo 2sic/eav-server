@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Context;
-
-namespace ToSic.Eav.Context
+﻿namespace ToSic.Eav.Context
 {
     /// <summary>
     /// WIP: Get the best possible user permissions based on the current context.
