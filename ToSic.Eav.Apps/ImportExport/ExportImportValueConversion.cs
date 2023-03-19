@@ -89,7 +89,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public static IValue GetExactAssignedValue(IAttribute attrib, string language, string languageFallback)
         {
-            var valueItem = string.IsNullOrEmpty(language)
+            var valueItem = string.IsNullOrEmpty(language) || language == languageFallback // if no language is specified, or it's the fallback language
                 ? attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == languageFallback)) // use default (fallback)
                   ?? attrib.Values.FirstOrDefault(v => !v.Languages.Any()) // or the node without any languages
                 : attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == language)); // otherwise really exact match
