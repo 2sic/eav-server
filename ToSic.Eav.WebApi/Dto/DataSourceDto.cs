@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.DataSources.Queries;
 
 namespace ToSic.Eav.DataSources.Catalog
 {
@@ -28,23 +27,34 @@ namespace ToSic.Eav.DataSources.Catalog
         public int Difficulty { get; set; }
         public int Audience { get; set; }
 
-        public DataSourceDto(string fallbackName, VisualQueryAttribute dsInfo)
+        public bool IsGlobal { get; }
+
+        public DataSourceDto(DataSourceInfo dsInfo, ICollection<string> outNames)
         {
-            Name = fallbackName; // will override further down if dsInfo is provided
-            if (dsInfo == null) return;
-            UiHint = dsInfo.UiHint;
-            PrimaryType = dsInfo.Type.ToString();
-            Icon = dsInfo.Icon; // ?.Replace("_", "-"); // wip: rename "xxx_yyy" icons to "xxx-yyy" - must switch to base64 soon
-            HelpLink = dsInfo.HelpLink;
-            In = dsInfo.In;
-            DynamicOut = dsInfo.DynamicOut;
-            DynamicIn = dsInfo.DynamicIn;
-            EnableConfig = dsInfo.EnableConfig;
-            ContentType = dsInfo.ExpectsDataOfType;
-            if (!string.IsNullOrEmpty(dsInfo.NiceName))
-                Name = dsInfo.NiceName;
-            Difficulty = (int)dsInfo.Audience;
-            Audience = (int)dsInfo.Audience;
+            var dsAttribute = dsInfo.VisualQuery;
+            Name = dsInfo.Type.Name; // will override further down if dsInfo is provided
+            Identifier = dsInfo.Name;
+            if (dsAttribute == null) return;
+            UiHint = dsAttribute.UiHint;
+            PrimaryType = dsAttribute.Type.ToString();
+            Icon = dsAttribute.Icon; // ?.Replace("_", "-"); // wip: rename "xxx_yyy" icons to "xxx-yyy" - must switch to base64 soon
+            HelpLink = dsAttribute.HelpLink;
+            In = dsAttribute.In;
+            DynamicOut = dsAttribute.DynamicOut;
+            DynamicIn = dsAttribute.DynamicIn;
+            EnableConfig = dsAttribute.EnableConfig;
+            ContentType = dsAttribute.ExpectsDataOfType;
+            if (!string.IsNullOrEmpty(dsAttribute.NiceName))
+                Name = dsAttribute.NiceName;
+            Difficulty = (int)dsAttribute.Audience;
+            Audience = (int)dsAttribute.Audience;
+            IsGlobal = dsInfo.IsGlobal;
+
+            TypeNameForUi = dsInfo.Type.FullName;
+            Out = outNames;
+
+            // WIP try to deprecate
+            PartAssemblyAndType = dsInfo.Name;
         }
     }
 }

@@ -81,10 +81,13 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
         public TImplementation Init(int appId)
         {
+            _appId = appId;
             if (appId != 0) // if 0, then no context is available or used
                 _appManager = Services.AppManagerLazy.Value.Init(appId);
             return this as TImplementation;
         }
+
+        private int _appId;
 
 
 
@@ -97,7 +100,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             if (!id.HasValue) return (query, "no id, empty");
 
-            var reader = Services.AppReaderLazy.Value.Init(appId/*, false*/);
+            var reader = Services.AppReaderLazy.Value.Init(appId);
             var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
@@ -128,21 +131,14 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// </summary>
         public IEnumerable<DataSourceDto> DataSources() => Log.Func(() =>
         {
-            var dsCatalog = Services.DataSourceCatalogLazy.Value;
-            var installedDataSources = DataSourceCatalog.GetAll(true);
+            var dsCat = Services.DataSourceCatalogLazy.Value;
+            var installedDataSources = DataSourceCatalog.GetAll(true, _appId);
 
             var result = installedDataSources
-                .Select(dsInfo => new DataSourceDto(dsInfo.Type.Name, dsInfo.VisualQuery)
-                {
-                    TypeNameForUi = dsInfo.Type.FullName,
-                    PartAssemblyAndType = dsInfo.Name,
-                    Identifier = dsInfo.Name,
-                    Out = dsInfo.VisualQuery?.DynamicOut == true ? null : dsCatalog.GetOutStreamNames(dsInfo)
-                })
+                .Select(ds => new DataSourceDto(ds, ds.VisualQuery?.DynamicOut == true ? null : dsCat.GetOutStreamNames(ds)))
                 .ToList();
 
             return (result, result.Count.ToString());
-
         });
 
         /// <summary>

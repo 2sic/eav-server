@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources.Catalog
         /// </summary>
         private static List<DataSourceInfo> GlobalCache { get; } = AssemblyHandling
             .FindInherited(typeof(IDataSource))
-            .Select(t => new DataSourceInfo(t))
+            .Select(t => new DataSourceInfo(t, true))
             .ToList();
 
         /// <summary>

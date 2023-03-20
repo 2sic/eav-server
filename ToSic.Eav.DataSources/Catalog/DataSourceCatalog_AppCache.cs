@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources.Catalog
         public void UpdateAppCache(int appId, IEnumerable<Type> appDataSources)
         {
             AppCache[appId] = (appDataSources ?? new List<Type>())
-                .Select(t => new DataSourceInfo(t))
+                .Select(t => new DataSourceInfo(t, false))
                 .ToList();
         }
 

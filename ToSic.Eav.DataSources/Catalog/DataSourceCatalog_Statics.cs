@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSources.Catalog
 {
@@ -49,9 +50,18 @@ namespace ToSic.Eav.DataSources.Catalog
         /// Get all Installed DataSources
         /// </summary>
         /// <remarks>Objects that implement IDataSource</remarks>
-        public static IEnumerable<DataSourceInfo> GetAll(bool onlyForVisualQuery)
-            => onlyForVisualQuery
-                ? GlobalCache.Where(dsi => !string.IsNullOrEmpty(dsi.VisualQuery?.GlobalName))
+        public static IEnumerable<DataSourceInfo> GetAll(bool onlyForVisualQuery, int appId)
+        {
+            var fromGlobal = onlyForVisualQuery
+                ? GlobalCache.Where(dsi => (dsi.VisualQuery?.GlobalName).HasValue())
                 : GlobalCache;
+
+            var appList = AppCache.TryGetValue(appId, out var appListTemp) ? appListTemp : new List<DataSourceInfo>();
+            var fromApp = onlyForVisualQuery
+                ? appList.Where(dsi => (dsi.VisualQuery?.GlobalName).HasValue())
+                : appList;
+
+            return fromGlobal.Concat(fromApp);
+        }
     }
 }

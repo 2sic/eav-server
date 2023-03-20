@@ -9,7 +9,13 @@ namespace ToSic.Eav.DataSources
         public VisualQueryAttribute VisualQuery { get; }
         public override string Name => VisualQuery?.GlobalName;
 
-        public DataSourceInfo(Type dsType): base(dsType) => VisualQuery = TypeMetadata;
+        public bool IsGlobal { get; }
+
+        public DataSourceInfo(Type dsType, bool isGlobal): base(dsType)
+        {
+            VisualQuery = TypeMetadata;
+            IsGlobal = isGlobal;
+        }
     }
 
 }
