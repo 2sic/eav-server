@@ -9,7 +9,6 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
-using static System.StringComparer;
 
 namespace ToSic.Eav.DataSources.Queries
 {

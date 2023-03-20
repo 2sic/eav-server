@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Process;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSources
@@ -13,9 +14,10 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Very lightweight DataSource base for data sources which are very simple and convention based.
     /// </summary>
-    public abstract class CustomDataSourceLight: CustomDataSourceAdvanced
+    public class CustomDataSourceLight: CustomDataSourceAdvanced
     {
-        protected CustomDataSourceLight(MyServices services,
+
+        protected internal CustomDataSourceLight(MyServices services,
             string noParamOrder = Parameters.Protector,
             string logName = null) : base(services, logName ?? "Ds.CustLt")
         {
@@ -24,6 +26,7 @@ namespace ToSic.Eav.DataSources
 
         protected virtual DataFactoryOptions Options
         {
+            // ReSharper disable once ConvertToNullCoalescingCompoundAssignment
             get => _options ?? (_options = new DataFactoryOptions(typeName: "Custom"));
             set => _options = value;
         }
@@ -31,13 +34,13 @@ namespace ToSic.Eav.DataSources
 
         protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();
 
-        protected void ProvideOut<T>(
+        protected internal void ProvideOut<T>(
             Func<IEnumerable<IHasRawEntity<T>>> source,
             string noParamOrder = Parameters.Protector,
             DataFactoryOptions options = default) where T : IRawEntity =>
             base.ProvideOut(() => GetHasRaw(source, options));
 
-        protected void ProvideOut<T>(
+        protected internal void ProvideOut<T>(
             Func<IEnumerable<T>> source,
             string noParamOrder = Parameters.Protector,
             DataFactoryOptions options = default) where T : IRawEntity =>

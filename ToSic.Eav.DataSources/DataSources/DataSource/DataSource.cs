@@ -28,21 +28,21 @@ namespace ToSic.Eav.DataSources
         /// <param name="logName">Your own log name, such as `My.CsvDs`</param>
         protected DataSource(MyServices services, string logName) : base(services, logName)
         {
-            AutoLoadAllConfigMasks();
+            AutoLoadAllConfigMasks(GetType());
         }
         protected DataSource(MyServicesBase<MyServices> extendedServices, string logName) : base(extendedServices, logName)
         {
-            AutoLoadAllConfigMasks();
+            AutoLoadAllConfigMasks(GetType());
         }
 
         /// <summary>
         /// Load all [Configuration] attributes and ensure we have the config masks.
         /// </summary>
         [PrivateApi]
-        private void AutoLoadAllConfigMasks()
+        internal void AutoLoadAllConfigMasks(Type type)
         {
             // Load all config masks which are defined on attributes
-            var configMasks = Services.ConfigDataLoader.GetTokens(GetType());
+            var configMasks = Services.ConfigDataLoader.GetTokens(type);
             configMasks.ForEach(cm => ConfigMask(cm.Key, cm.Token, cm.CacheRelevant));
         }
 
