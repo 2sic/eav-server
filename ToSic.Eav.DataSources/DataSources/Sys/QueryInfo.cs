@@ -33,8 +33,8 @@ namespace ToSic.Eav.DataSources.Sys
 
     public sealed class QueryInfo : DataSource
     {
+        private readonly IDataSourceGenerator<Attributes> _attributesGenerator;
         private readonly IDataFactory _dataFactory;
-        private readonly LazySvc<IDataSourceFactory> _dataSourceFactory;
         public QueryBuilder QueryBuilder { get; }
         private readonly LazySvc<QueryManager> _queryManagerLazy;
         private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value);
@@ -68,14 +68,14 @@ namespace ToSic.Eav.DataSources.Sys
         /// <summary>
         /// Constructs a new Attributes DS
         /// </summary>
-        public QueryInfo(MyServices services, LazySvc<IDataSourceFactory> dataSourceFactory,
-            LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, IDataFactory dataFactory) : base(
+        public QueryInfo(MyServices services,
+            LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, IDataFactory dataFactory, IDataSourceGenerator<Attributes> attributesGenerator) : base(
             services, $"{LogPrefix}.EavQIn")
         {
             ConnectServices(
                 QueryBuilder = queryBuilder,
                 _queryManagerLazy = queryManagerLazy,
-                _dataSourceFactory = dataSourceFactory,
+                _attributesGenerator = attributesGenerator,
                 _dataFactory = dataFactory.New(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString())
             );
             Provide(GetStreams);
@@ -108,7 +108,7 @@ namespace ToSic.Eav.DataSources.Sys
             if (!_query.Out.ContainsKey(StreamName))
                 return (EmptyList, "can't find stream name in query");
 
-            var attribInfo = _dataSourceFactory.Value.Create<Attributes>(source: _query);
+            var attribInfo = _attributesGenerator.New(source: _query);
             if (StreamName != StreamDefaultName)
                 attribInfo.Attach(StreamDefaultName, _query, StreamName);
 

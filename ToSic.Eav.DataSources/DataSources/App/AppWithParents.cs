@@ -8,6 +8,8 @@ namespace ToSic.Eav.DataSources
 {
     internal class AppWithParents: DataSource
     {
+        private readonly IDataSourceGenerator<StreamMerge> _mergeGenerator;
+
         public override int AppId
         {
             get => _appId == 0 ? base.AppId : _appId;
@@ -36,11 +38,12 @@ namespace ToSic.Eav.DataSources
         private int _appId;
         private int _zoneId;
 
-        public AppWithParents(MyServices services, IDataSourceFactory dataSourceFactory, IAppStates appStates) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
+        public AppWithParents(MyServices services, IDataSourceFactory dataSourceFactory, IAppStates appStates, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
         {
             ConnectServices(
                 _dataSourceFactory = dataSourceFactory,
-                _appStates = appStates
+                _appStates = appStates,
+                _mergeGenerator = mergeGenerator
             );
             Provide(GetList);
         }
@@ -51,7 +54,7 @@ namespace ToSic.Eav.DataSources
             
             var initialSource = _dataSourceFactory.CreateDefault(appIdentity: appState);
 
-            var merge = _dataSourceFactory.Create<StreamMerge>(source: initialSource);
+            var merge = _mergeGenerator.New(source: initialSource);
             // 2dm 2023-01-22 #maybeSupportIncludeParentApps
             var parent = appState.ParentApp;
             var countRecursions = 0;
