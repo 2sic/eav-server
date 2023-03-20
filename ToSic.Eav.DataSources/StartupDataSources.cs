@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSources
         {
             // Dependencies, new in v15
             services.TryAddTransient<DataSource.MyServices>();
-            services.TryAddTransient<CustomDataSource.MyServices>();
+            services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
             services.TryAddTransient<App.MyServices>();
             services.TryAddTransient<DataSourceConfiguration>();
             services.TryAddTransient<DataSourceConfiguration.MyServices>();

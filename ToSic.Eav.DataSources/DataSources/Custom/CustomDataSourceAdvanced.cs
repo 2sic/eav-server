@@ -9,13 +9,15 @@ namespace ToSic.Eav.DataSources
     /// <inheritdoc />
     /// <summary>
     /// Base DataSource class for providing data from external sources.
+    /// This is the advanced base class which is more complex.
+    /// You will usually want to use the CustomDataSourceLight
     /// </summary>
     /// <remarks>
     /// This has changed a lot in v15 (breaking change).
     /// Read about it in the docs.
     /// </remarks>
     [PublicApi_Stable_ForUseInYourCode]
-    public abstract class CustomDataSource: DataSource
+    public abstract class CustomDataSourceAdvanced: DataSource
     {
 
         public new class MyServices: DataSource.MyServices
@@ -47,11 +49,11 @@ namespace ToSic.Eav.DataSources
         /// this is important, because the date should stay fixed throughout the lifetime of this object
         /// but renew when it is updates
         /// </remarks>
-        protected CustomDataSource(MyServices services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
+        protected CustomDataSourceAdvanced(MyServices services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
         {
             DataFactory = services.DataFactory;
         }
-        protected CustomDataSource(MyServicesBase<MyServices> services, string logName = null) : base(services.ParentServices, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
+        protected CustomDataSourceAdvanced(MyServicesBase<MyServices> services, string logName = null) : base(services.ParentServices, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
         {
             ConnectServices(services);
             DataFactory = services.ParentServices.DataFactory;

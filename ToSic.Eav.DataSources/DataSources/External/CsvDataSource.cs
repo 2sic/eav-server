@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource",
         HelpLink = "https://r.2sxc.org/DsCsv")]
-    public class CsvDataSource : CustomDataSource
+    public class CsvDataSource : CustomDataSourceAdvanced
     {
         #region Known errors
         [PrivateApi]

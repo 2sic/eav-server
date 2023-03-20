@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
             },
         HelpLink = "https://r.2sxc.org/DsSql")]
 
-	public class Sql : CustomDataSource
+	public class Sql : CustomDataSourceAdvanced
 	{
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
@@ -127,10 +127,10 @@ namespace ToSic.Eav.DataSources
         #region Constructor
 
         [PrivateApi]
-		public new class MyServices: MyServicesBase<CustomDataSource.MyServices>
+		public new class MyServices: MyServicesBase<CustomDataSourceAdvanced.MyServices>
         {
             public SqlPlatformInfo SqlPlatformInfo { get; }
-            public MyServices(SqlPlatformInfo sqlPlatformInfo, CustomDataSource.MyServices parentServices): base(parentServices)
+            public MyServices(SqlPlatformInfo sqlPlatformInfo, CustomDataSourceAdvanced.MyServices parentServices): base(parentServices)
             {
                 ConnectServices(
                     SqlPlatformInfo = sqlPlatformInfo

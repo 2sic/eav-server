@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// Very lightweight DataSource base for data sources which are very simple and convention based.
     /// </summary>
-    public abstract class CustomDataSourceLight: CustomDataSource
+    public abstract class CustomDataSourceLight: CustomDataSourceAdvanced
     {
         protected CustomDataSourceLight(MyServices services,
             string noParamOrder = Parameters.Protector,
