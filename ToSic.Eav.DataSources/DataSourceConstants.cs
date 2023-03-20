@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Process;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
@@ -61,6 +62,8 @@ namespace ToSic.Eav.DataSources
         /// Constant empty list of entities - for common scenarios where we just need to return empty results.
         /// </summary>
         public static IImmutableList<IEntity> EmptyList = ImmutableList<IEntity>.Empty;
+
+        public static IImmutableList<IRawEntity> EmptyRawList = ImmutableList<IRawEntity>.Empty;
 
         #endregion
     }

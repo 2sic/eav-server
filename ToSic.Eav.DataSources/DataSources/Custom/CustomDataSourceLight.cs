@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
             string noParamOrder = Parameters.Protector,
             string logName = null) : base(services, logName ?? "Ds.CustLt")
         {
-            Provide(() => GetRaw(() => new List<IRawEntity>(), null));
+            Provide(() => GetRaw(GetDefault, null));
         }
 
         protected virtual DataFactoryOptions Options
@@ -28,6 +28,8 @@ namespace ToSic.Eav.DataSources
             set => _options = value;
         }
         private DataFactoryOptions _options;
+
+        protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();
 
         protected void ProvideOut<T>(
             IEnumerable<IHasRawEntity<T>> source,

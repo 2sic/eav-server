@@ -25,40 +25,22 @@ namespace ToSic.Eav.DataSources.Sys
         DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Features : DataSource
+    public sealed class Features : CustomDataSourceLight
     {
 
         #region Configuration-properties (no config)
 
         #endregion
 
-
-        private readonly IDataFactory _factory;
-
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Features(MyServices services, IFeaturesInternal featuresService, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Features(MyServices services, IFeaturesInternal featuresService) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
-            ConnectServices(
-                _featuresService = featuresService,
-                _factory = dataFactory.New(options: new DataFactoryOptions(typeName: "Feature"))
-            );
-            Provide(GetList);
+            ConnectServices(featuresService);
+            ProvideOut(() => featuresService.All.OrderBy(f => f.NameId), options: new DataFactoryOptions(typeName: "Feature"));
         }
-        private readonly IFeaturesInternal _featuresService;
-
-
-        private IImmutableList<IEntity> GetList() => Log.Func(l =>
-        {
-            // Don't parse configuration as there is nothing to configure
-            // Configuration.Parse();
-
-            var list = _factory.Create(_featuresService.All.OrderBy(f => f.NameId));
-
-            return (list, $"{list.Count}");
-        });
     }
 }
