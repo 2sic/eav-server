@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
             },
         HelpLink = "https://r.2sxc.org/DsSql")]
 
-	public class Sql : ExternalData
+	public class Sql : CustomDataSource
 	{
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed

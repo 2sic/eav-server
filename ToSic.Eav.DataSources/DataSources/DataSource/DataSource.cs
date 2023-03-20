@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources
     /// It must always be inherited.
     /// It provides a lot of core functionality to get configurations, ensure caching and more.
     ///
-    /// Important: in most cases you will inherit the <see cref="ExternalData"/> DataSource for custom data sources.
+    /// Important: in most cases you will inherit the <see cref="CustomDataSource"/> DataSource for custom data sources.
     /// </summary>
     /// <remarks>
     /// Had a major, breaking update in v15.

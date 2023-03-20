@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
     /// Read about it in the docs.
     /// </remarks>
     [PublicApi_Stable_ForUseInYourCode]
-    public abstract class ExternalData: DataSource
+    public abstract class CustomDataSource: DataSource
     {
 
         /// <summary>
@@ -30,10 +30,10 @@ namespace ToSic.Eav.DataSources
         /// but renew when it is updates
         /// </remarks>
         [PrivateApi]
-        protected ExternalData(MyServices services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
+        protected CustomDataSource(MyServices services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
         {
         }
-        protected ExternalData(MyServicesBase<MyServices> services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
+        protected CustomDataSource(MyServicesBase<MyServices> services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
         {
         }
 
