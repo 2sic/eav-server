@@ -29,10 +29,10 @@ namespace ToSic.Eav.DataSources.Queries
         /// The .net type which the data source has for this part. <br/>
         /// Will automatically resolve old names to new names as specified in the DataSources <see cref="VisualQueryAttribute"/>
         /// </summary>
-        public string DataSourceTypeIdentifier => _dstName ?? (_dstName = DataSourceCatalog.Find(GetCorrectedTypeName()));
+        public string DataSourceTypeIdentifier => _dstName ?? (_dstName = DataSourceCatalog.Find(GetCorrectedTypeName(), Entity?.AppId ?? 0));
         private string _dstName;
 
-        public Type DataSourceType => _dsType ?? (_dsType = DataSourceCatalog.FindTypeByGuidOrName(GetCorrectedTypeName()));
+        public Type DataSourceType => _dsType ?? (_dsType = DataSourceCatalog.FindTypeByGuidOrName(GetCorrectedTypeName(), Entity?.AppId ?? 0));
         private Type _dsType;
         
         private string DataSourceTypeInConfig
