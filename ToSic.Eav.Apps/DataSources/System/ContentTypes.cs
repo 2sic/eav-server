@@ -89,7 +89,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             ConnectServices(
                 _appStates = appStates,
-                _dataFactory = dataFactory.New(settings: new DataFactorySettings(_settings, appId: OfAppId))
+                _dataFactory = dataFactory.New(options: new DataFactorySettings(_settings, appId: OfAppId))
             );
             Provide(GetList);
 		}

@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             ConnectServices(
                 _licenseService = licenseService,
-                _factory = dataFactory.New(settings: new DataFactorySettings(typeName: "License"))
+                _factory = dataFactory.New(options: new DataFactorySettings(typeName: "License"))
             );
             Provide(GetList);
         }

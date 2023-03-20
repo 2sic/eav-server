@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             ConnectServices(
                 _appStates = appStates,
-                _dataFactory = dataFactory.New(settings: new DataFactorySettings(typeName: AttribContentTypeName, titleField: AttributeType.Title.ToString()))
+                _dataFactory = dataFactory.New(options: new DataFactorySettings(typeName: AttribContentTypeName, titleField: AttributeType.Title.ToString()))
             );
             Provide(GetList);
 		}

@@ -80,7 +80,7 @@ namespace ToSic.Eav.DataSources
 		public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.Paging")
         {
             ConnectServices(
-                _pagingFactory = dataFactory.New(settings: new DataFactorySettings(typeName: "Paging"))
+                _pagingFactory = dataFactory.New(options: new DataFactorySettings(typeName: "Paging"))
             );
             Provide(GetList);
             Provide(GetPaging, "Paging");

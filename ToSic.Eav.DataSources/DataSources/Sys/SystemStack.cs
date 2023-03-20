@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources.Sys
             var asRaw = res2.Select(r => new AppStackDataRaw(r)).ToList();
             // Note: must use configure here, because AppId and AddValues are properties that's not set in the constructor
             var options = new RawConvertOptions(addKeys: AddValues ? new[] { "Value" } : null);
-            var stackFactory = _dataFactory.New(settings: new DataFactorySettings(AppStackDataRaw.Settings, appId: AppId), rawConvertOptions: options);
+            var stackFactory = _dataFactory.New(options: new DataFactorySettings(AppStackDataRaw.Settings, appId: AppId), rawConvertOptions: options);
             var converted = stackFactory.Create(asRaw);
 
             return converted;

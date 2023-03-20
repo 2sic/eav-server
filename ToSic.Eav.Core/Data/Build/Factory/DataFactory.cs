@@ -93,7 +93,7 @@ namespace ToSic.Eav.Data.Build
 
         public IDataFactory New(
             string noParamOrder = Parameters.Protector,
-            DataFactorySettings settings = default,
+            DataFactorySettings options = default,
             ILookup<object, IEntity> relationships = default,
             RawConvertOptions rawConvertOptions = default
         )
@@ -102,7 +102,7 @@ namespace ToSic.Eav.Data.Build
             Parameters.Protect(noParamOrder);
 
             var clone = new DataFactory(_builder,
-                settings: settings,
+                settings: options,
                 relationships: relationships,
                 rawConvertOptions: rawConvertOptions
             );

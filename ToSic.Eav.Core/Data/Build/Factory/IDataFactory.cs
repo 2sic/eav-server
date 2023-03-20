@@ -77,7 +77,7 @@ namespace ToSic.Eav.Data.Build
 
         IDataFactory New(
             string noParamOrder = Parameters.Protector,
-            DataFactorySettings settings = default,
+            DataFactorySettings options = default,
             ILookup<object, IEntity> relationships = default,
             RawConvertOptions rawConvertOptions = default);
 
