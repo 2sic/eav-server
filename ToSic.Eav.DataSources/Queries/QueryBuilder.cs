@@ -18,6 +18,7 @@ namespace ToSic.Eav.DataSources.Queries
 	/// </summary>
 	public class QueryBuilder: ServiceBase
 	{
+        private readonly QueryDefinitionBuilder _queryDefinitionBuilder;
         private readonly IContextResolverUserPermissions _userPermissions;
         private readonly Generator<PassThrough> _passThrough;
         private readonly IDataSourceFactory _dataSourceFactory;
@@ -37,7 +38,8 @@ namespace ToSic.Eav.DataSources.Queries
             IZoneCultureResolver cultureResolver,
 			Generator<PassThrough> passThrough,
             IAppStates appStates,
-            IContextResolverUserPermissions userPermissions
+            IContextResolverUserPermissions userPermissions,
+            QueryDefinitionBuilder queryDefinitionBuilder
             ) : base("DS.PipeFt")
         {
             ConnectServices(
@@ -46,13 +48,16 @@ namespace ToSic.Eav.DataSources.Queries
                 _dataSourceFactory = dataSourceFactory,
                 _dataSourceFactory,
                 _passThrough = passThrough,
-                _userPermissions = userPermissions
+                _userPermissions = userPermissions,
+                _queryDefinitionBuilder = queryDefinitionBuilder
             );
         }
 
         
 
         #endregion
+
+        public QueryDefinition Create(IEntity entity, int appId) => _queryDefinitionBuilder.Create(entity, appId);
 
         /// <summary>
         /// Build a query-definition object based on the entity-ID defining the query
@@ -68,7 +73,7 @@ namespace ToSic.Eav.DataSources.Queries
 
                 // use findRepo, as it uses the cache, which gives the list of all items
                 var dataQuery = appEntities.FindRepoId(queryEntityId);
-                var result = new QueryDefinition(dataQuery, appId, Log);
+                var result = Create(dataQuery, appId);
                 return (result);
             }
             catch (KeyNotFoundException)

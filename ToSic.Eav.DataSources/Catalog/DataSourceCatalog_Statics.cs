@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSources.Catalog
 {
     public partial class DataSourceCatalog
     {
-        internal static string Find(string name, int appId)
+        internal string Find(string name, int appId)
         {
             // New 11.12.x If the type is identified by a GUID, that's what we should return
             var typeInfo = FindInCache(name, appId);
@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Catalog
             var newName = longName.Substring(0, second);
             return newName;
         }
-        internal static Type FindTypeByGuidOrName(string name, int appId)
+        internal Type FindTypeByGuidOrName(string name, int appId)
         {
             // New 11.12.x If the type is identified by a GUID, that's what we should return
             var typeInfo = FindInCache(name, appId);
@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources.Catalog
         }
 
         // Note: only public because we're still supporting a very old API in a 2sxc code
-        public static Type FindType(string name, int appId)
+        public Type FindType(string name, int appId)
         {
             // first try to just find the type, but check if it's marked [Obsolete]
             var type = Type.GetType(name);
@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources.Catalog
         /// Get all Installed DataSources
         /// </summary>
         /// <remarks>Objects that implement IDataSource</remarks>
-        public static IEnumerable<DataSourceInfo> GetAll(bool onlyForVisualQuery, int appId)
+        public IEnumerable<DataSourceInfo> GetAll(bool onlyForVisualQuery, int appId)
         {
             var fromGlobal = onlyForVisualQuery
                 ? GlobalCache.Where(dsi => (dsi.VisualQuery?.GlobalName).HasValue())

@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var dsCatalog = GetService<DataSourceCatalog>();
 
-            var allDS = DataSourceCatalog.GetAll(true, 0).ToList();
+            var allDS = dsCatalog.GetAll(true, 0).ToList();
 
             allDS.ForEach(ds =>
             {

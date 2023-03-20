@@ -21,28 +21,30 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public partial class QueryManager: PartOf<AppManager>
     {
-        private readonly LazySvc<DataBuilder> _builder;
 
         public QueryManager(
             LazySvc<SystemManager> systemManagerLazy,
             LazySvc<DataBuilder> builder,
             LazySvc<ValueBuilder> valueBuilder,
             LazySvc<JsonSerializer> jsonSerializer,
-            LazySvc<Eav.DataSources.Queries.QueryManager> queryManager
-            ) : base("App.QryMng")
+            LazySvc<Eav.DataSources.Queries.QueryManager> queryManager,
+            LazySvc<QueryDefinitionBuilder> queryDefBuilder) : base("App.QryMng")
         {
             ConnectServices(
                 _systemManagerLazy = systemManagerLazy,
                 _valueBuilder = valueBuilder,
                 _builder = builder,
                 Serializer = jsonSerializer.SetInit(j => j.SetApp(Parent.AppState)),
-                _queryManager = queryManager
+                _queryManager = queryManager,
+                _queryDefBuilder = queryDefBuilder
             );
         }
         private readonly LazySvc<SystemManager> _systemManagerLazy;
         private readonly LazySvc<ValueBuilder> _valueBuilder;
         private LazySvc<JsonSerializer> Serializer { get; }
         private readonly LazySvc<Eav.DataSources.Queries.QueryManager> _queryManager;
+        private readonly LazySvc<QueryDefinitionBuilder> _queryDefBuilder;
+        private readonly LazySvc<DataBuilder> _builder;
 
 
         public bool Delete(int id)
@@ -57,7 +59,7 @@ namespace ToSic.Eav.Apps.Parts
 
             // Get the Entity describing the Query and Query Parts (DataSources)
             var queryEntity = _queryManager.Value.GetQueryEntity(id, Parent.AppState);
-            var qDef = new QueryDefinition(queryEntity, Parent.AppId, Log);
+            var qDef = _queryDefBuilder.Value.Create(queryEntity, Parent.AppId);
 
             var parts = qDef.Parts;
             var mdItems = parts

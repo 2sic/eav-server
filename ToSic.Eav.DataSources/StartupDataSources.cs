@@ -30,12 +30,15 @@ namespace ToSic.Eav.DataSources
             services.TryAddTransient<DataTable>();
 
             services.TryAddTransient<QueryBuilder>();
+            services.TryAddTransient<QueryDefinitionBuilder>();
 
             services.TryAddTransient<ValueLanguages>();
 
             services.TryAddTransient<ITreeMapper, TreeMapper>();
 
             services.TryAddTransient<ConfigurationDataLoader>();
+
+            
 
             return services;
         }

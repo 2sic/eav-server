@@ -132,7 +132,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         public IEnumerable<DataSourceDto> DataSources() => Log.Func(() =>
         {
             var dsCat = Services.DataSourceCatalogLazy.Value;
-            var installedDataSources = DataSourceCatalog.GetAll(true, _appId);
+            var installedDataSources = Services.DataSourceCatalogLazy.Value.GetAll(true, _appId);
 
             var result = installedDataSources
                 .Select(ds => new DataSourceDto(ds, ds.VisualQuery?.DynamicOut == true ? null : dsCat.GetOutStreamNames(ds)))
@@ -260,7 +260,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             {
                 var deser = Services.JsonSerializer.New().SetApp(_appManager.AppState);
                 var ents = deser.Deserialize(args.GetContentString());
-                var qdef = new QueryDefinition(ents, args.AppId, Log);
+                var qdef = QueryBuilder.Create(ents, args.AppId);
                 _appManager.Queries.SaveCopy(qdef);
 
                 return true;

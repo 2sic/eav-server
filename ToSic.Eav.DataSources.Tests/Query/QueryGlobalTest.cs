@@ -15,10 +15,12 @@ namespace ToSic.Eav.DataSourceTests.Query
         {
             _queryBuilder = GetService<QueryBuilder>();
             _queryManager = GetService<QueryManager>();
+            _queryDefinitionBuilder = GetService<QueryDefinitionBuilder>();
         }
 
         private readonly QueryBuilder _queryBuilder;
         private readonly QueryManager _queryManager;
+        private readonly QueryDefinitionBuilder _queryDefinitionBuilder;
 
 
         private const int GlobalQueryCount = 15; // count in v15.03
@@ -45,7 +47,7 @@ namespace ToSic.Eav.DataSourceTests.Query
             var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, queryName);
             Assert.AreEqual(queryName, queryEnt.Value<string>("Name"), "should find zones");
 
-            var qdef = new QueryDefinition(queryEnt, queryEnt.AppId, null);
+            var qdef = _queryDefinitionBuilder.Create(queryEnt, queryEnt.AppId);
             Assert.AreEqual(2, qdef.Parts.Count, "counting parts of the qdef, should have the zone + sort = 2 parts");
         }
 
@@ -54,7 +56,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         {
             var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, $"{DataSourceConstants.SystemQueryPrefixPreV15}Zones");
 
-            var qDef = new QueryDefinition(queryEnt, TestConfig.AppForQueryTests, null);
+            var qDef = _queryDefinitionBuilder.Create(queryEnt, TestConfig.AppForQueryTests);
 
             var fac = _queryBuilder;
             var query = fac.GetDataSourceForTesting(qDef).Main;

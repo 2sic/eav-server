@@ -1,9 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Catalog;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSources.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources.Queries
 {
@@ -14,9 +12,10 @@ namespace ToSic.Eav.DataSources.Queries
     public class QueryPartDefinition: EntityBasedWithLog
     {
         [PrivateApi]
-        public QueryPartDefinition(IEntity entity, ILog parentLog) : base(entity, parentLog, "DS.QrPart")
+        public QueryPartDefinition(IEntity entity, string typeIdentifier, Type type, ILog parentLog) : base(entity, parentLog, "DS.QrPart")
         {
-
+            DataSourceTypeIdentifier = typeIdentifier;
+            DataSourceType = type;
         }
 
         /// <summary>
@@ -29,30 +28,8 @@ namespace ToSic.Eav.DataSources.Queries
         /// The .net type which the data source has for this part. <br/>
         /// Will automatically resolve old names to new names as specified in the DataSources <see cref="VisualQueryAttribute"/>
         /// </summary>
-        public string DataSourceTypeIdentifier => _dstName ?? (_dstName = DataSourceCatalog.Find(GetCorrectedTypeName(), Entity?.AppId ?? 0));
-        private string _dstName;
+        public string DataSourceTypeIdentifier { get; }
 
-        public Type DataSourceType => _dsType ?? (_dsType = DataSourceCatalog.FindTypeByGuidOrName(GetCorrectedTypeName(), Entity?.AppId ?? 0));
-        private Type _dsType;
-        
-        private string DataSourceTypeInConfig
-            => Get<string>(QueryConstants.PartAssemblyAndType, null)
-               ?? throw new Exception("Tried to get DataSource Type of a query part, but didn't find anything");
-
-
-
-        /// <summary>
-        /// Check if a Query part has an old assembly name, and if yes, correct it to the new name
-        /// </summary>
-        /// <returns></returns>
-        private string GetCorrectedTypeName()
-        {
-            var assemblyAndType = DataSourceTypeInConfig;
-            // Correct old stored names (ca. before 2sxc 4 to new)
-            var newName = assemblyAndType.EndsWith(V3To4DataSourceDllOld)
-                ? assemblyAndType.Replace(V3To4DataSourceDllOld, V3To4DataSourceDllNew)
-                : assemblyAndType;
-            return newName;
-        }
+        public Type DataSourceType { get; }
     }
 }

@@ -138,7 +138,7 @@ namespace ToSic.Eav.DataSources.Sys
             if (found == null)
                 throw new Exception($"Can't build information about query - couldn't find query '{qName}'");
 
-            var builtQuery = QueryBuilder.GetDataSourceForTesting(new QueryDefinition(found, AppId, Log),
+            var builtQuery = QueryBuilder.GetDataSourceForTesting(QueryBuilder.Create(found, AppId),
                 lookUps: Configuration.LookUpEngine);
             _query = builtQuery.Main;
         });

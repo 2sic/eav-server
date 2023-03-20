@@ -77,7 +77,7 @@ namespace ToSic.Eav.DataSources.Queries
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
-            Definition = new QueryDefinition(queryDef, appId, Log);
+            Definition = QueryBuilder.Create(queryDef, appId);
             this.Init(configSource);
 
             // hook up in, just in case we get parameters from an In
