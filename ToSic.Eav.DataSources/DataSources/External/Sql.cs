@@ -127,10 +127,10 @@ namespace ToSic.Eav.DataSources
         #region Constructor
 
         [PrivateApi]
-		public new class MyServices: MyServicesBase<DataSource.MyServices>
+		public new class MyServices: MyServicesBase<CustomDataSource.MyServices>
         {
             public SqlPlatformInfo SqlPlatformInfo { get; }
-            public MyServices(SqlPlatformInfo sqlPlatformInfo, DataSource.MyServices parentServices): base(parentServices)
+            public MyServices(SqlPlatformInfo sqlPlatformInfo, CustomDataSource.MyServices parentServices): base(parentServices)
             {
                 ConnectServices(
                     SqlPlatformInfo = sqlPlatformInfo

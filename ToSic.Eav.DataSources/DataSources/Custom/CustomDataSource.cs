@@ -1,4 +1,6 @@
 ﻿using System;
+using ToSic.Eav.Data.Build;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
@@ -16,6 +18,22 @@ namespace ToSic.Eav.DataSources
     public abstract class CustomDataSource: DataSource
     {
 
+        public new class MyServices: DataSource.MyServices
+        {
+            public IDataFactory DataFactory { get; }
+
+            public MyServices(
+                DataSourceConfiguration configuration,
+                LazySvc<DataSourceErrorHelper> errorHandler,
+                ConfigurationDataLoader configDataLoader,
+                IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader)
+            {
+                ConnectServices(
+                    DataFactory = dataFactory
+                );
+            }
+        }
+
         /// <summary>
         /// Initializes an DataSource which will usually provide/generate external data.
         /// </summary>
@@ -29,15 +47,19 @@ namespace ToSic.Eav.DataSources
         /// this is important, because the date should stay fixed throughout the lifetime of this object
         /// but renew when it is updates
         /// </remarks>
-        [PrivateApi]
         protected CustomDataSource(MyServices services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
         {
+            DataFactory = services.DataFactory;
         }
-        protected CustomDataSource(MyServicesBase<MyServices> services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
+        protected CustomDataSource(MyServicesBase<MyServices> services, string logName = null) : base(services.ParentServices, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
         {
+            ConnectServices(services);
+            DataFactory = services.ParentServices.DataFactory;
         }
 
         /// <inheritdoc />
         public override long CacheTimestamp { get; } = DateTime.Now.Ticks;  // Initialize with moment the object was created
+
+        protected IDataFactory DataFactory { get; }
     }
 }
