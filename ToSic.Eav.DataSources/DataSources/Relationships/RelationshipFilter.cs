@@ -143,7 +143,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public RelationshipFilter(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.Relfil")
         {
-            Provide(GetRelationshipsOrFallback);
+            ProvideOut(GetRelationshipsOrFallback);
             //ConfigMask(nameof(Relationship));
             //ConfigMask(nameof(Filter));
             //ConfigMaskMyConfig(nameof(CompareAttribute), $"{Settings.AttributeOnRelationship}||{Attributes.EntityFieldTitle}");

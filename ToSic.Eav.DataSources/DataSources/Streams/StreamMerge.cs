@@ -47,10 +47,10 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public StreamMerge(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.StMrge")
 		{
-            Provide(GetList);
-            Provide(GetDistinct, DistinctStream);
-            Provide(GetAnd, AndStream);
-            Provide(GetXor, XorStream);
+            ProvideOut(GetList);
+            ProvideOut(GetDistinct, DistinctStream);
+            ProvideOut(GetAnd, AndStream);
+            ProvideOut(GetXor, XorStream);
 		}
 
         private IImmutableList<IEntity> GetList() => Log.Func(() =>

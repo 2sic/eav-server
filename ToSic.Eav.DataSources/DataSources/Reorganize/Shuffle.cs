@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public Shuffle(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Shuffl")
         {
-            Provide(GetShuffle);
+            ProvideOut(GetShuffle);
         }
 
 

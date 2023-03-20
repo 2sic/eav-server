@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         protected MetadataDataSourceBase(MyServices services, string logName): base(services, logName)
         {
-            Provide(GetMetadata);
+            ProvideOut(GetMetadata);
         }
 
         private IImmutableList<IEntity> GetMetadata() => Log.Func(l =>

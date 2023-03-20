@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="getList">The function which will get the list.</param>
         /// <param name="name">_(optional)_ stream name, defaults to `Default`</param>
         [PublicApi]
-        protected void Provide(Func<IEnumerable<IEntity>> getList, string name = DataSourceConstants.StreamDefaultName)
+        protected void ProvideOut(Func<IEnumerable<IEntity>> getList, string name = DataSourceConstants.StreamDefaultName)
             => Out[name] = new DataStream(this, name, getList);
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="getList">The function which will get the list.</param>
         /// <param name="name">_(optional)_ stream name, defaults to `Default`</param>
         [PublicApi]
-        protected void Provide(Func<IImmutableList<IEntity>> getList, string name = DataSourceConstants.StreamDefaultName)
+        protected void ProvideOut(Func<IImmutableList<IEntity>> getList, string name = DataSourceConstants.StreamDefaultName)
             => Out[name] = new DataStream(this, name, getList);
 
         #endregion

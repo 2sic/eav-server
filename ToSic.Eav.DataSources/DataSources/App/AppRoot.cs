@@ -18,9 +18,9 @@ namespace ToSic.Eav.DataSources
         public AppRoot(IAppStates appStates, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Root")
         {
             _appStates = appStates;
-            Provide(() => AppState.List);
-            Provide(() => AppState.ListPublished.List, DataSourceConstants.StreamPublishedName);
-            Provide(() => AppState.ListNotHavingDrafts.List, DataSourceConstants.StreamDraftsName);
+            ProvideOut(() => AppState.List);
+            ProvideOut(() => AppState.ListPublished.List, DataSourceConstants.StreamPublishedName);
+            ProvideOut(() => AppState.ListNotHavingDrafts.List, DataSourceConstants.StreamDraftsName);
 		}
         private readonly IAppStates _appStates;
 

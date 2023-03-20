@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources.Sys
             ConnectServices(
                 _dataFactory = dataFactory.New(options: new DataFactoryOptions(appId: 0, typeName: "MetadataTargetTypes", titleField: Data.Attributes.TitleNiceName))
             );
-            Provide(GetList);
+            ProvideOut(GetList);
         }
 
         private IImmutableList<IEntity> GetList() => Log.Func(l =>

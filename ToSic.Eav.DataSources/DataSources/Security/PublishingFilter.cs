@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources
             ConnectServices(
                 _userPermissions = userPermissions
             );
-            Provide(PublishingFilterList);
+            ProvideOut(PublishingFilterList);
         }
         private readonly IContextResolverUserPermissions _userPermissions;
 

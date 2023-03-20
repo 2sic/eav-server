@@ -150,7 +150,7 @@ namespace ToSic.Eav.DataSources
                 _dataFactory = dataFactory
             );
             SqlServices = services;
-            Provide(GetList);
+            ProvideOut(GetList);
         }
         [PrivateApi] protected readonly MyServices SqlServices;
         private readonly IDataFactory _dataFactory;

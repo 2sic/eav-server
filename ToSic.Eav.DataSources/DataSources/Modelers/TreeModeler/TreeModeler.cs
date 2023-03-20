@@ -88,7 +88,7 @@ namespace ToSic.Eav.DataSources
                 _treeMapper = treeMapper
             );
             // Specify what out-streams this data-source provides. Usually just one, called "Default"
-            Provide(GetList);
+            ProvideOut(GetList);
         }
 
         /// <summary>

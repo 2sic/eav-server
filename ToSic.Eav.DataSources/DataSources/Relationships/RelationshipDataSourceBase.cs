@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         protected RelationshipDataSourceBase(MyServices services, string logName): base(services, logName)
         {
-            Provide(GetRelated);
+            ProvideOut(GetRelated);
         }
 
         private IImmutableList<IEntity> GetRelated() => Log.Func(() =>

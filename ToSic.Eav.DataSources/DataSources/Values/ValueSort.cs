@@ -71,7 +71,7 @@ namespace ToSic.Eav.DataSources
                 _valLanguages = valLanguages
             );
 
-            Provide(GetValueSort);
+            ProvideOut(GetValueSort);
         }
         private readonly ValueLanguages _valLanguages;
 

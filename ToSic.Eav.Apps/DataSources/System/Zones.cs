@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources.Sys
                 _appStates = appStates,
                 _dataFactory = dataFactory.New(options: new DataFactoryOptions(appId: 0, typeName: "Zone", titleField: ZoneType.Name.ToString()))
             );
-            Provide(GetList);
+            ProvideOut(GetList);
         }
         private readonly IZoneMapper _zoneMapper;
         private readonly IAppStates _appStates;

@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSources
                 _appStates = appStates,
                 _mergeGenerator = mergeGenerator
             );
-            Provide(GetList);
+            ProvideOut(GetList);
         }
 
         private IImmutableList<IEntity> GetList() => Log.Func(() =>

@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
         /// In this case it's just the "Default" containing a fake exception.
         /// </summary>
         public Error(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Error")
-            => Provide(GenerateExceptionStream);
+            => ProvideOut(GenerateExceptionStream);
 
         private IImmutableList<IEntity> GenerateExceptionStream() => Log.Func(l =>
         {

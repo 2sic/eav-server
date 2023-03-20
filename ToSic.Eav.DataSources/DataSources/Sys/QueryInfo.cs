@@ -78,8 +78,8 @@ namespace ToSic.Eav.DataSources.Sys
                 _attributesGenerator = attributesGenerator,
                 _dataFactory = dataFactory.New(options: new DataFactoryOptions(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
             );
-            Provide(GetStreams);
-            Provide(GetAttributes, "Attributes");
+            ProvideOut(GetStreams);
+            ProvideOut(GetAttributes, "Attributes");
         }
 
         private IImmutableList<IEntity> GetStreams() => Log.Func(l =>

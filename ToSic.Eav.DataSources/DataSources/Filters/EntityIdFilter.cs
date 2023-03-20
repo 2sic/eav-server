@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public EntityIdFilter(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.EntIdF")
         {
-            Provide(GetList);
+            ProvideOut(GetList);
 		}
 
         private IImmutableList<IEntity> GetList() => Log.Func(l =>

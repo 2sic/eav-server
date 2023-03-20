@@ -86,7 +86,7 @@ namespace ToSic.Eav.DataSources
             ConnectServices(
                 _dataFactory = dataFactory
             );
-            Provide(GetEntities);
+            ProvideOut(GetEntities);
         }
 
         /// <summary>

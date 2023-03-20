@@ -64,7 +64,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public StreamPick(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.StmPck")
         {
-            Provide(StreamPickList);
+            ProvideOut(StreamPickList);
         }
 
         private IImmutableList<IEntity> StreamPickList() => Log.Func(l =>

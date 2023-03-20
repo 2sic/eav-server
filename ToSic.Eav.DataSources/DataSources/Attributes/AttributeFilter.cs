@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSources
 		public AttributeFilter(EntityBuilder entityBuilder, MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.AtribF")
         {
             _entityBuilder = entityBuilder;
-            Provide(GetList);
+            ProvideOut(GetList);
         }
 
         private readonly EntityBuilder _entityBuilder;

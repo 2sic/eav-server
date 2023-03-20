@@ -71,7 +71,7 @@ namespace ToSic.Eav.DataSources.Sys
                 _settingsStack = settingsStack,
                 _dataFactory = dataFactory
             );
-            Provide(GetStack);
+            ProvideOut(GetStack);
         }
 
         #endregion

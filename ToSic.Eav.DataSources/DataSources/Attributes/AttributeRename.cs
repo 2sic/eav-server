@@ -75,7 +75,7 @@ namespace ToSic.Eav.DataSources
             ConnectServices(
                 _dataBuilder = dataBuilder
             );
-            Provide(GetList);
+            ProvideOut(GetList);
         }
 
         private readonly DataBuilder _dataBuilder;

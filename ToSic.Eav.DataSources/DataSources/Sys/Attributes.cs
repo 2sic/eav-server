@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSources.Sys
                 _appStates = appStates,
                 _dataFactory = dataFactory.New(options: new DataFactoryOptions(typeName: AttribContentTypeName, titleField: AttributeType.Title.ToString()))
             );
-            Provide(GetList);
+            ProvideOut(GetList);
 		}
         private readonly IAppStates _appStates;
         private readonly IDataFactory _dataFactory;

@@ -82,8 +82,8 @@ namespace ToSic.Eav.DataSources
             ConnectServices(
                 _pagingFactory = dataFactory.New(options: new DataFactoryOptions(typeName: "Paging"))
             );
-            Provide(GetList);
-            Provide(GetPaging, "Paging");
+            ProvideOut(GetList);
+            ProvideOut(GetPaging, "Paging");
 		}
 
 

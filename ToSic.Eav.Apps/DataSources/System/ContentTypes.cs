@@ -91,7 +91,7 @@ namespace ToSic.Eav.DataSources.Sys
                 _appStates = appStates,
                 _dataFactory = dataFactory.New(options: new DataFactoryOptions(_options, appId: OfAppId))
             );
-            Provide(GetList);
+            ProvideOut(GetList);
 		}
         private readonly IAppStates _appStates;
 

@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
         public PersonsDataSource(MyServices services, DataBuilder dataBuilder): base(services, "TST.Person")
         {
             _dataBuilder = dataBuilder;
-            Provide(GetPersons);
+            ProvideOut(GetPersons);
         }
 
         private readonly DataBuilder _dataBuilder;

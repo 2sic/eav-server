@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
 		public StreamFallback(MyServices services) : base(services, $"{LogPrefix}.FallBk")
 		{
-			Provide(GetStreamFallback);
+			ProvideOut(GetStreamFallback);
 		}
 
         private IImmutableList<IEntity> GetStreamFallback()

@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources.Sys
                 // Note: these are really the scopes of the current app, so we set the AppId
                 _scopesFactory = dataFactory.New(options: new DataFactoryOptions(appId: AppId, typeName: "Scope"))
             );
-            Provide(GetList);
+            ProvideOut(GetList);
         }
         private readonly IAppStates _appStates;
 

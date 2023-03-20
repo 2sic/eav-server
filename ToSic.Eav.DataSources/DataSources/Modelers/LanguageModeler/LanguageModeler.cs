@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources
             ConnectServices(
                 _dataBuilder = dataBuilder
             );
-            Provide(MapLanguagesIntoValues);
+            ProvideOut(MapLanguagesIntoValues);
         }
 
         private readonly DataBuilder _dataBuilder;

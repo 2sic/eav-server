@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public OwnerFilter(MyServices services): base(services, $"{LogPrefix}.OwnrFl")
         {
-            Provide(GetList);
+            ProvideOut(GetList);
         }
 
         private IImmutableList<IEntity> GetList() => Log.Func($"get for identity:{Identity}", () =>

@@ -95,7 +95,7 @@ namespace ToSic.Eav.DataSources
                 _valueLanguageService = valLanguages
             );
 
-            Provide(GetValueFilterOrFallback);
+            ProvideOut(GetValueFilterOrFallback);
         }
         private readonly ValueLanguages _valueLanguageService;
 

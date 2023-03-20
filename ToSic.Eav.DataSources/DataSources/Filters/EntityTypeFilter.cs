@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources
 
         {
             _appStates = appStates;
-            Provide(GetList);
+            ProvideOut(GetList);
         }
         private readonly IAppStates _appStates;
 

@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
             string noParamOrder = Parameters.Protector,
             string logName = null) : base(services, logName ?? "Ds.CustLt")
         {
-            Provide(() => GetRaw(GetDefault, null));
+            base.ProvideOut(() => GetRaw(GetDefault, null));
         }
 
         protected virtual DataFactoryOptions Options
@@ -32,28 +32,16 @@ namespace ToSic.Eav.DataSources
         protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();
 
         protected void ProvideOut<T>(
-            IEnumerable<IHasRawEntity<T>> source,
-            string noParamOrder = Parameters.Protector,
-            DataFactoryOptions options = default) where T : IRawEntity =>
-            Provide(() => GetHasRaw(() => source, options));
-
-        protected void ProvideOut<T>(
             Func<IEnumerable<IHasRawEntity<T>>> source,
             string noParamOrder = Parameters.Protector,
             DataFactoryOptions options = default) where T : IRawEntity =>
-            Provide(() => GetHasRaw(source, options));
-
-        protected void ProvideOut<T>(
-            IEnumerable<T> source,
-            string noParamOrder = Parameters.Protector,
-            DataFactoryOptions options = default) where T : IRawEntity => 
-            ProvideOut(() => source, options: options);
+            base.ProvideOut(() => GetHasRaw(source, options));
 
         protected void ProvideOut<T>(
             Func<IEnumerable<T>> source,
             string noParamOrder = Parameters.Protector,
             DataFactoryOptions options = default) where T : IRawEntity =>
-            Provide(() => GetRaw(source, options));
+            base.ProvideOut(() => GetRaw(source, options));
 
         private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>> source, DataFactoryOptions options) where T: IRawEntity
         {

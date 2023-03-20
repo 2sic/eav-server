@@ -126,7 +126,7 @@ namespace ToSic.Eav.DataSources
                 _serverPaths = serverPaths,
                 _dataFactory = dataFactory
             );
-            Provide(GetList);
+            ProvideOut(GetList);
         }
         private readonly IUser _user;
         private readonly IServerPaths _serverPaths;
