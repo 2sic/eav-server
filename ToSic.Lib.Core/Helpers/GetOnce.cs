@@ -34,9 +34,10 @@ namespace ToSic.Lib.Helpers
         {
             if (IsValueCreated) return _value;
             // Important: don't use try/catch, because the parent should be able to decide if try/catch is appropriate
-
-            // TODO: WIP - MUST BE MOVED UNDER THE GENERATOR, but ATM still work in progress
             _value = generator();
+            // Important: This must happen after the generator() - otherwise there is a risk of cyclic code which already assume
+            // the value was created, while still inside the creation of the value.
+            // So we would rather have a stack overflow and find the problem code, than to let the code assume the value was already made and null
             IsValueCreated = true;
             return _value;
         }
