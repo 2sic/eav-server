@@ -87,8 +87,7 @@ namespace ToSic.Eav.Persistence.File
             appState.Load(() => Log.Do(timer: true, message: msg, action: l =>
             {
                 // Prepare metadata lists & relationships etc.
-                // #removeUnusedPreloadOfMetaTypes
-                appState.InitMetadata(/*new Dictionary<int, string>().ToImmutableDictionary()*/);
+                appState.InitMetadata();
                 appState.Name = Constants.PresetName;
                 appState.Folder = Constants.PresetName;
 

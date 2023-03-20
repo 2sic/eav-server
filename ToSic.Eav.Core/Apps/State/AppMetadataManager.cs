@@ -12,11 +12,6 @@ namespace ToSic.Eav.Apps
     internal class AppMetadataManager: IMetadataSource
     {
         #region cache value objects: Types, _guid, _number, _string
-        // #removeUnusedPreloadOfMetaTypes
-        ///// <summary>
-        ///// Type-map for id/name of types
-        ///// </summary>
-        //private ImmutableDictionary<int, string> Types { get; }
 
         /// <summary>
         /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyGuid
@@ -46,13 +41,9 @@ namespace ToSic.Eav.Apps
 
         #endregion
 
-        // #removeUnusedPreloadOfMetaTypes
-        public AppMetadataManager(AppState app/*, ImmutableDictionary<int, string> metadataTypes*/) // : base("App.MDMan")
+        public AppMetadataManager(AppState app)
         {
             _app = app;
-            // #removeUnusedPreloadOfMetaTypes
-            //Types = metadataTypes;
-
             // make sure the lists have a sub-list for each known relationship type
             Reset();
         }
@@ -65,15 +56,6 @@ namespace ToSic.Eav.Apps
             _guid = new Dictionary<int, Dictionary<Guid, List<IEntity>>>();
             _number = new Dictionary<int, Dictionary<int, List<IEntity>>>();
             _string = new Dictionary<int, Dictionary<string, List<IEntity>>>();
-
-            // #removeUnusedPreloadOfMetaTypes
-            // 2023-01-10 2dm - believe this isn't relevant, as each key will be re-added if missing later - try to disable
-            //foreach (var metaType in Types)
-            //{
-            //    _guid.Add(metaType.Key, new Dictionary<Guid, List<IEntity>>());
-            //    _number.Add(metaType.Key, new Dictionary<int, List<IEntity>>());
-            //    _string.Add(metaType.Key, new Dictionary<string, List<IEntity>>());
-            //}
         }
 
         #region Cache Timestamp & Invalidation
@@ -105,10 +87,6 @@ namespace ToSic.Eav.Apps
         
         private static void AddToMetaDic<T>(IDictionary<int, Dictionary<T, List<IEntity>>> metadataIndex, int mdTargetType, T mdValue, IEntity newEntity)
         {
-            // get the index of the target type (like 4 = Entity target)
-            // #removeUnusedPreloadOfMetaTypes
-            // var indexOfType = metadataIndex[mdTargetType];
-
             // Get or create the metadata index on this targetType
             if (!metadataIndex.TryGetValue(mdTargetType, out var indexOfType))
                 indexOfType = metadataIndex[mdTargetType] = new Dictionary<T, List<IEntity>>();

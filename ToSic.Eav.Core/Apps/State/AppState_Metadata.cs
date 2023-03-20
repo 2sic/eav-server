@@ -25,15 +25,13 @@ namespace ToSic.Eav.Apps
         /// it's needed, so the metadata knows what lookup types are supported
         /// </summary>
         [PrivateApi("internal use only")]
-        // #removeUnusedPreloadOfMetaTypes
         public void InitMetadata()
         {
             if (!Loading)
                 throw new Exception("Trying to init metadata, but App is not in loading state.");
             if (_appContentTypesFromRepository != null)
                 throw new Exception("Can't init metadata if content-types are already set");
-            // #removeUnusedPreloadOfMetaTypes
-            _metadataManager = new AppMetadataManager(this /*, metadataTypes*/);
+            _metadataManager = new AppMetadataManager(this);
 
             Metadata = GetMetadataOf(TargetTypes.App, AppId, "App (" + AppId + ") " + Name + " (" + Folder + ")");
         }
