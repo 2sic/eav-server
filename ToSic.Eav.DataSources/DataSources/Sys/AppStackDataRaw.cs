@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources.Sys
         public const string TypeName = "AppStack";
         public const string TitleFieldName = Data.Attributes.TitleNiceName;
 
-        public static DataFactorySettings Settings = new DataFactorySettings(typeName: TypeName, titleField: TitleFieldName);
+        public static DataFactoryOptions Options = new DataFactoryOptions(typeName: TypeName, titleField: TitleFieldName);
 
         public AppStackDataRaw(PropertyDumpItem original)
         {

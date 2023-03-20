@@ -214,7 +214,7 @@ namespace ToSic.Eav.DataSources
                                      $"{commonErrorsIdTitle}"), "error");
                 }
 
-                var csvFactory = _dataFactory.New(options: new DataFactorySettings(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName));
+                var csvFactory = _dataFactory.New(options: new DataFactoryOptions(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName));
 
                 // Parse data
                 while (parser.Read())

@@ -137,7 +137,7 @@ namespace ToSic.Eav.DataSources
             if (!source.Columns.Contains(titleField))
                 throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-            var tblFactory = _dataFactory.New(options: new DataFactorySettings(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField));
+            var tblFactory = _dataFactory.New(options: new DataFactoryOptions(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField));
             
             // Populate a new Dictionary with EntityModels
             var result = new List<IEntity>();

@@ -76,7 +76,7 @@ namespace ToSic.Eav.DataSources.Sys
                 QueryBuilder = queryBuilder,
                 _queryManagerLazy = queryManagerLazy,
                 _attributesGenerator = attributesGenerator,
-                _dataFactory = dataFactory.New(options: new DataFactorySettings(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
+                _dataFactory = dataFactory.New(options: new DataFactoryOptions(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
             );
             Provide(GetStreams);
             Provide(GetAttributes, "Attributes");

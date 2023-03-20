@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources.Sys
 
         private const string AppIdKey = "AppId";
 	    private const string ContentTypeTypeName = "ContentType";
-        private DataFactorySettings _settings = new DataFactorySettings(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
+        private DataFactoryOptions _options = new DataFactoryOptions(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
 	    
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             ConnectServices(
                 _appStates = appStates,
-                _dataFactory = dataFactory.New(options: new DataFactorySettings(_settings, appId: OfAppId))
+                _dataFactory = dataFactory.New(options: new DataFactoryOptions(_options, appId: OfAppId))
             );
             Provide(GetList);
 		}

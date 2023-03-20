@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Build
 {
-    public class DataFactorySettings
+    public class DataFactoryOptions
     {
         /// <summary>
         /// The App-ID which will be assigned to the generated entities.
@@ -24,8 +24,8 @@ namespace ToSic.Eav.Data.Build
 
         public int IdSeed { get; }
 
-        public DataFactorySettings(
-            DataFactorySettings original = default,
+        public DataFactoryOptions(
+            DataFactoryOptions original = default,
             string noParamOrder = Eav.Parameters.Protector,
             int? appId = default,
             string typeName = default,

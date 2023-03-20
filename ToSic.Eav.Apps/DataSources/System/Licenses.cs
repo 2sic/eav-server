@@ -1,11 +1,8 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Linq;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys
@@ -25,9 +22,9 @@ namespace ToSic.Eav.DataSources.Sys
         DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Licenses : DataSource
+    public sealed class Licenses : CustomDataSourceLight
     {
-        private readonly IDataFactory _factory;
+        //private readonly IDataFactory _factory;
 
         #region Configuration-properties (no config)
 
@@ -38,25 +35,26 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Licenses(MyServices services, ILicenseService licenseService, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Licenses(MyServices services, ILicenseService licenseService/*, IDataFactory dataFactory*/) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
-                _licenseService = licenseService,
-                _factory = dataFactory.New(options: new DataFactorySettings(typeName: "License"))
+                /*_licenseService = */licenseService
+                //_factory = dataFactory.New(options: new DataFactoryOptions(typeName: "License"))
             );
-            Provide(GetList);
+            //Provide(GetList);
+            ProvideOut(() => licenseService.All.OrderBy(l => l.License?.Priority ?? 0), options: new DataFactoryOptions(typeName: "License"));
         }
-        private readonly ILicenseService _licenseService;
+        //private readonly ILicenseService _licenseService;
 
 
-        private IImmutableList<IEntity> GetList() => Log.Func(() =>
-        {
-            // Don't parse configuration as there is nothing to configure
-            // Configuration.Parse();
+        //private IImmutableList<IEntity> GetList() => Log.Func(() =>
+        //{
+        //    // Don't parse configuration as there is nothing to configure
+        //    // Configuration.Parse();
 
-            var list = _factory.Create(_licenseService.All.OrderBy(l => l.License?.Priority ?? 0));
+        //    var list = _factory.Create(_licenseService.All.OrderBy(l => l.License?.Priority ?? 0));
             
-            return (list, $"{list.Count}");
-        });
+        //    return (list, $"{list.Count}");
+        //});
     }
 }

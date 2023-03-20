@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             ConnectServices(
                 _featuresService = featuresService,
-                _factory = dataFactory.New(options: new DataFactorySettings(typeName: "Feature"))
+                _factory = dataFactory.New(options: new DataFactoryOptions(typeName: "Feature"))
             );
             Provide(GetList);
         }

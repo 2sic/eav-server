@@ -48,7 +48,7 @@ namespace ToSic.Eav.Data.Build
         ///// <inheritdoc />
         //public bool IdAutoIncrementZero { get; }
 
-        public DataFactorySettings Settings { get; }
+        public DataFactoryOptions Options { get; }
 
 
         public DateTime Created { get; } = DateTime.Now;
@@ -93,7 +93,7 @@ namespace ToSic.Eav.Data.Build
 
         public IDataFactory New(
             string noParamOrder = Parameters.Protector,
-            DataFactorySettings options = default,
+            DataFactoryOptions options = default,
             ILookup<object, IEntity> relationships = default,
             RawConvertOptions rawConvertOptions = default
         )
@@ -102,7 +102,7 @@ namespace ToSic.Eav.Data.Build
             Parameters.Protect(noParamOrder);
 
             var clone = new DataFactory(_builder,
-                settings: options,
+                options: options,
                 relationships: relationships,
                 rawConvertOptions: rawConvertOptions
             );
@@ -121,7 +121,7 @@ namespace ToSic.Eav.Data.Build
             string titleField = default,
             int idSeed = DataConstants.DataFactoryDefaultIdSeed,
             bool idAutoIncrementZero = true,
-            DataFactorySettings settings = default,
+            DataFactoryOptions options = default,
             ILookup<object, IEntity> relationships = default,
             RawConvertOptions rawConvertOptions = default
         ) :this (builder)
@@ -130,13 +130,13 @@ namespace ToSic.Eav.Data.Build
             Parameters.Protect(noParamOrder);
 
             // Store settings
-            var settingsWip= settings ?? new DataFactorySettings(appId: appId, typeName: typeName, titleField: titleField, idSeed: idSeed, autoId: idAutoIncrementZero);
-            Settings = settingsWip;
+            var settingsWip= options ?? new DataFactoryOptions(appId: appId, typeName: typeName, titleField: titleField, idSeed: idSeed, autoId: idAutoIncrementZero);
+            Options = settingsWip;
 
             //AppId = appId;
             //TitleField = titleField.UseFallbackIfNoValue(Attributes.TitleNiceName);
             IdCounter = idSeed;
-            ContentType = _builder.ContentType.Transient(Settings.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
+            ContentType = _builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
             //IdAutoIncrementZero = settingsWip.AutoId; // idAutoIncrementZero;
 
             if (rawConvertOptions != null) RawConvertOptions = rawConvertOptions;
@@ -234,11 +234,11 @@ namespace ToSic.Eav.Data.Build
             var valuesWithRelationships = RelsConverter.RelationshipsToAttributes(values, Relationships);
 
             var ent = _builder.Entity.Create(
-                appId: Settings.AppId,
-                entityId: id == 0 && Settings.AutoId ? IdCounter++ : id,
+                appId: Options.AppId,
+                entityId: id == 0 && Options.AutoId ? IdCounter++ : id,
                 contentType: ContentType,
                 attributes: _builder.Attribute.Create(valuesWithRelationships),
-                titleField: Settings.TitleField,
+                titleField: Options.TitleField,
                 guid: guid,
                 created: created == default ? Created : created,
                 modified: modified == default ? Modified : modified
