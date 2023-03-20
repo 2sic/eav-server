@@ -1,6 +1,7 @@
-﻿using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.Data.Process;
+using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data.Process
+namespace ToSic.Eav.Data.Build
 {
     /// <summary>
     /// Special object to carry an IEntity and another object which belong together.

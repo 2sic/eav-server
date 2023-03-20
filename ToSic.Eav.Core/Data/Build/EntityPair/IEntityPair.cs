@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data.Process
+namespace ToSic.Eav.Data.Build
 {
     /// <summary>
     /// Interface marking <see cref="EntityPair{TPartner}"/>s.
