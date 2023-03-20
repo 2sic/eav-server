@@ -33,20 +33,11 @@ namespace ToSic.Eav.Data.Build
 
         #region Properties to configure Builder / Defaults
 
-        ///// <inheritdoc />
-        //public int AppId { get; } = DataConstants.DataFactoryDefaultAppId;
-
-        ///// <inheritdoc />
-        //public string TitleField { get; } = Attributes.TitleNiceName;
-
         /// <inheritdoc />
         public int IdCounter { get; private set; }
 
         /// <inheritdoc />
         public IContentType ContentType { get; }
-
-        ///// <inheritdoc />
-        //public bool IdAutoIncrementZero { get; }
 
         public DataFactoryOptions Options { get; }
 
@@ -82,9 +73,7 @@ namespace ToSic.Eav.Data.Build
             Parameters.Protect(noParamOrder);
 
             var clone = new DataFactory(_builder,
-                //settings: settings,
-                appId: appId, typeName: typeName, titleField: titleField, idSeed: idSeed,
-                idAutoIncrementZero: idAutoIncrementZero, relationships: relationships,
+                options: new DataFactoryOptions(appId: appId, typeName: typeName, titleField: titleField, idSeed: idSeed, autoId: idAutoIncrementZero), relationships: relationships,
                 rawConvertOptions: rawConvertOptions
                 );
             if ((Log as Log)?.Parent != null) clone.LinkLog(((Log)Log).Parent);
@@ -116,11 +105,6 @@ namespace ToSic.Eav.Data.Build
         private DataFactory(
             DataBuilder builder,
             string noParamOrder = Parameters.Protector,
-            int appId = default,
-            string typeName = default,
-            string titleField = default,
-            int idSeed = DataConstants.DataFactoryDefaultIdSeed,
-            bool idAutoIncrementZero = true,
             DataFactoryOptions options = default,
             ILookup<object, IEntity> relationships = default,
             RawConvertOptions rawConvertOptions = default
@@ -130,14 +114,10 @@ namespace ToSic.Eav.Data.Build
             Parameters.Protect(noParamOrder);
 
             // Store settings
-            var settingsWip= options ?? new DataFactoryOptions(appId: appId, typeName: typeName, titleField: titleField, idSeed: idSeed, autoId: idAutoIncrementZero);
-            Options = settingsWip;
+            Options = options ?? new DataFactoryOptions();
 
-            //AppId = appId;
-            //TitleField = titleField.UseFallbackIfNoValue(Attributes.TitleNiceName);
-            IdCounter = idSeed;
+            IdCounter = Options.IdSeed;
             ContentType = _builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
-            //IdAutoIncrementZero = settingsWip.AutoId; // idAutoIncrementZero;
 
             if (rawConvertOptions != null) RawConvertOptions = rawConvertOptions;
 
