@@ -88,7 +88,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             ConnectServices(
                 _appStates = appStates,
-                _dataFactory = dataFactory.Configure(appId: OfAppId, typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString())
+                _dataFactory = dataFactory.New(appId: OfAppId, typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString())
             );
             Provide(GetList);
 		}

@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources.Sys
             ConnectServices(
                 _zoneMapper = zoneMapper,
                 _appStates = appStates,
-                _dataFactory = dataFactory.Configure(appId: 0, typeName: ZoneContentTypeName, titleField: ZoneType.Name.ToString())
+                _dataFactory = dataFactory.New(appId: 0, typeName: ZoneContentTypeName, titleField: ZoneType.Name.ToString())
             );
             Provide(GetList);
         }

@@ -88,7 +88,7 @@ namespace ToSic.Eav.DataSources.Sys
         public Apps(MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Apps")
         {
             ConnectServices(
-                _dataFactory = dataFactory.Configure(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
+                _dataFactory = dataFactory.New(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
             );
 
             _appGenerator = services.AppGenerator;

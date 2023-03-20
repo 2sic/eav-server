@@ -137,7 +137,7 @@ namespace ToSic.Eav.DataSources
             if (!source.Columns.Contains(titleField))
                 throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-            _dataFactory.Configure(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField);
+            var tblFactory = _dataFactory.New(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField);
             
             // Populate a new Dictionary with EntityModels
             var result = new List<IEntity>();
@@ -151,7 +151,7 @@ namespace ToSic.Eav.DataSources
                     StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
                 var mod = (string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?) ?? DateTime.MinValue;
 
-                var entity = _dataFactory.Create(values, id: entityId, modified: mod);
+                var entity = tblFactory.Create(values, id: entityId, modified: mod);
                 result.Add(entity);
             }
 

@@ -53,8 +53,8 @@ namespace ToSic.Eav.Data.Build
         ILookup<object, IEntity> Relationships { get; }
 
         /// <summary>
-        /// Initial configuration call to setup all the parameters for this builder.
-        /// It must be called before building anything. 
+        /// Spawn a new <see cref="IDataFactory"/> with an initial configuration.
+        /// This returns a _new_ <see cref="IDataFactory"/> and will not modify the original/parent.
         /// </summary>
         /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
         /// <param name="appId">The App this is virtually coming from, defaults to `0`</param>
@@ -65,7 +65,8 @@ namespace ToSic.Eav.Data.Build
         /// <param name="relationships"></param>
         /// <param name="rawConvertOptions">Optional special options which create-raw might use</param>
         /// <returns>Itself, to make call chaining easier</returns>
-        IDataFactory Configure(string noParamOrder = "Rule: All params must be named (https://r.2sxc.org/named-params)",
+        IDataFactory New(
+            string noParamOrder = Parameters.Protector,
             int appId = default,
             string typeName = default,
             string titleField = default,

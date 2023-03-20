@@ -321,7 +321,7 @@ namespace ToSic.Eav.DataSources
 			                             ?? columNames.FirstOrDefault();
 			            l.A($"will use '{casedTitle}' as title field");
 
-                        _dataFactory.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle);
+                        var sqlFactory = _dataFactory.New(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle);
 
                         #endregion
 
@@ -338,7 +338,7 @@ namespace ToSic.Eav.DataSources
 								var value = reader[c];
                                 return Convert.IsDBNull(value) ? null : value;
                             });
-                            var entity = _dataFactory.Create(values, id: entityId);
+                            var entity = sqlFactory.Create(values, id: entityId);
 			                list.Add(entity);
 			            }
 

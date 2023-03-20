@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources.Sys
         public MetadataTargetTypes(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
         {
             ConnectServices(
-                _dataFactory = dataFactory.Configure(appId: 0, typeName: "MetadataTargetTypes", titleField: Data.Attributes.TitleNiceName)
+                _dataFactory = dataFactory.New(appId: 0, typeName: "MetadataTargetTypes", titleField: Data.Attributes.TitleNiceName)
             );
             Provide(GetList);
         }

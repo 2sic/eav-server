@@ -214,7 +214,7 @@ namespace ToSic.Eav.DataSources
                                      $"{commonErrorsIdTitle}"), "error");
                 }
 
-                _dataFactory.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName);
+                var csvFactory = _dataFactory.New(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName);
 
                 // Parse data
                 while (parser.Read())
@@ -236,7 +236,7 @@ namespace ToSic.Eav.DataSources
                     for (var i = 0; i < headers.Length; i++)
                         entityValues.Add(headers[i], (i < fields.Length) ? fields[i] : null);
 
-                    entityList.Add(_dataFactory.Create(values: entityValues, id: entityId));
+                    entityList.Add(csvFactory.Create(values: entityValues, id: entityId));
                 }
             }
 

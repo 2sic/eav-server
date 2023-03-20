@@ -35,25 +35,25 @@ namespace ToSic.Eav.Data.Build
         #region Properties to configure Builder / Defaults
 
         /// <inheritdoc />
-        public int AppId { get; private set; } = DataConstants.DataFactoryDefaultAppId;
+        public int AppId { get; } = DataConstants.DataFactoryDefaultAppId;
 
         /// <inheritdoc />
-        public string TitleField { get; private set; } = Attributes.TitleNiceName;
+        public string TitleField { get; } = Attributes.TitleNiceName;
 
         /// <inheritdoc />
         public int IdCounter { get; private set; }
 
         /// <inheritdoc />
-        public IContentType ContentType { get; private set; }
+        public IContentType ContentType { get; }
 
         /// <inheritdoc />
-        public bool IdAutoIncrementZero { get; private set; }
+        public bool IdAutoIncrementZero { get; }
 
 
         public DateTime Created { get; } = DateTime.Now;
         public DateTime Modified { get; } = DateTime.Now;
 
-        private RawConvertOptions RawConvertOptions { get; set; } = new RawConvertOptions();
+        private RawConvertOptions RawConvertOptions { get; } = new RawConvertOptions();
 
         public ILookup<object, IEntity> Relationships => _nonLazyRelationships ?? _lazyRelationships;
         private ILookup<object, IEntity> _nonLazyRelationships;
@@ -64,9 +64,9 @@ namespace ToSic.Eav.Data.Build
         #endregion
 
 
-        #region Configure
-        /// <inheritdoc />
-        public IDataFactory Configure(
+        #region Spawn New
+
+        public IDataFactory New(
             string noParamOrder = Parameters.Protector,
             int appId = default,
             string typeName = default,
@@ -78,14 +78,35 @@ namespace ToSic.Eav.Data.Build
         )
         {
             // Ensure parameters are named
-            Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(Configure));
+            Parameters.Protect(noParamOrder);
 
-            // Prevent the developer from re-using the DataFactory
-            if (_alreadyConfigured)
-                throw new Exception(
-                    $"{nameof(Configure)} was already called - you cannot call it twice. " +
-                    $"To get another {nameof(IDataFactory)}, use Dependency Injection and/or a Generator<{nameof(IDataFactory)}>.");
-            _alreadyConfigured = true;
+            var clone = new DataFactory(_builder,
+                appId: appId, typeName: typeName, titleField: titleField, idSeed: idSeed,
+                idAutoIncrementZero: idAutoIncrementZero, relationships: relationships,
+                rawConvertOptions: rawConvertOptions
+                );
+            if ((Log as Log)?.Parent != null) clone.LinkLog(((Log)Log).Parent);
+            return clone;
+        }
+
+
+        /// <summary>
+        /// Private constructor to create a new factory with configuration
+        /// </summary>
+        private DataFactory(
+            DataBuilder builder,
+            string noParamOrder = Parameters.Protector,
+            int appId = default,
+            string typeName = default,
+            string titleField = default,
+            int idSeed = DataConstants.DataFactoryDefaultIdSeed,
+            bool idAutoIncrementZero = true,
+            ILookup<object, IEntity> relationships = default,
+            RawConvertOptions rawConvertOptions = default
+        ) :this (builder)
+        {
+            // Ensure parameters are named
+            Parameters.Protect(noParamOrder);
 
             // Store settings
             AppId = appId;
@@ -104,10 +125,7 @@ namespace ToSic.Eav.Data.Build
                 _lazyRelationships = relationshipsAsLazy;
             else
                 _nonLazyRelationships = relationships;  // will be null or a real value
-
-            return this;
         }
-        private bool _alreadyConfigured;
         #endregion
 
         #region Create IRawEntity / WrapUp
