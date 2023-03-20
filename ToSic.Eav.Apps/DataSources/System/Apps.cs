@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources.Sys
         #region Configuration-properties (no config)
 
         private const string ZoneIdField = "ZoneId";
-        private const string AppsContentTypeName = "EAV_Apps";
+        private const string AppsContentTypeName = "App";
 
 	    /// <summary>
 	    /// The attribute whose value will be filtered
@@ -88,7 +88,7 @@ namespace ToSic.Eav.DataSources.Sys
         public Apps(MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Apps")
         {
             ConnectServices(
-                _dataFactory = dataFactory.New(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
+                _dataFactory = dataFactory.New(settings: new DataFactorySettings(typeName: AppsContentTypeName, titleField: AppType.Name.ToString()))
             );
 
             _appGenerator = services.AppGenerator;

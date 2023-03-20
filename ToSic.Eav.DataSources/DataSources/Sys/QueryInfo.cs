@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources.Sys
         #region Configuration-properties (no config)
 
         private const string DefQuery = "not-configured"; // can't be blank, otherwise tokens fail
-        private const string QueryStreamsContentType = "EAV_Query_Stream";
+        private const string QueryStreamsContentType = "QueryStream";
 
         /// <summary>
         /// The content-type name
@@ -76,7 +76,7 @@ namespace ToSic.Eav.DataSources.Sys
                 QueryBuilder = queryBuilder,
                 _queryManagerLazy = queryManagerLazy,
                 _attributesGenerator = attributesGenerator,
-                _dataFactory = dataFactory.New(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString())
+                _dataFactory = dataFactory.New(settings: new DataFactorySettings(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
             );
             Provide(GetStreams);
             Provide(GetAttributes, "Attributes");

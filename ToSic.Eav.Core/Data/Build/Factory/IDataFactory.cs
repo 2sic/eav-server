@@ -17,17 +17,17 @@ namespace ToSic.Eav.Data.Build
     [PublicApi]
     public interface IDataFactory
     {
-        /// <summary>
-        /// The App-ID which will be assigned to the generated entities.
-        /// By default it will be `0`
-        /// </summary>
-        int AppId { get; }
+        ///// <summary>
+        ///// The App-ID which will be assigned to the generated entities.
+        ///// By default it will be `0`
+        ///// </summary>
+        //int AppId { get; }
 
-        /// <summary>
-        /// The field in the data which is the default title.
-        /// Defaults to `Title` if not set.
-        /// </summary>
-        string TitleField { get; }
+        ///// <summary>
+        ///// The field in the data which is the default title.
+        ///// Defaults to `Title` if not set.
+        ///// </summary>
+        //string TitleField { get; }
 
         /// <summary>
         /// A counter for the ID in case the data provided doesn't have an ID to use.
@@ -35,10 +35,10 @@ namespace ToSic.Eav.Data.Build
         /// </summary>
         int IdCounter { get; }
 
-        /// <summary>
-        /// Determines if Zero IDs are auto-incremented - default is `true`.
-        /// </summary>
-        bool IdAutoIncrementZero { get; }
+        ///// <summary>
+        ///// Determines if Zero IDs are auto-incremented - default is `true`.
+        ///// </summary>
+        //bool IdAutoIncrementZero { get; }
 
 
         /// <summary>
@@ -72,6 +72,12 @@ namespace ToSic.Eav.Data.Build
             string titleField = default,
             int idSeed = 1,
             bool idAutoIncrementZero = default,
+            ILookup<object, IEntity> relationships = default,
+            RawConvertOptions rawConvertOptions = default);
+
+        IDataFactory New(
+            string noParamOrder = Parameters.Protector,
+            DataFactorySettings settings = default,
             ILookup<object, IEntity> relationships = default,
             RawConvertOptions rawConvertOptions = default);
 

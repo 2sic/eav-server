@@ -321,7 +321,7 @@ namespace ToSic.Eav.DataSources
 			                             ?? columNames.FirstOrDefault();
 			            l.A($"will use '{casedTitle}' as title field");
 
-                        var sqlFactory = _dataFactory.New(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle);
+                        var sqlFactory = _dataFactory.New(settings: new DataFactorySettings(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle));
 
                         #endregion
 

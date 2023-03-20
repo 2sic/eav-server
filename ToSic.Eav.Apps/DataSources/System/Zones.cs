@@ -40,12 +40,6 @@ namespace ToSic.Eav.DataSources.Sys
 	{
         private readonly IDataFactory _dataFactory;
 
-        #region Configuration-properties (no config)
-
-	    private const string ZoneContentTypeName = "EAV_Zones";
-
-		#endregion
-
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new Zones DS
@@ -56,7 +50,7 @@ namespace ToSic.Eav.DataSources.Sys
             ConnectServices(
                 _zoneMapper = zoneMapper,
                 _appStates = appStates,
-                _dataFactory = dataFactory.New(appId: 0, typeName: ZoneContentTypeName, titleField: ZoneType.Name.ToString())
+                _dataFactory = dataFactory.New(settings: new DataFactorySettings(appId: 0, typeName: "Zone", titleField: ZoneType.Name.ToString()))
             );
             Provide(GetList);
         }

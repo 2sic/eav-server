@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Data.Process;
 
@@ -12,6 +13,8 @@ namespace ToSic.Eav.DataSources.Sys
     {
         public const string TypeName = "AppStack";
         public const string TitleFieldName = Data.Attributes.TitleNiceName;
+
+        public static DataFactorySettings Settings = new DataFactorySettings(typeName: TypeName, titleField: TitleFieldName);
 
         public AppStackDataRaw(PropertyDumpItem original)
         {

@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources.Sys
         #region Configuration-properties (no config)
 
 	    private const string TryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
-	    private const string AttribContentTypeName = "EAV_Attribute";
+	    private const string AttribContentTypeName = "Attribute";
 	    
         /// <summary>
         /// The content-type name
@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             ConnectServices(
                 _appStates = appStates,
-                _dataFactory = dataFactory.New(typeName: AttribContentTypeName, titleField: AttributeType.Title.ToString())
+                _dataFactory = dataFactory.New(settings: new DataFactorySettings(typeName: AttribContentTypeName, titleField: AttributeType.Title.ToString()))
             );
             Provide(GetList);
 		}

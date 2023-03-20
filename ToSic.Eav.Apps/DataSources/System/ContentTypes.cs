@@ -43,7 +43,8 @@ namespace ToSic.Eav.DataSources.Sys
         #region Configuration-properties (no config)
 
         private const string AppIdKey = "AppId";
-	    private const string ContentTypeTypeName = "EAV_ContentTypes";
+	    private const string ContentTypeTypeName = "ContentType";
+        private DataFactorySettings _settings = new DataFactorySettings(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
 	    
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace ToSic.Eav.DataSources.Sys
         {
             ConnectServices(
                 _appStates = appStates,
-                _dataFactory = dataFactory.New(appId: OfAppId, typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString())
+                _dataFactory = dataFactory.New(settings: new DataFactorySettings(_settings, appId: OfAppId))
             );
             Provide(GetList);
 		}
