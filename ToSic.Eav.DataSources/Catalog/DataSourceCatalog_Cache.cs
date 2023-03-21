@@ -39,6 +39,6 @@ namespace ToSic.Eav.DataSources.Catalog
             ?? (isLocal ? list.FirstOrDefault(dst => dst.TypeName.EqualsInsensitive(name)) : null)
             // Otherwise check for historical names in the VisualQuery Attribute
             ?? list.FirstOrDefault(dst =>
-                dst.VisualQuery?.PreviousNames.Any(pn => pn.EqualsInsensitive(name)) ?? false);
+                dst.VisualQuery?.NameIds.Any(pn => pn.EqualsInsensitive(name)) ?? false);
     }
 }

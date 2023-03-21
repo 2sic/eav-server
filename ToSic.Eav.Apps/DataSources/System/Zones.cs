@@ -24,10 +24,10 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "Zones of an installation",
         Icon = Icons.BorderOuter,
         Type = DataSourceType.System,
-        GlobalName = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
+        NameId = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
         Audience = Audience.Advanced,
         DynamicOut = false,
-        PreviousNames = new []
+        NameIds = new []
             {
                 "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
                 // not sure if this was ever used...just added it for safety for now

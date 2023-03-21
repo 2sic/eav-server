@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -14,7 +15,7 @@ namespace ToSic.Eav.DataSources.Queries
     [PublicApi]
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
-	public class VisualQueryAttribute : Attribute
+	public class VisualQueryAttribute : Attribute, IHasIdentityNameId
 	{
         /// <summary>
         /// Empty constructor - necessary, so DocFx includes this attribute in documentation.
@@ -36,7 +37,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <summary>
         /// List of in-streams expected by this data-source - will be shown in the UI. Default is empty []. 
         /// </summary>
-        public string[] In { get; set; } = null;// = Array.Empty<string>();
+        public string[] In { get; set; } = null;
 
         [PrivateApi]
         public string[] GetSafeIn() => In ?? Array.Empty<string>();
@@ -57,6 +58,7 @@ namespace ToSic.Eav.DataSources.Queries
             }
         }
 
+        // ReSharper disable once InconsistentNaming
         [PrivateApi] public bool _DynamicInWasSet;
         private bool _dynamicIn = false;
 
@@ -100,15 +102,19 @@ namespace ToSic.Eav.DataSources.Queries
         /// **required** this should be a unique id, ideally a GUID. <br/>
         /// </summary>
         /// <remarks>
-        /// _important: old code use string names like a.net namespace. This should not be done any more and will be deprecated in future._
+        /// * _important: old code use string names like a.net namespace. This should not be done any more and will be deprecated in future._
+        /// * Was renamed in 15.04 from `GlobalName` to the new `NameId` convention.
         /// </remarks>
-	    public string GlobalName { get; set; } = "";
+	    public string NameId { get; set; } = "";
 
         /// <summary>
         /// Names this DataSource may have had previously. <br/>
         /// This was introduced when we standardized the names, and still had historic data using old names or old namespaces. 
         /// </summary>
-	    public string[] PreviousNames { get; set; } = Array.Empty<string>();
+        /// <remarks>
+        /// * Was renamed in 15.04 to `NameIds` from `PreviousNames`
+        /// </remarks>
+	    public string[] NameIds { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// This marks the audience of a DataSource.

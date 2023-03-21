@@ -23,11 +23,11 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "Types of an App",
         Icon = Icons.Dns,
         Type = DataSourceType.System,
-        GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
+        NameId = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
         Audience = Audience.Advanced,
         DynamicOut = false,
         ConfigurationType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
-        PreviousNames = new []
+        NameIds = new []
             {
                 "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
                 // not sure if this was ever used...just added it for safety for now

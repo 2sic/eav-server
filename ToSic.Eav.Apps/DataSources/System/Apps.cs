@@ -24,11 +24,11 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "Apps of a Zone",
         Icon = Icons.Apps,
         Type = DataSourceType.System,
-        GlobalName = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
+        NameId = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
         DynamicOut = false,
         Audience = Audience.Advanced,
         ConfigurationType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
-        PreviousNames = new []
+        NameIds = new []
             {
                 "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
                 // not sure if this was ever used...just added it for safety for now

@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Mix/randomize the order of items",
         Icon = Icons.Shuffle,
         Type = DataSourceType.Sort, 
-        GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
         ConfigurationType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",

@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "List the DataSources available in the system",
         Icon = Icons.ArrowUpBoxed,
         Type = DataSourceType.System,
-        GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
         Audience = Audience.Advanced,
         DynamicOut = false,
         ConfigurationType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",

@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Split data into pages and forward just one batch",
         Icon = Icons.Stories,
         Type = DataSourceType.Logic, 
-        GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",

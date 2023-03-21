@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Keep items which have a property with the expected value",
         Icon = Icons.FilterList,
         Type = DataSourceType.Filter,
-        GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
         In = new[] { QueryConstants.InStreamDefaultRequired, StreamFallbackName },
         DynamicOut = false,
         ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",

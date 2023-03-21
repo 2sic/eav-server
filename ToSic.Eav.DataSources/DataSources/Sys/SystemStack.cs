@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "Settings and/or Resources as a Stack",
         Icon = Icons.Dns, // todo
         Type = DataSourceType.System,
-        GlobalName = "60806cb1-0c76-4c1e-8dfe-dcec94726f8d",
+        NameId = "60806cb1-0c76-4c1e-8dfe-dcec94726f8d",
         Audience = Audience.Advanced,
         ConfigurationType = "f9aca0f0-1b1b-4414-b42e-b337de124124"
         // HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes"

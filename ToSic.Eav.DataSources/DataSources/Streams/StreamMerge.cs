@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Combine multiple streams into one",
         Icon = Icons.MergeLeft,
         Type = DataSourceType.Logic, 
-        GlobalName = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
         DynamicOut = false,
         DynamicIn = true,
 	    HelpLink = "https://r.2sxc.org/DsStreamMerge")]

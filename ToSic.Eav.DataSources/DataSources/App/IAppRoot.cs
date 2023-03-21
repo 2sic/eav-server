@@ -14,8 +14,8 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.TableChart,
         Type = DataSourceType.Source,
         Audience = Audience.Advanced,
-        GlobalName = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",
-        PreviousNames = new []
+        NameId = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",
+        NameIds = new []
             {
                 "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",
                 "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources"

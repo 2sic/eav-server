@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Keep data based on user roles (editor sees draft items)",
         Icon = Icons.Eye, 
         Type = DataSourceType.Security, 
-        GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
         In = new []{ StreamPublishedName + "*", StreamDefaultName + "*",  StreamDraftsName + "*" },
         DynamicOut = false, 
         HelpLink = "https://r.2sxc.org/DsPublishingFilter")]

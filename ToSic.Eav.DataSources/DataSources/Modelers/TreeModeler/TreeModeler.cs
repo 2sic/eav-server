@@ -14,11 +14,11 @@ namespace ToSic.Eav.DataSources
     /// New in v11.20
     /// </remarks>
     [VisualQuery(
-        GlobalName = "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
+        NameId = "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
         NiceName = "Relationship/Tree Modeler",
         UiHint = "Connect items to create relationships or trees",
         Icon = Icons.Tree,
-        PreviousNames = new[]
+        NameIds = new[]
         {
             "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
             "ToSic.Eav.DataSources.TreeBuilder, ToSic.Eav.DataSources.SharePoint"

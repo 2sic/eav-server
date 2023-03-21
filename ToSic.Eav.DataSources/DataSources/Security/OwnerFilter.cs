@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Keep only item created by a specified user",
         Icon = Icons.PersonCircled,
         Type = DataSourceType.Security,
-        GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.OwnerFilter",

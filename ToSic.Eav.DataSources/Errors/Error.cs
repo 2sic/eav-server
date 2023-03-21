@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Warning,
         Type = DataSourceType.Debug,
         Audience = Audience.Advanced,
-        GlobalName = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a"   // namespace or guid
+        NameId = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a"   // namespace or guid
     )]
     [PublicApi]
     public class Error: DataSource

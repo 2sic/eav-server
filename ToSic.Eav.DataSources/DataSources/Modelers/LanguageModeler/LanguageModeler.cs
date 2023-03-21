@@ -17,11 +17,11 @@ namespace ToSic.Eav.DataSources
     /// New in v11.20
     /// </remarks>
     [VisualQuery(
-        GlobalName = "f390e460-46ff-4a6e-883f-f50fdeb363ee",
+        NameId = "f390e460-46ff-4a6e-883f-f50fdeb363ee",
         NiceName = "Language Modeler",
         UiHint = "Combine values to multi-language values",
         Icon = Icons.Translate,
-        PreviousNames = new[]
+        NameIds = new[]
         {
             "f390e460-46ff-4a6e-883f-f50fdeb363ee",
             "ToSic.Eav.DataSources.FieldMapping, ToSic.Eav.DataSources.SharePoint" // originally came from SharePoint

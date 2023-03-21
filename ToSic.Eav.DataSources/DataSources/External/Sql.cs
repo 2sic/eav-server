@@ -32,10 +32,10 @@ namespace ToSic.Eav.DataSources
         UiHint = "Get data from a database using SQL",
         Icon = Icons.FormDyn,
         Type = DataSourceType.Source,
-        GlobalName = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
         DynamicOut = false,
         ConfigurationType = "c76901b5-0345-4866-9fa3-6208de7f8543",
-        PreviousNames = new []
+        NameIds = new []
             {
                 "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources"
             },

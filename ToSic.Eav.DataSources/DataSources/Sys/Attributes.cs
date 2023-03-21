@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "Attributes/fields of a Content-Type",
         Icon = Icons.Dns,
         Type = DataSourceType.System,
-        GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
         Audience = Audience.Advanced,
         DynamicOut = false,
         ConfigurationType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",

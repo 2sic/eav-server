@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
 		UiHint = "All data in an app with streams for type",
         Icon = Icons.TableChart,
         Type = DataSourceType.Source,
-        GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
         DynamicOut = true,
         In = new []{DataSourceConstants.StreamDefaultName},
 		ConfigurationType = "|Config ToSic.Eav.DataSources.App",

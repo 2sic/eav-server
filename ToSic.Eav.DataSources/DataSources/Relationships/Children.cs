@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Get the item's children",
         Icon = Icons.ParentChild,
         Type = DataSourceType.Lookup,
-        GlobalName = "9f8de7ee-d1aa-4055-9bf9-8f183259cb05", 
+        NameId = "9f8de7ee-d1aa-4055-9bf9-8f183259cb05", 
         In = new[] { QueryConstants.InStreamDefaultRequired },
         DynamicOut = false,
         ConfigurationType = "832cd470-49f2-4909-a08a-77644457713e",

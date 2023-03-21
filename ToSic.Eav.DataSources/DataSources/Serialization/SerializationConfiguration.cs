@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Determine how this data is Serialized",
         Icon = Icons.HtmlDotDotDot,
         Type = DataSourceType.Modify, 
-        GlobalName = "2952e680-4aaa-4a12-adf7-325cb2854358",
+        NameId = "2952e680-4aaa-4a12-adf7-325cb2854358",
         DynamicOut = true,
         In = new []{DataSourceConstants.StreamDefaultName},
 	    ConfigurationType = "5c84cd3f-f853-40b3-81cf-dee6a07dc411",

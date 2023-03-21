@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources
         public VisualQueryAttribute VisualQuery { get; }
 
         // By default the name is the global name of the VisualQuery.
-        public override string Name => VisualQuery?.GlobalName;
+        public override string Name => VisualQuery?.NameId;
 
         public bool IsGlobal { get; }
 

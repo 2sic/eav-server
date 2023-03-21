@@ -53,12 +53,12 @@ namespace ToSic.Eav.DataSources.Catalog
         public IEnumerable<DataSourceInfo> GetAll(bool onlyForVisualQuery, int appId)
         {
             var fromGlobal = onlyForVisualQuery
-                ? GlobalCache.Where(dsi => (dsi.VisualQuery?.GlobalName).HasValue())
+                ? GlobalCache.Where(dsi => (dsi.VisualQuery?.NameId).HasValue())
                 : GlobalCache;
 
             var appList = Get(appId) ?? new List<DataSourceInfo>();
             var fromApp = onlyForVisualQuery
-                ? appList.Where(dsi => (dsi.VisualQuery?.GlobalName).HasValue())
+                ? appList.Where(dsi => (dsi.VisualQuery?.NameId).HasValue())
                 : appList;
 
             return fromGlobal.Concat(fromApp);

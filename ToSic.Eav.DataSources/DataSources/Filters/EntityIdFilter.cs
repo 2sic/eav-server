@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Find items based on one or more IDs",
         Icon = Icons.Fingerprint,
         Type = DataSourceType.Filter, 
-        GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter",

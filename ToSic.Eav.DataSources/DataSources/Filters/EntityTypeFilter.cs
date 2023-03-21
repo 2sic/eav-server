@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Only keep items of the specified type",
         Icon = Icons.RouteAlt,
         Type = DataSourceType.Filter, 
-        GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",

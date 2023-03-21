@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "List all features",
         Icon = Icons.TableChart,
         Type = DataSourceType.System,
-        GlobalName = "398d0b9f-044f-48f7-83ef-307872f7ed93",
+        NameId = "398d0b9f-044f-48f7-83ef-307872f7ed93",
         Audience = Audience.Advanced,
         DynamicOut = false
     )]

@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "Data Scopes group Content-Types by topic",
         Icon = Icons.Scopes,
         Type = DataSourceType.System,
-        GlobalName = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
+        NameId = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
         Audience = Audience.Advanced,
         DynamicOut = false
     )]

@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Sort items by a property",
         Icon = Icons.Sort,
         Type = DataSourceType.Sort,
-        GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.ValueSort",

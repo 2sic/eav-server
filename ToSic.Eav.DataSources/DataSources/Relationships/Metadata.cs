@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Get the item's metadata",
         Icon = Icons.OfferLocal,
         Type = DataSourceType.Lookup,
-        GlobalName = "3ab4b010-2daa-4a7f-b882-635d2d9fa0a0",
+        NameId = "3ab4b010-2daa-4a7f-b882-635d2d9fa0a0",
         In = new[] { QueryConstants.InStreamDefaultRequired },
         DynamicOut = false,
         ConfigurationType = "d7858b36-1ef1-4c3d-b15c-c567b0d7bdd4",

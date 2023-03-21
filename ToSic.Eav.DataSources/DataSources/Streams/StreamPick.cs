@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Choose a stream",
         Icon = Icons.Merge,
         Type = DataSourceType.Logic,
-        GlobalName = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
         ConfigurationType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",
         DynamicOut = false,
         DynamicIn = true,

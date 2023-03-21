@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Rename some attributes / properties",
         Icon = Icons.EditAttributes,
         Type = DataSourceType.Modify,
-        GlobalName = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
         ConfigurationType = "c5918cb8-d35a-48c7-9380-a437edde66d2",

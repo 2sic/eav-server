@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Keep items having a relationship matching a criteria",
         Icon = Icons.Share,
         Type = DataSourceType.Filter,
-        GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
         In = new[] { QueryConstants.InStreamDefaultRequired, DataSourceConstants.StreamFallbackName },
         DynamicOut = false,
         ConfigurationType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
