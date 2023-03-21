@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
-	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
+	    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
         HelpLink = "https://r.2sxc.org/DsIdFilter")]
 
     public class EntityIdFilter : DataSource

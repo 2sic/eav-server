@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
             "ToSic.Eav.DataSources.TreeBuilder, ToSic.Eav.DataSources.SharePoint"
         },
         Type = DataSourceType.Modify,
-        ExpectsDataOfType = "d167054a-fe0f-4e98-b1f1-0a9990873e86",
+        ConfigurationType = "d167054a-fe0f-4e98-b1f1-0a9990873e86",
         In = new[] { DataSourceConstants.StreamDefaultName + "*" },
         HelpLink = "https://r.2sxc.org/DsTreeModeler")]
     [PublicApi("Brand new in v11.20, WIP, may still change a bit")]

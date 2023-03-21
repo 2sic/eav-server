@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
         In = new[] { QueryConstants.InStreamDefaultRequired, StreamFallbackName },
         DynamicOut = false,
-        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
+        ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://r.2sxc.org/DsValueFilter")]
 
     public sealed class ValueFilter : DataSource

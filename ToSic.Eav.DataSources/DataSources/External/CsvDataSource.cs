@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
         DynamicOut = false,
-        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource",
+        ConfigurationType = "|Config ToSic.Eav.DataSources.CsvDataSource",
         HelpLink = "https://r.2sxc.org/DsCsv")]
     public class CsvDataSource : CustomDataSourceAdvanced
     {

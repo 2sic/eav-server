@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "9f8de7ee-d1aa-4055-9bf9-8f183259cb05", 
         In = new[] { QueryConstants.InStreamDefaultRequired },
         DynamicOut = false,
-        ExpectsDataOfType = "832cd470-49f2-4909-a08a-77644457713e",
+        ConfigurationType = "832cd470-49f2-4909-a08a-77644457713e",
         HelpLink = "https://r.2sxc.org/DsChildren")]
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 

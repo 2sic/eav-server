@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
-	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueSort",
+	    ConfigurationType = "|Config ToSic.Eav.DataSources.ValueSort",
         HelpLink = "https://r.2sxc.org/DsValueSort")]
 
     public sealed class ValueSort : DataSource

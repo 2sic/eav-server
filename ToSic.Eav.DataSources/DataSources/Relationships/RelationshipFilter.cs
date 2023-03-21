@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
         In = new[] { QueryConstants.InStreamDefaultRequired, DataSourceConstants.StreamFallbackName },
         DynamicOut = false,
-        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
+        ConfigurationType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
         HelpLink = "https://r.2sxc.org/DsRelationshipFilter")]
     public sealed class RelationshipFilter : DataSource
     {

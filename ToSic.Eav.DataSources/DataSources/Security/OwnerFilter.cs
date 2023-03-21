@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
-	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.OwnerFilter",
+	    ConfigurationType = "|Config ToSic.Eav.DataSources.OwnerFilter",
         HelpLink = "https://r.2sxc.org/DsOwnerFilter")]
 
     public class OwnerFilter : DataSource

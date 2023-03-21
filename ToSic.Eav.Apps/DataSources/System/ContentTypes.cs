@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources.Sys
         GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
         Audience = Audience.Advanced,
         DynamicOut = false,
-        ExpectsDataOfType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
+        ConfigurationType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
         PreviousNames = new []
             {
                 "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",

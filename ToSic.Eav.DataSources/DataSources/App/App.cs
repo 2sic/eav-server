@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
         DynamicOut = true,
         In = new []{DataSourceConstants.StreamDefaultName},
-		ExpectsDataOfType = "|Config ToSic.Eav.DataSources.App",
+		ConfigurationType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://r.2sxc.org/DsApp")]
     public partial class App : DataSource
 	{

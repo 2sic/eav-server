@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new []{QueryConstants.InStreamDefaultRequired},
-	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.AttributeFilter",
+	    ConfigurationType = "|Config ToSic.Eav.DataSources.AttributeFilter",
         HelpLink = "https://r.2sxc.org/DsAttributeFilter")]
 
     public class AttributeFilter : DataSource

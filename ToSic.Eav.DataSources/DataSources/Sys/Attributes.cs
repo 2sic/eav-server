@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources.Sys
         GlobalName = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
         Audience = Audience.Advanced,
         DynamicOut = false,
-        ExpectsDataOfType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
+        ConfigurationType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes")]
 
     public sealed class Attributes: DataSource

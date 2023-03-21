@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
-	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
+	    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
         HelpLink = "https://r.2sxc.org/DsTypeFilter")]
 
     public class EntityTypeFilter : DataSource

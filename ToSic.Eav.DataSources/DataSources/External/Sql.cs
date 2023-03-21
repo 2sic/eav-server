@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
         DynamicOut = false,
-        ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543",
+        ConfigurationType = "c76901b5-0345-4866-9fa3-6208de7f8543",
         PreviousNames = new []
             {
                 "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources"

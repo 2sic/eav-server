@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources.Sys
         GlobalName = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
         Audience = Audience.Advanced,
         DynamicOut = false,
-        ExpectsDataOfType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
+        ConfigurationType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
         HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.System.QueryInfo.html")]
 
     public sealed class QueryInfo : DataSource

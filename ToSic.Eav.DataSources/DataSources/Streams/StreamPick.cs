@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Merge,
         Type = DataSourceType.Logic,
         GlobalName = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
-        ExpectsDataOfType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",
+        ConfigurationType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",
         DynamicOut = false,
         DynamicIn = true,
         HelpLink = "https://r.2sxc.org/DsStreamPick")]

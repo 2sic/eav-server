@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Source,
         GlobalName = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",
         DynamicOut = true,
-	    ExpectsDataOfType = "78d25ea6-66cc-44a2-b45d-77749cd9420a",
+	    ConfigurationType = "78d25ea6-66cc-44a2-b45d-77749cd9420a",
         HelpLink = "https://r.2sxc.org/QueryRun"
         )]
 

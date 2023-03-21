@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources.Catalog
             DynamicOut = dsAttribute.DynamicOut;
             DynamicIn = dsAttribute.DynamicIn;
             EnableConfig = dsAttribute.EnableConfig;
-            ContentType = dsAttribute.ExpectsDataOfType;
+            ContentType = dsAttribute.ConfigurationType;
             if (!string.IsNullOrEmpty(dsAttribute.NiceName))
                 Name = dsAttribute.NiceName;
             Difficulty = (int)dsAttribute.Audience;

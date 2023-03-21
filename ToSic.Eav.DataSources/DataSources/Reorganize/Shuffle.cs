@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
         DynamicOut = false,
         In = new[] { QueryConstants.InStreamDefaultRequired },
-        ExpectsDataOfType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
+        ConfigurationType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
         HelpLink = "https://r.2sxc.org/DsShuffle")]
 	public sealed class Shuffle: DataSource
 	{

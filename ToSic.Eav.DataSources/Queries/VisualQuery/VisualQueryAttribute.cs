@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         /// <returns>True if we have a known configuration content-type</returns>
         [PrivateApi("not important to the public")]
-	    public bool EnableConfig => ExpectsDataOfType.HasValue();
+	    public bool EnableConfig => ConfigurationType.HasValue();
 
         /// <summary>
         /// Name of the content-type used to configure this data-source in the visual-query designer. <br/>
@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <remarks>
         /// Older data sources have a name like "|Config ToSic.Eav.DataSources.App", but that's deprecated
         /// </remarks>
-        public string ExpectsDataOfType { get; set; }
+        public string ConfigurationType { get; set; }
 
 
         /// <summary>
