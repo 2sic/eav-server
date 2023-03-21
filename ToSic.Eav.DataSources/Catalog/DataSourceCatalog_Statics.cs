@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources.Catalog
             if (typeInfo?.Name != null) return typeInfo.Name;
 
             // Old mechanism which checks real types etc but probably is never needed any more
-            var type = FindDataSourceInfo(name, appId).Type;
+            var type = FindDataSourceInfo(name, appId)?.Type;
             if (type == null) return name;
             var longName = type.AssemblyQualifiedName;
             var first = longName.IndexOf(',');

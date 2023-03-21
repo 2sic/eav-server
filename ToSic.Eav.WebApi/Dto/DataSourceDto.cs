@@ -30,6 +30,8 @@ namespace ToSic.Eav.DataSources.Catalog
 
         public bool IsGlobal { get; }
 
+        public string Errors { get; }
+
         public DataSourceDto(DataSourceInfo dsInfo, ICollection<string> outNames)
         {
             var dsAttribute = dsInfo.VisualQuery;
@@ -53,6 +55,7 @@ namespace ToSic.Eav.DataSources.Catalog
 
             TypeNameForUi = dsInfo.Type.FullName;
             Out = outNames;
+            Errors = dsInfo.ErrorOrNull?.Message;
 
             // WIP try to deprecate
             PartAssemblyAndType = dsInfo.Name;

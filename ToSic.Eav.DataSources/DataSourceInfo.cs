@@ -21,11 +21,11 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public DataSourceInfoError ErrorOrNull { get; }
 
-        public DataSourceInfo(Type dsType, bool isGlobal, VisualQueryAttribute fallbackVisualQuery = null, DataSourceInfoError error = default) : base(dsType)
+        public DataSourceInfo(Type dsType, bool isGlobal, string overrideTypeName = default, VisualQueryAttribute overrideVisualQuery = null, DataSourceInfoError error = default) : base(dsType)
         {
             IsGlobal = isGlobal;
-            TypeName = dsType.Name;
-            VisualQuery = TypeMetadata ?? fallbackVisualQuery;
+            TypeName = overrideTypeName ?? dsType.Name;
+            VisualQuery = overrideVisualQuery ?? TypeMetadata;
             ErrorOrNull = error;
         }
     }
