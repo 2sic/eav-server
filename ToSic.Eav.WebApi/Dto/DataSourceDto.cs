@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ToSic.Eav.DataSources.Catalog
 {
@@ -39,7 +40,7 @@ namespace ToSic.Eav.DataSources.Catalog
             PrimaryType = dsAttribute.Type.ToString();
             Icon = dsAttribute.Icon; // ?.Replace("_", "-"); // wip: rename "xxx_yyy" icons to "xxx-yyy" - must switch to base64 soon
             HelpLink = dsAttribute.HelpLink;
-            In = dsAttribute.In;
+            In = dsAttribute.In ?? Array.Empty<string>();
             DynamicOut = dsAttribute.DynamicOut;
             DynamicIn = dsAttribute.DynamicIn;
             EnableConfig = dsAttribute.EnableConfig;

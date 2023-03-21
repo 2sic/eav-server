@@ -36,7 +36,10 @@ namespace ToSic.Eav.DataSources.Queries
         /// <summary>
         /// List of in-streams expected by this data-source - will be shown in the UI. Default is empty []. 
         /// </summary>
-        public string[] In { get; set; } = Array.Empty<string>();
+        public string[] In { get; set; } = null;// = Array.Empty<string>();
+
+        [PrivateApi]
+        public string[] GetSafeIn() => In ?? Array.Empty<string>();
 
         /// <summary>
         /// Determine if this data sources can have many out-streams with custom names. Default is false.
@@ -44,8 +47,19 @@ namespace ToSic.Eav.DataSources.Queries
         /// <returns>True if this data source can also provide other named out-streams, false if it only has the defined list of out-streams.</returns>
         public bool DynamicOut { get; set; } = false;
 
-        public bool DynamicIn { get; set; } = false;
-        
+        public bool DynamicIn
+        {
+            get => _dynamicIn;
+            set 
+            {
+                _dynamicIn = value;
+                _DynamicInWasSet = true;
+            }
+        }
+
+        [PrivateApi] public bool _DynamicInWasSet;
+        private bool _dynamicIn = false;
+
         /// <summary>
         /// The help-link to get help for this data source. The UI will offer a help-button if provided. 
         /// </summary>
