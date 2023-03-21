@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Api.Api01;
-using ToSic.Eav.Apps.DataSources;
 using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
@@ -11,6 +10,7 @@ using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
+using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;

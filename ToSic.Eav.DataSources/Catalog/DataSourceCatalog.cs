@@ -10,8 +10,11 @@ namespace ToSic.Eav.DataSources.Catalog
     [PrivateApi]
     public partial class DataSourceCatalog: ServiceBase
     {
-        public DataSourceCatalog(IServiceProvider serviceProvider) : base("DS.DsCat")
+        private readonly LazySvc<IAppDataSourcesLoader> _appDataSourcesLoader;
+
+        public DataSourceCatalog(IServiceProvider serviceProvider, LazySvc<IAppDataSourcesLoader> appDataSourcesLoader) : base("DS.DsCat")
         {
+            _appDataSourcesLoader = appDataSourcesLoader;
             ServiceProvider = serviceProvider;
         }
         private IServiceProvider ServiceProvider { get; }
