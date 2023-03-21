@@ -12,16 +12,16 @@ namespace ToSic.Eav.DataSources
     /// the LookUp engine which will perform the token resolution
     /// </summary>
     [PublicApi] 
-    public interface IDataSourceConfiguration: IGetAccessors<string>, ISetAccessors<string>, ISetAccessors<object>
+    public interface IDataSourceConfiguration: IGetAccessors<string>, ISetAccessorsGeneric
     {
         /// <summary>
         /// Get a configuration value for a specific property.
         /// Just use `GetThis()` and the method name (which is the key) is added automatically by the compiler.
         /// </summary>
-        /// <param name="key">The configuration key. Do not set this; it's auto-added by the compiler.</param>
+        /// <param name="name">The configuration key. Do not set this; it's auto-added by the compiler.</param>
         /// <returns></returns>
         /// <remarks>Added in v15.04</remarks>
-        string GetThis([CallerMemberName] string key = default);
+        string GetThis([CallerMemberName] string name = default);
 
         /// <summary>
         /// Get a configuration value for a specific property, or the fallback.
@@ -29,19 +29,19 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         /// <typeparam name="T">The data type of the result. Usually optional, because the fallback has this type so it's auto detected.</typeparam>
         /// <param name="fallback">Fallback value if the configuration is missing or can't be parsed into the expected data format.</param>
-        /// <param name="key">The configuration key. Do not set this; it's auto-added by the compiler.</param>
+        /// <param name="name">The configuration key. Do not set this; it's auto-added by the compiler.</param>
         /// <returns>The configuration value or the fallback.</returns>
         /// <remarks>Added in v15.04</remarks>
-        T GetThis<T>(T fallback, [CallerMemberName] string key = default);
+        T GetThis<T>(T fallback, [CallerMemberName] string name = default);
 
         /// <summary>
         /// Set a configuration value for a specific property.
         /// Just use `SetThis(value)` and the method name (which is the key) is added automatically by the compiler.
         /// </summary>
         /// <param name="value">The new value</param>
-        /// <param name="key">The configuration key. Do not set this; it's auto-added by the compiler.</param>
+        /// <param name="name">The configuration key. Do not set this; it's auto-added by the compiler.</param>
         /// <remarks>Added in v15.04</remarks>
-        void SetThis<T>(T value, [CallerMemberName] string key = default);
+        void SetThis<T>(T value, [CallerMemberName] string name = default);
 
 
         /// <summary>

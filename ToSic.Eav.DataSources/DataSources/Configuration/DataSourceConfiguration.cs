@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ToSic.Eav.Context;
-using ToSic.Eav.Conventions;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
@@ -49,14 +48,17 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-        public string GetThis([CallerMemberName] string key = default) => Values.TryGetValue(key, out var result) 
-            ? result 
-            : throw new ArgumentException($"Trying to get a configuration by name of {key} but it doesn't exist. Did you forget to add to ConfigMask?");
+        private const string ConfigNotFoundMessage = "Trying to get a configuration by name of {0} but it doesn't exist. Did you forget to add to ConfigMask?";
 
-        public T GetThis<T>(T fallback, [CallerMemberName] string key = default) => Get<T>(key);
+        public string GetThis([CallerMemberName] string name = default) => ParseToken(GetRaw(name));
+        public string GetRaw([CallerMemberName] string name = default) => Values.TryGetValue(name, out var result) 
+            ? result
+            : throw new ArgumentException(string.Format(ConfigNotFoundMessage, name));
+
+        public T GetThis<T>(T fallback, [CallerMemberName] string name = default) => Get<T>(name, fallback: fallback);
 
         // ReSharper disable once AssignNullToNotNullAttribute
-        public void SetThis<T>(T value, [CallerMemberName] string key = default) => Values[key] = value?.ToString();
+        public void SetThis<T>(T value, [CallerMemberName] string name = default) => Values[name] = value?.ToString();
 
         [PrivateApi]
         public IDictionary<string, string> Values { get; internal set; } = new Dictionary<string, string>(InvariantCultureIgnoreCase);
@@ -94,6 +96,20 @@ namespace ToSic.Eav.DataSources
             return LookUpEngine.LookUp(values, OverrideLookUps);
         }
 
+        private string Parse(string name)
+        {
+            if (name == null) return null;
+            if (!Values.TryGetValue(name, out var token) || !token.HasValue()) return token;
+            return ParseToken(token);
+        }
+
+        private string ParseToken(string token)
+        {
+            var list = new Dictionary<string, string>(InvariantCultureIgnoreCase) { { "0", token } };
+            var parsed = Parse(list);
+            return parsed["0"];
+        }
+
         /// <summary>
         /// An internally created lookup to give access to the In-streams if there are any
         /// </summary>
@@ -106,17 +122,14 @@ namespace ToSic.Eav.DataSources
         private readonly GetOnce<IDictionary<string, ILookUp>> _overrideLookUps = new GetOnce<IDictionary<string, ILookUp>>();
 
 
-        public string Get(string name) => Values.TryGetValue(name, out var result) ? result : null;
+        public string Get(string name) => Parse(name);
 
-        public TValue Get<TValue>(string name) =>
-            Values.TryGetValue(name, out var result) ? result.ConvertOrDefault<TValue>()                : default;
+        public TValue Get<TValue>(string name) => Parse(name).ConvertOrDefault<TValue>();
 
         public TValue Get<TValue>(string name, string noParamOrder = Parameters.Protector, TValue fallback = default) =>
-            Values.TryGetValue(name, out var result) ? result.ConvertOrFallback(fallback) : fallback;
+            Parse(name).ConvertOrFallback(fallback);
 
 
-        public void Set(string name, string value) => Values[name] = value;
-
-        public void Set(string name, object value) => Values[name] = value?.ToString();
+        public void Set<TValue>(string name, TValue value) => Values[name] = value?.ToString();
     }
 }

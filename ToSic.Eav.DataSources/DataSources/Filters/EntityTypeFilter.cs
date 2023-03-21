@@ -75,18 +75,6 @@ namespace ToSic.Eav.DataSources
                 if (foundType != null) // maybe it doesn't find it!
                 {
                     var result = source.OfType(foundType).ToList();
-                    // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-                    //if (IncludeParentApps)
-                    //{
-                    //    l.A($"Special internal case - {nameof(IncludeParentApps)}!");
-                    //    var parent = appState.ParentApp;
-                    //    while (parent?.AppState != null)
-                    //    {
-                    //        var additions = parent.AppState.List.OfType(foundType);
-                    //        result.AddRange(additions);
-                    //        parent = parent.AppState.ParentApp;
-                    //    }
-                    //}
                     return (result.ToImmutableList(), "fast");
                 }
             }

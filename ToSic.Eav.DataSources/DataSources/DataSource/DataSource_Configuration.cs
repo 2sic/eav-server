@@ -1,12 +1,11 @@
 ﻿using System;
-using ToSic.Eav.Conventions;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using static System.StringComparison;
 
 namespace ToSic.Eav.DataSources
 {
-    public abstract partial class DataSource: IGetAccessors<string>, ISetAccessors<string>, ISetAccessors<object>
+    public abstract partial class DataSource
     {
         /// <summary>
         /// Correct prefix to use when retrieving a value from the current data sources configuration entity.
@@ -47,6 +46,6 @@ namespace ToSic.Eav.DataSources
 
         public TValue Get<TValue>(string name, string noParamOrder = Parameters.Protector, TValue fallback = default) => Configuration.Get<TValue>(name, noParamOrder, fallback: fallback);
         public void Set(string name, string value) => Configuration.Set(name, value);
-        public void Set(string name, object value) => Configuration.Set(name, value);
+        public void Set<TValue>(string name, TValue value) => Configuration.Set(name, value);
     }
 }
