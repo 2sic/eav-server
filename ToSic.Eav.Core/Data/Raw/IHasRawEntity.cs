@@ -11,8 +11,13 @@ namespace ToSic.Eav.Data.Raw
     /// Added in 15.04
     /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP for DataSources")]
-    public interface IHasRawEntity<out T> where T: IRawEntity
+    public interface IHasRawEntity<out T>: IHasRawEntity where T: IRawEntity
     {
         T RawEntity { get; }
+    }
+
+    public interface IHasRawEntity
+    {
+
     }
 }

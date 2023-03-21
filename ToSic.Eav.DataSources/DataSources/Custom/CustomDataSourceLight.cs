@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -6,8 +7,8 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources
 {
@@ -17,10 +18,9 @@ namespace ToSic.Eav.DataSources
     public class CustomDataSourceLight: CustomDataSourceAdvanced
     {
 
-        protected internal CustomDataSourceLight(MyServices services,
-            string noParamOrder = Parameters.Protector,
-            string logName = null) : base(services, logName ?? "Ds.CustLt")
+        protected internal CustomDataSourceLight(MyServices services, string logName = null) : base(services, logName ?? "Ds.CustLt")
         {
+            // Provide a default out, in case the overriding class doesn't
             base.ProvideOut(() => GetRaw(GetDefault, null));
         }
 
@@ -34,17 +34,99 @@ namespace ToSic.Eav.DataSources
 
         protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();
 
+        /// <summary>
+        /// Provide data on the `Out` of this DataSource.
+        /// This is a very generic version which takes any function that generates a list of something.
+        /// Internally it will try to detect what the data was and convert it to the final format.
+        ///
+        /// Note that the `source` must create a list (`IEnumerable`) of any of the following (all items must have the same type):
+        /// * <see cref="IEntity"/>
+        /// * <see cref="IRawEntity"/>
+        /// * <see cref="IHasRawEntity{T}"/>
+        ///
+        /// If you know what data type you're creating, you should look at the other ProvideOut* methods.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+        /// <param name="name">_optional_ name of the out-stream.</param>
+        /// <param name="options">Conversion options which are relevant for <see cref="IRawEntity"/> data</param>
+        protected internal void ProvideOut(
+            Func<IEnumerable> source,
+            string noParamOrder = Parameters.Protector,
+            string name = StreamDefaultName,
+            DataFactoryOptions options = default)
+        {
+            Parameters.Protect(noParamOrder, $"{nameof(name)}, {nameof(options)}");
+            base.ProvideOut(() => GetAny(source, options), name);
+        }
+
+
         protected internal void ProvideOutRaw<T>(
             Func<IEnumerable<IHasRawEntity<T>>> source,
             string noParamOrder = Parameters.Protector,
-            DataFactoryOptions options = default) where T : IRawEntity =>
+            string name = StreamDefaultName,
+            DataFactoryOptions options = default) where T : IRawEntity
+        {
+            Parameters.Protect(noParamOrder, $"{nameof(name)}, {nameof(options)}");
             base.ProvideOut(() => GetHasRaw(source, options));
+        }
 
         protected internal void ProvideOutRaw<T>(
             Func<IEnumerable<T>> source,
             string noParamOrder = Parameters.Protector,
-            DataFactoryOptions options = default) where T : IRawEntity =>
+            string name = StreamDefaultName,
+            DataFactoryOptions options = default) where T : IRawEntity
+        {
+            Parameters.Protect(noParamOrder, $"{nameof(name)}, {nameof(options)}");
             base.ProvideOut(() => GetRaw(source, options));
+        }
+
+        private IImmutableList<IEntity> GetAny(Func<IEnumerable> source, DataFactoryOptions options)
+        {
+            var l = Log.Fn<IImmutableList<IEntity>>();
+            Configuration.Parse();
+            
+            List<object> data;
+            try
+            {
+                data = source?.Invoke().Cast<object>().ToList();
+            }
+            catch (Exception ex)
+            {
+                l.Ex(ex);
+                var runErr = Error.Create(title: $"Error calling source generator of {nameof(ProvideOut)}. " +
+                                                 "Error details can be found in Insights.");
+                return l.Return(runErr, "error");
+            }
+
+            if (data.SafeNone()) l.Return(EmptyList, "no items returned");
+
+            if (data.All(i => i is IEntity))
+                return l.Return(data.Cast<IEntity>().ToImmutableList(), "IEntities");
+
+            if (data.All(i => i is IRawEntity))
+            {
+                var raw = data.Cast<IRawEntity>().ToList();
+                var result = DataFactory.New(options: options ?? Options).Create(raw);
+                return l.Return(result, "was IRawEntity");
+            }
+
+            // Do this first, to make all the data be IRawEntity
+            if (data.All(i => i is IHasRawEntity))
+            {
+                var raw = data.Cast<IHasRawEntity<IRawEntity>>().ToList();
+                var result = DataFactory.New(options: options ?? Options).Create(raw);
+                return l.Return(result, "was IHasRawEntity");
+            }
+
+            // todo - maybe also process IHasEntity - but only after doing the raw entities
+
+            var err = Error.Create(title: $"Error in {nameof(ProvideOutRaw)}",
+                message: "The list received was tested against all possible data types but non matched. " +
+                         $"Expected was a list of either {nameof(IEntity)}, {nameof(IRawEntity)}, {nameof(IHasRawEntity<IRawEntity>)}. " +
+                         "Note that all items must be of the same type. ");
+            return l.Return(err, "error");
+        }
 
         private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>> source, DataFactoryOptions options) where T: IRawEntity
         {
@@ -56,7 +138,7 @@ namespace ToSic.Eav.DataSources
 
             // If we didn't get anything, return empty
             if (raw.SafeNone())
-                return l.Return(DataSourceConstants.EmptyList, "no items returned");
+                return l.Return(EmptyList, "no items returned");
 
             // Transform result to IEntity
             var result = DataFactory.New(options: options ?? Options).Create(raw);
@@ -73,7 +155,7 @@ namespace ToSic.Eav.DataSources
 
             // If we didn't get anything, return empty
             if (raw.SafeNone())
-                return l.Return(DataSourceConstants.EmptyList, "no items returned");
+                return l.Return(EmptyList, "no items returned");
 
             // Transform result to IEntity
             var result = DataFactory.New(options: options ?? Options).Create(raw);
