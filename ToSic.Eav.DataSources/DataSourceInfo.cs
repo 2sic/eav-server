@@ -17,9 +17,25 @@ namespace ToSic.Eav.DataSources
 
         public DataSourceInfo(Type dsType, bool isGlobal): base(dsType)
         {
-            VisualQuery = TypeMetadata;
             IsGlobal = isGlobal;
             TypeName = dsType.Name;
+
+            VisualQuery = TypeMetadata ?? new VisualQueryAttribute();
+
+            // adjust VisualQuery values for App DataSources
+            if (!isGlobal)
+            {
+                VisualQuery.Type = DataSourceType.App;
+                VisualQuery.Icon = string.IsNullOrEmpty(VisualQuery.Icon) ? "star" : VisualQuery.Icon;
+                VisualQuery.ConfigurationType = string.IsNullOrEmpty(VisualQuery.ConfigurationType) ? FindDataSourceConfiguration(nameof(dsType)) : VisualQuery.ConfigurationType;
+            }
+        }
+
+        private static string FindDataSourceConfiguration(string name)
+        {
+            var configurationTypeName = $"{name}Configuration";
+            // find the configuration type guid based on the name of DataSource 
+            return Guid.Empty.ToString(); // TODO....
         }
     }
 
