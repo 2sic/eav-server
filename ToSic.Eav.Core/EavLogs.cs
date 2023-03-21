@@ -10,5 +10,7 @@
         public const string WebApi = "API";
 
         public static string LogStoreAppStateLoader = "global-app-load";
+
+        public static string LogStoreAppDataSourcesLoader = "global-app-data-sources-load";
     }
 }
