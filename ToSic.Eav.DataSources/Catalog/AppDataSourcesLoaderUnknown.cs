@@ -12,9 +12,7 @@ namespace ToSic.Eav.DataSources.Catalog
         public AppDataSourcesLoaderUnknown(WarnUseOfUnknown<AppDataSourcesLoaderUnknown> _) : base("Eav.AppDtaSrcLoadUnk")
         { }
 
-        public (List<DataSourceInfo> data, CacheItemPolicy policy) CreateAndReturnAppCache(int appId)
-        {
-            throw new NotImplementedException();
-        }
+        public (List<DataSourceInfo> data, CacheItemPolicy policy) CreateAndReturnAppCache(int appId) 
+            => (new List<DataSourceInfo>(), new CacheItemPolicy());
     }
 }
