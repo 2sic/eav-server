@@ -26,6 +26,15 @@ namespace ToSic.Eav.DataSources
         }
         private readonly DataBuilder _builder;
 
+        [PrivateApi]
+        internal DataSourceErrorHelper Link(IDataSource source)
+        {
+            _source = source;
+            return this;
+        }
+
+        private IDataSource _source;
+
 
         /// <summary>
         /// Create a stream containing an error entity.
@@ -55,9 +64,9 @@ namespace ToSic.Eav.DataSources
             return new[] { entity }.ToImmutableList();
         }
 
-        public IImmutableList<IEntity> TryGetInFailed(IDataSourceTarget target, string streamName = DataSourceConstants.StreamDefaultName)
+        public IImmutableList<IEntity> TryGetInFailed(IDataSource target = default, string streamName = DataSourceConstants.StreamDefaultName)
         {
-            var source = target as IDataSource;
+            var source = target ?? _source;
             if (!target.In.ContainsKey(streamName))
                 return Create(source: source, title: $"Stream '{streamName}' not found",
                         message: $"This DataSource needs the stream '{streamName}' on the In to work, but it couldn't find it.");

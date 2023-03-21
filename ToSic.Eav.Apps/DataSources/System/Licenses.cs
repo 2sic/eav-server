@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources.Sys
         public Licenses(MyServices services, ILicenseService licenseService) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(licenseService);
-            ProvideOut(() => licenseService.All.OrderBy(l => l.License?.Priority ?? 0), options: new DataFactoryOptions(typeName: "License"));
+            ProvideOutRaw(() => licenseService.All.OrderBy(l => l.License?.Priority ?? 0), options: new DataFactoryOptions(typeName: "License"));
         }
     }
 }

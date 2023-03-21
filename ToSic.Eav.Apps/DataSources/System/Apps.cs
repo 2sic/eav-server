@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources.Sys
         public Apps(MyServices services, Generator<Eav.Apps.App> appGenerator, IAppStates appStates) : base(services, $"{LogPrefix}.Apps")
         {
             ConnectServices(appGenerator, appStates);
-            ProvideOut(() => GetDefault(appStates, appGenerator), options: new DataFactoryOptions(typeName: AppsContentTypeName, titleField: AppType.Name.ToString()));
+            ProvideOutRaw(() => GetDefault(appStates, appGenerator), options: new DataFactoryOptions(typeName: AppsContentTypeName, titleField: AppType.Name.ToString()));
         }
 
         #endregion

@@ -34,13 +34,13 @@ namespace ToSic.Eav.DataSources
 
         protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();
 
-        protected internal void ProvideOut<T>(
+        protected internal void ProvideOutRaw<T>(
             Func<IEnumerable<IHasRawEntity<T>>> source,
             string noParamOrder = Parameters.Protector,
             DataFactoryOptions options = default) where T : IRawEntity =>
             base.ProvideOut(() => GetHasRaw(source, options));
 
-        protected internal void ProvideOut<T>(
+        protected internal void ProvideOutRaw<T>(
             Func<IEnumerable<T>> source,
             string noParamOrder = Parameters.Protector,
             DataFactoryOptions options = default) where T : IRawEntity =>
