@@ -51,9 +51,9 @@ namespace ToSic.Eav.DataSources.Queries
 
             var correctedName = GetCorrectedTypeName(assemblyAndType);
             var dsTypeIdentifier = _catalog.Find(correctedName, entity?.AppId ?? 0);
-            var dsType = _catalog.FindTypeByGuidOrName(correctedName, entity?.AppId ?? 0);
+            var dsInfo = _catalog.FindDsiByGuidOrName(correctedName, entity?.AppId ?? 0);
 
-            return new QueryPartDefinition(entity, dsTypeIdentifier, dsType, Log);
+            return new QueryPartDefinition(entity, dsTypeIdentifier, dsInfo.Type, dsInfo, Log);
         }
 
 

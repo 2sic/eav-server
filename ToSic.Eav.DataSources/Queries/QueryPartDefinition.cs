@@ -12,10 +12,11 @@ namespace ToSic.Eav.DataSources.Queries
     public class QueryPartDefinition: EntityBasedWithLog
     {
         [PrivateApi]
-        public QueryPartDefinition(IEntity entity, string typeIdentifier, Type type, ILog parentLog) : base(entity, parentLog, "DS.QrPart")
+        public QueryPartDefinition(IEntity entity, string typeIdentifier, Type type, DataSourceInfo dataSourceInfo, ILog parentLog) : base(entity, parentLog, "DS.QrPart")
         {
             DataSourceTypeIdentifier = typeIdentifier;
             DataSourceType = type;
+            DataSourceInfo = dataSourceInfo;
         }
 
         /// <summary>
@@ -31,5 +32,6 @@ namespace ToSic.Eav.DataSources.Queries
         public string DataSourceTypeIdentifier { get; }
 
         public Type DataSourceType { get; }
+        public DataSourceInfo DataSourceInfo { get; }
     }
 }

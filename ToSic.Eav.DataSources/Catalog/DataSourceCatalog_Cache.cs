@@ -12,6 +12,7 @@ namespace ToSic.Eav.DataSources.Catalog
         private static List<DataSourceInfo> GlobalCache { get; } = AssemblyHandling
             .FindInherited(typeof(IDataSource))
             .Select(t => new DataSourceInfo(t, true))
+            // TODO: ORDER IN A WAY THAT OBSOLETE ONES ARE LAST
             .ToList();
 
         /// <summary>

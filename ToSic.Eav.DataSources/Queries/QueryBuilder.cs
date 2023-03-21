@@ -153,6 +153,18 @@ namespace ToSic.Eav.DataSources.Queries
                 var dataSource = _dataSourceFactory.Create(type: dsType, appIdentity: appIdentity, source: null, configSource: partConfig);
 	            dataSource.Guid = dataQueryPart.Guid;
 
+                // new with errors
+                try
+                {
+                    var err = dataQueryPart.DataSourceInfo?.ErrorOrNull;
+                    if (dataQueryPart.DataSourceInfo?.ErrorOrNull != null && dataSource is Error errDs)
+                    {
+                        errDs.Title = err.Title;
+                        errDs.Message = err.Message;
+                    }
+                }
+                catch { }
+
                 try
                 {
                     dataSource.Label = dataQueryPart.Entity.GetBestTitle();
