@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps;
+using System.Runtime.Caching;
 
 namespace ToSic.Eav.DataSources.Catalog
 {
     public interface IAppDataSourcesLoader
     {
-        List<DataSourceInfo> Get(int appId);
+        (List<DataSourceInfo> data, CacheItemPolicy policy) CreateAndReturnAppCache(int appId);
     }
 }

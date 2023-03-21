@@ -1,14 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Runtime.Caching;
-using ToSic.Eav.Caching.CachingMonitors;
 
 namespace ToSic.Eav.DataSources.Catalog
 {
     public partial class DataSourceCatalog
     {
-        public List<DataSourceInfo> Get(int appId) => _appDataSourcesLoader.Value.Get(appId);
+        /// <summary>
+        /// A cache of all DataSource Types - initialized upon first access ever, then static cache.
+        /// </summary>
+        private static MemoryCache AppCache => MemoryCache.Default;
+
+        private static string AppCacheKey(int appId) => $"DataSourceCatalog:AppDataSource:{appId}";
+
+        public List<DataSourceInfo> Get(int appId)
+        {
+            if (AppCache[AppCacheKey(appId)] is List<DataSourceInfo> dataFromCache) return dataFromCache;
+
+            var (data, policy) = _appDataSourcesLoader.Value.CreateAndReturnAppCache(appId);
+            AppCache.Set(new CacheItem(AppCacheKey(appId), data), policy);
+            return data;
+        }
     }
 }

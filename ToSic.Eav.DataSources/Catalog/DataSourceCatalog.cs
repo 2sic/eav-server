@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Caching;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -11,13 +12,13 @@ namespace ToSic.Eav.DataSources.Catalog
     public partial class DataSourceCatalog: ServiceBase
     {
         private readonly LazySvc<IAppDataSourcesLoader> _appDataSourcesLoader;
+        private IServiceProvider ServiceProvider { get; }
 
         public DataSourceCatalog(IServiceProvider serviceProvider, LazySvc<IAppDataSourcesLoader> appDataSourcesLoader) : base("DS.DsCat")
         {
             _appDataSourcesLoader = appDataSourcesLoader;
             ServiceProvider = serviceProvider;
         }
-        private IServiceProvider ServiceProvider { get; }
 
         /// <summary>
         /// Create Instance of DataSource to get In- and Out-Streams

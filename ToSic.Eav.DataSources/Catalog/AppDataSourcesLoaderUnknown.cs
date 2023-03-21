@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Caching;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Lib.Services;
@@ -11,7 +12,7 @@ namespace ToSic.Eav.DataSources.Catalog
         public AppDataSourcesLoaderUnknown(WarnUseOfUnknown<AppDataSourcesLoaderUnknown> _) : base("Eav.AppDtaSrcLoadUnk")
         { }
 
-        public List<DataSourceInfo> Get(int appId)
+        public (List<DataSourceInfo> data, CacheItemPolicy policy) CreateAndReturnAppCache(int appId)
         {
             throw new NotImplementedException();
         }
