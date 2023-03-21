@@ -59,9 +59,7 @@ namespace ToSic.Eav.DataSources
                 throw new Exception("Unexpected source - stream without a real source. can't process; wip");
             var source = upstream.Source;
             var ds = Create<TDataSource>(appIdentity: source, configSource: source.Configuration.LookUpEngine);
-            if (!(ds is IDataTarget target))
-                throw new Exception("error, ds not target; wip");
-            target.Attach(DataSourceConstants.StreamDefaultName, upstream);
+            ds.Attach(DataSourceConstants.StreamDefaultName, upstream);
             return ds;
         }
 

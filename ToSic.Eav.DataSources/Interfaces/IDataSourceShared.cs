@@ -5,10 +5,10 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.DataSources
 {
     /// <summary>
-    /// Shared properties of IDataSource and IDataTarget
+    /// Shared properties of <see cref="IDataSourceSource"/> and <see cref="IDataSourceTarget"/>
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface IDataPartShared
+    public interface IDataSourceShared
     {
         /// <summary>
         /// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.

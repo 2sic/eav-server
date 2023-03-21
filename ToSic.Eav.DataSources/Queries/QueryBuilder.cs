@@ -233,7 +233,7 @@ namespace ToSic.Eav.DataSources.Queries
 				    try
 				    {
 				        var conSource = allDataSources[wire.From];
-                        ((IDataTarget) allDataSources[wire.To]).Attach(wire.In, conSource, wire.Out);
+                        allDataSources[wire.To].Attach(wire.In, conSource, wire.Out);
                         initializedWirings.Add(wire);
 
                         // In the end, inform caller that we did add some connections

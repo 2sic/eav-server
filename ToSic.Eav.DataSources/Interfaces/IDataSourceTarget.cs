@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
@@ -10,9 +9,14 @@ namespace ToSic.Eav.DataSources
 	/// Represents a data source that can be the recipient of Data.
 	/// This basically means it has an In <see cref="IDataStream"/>
 	/// </summary>
-	[PrivateApi]
-    [Obsolete("Obsolete since v15.04 - will be removed ca. v16")]
-	public interface IDataTarget: IDataSourceShared
+	/// <remarks>
+	/// New in v15.04 as it replaces the old `IDataTarget` because of confusing names.
+	/// </remarks>
+	[PublicApi]
+	public interface IDataSourceTarget: IDataSourceShared, 
+#pragma warning disable CS0618
+        IDataTarget
+#pragma warning restore CS0618
     {
 		/// <summary>
 		/// List of all In connections

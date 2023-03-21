@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
         public IDataSource DataSource;
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
-        public IDataTarget DataTarget;
+        public IDataSourceTarget DataTarget;
         
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
         public string SourceStream { get; }
@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-        public Connection(IDataStream sourceStream, IDataTarget target, string targetStream)
+        public Connection(IDataStream sourceStream, IDataSourceTarget target, string targetStream)
         {
             DirectlyAttachedStream = sourceStream;
             DataSource = sourceStream.Source;
@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        public Connection(IDataSource source, string sourceStream, IDataTarget target, string targetStream)
+        public Connection(IDataSource source, string sourceStream, IDataSourceTarget target, string targetStream)
         {
             DataSource = source;
             DataTarget = target;
@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class QuickSourceInfo 
     {
-        public QuickSourceInfo(IDataPartShared data, string streamName)
+        public QuickSourceInfo(IDataSourceShared data, string streamName)
         {
             Label = data?.Label;
             Guid = data?.Guid;

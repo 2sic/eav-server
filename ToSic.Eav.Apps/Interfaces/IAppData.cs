@@ -4,7 +4,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
-using IDataSource = ToSic.Eav.DataSources.IDataSource;
 
 namespace ToSic.Eav.Apps
 {
@@ -12,7 +11,7 @@ namespace ToSic.Eav.Apps
     /// An App-DataSource which also provides direct commands to edit/update/delete data.
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public interface IAppData: IDataSource, IDataTarget, IMetadataSource
+    public interface IAppData: IDataSource, IMetadataSource
     {
         /// <summary>
         /// Create a new entity in the storage.

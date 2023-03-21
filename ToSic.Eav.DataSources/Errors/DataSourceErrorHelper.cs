@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources
             return new[] { entity }.ToImmutableList();
         }
 
-        public IImmutableList<IEntity> TryGetInFailed(IDataTarget target, string streamName = DataSourceConstants.StreamDefaultName)
+        public IImmutableList<IEntity> TryGetInFailed(IDataSourceTarget target, string streamName = DataSourceConstants.StreamDefaultName)
         {
             var source = target as IDataSource;
             if (!target.In.ContainsKey(streamName))

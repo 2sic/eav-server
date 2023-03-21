@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
     /// Consult the guide to upgrade your custom data sources.
     /// </remarks>
     [PublicApi]
-    public abstract partial class DataSource : ServiceBase<DataSource.MyServices>, IDataSource, IDataTarget
+    public abstract partial class DataSource : ServiceBase<DataSource.MyServices>, IDataSource
     {
 
         /// <summary>

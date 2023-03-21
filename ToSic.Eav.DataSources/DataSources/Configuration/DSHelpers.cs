@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources
                 realDs.AppId = appIdentity.AppId;
             }
 
-            if (source != null) (thisDs as IDataTarget)?.Attach(source);
+            if (source != null) thisDs.Attach(source);
 
             configSource = configSource ?? source?.Configuration?.LookUpEngine;
             if (configSource != null && thisDs.Configuration is DataSourceConfiguration dsConfig)

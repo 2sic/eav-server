@@ -21,13 +21,13 @@ namespace ToSic.Eav.LookUp
         /// </summary>
         public const string InStreamName = "In";
 
-	    private readonly IDataTarget _dataTarget;
+	    private readonly IDataSourceTarget _dataTarget;
         private readonly IZoneCultureResolver _cultureResolver;
 
         /// <summary>
 		/// Constructor expecting the data-target, of which it will use the In-Stream
 		/// </summary>
-        public LookUpInDataTarget(IDataTarget dataTarget, IZoneCultureResolver cultureResolver)
+        public LookUpInDataTarget(IDataSourceTarget dataTarget, IZoneCultureResolver cultureResolver)
 		{
 		    _dataTarget = dataTarget;
             _cultureResolver = cultureResolver;

@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources.Caching
         /// <returns></returns>
         private List<IDataSource> UniqueSources()
         {
-            if (!(DataSource is IDataTarget target)) return new List<IDataSource>();
+            if (!(DataSource is IDataSourceTarget target)) return new List<IDataSource>();
 
             if (target.In == null || target.In.Count == 0)
                 return new List<IDataSource>();

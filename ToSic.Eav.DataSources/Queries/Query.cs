@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         /// <returns></returns>
         [PrivateApi]
-		public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine configSource, IDataTarget source = null)
+		public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine configSource, IDataSourceTarget source = null)
 		{
 		    ZoneId = zoneId;
 		    AppId = appId;
