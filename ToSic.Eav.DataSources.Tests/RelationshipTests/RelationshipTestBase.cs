@@ -89,7 +89,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
         protected RelationshipFilter BuildRelationshipFilter(string primaryType, ILookUpEngine config = null)
         {
-            var baseDs = DataSourceFactory.CreateDefault(RelationshipTestSpecs.AppIdentity, configSource: config);
+            var baseDs = DataSourceFactory.CreateDefault(RelationshipTestSpecs.AppIdentity, configuration: config);
             var appDs = CreateDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.

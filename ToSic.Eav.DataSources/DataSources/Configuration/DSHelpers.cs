@@ -7,10 +7,13 @@ namespace ToSic.Eav.DataSources
 {
     internal static class DSHelpers
     {
-        public static T Init<T>(this T thisDs, ILookUpEngine configSource) where T : IDataSource
+        public static T Init<T>(this T thisDs, IConfiguration configuration) where T : IDataSource
         {
-            if (configSource != null && thisDs.Configuration is DataSourceConfigurationManager dsConfig)
-                dsConfig.LookUpEngine = configSource;
+            if (configuration != null && thisDs.Configuration is DataSourceConfigurationManager dsConfig)
+            {
+                var lookup = configuration.GetLookupEngineWip();
+                if (lookup != null) dsConfig.LookUpEngine = lookup;
+            }
             return thisDs;
         }
 

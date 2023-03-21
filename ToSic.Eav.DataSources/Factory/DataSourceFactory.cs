@@ -89,13 +89,13 @@ namespace ToSic.Eav.DataSources
             IAppIdentity appIdentity,
             string noParamOrder = Parameters.Protector,
             bool? showDrafts = default, 
-            ILookUpEngine configSource = default) 
+            IConfiguration configuration = default) 
         {
-            var l = Log.Fn<IDataSource>($"#{appIdentity.Show()}, draft:{showDrafts}, config:{configSource != null}");
+            var l = Log.Fn<IDataSource>($"#{appIdentity.Show()}, draft:{showDrafts}, config:{configuration != null}");
 
-            configSource = configSource ?? _lookupResolveLazy.Value.GetLookUpEngine(0);
-            var appRoot = Create<IAppRoot>(appIdentity: appIdentity, configuration: configSource);
-            var publishingFilter = Create<PublishingFilter>(source: appRoot, configuration: configSource);
+            configuration = configuration ?? _lookupResolveLazy.Value.GetLookUpEngine(0);
+            var appRoot = Create<IAppRoot>(appIdentity: appIdentity, configuration: configuration);
+            var publishingFilter = Create<PublishingFilter>(source: appRoot, configuration: configuration);
 
             if (showDrafts != null)
                 publishingFilter.ShowDrafts = showDrafts;

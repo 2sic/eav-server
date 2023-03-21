@@ -151,7 +151,7 @@ namespace ToSic.Eav.DataSources
                 appDs = appStack;
             }
             else
-                appDs = _services.DataSourceFactory.CreateDefault(appIdentity: this, configSource: Configuration.LookUpEngine);
+                appDs = _services.DataSourceFactory.CreateDefault(appIdentity: this, configuration: Configuration.LookUpEngine);
 
             Attach(DataSourceConstants.StreamDefaultName, appDs);
             _attachOtherDataSourceRunning = false;

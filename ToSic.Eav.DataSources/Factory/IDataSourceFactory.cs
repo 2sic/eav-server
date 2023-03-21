@@ -59,12 +59,12 @@ namespace ToSic.Eav.DataSources
         /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
         /// <param name="appIdentity">identity, **required**</param>
         /// <param name="showDrafts">optional override whether Draft Entities should be returned</param>
-        /// <param name="configSource">optional configuration lookup if needed</param>
+        /// <param name="configuration">optional configuration lookup if needed</param>
         /// <returns>A <see cref="PublishingFilter"/> DataSource providing data for this app.</returns>
         IDataSource CreateDefault(
             IAppIdentity appIdentity,
             string noParamOrder = Parameters.Protector,
             bool? showDrafts = default, 
-            ILookUpEngine configSource = default);
+            IConfiguration configuration = default);
     }
 }
