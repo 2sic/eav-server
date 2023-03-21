@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace ToSic.Eav.Plumbing
 {
@@ -36,5 +37,8 @@ namespace ToSic.Eav.Plumbing
                     return false;
             }
         }
+
+        public static T GetDirectlyAttachedAttribute<T>(this Type type) where T : class
+            => type.GetCustomAttributes(typeof(T), false).FirstOrDefault() as T;
     }
 }
