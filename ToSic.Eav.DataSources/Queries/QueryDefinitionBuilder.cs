@@ -51,7 +51,9 @@ namespace ToSic.Eav.DataSources.Queries
 
             var correctedName = GetCorrectedTypeName(assemblyAndType);
             var dsTypeIdentifier = _catalog.Find(correctedName, entity?.AppId ?? 0);
-            var dsInfo = _catalog.FindDsiByGuidOrName(correctedName, entity?.AppId ?? 0);
+            var dsInfo = _catalog.FindDsiByGuidOrName(correctedName, entity?.AppId ?? 0)
+                ?? DataSourceInfo.CreateError(dsTypeIdentifier, false, DataSourceType.System,
+                    new DataSourceInfoError("Error finding data source", $"Tried to find {assemblyAndType} ({correctedName}) but can't find it."));
 
             return new QueryPartDefinition(entity, dsTypeIdentifier, dsInfo.Type, dsInfo, Log);
         }

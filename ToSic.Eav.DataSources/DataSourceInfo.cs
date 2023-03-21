@@ -28,11 +28,26 @@ namespace ToSic.Eav.DataSources
             VisualQuery = overrideVisualQuery ?? TypeMetadata;
             ErrorOrNull = error;
         }
+
+        public static DataSourceInfo CreateError(string typeName, bool isGlobal, DataSourceType type, DataSourceInfoError error)
+        {
+            var vq = new VisualQueryAttribute
+            {
+                NameId = typeName,
+                Type = DataSourceType.System,
+            };
+            return new DataSourceInfo(typeof(Error), isGlobal, typeName, vq, error);
+        }
     }
 
 
     public class DataSourceInfoError
     {
+        public DataSourceInfoError(string title, string message)
+        {
+            Title = title;
+            Message = message;
+        }
         public string Title { get; set; }
         public string Message { get; set; }
     }
