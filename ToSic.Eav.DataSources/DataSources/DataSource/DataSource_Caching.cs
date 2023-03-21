@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
 
         /// <inheritdoc />
         [InternalApi_DoNotUse_MayChangeWithoutNotice]
-        public List<string> CacheRelevantConfigurations { get; set; } = new List<string>();
+        public List<string> CacheRelevantConfigurations { get; } = new List<string>();
 
 
         [PrivateApi]

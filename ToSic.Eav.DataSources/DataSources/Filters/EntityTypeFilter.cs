@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources
 
             // Get original from In-Stream
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             try
             {

@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             return (ShuffleInternal(source.ToList(), Take), "ok");
         });

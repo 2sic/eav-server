@@ -84,7 +84,7 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var raw = AttributeNames;
             // note: since 2sxc 11.13 we have lines for attributes

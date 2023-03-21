@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources
                 return (EmptyList, "no in stream with name");
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var result = source
                 .Distinct()
@@ -70,7 +70,7 @@ namespace ToSic.Eav.DataSources
                 return (EmptyList, "no in-stream with name");
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var result = source
                 .GroupBy(s => s)

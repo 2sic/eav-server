@@ -123,7 +123,7 @@ namespace ToSic.Eav.DataSources
 
             // Get the In-list and stop if error or empty
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
             if (!source.Any()) return (source, "empty");
 
             var op = Operator.ToLowerInvariant();

@@ -93,7 +93,7 @@ namespace ToSic.Eav.DataSources
             var itemsToSkip = (PageNumber - 1) * PageSize;
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var result = source
                 .Skip(itemsToSkip)
@@ -109,7 +109,7 @@ namespace ToSic.Eav.DataSources
 
             // Calculate any additional stuff
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var itemCount = source.Count;
             var pageCount = Math.Ceiling((decimal)itemCount / PageSize);

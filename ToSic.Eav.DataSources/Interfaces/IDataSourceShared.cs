@@ -22,8 +22,10 @@ namespace ToSic.Eav.DataSources
         /// <returns>Name of this source.</returns>
         string Name { get; }
 
-
         [PrivateApi("internal use only - for labeling data sources in queries to show in debugging")]
         string Label { get; }
+
+        [PrivateApi]
+        void AddDebugInfo(Guid? guid, string label);
     }
 }

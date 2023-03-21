@@ -113,7 +113,7 @@ namespace ToSic.Eav.DataSources
             var ds = _services.DataSourceFactory.Create<EntityTypeFilter>(appIdentity: this, source: upstreamDataSource,
                 configSource: Configuration.LookUpEngine);
             ds.TypeName = typeName;
-            ds.Guid = Guid; // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
+            ds.AddDebugInfo(Guid, null); // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
             return ds;
         });
     }

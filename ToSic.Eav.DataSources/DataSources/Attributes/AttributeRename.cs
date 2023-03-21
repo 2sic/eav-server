@@ -141,7 +141,7 @@ namespace ToSic.Eav.DataSources
                 newType = _dataBuilder.ContentType.Transient(AppId, typeName, typeName);
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var result = source
                 .Select(entity =>

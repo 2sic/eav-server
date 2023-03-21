@@ -232,7 +232,7 @@ namespace ToSic.Eav.DataSources
                 // Ready to finish, but first, ensure repeating if desired
                 SelectCommand = result.ToString();
             }
-	        CacheRelevantConfigurations = CacheRelevantConfigurations.Concat(additionalParams).ToList();
+	        CacheRelevantConfigurations.AddRange(additionalParams);
 
             Configuration.Parse();
         }

@@ -196,7 +196,7 @@ namespace ToSic.Eav.DataSources
             l.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{strMode}', child/parent:'{childParent}'");
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var compType = lowAttribName == Attributes.EntityFieldAutoSelect
                 ? CompareType.Auto

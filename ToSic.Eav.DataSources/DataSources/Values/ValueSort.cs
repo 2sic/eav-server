@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources
             LanguageList = _valLanguages.PrepareLanguageList(Languages);
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             // check if no list parameters specified
             if (sortAttributes.Length == 1 && string.IsNullOrWhiteSpace(sortAttributes[0]))

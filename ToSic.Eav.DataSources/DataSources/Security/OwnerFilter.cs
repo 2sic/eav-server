@@ -59,7 +59,7 @@ namespace ToSic.Eav.DataSources
                 return (EmptyList, "no identity");
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             return (source.Where(e => e.Owner == Identity).ToImmutableList(), "ok");
         });

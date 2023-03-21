@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSources
 
             // Make sure we have an In - otherwise error
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var typeName = ContentTypeName;
             if (string.IsNullOrWhiteSpace(typeName)) typeName = null;

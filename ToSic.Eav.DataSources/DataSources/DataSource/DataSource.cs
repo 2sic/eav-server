@@ -52,7 +52,13 @@ namespace ToSic.Eav.DataSources
         public string Name => GetType().Name;
 
         [PrivateApi("internal use only - for labeling data sources in queries to show in debugging")]
-        public string Label { get; set; }
+        public string Label { get; private set; }
+
+        public void AddDebugInfo(Guid? guid, string label)
+        {
+            Guid = guid ?? Guid;
+            Label = label ?? Label;
+        }
 
         /// <inheritdoc />
         public virtual int AppId { get; protected set; }
@@ -61,7 +67,7 @@ namespace ToSic.Eav.DataSources
         public virtual int ZoneId { get; protected set; }
 
         /// <inheritdoc />
-        public Guid Guid { get; internal set; }
+        public Guid Guid { get; private set; }
 
 
         #region Error Handling

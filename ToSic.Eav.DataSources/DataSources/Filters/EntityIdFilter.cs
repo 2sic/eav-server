@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources
             var entityIds = entityIdsOrError.Result;
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(this), "error");
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var result = entityIds.Select(eid => source.One(eid)).Where(e => e != null).ToImmutableList();
 
