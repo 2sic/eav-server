@@ -6,7 +6,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using static System.StringComparer;
 
-namespace ToSic.Eav.Data.Process
+namespace ToSic.Eav.Data.Raw
 {
     /// <summary>
     /// Options which may be needed to create new <see cref="IEntity"/>s from <see cref="IRawEntity"/>.

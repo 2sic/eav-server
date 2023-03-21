@@ -2,7 +2,7 @@
 using System.Linq;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data.Process
+namespace ToSic.Eav.Data.Raw
 {
     /// <summary>
     /// Represents a relationship in a RawEntity.

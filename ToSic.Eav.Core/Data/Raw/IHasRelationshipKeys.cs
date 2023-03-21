@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data.Process
+namespace ToSic.Eav.Data.Raw
 {
     /// <summary>
     /// Mark objects of type <see cref="IRawEntity"/> to also provide relationship keys.

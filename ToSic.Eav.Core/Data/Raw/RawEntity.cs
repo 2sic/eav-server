@@ -3,7 +3,7 @@ using ToSic.Eav.Generics;
 using ToSic.Lib.Documentation;
 using static System.StringComparer;
 
-namespace ToSic.Eav.Data.Process
+namespace ToSic.Eav.Data.Raw
 {
     /// <summary>
     /// A ready-to-use <see cref="IRawEntity"/> which receives all the data in the constructor.

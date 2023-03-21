@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data.Process
+namespace ToSic.Eav.Data.Raw
 {
     /// <summary>
     /// This marks objects which have data prepared to be converted to Entities.

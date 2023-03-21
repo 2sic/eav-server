@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data.Process
+namespace ToSic.Eav.Data.Raw
 {
     /// <summary>
     /// Base class for raw entities which makes implementations a bit simpler when not much is needed.
