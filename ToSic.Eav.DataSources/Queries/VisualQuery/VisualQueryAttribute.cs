@@ -108,12 +108,12 @@ namespace ToSic.Eav.DataSources.Queries
 
         internal static VisualQueryAttribute AppDefaults = new VisualQueryAttribute()
         {
+            // enforce
             Type = DataSourceType.App,
+            // set if not set
             Icon = "star"
             // todo:
             // - auto set the visual query attribute if missing
-            // - also set NiceName to be class name if not set
-            // - also set UiHint if not set to be "{nicename} App DataSource"
         };
     }
 }
