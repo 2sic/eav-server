@@ -27,12 +27,7 @@ namespace ToSic.Eav.DataSources
         {
             if (thisDs == null) throw new ArgumentNullException(nameof(thisDs));
 
-            if (thisDs is DataSource realDs)
-            {
-                appIdentity = appIdentity ?? source;
-                realDs.ZoneId = appIdentity.ZoneId;
-                realDs.AppId = appIdentity.AppId;
-            }
+            (thisDs as IAppIdentitySync)?.UpdateAppIdentity(appIdentity ?? source);
 
             if (source != null) thisDs.Attach(source);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Apps;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
@@ -17,7 +18,7 @@ namespace ToSic.Eav.DataSources
     /// Consult the guide to upgrade your custom data sources.
     /// </remarks>
     [PublicApi]
-    public abstract partial class DataSource : ServiceBase<DataSource.MyServices>, IDataSource
+    public abstract partial class DataSource : ServiceBase<DataSource.MyServices>, IDataSource, IAppIdentitySync
     {
 
         /// <summary>
@@ -54,10 +55,10 @@ namespace ToSic.Eav.DataSources
         public string Label { get; set; }
 
         /// <inheritdoc />
-        public virtual int AppId { get; protected internal set; }
+        public virtual int AppId { get; protected set; }
 
         /// <inheritdoc />
-        public virtual int ZoneId { get; protected internal set; }
+        public virtual int ZoneId { get; protected set; }
 
         /// <inheritdoc />
         public Guid Guid { get; set; }
@@ -71,5 +72,10 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
+        void IAppIdentitySync.UpdateAppIdentity(IAppIdentity appIdentity)
+        {
+            AppId = appIdentity.AppId;
+            ZoneId = appIdentity.ZoneId;
+        }
     }
 }
