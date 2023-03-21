@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
             string noParamOrder = Parameters.Protector,
             string logName = null)
         {
-            var ds = new CustomDataSourceLight(services, noParamOrder, logName);
+            var ds = new CustomDataSourceLight(services, logName);
             ds.Error.Link(wrapper);
             ds.AutoLoadAllConfigMasks(wrapper.GetType());
             return ds;
