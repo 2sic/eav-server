@@ -76,5 +76,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         [PrivateApi]
         ILookUpEngine LookUpEngine { get; }
+
+        [PrivateApi]
+        void AddIfMissing(string name, string value);
     }
 }

@@ -35,17 +35,11 @@ namespace ToSic.Eav.DataSources
             if (token.IndexOf($"[{MyConfigOld}:", InvariantCultureIgnoreCase) > -1)
                 throw new ArgumentException($"Don't user the source {MyConfigOld} for retrieving DS configuration any more (breaking change in v15). " +
                                             $"Instead, use the source name of the variable {nameof(MyConfiguration)}.");
-            Configuration.Values.Add(key, token);
+            // New v15.04 - only add if it has not already been set
+            // This is to ensure that config masks don't overwrite data which 
+            Configuration.AddIfMissing(key, token);
             if (cacheRelevant)
                 CacheRelevantConfigurations.Add(key);
         }
-
-        public string Get(string name) => Configuration.Get(name);
-
-        public TValue Get<TValue>(string name) => Configuration.Get<TValue>(name);
-
-        public TValue Get<TValue>(string name, string noParamOrder = Parameters.Protector, TValue fallback = default) => Configuration.Get<TValue>(name, noParamOrder, fallback: fallback);
-        public void Set(string name, string value) => Configuration.Set(name, value);
-        public void Set<TValue>(string name, TValue value) => Configuration.Set(name, value);
     }
 }

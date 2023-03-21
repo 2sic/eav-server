@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp;
 
@@ -23,7 +24,8 @@ namespace ToSic.Eav.DataSources
         public static T Init<T>(this T thisDs,
             IAppIdentity appIdentity,
             IDataSource source = default,
-            ILookUpEngine configSource = default) where T : IDataSource
+            ILookUpEngine configSource = default,
+            IDictionary<string, string> configuration = default) where T : IDataSource
         {
             if (thisDs == null) throw new ArgumentNullException(nameof(thisDs));
 
@@ -33,7 +35,10 @@ namespace ToSic.Eav.DataSources
 
             configSource = configSource ?? source?.Configuration?.LookUpEngine;
             if (configSource != null && thisDs.Configuration is DataSourceConfiguration dsConfig)
+            {
                 dsConfig.LookUpEngine = configSource;
+                if (configuration != null) dsConfig.AddMany(configuration);
+            }
             return thisDs;
         }
     }

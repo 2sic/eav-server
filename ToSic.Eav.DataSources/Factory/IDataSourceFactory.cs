@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
@@ -35,7 +36,8 @@ namespace ToSic.Eav.DataSources
             string noParamOrder = Parameters.Protector,
             IDataSource source = default, 
             IAppIdentity appIdentity = default,
-            ILookUpEngine configSource = default);
+            ILookUpEngine configSource = default,
+            IDictionary<string, string> configuration = default);
 
         /// <summary>
         /// Preferred way to create DataSources.

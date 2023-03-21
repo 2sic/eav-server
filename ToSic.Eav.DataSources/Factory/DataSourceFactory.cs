@@ -5,6 +5,7 @@ using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
+using System.Collections.Generic;
 
 namespace ToSic.Eav.DataSources
 {
@@ -34,10 +35,11 @@ namespace ToSic.Eav.DataSources
             string noParamOrder = Parameters.Protector,
             IDataSource source = default, 
             IAppIdentity appIdentity = default,
-            ILookUpEngine configSource = default) => Log.Func(() =>
+            ILookUpEngine configSource = default,
+            IDictionary<string, string> configuration = default) => Log.Func(() =>
         {
             var newDs = _serviceProvider.Build<IDataSource>(type, Log);
-            return newDs.Init(appIdentity: appIdentity, source: source, configSource: configSource);
+            return newDs.Init(appIdentity: appIdentity, source: source, configSource: configSource, configuration: configuration);
         });
 
 

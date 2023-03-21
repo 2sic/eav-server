@@ -131,5 +131,17 @@ namespace ToSic.Eav.DataSources
 
 
         public void Set<TValue>(string name, TValue value) => Values[name] = value?.ToString();
+
+        public void AddIfMissing(string name, string value)
+        {
+            if (Values.ContainsKey(name)) return;
+            Values[name] = value;
+        }
+
+        public void AddMany(IDictionary<string, string> values)
+        {
+            if (values == null) return;
+            foreach (var pair in values) Values[pair.Key] = pair.Value;
+        }
     }
 }
