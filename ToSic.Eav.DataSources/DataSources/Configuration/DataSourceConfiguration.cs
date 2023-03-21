@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ToSic.Eav.Context;
+using ToSic.Eav.Conventions;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
@@ -52,10 +53,7 @@ namespace ToSic.Eav.DataSources
             ? result 
             : throw new ArgumentException($"Trying to get a configuration by name of {key} but it doesn't exist. Did you forget to add to ConfigMask?");
 
-        public T GetThis<T>(T fallback, [CallerMemberName] string key = default)
-            => Values.TryGetValue(key, out var result)
-                ? result.ConvertOrFallback(fallback)
-                : fallback;
+        public T GetThis<T>(T fallback, [CallerMemberName] string key = default) => Get<T>(key);
 
         // ReSharper disable once AssignNullToNotNullAttribute
         public void SetThis<T>(T value, [CallerMemberName] string key = default) => Values[key] = value?.ToString();
@@ -108,5 +106,17 @@ namespace ToSic.Eav.DataSources
         private readonly GetOnce<IDictionary<string, ILookUp>> _overrideLookUps = new GetOnce<IDictionary<string, ILookUp>>();
 
 
+        public string Get(string name) => Values.TryGetValue(name, out var result) ? result : null;
+
+        public TValue Get<TValue>(string name) =>
+            Values.TryGetValue(name, out var result) ? result.ConvertOrDefault<TValue>()                : default;
+
+        public TValue Get<TValue>(string name, string noParamOrder = Parameters.Protector, TValue fallback = default) =>
+            Values.TryGetValue(name, out var result) ? result.ConvertOrFallback(fallback) : fallback;
+
+
+        public void Set(string name, string value) => Values[name] = value;
+
+        public void Set(string name, object value) => Values[name] = value?.ToString();
     }
 }

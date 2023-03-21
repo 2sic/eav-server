@@ -130,10 +130,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Types\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
