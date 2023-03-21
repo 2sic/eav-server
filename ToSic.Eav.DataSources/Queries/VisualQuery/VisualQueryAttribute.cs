@@ -105,15 +105,5 @@ namespace ToSic.Eav.DataSources.Queries
         /// Made public and renamed to `Audience` in v15.03
         /// </remarks>
         public Audience Audience { get; set; } = Audience.Default;
-
-        internal static VisualQueryAttribute AppDefaults = new VisualQueryAttribute()
-        {
-            // enforce
-            Type = DataSourceType.App,
-            // set if not set
-            Icon = "star"
-            // todo:
-            // - auto set the visual query attribute if missing
-        };
     }
 }
