@@ -111,8 +111,8 @@ namespace ToSic.Eav.DataSources.Queries
 			// tell the primary-out that it has this guid, for better debugging
             var passThroughConfig = new LookUpEngine(templateConfig, Log);
             IDataSource outTarget = _passThrough.New().Init(passThroughConfig);
-			if (outTarget.Guid == Guid.Empty)
-	            outTarget.Guid = queryDef.Entity.EntityGuid;
+			if (outTarget.Guid == Guid.Empty && outTarget is DataSource dsWithGuid)
+                dsWithGuid.Guid = queryDef.Entity.EntityGuid;
 
             #endregion
 
@@ -151,7 +151,15 @@ namespace ToSic.Eav.DataSources.Queries
                 var dsType = dataQueryPart.DataSourceType;
 
                 var dataSource = _dataSourceFactory.Create(type: dsType, appIdentity: appIdentity, source: null, configSource: partConfig);
-	            dataSource.Guid = dataQueryPart.Guid;
+                if (dataSource is DataSource realDataSource)
+                {
+                    realDataSource.Guid = dataQueryPart.Guid;
+                    try
+                    {
+                        realDataSource.Label = dataQueryPart.Entity.GetBestTitle();
+                    }
+                    catch { /* ignore */ }
+                }
 
                 // new with errors
                 try
@@ -165,10 +173,6 @@ namespace ToSic.Eav.DataSources.Queries
                 }
                 catch { }
 
-                try
-                {
-                    dataSource.Label = dataQueryPart.Entity.GetBestTitle();
-                } catch { /* ignore */ }
 
                 var partGuidStr = dataQueryPart.Guid.ToString();
 

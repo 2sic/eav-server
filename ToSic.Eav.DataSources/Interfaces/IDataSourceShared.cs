@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
         /// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.
         /// </summary>
         /// <returns>The guid of this data source which identifies the configuration <see cref="IEntity"/> of the data source.</returns>
-        Guid Guid { get; set; }
+        Guid Guid { get; }
 
         /// <summary>
         /// Name of this DataSource - not usually relevant.
@@ -24,6 +24,6 @@ namespace ToSic.Eav.DataSources
 
 
         [PrivateApi("internal use only - for labeling data sources in queries to show in debugging")]
-        string Label { get; set; }
+        string Label { get; }
     }
 }

@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSources
         public virtual int ZoneId { get; protected set; }
 
         /// <inheritdoc />
-        public Guid Guid { get; set; }
+        public Guid Guid { get; internal set; }
 
 
         #region Error Handling

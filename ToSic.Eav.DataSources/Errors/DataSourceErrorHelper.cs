@@ -64,13 +64,13 @@ namespace ToSic.Eav.DataSources
             return new[] { entity }.ToImmutableList();
         }
 
-        public IImmutableList<IEntity> TryGetInFailed(IDataSource target = default, string streamName = DataSourceConstants.StreamDefaultName)
+        public IImmutableList<IEntity> TryGetInFailed(IDataSource source = default, string streamName = DataSourceConstants.StreamDefaultName)
         {
-            var source = target ?? _source;
-            if (!target.In.ContainsKey(streamName))
+            source = source ?? _source;
+            if (!source.In.ContainsKey(streamName))
                 return Create(source: source, title: $"Stream '{streamName}' not found",
                         message: $"This DataSource needs the stream '{streamName}' on the In to work, but it couldn't find it.");
-            var stream = target.In[streamName];
+            var stream = source.In[streamName];
             if (stream == null)
                 return Create(source: source, title: $"Stream '{streamName}' is Null", message: $"The Stream '{streamName}' was found on In, but it's null");
             var list = stream.List?.ToImmutableList();

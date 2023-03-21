@@ -12,12 +12,18 @@ namespace ToSic.Eav.DataSources
     /// </summary>
     public static class BreachExtensions
     {
-        public static void BreachAutoLoadAllConfigMasks(this DataSource ds, Type type) => ds.AutoLoadAllConfigMasks(type);
+        //public static void BreachAutoLoadAllConfigMasks(this DataSource ds, Type type) => ds.AutoLoadAllConfigMasks(type);
 
         public static CustomDataSourceLight CustomDataSourceLight(CustomDataSourceLight.MyServices services,
+            IDataSource wrapper,
             string noParamOrder = Parameters.Protector,
-            string logName = null) =>
-            new CustomDataSourceLight(services, noParamOrder, logName);
+            string logName = null)
+        {
+            var ds = new CustomDataSourceLight(services, noParamOrder, logName);
+            ds.Error.Link(wrapper);
+            ds.AutoLoadAllConfigMasks(wrapper.GetType());
+            return ds;
+        }
 
         public static void BreachProvideOutRaw<T>(
             this CustomDataSourceLight ds,
