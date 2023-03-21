@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources.Catalog
                 ? GlobalCache.Where(dsi => (dsi.VisualQuery?.GlobalName).HasValue())
                 : GlobalCache;
 
-            var appList = AppCache.TryGetValue(appId, out var appListTemp) ? appListTemp : new List<DataSourceInfo>();
+            var appList = Get(appId) ?? new List<DataSourceInfo>();
             var fromApp = onlyForVisualQuery
                 ? appList.Where(dsi => (dsi.VisualQuery?.GlobalName).HasValue())
                 : appList;

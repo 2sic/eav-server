@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Api.Api01;
+using ToSic.Eav.Apps.DataSources;
 using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
@@ -93,7 +94,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppUserLanguageCheck>();
 
             // V15 Data Sources
-            services.TryAddTransient<DataSources.Sys.Apps.MyServices>();
+            services.TryAddTransient<Eav.DataSources.CustomDataSourceAdvanced.MyServices>();
 
 
             return services;
@@ -117,8 +118,8 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
             services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
             services.TryAddTransient<IAppFileSystemLoader, FileSystemLoaderUnknown>();
-
             services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
+            services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();
 
             return services;
         }

@@ -20,14 +20,15 @@ namespace ToSic.Eav.DataSources.Catalog
         /// <param name="name"></param>
         /// <param name="appId"></param>
         /// <returns></returns>
-        private static DataSourceInfo FindInCache(string name, int appId)
+        private DataSourceInfo FindInCache(string name, int appId)
         {
             var list = GlobalCache;
             var inGlobal = FindInCachedList(name, list, false);
             if (inGlobal != null) return inGlobal;
 
             // New v15.04 - also support app level data sources
-            return !AppCache.TryGetValue(appId, out var appCache) 
+            var appCache = Get(appId);
+            return appCache == null
                 ? null 
                 : FindInCachedList(name, appCache, true);
         }
