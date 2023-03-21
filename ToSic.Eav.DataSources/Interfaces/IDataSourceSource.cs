@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Conventions;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Lib.Documentation;
@@ -59,7 +58,7 @@ namespace ToSic.Eav.DataSources
         /// Keeps track of all values which the data source will need, and manages the LookUp engine
         /// which provides these values. 
         /// </summary>
-        IDataSourceConfiguration Configuration { get; }
+        IDataSourceConfigurationManager Configuration { get; }
 
         #endregion
 

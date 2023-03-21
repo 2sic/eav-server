@@ -13,8 +13,8 @@ namespace ToSic.Eav.DataSources
             services.TryAddTransient<DataSource.MyServices>();
             services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
             services.TryAddTransient<App.MyServices>();
-            services.TryAddTransient<DataSourceConfiguration>();
-            services.TryAddTransient<DataSourceConfiguration.MyServices>();
+            services.TryAddTransient<DataSourceConfigurationManager>();
+            services.TryAddTransient<DataSourceConfigurationManager.MyServices>();
 
             services.TryAddTransient<DataSourceCatalog>();
             services.TryAddTransient<IDataSourceFactory, DataSourceFactory>();

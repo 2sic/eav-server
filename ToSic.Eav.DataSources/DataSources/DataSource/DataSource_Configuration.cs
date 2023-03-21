@@ -16,8 +16,8 @@ namespace ToSic.Eav.DataSources
         private static readonly string MyConfigOld = "Settings";
 
         /// <inheritdoc />
-        public IDataSourceConfiguration Configuration => _config.Get(() => base.Services.Configuration.Attach(this));
-        private readonly GetOnce<IDataSourceConfiguration> _config = new GetOnce<IDataSourceConfiguration>();
+        public IDataSourceConfigurationManager Configuration => _config.Get(() => base.Services.Configuration.Attach(this));
+        private readonly GetOnce<IDataSourceConfigurationManager> _config = new GetOnce<IDataSourceConfigurationManager>();
 
         /// <summary>
         /// Add a value to the configuration list for later resolving tokens and using in Cache-Keys.

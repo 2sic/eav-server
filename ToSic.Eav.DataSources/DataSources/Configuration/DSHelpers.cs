@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSources
@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
     {
         public static T Init<T>(this T thisDs, ILookUpEngine configSource) where T : IDataSource
         {
-            if (configSource != null && thisDs.Configuration is DataSourceConfiguration dsConfig)
+            if (configSource != null && thisDs.Configuration is DataSourceConfigurationManager dsConfig)
                 dsConfig.LookUpEngine = configSource;
             return thisDs;
         }
@@ -20,12 +20,11 @@ namespace ToSic.Eav.DataSources
         /// <param name="thisDs">The new data source</param>
         /// <param name="appIdentity">app identifier</param>
         /// <param name="source">upstream data source - for auto-attaching</param>
-        /// <param name="configSource">optional configuration provider - for auto-attaching</param>
+        /// <param name="configuration">optional configuration provider - for auto-attaching</param>
         public static T Init<T>(this T thisDs,
             IAppIdentity appIdentity,
             IDataSource source = default,
-            ILookUpEngine configSource = default,
-            IDictionary<string, string> configuration = default) where T : IDataSource
+            IConfiguration configuration = default) where T : IDataSource
         {
             if (thisDs == null) throw new ArgumentNullException(nameof(thisDs));
 
@@ -33,11 +32,13 @@ namespace ToSic.Eav.DataSources
 
             if (source != null) thisDs.Attach(source);
 
-            configSource = configSource ?? source?.Configuration?.LookUpEngine;
-            if (configSource != null && thisDs.Configuration is DataSourceConfiguration dsConfig)
+            configuration = configuration ?? source?.Configuration?.LookUpEngine;
+            if (configuration != null && thisDs.Configuration is DataSourceConfigurationManager dsConfig)
             {
-                dsConfig.LookUpEngine = configSource;
-                if (configuration != null) dsConfig.AddMany(configuration);
+                var lookup = configuration.GetLookupEngineWip();
+                if (lookup != null) dsConfig.LookUpEngine = lookup;
+                var configValues = configuration.GetValuesWip();
+                if (configValues != null) dsConfig.AddMany(configValues);
             }
             return thisDs;
         }

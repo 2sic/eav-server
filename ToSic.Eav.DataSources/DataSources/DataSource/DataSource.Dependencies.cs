@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources
         [PublicApi]
         public class MyServices : MyServicesBase
         {
-            [PrivateApi] public DataSourceConfiguration Configuration { get; }
+            [PrivateApi] public DataSourceConfigurationManager Configuration { get; }
             [PrivateApi] public ConfigurationDataLoader ConfigDataLoader { get; }
             [PrivateApi] public LazySvc<DataSourceErrorHelper> ErrorHandler { get; }
 
@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
             /// </summary>
             [PrivateApi]
             public MyServices(
-                DataSourceConfiguration configuration,
+                DataSourceConfigurationManager configuration,
                 LazySvc<DataSourceErrorHelper> errorHandler,
                 ConfigurationDataLoader configDataLoader
             )

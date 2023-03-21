@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Configuration;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
@@ -147,5 +148,8 @@ namespace ToSic.Eav.LookUp
 	                // ensure that there is an "override property provider" which would pre-catch certain keys
 	                AddOverride(provider);
 	    }
+
+        ILookUpEngine IConfiguration.GetLookupEngineWip() => this;
+        IDictionary<string, string> IConfiguration.GetValuesWip() => null;
     }
 }

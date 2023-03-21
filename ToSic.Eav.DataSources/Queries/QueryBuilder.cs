@@ -150,7 +150,7 @@ namespace ToSic.Eav.DataSources.Queries
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
                 var dsType = dataQueryPart.DataSourceType;
 
-                var dataSource = _dataSourceFactory.Create(type: dsType, appIdentity: appIdentity, source: null, configSource: partConfig);
+                var dataSource = _dataSourceFactory.Create(type: dsType, appIdentity: appIdentity, source: null, configuration: partConfig);
                 try { dataSource.AddDebugInfo(dataQueryPart.Guid, dataQueryPart.Entity.GetBestTitle()); }
                 catch { /* ignore */ }
 

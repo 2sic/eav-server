@@ -11,8 +11,8 @@ namespace ToSic.Eav.DataSources
     /// It manages all the properties which the data source will want to look up, as well as
     /// the LookUp engine which will perform the token resolution
     /// </summary>
-    [PublicApi] 
-    public interface IDataSourceConfiguration: IGetAccessors<string>, ISetAccessorsGeneric
+    [InternalApi_DoNotUse_MayChangeWithoutNotice] 
+    public interface IDataSourceConfigurationManager: IGetAccessors<string>, ISetAccessorsGeneric
     {
         /// <summary>
         /// Get a configuration value for a specific property.

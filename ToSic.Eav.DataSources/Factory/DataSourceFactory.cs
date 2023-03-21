@@ -5,7 +5,7 @@ using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
-using System.Collections.Generic;
+using ToSic.Eav.Configuration;
 
 namespace ToSic.Eav.DataSources
 {
@@ -35,11 +35,10 @@ namespace ToSic.Eav.DataSources
             string noParamOrder = Parameters.Protector,
             IDataSource source = default, 
             IAppIdentity appIdentity = default,
-            ILookUpEngine configSource = default,
-            IDictionary<string, string> configuration = default) => Log.Func(() =>
+            IConfiguration configuration = default) => Log.Func(() =>
         {
             var newDs = _serviceProvider.Build<IDataSource>(type, Log);
-            return newDs.Init(appIdentity: appIdentity, source: source, configSource: configSource, configuration: configuration);
+            return newDs.Init(appIdentity: appIdentity, source: source, configuration: configuration);
         });
 
 
@@ -60,7 +59,7 @@ namespace ToSic.Eav.DataSources
             if (upstream.Source == null)
                 throw new Exception("Unexpected source - stream without a real source. can't process; wip");
             var source = upstream.Source;
-            var ds = Create<TDataSource>(appIdentity: source, configSource: source.Configuration.LookUpEngine);
+            var ds = Create<TDataSource>(appIdentity: source, configuration: source.Configuration.LookUpEngine);
             ds.Attach(DataSourceConstants.StreamDefaultName, upstream);
             return ds;
         }
@@ -70,15 +69,15 @@ namespace ToSic.Eav.DataSources
             string noParamOrder = Parameters.Protector,
             IDataSource source = default,
             IAppIdentity appIdentity = default,
-            ILookUpEngine configSource = default) where TDataSource : IDataSource => Log.Func(() =>
+            IConfiguration configuration = default) where TDataSource : IDataSource => Log.Func(() =>
         {
             if (source == null && appIdentity == null)
                 throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(source)} and {nameof(appIdentity)} no not be null.");
-            if (source == null && configSource == null)
-                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(source)} and {nameof(configSource)} no not be null.");
+            if (source == null && configuration == null)
+                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(source)} and {nameof(configuration)} no not be null.");
 
             var newDs = _serviceProvider.Build<TDataSource>(Log);
-            return newDs.Init(appIdentity: appIdentity, source: source, configSource: configSource);
+            return newDs.Init(appIdentity: appIdentity, source: source, configuration: configuration);
         });
 
         #endregion
@@ -95,8 +94,8 @@ namespace ToSic.Eav.DataSources
             var l = Log.Fn<IDataSource>($"#{appIdentity.Show()}, draft:{showDrafts}, config:{configSource != null}");
 
             configSource = configSource ?? _lookupResolveLazy.Value.GetLookUpEngine(0);
-            var appRoot = Create<IAppRoot>(appIdentity: appIdentity, configSource: configSource);
-            var publishingFilter = Create<PublishingFilter>(source: appRoot, configSource: configSource);
+            var appRoot = Create<IAppRoot>(appIdentity: appIdentity, configuration: configSource);
+            var publishingFilter = Create<PublishingFilter>(source: appRoot, configuration: configSource);
 
             if (showDrafts != null)
                 publishingFilter.ShowDrafts = showDrafts;

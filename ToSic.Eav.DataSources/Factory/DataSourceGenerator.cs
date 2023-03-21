@@ -19,6 +19,6 @@ namespace ToSic.Eav.DataSources
             IDataSource source = default,
             IAppIdentity appIdentity = default,
             ILookUpEngine configSource = default) =>
-            _dataSourceFactory.Value.Create<TDataSource>(source: source, appIdentity: appIdentity, configSource: configSource);
+            _dataSourceFactory.Value.Create<TDataSource>(source: source, appIdentity: appIdentity, configuration: configSource);
     }
 }

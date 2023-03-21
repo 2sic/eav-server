@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Raw;
 using static ToSic.Eav.DataSources.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources
@@ -16,7 +12,7 @@ namespace ToSic.Eav.DataSources
     {
         //public static void BreachAutoLoadAllConfigMasks(this DataSource ds, Type type) => ds.AutoLoadAllConfigMasks(type);
 
-        public static CustomDataSourceLight CustomDataSourceLight(CustomDataSourceLight.MyServices services,
+        public static CustomDataSourceLight CustomDataSourceLight(CustomDataSourceAdvanced.MyServices services,
             IDataSource wrapper,
             string noParamOrder = Parameters.Protector,
             string logName = null)
@@ -34,31 +30,6 @@ namespace ToSic.Eav.DataSources
             string name = StreamDefaultName,
             DataFactoryOptions options = default) =>
             ds.ProvideOut(source, options: options, name: name);
-
-        //public static void BreachProvideOutRaw<T>(
-        //    this CustomDataSourceLight ds,
-        //    Func<IEnumerable<IHasRawEntity<T>>> source,
-        //    string noParamOrder = Parameters.Protector,
-        //    DataFactoryOptions options = default) where T : IRawEntity =>
-        //    ds.ProvideOutRaw(source, options: options);
-
-        //public static void BreachProvideOutRaw<T>(
-        //    this CustomDataSourceLight ds,
-        //    Func<IEnumerable<T>> source,
-        //    string noParamOrder = Parameters.Protector,
-        //    DataFactoryOptions options = default) where T : IRawEntity =>
-        //    ds.ProvideOutRaw(source, options: options);
-
-        //public static void BreachProvideOut(
-        //    this CustomDataSourceLight ds,
-        //    Func<IEnumerable<IEntity>> getList,
-        //    string name = DataSourceConstants.StreamDefaultName)
-        //    => (ds as DataSource).ProvideOut(getList, name);
-
-        //public static void BreachProvideOut(
-        //    this CustomDataSourceLight ds,
-        //    Func<IImmutableList<IEntity>> getList,
-        //    string name = DataSourceConstants.StreamDefaultName)
-        //    => (ds as DataSource).ProvideOut(getList, name);
+        
     }
 }
