@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources
 {
@@ -30,7 +31,7 @@ namespace ToSic.Eav.DataSources
             this CustomDataSourceLight ds,
             Func<IEnumerable> source,
             string noParamOrder = Parameters.Protector,
-            string name = default,
+            string name = StreamDefaultName,
             DataFactoryOptions options = default) =>
             ds.ProvideOut(source, options: options, name: name);
 
