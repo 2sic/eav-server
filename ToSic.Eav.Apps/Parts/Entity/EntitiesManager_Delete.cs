@@ -39,7 +39,11 @@ namespace ToSic.Eav.Apps.Parts
             var oks = BatchCheckCanDelete(deleteIds.ToArray(), force, skipIfCant, parentId, parentField);
 
             // than delete entities with metadata
-            var ok = Parent.DataController.Entities.DeleteEntity(deleteIds.ToArray(), true, true);
+            var repositoryIds = deleteIds.ToArray();
+            var ok = Parent.DataController.Entities.DeleteEntity(repositoryIds, true, true);
+
+            // @STV Todo
+            //Parent.AppState.Remove(repositoryIds, true);
 
             SystemManager.PurgeApp(Parent.AppId);
 

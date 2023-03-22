@@ -58,6 +58,22 @@ namespace ToSic.Eav.Apps
             if (log) Log.A($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{DynamicUpdatesCount}");
         }
 
+        // TODO: @STV
+        //public void Remove(int[] repositoryIds, bool log)
+        //{
+        //    if (repositoryIds == null || repositoryIds.Length == 0) return;
+        //    Load(() =>
+        //    {
+        //        foreach (var id in repositoryIds)
+        //        {
+        //            // Remove any drafts that are related if necessary
+        //            //if (Index.TryGetValue(id, out var oldEntity)) 
+        //            //    RemoveObsoleteDraft(oldEntity, log);
+        //            Index.Remove(id);
+        //        }
+        //    });
+        //}
+
         /// <summary>
         /// Reset all item storages and indexes
         /// </summary>
