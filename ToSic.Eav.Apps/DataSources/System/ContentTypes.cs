@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -36,10 +39,8 @@ namespace ToSic.Eav.DataSources.Sys
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
     // ReSharper disable once UnusedMember.Global
-    public sealed class ContentTypes: DataSource
+    public sealed class ContentTypes: CustomDataSourceLight
 	{
-        private readonly IDataFactory _dataFactory;
-
         #region Configuration-properties (no config)
 
         private const string AppIdKey = "AppId";
@@ -85,44 +86,49 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new ContentTypes DS
         /// </summary>
         [PrivateApi]
-        public ContentTypes(MyServices services, IAppStates appStates, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
+        public ContentTypes(MyServices services, IAppStates appStates): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
         {
             ConnectServices(
-                _appStates = appStates,
-                _dataFactory = dataFactory.New(options: new DataFactoryOptions(_options, appId: OfAppId))
+                _appStates = appStates
             );
             ProvideOut(GetList);
 		}
         private readonly IAppStates _appStates;
 
-        private IImmutableList<IEntity> GetList() => Log.Func(l =>
+        protected override DataFactoryOptions Options => new DataFactoryOptions(_options, appId: OfAppId);
+
+        private IEnumerable<IRawEntity> GetList() => Log.Func(l =>
         {
             Configuration.Parse();
 
             var appId = OfAppId;
-
-            var scp = Scope;
-            if (string.IsNullOrWhiteSpace(scp)) scp = Data.Scopes.Default;
+            var scp = Scope.UseFallbackIfNoValue(Data.Scopes.Default);
 
             var types = _appStates.Get(appId).ContentTypes.OfScope(scp);
 
-            var list = types.OrderBy(t => t.Name).Select(t =>
-            {
-                Guid? guid = null;
-                try
+            var list = types
+                .OrderBy(t => t.Name)
+                .Select(t =>
                 {
-                    if (Guid.TryParse(t.NameId, out Guid g)) guid = g;
-                }
-                catch
-                {
-                    /* ignore */
-                }
+                    Guid? guid = null;
+                    try
+                    {
+                        if (Guid.TryParse(t.NameId, out var g)) guid = g;
+                    }
+                    catch
+                    {
+                        /* ignore */
+                    }
 
-                return _dataFactory.Create(ContentTypeUtil.BuildDictionary(t), id: t.Id, guid: guid ?? Guid.Empty);
-            });
+                    return new RawEntity(ContentTypeUtil.BuildDictionary(t))
+                    {
+                        Id = t.Id,
+                        Guid = guid ?? Guid.Empty
+                    };
+                })
+                .ToList();
 
-            var result = list.ToImmutableList();
-            return (result, $"{result.Count}");
+            return (list, $"{list.Count}");
         });
     }
 }
