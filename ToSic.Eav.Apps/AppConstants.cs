@@ -39,5 +39,14 @@
         public const string AppFolderPlaceholder = "[AppFolder]";
         public static string AppPathPlaceholder = "[App:Path]";
         public static string AppPathSharedPlaceholder = "[App:PathShared]";
+
+
+        // todo: move to some kind of injection thingy?
+
+        /// <summary>
+        /// The type name used to store templates in the eav-system
+        /// </summary>
+        public static string TemplateContentType = Eav.ImportExport.Settings.TemplateContentType;
+
     }
 }
