@@ -38,14 +38,18 @@ namespace ToSic.Eav.Apps.Parts
             // check if we can delete entities with metadata, or throw exception
             var oks = BatchCheckCanDelete(deleteIds.ToArray(), force, skipIfCant, parentId, parentField);
 
-            // than delete entities with metadata
+            // than delete entities with metadata without app cache purge
             var repositoryIds = deleteIds.ToArray();
-            var ok = Parent.DataController.Entities.DeleteEntity(repositoryIds, true, true);
+            var ok = false;
+            var dc = Parent.DataController;
+            dc.DoButSkipAppCachePurge(() => ok = Parent.DataController.Entities.DeleteEntity(repositoryIds, true, true));
 
-            // @STV Todo
-            //Parent.AppState.Remove(repositoryIds, true);
-
-            SystemManager.PurgeApp(Parent.AppId);
+            // remove entity from cache
+            // introduced in v15.05 to reduce work on entity delete
+            // in past we PurgeApp in whole on each entity delete
+            // this should be much faster, but side effects are possible.
+            Parent.AppState.Remove(repositoryIds, true);
+            //SystemManager.PurgeApp(Parent.AppId);
 
             return ok;
         });

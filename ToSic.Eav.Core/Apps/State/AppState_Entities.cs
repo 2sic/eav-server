@@ -58,21 +58,31 @@ namespace ToSic.Eav.Apps
             if (log) Log.A($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{DynamicUpdatesCount}");
         }
 
-        // TODO: @STV
-        //public void Remove(int[] repositoryIds, bool log)
-        //{
-        //    if (repositoryIds == null || repositoryIds.Length == 0) return;
-        //    Load(() =>
-        //    {
-        //        foreach (var id in repositoryIds)
-        //        {
-        //            // Remove any drafts that are related if necessary
-        //            //if (Index.TryGetValue(id, out var oldEntity)) 
-        //            //    RemoveObsoleteDraft(oldEntity, log);
-        //            Index.Remove(id);
-        //        }
-        //    });
-        //}
+        /// <summary>
+        /// Removes an entity from the cache. Should only be used by EAV code
+        /// </summary>
+        /// <remarks>
+        /// Introduced in v15.05 to reduce work on entity delete.
+        /// In past we PurgeApp in whole on each entity delete.
+        /// This should be much faster, but side effects are possible.
+        /// </remarks>
+        [PrivateApi("Only internal use")]
+        public void Remove(int[] repositoryIds, bool log)
+        {
+            if (repositoryIds == null || repositoryIds.Length == 0) return;
+            Load(() =>
+            {
+                foreach (var id in repositoryIds)
+                {
+                    // Remove any drafts that are related if necessary
+                    //if (Index.TryGetValue(id, out var oldEntity)) 
+                    //    RemoveObsoleteDraft(oldEntity, log);
+                    Index.Remove(id);
+
+                    if (log) Log.A($"removed entity {id}");
+                }
+            });
+        }
 
         /// <summary>
         /// Reset all item storages and indexes
