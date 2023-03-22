@@ -1,7 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
-using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
@@ -14,7 +13,7 @@ namespace ToSic.Eav.DataSources
     /// <remarks>
     /// Released in v15.04
     /// </remarks>
-    [PublicApi]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public interface IDataSourceFactory
     {
         /// <summary>
