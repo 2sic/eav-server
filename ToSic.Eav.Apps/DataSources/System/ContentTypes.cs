@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
@@ -11,7 +10,6 @@ using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys
@@ -91,11 +89,9 @@ namespace ToSic.Eav.DataSources.Sys
             ConnectServices(
                 _appStates = appStates
             );
-            ProvideOut(GetList);
+            ProvideOut(GetList, options: () => new DataFactoryOptions(_options, appId: OfAppId));
 		}
         private readonly IAppStates _appStates;
-
-        protected override DataFactoryOptions Options => new DataFactoryOptions(_options, appId: OfAppId);
 
         private IEnumerable<IRawEntity> GetList() => Log.Func(l =>
         {
@@ -108,27 +104,29 @@ namespace ToSic.Eav.DataSources.Sys
 
             var list = types
                 .OrderBy(t => t.Name)
-                .Select(t =>
+                .Select(t => new RawEntity(ContentTypeUtil.BuildDictionary(t))
                 {
-                    Guid? guid = null;
-                    try
-                    {
-                        if (Guid.TryParse(t.NameId, out var g)) guid = g;
-                    }
-                    catch
-                    {
-                        /* ignore */
-                    }
-
-                    return new RawEntity(ContentTypeUtil.BuildDictionary(t))
-                    {
-                        Id = t.Id,
-                        Guid = guid ?? Guid.Empty
-                    };
+                    Id = t.Id,
+                    Guid = SafeConvertGuid(t) ?? Guid.Empty
                 })
                 .ToList();
 
             return (list, $"{list.Count}");
         });
+
+        private static Guid? SafeConvertGuid(IContentType t)
+        {
+            Guid? guid = null;
+            try
+            {
+                if (Guid.TryParse(t.NameId, out var g)) guid = g;
+            }
+            catch
+            {
+                /* ignore */
+            }
+
+            return guid;
+        }
     }
 }

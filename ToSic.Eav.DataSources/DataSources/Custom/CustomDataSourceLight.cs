@@ -46,42 +46,42 @@ namespace ToSic.Eav.DataSources
         ///
         /// If you know what data type you're creating, you should look at the other ProvideOut* methods.
         /// </summary>
-        /// <param name="source"></param>
+        /// <param name="data"></param>
         /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
         /// <param name="name">_optional_ name of the out-stream.</param>
         /// <param name="options">Conversion options which are relevant for <see cref="IRawEntity"/> data</param>
         protected internal void ProvideOut(
-            Func<IEnumerable> source,
+            Func<IEnumerable> data,
             string noParamOrder = Parameters.Protector,
             string name = StreamDefaultName,
-            DataFactoryOptions options = default)
+            Func<DataFactoryOptions> options = default)
         {
             Parameters.Protect(noParamOrder, $"{nameof(name)}, {nameof(options)}");
-            base.ProvideOut(() => GetAny(source, options), name);
+            base.ProvideOut(() => GetAny(data, options), name);
         }
 
 
         protected internal void ProvideOutRaw<T>(
-            Func<IEnumerable<IHasRawEntity<T>>> source,
+            Func<IEnumerable<IHasRawEntity<T>>> data,
             string noParamOrder = Parameters.Protector,
             string name = StreamDefaultName,
-            DataFactoryOptions options = default) where T : IRawEntity
+            Func<DataFactoryOptions> options = default) where T : IRawEntity
         {
             Parameters.Protect(noParamOrder, $"{nameof(name)}, {nameof(options)}");
-            base.ProvideOut(() => GetHasRaw(source, options));
+            base.ProvideOut(() => GetHasRaw(data, options), name);
         }
 
         protected internal void ProvideOutRaw<T>(
-            Func<IEnumerable<T>> source,
+            Func<IEnumerable<T>> data,
             string noParamOrder = Parameters.Protector,
             string name = StreamDefaultName,
-            DataFactoryOptions options = default) where T : IRawEntity
+            Func<DataFactoryOptions> options = default) where T : IRawEntity
         {
             Parameters.Protect(noParamOrder, $"{nameof(name)}, {nameof(options)}");
-            base.ProvideOut(() => GetRaw(source, options));
+            base.ProvideOut(() => GetRaw(data, options), name);
         }
 
-        private IImmutableList<IEntity> GetAny(Func<IEnumerable> source, DataFactoryOptions options)
+        private IImmutableList<IEntity> GetAny(Func<IEnumerable> source, Func<DataFactoryOptions> options)
         {
             var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
@@ -107,7 +107,7 @@ namespace ToSic.Eav.DataSources
             if (data.All(i => i is IRawEntity))
             {
                 var raw = data.Cast<IRawEntity>().ToList();
-                var result = DataFactory.New(options: options ?? Options).Create(raw);
+                var result = DataFactory.New(options: GetBest(options)).Create(raw);
                 return l.Return(result, "was IRawEntity");
             }
 
@@ -115,7 +115,7 @@ namespace ToSic.Eav.DataSources
             if (data.All(i => i is IHasRawEntity))
             {
                 var raw = data.Cast<IHasRawEntity<IRawEntity>>().ToList();
-                var result = DataFactory.New(options: options ?? Options).Create(raw);
+                var result = DataFactory.New(options: GetBest(options)).Create(raw);
                 return l.Return(result, "was IHasRawEntity");
             }
 
@@ -128,7 +128,9 @@ namespace ToSic.Eav.DataSources
             return l.Return(err, "error");
         }
 
-        private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>> source, DataFactoryOptions options) where T: IRawEntity
+        private DataFactoryOptions GetBest(Func<DataFactoryOptions> options) => options?.Invoke() ?? Options;
+
+        private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>> source, Func<DataFactoryOptions> options) where T: IRawEntity
         {
             var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
@@ -141,11 +143,11 @@ namespace ToSic.Eav.DataSources
                 return l.Return(EmptyList, "no items returned");
 
             // Transform result to IEntity
-            var result = DataFactory.New(options: options ?? Options).Create(raw);
+            var result = DataFactory.New(options: GetBest(options)).Create(raw);
             return l.Return(result, $"Got {result.Count} items");
         }
 
-        private IImmutableList<IEntity> GetHasRaw<T>(Func<IEnumerable<IHasRawEntity<T>>> source, DataFactoryOptions options) where T: IRawEntity
+        private IImmutableList<IEntity> GetHasRaw<T>(Func<IEnumerable<IHasRawEntity<T>>> source, Func<DataFactoryOptions> options) where T: IRawEntity
         {
             var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
@@ -158,7 +160,7 @@ namespace ToSic.Eav.DataSources
                 return l.Return(EmptyList, "no items returned");
 
             // Transform result to IEntity
-            var result = DataFactory.New(options: options ?? Options).Create(raw);
+            var result = DataFactory.New(options: GetBest(options)).Create(raw);
             return l.Return(result, $"Got {result.Count} items");
         }
 

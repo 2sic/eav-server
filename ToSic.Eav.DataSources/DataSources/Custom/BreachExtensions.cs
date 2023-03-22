@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
             Func<IEnumerable> source,
             string noParamOrder = Parameters.Protector,
             string name = StreamDefaultName,
-            DataFactoryOptions options = default) =>
+            Func<DataFactoryOptions> options = default) =>
             ds.ProvideOut(source, options: options, name: name);
         
     }

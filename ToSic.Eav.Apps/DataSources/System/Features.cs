@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSources.Sys
         public Features(MyServices services, IFeaturesInternal featuresService) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(featuresService);
-            ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: new DataFactoryOptions(typeName: "Feature"));
+            ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: () => new DataFactoryOptions(typeName: "Feature"));
         }
     }
 }
