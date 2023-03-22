@@ -6,21 +6,26 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// Represents a Dimension / Language Assignment
     /// </summary>
+    /// <remarks>
+    /// * completely #immutable since v15.04
+    /// </remarks>
     [PrivateApi("2021-09-30 hidden, previously marked as PublicApi_Stable_ForUseInYourCode")]
     public class Language : ILanguage
     {
-        /// <inheritdoc />
-        public int DimensionId { get; set; }
-
-        /// <inheritdoc />
-        public bool ReadOnly { get; set; }
-
-        /// <inheritdoc />
-        public string Key
+        public Language(string key, bool readOnly, int dimensionId = 0)
         {
-            get => _key;
-            set => _key = value.ToLowerInvariant();
+            Key = key.ToLowerInvariant();
+            ReadOnly = readOnly;
+            DimensionId = dimensionId;
         }
-        private string _key;
+
+        /// <inheritdoc />
+        public int DimensionId { get; }
+
+        /// <inheritdoc />
+        public bool ReadOnly { get; }
+
+        /// <inheritdoc />
+        public string Key { get; }
     }
 }

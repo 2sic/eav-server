@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
-using System.Net.Mime;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -20,9 +20,9 @@ namespace ToSic.Eav.DataSources
     /// This is not meant for VisualQuery, but for code which pre-processes data in a DataTable and then wants to provide it as entities. 
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-	public class DataTable : ExternalData
+	public class DataTable : CustomDataSourceAdvanced
 	{
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
         // help Link: https://r.2sxc.org/DsDataTable
 		#region Configuration-properties
 
@@ -81,12 +81,12 @@ namespace ToSic.Eav.DataSources
         /// Initializes a new instance of the DataTableDataSource class
         /// </summary>
         [PrivateApi]
-        public DataTable(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.ExtTbl")
+        public DataTable(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.ExtTbl")
         {
             ConnectServices(
-                _dataBuilder = dataBuilder
+                _dataFactory = dataFactory
             );
-            Provide(GetEntities);
+            ProvideOut(GetEntities);
         }
 
         /// <summary>
@@ -116,19 +116,19 @@ namespace ToSic.Eav.DataSources
             return this;
         }
 
-        private ImmutableArray<IEntity> GetEntities() => Log.Func(l =>
+        private IImmutableList<IEntity> GetEntities() => Log.Func(l =>
         {
             Configuration.Parse();
 
             l.A($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
             var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
-            return (result, $"ok: {result.Length}");
+            return (result, $"ok: {result.Count}");
         });
 
         /// <summary>
         /// Convert a DataTable to a Dictionary of EntityModels
         /// </summary>
-        private ImmutableArray<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null
+        private IImmutableList<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null
         ) => Log.Func(() =>
         {
             // Validate Columns
@@ -137,7 +137,7 @@ namespace ToSic.Eav.DataSources
             if (!source.Columns.Contains(titleField))
                 throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-            _dataBuilder.Configure(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField);
+            var tblFactory = _dataFactory.New(options: new DataFactoryOptions(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField));
             
             // Populate a new Dictionary with EntityModels
             var result = new List<IEntity>();
@@ -151,12 +151,12 @@ namespace ToSic.Eav.DataSources
                     StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
                 var mod = (string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?) ?? DateTime.MinValue;
 
-                var entity = _dataBuilder.Create(values, id: entityId, modified: mod);
+                var entity = tblFactory.Create(values, id: entityId, modified: mod);
                 result.Add(entity);
             }
 
-            var final = result.ToImmutableArray();
-            return (final, $"{final.Length}");
+            var final = result.ToImmutableList();
+            return (final, $"{final.Count}");
         });
     }
 }

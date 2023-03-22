@@ -1,7 +1,9 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Context;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -17,22 +19,23 @@ namespace ToSic.Eav.DataSources
         UiHint = "Keep data based on user roles (editor sees draft items)",
         Icon = Icons.Eye, 
         Type = DataSourceType.Security, 
-        GlobalName = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
-        In = new []{ Constants.PublishedStreamName + "*", Constants.DefaultStreamName + "*",  Constants.DraftsStreamName + "*" },
+        NameId = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
+        In = new []{ StreamPublishedName + "*", StreamDefaultName + "*",  StreamDraftsName + "*" },
         DynamicOut = false, 
         HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
 
     public class PublishingFilter : DataSource
 	{
+
         #region Configuration-properties
 
 		/// <summary>
 		/// Indicates whether to show drafts or only Published Entities. 
 		/// </summary>
-		[Configuration(Fallback = false)]
-		public bool ShowDrafts
+		[Configuration(Fallback = null)]
+		public bool? ShowDrafts
 		{
-			get => Configuration.GetThis(QueryConstants.ShowDraftsDefault);
+			get => Configuration.GetThis<bool?>(null);
             set => Configuration.SetThis(value);
         }
 		#endregion
@@ -42,19 +45,23 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new PublishingFilter
 		/// </summary>
 		[PrivateApi]
-		public PublishingFilter(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Publsh")
+		public PublishingFilter(MyServices services, IContextResolverUserPermissions userPermissions) : base(services, $"{LogPrefix}.Publsh")
         {
-            Provide(PublishingFilterList);
-       }
+            ConnectServices(
+                _userPermissions = userPermissions
+            );
+            ProvideOut(PublishingFilterList);
+        }
+        private readonly IContextResolverUserPermissions _userPermissions;
 
 
-	    private IImmutableList<IEntity> PublishingFilterList()
+        private IImmutableList<IEntity> PublishingFilterList()
 	    {
             Configuration.Parse();
-            Log.A($"get incl. draft:{ShowDrafts}");
-	        var outStreamName = ShowDrafts 
-                ? Constants.DraftsStreamName 
-                : Constants.PublishedStreamName;
+            var showDraftsInSettings = ShowDrafts;
+			var finalShowDrafts = ShowDrafts ?? _userPermissions.UserPermissions()?.UserMayEdit ?? QueryConstants.ParamsShowDraftsDefault;
+            Log.A($"get incl. draft:'{showDraftsInSettings}' = '{finalShowDrafts}'");
+	        var outStreamName = finalShowDrafts ? StreamDraftsName : StreamPublishedName;
 	        return In[outStreamName].List.ToImmutableList();
 	    }
 

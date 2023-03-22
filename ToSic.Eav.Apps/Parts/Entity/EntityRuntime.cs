@@ -15,8 +15,8 @@ namespace ToSic.Eav.Apps.Parts
     // ReSharper disable once InheritdocConsiderUsage
     public class EntityRuntime: PartOf<AppRuntime>
     {
-        private readonly LazySvc<DataSourceFactory> _dataSourceFactory;
-        public EntityRuntime(LazySvc<DataSourceFactory> dataSourceFactory): base ("RT.EntRun") =>
+        private readonly LazySvc<IDataSourceFactory> _dataSourceFactory;
+        public EntityRuntime(LazySvc<IDataSourceFactory> dataSourceFactory): base ("RT.EntRun") =>
             ConnectServices(
                 _dataSourceFactory = dataSourceFactory
             );
@@ -53,23 +53,16 @@ namespace ToSic.Eav.Apps.Parts
         /// <returns></returns>
         public IEntity Get(Guid entityGuid) => Parent.AppState.List.One(entityGuid);
 
-        public IEnumerable<IEntity> Get(string contentTypeName
-        // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-        // , bool includeParentApps = false
-        )
+        public IEnumerable<IEntity> Get(string contentTypeName, IDataSource source = default)
         {
-            var typeFilter = _dataSourceFactory.Value.GetDataSource<EntityTypeFilter>(Parent.Data); // need to go to cache, to include published & unpublished
+            var typeFilter = _dataSourceFactory.Value.Create<EntityTypeFilter>(source: source ?? Parent.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
-            // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-            //if (includeParentApps) typeFilter.IncludeParentApps = true;
             return typeFilter.List;
         }
         public IEnumerable<IEntity> GetWithParentAppsExperimental(string contentTypeName) => Log.Func(() =>
         {
-            var merged = _dataSourceFactory.Value.GetDataSource<AppWithParents>(Parent.Data);
-            var typeFilter = _dataSourceFactory.Value.GetDataSource<EntityTypeFilter>(merged);
-            typeFilter.TypeName = contentTypeName;
-            return typeFilter.List;
+            var merged = _dataSourceFactory.Value.Create<AppWithParents>(source: Parent.Data);
+            return Get(contentTypeName, merged);
         });
 
         #endregion

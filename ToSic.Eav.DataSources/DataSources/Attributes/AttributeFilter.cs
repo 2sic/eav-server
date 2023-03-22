@@ -2,10 +2,11 @@
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -20,10 +21,10 @@ namespace ToSic.Eav.DataSources
         UiHint = "Remove attributes/properties to limit what is available",
         Icon = Icons.Delete,
         Type = DataSourceType.Modify, 
-        GlobalName = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new []{Constants.DefaultStreamNameRequired},
-	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.AttributeFilter",
+        In = new []{QueryConstants.InStreamDefaultRequired},
+	    ConfigurationType = "|Config ToSic.Eav.DataSources.AttributeFilter",
         HelpLink = "https://r.2sxc.org/DsAttributeFilter")]
 
     public class AttributeFilter : DataSource
@@ -68,7 +69,7 @@ namespace ToSic.Eav.DataSources
 		public AttributeFilter(EntityBuilder entityBuilder, MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.AtribF")
         {
             _entityBuilder = entityBuilder;
-            Provide(GetList);
+            ProvideOut(GetList);
         }
 
         private readonly EntityBuilder _entityBuilder;
@@ -82,6 +83,9 @@ namespace ToSic.Eav.DataSources
         {
             Configuration.Parse();
 
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
+
             var raw = AttributeNames;
             // note: since 2sxc 11.13 we have lines for attributes
             // older data still uses commas since it was single-line
@@ -94,33 +98,29 @@ namespace ToSic.Eav.DataSources
             l.A($"attrib filter names:[{string.Join(",", attributeNames)}]");
 
             // Determine if we should remove or keep the things in the list
-            var keepNamedAttributes = Mode != ModeRemove;
+            var modeIsKeepAttributes = Mode != ModeRemove;
 
             // If no attributes were given or just one with *, then don't filter at all
             var noFieldNames = attributeNames.Length == 0
                                || attributeNames.Length == 1 && string.IsNullOrWhiteSpace(attributeNames[0]);
 
-            if (!GetRequiredInList(out var sourceList))
-                return (sourceList, "error");
-
             // Case #1 if we don't change anything, short-circuit and return original
-            if (noFieldNames && !keepNamedAttributes)
-                return (sourceList, $"keep original {sourceList.Count}");
+            if (noFieldNames && !modeIsKeepAttributes)
+                return (source, $"keep original {source.Count}");
 
-            var result = sourceList
+            var result = source
                 .Select(e =>
                 {
                     // Case 2: Check if we should take none at all
-                    if (noFieldNames && keepNamedAttributes)
-                        return _entityBuilder.Clone(e, new Dictionary<string, IAttribute>(), null);
+                    if (noFieldNames && modeIsKeepAttributes)
+                        return _entityBuilder.CreateFrom(e, attributes: _entityBuilder.Attribute.Empty());
 
                     // Case 3 - not all fields, keep/drop the ones we don't want
                     var attributes = e.Attributes
-                        .Where(a => attributeNames.Contains(a.Key) == keepNamedAttributes)
-                        .ToDictionary(k => k.Key, v => v.Value);
-                    return _entityBuilder.Clone(e, attributes, e.Relationships.AllRelationships);
+                        .Where(aPair => attributeNames.Contains(aPair.Key) == modeIsKeepAttributes)
+                        .ToImmutableDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
+                    return _entityBuilder.CreateFrom(e, attributes: attributes);
                 })
-                .Cast<IEntity>()
                 .ToImmutableList();
 
             return (result, $"modified {result.Count}");

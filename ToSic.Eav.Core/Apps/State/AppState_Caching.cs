@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps
 
 
         /// <inheritdoc />
-        public bool CacheChanged(long newCacheTimeStamp) => CacheTimestamp != newCacheTimeStamp;
+        public bool CacheChanged(long dependentTimeStamp) => CacheTimestamp > dependentTimeStamp;
 
         /// <summary>
         /// The App can itself be the master of expiry, or it can be that a parent-app must be included

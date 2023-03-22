@@ -2,12 +2,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.Data;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.LookUp;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Core.Tests.LookUp
 {
     [TestClass]
-    public class LookUpTests
+    public class LookUpTests: TestBaseEavCore
     {
         [TestMethod]
         public void ValueProvider_StaticValueProvider()
@@ -30,7 +32,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void ValueProvider_EntityValueProvider()
         {
-            ILookUp valProv = new LookUpInEntity("no-name", SampleData.TestEntityDaniel(), null);
+            ILookUp valProv = new LookUpInEntity("no-name", new SampleData(GetService<DataBuilder>()).TestEntityDaniel(), null);
 
             Assert.AreNotEqual(string.Empty, valProv.Get("FirstName"), "Has first name");
             Assert.AreNotEqual(string.Empty, valProv.Get("EntityId"), "Has entity id");
@@ -48,7 +50,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void ValueProvider_EntityValueProvider_DateTimeFormat()
         {
-            ILookUp valProv = new LookUpInEntity("no-name", SampleData.TestEntityDaniel(), null);
+            ILookUp valProv = new LookUpInEntity("no-name", new SampleData(GetService<DataBuilder>()).TestEntityDaniel(), null);
             
             Assert.AreEqual(DateTime.Parse("2019-11-06T01:00:05Z"), DateTime.Parse(valProv.Get("AnyDate")));
             Assert.AreEqual("TestType", valProv.Get("EntityType"));

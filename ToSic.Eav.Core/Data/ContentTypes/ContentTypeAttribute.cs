@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
@@ -7,8 +6,12 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// Defines an attribute with name and the type this attribute has. Part of of a <see cref="IContentType"/> definition.
+    /// Defines an attribute with name and the type this attribute has.
+    /// Part of of a <see cref="IContentType"/> definition.
     /// </summary>
+    /// <remarks>
+    /// * completely #immutable since v15.04
+    /// </remarks>
     [PrivateApi("2021-09-30 changed to private, before was internal-this is just fyi, always use the interface")]
     public class ContentTypeAttribute : AttributeBase, IContentTypeAttribute
     {
@@ -16,48 +19,39 @@ namespace ToSic.Eav.Data
         public int AppId { get; }
 
         /// <inheritdoc />
-        public int AttributeId { get; set; }
+        public int AttributeId { get; }
 
         /// <inheritdoc />
-        public int SortOrder { get; internal set; }
+        public int SortOrder { get; }
 
         /// <inheritdoc />
-        public bool IsTitle { get; set; }
+        public bool IsTitle { get; }
 
         /// <inheritdoc />
         /// <summary>
         /// Extended constructor when also storing the persistence Id
         /// </summary>
-        // TODO: clean up call to this function, as 2 params are not used
-        public ContentTypeAttribute(int appId, string name, string type, bool isTitle, int attributeId, int sortOrder, 
-            IHasMetadataSource metaProvider = null, int parentApp = 0, 
-            Func<IHasMetadataSource> metaSourceFinder = null) : base(name, type)
+        public ContentTypeAttribute(
+            int appId,
+            string name,
+            ValueTypes type,
+            bool isTitle,
+            int attributeId,
+            int sortOrder,
+            IMetadataOf metadata = default) : base(name, type)
         {
             AppId = appId;
             IsTitle = isTitle;
             AttributeId = attributeId;
             SortOrder = sortOrder;
-            _metaSourceFinder = metaSourceFinder;
+            Metadata = metadata;
         }
-
-        /// <summary>
-        /// Create an attribute definition "from scratch" so for
-        /// import-scenarios and code-created attribute definitions
-        /// </summary>
-        public ContentTypeAttribute(int appId, string name, string type, List<IEntity> attributeMetadata)
-            : this(appId, name, type, false, 0, 0)
-            => MetadataInternal.Use(attributeMetadata);
 
 
         #region Metadata and Permissions
 
         /// <inheritdoc />
-        public IMetadataOf Metadata => MetadataInternal;
-
-        private MetadataOf<int> MetadataInternal 
-            => _metadata ?? (_metadata = new MetadataOf<int>((int)TargetTypes.Attribute, AttributeId, _metaSourceFinder, Name + " (" + Type + ")"));
-        private MetadataOf<int> _metadata;
-        private readonly Func<IHasMetadataSource> _metaSourceFinder;
+        public IMetadataOf Metadata { get; }
 
         /// <inheritdoc />
         [PrivateApi("because permissions will probably become an entity-based type")]

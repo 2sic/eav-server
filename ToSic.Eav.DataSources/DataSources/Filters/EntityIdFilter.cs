@@ -21,10 +21,10 @@ namespace ToSic.Eav.DataSources
         UiHint = "Find items based on one or more IDs",
         Icon = Icons.Fingerprint,
         Type = DataSourceType.Filter, 
-        GlobalName = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { Constants.DefaultStreamNameRequired },
-	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
+        In = new[] { QueryConstants.InStreamDefaultRequired },
+	    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
         HelpLink = "https://r.2sxc.org/DsIdFilter")]
 
     public class EntityIdFilter : DataSource
@@ -54,28 +54,28 @@ namespace ToSic.Eav.DataSources
 		[PrivateApi]
 		public EntityIdFilter(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.EntIdF")
         {
-            Provide(GetList);
+            ProvideOut(GetList);
 		}
 
         private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
-            var entityIds = CustomConfigurationParse();
+            var entityIdsOrError = CustomConfigurationParse();
+            if (entityIdsOrError.IsError)
+                return (entityIdsOrError.Errors, "error");
 
-            // if CustomConfiguration resulted in an error, report now
-            if (!ErrorStream.IsDefaultOrEmpty)
-                return (ErrorStream, "error");
+            var entityIds = entityIdsOrError.Result;
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
-            var result = entityIds.Select(eid => originals.One(eid)).Where(e => e != null).ToImmutableArray();
+            var result = entityIds.Select(eid => source.One(eid)).Where(e => e != null).ToImmutableList();
 
-            l.A(l.Try(() => $"get ids:[{string.Join(",", entityIds)}] found:{result.Length}"));
+            l.A(l.Try(() => $"get ids:[{string.Join(",", entityIds)}] found:{result.Count}"));
             return (result, "ok");
         });
 
         [PrivateApi]
-        private int[] CustomConfigurationParse() => Log.Func(() =>
+        private ResultOrError<int[]> CustomConfigurationParse() => Log.Func(() =>
         {
             Configuration.Parse();
 
@@ -86,7 +86,7 @@ namespace ToSic.Eav.DataSources
                 var configEntityIds = EntityIds;
                 // check if we have anything to work with
                 if (string.IsNullOrWhiteSpace(configEntityIds))
-                    return (Array.Empty<int>(), "empty");
+                    return (new ResultOrError<int[]>(true, Array.Empty<int>()), "empty");
 
                 var preCleanedIds = configEntityIds
                     .Split(',')
@@ -95,12 +95,13 @@ namespace ToSic.Eav.DataSources
                 foreach (var strEntityId in preCleanedIds)
                     if (int.TryParse(strEntityId, out var entityIdToAdd))
                         lstEntityIds.Add(entityIdToAdd);
-                return (lstEntityIds.Distinct().ToArray(), EntityIds);
+                return (new ResultOrError<int[]>(true, lstEntityIds.Distinct().ToArray()), EntityIds);
             }
             catch (Exception ex)
             {
-                SetError("Can't find IDs", "Unable to load EntityIds from Configuration. Unexpected Exception.", ex);
-                return (null, "error");
+                return (new ResultOrError<int[]>(false, Array.Empty<int>(),
+                    Error.Create(title: "Can't find IDs", message: "Unable to load EntityIds from Configuration. Unexpected Exception.",
+                        exception: ex)), "error");
             }
 
             #endregion

@@ -89,6 +89,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataSourceFactoryTestExtensions.cs" />
     <Compile Include="IServiceBuilder.cs" />
     <Compile Include="Mocks\MockGlobalMetadataProvider.cs" />
     <Compile Include="Platforms\TestPlatformNotPatron.cs" />

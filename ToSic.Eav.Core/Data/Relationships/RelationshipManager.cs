@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
@@ -16,34 +15,44 @@ namespace ToSic.Eav.Data
 	{
         // special note: ATM everything is an IEntity, so EntityLight is currently not supported
 
-        private readonly IEntityLight _entity;
-	    public IEnumerable<EntityRelationship> AllRelationships { get; }
+        /// <summary>
+        /// This should be reworked, it often contains all relationships of the entire app
+        /// </summary>
+	    private IEnumerable<EntityRelationship> AllRelationships { get; }
 
-        private AppState App;
 
 		/// <summary>
 		/// Initializes a new instance of the RelationshipManager class.
 		/// </summary>
-		public RelationshipManager(IEntityLight entity, AppState app, IEnumerable<EntityRelationship> allRelationships)
+		internal RelationshipManager(IEntityLight entity, AppState app, IEnumerable<EntityRelationship> fallbackRels = null)
         {
 			_entity = entity;
-            App = app;
-		    if (app != null)
-		        AllRelationships = new SynchronizedList<EntityRelationship>(app,
-		            () => app.Relationships.List);
+            _app = app;
+            _fallbackRels = fallbackRels;
+            if (app != null)
+                AllRelationships = app.Relationships;
             else
-		        AllRelationships = allRelationships ?? new List<EntityRelationship>();
+		        AllRelationships = fallbackRels ?? new List<EntityRelationship>();
 		}
+        private readonly IEntityLight _entity;
+        private readonly AppState _app;
+        private readonly IEnumerable<EntityRelationship> _fallbackRels;
 
-		/// <inheritdoc />
+        internal RelationshipManager(IEntityLight entity, RelationshipManager original)
+            : this(entity, original?._app, original?._fallbackRels) { }
+
+        /// <inheritdoc />
 		public IEnumerable<IEntity> AllChildren => ChildRelationships().Select(r => r.Child);
 
 	    private IImmutableList<EntityRelationship> ChildRelationships()
         {
             if (_childRelationships != null) return _childRelationships.List;
-            Func<IImmutableList<EntityRelationship>> getChildren = () => AllRelationships.Where(r => r.Parent == _entity).ToImmutableArray();
-            if (App == null) return getChildren.Invoke();
-            _childRelationships = new SynchronizedList<EntityRelationship>(App, getChildren);
+
+            IImmutableList<EntityRelationship> GetChildrenInternal() 
+                => AllRelationships.Where(r => r.Parent == _entity).ToImmutableList();
+
+            if (_app == null) return GetChildrenInternal();
+            _childRelationships = new SynchronizedList<EntityRelationship>(_app, GetChildrenInternal);
             return _childRelationships.List;
         }
 
@@ -58,17 +67,18 @@ namespace ToSic.Eav.Data
 	    private IImmutableList<EntityRelationship> ParentRelationships()
         {
             if (_parentRelationships != null) return _parentRelationships.List;
-            Func<IImmutableList<EntityRelationship>> getParents = () => AllRelationships.Where(r => r.Child == _entity).ToImmutableArray();// .ToList();
-            if (App == null) return getParents.Invoke(); // return AllRelationships.Where(r => r.Child == _entity);
-            _parentRelationships = new SynchronizedList<EntityRelationship>(App, getParents);
+
+            IImmutableList<EntityRelationship> GetParents() => AllRelationships.Where(r => r.Child == _entity).ToImmutableList();
+
+            if (_app == null) return GetParents();
+            _parentRelationships = new SynchronizedList<EntityRelationship>(_app, GetParents);
             return _parentRelationships.List;
         }
         private SynchronizedList<EntityRelationship> _parentRelationships;
 
         /// <inheritdoc />
         [PrivateApi]
-        public IRelationshipChildren Children 
-            => _entity is IEntity entity ? new RelationshipChildren(entity.Attributes) : null ;
+        public IRelationshipChildren Children => _entity is IEntity entity ? new RelationshipChildren(entity.Attributes) : null ;
 
 
 

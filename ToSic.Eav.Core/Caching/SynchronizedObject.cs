@@ -63,7 +63,7 @@ namespace ToSic.Eav.Caching
         public long CacheTimestamp { get; private set; }
 
         /// <inheritdoc />
-        public bool CacheChanged(long newCacheTimeStamp) => Upstream.CacheChanged(newCacheTimeStamp);
+        public bool CacheChanged(long dependentTimeStamp) => Upstream.CacheChanged(dependentTimeStamp);
 
         /// <inheritdoc />
         public bool CacheChanged() => Upstream.CacheChanged(CacheTimestamp);

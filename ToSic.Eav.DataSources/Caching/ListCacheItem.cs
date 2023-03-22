@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources.Caching
         public long CacheTimestamp { get; set; }
 
         /// <inheritdoc/>
-        public bool CacheChanged(long newCacheTimeStamp) => newCacheTimeStamp != CacheTimestamp;
+        public bool CacheChanged(long dependentTimeStamp) => dependentTimeStamp != CacheTimestamp;
 
         /// <summary>
         /// Initialize the object - ready to cache

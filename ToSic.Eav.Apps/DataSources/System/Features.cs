@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Configuration;
-using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -20,45 +20,27 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "List all features",
         Icon = Icons.TableChart,
         Type = DataSourceType.System,
-        GlobalName = "398d0b9f-044f-48f7-83ef-307872f7ed93",
+        NameId = "398d0b9f-044f-48f7-83ef-307872f7ed93",
         Audience = Audience.Advanced,
         DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Features : DataSource
+    public sealed class Features : CustomDataSourceLight
     {
 
         #region Configuration-properties (no config)
 
         #endregion
 
-
-        private readonly IDataBuilder _featuresDataBuilder;
-
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Features(MyServices services, IFeaturesInternal featuresService, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Features(MyServices services, IFeaturesInternal featuresService) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
-            ConnectServices(
-                _featuresService = featuresService,
-                _featuresDataBuilder = dataBuilder.Configure(typeName: "Feature")
-            );
-            Provide(GetList);
+            ConnectServices(featuresService);
+            ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: new DataFactoryOptions(typeName: "Feature"));
         }
-        private readonly IFeaturesInternal _featuresService;
-
-
-        private IImmutableList<IEntity> GetList() => Log.Func(l =>
-        {
-            // Don't parse configuration as there is nothing to configure
-            // Configuration.Parse();
-
-            var list = _featuresDataBuilder.CreateMany(_featuresService.All.OrderBy(f => f.NameId));
-
-            return (list, $"{list.Count}");
-        });
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
+using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Services;
@@ -21,15 +23,15 @@ namespace ToSic.Eav.ImportExport.Xml
             public List<DimensionDefinition> PrioritizedDimensions = new List<DimensionDefinition>();
         }
 
-        public XmlToEntity(IAppStates appStates, MultiBuilder multiBuilder) : base("Imp.XmlEnt")
+        public XmlToEntity(IAppStates appStates, DataBuilder dataBuilder) : base("Imp.XmlEnt")
         {
             ConnectServices(
-                _multiBuilder = multiBuilder
+                _dataBuilder = dataBuilder
             );
             _presetApp = appStates.GetPresetApp();
         }
 
-        private readonly MultiBuilder _multiBuilder;
+        private readonly DataBuilder _dataBuilder;
         private readonly AppState _presetApp;
 
         public XmlToEntity Init(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
@@ -167,18 +169,20 @@ namespace ToSic.Eav.ImportExport.Xml
 
                 // construct value elements
                 var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
-                        => _multiBuilder.Value.Build(tempImportValue.XmlValue.Attribute(
-                                                         XmlConstants.EntityTypeAttribute)?.Value ??
-                                                     throw new NullReferenceException(
-                                                         "cant' build attribute with unknown value-type"),
+                        => _dataBuilder.Value.Build(
+                            ValueTypeHelpers.Get(
+                                tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value ??
+                                throw new NullReferenceException("can't build attribute with unknown value-type")
+                            ),
                             tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
                             throw new NullReferenceException("can't build attribute without value"),
-                            tempImportValue.Dimensions))
+                            tempImportValue.Dimensions.ToImmutableList()))
                     .ToList();
 
                 // construct the attribute with these value elements
-                var newAttr = _multiBuilder.Attribute.CreateTyped(sourceAttrib.StaticName,
-                    tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value,
+                var newAttr = _dataBuilder.Attribute.Create(
+                    sourceAttrib.StaticName,
+                    ValueTypeHelpers.Get(tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value),
                     currentAttributesImportValues);
 
                 // attach to attributes-list
@@ -194,20 +198,35 @@ namespace ToSic.Eav.ImportExport.Xml
             var guidString = xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
                              throw new NullReferenceException("can't import an entity without a guid identifier");
             var guid = Guid.Parse(guidString);
-		    var attribs = finalAttributes.ToDictionary(x => x.Key, y => (object) y.Value);
+		    // var attribs = finalAttributes.ToDictionary(x => x.Key, y => (object) y.Value);
 
-		    var targetEntity = globalType != null
-		        ? new Entity(AppId, guid, globalType, attribs)
-		        : new Entity(AppId, 0, guid, typeName, attribs);
-		    if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
+            var typeForEntity = globalType;
+            if (typeForEntity == null)
+            {
+                // if it's not a global type but still marked as IsJson
+                // then it's a local extension type with Content-Type definitions in the app/system folder
+                // in this case, the storage system must know that it should json-save it
+                var newTypeRepoType = xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True"
+                    ? RepositoryTypes.Folder
+                    : RepositoryTypes.Sql;
+                typeForEntity = _dataBuilder.ContentType.Create(appId: AppId,
+                    id: 0, name: typeName, nameId: null, scope: null, repositoryType: newTypeRepoType);
+            }
+		    var targetEntity = // globalType != null
+		        // ? _dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, typedValues: finalAttributes)
+                // If not yet a known type, create a temporary pointer ContentType
+		        /*:*/ _dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity,
+                    attributes: finalAttributes.ToImmutableInvariant(),
+                    metadataFor: metadataForFor);
+		    //if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
 
-            // if it's not a global type but still marked as IsJson
-            // then it's a local extension type with Content-Type definitions in the app/system folder
-            // in this case, the storage system must know that it should json-save it
-            if (globalType == null && xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True")
-                (targetEntity.Type as ContentType).SetSource(RepositoryTypes.Folder);
+            //// if it's not a global type but still marked as IsJson
+            //// then it's a local extension type with Content-Type definitions in the app/system folder
+            //// in this case, the storage system must know that it should json-save it
+            //if (globalType == null && xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True")
+            //    (targetEntity.Type as ContentType).SetSource(RepositoryTypes.Folder);
 
-            return wrap.Return(targetEntity, $"returning {guid} of type {globalType?.Name ?? typeName} with attribs:{attribs.Count} and metadata:{metadataForFor != null}");
+            return wrap.Return(targetEntity, $"returning {guid} of type {globalType?.Name ?? typeName} with attribs:{finalAttributes.Count} and metadata:{metadataForFor != null}");
         }
 
         /// <summary>
@@ -225,7 +244,7 @@ namespace ToSic.Eav.ImportExport.Xml
             var dimensionsToAdd = new List<ILanguage>();
             if (_envLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
             {
-                dimensionsToAdd.Add(new Language { Key = envLang.EnvironmentKey, ReadOnly = readOnly });
+                dimensionsToAdd.Add(new Language(envLang.EnvironmentKey, readOnly));
                 logText += "built dimension-list";
             }
 
@@ -282,33 +301,36 @@ namespace ToSic.Eav.ImportExport.Xml
 	        return wrap.Return(sourceValueNode, (sourceValueNode != null).ToString());
         }
 
-	    private Tuple<XElement, bool> FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang, List<XElement> xmlValuesOfAttrib)
-	    {
-	        var wrap = Log.Fn<Tuple<XElement, bool>>(envLang.EnvironmentKey);
-	        XElement sourceValueNode = null;
-	        var readOnly = false;
+        private (XElement Element, bool ReadOnly) FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang,
+            List<XElement> xmlValuesOfAttrib
+        ) => Log.Func(envLang.EnvironmentKey, () =>
+        {
+            XElement sourceValueNode = null;
+            var readOnly = false;
 
             // find the xml-node which best matches the language we want to fill in
             foreach (var sourceLanguage in envLang.PrioritizedDimensions)
-	        {
-	            var dimensionId = sourceLanguage.DimensionId.ToString();
-	            // find a possible match for exactly this language
-	            sourceValueNode = xmlValuesOfAttrib.FirstOrDefault(p =>
-	                p.Elements(XmlConstants.ValueDimNode).Any(d => d.Attribute(XmlConstants.DimId)?.Value == dimensionId));
-	            if (sourceValueNode == null) continue;
+            {
+                var dimensionId = sourceLanguage.DimensionId.ToString();
+                // find a possible match for exactly this language
+                sourceValueNode = xmlValuesOfAttrib.FirstOrDefault(p =>
+                    p.Elements(XmlConstants.ValueDimNode)
+                        .Any(d => d.Attribute(XmlConstants.DimId)?.Value == dimensionId));
+                if (sourceValueNode == null) continue;
 
-	            // if match found, check what the read/write should be
-	            var textVal = sourceValueNode.Elements(XmlConstants.ValueDimNode)
-	                              .FirstOrDefault(p => p.Attribute(XmlConstants.DimId)?.Value == dimensionId)?
-	                              .Attribute("ReadOnly")?.Value ?? "false";
+                // if match found, check what the read/write should be
+                var textVal = sourceValueNode.Elements(XmlConstants.ValueDimNode)
+                    .FirstOrDefault(p => p.Attribute(XmlConstants.DimId)?.Value == dimensionId)?
+                    .Attribute("ReadOnly")?.Value ?? "false";
 
-	            readOnly = bool.Parse(textVal);
+                readOnly = bool.Parse(textVal);
 
-	            Log.A($"node for {envLang.EnvironmentKey} on Dim:{sourceLanguage.DimensionId}; readOnly: {readOnly}");
-	            break;
-	        }
-	        return wrap.Return(new Tuple<XElement, bool>(sourceValueNode, readOnly), (sourceValueNode != null).ToString());
-        }
+                Log.A($"node for {envLang.EnvironmentKey} on Dim:{sourceLanguage.DimensionId}; readOnly: {readOnly}");
+                break;
+            }
+
+            return ((sourceValueNode, readOnly), (sourceValueNode != null).ToString());
+        });
 
 
 	    private class ImportValue

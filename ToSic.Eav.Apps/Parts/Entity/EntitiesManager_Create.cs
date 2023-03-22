@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 
@@ -10,14 +8,17 @@ namespace ToSic.Eav.Apps.Parts
 {
     public partial class EntitiesManager
     {
-        public Tuple<int, Guid> Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null
+        public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null
         ) => Log.Func($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}", () =>
         {
-            var newEnt = new Entity(Parent.AppId, Guid.NewGuid(), Parent.Read.ContentTypes.Get(typeName), values);
-            if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
+            var newEnt = Builder.Entity.Create(appId: Parent.AppId, guid: Guid.NewGuid(),
+                contentType: Parent.Read.ContentTypes.Get(typeName),
+                attributes: Builder.Attribute.Create(values),
+                metadataFor: metadataFor);
+            //if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
             var eid = Save(newEnt);
             var guid = Parent.DataController.Entities.TempLastSaveGuid;
-            return (new Tuple<int, Guid>(eid, guid), $"id:{eid}, guid:{guid}");
+            return ((eid, guid), $"id:{eid}, guid:{guid}");
         });
 
         
@@ -42,7 +43,9 @@ namespace ToSic.Eav.Apps.Parts
                 return existingEnt.EntityId;
             }
 
-            var newE = new Entity(Parent.AppId, newGuid, Parent.Read.ContentTypes.Get(typeName), values);
+            var newE = Builder.Entity.Create(appId: Parent.AppId, guid: newGuid,
+                contentType: Parent.Read.ContentTypes.Get(typeName),
+                attributes: Builder.Attribute.Create(values));
             return Save(newE);
         }
     }

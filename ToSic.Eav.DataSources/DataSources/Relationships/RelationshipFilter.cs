@@ -20,10 +20,10 @@ namespace ToSic.Eav.DataSources
         UiHint = "Keep items having a relationship matching a criteria",
         Icon = Icons.Share,
         Type = DataSourceType.Filter,
-        GlobalName = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
-        In = new[] { Constants.DefaultStreamNameRequired, Constants.FallbackStreamName },
+        NameId = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
+        In = new[] { QueryConstants.InStreamDefaultRequired, DataSourceConstants.StreamFallbackName },
         DynamicOut = false,
-        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
+        ConfigurationType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
         HelpLink = "https://r.2sxc.org/DsRelationshipFilter")]
     public sealed class RelationshipFilter : DataSource
     {
@@ -143,7 +143,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public RelationshipFilter(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.Relfil")
         {
-            Provide(GetRelationshipsOrFallback);
+            ProvideOut(GetRelationshipsOrFallback);
             //ConfigMask(nameof(Relationship));
             //ConfigMask(nameof(Filter));
             //ConfigMaskMyConfig(nameof(CompareAttribute), $"{Settings.AttributeOnRelationship}||{Attributes.EntityFieldTitle}");
@@ -156,13 +156,13 @@ namespace ToSic.Eav.DataSources
         private IImmutableList<IEntity> GetRelationshipsOrFallback() => Log.Func(() =>
         {
             var res = GetEntities();
-            if (!res.Any() && In.HasStreamWithItems(Constants.FallbackStreamName))
-                return (In[Constants.FallbackStreamName].List.ToImmutableList(), "fallback");
+            if (!res.Any() && In.HasStreamWithItems(DataSourceConstants.StreamFallbackName))
+                return (In[DataSourceConstants.StreamFallbackName].List.ToImmutableList(), "fallback");
 
             return (res, "ok");
         });
 
-        private IImmutableList<IEntity> GetEntities() => Log.Func(() =>
+        private IImmutableList<IEntity> GetEntities() => Log.Func(l =>
         {
             // todo: maybe do something about languages on properties?
             Configuration.Parse();
@@ -178,14 +178,14 @@ namespace ToSic.Eav.DataSources
                 strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
 
             if (!AllCompareModes.Contains(strMode))
-                return (SetError("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."), "error");
+                return (Error.Create(title: "CompareMode unknown", message: $"CompareMode other '{strMode}' is unknown."), "error");
 
             //if (!Enum.TryParse<CompareModes>(strMode, true, out var mode))
             //    return (SetError("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."), "error");
 
             var childParent = ChildOrParent;
             if (!_directionPossibleValues.Contains(childParent, StringComparer.CurrentCultureIgnoreCase))
-                return (SetError("Can only compare Children", $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'"), "error");
+                return (Error.Create(title: "Can only compare Children", message: $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'"), "error");
 
             //var lang = Languages.ToLowerInvariant();
             //if (lang != "default")
@@ -193,10 +193,10 @@ namespace ToSic.Eav.DataSources
             //if (lang == "default") lang = ""; // no language is automatically the default language
 
             var lowAttribName = compAttr.ToLowerInvariant();
-            Log.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{strMode}', child/parent:'{childParent}'");
+            l.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{strMode}', child/parent:'{childParent}'");
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var compType = lowAttribName == Attributes.EntityFieldAutoSelect
                 ? CompareType.Auto
@@ -207,24 +207,34 @@ namespace ToSic.Eav.DataSources
                         : CompareType.Any;
 
             // pick the correct value-comparison
-            var comparisonOnRelatedItem = compType == CompareType.Auto
-                ? CompareTwo(GetFieldValue(CompareType.Id, null), GetFieldValue(CompareType.Title, null))
-                : CompareOne(GetFieldValue(compType, compAttr));
+            Func<IEntity, string, bool> comparisonOnRelatedItem;
+            if (compType == CompareType.Auto)
+            {
+                var getId = GetFieldValue(CompareType.Id, null);
+                if (getId.IsError) return (getId.Errors, "error");
+                var getTitle = GetFieldValue(CompareType.Title, null);
+                if (getTitle.IsError) return (getTitle.Errors, "error");
+                comparisonOnRelatedItem = CompareTwo(getId.Result, getTitle.Result);
 
-            if (comparisonOnRelatedItem == null)
-                return (ErrorStream, "error");
+            }
+            else
+            {
+                var getValue = GetFieldValue(compType, compAttr);
+                if (getValue.IsError) return (getValue.Errors, "error");
+                comparisonOnRelatedItem = CompareOne(getValue.Result);
+            }
 
             var filterList = Separator == DefaultSeparator
                 ? new[] { filter }
                 : filter.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries);
 
 
-            Log.A($"will compare mode:{strMode} on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
+            l.A($"will compare mode:{strMode} on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
 
             // pick the correct list-comparison - atm ca. 6 options
-            var modeCompare = PickMode(strMode, relationship, comparisonOnRelatedItem, filterList);
-            if (modeCompare == null)
-                return (ErrorStream, "error");
+            var modeCompareOrError = PickMode(strMode, relationship, comparisonOnRelatedItem, filterList);
+            if (modeCompareOrError.IsError) return (modeCompareOrError.Errors, "error");
+            var modeCompare = modeCompareOrError.Result;
 
             var finalCompare = useNot
                 ? e => !modeCompare(e)
@@ -232,14 +242,13 @@ namespace ToSic.Eav.DataSources
 
             try
             {
-                var results = originals.Where(finalCompare).ToImmutableArray();
+                var results = source.Where(finalCompare).ToImmutableList();
 
-                return (results, $"{results.Length}");
+                return (results, $"{results.Count}");
             }
             catch (Exception ex)
             {
-                return (SetError("Error comparing Relationships", "Unknown error, check details in Insights logs", ex),
-                    "error");
+                return (Error.Create(title: "Error comparing Relationships", message: "Unknown error, check details in Insights logs", exception: ex), "error");
             }
         });
 
@@ -252,46 +261,54 @@ namespace ToSic.Eav.DataSources
         /// <param name="internalCompare">internal compare method</param>
         /// <param name="valuesToFind">value-list to compare to</param>
         /// <returns></returns>
-        private Func<IEntity, bool> PickMode(string modeToPick, string relationship,
-            Func<IEntity, string, bool> internalCompare, string[] valuesToFind) => Log.Func<Func<IEntity, bool>>(l =>
+        private ResultOrError<Func<IEntity, bool>> PickMode(string modeToPick, string relationship,
+            Func<IEntity, string, bool> internalCompare, string[] valuesToFind) => Log.Func(l =>
         {
             switch (modeToPick)
             {
                 case CompareModeContains:
                     if (valuesToFind.Length > 1)
-                        return (entity =>
-                        {
-                            var rels = entity.Relationships.Children[relationship];
-                            return valuesToFind.All(v => rels.Any(r => internalCompare(r, v)));
-                        }, "contains all");
-                    return (entity => entity.Relationships.Children[relationship]
-                        .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? "")), "contains one");
+                        return (new ResultOrError<Func<IEntity, bool>>(true,
+                            entity =>
+                            {
+                                var rels = entity.Relationships.Children[relationship];
+                                return valuesToFind.All(v => rels.Any(r => internalCompare(r, v)));
+                            }), "contains all");
+                    return (new ResultOrError<Func<IEntity, bool>>(true,
+                        entity => entity.Relationships.Children[relationship]
+                            .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? ""))
+                    ), "contains one");
                 case CompareModeContainsAny:
                     // Condition that of the needed relationships, at least one must exist
-                    return (entity =>
+                    return (new ResultOrError<Func<IEntity, bool>>(true, entity =>
                     {
                         var rels = entity.Relationships.Children[relationship];
                         return valuesToFind.Any(v => rels.Any(r => internalCompare(r, v)));
-                    }, "will use contains any");
+                    }), "will use contains any");
                 case CompareModeAny:
-                    return (entity => entity.Relationships.Children[relationship].Any(), "will use any");
+                    return (new ResultOrError<Func<IEntity, bool>>(true,
+                        entity => entity.Relationships.Children[relationship].Any()), "will use any");
                 case CompareModeFirst:
                     // Condition that of the needed relationships, the first must be what we want
-                    return (entity =>
+                    return (new ResultOrError<Func<IEntity, bool>>(true, entity =>
                     {
                         var first = entity.Relationships.Children[relationship].FirstOrDefault();
                         return first != null && valuesToFind.Any(v => internalCompare(first, v));
-                    }, "will use first is");
+                    }), "will use first is");
                 case CompareModeCount:
                     // Count relationships
                     if (int.TryParse(valuesToFind.FirstOrDefault() ?? "0", out var count))
-                        return (entity => entity.Relationships.Children[relationship].Count() == count, "count");
+                        return (new ResultOrError<Func<IEntity, bool>>(true,
+                            entity => entity.Relationships.Children[relationship].Count() == count), "count");
 
-                    return (_ => false, "count");
+                    return (new ResultOrError<Func<IEntity, bool>>(true, _ => false), "count");
 
                 default:
-                    SetError("Mode unknown", $"The mode '{modeToPick}' is invalid");
-                    return (null, "error, unknown compare mode");
+                    return (
+                        new ResultOrError<Func<IEntity, bool>>(false, null,
+                            Error.Create(source: this, title: "Mode unknown", message: $"The mode '{modeToPick}' is invalid")), "error, unknown compare mode");
+                    //SetError("Mode unknown", $"The mode '{modeToPick}' is invalid");
+                    //return (null, "error, unknown compare mode");
             }
         });
 
@@ -312,13 +329,13 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private Func<IEntity, string> GetFieldValue(CompareType type, string fieldName)
+        private ResultOrError<Func<IEntity, string>> GetFieldValue(CompareType type, string fieldName) => Log.Func(l =>
         {
             switch (type)
             {
                 case CompareType.Any:
-                    Log.A($"will compare on a normal attribute:{fieldName}");
-                    return e =>
+                    l.A($"compare on a normal attribute:{fieldName}");
+                    return new ResultOrError<Func<IEntity, string>>(true, e =>
                     {
                         try
                         {
@@ -331,22 +348,20 @@ namespace ToSic.Eav.DataSources
                                                 "Probably comparing an attribute on the related entity that doesn't exist. " +
                                                 $"Was trying to compare the attribute '{fieldName}'");
                         }
-                    };
+                    });
                 case CompareType.Id:
-                    Log.A("will compare on ID");
-                    return e => e?.EntityId.ToString();
+                    l.A("will compare on ID");
+                    return new ResultOrError<Func<IEntity, string>>(true, e => e?.EntityId.ToString());
                 case CompareType.Title:
-                    Log.A("will compare on title");
-                    return e => e?.GetBestTitle()?.ToLowerInvariant();
-                // 2021-03-29
-                //return e => e?.Title?[0]?.ToString().ToLowerInvariant();
+                    l.A("will compare on title");
+                    return new ResultOrError<Func<IEntity, string>>(true, e => e?.GetBestTitle()?.ToLowerInvariant());
                 // ReSharper disable once RedundantCaseLabel
                 case CompareType.Auto:
                 default:
-                    SetError("Problem with CompareType", $"The CompareType '{type}' is unexpected.");
-                    return null;
+                    return new ResultOrError<Func<IEntity, string>>(false, null, 
+                        Error.Create(title: "Problem with CompareType", message: $"The CompareType '{type}' is unexpected."));
             }
-        }
+        });
 
     }
 }

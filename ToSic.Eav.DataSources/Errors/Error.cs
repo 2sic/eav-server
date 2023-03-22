@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Warning,
         Type = DataSourceType.Debug,
         Audience = Audience.Advanced,
-        GlobalName = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a"   // namespace or guid
+        NameId = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a"   // namespace or guid
     )]
     [PublicApi]
     public class Error: DataSource
@@ -39,13 +39,13 @@ namespace ToSic.Eav.DataSources
         /// In this case it's just the "Default" containing a fake exception.
         /// </summary>
         public Error(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Error")
-            => Provide(GenerateExceptionStream);
+            => ProvideOut(GenerateExceptionStream);
 
-        private ImmutableArray<IEntity> GenerateExceptionStream() => Log.Func(l =>
+        private IImmutableList<IEntity> GenerateExceptionStream() => Log.Func(l =>
         {
             l.A("This is a fake Error / Exception");
             l.A("The Error DataSource creates an exception on purpose, to test exception functionality in Visual Query");
-            return (SetError(Title, Message), "fake error");
+            return (Error.Create(title: Title, message: Message), "fake error");
         });
     }
 }

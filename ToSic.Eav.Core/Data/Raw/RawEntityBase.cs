@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data.Raw
 {
@@ -10,12 +11,17 @@ namespace ToSic.Eav.Data.Raw
     /// You can inherit this class, but you can also just re-implement the interface yourself.
     /// Whatever works better for you.
     /// </summary>
-    public abstract class RawEntityBase: IRawEntity
+    /// <remarks>
+    /// Added in 15.04
+    /// </remarks>
+    [PublicApi]
+    public abstract class RawEntityBase: IRawEntity, IHasRelationshipKeys
     {
         public virtual int Id { get; set; }
-        public virtual Guid Guid { get; set; }
+        public virtual Guid Guid { get; set; } = Guid.Empty;
         public virtual DateTime Created { get; set; } = DateTime.Now;
         public virtual DateTime Modified { get; set; } = DateTime.Now;
-        public abstract Dictionary<string, object> GetProperties(CreateRawOptions options);
+        public abstract Dictionary<string, object> Attributes(RawConvertOptions options);
+        public virtual IEnumerable<object> RelationshipKeys(RawConvertOptions options) => new List<object>();
     }
 }

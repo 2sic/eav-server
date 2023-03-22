@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
@@ -21,15 +21,18 @@ namespace ToSic.Eav.Apps.Parts
     /// </summary>
     public class AppInitializer : ServiceBase
     {
+
         #region Constructor / DI
 
         public AppInitializer(
+            LazySvc<DataBuilder> builder,
             Generator<IRepositoryLoader> repositoryLoaderGenerator,
             Generator<AppManager> appManagerGenerator,
             SystemManager systemManager,
             IAppStates appStates) : base("Eav.AppBld")
         {
             ConnectServices(
+                _builder = builder,
                 SystemManager = systemManager,
                 _repositoryLoaderGenerator = repositoryLoaderGenerator,
                 _appManagerGenerator = appManagerGenerator,
@@ -37,6 +40,7 @@ namespace ToSic.Eav.Apps.Parts
             );
         }
 
+        private readonly LazySvc<DataBuilder> _builder;
         private readonly Generator<AppManager> _appManagerGenerator;
         private readonly Generator<IRepositoryLoader> _repositoryLoaderGenerator;
         private readonly IAppStates _appStates;
@@ -50,9 +54,6 @@ namespace ToSic.Eav.Apps.Parts
         }
 
         private AppState AppState { get; set; }
-
-        private AppState PresetApp => _presetApp ?? (_presetApp = _appStates.GetPresetApp());
-        private AppState _presetApp;
 
         /// <summary>
         /// The App Manager must be re-created during initialization
@@ -170,9 +171,11 @@ namespace ToSic.Eav.Apps.Parts
             }
 
             var values = cTypeAndOrEntity.Values ?? new Dictionary<string, object>();
-
-            var newEnt = new Entity(AppState.AppId, Guid.NewGuid(), ct, values);
-            newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
+            var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: AppState.AppId);
+            var newEnt = _builder.Value.Entity.Create(appId: AppState.AppId, guid: Guid.NewGuid(),
+                contentType: ct,
+                attributes: _builder.Value.Attribute.Create(values), metadataFor: mdTarget);
+            //newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
             AppManager.Entities.Save(newEnt);
         });
 
@@ -187,7 +190,7 @@ namespace ToSic.Eav.Apps.Parts
             // discuss w/2dm if you think you want to change this
             var ct = inAppType
                 ? AppManager.Read.ContentTypes.Get(setName)
-                : PresetApp.GetContentType(setName);
+                : _appStates.GetPresetApp().GetContentType(setName);
             return ct;
         }
 

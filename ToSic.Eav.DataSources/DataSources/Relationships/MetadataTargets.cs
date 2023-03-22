@@ -22,10 +22,10 @@ namespace ToSic.Eav.DataSources
         UiHint = "Get the item's targets (if they are metadata)",
         Icon = Icons.Metadata,
         Type = DataSourceType.Lookup,
-        GlobalName = "afaf73d9-775c-4932-aebd-23e898b1643e",
-        In = new[] { Constants.DefaultStreamNameRequired },
+        NameId = "afaf73d9-775c-4932-aebd-23e898b1643e",
+        In = new[] { QueryConstants.InStreamDefaultRequired },
         DynamicOut = false,
-        ExpectsDataOfType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
+        ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
         HelpLink = "https://r.2sxc.org/DsMetadataTargets")]
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 

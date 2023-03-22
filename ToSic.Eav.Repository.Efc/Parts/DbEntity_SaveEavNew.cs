@@ -1,6 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -10,9 +10,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
     public partial class DbEntity
     {
 
-        private ToSicEavEntities CreateDbRecord(IEntity newEnt, int changeId, int contentTypeId)
+        private ToSicEavEntities CreateDbRecord(IEntity newEnt, int changeId, int contentTypeId
+        ) => Log.Func($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}", () =>
         {
-            var wrapLog = Log.Fn<ToSicEavEntities>($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
             var dbEnt = new ToSicEavEntities
             {
                 AppId = DbContext.AppId,
@@ -24,7 +24,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 ChangeLogModified = changeId,
                 EntityGuid = newEnt.EntityGuid != Guid.Empty ? newEnt.EntityGuid : Guid.NewGuid(),
                 IsPublished = newEnt.IsPublished,
-                PublishedEntityId = newEnt.IsPublished ? null : ((Entity)newEnt).GetPublishedIdForSaving(),
+                PublishedEntityId = newEnt.IsPublished ? null : ((Entity)newEnt).GetInternalPublishedIdForSaving(),
                 Owner = string.IsNullOrEmpty(newEnt.Owner) ? DbContext.UserName : newEnt.Owner,
                 AttributeSetId = contentTypeId,
                 Version = 1,
@@ -32,7 +32,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             };
 
             DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(dbEnt), "save new");
-            return wrapLog.ReturnAsOk(dbEnt);
-        }
+            return (dbEnt, "ok");
+        });
     }
 }

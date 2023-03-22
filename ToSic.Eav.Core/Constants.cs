@@ -80,39 +80,6 @@ namespace ToSic.Eav
 
 
 
-        #region DataSource Constants
-
-        /// <summary>content type name of the query AttributeSet</summary>
-        public static readonly string QueryTypeName = "DataPipeline";
-
-        /// <summary>content-type name of the queryPart AttributeSet</summary>
-        public static readonly string QueryPartTypeName = "DataPipelinePart";
-
-        /// <summary>
-        /// Attribute Name on the query-Entity describing the Stream-Wiring
-        /// </summary>
-        public const string QueryStreamWiringAttributeName = "StreamWiring";
-
-        /// <summary>
-        /// Default In-/Out-Stream Name
-        /// </summary>
-        public const string DefaultStreamName = "Default";
-        public const string DefaultStreamNameRequired = DefaultStreamName + "*";
-
-        public const string FallbackStreamName = "Fallback";
-
-        /// <summary>PublishedEntities Stream Name</summary>
-        public const string PublishedStreamName = "Published";
-
-        /// <summary>Draft-Entities Stream Name</summary>
-        public const string DraftsStreamName = "Drafts";
-
-
-        #endregion
-
-
-
-
         #region special uses of Apps
 
 
@@ -130,6 +97,5 @@ namespace ToSic.Eav
         /// TODO: rename to Preset...
         /// </summary>
         public const int PresetContentTypeFakeParent = -42000001; // just a very strange, dummy number
-
     }
 }

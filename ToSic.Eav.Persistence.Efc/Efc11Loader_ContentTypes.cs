@@ -107,8 +107,14 @@ namespace ToSic.Eav.Persistence.Efc
                     //set.Description,
                     Attributes = set.ToSicEavAttributesInSets
                         .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
-                        .Select(a => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type,
-                            a.IsTitle, a.AttributeId, a.SortOrder, source, metaSourceFinder: () => source)),
+                        .Select(a => _dataBuilder.TypeAttributeBuilder
+                            .Create(appId: appId,
+                                name: a.Attribute.StaticName,
+                                type: ValueTypeHelpers.Get(a.Attribute.Type),
+                                isTitle: a.IsTitle,
+                                id: a.AttributeId,
+                                sortOrder: a.SortOrder,
+                                metaSourceFinder: () => source)),
                     IsGhost = set.UsesConfigurationOfAttributeSet,
                     SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                     AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
@@ -130,9 +136,16 @@ namespace ToSic.Eav.Persistence.Efc
                 .ToDictionary(
                     s => s.AttributeSetId,
                     s => s.ToSicEavAttributesInSets.Select(a
-                        => new ContentTypeAttribute(appId, a.Attribute.StaticName, a.Attribute.Type, a.IsTitle,
-                            a.AttributeId, a.SortOrder, parentApp: s.AppId,
-                            metaSourceFinder: () => _appStates.Get(s.AppId))));// Must get own MetaSourceFinder since they come from other apps
+                        => _dataBuilder.TypeAttributeBuilder.Create(
+                            appId: appId,
+                            name: a.Attribute.StaticName,
+                            type: ValueTypeHelpers.Get(a.Attribute.Type),
+                            isTitle: a.IsTitle,
+                            id: a.AttributeId,
+                            sortOrder: a.SortOrder,
+                            // Must get own MetaSourceFinder since they come from other apps
+                            metaSourceFinder: () => _appStates.Get(s.AppId)))
+                );
             sqlTime.Stop();
 
             // Convert to ContentType-Model
@@ -140,19 +153,28 @@ namespace ToSic.Eav.Persistence.Efc
             {
                 var notGhost = set.IsGhost == null;
 
-                return (IContentType)new ContentType(appId, set.Name, set.StaticName, set.AttributeSetId,
+                var ctAttributes = (set.SharedDefinitionId.HasValue
+                        ? sharedAttribs[set.SharedDefinitionId.Value]
+                        : set.Attributes)
+                    // ReSharper disable once RedundantEnumerableCastCall
+                    .Cast<IContentTypeAttribute>()
+                    .ToList();
+
+                return _dataBuilder.ContentType.Create(
+                    appId: appId, 
+                    name: set.Name,
+                    nameId: set.StaticName, 
+                    id: set.AttributeSetId,
+                    scope: set.Scope,
                     // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                    set.Scope, /*set.Description,*/ set.IsGhost, set.ZoneId, set.AppId, set.ConfigIsOmnipresent,
-                    metaSourceFinder: () => notGhost ? source : _appStates.Get(new AppIdentity(set.ZoneId, set.AppId))
-                )
-                {
-                    Attributes = (set.SharedDefinitionId.HasValue
-                            ? sharedAttribs[set.SharedDefinitionId.Value]
-                            : set.Attributes)
-                        // ReSharper disable once RedundantEnumerableCastCall
-                        .Cast<IContentTypeAttribute>()
-                        .ToList()
-                };
+                    /*set.Description,*/
+                    parentTypeId: set.IsGhost,
+                    configZoneId: set.ZoneId,
+                    configAppId: set.AppId,
+                    isAlwaysShared: set.ConfigIsOmnipresent,
+                    metaSourceFinder: (() => notGhost ? source : _appStates.Get(new AppIdentity(set.ZoneId, set.AppId))),
+                    attributes: ctAttributes
+                );
             });
 
             _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);

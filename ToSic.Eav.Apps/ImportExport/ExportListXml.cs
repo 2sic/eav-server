@@ -109,7 +109,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Get the attribute definitions
             var attribsOfType = ContentType.Attributes;
-            Log.A($"will export {entList.Count} entities X {attribsOfType.Count} attribs");
+            Log.A($"will export {entList.Count} entities X {attribsOfType.Count()} attribs");
 
             foreach (var entity in entList)
                 foreach (var language in languages)
@@ -121,7 +121,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     foreach (var attribute in attribsOfType)
                     {
                         string value;
-                        if (attribute.Type == XmlConstants.Entity) // Special, handle separately
+                        if (attribute.Type == ValueTypes.Entity) // Special, handle separately
                             value = entity.Attributes[attribute.Name].Values.FirstOrDefault()?.Serialized;
                         else
                             value = exportLanguageReference == ExportLanguageResolution.Resolve

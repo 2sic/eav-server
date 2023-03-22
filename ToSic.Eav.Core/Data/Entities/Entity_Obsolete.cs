@@ -15,16 +15,8 @@ namespace ToSic.Eav.Data
         [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
         public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks)
         {
-            if (IsLight)
-                return base.GetBestValue(attributeName);
-
             var set = FindPropertyInternal(new PropReqSpecs(attributeName, languages), null);
-            var result = set.Result;
-            var attributeType = set.FieldType;
-
-            if (attributeType == Data.Attributes.FieldIsVirtual) return result;
-
-            return result;
+            return set.Result;
         }
 
         [PrivateApi]

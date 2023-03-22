@@ -1,25 +1,70 @@
-﻿namespace ToSic.Eav.DataSources
+﻿using System.Collections.Immutable;
+using ToSic.Eav.Data;
+using ToSic.Eav.Data.Raw;
+using ToSic.Lib.Documentation;
+
+namespace ToSic.Eav.DataSources
 {
-    internal class DataSourceConstants
+    /// <summary>
+    /// Various constants typically used in/for DataSources.
+    /// </summary>
+    [PublicApi]
+    public class DataSourceConstants
     {
-        public const string LogPrefix = "DS";
-        public static readonly string RootDataSource = typeof(IAppRoot).AssemblyQualifiedName;
+        /// <summary>
+        /// Prefix to use for all built-in data sources.
+        /// </summary>
+        [PrivateApi]
+        internal const string LogPrefix = "DS";
 
-        #region Version Change Constants
+        #region Version Change Constants (internal)
 
-        internal const string V3To4DataSourceDllOld = ", ToSic.Eav";
-        internal const string V3To4DataSourceDllNew = ", ToSic.Eav.DataSources";
-
-        #endregion
+        [PrivateApi] internal const string V3To4DataSourceDllOld = ", ToSic.Eav";
+        [PrivateApi] internal const string V3To4DataSourceDllNew = ", ToSic.Eav.DataSources";
 
         /// <summary>
         /// Global queries must start with this prefix
         /// </summary>
-        public const string GlobalEavQueryPrefix = "Eav.Queries.Global.";
+        [PrivateApi] internal const string SystemQueryPrefixPreV15 = "Eav.Queries.Global.";
+        [PrivateApi] internal const string SystemQueryPrefix = "System.";
+
+        #endregion
+
+        #region Stream names - all public
 
         /// <summary>
-        /// Unsure what this is for, and if there are actually any queries that match this!
+        /// Default In-/Out-Stream Name
         /// </summary>
-        public const string GlobalQueryPrefix = "Global.";
+        public const string StreamDefaultName = "Default";
+
+
+        /// <summary>
+        /// Very common stream name for fallback streams.
+        /// </summary>
+        public const string StreamFallbackName = "Fallback";
+
+
+        /// <summary>
+        /// PublishedEntities Stream Name
+        /// </summary>
+        internal const string StreamPublishedName = "Published";
+
+        /// <summary>
+        /// Draft-Entities Stream Name
+        /// </summary>
+        internal const string StreamDraftsName = "Drafts";
+
+        #endregion
+
+        #region Empty Lists
+
+        /// <summary>
+        /// Constant empty list of entities - for common scenarios where we just need to return empty results.
+        /// </summary>
+        public static IImmutableList<IEntity> EmptyList = ImmutableList<IEntity>.Empty;
+
+        public static IImmutableList<IRawEntity> EmptyRawList = ImmutableList<IRawEntity>.Empty;
+
+        #endregion
     }
 }

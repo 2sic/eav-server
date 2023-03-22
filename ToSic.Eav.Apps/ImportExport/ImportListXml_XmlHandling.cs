@@ -12,9 +12,8 @@ namespace ToSic.Eav.Apps.ImportExport
     public partial class ImportListXml
     {
 
-        private bool RunDocumentValidityChecks()
+        private bool RunDocumentValidityChecks() => Log.Func(timer: true, func: () =>
         {
-            var wrapLog = Log.Fn<bool>(timer: true);
             // #1 Assure that each element has a GUID and language child element
             foreach (var element in DocumentElements)
             {
@@ -35,29 +34,29 @@ namespace ToSic.Eav.Apps.ImportExport
             // count languages
             var documentElementLanguagesCount = documentElementLanguagesAll.Select(item => item.Count);
 
-            if (documentElementLanguagesCount.All(count => count == 1)) return wrapLog.ReturnTrue("ok");
+            if (documentElementLanguagesCount.All(count => count == 1)) return (true, "ok");
 
-            if (!documentElementLanguagesAll.Any(lang => _languages.Except(lang).Any())) return wrapLog.ReturnTrue("ok");
+            if (!documentElementLanguagesAll.Any(lang => _languages.Except(lang).Any()))
+                return (true, "ok");
 
             ErrorLog.Add(ImportErrorCode.MissingElementLanguage,
                 "Langs=" + string.Join(", ", _languages));
-            return wrapLog.ReturnFalse("error");
-        }
+            return (false, "error");
+        });
 
-        private bool LoadStreamIntoDocumentElement(Stream dataStream)
+        private bool LoadStreamIntoDocumentElement(Stream dataStream) => Log.Func(timer: true, func: () =>
         {
-            var wrapLog = Log.Fn<bool>(timer: true);
             Document = XDocument.Load(dataStream);
             dataStream.Position = 0;
             if (Document == null)
             {
                 ErrorLog.Add(ImportErrorCode.InvalidDocument);
-                return wrapLog.ReturnFalse($"error {ImportErrorCode.InvalidDocument}");
+                return (false, $"error {ImportErrorCode.InvalidDocument}");
             }
 
             // #1 Check that document-root is the expected value
             var documentRoot = Document.Element(XmlConstants.Root)
-                ?? Document.Element(XmlConstants.Root97);
+                               ?? Document.Element(XmlConstants.Root97);
 
             if (documentRoot == null)
             {
@@ -71,7 +70,7 @@ namespace ToSic.Eav.Apps.ImportExport
             if (!DocumentElements.Any())
             {
                 ErrorLog.Add(ImportErrorCode.InvalidDocument);
-                return wrapLog.ReturnFalse($"error {ImportErrorCode.InvalidDocument}");
+                return (false, $"error {ImportErrorCode.InvalidDocument}");
             }
 
             // #3 Check the content type of the document (it can be found on each element in the Type attribute)
@@ -80,11 +79,11 @@ namespace ToSic.Eav.Apps.ImportExport
                 documentTypeAttribute.Value != ContentType.Name.RemoveSpecialCharacters())
             {
                 ErrorLog.Add(ImportErrorCode.InvalidRoot);
-                return wrapLog.ReturnFalse($"error: {ImportErrorCode.InvalidRoot}");
+                return (false, $"error: {ImportErrorCode.InvalidRoot}");
             }
 
-            return wrapLog.ReturnTrue("ok");
-        }
+            return (true, "ok");
+        });
 
 
     }

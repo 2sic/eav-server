@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Source;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -11,41 +12,32 @@ namespace ToSic.Eav.Apps
     [PrivateApi("don't publish this - too internal, special, complicated")]
     public class AppRelationshipManager: SynchronizedList<EntityRelationship>
     {
-        readonly AppState _upstreamApp;
         public AppRelationshipManager(AppState upstream) : base(upstream, () => Rebuild(upstream))
         {
-            _upstreamApp = upstream;
         }
 
-
-        private static ImmutableArray<EntityRelationship> Rebuild(AppState appState)
+        private static ImmutableList<EntityRelationship> Rebuild(AppState appState)
         {
             // todo: could be optimized (minor)
             // atm guid-relationships (like in json-objects) 
             // will have multiple lookups - first to find the json, then to add to relationship index
 
             var cache = new List<EntityRelationship>();
-            Dictionary<int, IEntity> index = appState.Index;
+            var index = appState.Index;
             foreach (var entity in appState.List)
-                foreach (var attribute in entity.Attributes
-                             .Select(a => a.Value)
-                             .Where(a => a is IAttribute<IEnumerable<IEntity>>)
-                             .Cast<IAttribute<IEnumerable<IEntity>>>()
-                )
-                foreach (var val in ((LazyEntities)attribute.Typed[0].TypedContents).EntityIds.Where(e => e != null))
+            {
+                var lazyEntityValues = entity.Attributes
+                        .Select(a => a.Value)
+                        .Where(a => a is IAttribute<IEnumerable<IEntity>>)
+                        .Cast<IAttribute<IEnumerable<IEntity>>>()
+                        .Select(a => a.Typed.First().TypedContents as LazyEntitiesSource)
+                        .Where(tc => tc != null);
+                foreach (var value in lazyEntityValues)
+                foreach (var val in value.EntityIds.Where(e => e != null))
                     Add(index, cache, entity.EntityId, val);
+            }
 
-            return cache.ToImmutableArray();
-        }
-
-        [PrivateApi]
-        public void AttachRelationshipResolver(IEntity entity)
-        {
-            foreach (var attrib in entity.Attributes.Select(a => a.Value)
-                .Where(a => a is IAttribute<IEnumerable<IEntity>>)
-                .Cast<IAttribute<IEnumerable<IEntity>>>()
-            )
-                (attrib?.TypedContents as LazyEntities)?.AttachLookupList(_upstreamApp);
+            return cache.ToImmutableList();
         }
 
         private static void Add(IReadOnlyDictionary<int, IEntity> lookup, List<EntityRelationship> list, int parent, int? child)

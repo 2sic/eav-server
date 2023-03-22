@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 
@@ -24,8 +23,11 @@ namespace ToSic.Eav.Apps.Parts
                 UpdateParts(existingEntity.EntityId, values);
             else
             {
-                var saveEnt = new Entity(Parent.AppId, Guid.NewGuid(), Parent.Read.ContentTypes.Get(typeName), values);
-                saveEnt.SetMetadata(target);
+                var saveEnt = Builder.Entity.Create(appId: Parent.AppId, guid: Guid.NewGuid(),
+                    contentType: Parent.Read.ContentTypes.Get(typeName),
+                    attributes: Builder.Attribute.Create(values),
+                    metadataFor: target);
+                //saveEnt.SetMetadata(target);
                 Save(saveEnt);
             }
         });

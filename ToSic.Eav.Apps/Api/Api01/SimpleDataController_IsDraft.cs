@@ -1,55 +1,38 @@
-﻿using System;
-using ToSic.Eav.Apps.Api.Api01;
-using ToSic.Eav.Plumbing;
+﻿using ToSic.Eav.Plumbing;
+using static ToSic.Eav.Apps.Api.Api01.SaveApiAttributes;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Api.Api01
 {
     public partial class SimpleDataController
     {
-        public static (bool published, bool branch) IsDraft(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
+        public static (bool ShouldPublish, bool ShouldBranchDrafts) GetPublishSpecs(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            bool published, branch;
 
-            if (!existingIsPublished.HasValue) // when creating new
-                branch = false; // false because is it new one, so no branch
-            else // update published, draft, published and draft
-                branch = existingIsPublished.Value && !writePublishAllowed;
-
+            // If it already has a published original
+            // Then we want to keep it that way, unless it's not allowed,
+            // in which case we must branch (if we will create a draft, to be determined later on)
+            var shouldBranchDrafts = existingIsPublished == true && !writePublishAllowed;
 
             switch (publishedState)
             {
-                // Case No change
+                // Case No change, not specified
                 case null:
                 case string emptyString when string.IsNullOrEmpty(emptyString):
-                case string nullString when nullString.Equals(SaveApiAttributes.PublishModeNull,
-                    StringComparison.InvariantCultureIgnoreCase):
-                    published = !existingIsPublished.HasValue
-                        ? writePublishAllowed
-                        : existingIsPublished.Value && writePublishAllowed;
-                    break;
+                case string nullWritten when nullWritten.EqualsInsensitive(PublishModeNull):
+                    var published = existingIsPublished != false && writePublishAllowed;
+                    return (published, shouldBranchDrafts);
 
                 // Case "draft"
-                case string draftString when draftString.Equals(SaveApiAttributes.PublishModeDraft,
-                    StringComparison.InvariantCultureIgnoreCase):
-                    published = false;
-                    branch = existingIsPublished ?? false;
-                    break;
+                case string draftString when draftString.EqualsInsensitive(PublishModeDraft):
+                    return (false, existingIsPublished ?? false);
 
-                // case boolean / truthy
+                // case boolean or truthy string
                 default:
-                    var savePublished = publishedState.ConvertOrDefault<bool>(numeric: false, truthy: true);
-                    published = savePublished && writePublishAllowed;
-                    break;
+                    var isPublished = publishedState.ConvertOrDefault<bool>(numeric: false, truthy: true);
+                    return (isPublished && writePublishAllowed, shouldBranchDrafts);
             }
-
-            // TODO: STV find is it better to return just NULL (for value tuple) when branch == false
-
-            return (published, branch);
         }
-
-        public static (bool published, bool branch) DraftAndBranch(bool draft) => (!draft, draft);
-
 
         //private static bool? IsDraft(Dictionary<string, object> values, IEntity original)
         //{

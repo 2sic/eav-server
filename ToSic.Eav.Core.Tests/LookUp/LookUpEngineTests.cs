@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
 using ToSic.Eav.LookUp;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Core.Tests.LookUp
 {
     [TestClass]
-    public class LookUpEngineTests
+    public class LookUpEngineTests: TestBaseEavCore
     {
 
         #region Important Values which will be checked when resolved
@@ -22,7 +24,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void LookUpEngine_SourcesWork()
         {
-            var lookUpEngine = LookUpTestData.AppSetAndRes();
+            var lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
             AssertLookUpEngineHasSourcesOfOriginal(lookUpEngine);
         }
 
@@ -38,7 +40,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void LookUpEngine_DontModifyThingsWithoutTokens()
         {
-            var vc = LookUpTestData.AppSetAndRes();
+            var vc = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
             var settings = Settings();
             settings = vc.LookUp(settings);
             Assert.AreEqual(ResolvedSettingDefaultCat, settings["DefaultCategory"], "Default should be all");
@@ -48,7 +50,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void BasicLookupsWork()
         {
-            var mainEngine = LookUpTestData.AppSetAndRes(-1);
+            var mainEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes(-1);
             var settings = mainEngine.LookUp(TestTokens());
             foreach (var setting in settings)
                 Assert.AreEqual(setting.Key, setting.Value,
@@ -58,7 +60,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void OverrideLookUps()
         {
-            var mainEngine = LookUpTestData.AppSetAndRes(-1);
+            var mainEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes(-1);
             var overrideSources = new DictionaryInvariant<ILookUp>();
             const string overridenTitle = "overriden Title";
             var overrideDic = new Dictionary<string, string>
@@ -74,7 +76,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         [TestMethod]
         public void InheritEngine()
         {
-            var original = LookUpTestData.AppSetAndRes();
+            var original = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
             var cloned = new LookUpEngine(original, null);
             Assert.AreEqual(0, cloned.Sources.Count);
             AssertLookUpEngineHasSourcesOfOriginal(cloned.Downstream);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 using static System.StringComparer;
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
 
@@ -14,8 +15,8 @@ namespace ToSic.Eav.Configuration
         public FeaturesService(FeaturesCatalog featuresCatalog) => _featuresCatalog = featuresCatalog;
         private readonly FeaturesCatalog _featuresCatalog;
 
-        public IEnumerable<FeatureState> All => _all ?? (_all = Merge(Stored, _featuresCatalog.List));
-        private static List<FeatureState> _all;
+        public IEnumerable<FeatureState> All => _all.Get(() => Merge(Stored, _featuresCatalog.List));
+        private static readonly GetOnce<List<FeatureState>> _all = new GetOnce<List<FeatureState>>();
 
         /// <summary>
         /// List of all enabled features with their guids and nameIds
@@ -75,18 +76,19 @@ namespace ToSic.Eav.Configuration
         #region Static Caches
 
         [PrivateApi]
-        public FeatureListStored Stored
+        public FeatureListStored Stored => _staticStored;
+
+        private static FeatureListStored _staticStored;
+
+        public bool UpdateFeatureList(FeatureListStored newList)
         {
-            get => _stored;
-            set
-            {
-                _stored = value;
-                _all = null;
-                _enabledFeatures = null;
-                CacheTimestamp = DateTime.Now.Ticks;
-            }
+            _staticStored = newList;
+            _all.Reset();
+            _enabledFeatures = null;
+            CacheTimestamp = DateTime.Now.Ticks;
+            FeaturesChanged?.Invoke(this, EventArgs.Empty); // publish event so lightspeed can flush cache
+            return true;
         }
-        private static FeatureListStored _stored;
 
 
         private static List<FeatureState> Merge(FeatureListStored config, IReadOnlyCollection<FeatureDefinition> featuresCat)
@@ -140,18 +142,9 @@ namespace ToSic.Eav.Configuration
 
 
         [PrivateApi]
-        public long CacheTimestamp
-        {
-            get => _cacheTimestamp;
-            set
-            {
-                _cacheTimestamp = value;
-                FeaturesChanged?.Invoke(this, EventArgs.Empty); // publish event so lightspeed can flush cache
-            }
-        }
-        private long _cacheTimestamp;
+        public long CacheTimestamp { get; private set; }
 
-        public bool CacheChanged(long newCacheTimeStamp) => CacheTimestamp != newCacheTimeStamp;
+        public bool CacheChanged(long dependentTimeStamp) => CacheTimestamp != dependentTimeStamp;
 
         // Custom event for LightSpeed
         [PrivateApi] 

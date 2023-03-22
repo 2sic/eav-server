@@ -29,7 +29,7 @@ namespace ToSic.Eav.ImportExport.Json
                 // check all metadata of these attributes - get possible sub-entities attached
                 var attribMdItems = contentType.Attributes.SelectMany(a => a.Metadata).ToArray();
                 var attribMdEntityAttribs = attribMdItems.SelectMany(m => m.Attributes
-                        .Where(a => a.Value.ControlledType == ValueTypes.Entity))
+                        .Where(a => a.Value.Type == ValueTypes.Entity))
                     .ToArray();
                 var mdParts =
                     // On Dynamically Typed Entities, the Children()-Call won't work, because the Relationship-Manager doesn't know the children.
@@ -62,7 +62,7 @@ namespace ToSic.Eav.ImportExport.Json
                 .Select(a => new JsonAttributeDefinition
                 {
                     Name = a.Name,
-                    Type = a.Type,
+                    Type = a.Type.ToString(),
                     InputType = a.InputType(),
                     IsTitle = a.IsTitle,
                     Metadata = a.Metadata

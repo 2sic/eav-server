@@ -120,8 +120,8 @@ namespace ToSic.Eav.Apps.Tests
                 PName, CName);
             pair.Replace(index, new[]
             {
-                new Tuple<bool, int?>(true, 999), 
-                new Tuple<bool, int?>(updatePair, 777), 
+                (true, 999 as int?), 
+                (updatePair, 777 as int?), 
             });
             return pair;
         }

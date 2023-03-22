@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         protected RelationshipDataSourceBase(MyServices services, string logName): base(services, logName)
         {
-            Provide(GetRelated);
+            ProvideOut(GetRelated);
         }
 
         private IImmutableList<IEntity> GetRelated() => Log.Func(() =>
@@ -49,8 +49,8 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Make sure we have an In - otherwise error
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var fieldName = FieldName;
             if (string.IsNullOrWhiteSpace(fieldName)) fieldName = null;
@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources
 
             var find = InnerGet(fieldName, typeName);
 
-            var relationships = originals
+            var relationships = source
                 .SelectMany(o => find(o));
 
             if (FilterDuplicates)

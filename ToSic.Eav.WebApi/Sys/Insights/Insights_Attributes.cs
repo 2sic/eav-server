@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi.Sys
             {
                 Log.A("getting content-type stats");
                 var attribs = typ.Attributes;
-                msg += P($"attribs: {attribs.Count}\n");
+                msg += P($"attribs: {attribs.Count()}\n");
                 msg += "<table id='table'>"
                     + HeadFields( "#", "Id", "Name", "Type", "Input", "IsTitle", "Metadata", "Permissions" )
                     + "<tbody>";
@@ -32,7 +32,7 @@ namespace ToSic.Eav.WebApi.Sys
                         (++count).ToString(),
                         att.AttributeId.ToString(),
                         att.Name,
-                        att.Type,
+                        att.Type.ToString(),
                         att.InputType(),
                         EmojiTrueFalse(att.IsTitle),
                         LinkTo($"{att.Metadata.Count()}", nameof(AttributeMetadata), appId, type: type, nameId: att.Name),

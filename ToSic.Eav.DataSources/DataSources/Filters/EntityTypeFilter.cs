@@ -20,10 +20,10 @@ namespace ToSic.Eav.DataSources
         UiHint = "Only keep items of the specified type",
         Icon = Icons.RouteAlt,
         Type = DataSourceType.Filter, 
-        GlobalName = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { Constants.DefaultStreamNameRequired },
-	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
+        In = new[] { QueryConstants.InStreamDefaultRequired },
+	    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
         HelpLink = "https://r.2sxc.org/DsTypeFilter")]
 
     public class EntityTypeFilter : DataSource
@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources
 
         {
             _appStates = appStates;
-            Provide(GetList);
+            ProvideOut(GetList);
         }
         private readonly IAppStates _appStates;
 
@@ -65,8 +65,8 @@ namespace ToSic.Eav.DataSources
             l.A($"get list with type:{TypeName}");
 
             // Get original from In-Stream
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             try
             {
@@ -74,20 +74,8 @@ namespace ToSic.Eav.DataSources
                 var foundType = appState?.GetContentType(TypeName);
                 if (foundType != null) // maybe it doesn't find it!
                 {
-                    var result = originals.OfType(foundType).ToList();
-                    // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-                    //if (IncludeParentApps)
-                    //{
-                    //    l.A($"Special internal case - {nameof(IncludeParentApps)}!");
-                    //    var parent = appState.ParentApp;
-                    //    while (parent?.AppState != null)
-                    //    {
-                    //        var additions = parent.AppState.List.OfType(foundType);
-                    //        result.AddRange(additions);
-                    //        parent = parent.AppState.ParentApp;
-                    //    }
-                    //}
-                    return (result.ToImmutableArray(), "fast");
+                    var result = source.OfType(foundType).ToList();
+                    return (result.ToImmutableList(), "fast");
                 }
             }
             catch (Exception ex)
@@ -102,7 +90,7 @@ namespace ToSic.Eav.DataSources
             //if (!GetRequiredInList(out var originals2))
             //    return (originals2, "error");
 
-            return (originals.OfType(TypeName).ToImmutableArray(), "slower");
+            return (source.OfType(TypeName).ToImmutableList(), "slower");
         });
 
     }

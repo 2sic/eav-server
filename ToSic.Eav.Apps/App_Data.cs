@@ -2,50 +2,35 @@
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Apps
 {
     public partial class App
     {
         [PrivateApi]
-        public ILookUpEngine ConfigurationProvider
+        public ILookUpEngine ConfigurationProvider => _configurationProvider.Get(() => AppDataConfig.Configuration);
+        private readonly GetOnce<ILookUpEngine> _configurationProvider = new GetOnce<ILookUpEngine>();
+
+        private IAppDataConfiguration AppDataConfig => _appDataConfigOnce.Get(() =>
         {
-            get
-            {
-                if (_configurationProviderBuilt) return _configurationProvider;
+            // try deferred initialization of the configuration, 
+            // this only works if on initialization a _dataConfigBuilder was provided
+            if (_dataConfigurationBuilder == null) return null;
 
-                // try deferred initialization of the configuration, 
-                // this only works if on initialization a _dataConfigBuilder was provided
-                if (_dataConfigurationBuilder != null)
-                {
-                    var config = _dataConfigurationBuilder.Invoke(this);
-                    InitData(config.ShowDrafts, config.Configuration);
-                }
-                _configurationProviderBuilt = true;
-                return _configurationProvider;
-            }
-        }
-        private ILookUpEngine _configurationProvider;
-        private bool _configurationProviderBuilt;
+            var config = _dataConfigurationBuilder.Invoke(this);
+            // needed to initialize data - must always happen a bit later because the show-draft info isn't available when creating the first App-object.
+            // todo: later this should be moved to initialization of this object
+            Log.A($"init data drafts:{config.ShowDrafts}, hasConf:{config.Configuration != null}");
+            return config;
 
+        });
+        private readonly GetOnce<IAppDataConfiguration> _appDataConfigOnce = new GetOnce<IAppDataConfiguration>();
+        private Func<App, IAppDataConfiguration> _dataConfigurationBuilder;
 
         #region Data
 
-        private Func<App, IAppDataConfiguration> _dataConfigurationBuilder;
 
-
-        /// <summary>
-        /// needed to initialize data - must always happen a bit later because the show-draft info isn't available when creating the first App-object.
-        /// todo: later this should be moved to initialization of this object
-        /// </summary>
-        /// <param name="showDrafts"></param>
-        /// <param name="configurationValues">this is needed for providing parameters to the data-query-system</param>
-        private void InitData(bool showDrafts, ILookUpEngine configurationValues)
-        {
-            Log.A($"init data drafts:{showDrafts}, hasConf:{configurationValues != null}");
-            _configurationProvider = configurationValues;
-            ShowDrafts = showDrafts;
-        }
 
         /// <inheritdoc />
         public IAppData Data => _data ?? (_data = BuildData());
@@ -59,9 +44,8 @@ namespace ToSic.Eav.Apps
                                     "Please call InitData first to provide this data.");
 
             // Note: ModulePermissionController does not work when indexing, return false for search
-            var initialSource = _dsFactory.GetPublishing(this, ShowDrafts, ConfigurationProvider);
-
-            var appDataWithCreate = _dsFactory.GetDataSource<AppData>(initialSource);
+            var initialSource = Services.DataSourceFactory.CreateDefault(appIdentity: this, showDrafts: AppDataConfig?.ShowDrafts, configuration: ConfigurationProvider);
+            var appDataWithCreate = Services.DataSourceFactory.Create<AppData>(source: initialSource);
 
             return appDataWithCreate;
         });

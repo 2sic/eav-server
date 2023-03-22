@@ -19,8 +19,8 @@ namespace ToSic.Eav.DataSources
         UiHint = "Choose a stream",
         Icon = Icons.Merge,
         Type = DataSourceType.Logic,
-        GlobalName = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
-        ExpectsDataOfType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",
+        NameId = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
+        ConfigurationType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",
         DynamicOut = false,
         DynamicIn = true,
         HelpLink = "https://r.2sxc.org/DsStreamPick")]
@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The stream name to lookup.
         /// </summary>
-        [Configuration(Fallback = Constants.DefaultStreamName)]
+        [Configuration(Fallback = DataSourceConstants.StreamDefaultName)]
         public string StreamName
         {
             get => Configuration.GetThis();
@@ -64,7 +64,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public StreamPick(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.StmPck")
         {
-            Provide(StreamPickList);
+            ProvideOut(StreamPickList);
         }
 
         private IImmutableList<IEntity> StreamPickList() => Log.Func(l =>
@@ -73,18 +73,18 @@ namespace ToSic.Eav.DataSources
             var name = StreamName;
             l.A($"StreamName to Look for: '{name}'");
             if (string.IsNullOrWhiteSpace(StreamName))
-                return (ImmutableArray<IEntity>.Empty, "no name");
+                return (ImmutableList<IEntity>.Empty, "no name");
 
             name = name.ToLowerInvariant();
             var foundStream = In.FirstOrDefault(pair => pair.Key.ToLowerInvariant() == name);
 
             if (!string.IsNullOrEmpty(foundStream.Key))
-                return (foundStream.Value.List.ToImmutableArray(), "ok");
+                return (foundStream.Value.List.ToImmutableList(), "ok");
 
             // Error not found
             var msg = $"StreamPick can't find stream by the name '{StreamName}'";
             l.A(msg);
-            return (ErrorHandler.CreateErrorList(source: this, title: "Can't find Stream", message: $"Trying to pick the stream '{StreamName}' but it doesn't exist on the In."), "error");
+            return (Error.Create(title: "Can't find Stream", message: $"Trying to pick the stream '{StreamName}' but it doesn't exist on the In."), "error");
 
         });
 

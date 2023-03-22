@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.RelationshipTests;
 using ToSic.Lib.Logging;
@@ -88,7 +89,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
         protected RelationshipFilter BuildRelationshipFilter(string primaryType, ILookUpEngine config = null)
         {
-            var baseDs = DataSourceFactory.GetPublishing(RelationshipTestSpecs.AppIdentity, configProvider: config);
+            var baseDs = DataSourceFactory.CreateDefault(RelationshipTestSpecs.AppIdentity, configuration: config);
             var appDs = CreateDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.
@@ -106,15 +107,16 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
             Assert.IsTrue(stream.ListForTests().Any(), "stream.List.Count() > 0");
 
             var relFilt = CreateDataSource<RelationshipFilter>(appDs.Configuration.LookUpEngine);
-            relFilt.AttachForTests(Constants.DefaultStreamName, stream);
+            relFilt.AttachForTests(DataSourceConstants.StreamDefaultName, stream);
             return relFilt;
         }
 
 
-        protected static LookUpEngine BuildConfigurationProvider(Dictionary<string, object> vals)
+        protected LookUpEngine BuildConfigurationProvider(Dictionary<string, object> vals)
         {
-            var vc = LookUpTestData.AppSetAndRes();
-            vc.Add(LookUpTestData.BuildLookUpEntity(DataSource.MyConfiguration, vals));
+            var testData = new LookUpTestData(GetService<DataBuilder>());
+            var vc = testData.AppSetAndRes();
+            vc.Add(testData.BuildLookUpEntity(DataSource.MyConfiguration, vals));
             return vc;
         }
 

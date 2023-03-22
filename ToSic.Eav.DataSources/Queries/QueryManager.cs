@@ -6,10 +6,11 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
-using static System.StringComparison;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -22,9 +23,9 @@ namespace ToSic.Eav.DataSources.Queries
 	{
         private readonly LazySvc<IAppStates> _appStates;
         private readonly Generator<Query> _queryGenerator;
-        public DataSourceFactory DataSourceFactory { get; }
+        public IDataSourceFactory DataSourceFactory { get; }
 
-        public QueryManager(DataSourceFactory dataSourceFactory, Generator<Query> queryGenerator, LazySvc<IAppStates> appStates) : base($"{DataSourceConstants.LogPrefix}.QryMan")
+        public QueryManager(IDataSourceFactory dataSourceFactory, Generator<Query> queryGenerator, LazySvc<IAppStates> appStates) : base($"{LogPrefix}.QryMan")
         {
             ConnectServices(
                 DataSourceFactory = dataSourceFactory,
@@ -33,28 +34,29 @@ namespace ToSic.Eav.DataSources.Queries
             );
         }
 
-	    /// <summary>
-		/// Get an Entity Describing a Query
-		/// </summary>
-		/// <param name="entityId">EntityId</param>
-		/// <param name="dataSource">DataSource to load Entity from</param>
-		internal IEntity GetQueryEntity(int entityId, AppState dataSource)
+        /// <summary>
+        /// Get an Entity Describing a Query
+        /// </summary>
+        /// <param name="entityId">EntityId</param>
+        /// <param name="dataSource">DataSource to load Entity from</param>
+        internal IEntity GetQueryEntity(int entityId, AppState dataSource) => Log.Func($"{entityId}", l =>
         {
             var wrapLog = Log.Fn<IEntity>($"{entityId}");
-			try
-			{
-			    var queryEntity = dataSource.List.FindRepoId(entityId);
-                if (queryEntity.Type.NameId != Constants.QueryTypeName)
-                    throw new ArgumentException("Entity is not an DataQuery Entity", nameof(entityId));
-			    return wrapLog.ReturnAsOk(queryEntity);
-			}
-			catch (Exception)
+            try
             {
-                wrapLog.ReturnNull("error");
-				throw new ArgumentException($"Could not load Query-Entity with ID {entityId}.", nameof(entityId));
-			}
+                var queryEntity = dataSource.List.FindRepoId(entityId);
+                if (queryEntity.Type.NameId != QueryConstants.QueryTypeName)
+                    throw new ArgumentException("Entity is not an DataQuery Entity", nameof(entityId));
+                return wrapLog.Return(queryEntity);
+            }
+            catch (Exception ex)
+            {
+                l.Ex(new ArgumentException($"Could not load Query-Entity with ID {entityId}.", nameof(entityId)));
+                l.Ex(ex);
+                throw;
+            }
 
-		}
+        });
 
         /// <summary>
         /// Assembles a list of all queries / Queries configured for this app. 
@@ -62,48 +64,55 @@ namespace ToSic.Eav.DataSources.Queries
         /// ...but will be auto-assembled the moment they are accessed
         /// </summary>
         /// <returns></returns>
-	    internal Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine valuesCollectionProvider, bool showDrafts)
+        internal Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine lookUps) => Log.Func(() =>
         {
-            var wrapLog = Log.Fn<Dictionary<string, IQuery>>($"..., ..., {showDrafts}");
-	        var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
-	        foreach (var entQuery in AllQueryItems(app))
-	        {
-	            var delayedQuery = _queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, valuesCollectionProvider, showDrafts, null);
+            var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
+            foreach (var entQuery in AllQueryItems(app))
+            {
+                var delayedQuery = _queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, lookUps);
                 // make sure it doesn't break if two queries have the same name...
-	            var name = entQuery.Title[0].ToString();
-	            if (!dict.ContainsKey(name))
-	                dict[name] = delayedQuery;
-	        }
+                var name = entQuery.GetBestTitle();
+                if (!dict.ContainsKey(name))
+                    dict[name] = delayedQuery;
+            }
+            return (dict);
+        });
 
-            return wrapLog.ReturnAsOk(dict);
-        }
-
-	    internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app)
+        internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app, int recurseParents = 0) => Log.Func($"App: {app.AppId}, recurse: {recurseParents}", l =>
         {
-            var wrapLog = Log.Fn<IImmutableList<IEntity>>();
             // TODO
-            var appState = _appStates.Value.Get(app);
+            var appState = app as AppState ?? _appStates.Value.Get(app);
             var result = QueryEntities(appState);
-            return wrapLog.ReturnAsOk(result);
-        }
+            if (recurseParents <= 0) return (result, "ok, no recursions");
+            l.A($"Try to recurse parents {recurseParents}");
+            if (appState.ParentApp?.AppState == null) return (result, "no more parents to recurse on");
+            var resultFromParents = AllQueryItems(appState.ParentApp.AppState, recurseParents -1);
+            result = result.Concat(resultFromParents).ToImmutableList();
+            return (result, "ok");
+        });
 
-        internal IEntity FindQuery(IAppIdentity appIdentity, string nameOrGuid)
+        internal IEntity FindQuery(IAppIdentity appIdentity, string nameOrGuid, int recurseParents = 0) => Log.Func($"{nameOrGuid}, recurse: {recurseParents}", () =>
         {
-            var wrapLog = Log.Fn<IEntity>(nameOrGuid);
-            var all = AllQueryItems(appIdentity);
+            if (nameOrGuid.IsEmptyOrWs()) return (null, "null - no name");
+            var all = AllQueryItems(appIdentity, recurseParents);
             var result = FindByNameOrGuid(all, nameOrGuid);
-            return wrapLog.Return(result, result == null ? "null" : "ok");
-        }
+            // If nothing found and we have an old name, try the new name
+            if (result == null && nameOrGuid.StartsWith(SystemQueryPrefixPreV15))
+                result = FindByNameOrGuid(all, nameOrGuid.Replace(SystemQueryPrefixPreV15, SystemQueryPrefix));
+            return (result, result == null ? "null" : "ok");
+        });
 
-        public static IImmutableList<IEntity> QueryEntities(AppState appState)
-            => appState.List.OfType(Constants.QueryTypeName).ToImmutableList();
+        // todo: move to query-read or helper
 
-        //public static IEntity FindByName(IImmutableList<IEntity> queries, string name) 
-        //    => queries.FirstOrDefault(e => e.Value<string>("Name") == name);
+        private static IImmutableList<IEntity> QueryEntities(AppState appState)
+            => appState.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
 
-        public static IEntity FindByNameOrGuid(IImmutableList<IEntity> queries, string nameOrGuid) =>
+
+        // todo: move to query-read or helper, or make private
+
+        private static IEntity FindByNameOrGuid(IImmutableList<IEntity> queries, string nameOrGuid) =>
             queries.FirstOrDefault(
-                q => string.Equals(q.Value<string>("Name"), nameOrGuid, InvariantCultureIgnoreCase)
-                     || string.Equals(q.EntityGuid.ToString(), nameOrGuid, InvariantCultureIgnoreCase));
+                q => q.Value<string>("Name").EqualsInsensitive(nameOrGuid)
+                     || q.EntityGuid.ToString().EqualsInsensitive(nameOrGuid));
     }
 }

@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps
                 case TargetTypes.Attribute:
                     if (!int.TryParse(key, out var keyInt)) return null;
                     var attr = appState.FindAttribute(keyInt);
-                    return attr?.Item1?.Metadata?.Target.Title + "/" + attr?.Item2?.Metadata?.Target.Title;
+                    return attr.Item1?.Metadata?.Target.Title + "/" + attr.Item2?.Metadata?.Target.Title;
                 case TargetTypes.App:
                     return appState.Metadata?.Target.Title;
                 case TargetTypes.Entity:
@@ -42,15 +42,15 @@ namespace ToSic.Eav.Apps
             }
         }
 
-        public static Tuple<IContentType, IContentTypeAttribute> FindAttribute(this AppState appState, string idString) 
-            => !int.TryParse(idString, out var keyInt) ? null : appState.FindAttribute(keyInt);
+        public static (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(this AppState appState, string idString) 
+            => !int.TryParse(idString, out var keyInt) ? default : appState.FindAttribute(keyInt);
 
-        public static Tuple<IContentType, IContentTypeAttribute> FindAttribute(this AppState appState, int id)
+        public static (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(this AppState appState, int id)
         {
             var allLocalCts = appState.ContentTypes
                 .Where(ct => !ct.HasAncestor());
             var attr = allLocalCts
-                .SelectMany(ct => ct.Attributes.Select(at => new Tuple<IContentType, IContentTypeAttribute>(ct, at)))
+                .SelectMany(ct => ct.Attributes.Select(at => (ct, at)))
                 .FirstOrDefault(set => set.Item2.AttributeId == id);
             return attr;
         }

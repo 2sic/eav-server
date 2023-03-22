@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -20,15 +21,15 @@ namespace ToSic.Eav.DataSources
         UiHint = "Split data into pages and forward just one batch",
         Icon = Icons.Stories,
         Type = DataSourceType.Logic, 
-        GlobalName = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { Constants.DefaultStreamNameRequired },
-	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Paging",
+        In = new[] { QueryConstants.InStreamDefaultRequired },
+	    ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
         HelpLink = "https://r.2sxc.org/DsPaging")]
 
     public sealed class Paging: DataSource
 	{
-        private readonly IDataBuilder _pagingBuilder;
+        private readonly IDataFactory _pagingFactory;
 
         #region Configuration-properties (no config)
 
@@ -76,13 +77,13 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public Paging(MyServices services, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.Paging")
+		public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.Paging")
         {
             ConnectServices(
-                _pagingBuilder = dataBuilder.Configure(typeName: "Paging")
+                _pagingFactory = dataFactory.New(options: new DataFactoryOptions(typeName: "Paging"))
             );
-            Provide(GetList);
-            Provide("Paging", GetPaging);
+            ProvideOut(GetList);
+            ProvideOut(GetPaging, "Paging");
 		}
 
 
@@ -91,14 +92,14 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1) * PageSize;
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
-            var result = originals
+            var result = source
                 .Skip(itemsToSkip)
                 .Take(PageSize)
-                .ToImmutableArray();
-            l.A($"get page:{PageNumber} with size{PageSize} found:{result.Length}");
+                .ToImmutableList();
+            l.A($"get page:{PageNumber} with size{PageSize} found:{result.Count}");
             return (result, "ok");
         });
 
@@ -107,10 +108,10 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Calculate any additional stuff
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
-            var itemCount = originals.Count;
+            var itemCount = source.Count;
             var pageCount = Math.Ceiling((decimal)itemCount / PageSize);
 
             // Assemble the entity
@@ -123,11 +124,11 @@ namespace ToSic.Eav.DataSources
                 { "PageCount", pageCount }
             };
 
-            var entity = _pagingBuilder.Create(paging, id: PageNumber);
+            var entity = _pagingFactory.Create(paging, id: PageNumber);
 
             // Assemble list of this for the stream
             var list = new List<IEntity> { entity };
-            return (list.ToImmutableArray(), "ok");
+            return (list.ToImmutableList(), "ok");
         });
 
     }

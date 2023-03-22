@@ -122,12 +122,12 @@ namespace ToSic.Eav.DataFormats.EavLight
                     var value = entity.GetBestValue(attribute.Name, Languages);
 
                     // Special Case 1: Hyperlink Field which must be resolved
-                    if (attribute.Type == DataTypes.Hyperlink && value is string stringValue &&
+                    if (attribute.Type == ValueTypes.Hyperlink && value is string stringValue &&
                         ValueConverterBase.CouldBeReference(stringValue))
                         return Services.ValueConverter.ToValue(stringValue, entity.EntityGuid);
 
                     // Special Case 2: Entity-List
-                    if (attribute.Type == DataTypes.Entity && value is IEnumerable<IEntity> entities)
+                    if (attribute.Type == ValueTypes.Entity && value is IEnumerable<IEntity> entities)
                         return serRels.Serialize == true ? CreateListOrCsvOfSubEntities(entities, serRels) : null;
 
                     // Default: Normal Value

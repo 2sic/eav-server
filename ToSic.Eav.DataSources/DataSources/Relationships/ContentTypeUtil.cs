@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Sys.Types;
 
@@ -16,7 +17,7 @@ namespace ToSic.Eav.DataSources.Sys
             {ContentTypeType.IsDynamic.ToString(), t.IsDynamic},
 
             {ContentTypeType.Scope.ToString(), t.Scope},
-            {ContentTypeType.AttributesCount.ToString(), t.Attributes.Count},
+            {ContentTypeType.AttributesCount.ToString(), t.Attributes.Count()},
 
             {ContentTypeType.RepositoryType.ToString(), t.RepositoryType.ToString()},
             {ContentTypeType.RepositoryAddress.ToString(), t.RepositoryAddress},

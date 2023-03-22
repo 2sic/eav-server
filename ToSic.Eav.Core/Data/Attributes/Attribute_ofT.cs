@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
 {
     /// <summary>
-    /// Represents an Attribute / Property of an Entity with Values of a Generic Type
+    /// Represents an Attribute / Property of an Entity with Values of a Generic Type.
     /// </summary>
     /// <remarks>
-    /// > We recommend you read about the [](xref:Basics.Data.Index)
+    /// * completely #immutable since v15.04
+    /// * We recommend you read about the [](xref:Basics.Data.Index)
     /// </remarks>
     /// <typeparam name="T">Type of the Value</typeparam>
     [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi, this is just fyi, use interface IAttribute<T>")]
@@ -18,12 +20,20 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Create an attribute object - usually when building up the data-model for caching.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="type"></param>
-        public Attribute(string name, string type) : base(name, type) { }
+        internal Attribute(string name, ValueTypes type, IImmutableList<IValue> values = null) : base(name, type)
+        {
+            _values = values ?? new List<IValue>().ToImmutableList();
+        }
+
+        [PrivateApi]
+        public IAttribute CloneWithNewValues(IImmutableList<IValue> values)
+        {
+            return new Attribute<T>(Name, Type, values);
+        }
 
         /// <inheritdoc/>
-        public IList<IValue> Values { get; set; } = new List<IValue>();
+        public IEnumerable<IValue> Values => _values;
+        private readonly IImmutableList<IValue> _values;
 
         /// <inheritdoc/>
         public T TypedContents
@@ -56,7 +66,7 @@ namespace ToSic.Eav.Data
         }
 
         /// <inheritdoc/>
-        public IList<IValue<T>> Typed => Values.Cast<IValue<T>>().ToList();
+        public IEnumerable<IValue<T>> Typed => Values.Cast<IValue<T>>().ToList();
 
         /// <inheritdoc/>
         public T this[int languageId] => GetInternal(new[] { languageId }, FindHavingDimensions);
@@ -65,8 +75,6 @@ namespace ToSic.Eav.Data
         [PrivateApi]
         object IAttribute.this[string languageKey] => GetInternal(new [] {languageKey}, FindHavingDimensions);
 
-        [PrivateApi]
-        object IAttribute.this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
 
         [PrivateApi]
         public (IValue ValueField, object Result) GetTypedValue(string[] languageKeys)
@@ -79,15 +87,21 @@ namespace ToSic.Eav.Data
         object IAttribute.this[int languageId] => this[languageId];
         #endregion
 
-        /// <inheritdoc/>
-        public T this[int[] languageIds] => GetInternal(languageIds, FindHavingDimensions);
+        #region 2dm Removed Accessors which I believe were only internal and never used!
 
+        //[PrivateApi]
+        //object IAttribute.this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
 
-        /// <inheritdoc/>
-        public T this[string languageKey] => GetInternal(new[] { languageKey }, FindHavingDimensions);
+        ///// <inheritdoc/>
+        //public T this[int[] languageIds] => GetInternal(languageIds, FindHavingDimensions);
 
-        /// <inheritdoc/>
-        public T this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
+        ///// <inheritdoc/>
+        //public T this[string languageKey] => GetInternal(new[] { languageKey }, FindHavingDimensions);
+
+        ///// <inheritdoc/>
+        //public T this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
+
+        #endregion
 
         private T GetInternal<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
         {
@@ -98,7 +112,7 @@ namespace ToSic.Eav.Data
         private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
         {
             // Value with Dimensions specified
-            if (keys != null && keys.Length > 0 && Values != null && Values.Count > 0)
+            if (keys != null && keys.Length > 0 && Values != null && Values.Any())
             {
                 // try match all specified Dimensions
                 // note that as of now, the dimensions are always just 1 language, not more
@@ -143,5 +157,10 @@ namespace ToSic.Eav.Data
             return valuesHavingDimensions;
         }
 
+        #region ToString to improve debugging experience
+
+        public override string ToString() => $"{GetType()} ={GetTypedValue()?.Serialized}";
+
+        #endregion
     }
 }

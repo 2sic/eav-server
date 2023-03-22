@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
@@ -58,9 +59,9 @@ namespace ToSic.Eav.Data
 
 
         /// <summary>
-        /// Dictionary with all Attribute Definitions
+        /// All Attribute Definitions
         /// </summary>
-        IList<IContentTypeAttribute> Attributes { get; set; }
+        IEnumerable<IContentTypeAttribute> Attributes { get; /*set;*/ } // removed set 2022-02-26 2dm #immutable
 
         /// <summary>
         /// A simple indexer to get an attribute
@@ -119,5 +120,15 @@ namespace ToSic.Eav.Data
         bool AlwaysShareConfiguration { get; }
 
         #endregion
+
+        /// <summary>
+        /// Find the title field of the current content type.
+        /// In edge cases it can happen that there is no field
+        /// </summary>
+        /// <returns></returns>
+        [JsonIgnore]
+        [PrivateApi("new 15.04")]
+        string TitleFieldName { get; }
+
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -19,18 +18,19 @@ namespace ToSic.Eav.DataSources.Queries
         internal const string FieldTestParams = "TestParameters";
 
         [PrivateApi]
-        internal const string FieldParams = QueryConstants.ParamsLookup;
+        internal const string FieldParams = QueryConstants.ParamsSourceName;
 
         #endregion
 
         #region Constructor
         [PrivateApi]
-        public QueryDefinition(IEntity header, int appId, ILog parentLog) 
+        public QueryDefinition(IEntity header, int appId, List<QueryPartDefinition> parts, ILog parentLog) 
             : base(header, parentLog, "DS.QDef")
         {
             if (appId == Constants.AppIdEmpty)
                 appId = header.AppId;
             AppId = appId;
+            Parts = parts;
         }
         #endregion
 
@@ -41,33 +41,12 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         public int AppId;
 
+
         /// <summary>
         /// The parts of the query
         /// </summary>
-        public List<QueryPartDefinition> Parts
-        {
-            get
-            {
-                if (_parts!= null) return _parts;
+        public List<QueryPartDefinition> Parts { get; }
 
-                var wrapLog = Log.Fn<List<QueryPartDefinition>>();
-
-                //Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
-
-                var temp = Entity.Metadata
-                    .Where(m => m.Type.Is(Constants.QueryPartTypeName))
-                    .ToList();
-                
-                //Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
-
-                _parts = temp
-                    .Select(e => new QueryPartDefinition(e, Log))
-                    .ToList();
-                return wrapLog.Return(_parts, $"{_parts.Count}");
-            }
-        }
-
-        private List<QueryPartDefinition> _parts;
 
         /// <summary>
         /// Connections used in the query to map various DataSource Out-Streams to various other DataTarget In-Streams
@@ -79,7 +58,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// The connections as they are serialized in the Entity
         /// </summary>
         [PrivateApi]
-        private string ConnectionsRaw => Get(Constants.QueryStreamWiringAttributeName, "");
+        private string ConnectionsRaw => Get(QueryConstants.QueryStreamWiringAttributeName, "");
 
     }
 }

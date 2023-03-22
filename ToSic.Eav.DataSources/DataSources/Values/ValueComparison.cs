@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         private readonly Action<string, string> _errCallback;
 
         public Func<IEntity, bool> GetComparison(ValueTypes type, string fieldName, string operation,
-            string[] languages, string expected) => Log.Func(() =>
+            string[] languages, string expected) => Log.Func(l =>
         {
             operation = operation.ToLowerInvariant();
 
@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources
                 case ValueTypes.Number:
                     return (NumberComparison(fieldName, operation, languages, expected), "decimal comparison");
                 case ValueTypes.Entity:
-                    Log.A("Would apply entity comparison, but this doesn't work");
+                    l.A("Would apply entity comparison, but this doesn't work");
                     _errCallback("Can't apply Value comparison to Relationship",
                         "Can't compare values which contain related entities - use the RelationshipFilter instead.");
                     return (null, "error");
@@ -47,31 +47,7 @@ namespace ToSic.Eav.DataSources
                 default:
                     return (StringComparison(fieldName, operation, languages, expected), "string comparison");
             }
-
-            // Fallback - if known type didn't work, try based on the object data
-            // 2022-03-09 2dm disabled this, I believe this will never happen based on the changes above
-            // If all works well, remove mid of 2022
-            //switch (firstValue)
-            //{
-            //    case bool _:
-            //        return wrapLog("bool comparison", BoolComparison(fieldName, operation, languages, expected));
-            //    case int _:
-            //    case float _:
-            //    case decimal _:
-            //        return wrapLog("decimal comparison", NumberComparison(fieldName, operation, languages, expected));
-            //    case DateTime _:
-            //        return wrapLog("datetime comparison", DateTimeComparison(fieldName, operation, languages, expected));
-            //    case IEnumerable<IEntity> _:
-            //    case IEntity _:
-            //        Log.A("Would apply entity comparison, but this doesn't work");
-            //        _errCallback("Can't apply Value comparison to Relationship",
-            //            "Can't compare values which contain related entities - use the RelationshipFilter instead.");
-            //        return wrapLog("error", null);
-            //    case string _:
-            //    case null:  // note: null should never happen, because we only look at entities having non-null in this value
-            //    default:
-            //        return wrapLog("string comparison", StringComparison(fieldName, operation, languages, expected));
-            //}
+            
         });
 
 

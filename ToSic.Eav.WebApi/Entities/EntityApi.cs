@@ -5,7 +5,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Lib.Logging;
@@ -44,9 +44,14 @@ namespace ToSic.Eav.WebApi
         public AppRuntime AppRead;
 
 
-        public EntityApi Init(int appId, bool showDrafts, ILog parentLog = null)
+        public EntityApi Init(int appId, bool? showDrafts)
         {
             AppRead = _appRuntime.Init(appId, showDrafts);
+            return this;
+        }
+        public EntityApi Init(int appId)
+        {
+            AppRead = _appRuntime.Init(appId);
             return this;
         }
 
@@ -86,7 +91,7 @@ namespace ToSic.Eav.WebApi
                 var ent = p.EntityId != 0 || p.DuplicateEntity.HasValue
                         ? GetEditableEditionAndMaybeCloneIt(p)
                         : null;
-                return new BundleWithHeader<IEntity>()
+                return new BundleWithHeader<IEntity>
                 {
                     Header = p,
                     Entity = ent
@@ -95,16 +100,21 @@ namespace ToSic.Eav.WebApi
 
             // make sure the header has the right "new" guid as well - as this is the primary one to work with
             // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
-            var itemsToCorrect = list.Where(i => i.Header.Guid == Guid.Empty).ToArray(); // must do toArray, to prevent re-checking after setting the guid
-            foreach (var bundle in itemsToCorrect)
+            var itemsWithEmptyHeaderGuid = list
+                .Where(i => i.Header.Guid == default)
+                .ToArray(); // must do toArray, to prevent re-checking after setting the guid
+
+            foreach (var bundle in itemsWithEmptyHeaderGuid)
             {
                 var hasEntity = bundle.Entity != null;
-                var useExistingGuid = hasEntity && bundle.Entity.EntityGuid != Guid.Empty;
-                bundle.Header.Guid = useExistingGuid
+                var useEntityGuid = hasEntity && bundle.Entity.EntityGuid != default;
+                bundle.Header.Guid = useEntityGuid
                     ? bundle.Entity.EntityGuid
                     : Guid.NewGuid();
-                if (hasEntity && !useExistingGuid)
-                    (bundle.Entity as Entity).SetGuid(bundle.Header.Guid);
+                if (hasEntity && !useEntityGuid)
+                    bundle.Entity = _entityBuilder.CreateFrom(bundle.Entity, guid: bundle.Header.Guid);
+                //bundle.Entity = _entityBuilder.ResetIdentifiers(bundle.Entity, newGuid: bundle.Header.Guid);
+                //(bundle.Entity as Entity).SetGuid(bundle.Header.Guid);
             }
 
             // Update header with ContentTypeName in case it wasn't there before
@@ -122,14 +132,16 @@ namespace ToSic.Eav.WebApi
         private IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
         {
             var found = AppRead.AppState.List.GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
-            // if there is a draft, only allow editing that
+            // if there is a draft, use that for editing - not the original
             found = found.GetDraft() ?? found;
 
+            // If we want the original (not a copy for new) then stop here
             if (!p.DuplicateEntity.HasValue) return found;
 
-            var copy = _entityBuilder.Clone(found, found.Attributes, null);
-            copy.SetGuid(Guid.Empty);
-            copy.ResetEntityId();
+            // TODO: 2023-02-25 seems that EntityId is reset, but RepositoryId isn't - not sure why or if this is correct
+            var copy = _entityBuilder.CreateFrom(found, id: 0, guid: Guid.Empty);
+            //copy.SetGuid(Guid.Empty);
+            //copy.ResetEntityId();
             return copy;
         }
 
@@ -186,7 +198,7 @@ namespace ToSic.Eav.WebApi
             var permCheck = _multiPermissionsTypes.New().Init(context, app, contentType);
             if (!permCheck.EnsureAll(requiredGrants, out var error))
                 throw HttpException.PermissionDenied(error);
-            return Init(app.AppId, true);
+            return Init(app.AppId/*, true*/);
         }
 
         public List<Dictionary<string, object>> GetEntitiesForAdmin(string contentType, bool excludeAncestor = false)

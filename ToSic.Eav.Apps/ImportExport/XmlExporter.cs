@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.ImportExport;
@@ -44,13 +45,15 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Constructor & DI
 
-        protected XmlExporter(XmlSerializer xmlSerializer, IAppStates appStates, string logPrefix) : base(logPrefix + "XmlExp")
+        protected XmlExporter(XmlSerializer xmlSerializer, IAppStates appStates, IContextResolver contextResolver, string logPrefix) : base(logPrefix + "XmlExp")
         {
             ConnectServices(
                 AppStates = appStates,
-                Serializer = xmlSerializer
+                Serializer = xmlSerializer,
+                ContextResolver = contextResolver
             );
         }
+        protected IContextResolver ContextResolver { get; }
         public XmlSerializer Serializer { get; }
         protected readonly IAppStates AppStates;
 
@@ -73,7 +76,26 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
         /// </summary>
         /// <returns></returns>
-        public abstract XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds);
+        public virtual XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
+        {
+            ContextResolver.SetApp(new AppIdentity(zoneId, appId));
+            var appCtx = ContextResolver.App();//appId);
+            //var appState = AppStates.Get(new AppIdentity(zoneId, appId));
+            //AdamManager.Init(appCtx, Constants.CompatibilityLevel10);
+            PostContextInit(appCtx);
+            Constructor(zoneId, appRuntime, /*appState*/appCtx.AppState.NameId, appExport, attrSetIds, entityIds);
+
+            // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
+            InitExportXDocument(/*_site*/appCtx.Site.DefaultCultureCode, EavSystemInfo.VersionString);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Post context init the caller must be able to init Adam, which is not part of this project, so we're handling it as a callback
+        /// </summary>
+        /// <param name="appContext"></param>
+        protected abstract void PostContextInit(IContextOfApp appContext);
 
         private void EnsureThisIsInitialized()
         {
@@ -168,18 +190,18 @@ namespace ToSic.Eav.Apps.ImportExport
                 var attributes = new XElement(XmlConstants.Attributes);
 
                 // Add all Attributes to AttributeSet including meta information
-                foreach (var x in set.Attributes.OrderBy(a => a.SortOrder))
+                foreach (var a in set.Attributes.OrderBy(a => a.SortOrder))
                 {
-                    var attribute = new XElement(XmlConstants.Attribute,
-                        new XAttribute(XmlConstants.Static, x.Name),
-                        new XAttribute(XmlConstants.Type, x.Type),
-                        new XAttribute(XmlConstants.IsTitle, x.IsTitle),
+                    var xmlAttribute = new XElement(XmlConstants.Attribute,
+                        new XAttribute(XmlConstants.Static, a.Name),
+                        new XAttribute(XmlConstants.Type, a.Type.ToString()),
+                        new XAttribute(XmlConstants.IsTitle, a.IsTitle),
                         // Add Attribute MetaData
-                        from c in AppState.GetMetadata(TargetTypes.Attribute, x.AttributeId).ToList()
-                        select GetEntityXElement(c.EntityId, c.Type.NameId)
+                        AppState.GetMetadata(TargetTypes.Attribute, a.AttributeId)
+                            .Select(c => GetEntityXElement(c.EntityId, c.Type.NameId))
                     );
 
-                    attributes.Add(attribute);
+                    attributes.Add(xmlAttribute);
                 }
 
                 // Add AttributeSet / Content Type

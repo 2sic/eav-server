@@ -2,14 +2,14 @@
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
-using ToSic.Eav.Data;
-using System.Security.Policy;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys
@@ -24,10 +24,10 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "Zones of an installation",
         Icon = Icons.BorderOuter,
         Type = DataSourceType.System,
-        GlobalName = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
+        NameId = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
         Audience = Audience.Advanced,
         DynamicOut = false,
-        PreviousNames = new []
+        NameIds = new []
             {
                 "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
                 // not sure if this was ever used...just added it for safety for now
@@ -38,33 +38,27 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class Zones: DataSource
 	{
-        private readonly IDataBuilder _dataBuilder;
-
-        #region Configuration-properties (no config)
-
-	    private const string ZoneContentTypeName = "EAV_Zones";
-
-		#endregion
+        private readonly IDataFactory _dataFactory;
 
         /// <inheritdoc />
         /// <summary>
         /// Constructs a new Zones DS
         /// </summary>
         [PrivateApi]
-		public Zones(MyServices services, IZoneMapper zoneMapper, IAppStates appStates, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.Zones")
+		public Zones(MyServices services, IZoneMapper zoneMapper, IAppStates appStates, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.Zones")
         {
             ConnectServices(
                 _zoneMapper = zoneMapper,
                 _appStates = appStates,
-                _dataBuilder = dataBuilder.Configure(appId: 0, titleField: ZoneType.Name.ToString(), typeName: ZoneContentTypeName)
+                _dataFactory = dataFactory.New(options: new DataFactoryOptions(appId: 0, typeName: "Zone", titleField: ZoneType.Name.ToString()))
             );
-            Provide(GetList);
+            ProvideOut(GetList);
         }
         private readonly IZoneMapper _zoneMapper;
         private readonly IAppStates _appStates;
 
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             // Get cache, which manages a list of zones
             var zones = _appStates.Zones;
@@ -85,10 +79,10 @@ namespace ToSic.Eav.DataSources.Sys
                     {ZoneType.AppCount.ToString(), zone.Apps.Count}
                 };
 
-                return _dataBuilder.Create(znData, id: zone.ZoneId);
+                return _dataFactory.Create(znData, id: zone.ZoneId);
             });
-            var results = list.ToImmutableArray();
-            return (results, $"{results.Length}");
+            var results = list.ToImmutableList();
+            return (results, $"{results.Count}");
         });
 
     }

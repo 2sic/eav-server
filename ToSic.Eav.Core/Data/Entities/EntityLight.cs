@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.Json.Serialization;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
@@ -10,52 +12,58 @@ using ToSic.Lib.Helpers;
 namespace ToSic.Eav.Data
 {
     /// <inheritdoc />
+    /// <remarks>
+    /// Not 100% #immutable, because the EntityId is still manipulated once in case it's a draft-entity of another entity.
+    /// Not sure when/how to fix.
+    /// </remarks>
     [PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi, always use IEntity")]
 	public partial class EntityLight : IEntityLight
     {
         #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
         /// <inheritdoc />
-        public int AppId { get; internal set; }
+        public int AppId { get; }
 
         /// <inheritdoc />
 		public int EntityId { get; internal set; } 
 
         /// <inheritdoc />
-		public Guid EntityGuid { get; internal set; }
+		public Guid EntityGuid { get; }
 
         /// <inheritdoc />
-        public object Title => TitleFieldName == null ? null : this[TitleFieldName];
+        public object Title => TitleFieldName.HasValue() ? this[TitleFieldName] : null;
 
         [JsonIgnore]
         [PrivateApi]
-        internal string TitleFieldName;
+        internal string TitleFieldName => _titleFieldName ?? Type.TitleFieldName;
+        private readonly string _titleFieldName;
 
         /// <summary>
         /// List of all attributes in light-mode - single language, simple.
         /// Internal use only!
         /// </summary>
         [PrivateApi("Internal use only!")]
-		public Dictionary<string, object> AttributesLight { get; }
+		public IImmutableDictionary<string, object> AttributesLight { get; }
 
         /// <inheritdoc />
-		public IContentType Type { get; internal set; }
+		public IContentType Type { get; }
 
         /// <inheritdoc />
-		public DateTime Created { get; internal set; }
+		public DateTime Created { get; }
         
         /// <inheritdoc />
-		public DateTime Modified { get; internal set; }
+		public DateTime Modified { get; }
 
         /// <inheritdoc />
         [JsonIgnore]
-        public IRelationshipManager Relationships { get; internal set; }
+        public IRelationshipManager Relationships { get; }
 
         /// <inheritdoc />
-        public ITarget MetadataFor { get; internal set; }
+        public ITarget MetadataFor { get; }
 
         /// <inheritdoc />
-        public string Owner { get; internal set; }
+        public string Owner { get; }
 
+        /// <inheritdoc />
         public int OwnerId => _ownerId.Get(() => int.TryParse(Owner.After("="), out var o) ? o : -1);
         private readonly GetOnce<int> _ownerId = new GetOnce<int>();
         #endregion
@@ -81,27 +89,22 @@ namespace ToSic.Eav.Data
         /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
         /// </summary>
         [PrivateApi]
-        internal EntityLight(int appId, int entityId, Guid? guid, IContentType contentType, Dictionary<string, object> values, string titleAttribute = null, 
-            DateTime? created = null, DateTime? modified = null, string owner = null)
+        internal EntityLight(
+            int appId, int entityId, Guid? guid, IContentType contentType, EntityPartsBuilder partsBuilder, IImmutableDictionary<string, object> rawValues, string titleFieldName = null, 
+            DateTime? created = null, DateTime? modified = null, string owner = null,
+            ITarget metadataFor = default)
         {
             AppId = appId;
             EntityId = entityId;
-            if(guid != null) EntityGuid = guid.Value;
+            EntityGuid = guid ?? Guid.Empty;
             Type = contentType;
-            AttributesLight = values;
-            try
-            {
-                if (titleAttribute != null) TitleFieldName = titleAttribute;
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new KeyNotFoundException($"The Title Attribute with Name \"{titleAttribute}\" doesn't exist in the Entity-Attributes.");
-            }
-            MetadataFor = new Target();
+            AttributesLight = rawValues;
+            _titleFieldName = titleFieldName;
+            MetadataFor = metadataFor ?? new Target();
             if (created.HasValue) Created = created.Value;
             if (modified.HasValue) Modified = modified.Value;
             if (!string.IsNullOrEmpty(owner)) Owner = owner;
-            Relationships = new RelationshipManager(this, null, null);
+            Relationships = partsBuilder.RelationshipManager(this);
         }
 
 
@@ -170,6 +173,8 @@ namespace ToSic.Eav.Data
                     return OwnerId;
                 case Attributes.EntityFieldModified:
                     return Modified;
+                case Attributes.EntityAppId:
+                    return AppId;
                 default:
                     return null;
             }
@@ -200,13 +205,5 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        #region Save/Update settings - needed when passing this object to the save-layer
-
-
-        // todo: move to save options
-        [PrivateApi]
-        public bool PlaceDraftInBranch { get; set; }
-
-        #endregion
     }
 }

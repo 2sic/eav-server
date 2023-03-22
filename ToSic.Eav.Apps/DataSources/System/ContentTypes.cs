@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
+﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Documentation;
@@ -23,11 +23,11 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "Types of an App",
         Icon = Icons.Dns,
         Type = DataSourceType.System,
-        GlobalName = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
+        NameId = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
         Audience = Audience.Advanced,
         DynamicOut = false,
-        ExpectsDataOfType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
-        PreviousNames = new []
+        ConfigurationType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
+        NameIds = new []
             {
                 "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
                 // not sure if this was ever used...just added it for safety for now
@@ -38,12 +38,13 @@ namespace ToSic.Eav.DataSources.Sys
     // ReSharper disable once UnusedMember.Global
     public sealed class ContentTypes: DataSource
 	{
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
 
         #region Configuration-properties (no config)
 
         private const string AppIdKey = "AppId";
-	    private const string ContentTypeTypeName = "EAV_ContentTypes";
+	    private const string ContentTypeTypeName = "ContentType";
+        private DataFactoryOptions _options = new DataFactoryOptions(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
 	    
 
         /// <summary>
@@ -84,17 +85,17 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new ContentTypes DS
         /// </summary>
         [PrivateApi]
-        public ContentTypes(MyServices services, IAppStates appStates, IDataBuilder dataBuilder): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
+        public ContentTypes(MyServices services, IAppStates appStates, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
         {
             ConnectServices(
                 _appStates = appStates,
-                _dataBuilder = dataBuilder.Configure(appId: OfAppId, typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString())
+                _dataFactory = dataFactory.New(options: new DataFactoryOptions(_options, appId: OfAppId))
             );
-            Provide(GetList);
+            ProvideOut(GetList);
 		}
         private readonly IAppStates _appStates;
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             Configuration.Parse();
 
@@ -117,11 +118,11 @@ namespace ToSic.Eav.DataSources.Sys
                     /* ignore */
                 }
 
-                return _dataBuilder.Create(ContentTypeUtil.BuildDictionary(t), id: t.Id, guid: guid ?? Guid.Empty);
+                return _dataFactory.Create(ContentTypeUtil.BuildDictionary(t), id: t.Id, guid: guid ?? Guid.Empty);
             });
 
-            var result = list.ToImmutableArray();
-            return (result, $"{result.Length}");
+            var result = list.ToImmutableList();
+            return (result, $"{result.Count}");
         });
     }
 }

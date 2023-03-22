@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace ToSic.Eav.Plumbing
 {
@@ -12,7 +11,7 @@ namespace ToSic.Eav.Plumbing
             // must put this in a try/catch, in case other DLLs have incompatible attributes
             try
             {
-                TypeMetadata = Type.GetCustomAttributes(typeof(T), false).FirstOrDefault() as T;
+                TypeMetadata = dsType.GetDirectlyAttachedAttribute<T>();
             }
             catch {  /*ignore */ }
         }

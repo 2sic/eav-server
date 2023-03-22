@@ -11,9 +11,14 @@ namespace ToSic.Eav.DataSources
     public class ConnectionStream: IDataStream, IWrapper<IDataStream>
     {
 
-        public ConnectionStream(Connection connection) => Connection = connection;
+        public ConnectionStream(Connection connection, DataSourceErrorHelper errorHandler = null)
+        {
+            Connection = connection;
+            _errorHandler = errorHandler;
+        }
 
         public Connection Connection;
+        private readonly DataSourceErrorHelper _errorHandler;
 
         private IDataStream LoadStream()
         {
@@ -46,9 +51,8 @@ namespace ToSic.Eav.DataSources
 
         private IDataStream CreateErrorStream(string title, string message, IDataSource intendedSource = null)
         {
-            var errorHandler = Connection.DataSource?.ErrorHandler ?? new DataSourceErrorHandling();
-            var entityList = errorHandler.CreateErrorList(title: title, message: message);
-            return new DataStream(intendedSource, "ConnectionStreamError", () => entityList);
+            var errors = _errorHandler.Create(title: title, message: message);
+            return new DataStream(intendedSource, "ConnectionStreamError", () => errors);
         }
 
         public IDataStream GetContents() => UnwrappedDataStream;

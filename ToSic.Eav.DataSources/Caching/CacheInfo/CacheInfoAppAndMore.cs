@@ -36,6 +36,6 @@ namespace ToSic.Eav.DataSources.Caching.CacheInfo
 
         public long CacheTimestamp => App.CacheTimestamp;
 
-        public bool CacheChanged(long newCacheTimeStamp) => App.CacheChanged(newCacheTimeStamp);
+        public bool CacheChanged(long dependentTimeStamp) => App.CacheChanged(dependentTimeStamp);
     }
 }

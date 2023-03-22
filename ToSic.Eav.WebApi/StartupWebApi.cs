@@ -10,6 +10,7 @@ using ToSic.Eav.WebApi.Cms;
 using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Eav.WebApi.Languages;
 using ToSic.Eav.WebApi.Plumbing;
+using ToSic.Eav.WebApi.SaveHelpers;
 using ToSic.Eav.WebApi.Serialization;
 using ToSic.Eav.WebApi.Sys;
 using ToSic.Eav.WebApi.Sys.Licenses;
@@ -37,11 +38,12 @@ namespace ToSic.Eav.WebApi
             // Various Backends
             services.TryAddTransient<LanguagesBackend>();
             services.TryAddTransient<ZoneBackend>();
+            services.TryAddTransient<SaveEntities>();
 
             // APIs
             services.TryAddTransient<EntityPickerApi>();
             services.TryAddTransient<ContentTypeApi>();
-            services.TryAddTransient<QueryControllerServices>();
+            services.TryAddTransient(typeof(QueryControllerBase<>.MyServices));
             services.TryAddTransient(typeof(ContentExportApi<>));
             services.TryAddTransient<ContentImportApi>();
 

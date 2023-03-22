@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Documentation;
+﻿using System;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Data
 {
@@ -6,19 +7,23 @@ namespace ToSic.Lib.Data
     /// Helper base class for all wrappers
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [PrivateApi("probably move to Lib soon")]
+    [PrivateApi]
     public abstract class Wrapper<T>: IWrapper<T>
     {
-        /// <summary>
-        /// Property with the contents - should be used for all private/internal access to the UnwrappedContent
-        /// </summary>
-        [PrivateApi("should never appear in documentations")]
-        protected virtual T UnwrappedContents { get; private set; }
+        ///// <summary>
+        ///// Property with the contents - should be used for all private/internal access to the UnwrappedContent
+        ///// </summary>
+        //[PrivateApi("should never appear in documentations")]
+        //protected virtual T UnwrappedContents => _unwrappedContents;
 
-        public T GetContents() => UnwrappedContents;
+        private T _unwrappedContents;
 
-        protected Wrapper(T contents) => UnwrappedContents = contents;
+        /// <inheritdoc />
+        public virtual T GetContents() => _unwrappedContents;
 
-        protected void Wrap(T contents) => UnwrappedContents = contents;
+        protected Wrapper(T contents) => _unwrappedContents = contents;
+
+
+        protected void Wrap(T contents) => _unwrappedContents = contents;
     }
 }

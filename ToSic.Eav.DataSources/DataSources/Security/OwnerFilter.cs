@@ -3,6 +3,7 @@ using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -17,10 +18,10 @@ namespace ToSic.Eav.DataSources
         UiHint = "Keep only item created by a specified user",
         Icon = Icons.PersonCircled,
         Type = DataSourceType.Security,
-        GlobalName = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { Constants.DefaultStreamNameRequired },
-	    ExpectsDataOfType = "|Config ToSic.Eav.DataSources.OwnerFilter",
+        In = new[] { QueryConstants.InStreamDefaultRequired },
+	    ConfigurationType = "|Config ToSic.Eav.DataSources.OwnerFilter",
         HelpLink = "https://r.2sxc.org/DsOwnerFilter")]
 
     public class OwnerFilter : DataSource
@@ -45,9 +46,9 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new PublishingFilter
 		/// </summary>
 		[PrivateApi]
-		public OwnerFilter(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.OwnrFl")
+		public OwnerFilter(MyServices services): base(services, $"{LogPrefix}.OwnrFl")
         {
-            Provide(GetList);
+            ProvideOut(GetList);
         }
 
         private IImmutableList<IEntity> GetList() => Log.Func($"get for identity:{Identity}", () =>
@@ -55,12 +56,12 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             if (string.IsNullOrWhiteSpace(Identity))
-                return (ImmutableArray<IEntity>.Empty, "no identity");
+                return (EmptyList, "no identity");
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
-            return (originals.Where(e => e.Owner == Identity).ToImmutableArray(), "ok");
+            return (source.Where(e => e.Owner == Identity).ToImmutableList(), "ok");
         });
 
     }

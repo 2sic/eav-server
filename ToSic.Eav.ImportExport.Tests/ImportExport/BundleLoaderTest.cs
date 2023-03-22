@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Lib.Logging;
 
 // ReSharper disable once CheckNamespace
@@ -66,7 +66,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         {
             Trace.WriteLine($"path:'{TestStorageRoot}'");
             var loader = GetService<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
-            var relationshipsSource = new DirectEntitiesSource(new List<IEntity>());
+            var relationshipsSource = new ImmutableEntitiesSource();
             try
             {
                 return loader.EntitiesInBundles(relationshipsSource);
@@ -85,7 +85,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             IList<IEntity> entities;
             try
             {
-                entities = loader.Entities(FsDataConstants.QueriesFolder, 0); // .Queries(0);
+                entities = DirectEntitiesSource.Using(set => loader.Entities(FsDataConstants.QueriesFolder, 0, set.Source));
             }
             finally
             {

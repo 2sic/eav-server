@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.Data;
+using static System.StringComparison;
 
 namespace ToSic.Eav.Plumbing
 {
@@ -30,14 +31,14 @@ namespace ToSic.Eav.Plumbing
         {
             if (a == null && b == null) return true;
             if (a == null) return false;
-            return a.Equals(b, StringComparison.InvariantCultureIgnoreCase);
+            return a.Equals(b, InvariantCultureIgnoreCase);
         }
 
         public static bool ContainsInsensitive(this string a, string b)
         {
             if (a == null && b == null) return true;
             if (a == null || b == null) return false;
-            return a.IndexOf(b, 0, StringComparison.CurrentCultureIgnoreCase) != -1;
+            return a.IndexOf(b, 0, CurrentCultureIgnoreCase) != -1;
         }
 
         public static string Truncate(this string value, int maxLength)
@@ -57,5 +58,18 @@ namespace ToSic.Eav.Plumbing
             => value ?? NullKey;
 
         private const string NullKey = "\0";
+
+
+        // https://stackoverflow.com/questions/2571716/find-nth-occurrence-of-a-character-in-a-string
+        public static int GetNthIndex(this string s, char t, int n)
+        {
+            if (s.IsEmpty()) return -1;
+            var count = 0;
+            for (var i = 0; i < s.Length; i++)
+                if (s[i] == t)
+                    if (++count == n)
+                        return i;
+            return -1;
+        }
     }
 }

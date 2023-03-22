@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using IEntity = ToSic.Eav.Data.IEntity;
+using Connection = ToSic.Eav.DataSources.Queries.Connection;
+using Connections = ToSic.Eav.DataSources.Queries.Connections;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -17,87 +19,33 @@ namespace ToSic.Eav.Apps.Parts
     /// <summary>
     /// query manager to work with queries
     /// </summary>
-    public class QueryManager: PartOf<AppManager>
+    public partial class QueryManager: PartOf<AppManager>
     {
+
         public QueryManager(
             LazySvc<SystemManager> systemManagerLazy,
+            LazySvc<DataBuilder> builder,
             LazySvc<ValueBuilder> valueBuilder,
             LazySvc<JsonSerializer> jsonSerializer,
-            LazySvc<Eav.DataSources.Queries.QueryManager> queryManager
-            ) : base("App.QryMng")
+            LazySvc<Eav.DataSources.Queries.QueryManager> queryManager,
+            LazySvc<QueryDefinitionBuilder> queryDefBuilder) : base("App.QryMng")
         {
             ConnectServices(
                 _systemManagerLazy = systemManagerLazy,
                 _valueBuilder = valueBuilder,
+                _builder = builder,
                 Serializer = jsonSerializer.SetInit(j => j.SetApp(Parent.AppState)),
-                _queryManager = queryManager
+                _queryManager = queryManager,
+                _queryDefBuilder = queryDefBuilder
             );
         }
         private readonly LazySvc<SystemManager> _systemManagerLazy;
         private readonly LazySvc<ValueBuilder> _valueBuilder;
         private LazySvc<JsonSerializer> Serializer { get; }
         private readonly LazySvc<Eav.DataSources.Queries.QueryManager> _queryManager;
+        private readonly LazySvc<QueryDefinitionBuilder> _queryDefBuilder;
+        private readonly LazySvc<DataBuilder> _builder;
 
-        public void SaveCopy(int id) => SaveCopy(Parent.Read.Queries.Get(id));
-
-        public void SaveCopy(QueryDefinition query)
-        {
-            var newQuery = CopyAndResetIds(query.Entity);
-            var parts = query.Parts;
-            var newParts = parts.ToDictionary(o => o.Guid, o => CopyAndResetIds(o.Entity, newQuery.EntityGuid));
-
-            var origMetadata = parts
-                .ToDictionary(o => o.Guid, o => o.Entity.Metadata.FirstOrDefault())
-                .Where(m => m.Value != null);
-
-            var newMetadata = origMetadata.Select(o => CopyAndResetIds(o.Value, newParts[o.Key].EntityGuid));
-
-            // now update wiring...
-            var origWiring = query.Connections;
-            var keyMap = newParts.ToDictionary(o => o.Key.ToString(), o => o.Value.EntityGuid.ToString());
-            var newWiring = RemapWiringToCopy(origWiring, keyMap);
-
-            newQuery.Attributes[Constants.QueryStreamWiringAttributeName].Values = new List<IValue>
-            {
-                _valueBuilder.Value.Build(ValueTypes.String, newWiring, new List<ILanguage>())
-            };
-
-            var saveList = newParts.Select(p => p.Value).Concat(newMetadata).Cast<IEntity>().ToList();
-            saveList.Add(newQuery);
-            Parent.Entities.Save(saveList);
-        }
-
-
-        private static string RemapWiringToCopy(IList<Connection> origWiring, Dictionary<string, string> keyMap)
-        {
-            var wiringsSource = origWiring;
-            var wiringsClone = new List<Connection>();
-            if (wiringsSource != null)
-                foreach (var wireInfo in wiringsSource)
-                {
-                    var wireInfoClone = wireInfo; // creates a clone of the Struct
-                    if (keyMap.ContainsKey(wireInfo.From))
-                        wireInfoClone.From = keyMap[wireInfo.From];
-                    if (keyMap.ContainsKey(wireInfo.To))
-                        wireInfoClone.To = keyMap[wireInfo.To];
-
-                    wiringsClone.Add(wireInfoClone);
-                }
-            var newWiring = Connections.Serialize(wiringsClone);
-            return newWiring;
-        }
-
-        private Entity CopyAndResetIds(IEntity origQuery, Guid? newMetadataTarget = null)
-        {
-            var serializer = Serializer.Value;
-            var newSer = serializer.Serialize(origQuery);
-            var newEnt = serializer.Deserialize(newSer) as Entity;
-            newEnt.SetGuid(Guid.NewGuid());
-            newEnt.ResetEntityId();
-            if(newMetadataTarget != null)
-                newEnt.Retarget(newMetadataTarget.Value);
-            return newEnt;
-        }
 
         public bool Delete(int id)
         {
@@ -111,7 +59,7 @@ namespace ToSic.Eav.Apps.Parts
 
             // Get the Entity describing the Query and Query Parts (DataSources)
             var queryEntity = _queryManager.Value.GetQueryEntity(id, Parent.AppState);
-            var qDef = new QueryDefinition(queryEntity, Parent.AppId, Log);
+            var qDef = _queryDefBuilder.Value.Create(queryEntity, Parent.AppId);
 
             var parts = qDef.Parts;
             var mdItems = parts
@@ -145,9 +93,10 @@ namespace ToSic.Eav.Apps.Parts
             // Get/Save Query EntityGuid. Its required to assign Query Parts to it.
             var qdef = Parent.Read.Queries.Get(queryId);
 
-            // todo: maybe create a GetBestValue<typed> ? 
-            if (((IAttribute<bool?>)qdef.Entity["AllowEdit"]).TypedContents == false)
-                throw new InvalidOperationException("Query has AllowEdit set to false");
+            // todo: maybe create a GetBestValue<typed> ?
+            const string AllowEdit = "AllowEdit";
+            if (qdef.Entity.GetBestValue<bool>(AllowEdit, Array.Empty<string>()) == false)
+                throw new InvalidOperationException($"Query has {AllowEdit} set to false");
 
             Dictionary<string, Guid> addedSources = SavePartsAndGenerateRenameMap(
                 partDefs, qdef.Entity.EntityGuid);
@@ -192,9 +141,9 @@ namespace ToSic.Eav.Apps.Parts
                 // Add new DataSource
                 else
                 {
-                    Tuple<int, Guid> entity = Parent.Entities.Create(Constants.QueryPartTypeName, dataSource,
-                        new Target((int)TargetTypes.Entity, null) { KeyGuid = queryEntityGuid });
-                    newDataSources.Add(originalIdentity, entity.Item2);
+                    var newSpecs = Parent.Entities.Create(QueryConstants.QueryPartTypeName, dataSource,
+                        new Target((int)TargetTypes.Entity, null, keyGuid: queryEntityGuid));
+                    newDataSources.Add(originalIdentity, newSpecs.EntityGuid);
                 }
             }
 
@@ -252,7 +201,7 @@ namespace ToSic.Eav.Apps.Parts
                     $"DataSource \"{wireInfo.To}\" has multiple In-Streams with Name \"{wireInfo.In}\". Each In-Stream must have an unique Name and can have only one connection.");
 
             // add to new object...then send to save/update
-            values[Constants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
+            values[QueryConstants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
             Parent.Entities.UpdateParts(id, values);
         }
 

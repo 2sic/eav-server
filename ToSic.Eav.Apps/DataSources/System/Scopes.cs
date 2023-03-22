@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -21,14 +22,14 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "Data Scopes group Content-Types by topic",
         Icon = Icons.Scopes,
         Type = DataSourceType.System,
-        GlobalName = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
+        NameId = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
         Audience = Audience.Advanced,
         DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global
     public sealed class Scopes : DataSource
     {
-        private readonly IDataBuilder _scopesDataBuilder;
+        private readonly IDataFactory _scopesFactory;
 
         #region Configuration-properties (no config)
 
@@ -39,18 +40,18 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Scopes(MyServices services, IAppStates appStates, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Scopes(MyServices services, IAppStates appStates, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(
                 _appStates = appStates,
                 // Note: these are really the scopes of the current app, so we set the AppId
-                _scopesDataBuilder = dataBuilder.Configure(appId: AppId, typeName: "Scope")
+                _scopesFactory = dataFactory.New(options: new DataFactoryOptions(appId: AppId, typeName: "Scope"))
             );
-            Provide(GetList);
+            ProvideOut(GetList);
         }
         private readonly IAppStates _appStates;
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             Configuration.Parse();
 
@@ -58,7 +59,7 @@ namespace ToSic.Eav.DataSources.Sys
 
             var scopes = _appStates.Get(appId).ContentTypes.GetAllScopesWithLabels();
 
-            var scopeBuilder = _scopesDataBuilder;
+            var scopeBuilder = _scopesFactory;
             var list = scopes
                 .Select(s => scopeBuilder.Create(new Dictionary<string, object>
                     {
@@ -66,9 +67,9 @@ namespace ToSic.Eav.DataSources.Sys
                         { Data.Attributes.TitleNiceName, s.Value },
                     }
                 ))
-                .ToImmutableArray();
+                .ToImmutableList();
 
-            return (list, $"{list.Length}");
+            return (list, $"{list.Count}");
         });
     }
 }

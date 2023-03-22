@@ -5,9 +5,14 @@ namespace ToSic.Eav.DataSources.Queries
     /// <summary>
     /// Describes what a DataSource is for in the visual query (for logical grouping)
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
+    [PublicApi]
     public enum DataSourceType
     {
+        /// <summary>
+        /// DataSources of Type App only exist on the app.
+        /// </summary>
+        App,
+
         Cache,
         Filter,
         Logic,

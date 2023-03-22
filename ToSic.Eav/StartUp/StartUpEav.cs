@@ -30,7 +30,7 @@ namespace ToSic.Eav.StartUp
                 .AddEavWebApi()
                 // Apps
                 .AddEavApps()
-                .AddFallbackAppServices()
+                .AddAppFallbackServices()
                 // SQL Server
                 .AddRepositoryAndEfc()
                 // Import/Export as well as File Based Json loading

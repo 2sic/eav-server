@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// </summary>
         internal string ValueWithFullFallback(IEntity entity, IContentTypeAttribute attribute, string language, string languageFallback, bool resolveLinks)
         {
-            var value = entity.GetBestValue(attribute.Name, new []{ language, languageFallback } ).ToString();
+            var value = entity.GetBestValue(attribute.Name, new []{ language, languageFallback } ) as string;
             return ResolveValue(entity, attribute.Type, value, resolveLinks);
         }
 
@@ -46,17 +46,17 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // Option 1: nothing (no value found at all)
             // create a special "null" entry, so the re-import will also null this
-            if (attrib == null || attrib.Values.Count == 0)
-                return XmlConstants.Null;
+            if (attrib == null || !attrib.Values.Any())
+                return XmlConstants.NullMarker;
 
             // now try to find the exact value-item for this language
             var valueItem = GetExactAssignedValue(attrib, language, languageFallback);
 
             if (valueItem == null)
-                return XmlConstants.Null;
+                return XmlConstants.NullMarker;
 
             // Option 2: Exact match (non-shared) on no other languages
-            if (valueItem.Languages.Count == 0 || valueItem.Languages.Count == 1)
+            if (!valueItem.Languages.Any() || valueItem.Languages.Count() == 1)
                 return ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks);
 
             // Option 4 - language is assigned - either shared or Read-only
@@ -89,7 +89,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public static IValue GetExactAssignedValue(IAttribute attrib, string language, string languageFallback)
         {
-            var valueItem = string.IsNullOrEmpty(language)
+            var valueItem = string.IsNullOrEmpty(language) || language == languageFallback // if no language is specified, or it's the fallback language
                 ? attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == languageFallback)) // use default (fallback)
                   ?? attrib.Values.FirstOrDefault(v => !v.Languages.Any()) // or the node without any languages
                 : attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == language)); // otherwise really exact match
@@ -100,22 +100,22 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Append an element to this. The element will have the value of the EavValue. File and page references 
         /// can optionally be resolved.
         /// </summary>
-        internal string ResolveValue(IEntity entity, string attrType, string value, bool resolveLinks) 
-            => ResolveValue(entity.AppId, entity.EntityGuid, attrType, value, resolveLinks);
+        internal string ResolveValue(IEntity entity, ValueTypes attrType, string value, bool resolveLinks) 
+            => ResolveValue(entity.EntityGuid, attrType, value, resolveLinks);
 
 
         /// <summary>
         /// Append an element to this. The element will have the value of the EavValue. File and page references 
         /// can optionally be resolved.
         /// </summary>
-        internal string ResolveValue(int appId, Guid itemGuid, string attrType, string value, bool resolveLinks)
+        internal string ResolveValue(Guid itemGuid, ValueTypes attrType, string value, bool resolveLinks)
         {
             if (value == null)
-                return XmlConstants.Null;
+                return XmlConstants.NullMarker;
             if (value == string.Empty)
-                return XmlConstants.Empty;
+                return XmlConstants.EmptyMarker;
             if (resolveLinks)
-                return ResolveHyperlinksFromSite(appId, itemGuid, value, attrType);
+                return ResolveHyperlinksFromSite(itemGuid, value, attrType);
             return value;
         }
 
@@ -124,8 +124,8 @@ namespace ToSic.Eav.Apps.ImportExport
         /// File:4711 to Content/file4711.jpg. If the reference cannot be resolved, 
         /// the original value will be returned. 
         /// </summary>
-        internal string ResolveHyperlinksFromSite(int appId, Guid itemGuid, string value, string attrType)
-            => attrType != DataTypes.Hyperlink
+        internal string ResolveHyperlinksFromSite(Guid itemGuid, string value, ValueTypes attrType)
+            => attrType != ValueTypes.Hyperlink
                 ? value
                 : ValueConverter.ToValue(value, itemGuid);
 

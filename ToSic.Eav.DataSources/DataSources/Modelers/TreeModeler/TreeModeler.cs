@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
@@ -15,18 +14,18 @@ namespace ToSic.Eav.DataSources
     /// New in v11.20
     /// </remarks>
     [VisualQuery(
-        GlobalName = "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
+        NameId = "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
         NiceName = "Relationship/Tree Modeler",
         UiHint = "Connect items to create relationships or trees",
         Icon = Icons.Tree,
-        PreviousNames = new[]
+        NameIds = new[]
         {
             "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
             "ToSic.Eav.DataSources.TreeBuilder, ToSic.Eav.DataSources.SharePoint"
         },
         Type = DataSourceType.Modify,
-        ExpectsDataOfType = "d167054a-fe0f-4e98-b1f1-0a9990873e86",
-        In = new[] { Constants.DefaultStreamName + "*" },
+        ConfigurationType = "d167054a-fe0f-4e98-b1f1-0a9990873e86",
+        In = new[] { DataSourceConstants.StreamDefaultName + "*" },
         HelpLink = "https://r.2sxc.org/DsTreeModeler")]
     [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
     // ReSharper disable once UnusedMember.Global
@@ -89,7 +88,7 @@ namespace ToSic.Eav.DataSources
                 _treeMapper = treeMapper
             );
             // Specify what out-streams this data-source provides. Usually just one, called "Default"
-            Provide(GetList);
+            ProvideOut(GetList);
         }
 
         /// <summary>
@@ -100,23 +99,28 @@ namespace ToSic.Eav.DataSources
         {
             Configuration.Parse();
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
+            var tm = (TreeMapper)_treeMapper;
             switch (Identifier)
             {
                 case "EntityGuid":
-                    var resultGuid = _treeMapper.AddRelationships<Guid>(
-                        originals, Identifier, ParentReferenceField,
+                    var resultGuid = tm.AddParentChild(
+                        source, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
                     return (resultGuid, $"Guid: {resultGuid.Count}");
                 case "EntityId":
-                    var resultInt = _treeMapper.AddRelationships<int>(
-                        originals, Identifier, ParentReferenceField,
+                    var resultInt = tm.AddParentChild(
+                        source, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
                     return (resultInt, $"int: {resultInt.Count}");
                 default:
-                    return (SetError("Invalid Identifier", "TreeBuilder currently supports EntityGuid or EntityId as parent identifier attribute."), "error");
+                    return (Error.Create(
+                            title: "Invalid Identifier",
+                            message:
+                            "TreeBuilder only supports EntityGuid or EntityId as parent identifier attribute."),
+                        "error");
             }
         });
 

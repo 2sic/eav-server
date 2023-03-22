@@ -4,8 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Catalog;
+using ToSic.Eav.DataSources.Debug;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
@@ -13,9 +15,10 @@ using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Dto;
+using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using Connection = ToSic.Eav.DataSources.Queries.Connection;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using SystemJsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Admin.Query
 {
@@ -23,22 +26,68 @@ namespace ToSic.Eav.WebApi.Admin.Query
     /// <summary>
     /// Web API Controller for the Pipeline Designer UI
     /// </summary>
-    public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerServices> where TImplementation : QueryControllerBase<TImplementation>
+    public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerBase<TImplementation>.MyServices> where TImplementation : QueryControllerBase<TImplementation>
     {
-        protected QueryControllerBase(QueryControllerServices services, string logName) : base(services, logName)
+
+        #region Constructor / DI / Services
+
+        public class MyServices : MyServicesBase
+        {
+            public LazySvc<AppManager> AppManagerLazy { get; }
+            /// <summary>
+            /// The lazy reader should only be used in the Definition - it's important that it's a new object
+            /// when used, to ensure it has the changes previously saved
+            /// </summary>
+            public LazySvc<AppRuntime> AppReaderLazy { get; }
+            public QueryBuilder QueryBuilder { get; }
+            public LazySvc<ConvertToEavLight> EntToDicLazy { get; }
+            public LazySvc<QueryInfo> QueryInfoLazy { get; }
+            public LazySvc<DataSourceCatalog> DataSourceCatalogLazy { get; }
+            public Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> JsonSerializer { get; }
+            public Generator<PassThrough> PassThrough { get; }
+
+            public MyServices(LazySvc<AppManager> appManagerLazy,
+                LazySvc<AppRuntime> appReaderLazy,
+                QueryBuilder queryBuilder,
+                LazySvc<ConvertToEavLight> entToDicLazy,
+                LazySvc<QueryInfo> queryInfoLazy,
+                LazySvc<DataSourceCatalog> dataSourceCatalogLazy,
+                Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> jsonSerializer,
+                Generator<PassThrough> passThrough)
+            {
+                ConnectServices(
+                    AppManagerLazy = appManagerLazy,
+                    AppReaderLazy = appReaderLazy,
+                    QueryBuilder = queryBuilder,
+                    EntToDicLazy = entToDicLazy,
+                    QueryInfoLazy = queryInfoLazy,
+                    DataSourceCatalogLazy = dataSourceCatalogLazy,
+                    JsonSerializer = jsonSerializer,
+                    PassThrough = passThrough
+                );
+            }
+        }
+
+
+
+        protected QueryControllerBase(MyServices services, string logName) : base(services, logName)
         {
             QueryBuilder = services.QueryBuilder;
         }
         private AppManager _appManager;
         private QueryBuilder QueryBuilder { get; }
 
+        #endregion
 
         public TImplementation Init(int appId)
         {
+            _appId = appId;
             if (appId != 0) // if 0, then no context is available or used
                 _appManager = Services.AppManagerLazy.Value.Init(appId);
             return this as TImplementation;
         }
+
+        private int _appId;
 
 
 
@@ -51,13 +100,13 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             if (!id.HasValue) return (query, "no id, empty");
 
-            var reader = Services.AppReaderLazy.Value.Init(appId, false);
+            var reader = Services.AppReaderLazy.Value.Init(appId);
             var qDef = reader.Queries.Get(id.Value);
 
             #region Deserialize some Entity-Values
 
             query.Pipeline = qDef.Entity.AsDictionary();
-            query.Pipeline[Constants.QueryStreamWiringAttributeName] = qDef.Connections;
+            query.Pipeline[QueryConstants.QueryStreamWiringAttributeName] = qDef.Connections;
 
             var converter = Services.EntToDicLazy.Value;
             converter.Type.Serialize = true;
@@ -82,21 +131,14 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// </summary>
         public IEnumerable<DataSourceDto> DataSources() => Log.Func(() =>
         {
-            var dsCatalog = Services.DataSourceCatalogLazy.Value;
-            var installedDataSources = DataSourceCatalog.GetAll(true);
+            var dsCat = Services.DataSourceCatalogLazy.Value;
+            var installedDataSources = Services.DataSourceCatalogLazy.Value.GetAll(true, _appId);
 
             var result = installedDataSources
-                .Select(dsInfo => new DataSourceDto(dsInfo.Type.Name, dsInfo.VisualQuery)
-                {
-                    TypeNameForUi = dsInfo.Type.FullName,
-                    PartAssemblyAndType = dsInfo.Name,
-                    Identifier = dsInfo.Name,
-                    Out = dsInfo.VisualQuery?.DynamicOut == true ? null : dsCatalog.GetOutStreamNames(dsInfo)
-                })
+                .Select(ds => new DataSourceDto(ds, ds.VisualQuery?.DynamicOut == true ? null : dsCat.GetOutStreamNames(ds)))
                 .ToList();
 
             return (result, result.Count.ToString());
-
         });
 
         /// <summary>
@@ -115,9 +157,9 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 .ToList();
 
             // Update Pipeline Entity with new Wirings etc.
-            var wiringString = data.Pipeline[Constants.QueryStreamWiringAttributeName]?.ToString() ?? "";
+            var wiringString = data.Pipeline[QueryConstants.QueryStreamWiringAttributeName]?.ToString() ?? "";
             var wirings =
-                JsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
+                SystemJsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
                 ?? new List<Connection>();
 
             _appManager.Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
@@ -130,7 +172,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// </summary>
         protected QueryRunDto DebugStream(int appId, int id, int top, LookUpEngine lookUps, string from, string streamName)
         {
-            IDataSource GetSubStream(Tuple<IDataSource, Dictionary<string, IDataSource>> builtQuery)
+            IDataSource GetSubStream((IDataSource, Dictionary<string, IDataSource>) builtQuery)
             {
                 // Find the DataSource
                 if (!builtQuery.Item2.ContainsKey(from))
@@ -153,12 +195,12 @@ namespace ToSic.Eav.WebApi.Admin.Query
         }
 
         protected QueryRunDto RunDevInternal(int appId, int id, LookUpEngine lookUps, int top,
-            Func<Tuple<IDataSource, Dictionary<string, IDataSource>>, IDataSource> partLookup
+            Func<(IDataSource Main, Dictionary<string, IDataSource> DataSources), IDataSource> partLookup
         ) => Log.Func($"a#{appId}, {nameof(id)}:{id}, top: {top}", () =>
         {
             // Get the query, run it and track how much time this took
             var qDef = QueryBuilder.GetQueryDefinition(appId, id);
-            var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, true, lookUps);
+            var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, lookUps: lookUps);
             var outSource = builtQuery.Item1;
 
 
@@ -218,7 +260,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             {
                 var deser = Services.JsonSerializer.New().SetApp(_appManager.AppState);
                 var ents = deser.Deserialize(args.GetContentString());
-                var qdef = new QueryDefinition(ents, args.AppId, Log);
+                var qdef = QueryBuilder.Create(ents, args.AppId);
                 _appManager.Queries.SaveCopy(qdef);
 
                 return true;

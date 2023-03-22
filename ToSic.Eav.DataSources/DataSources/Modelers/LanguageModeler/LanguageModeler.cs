@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -17,18 +17,18 @@ namespace ToSic.Eav.DataSources
     /// New in v11.20
     /// </remarks>
     [VisualQuery(
-        GlobalName = "f390e460-46ff-4a6e-883f-f50fdeb363ee",
+        NameId = "f390e460-46ff-4a6e-883f-f50fdeb363ee",
         NiceName = "Language Modeler",
         UiHint = "Combine values to multi-language values",
         Icon = Icons.Translate,
-        PreviousNames = new[]
+        NameIds = new[]
         {
             "f390e460-46ff-4a6e-883f-f50fdeb363ee",
             "ToSic.Eav.DataSources.FieldMapping, ToSic.Eav.DataSources.SharePoint" // originally came from SharePoint
         },
         Type = DataSourceType.Modify,
-        ExpectsDataOfType = "7b4fce73-9c29-4517-af14-0a704da5b958",
-        In = new[] { Constants.DefaultStreamName + "*" },
+        ConfigurationType = "7b4fce73-9c29-4517-af14-0a704da5b958",
+        In = new[] { DataSourceConstants.StreamDefaultName + "*" },
         HelpLink = "https://r.2sxc.org/DsLanguageModeler")]
     [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
     public sealed class LanguageModeler : DataSource
@@ -51,15 +51,15 @@ namespace ToSic.Eav.DataSources
         /// Initializes this data source
         /// </summary>
         [PrivateApi]
-        public LanguageModeler(MultiBuilder multiBuilder, MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.LngMod")
+        public LanguageModeler(DataBuilder dataBuilder, MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.LngMod")
         {
             ConnectServices(
-                _multiBuilder = multiBuilder
+                _dataBuilder = dataBuilder
             );
-            Provide(MapLanguagesIntoValues);
+            ProvideOut(MapLanguagesIntoValues);
         }
 
-        private readonly MultiBuilder _multiBuilder;
+        private readonly DataBuilder _dataBuilder;
 
 
         /// <summary>
@@ -84,23 +84,19 @@ namespace ToSic.Eav.DataSources
 
             var fieldMapErrors = string.Join(";", mapErrors);
             if (!string.IsNullOrWhiteSpace(fieldMapErrors))
-                return (SetError("Field Map Error", fieldMapErrors), "error");
+                return (Error.Create(title: "Field Map Error", message: fieldMapErrors), "error");
 
             #endregion
 
             l.A($"Field Map created - has {fieldMap.Length} parts");
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var result = new List<IEntity>();
-            foreach (var entity in originals)
+            foreach (var entity in source)
             {
-                var modifiedEntity = _multiBuilder.Entity.Clone(entity,
-                    _multiBuilder.Attribute.Clone(entity.Attributes), 
-                    (entity.Relationships as RelationshipManager)?.AllRelationships);
-
-                var attributes = modifiedEntity.Attributes;
+                var attributes = _dataBuilder.Attribute.Mutable(entity.Attributes);
 
                 foreach (var map in fieldMap)
                     // if source value contains = it must be a language mapping
@@ -113,9 +109,9 @@ namespace ToSic.Eav.DataSources
                             .Where(s => attributes.ContainsKey(s))
                             .Select(s => attributes[s]).FirstOrDefault();
                         var newAttribute =
-                            _multiBuilder.Attribute.CreateTyped(map.Target,
-                                firstExistingValue?.Type ??
-                                "string"); // if there are no values, we assume it's a string field
+                            _dataBuilder.Attribute.Create(map.Target,
+                                firstExistingValue?.Type ?? ValueTypes.String); // if there are no values, we assume it's a string field
+                        // #immutableTodo
                         attributes.Add(map.Target, newAttribute);
 
                         foreach (var entry in map.Fields)
@@ -127,12 +123,11 @@ namespace ToSic.Eav.DataSources
                                 continue;
                             }
 
-                            var value = attributes[entry.OriginalField].Values.FirstOrDefault()
-                                ?.ObjectContents;
+                            var currentAttribute = attributes[entry.OriginalField];
+                            var value = currentAttribute.Values.FirstOrDefault()?.ObjectContents;
                             // Remove first, in case the new name replaces an old one
-                            attributes.Remove(entry.OriginalField);
-                            // Now add the resulting new attribute
-                            _multiBuilder.Attribute.AddValue(attributes, map.Target, value, newAttribute.Type, entry.Language);
+                            var temp = _dataBuilder.Attribute.CreateOrUpdate(originalOrNull: currentAttribute, name: map.Target, value: value, type: newAttribute.Type, language: entry.Language);
+                            attributes = _dataBuilder.Attribute.Replace(attributes, temp);
                         }
                     }
                     else // simple re-mapping / renaming
@@ -145,19 +140,22 @@ namespace ToSic.Eav.DataSources
 
                         // Make a copy to make sure the Name property of the attribute is set correctly
                         var sourceAttr = attributes[map.Source];
-                        var newAttribute = _multiBuilder.Attribute.CreateTyped(map.Target, sourceAttr.Type,
-                            (List<IValue>)sourceAttr.Values);
+                        var newAttribute = _dataBuilder.Attribute.Create(map.Target, sourceAttr.Type, sourceAttr.Values.ToList());
                         // Remove first, in case the new name replaces an old one
+                        // #immutableTodo
                         attributes.Remove(map.Source);
                         // Now add the resulting new attribute
+                        // #immutableTodo
                         attributes.Add(map.Target, newAttribute);
                     }
+
+                var modifiedEntity = _dataBuilder.Entity.CreateFrom(entity, attributes: _dataBuilder.Attribute.Create(attributes));
 
                 result.Add(modifiedEntity);
             }
 
-            var immutableResults = result.ToImmutableArray();
-            return (immutableResults, $"{immutableResults.Length}");
+            var immutableResults = result.ToImmutableList();
+            return (immutableResults, $"{immutableResults.Count}");
         });
     }
 

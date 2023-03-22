@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
@@ -22,7 +23,7 @@ namespace ToSic.Eav.DataSources.Sys
         UiHint = "Get Target Types which determine what kind of thing/target the metadata is for.",
         Icon = Icons.MetadataTargetTypes,
         Type = DataSourceType.System,
-        GlobalName = "fba0d40d-f6af-4593-9ccb-54cfd73d8217", // new generated
+        NameId = "fba0d40d-f6af-4593-9ccb-54cfd73d8217", // new generated
         Audience = Audience.Advanced,
         DynamicOut = false
     )]
@@ -30,17 +31,17 @@ namespace ToSic.Eav.DataSources.Sys
 
     public class MetadataTargetTypes : DataSource
     {
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
 
-        public MetadataTargetTypes(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
+        public MetadataTargetTypes(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
         {
             ConnectServices(
-                _dataBuilder = dataBuilder.Configure(appId: 0, titleField: Data.Attributes.TitleNiceName, typeName: "MetadataTargetTypes")
+                _dataFactory = dataFactory.New(options: new DataFactoryOptions(appId: 0, typeName: "MetadataTargetTypes", titleField: Data.Attributes.TitleNiceName))
             );
-            Provide(GetList);
+            ProvideOut(GetList);
         }
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             var publicTargetTypes = Enum.GetValues(typeof(TargetTypes))
                 .Cast<TargetTypes>()
@@ -65,7 +66,7 @@ namespace ToSic.Eav.DataSources.Sys
                 .ToList();
 
             var list = publicTargetTypes
-                .Select(set => _dataBuilder.Create(
+                .Select(set => _dataFactory.Create(
                     new Dictionary<string, object>
                     {
                         { Data.Attributes.TitleNiceName, set.Title },
@@ -73,9 +74,9 @@ namespace ToSic.Eav.DataSources.Sys
                     },
                     id: (int)set.TargetType
                     )
-                ).ToImmutableArray();
+                ).ToImmutableList();
             
-            return (list, $"{list.Length} items");
+            return (list, $"{list.Count} items");
         });
     }
 }

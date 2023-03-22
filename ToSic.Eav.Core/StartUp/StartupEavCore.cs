@@ -7,7 +7,7 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Repositories;
@@ -24,12 +24,10 @@ namespace ToSic.Eav.StartUp
         public static IServiceCollection AddEavCore(this IServiceCollection services)
         {
             // Data Builder & Converters
-            services.TryAddTransient<IDataBuilderInternal, DataBuilderInternal>();
-            services.TryAddTransient<IDataBuilder, DataBuilder>(); // v15.03
-            services.TryAddTransient<MultiBuilder>();
+            services.TryAddTransient<IDataFactory, DataFactory>(); // v15.03
+            services.TryAddTransient<DataBuilder>();
             services.TryAddTransient<DimensionBuilder>();
             services.TryAddTransient<AttributeBuilder>();
-            services.TryAddTransient<AttributeBuilderForImport>();
             services.TryAddTransient<EntityBuilder>();
             services.TryAddTransient<EntitySaver>();
             services.TryAddTransient<ValueBuilder>();
@@ -106,6 +104,8 @@ namespace ToSic.Eav.StartUp
 
             services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
             services.TryAddTransient<IUser, UserUnknown>();
+            services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
+            services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
             services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
             services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
             services.TryAddTransient<IAppRepositoryLoader, AppRepositoryLoaderUnknown>();

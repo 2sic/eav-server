@@ -32,7 +32,7 @@ namespace ToSic.Eav.Data
             // if still not found, assemble from known type
             if (inputType.HasValue()) return inputType;
             
-            return definition.Type.ToLowerInvariant() + "-default";
+            return definition.Type.ToString().ToLowerInvariant() + "-default";
         }
 
         public static string EntityFieldItemTypePrimary(this IContentTypeAttribute attribute)

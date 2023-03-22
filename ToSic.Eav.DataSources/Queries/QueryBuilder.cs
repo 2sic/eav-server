@@ -4,11 +4,11 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.LookUp;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
-using static System.StringComparer;
 
 namespace ToSic.Eav.DataSources.Queries
 {
@@ -17,8 +17,10 @@ namespace ToSic.Eav.DataSources.Queries
 	/// </summary>
 	public class QueryBuilder: ServiceBase
 	{
+        private readonly QueryDefinitionBuilder _queryDefinitionBuilder;
+        private readonly IContextResolverUserPermissions _userPermissions;
         private readonly Generator<PassThrough> _passThrough;
-        private readonly DataSourceFactory _dataSourceFactory;
+        private readonly IDataSourceFactory _dataSourceFactory;
         private readonly IZoneCultureResolver _cultureResolver;
         private readonly IAppStates _appStates;
 
@@ -31,23 +33,30 @@ namespace ToSic.Eav.DataSources.Queries
 		/// Never call this constructor from your code, as it re-configures the DataSourceFactory it gets
 		/// </remarks>
         public QueryBuilder(
-            DataSourceFactory dataSourceFactory, 
+            IDataSourceFactory dataSourceFactory, 
             IZoneCultureResolver cultureResolver,
 			Generator<PassThrough> passThrough,
-            IAppStates appStates) : base("DS.PipeFt")
+            IAppStates appStates,
+            IContextResolverUserPermissions userPermissions,
+            QueryDefinitionBuilder queryDefinitionBuilder
+            ) : base("DS.PipeFt")
         {
             ConnectServices(
                 _cultureResolver = cultureResolver,
                 _appStates = appStates,
                 _dataSourceFactory = dataSourceFactory,
                 _dataSourceFactory,
-                _passThrough = passThrough
+                _passThrough = passThrough,
+                _userPermissions = userPermissions,
+                _queryDefinitionBuilder = queryDefinitionBuilder
             );
         }
 
         
 
         #endregion
+
+        public QueryDefinition Create(IEntity entity, int appId) => _queryDefinitionBuilder.Create(entity, appId);
 
         /// <summary>
         /// Build a query-definition object based on the entity-ID defining the query
@@ -58,12 +67,12 @@ namespace ToSic.Eav.DataSources.Queries
             try
             {
                 var app = _appStates.IdentityOfApp(appId);
-                var source = _dataSourceFactory.GetPublishing(app);
+                var source = _dataSourceFactory.CreateDefault(appIdentity: app);
                 var appEntities = source.List;
 
                 // use findRepo, as it uses the cache, which gives the list of all items
                 var dataQuery = appEntities.FindRepoId(queryEntityId);
-                var result = new QueryDefinition(dataQuery, appId, Log);
+                var result = Create(dataQuery, appId);
                 return (result);
             }
             catch (KeyNotFoundException)
@@ -72,43 +81,28 @@ namespace ToSic.Eav.DataSources.Queries
             }
         });
 
-        // 2023-02-10 2dm removed/changed to MyConfig because it would conflict with the new Settings lookup
-        // https://github.com/2sic/2sxc/issues/3001
-        // Remove this comment 2023 Q2
-        //public const string ConfigKeyPartSettings = "settings";
 
-        // 2023-02-10 2dm - removing the #PipelineSettings
-        //public const string ConfigKeyPipelineSettings = "pipelinesettings";
-
-
-	    public Tuple<IDataSource, Dictionary<string, IDataSource>> BuildQuery(QueryDefinition queryDef,
+        public (IDataSource Main, Dictionary<string, IDataSource> DataSources) BuildQuery(QueryDefinition queryDef,
             ILookUpEngine lookUpEngineToClone,
-            List<ILookUp> overrideLookUps,
-            bool showDrafts
-        ) => Log.Func($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}, drafts:{showDrafts}", l =>
+            List<ILookUp> overrideLookUps
+        ) => Log.Func($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}", l =>
         {
 	        #region prepare shared / global value providers
             
-			// 2023-02-10 2dm - removing the #PipelineSettings - clean up 2023 Q2
-			// I believe this was an old feature which was never used, and super-seeded by Params
-	        // the query settings which apply to the whole query
-	        //var querySettingsLookUp = new LookUpInMetadata(ConfigKeyPipelineSettings, queryDef.Entity, _cultureResolver.SafeLanguagePriorityCodes());
-
             // centralizing building of the primary configuration template for each part
             var templateConfig = new LookUpEngine(lookUpEngineToClone, Log);
 
+            var showDrafts = _userPermissions.UserPermissions().UserMayEdit;
             if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
-                paramsLookup.Properties[QueryConstants.ParamsShowDraftKey] = showDrafts.ToString();
+                paramsLookup.Properties[QueryConstants.ParamsShowDraftsKey] = showDrafts.ToString();
 
-            // 2023-02-10 2dm - removing the #PipelineSettings
-            //templateConfig.Add(querySettingsLookUp);        // add [pipelinesettings:...]
             templateConfig.Add(queryDef.ParamsLookUp);      // Add [params:...]
             templateConfig.AddOverride(overrideLookUps);    // add override
 
-
+            // 2023-03-13 2dm - #removedQueryPartShowDrafts - it's available on [Params:ShowDrafts] and I don't think every source needs it too
             // provide global settings for ShowDrafts, ATM just if showdrafts are to be used
-            var itemSettingsShowDrafts = new Dictionary<string, string>(InvariantCultureIgnoreCase)
-                {{QueryConstants.ParamsShowDraftKey, showDrafts.ToString()}};
+            //var itemSettingsShowDrafts = new Dictionary<string, string>(InvariantCultureIgnoreCase)
+            //    {{QueryConstants.ParamsShowDraftKey, showDrafts.ToString()}};
 
             #endregion
 
@@ -118,13 +112,20 @@ namespace ToSic.Eav.DataSources.Queries
             var passThroughConfig = new LookUpEngine(templateConfig, Log);
             IDataSource outTarget = _passThrough.New().Init(passThroughConfig);
 			if (outTarget.Guid == Guid.Empty)
-	            outTarget.Guid = queryDef.Entity.EntityGuid;
+                outTarget.AddDebugInfo(queryDef.Entity.EntityGuid, null);
 
             #endregion
 
-	        #region init all DataQueryParts
+            #region Load Parameters needed for all parts
 
-	        l.A($"add parts to pipe#{queryDef.Entity.EntityId} ");
+            var appIdentity = _appStates.IdentityOfApp(queryDef.AppId);
+            var dimensions = _cultureResolver.SafeLanguagePriorityCodes();
+
+            #endregion
+
+            #region init all DataQueryParts
+
+            l.A($"add parts to pipe#{queryDef.Entity.EntityId} ");
 	        var dataSources = new Dictionary<string, IDataSource>();
             var parts = queryDef.Parts;
             l.A($"parts:{parts.Count}");
@@ -138,29 +139,37 @@ namespace ToSic.Eav.DataSources.Queries
 
 	            var partConfig = new LookUpEngine(templateConfig, Log);
                 // add / set item part configuration
-	            partConfig.Add(new LookUpInMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, _cultureResolver.SafeLanguagePriorityCodes()));
+	            partConfig.Add(new LookUpInQueryMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, dimensions));
 
-	            // if show-draft in overridden, add that to the settings
-	            partConfig.AddOverride(new LookUpInDictionary(DataSource.MyConfiguration, itemSettingsShowDrafts));
+                // 2023-03-13 2dm - #removedQueryPartShowDrafts
+                // if show-draft in overridden, add that to the settings
+                //partConfig.AddOverride(new LookUpInDictionary(DataSource.MyConfiguration, itemSettingsShowDrafts));
 
                 #endregion
 
-
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
-                var assemblyAndType = dataQueryPart.DataSourceType;
+                var dsType = dataQueryPart.DataSourceType;
 
-                var appIdentity = _appStates.IdentityOfApp(queryDef.AppId);
-                var dataSource = _dataSourceFactory.GetDataSource(assemblyAndType, appIdentity, lookUps: partConfig);
-	            dataSource.Guid = dataQueryPart.Guid;
+                var dataSource = _dataSourceFactory.Create(type: dsType, appIdentity: appIdentity, source: null, configuration: partConfig);
+                try { dataSource.AddDebugInfo(dataQueryPart.Guid, dataQueryPart.Entity.GetBestTitle()); }
+                catch { /* ignore */ }
 
+                // new with errors
                 try
                 {
-                    dataSource.Label = dataQueryPart.Entity.GetBestTitle();
-                } catch { /* ignore */ }
+                    var err = dataQueryPart.DataSourceInfo?.ErrorOrNull;
+                    if (dataQueryPart.DataSourceInfo?.ErrorOrNull != null && dataSource is Error errDs)
+                    {
+                        errDs.Title = err.Title;
+                        errDs.Message = err.Message;
+                    }
+                }
+                catch { }
+
 
                 var partGuidStr = dataQueryPart.Guid.ToString();
 
-                l.A($"add '{assemblyAndType}' as part#{dataQueryPart.Id}({partGuidStr.Substring(0, 6)}...)");
+                l.A($"add '{dsType.FullName}' as part#{dataQueryPart.Id}({partGuidStr.Substring(0, 6)}...)");
 	            dataSources.Add(partGuidStr, dataSource);
 	        }
 	        dataSources.Add("Out", outTarget);
@@ -168,8 +177,7 @@ namespace ToSic.Eav.DataSources.Queries
 	        #endregion
 
 	        InitWirings(queryDef, dataSources);
-			var result = new Tuple<IDataSource, Dictionary<string, IDataSource>>(outTarget, dataSources);
-			return (result, $"parts:{parts.Count}");
+			return ((outTarget, dataSources), $"parts:{parts.Count}");
 	    });
 
 	    /// <summary>
@@ -234,7 +242,7 @@ namespace ToSic.Eav.DataSources.Queries
 				    try
 				    {
 				        var conSource = allDataSources[wire.From];
-                        ((IDataTarget) allDataSources[wire.To]).Attach(wire.In, conSource, wire.Out);
+                        allDataSources[wire.To].Attach(wire.In, conSource, wire.Out);
                         initializedWirings.Add(wire);
 
                         // In the end, inform caller that we did add some connections
@@ -251,14 +259,13 @@ namespace ToSic.Eav.DataSources.Queries
 		}
 
 
-        public Tuple<IDataSource, Dictionary<string, IDataSource>> GetDataSourceForTesting(
+        public (IDataSource Main, Dictionary<string, IDataSource> DataSources) GetDataSourceForTesting(
             QueryDefinition queryDef,
-            bool showDrafts,
             ILookUpEngine lookUps = null
-        ) => Log.Func($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId}), drafts:{showDrafts}", () =>
+        ) => Log.Func($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId})", () =>
         {
             var testValueProviders = queryDef.TestParameterLookUps;
-            return BuildQuery(queryDef, lookUps, testValueProviders, showDrafts);
+            return BuildQuery(queryDef, lookUps, testValueProviders);
         });
 
 

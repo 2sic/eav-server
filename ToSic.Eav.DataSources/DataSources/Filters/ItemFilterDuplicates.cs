@@ -1,8 +1,10 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -17,9 +19,9 @@ namespace ToSic.Eav.DataSources
         UiHint = "Remove items which occur multiple times",
         Icon = Icons.Filter1,
         Type = DataSourceType.Logic, 
-        GlobalName = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { Constants.DefaultStreamName },
+        In = new[] { StreamDefaultName },
 	    HelpLink = "https://r.2sxc.org/DsFilterDuplicates")]
 
     public sealed class ItemFilterDuplicates: DataSource
@@ -32,10 +34,10 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public ItemFilterDuplicates(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.Duplic")
+		public ItemFilterDuplicates(MyServices services): base(services, $"{LogPrefix}.Duplic")
         {
-            Provide(GetUnique);
-            Provide(DuplicatesStreamName, GetDuplicates);
+            ProvideOut(GetUnique);
+            ProvideOut(GetDuplicates, DuplicatesStreamName);
 		}
 
         /// <summary>
@@ -44,15 +46,15 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private IImmutableList<IEntity> GetUnique() => Log.Func(() =>
         {
-            if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
-                return (ImmutableArray<IEntity>.Empty, "no in stream with name");
+            if (!In.HasStreamWithItems(StreamDefaultName)) 
+                return (EmptyList, "no in stream with name");
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
-            var result = originals
+            var result = source
                 .Distinct()
-                .ToImmutableArray();
+                .ToImmutableList();
 
             return (result, "ok");
         });
@@ -64,17 +66,17 @@ namespace ToSic.Eav.DataSources
         /// <returns></returns>
         private IImmutableList<IEntity> GetDuplicates() => Log.Func(() =>
         {
-            if (!In.HasStreamWithItems(Constants.DefaultStreamName)) 
-                return (ImmutableArray<IEntity>.Empty, "no in-stream with name");
+            if (!In.HasStreamWithItems(StreamDefaultName)) 
+                return (EmptyList, "no in-stream with name");
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
-            var result = originals
+            var result = source
                 .GroupBy(s => s)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
-                .ToImmutableArray();
+                .ToImmutableList();
 
             return (result, "ok");
         });

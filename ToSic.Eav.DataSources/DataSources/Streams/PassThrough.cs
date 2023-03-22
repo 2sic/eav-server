@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.CopyAll,
         Type = DataSourceType.Source, 
         Audience = Audience.Advanced,
-        GlobalName = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
         DynamicOut = true,
         DynamicIn = true)]
 

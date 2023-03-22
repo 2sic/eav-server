@@ -19,6 +19,6 @@ namespace ToSic.Eav.Caching
         public long CacheTimestamp => _sources.Max(s => s.CacheTimestamp);
 
         /// <inheritdoc />
-        public bool CacheChanged(long newCacheTimeStamp) => CacheTimestamp != newCacheTimeStamp;
+        public bool CacheChanged(long dependentTimeStamp) => CacheTimestamp != dependentTimeStamp;
     }
 }

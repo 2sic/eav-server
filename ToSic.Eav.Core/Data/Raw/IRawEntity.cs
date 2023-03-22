@@ -9,7 +9,10 @@ namespace ToSic.Eav.Data.Raw
     ///
     /// Typically used for external data DataSources which get something and pass it to an Entity Builder.
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP for DataSources")]
+    /// <remarks>
+    /// Added in 15.04
+    /// </remarks>
+    [PublicApi]
     public interface IRawEntity
     {
         /// <summary>
@@ -42,6 +45,6 @@ namespace ToSic.Eav.Data.Raw
         /// * Please ensure it doesn't have duplicate keys. Also not keys which are only different in casing.
         /// * Also ensure you don't use spaces, dots or special characters in keys
         /// </remarks>
-        Dictionary<string, object> GetProperties(CreateRawOptions options);
+        Dictionary<string, object> Attributes(RawConvertOptions options);
     }
 }

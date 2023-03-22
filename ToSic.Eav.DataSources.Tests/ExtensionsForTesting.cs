@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSourceTests
 {
@@ -14,15 +16,15 @@ namespace ToSic.Eav.DataSourceTests
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static IDictionary<string, IDataStream> InForTests(this IDataTarget target) => target.In;
+        public static IDictionary<string, IDataStream> InForTests(this IDataSourceTarget target) => target.In;
 
-        public static void AttachForTests(this IDataTarget target, IDataSource source) => target.Attach(source);
+        public static void AttachForTests(this IDataSourceTarget target, IDataSource source) => target.Attach(source);
 
-        public static void AttachForTests(this IDataTarget target, string streamName, IDataSource dataSource,
-            string sourceName = Constants.DefaultStreamName)
+        public static void AttachForTests(this IDataSourceTarget target, string streamName, IDataSource dataSource,
+            string sourceName = DataSourceConstants.StreamDefaultName)
             => target.Attach(streamName, dataSource, sourceName);
 
-        public static void AttachForTests(this IDataTarget target, string streamName, IDataStream dataStream)
+        public static void AttachForTests(this IDataSourceTarget target, string streamName, IDataStream dataStream)
             => target.Attach(streamName, dataStream);
 
         public static IEnumerable<IEntity> ListForTests(this IDataSource source) => source.List;
@@ -31,5 +33,6 @@ namespace ToSic.Eav.DataSourceTests
         public static IEnumerable<IEntity> ListForTests(this IDataSource source, string name) => source.Out[name];
 
         public static IEnumerable<IEntity> ListForTests(this IDataStream stream) => stream.List;
+
     }
 }

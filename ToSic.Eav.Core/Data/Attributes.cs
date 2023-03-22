@@ -69,6 +69,11 @@ namespace ToSic.Eav.Data
         public const string EntityFieldOwnerId = "ownerid";
         public const string EntityFieldCreatorWIP = "creator";  // this is not in use yet, but probably will be soon
 
+        /// <summary>
+        /// New v15.04
+        /// </summary>
+        public const string EntityAppId = "appid";
+
         #endregion
 
         #region Internal Attribute Information

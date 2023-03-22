@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.DI;
@@ -17,16 +17,13 @@ namespace ToSic.Eav.ImportExport.Json
 
         public new class MyServices: SerializerBase.MyServices
         {
-            public MyServices(ITargetTypes metadataTargets, IAppStates appStates, MultiBuilder multiBuilder, LazySvc<IValueConverter> valueConverter)
-                : base(metadataTargets, appStates)
+            public MyServices(ITargetTypes metadataTargets, IAppStates appStates, DataBuilder dataBuilder, LazySvc<IValueConverter> valueConverter)
+                : base(metadataTargets, dataBuilder, appStates)
             {
                 ConnectServices(
-                    MultiBuilder = multiBuilder,
                     ValueConverter = valueConverter
                 );
             }
-
-            public MultiBuilder MultiBuilder { get; }
             public LazySvc<IValueConverter> ValueConverter { get; }
         }
 
@@ -43,10 +40,7 @@ namespace ToSic.Eav.ImportExport.Json
         /// </summary>
         protected JsonSerializer(MyServices services, string logName): base(services, logName)
         {
-            MultiBuilder = services.MultiBuilder;
         }
-        [PrivateApi]
-        protected MultiBuilder MultiBuilder { get; }
 
         /// <summary>
         /// WIP test API to ensure content-types serialized for UI resolve any hyperlinks.

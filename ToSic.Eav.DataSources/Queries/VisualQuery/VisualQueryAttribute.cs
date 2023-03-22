@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources.Queries
@@ -14,7 +15,7 @@ namespace ToSic.Eav.DataSources.Queries
     [PublicApi]
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
-	public class VisualQueryAttribute : Attribute
+	public class VisualQueryAttribute : Attribute, IHasIdentityNameId
 	{
         /// <summary>
         /// Empty constructor - necessary, so DocFx includes this attribute in documentation.
@@ -36,7 +37,10 @@ namespace ToSic.Eav.DataSources.Queries
         /// <summary>
         /// List of in-streams expected by this data-source - will be shown in the UI. Default is empty []. 
         /// </summary>
-        public string[] In { get; set; } = Array.Empty<string>();
+        public string[] In { get; set; } = null;
+
+        [PrivateApi]
+        public string[] GetSafeIn() => In ?? Array.Empty<string>();
 
         /// <summary>
         /// Determine if this data sources can have many out-streams with custom names. Default is false.
@@ -44,8 +48,20 @@ namespace ToSic.Eav.DataSources.Queries
         /// <returns>True if this data source can also provide other named out-streams, false if it only has the defined list of out-streams.</returns>
         public bool DynamicOut { get; set; } = false;
 
-        public bool DynamicIn { get; set; } = false;
-        
+        public bool DynamicIn
+        {
+            get => _dynamicIn;
+            set 
+            {
+                _dynamicIn = value;
+                _DynamicInWasSet = true;
+            }
+        }
+
+        // ReSharper disable once InconsistentNaming
+        [PrivateApi] public bool _DynamicInWasSet;
+        private bool _dynamicIn = false;
+
         /// <summary>
         /// The help-link to get help for this data source. The UI will offer a help-button if provided. 
         /// </summary>
@@ -57,7 +73,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         /// <returns>True if we have a known configuration content-type</returns>
         [PrivateApi("not important to the public")]
-	    public bool EnableConfig => ExpectsDataOfType.HasValue();
+	    public bool EnableConfig => ConfigurationType.HasValue();
 
         /// <summary>
         /// Name of the content-type used to configure this data-source in the visual-query designer. <br/>
@@ -67,7 +83,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <remarks>
         /// Older data sources have a name like "|Config ToSic.Eav.DataSources.App", but that's deprecated
         /// </remarks>
-        public string ExpectsDataOfType { get; set; }
+        public string ConfigurationType { get; set; }
 
 
         /// <summary>
@@ -86,15 +102,19 @@ namespace ToSic.Eav.DataSources.Queries
         /// **required** this should be a unique id, ideally a GUID. <br/>
         /// </summary>
         /// <remarks>
-        /// _important: old code use string names like a.net namespace. This should not be done any more and will be deprecated in future._
+        /// * _important: old code use string names like a.net namespace. This should not be done any more and will be deprecated in future._
+        /// * Was renamed in 15.04 from `GlobalName` to the new `NameId` convention.
         /// </remarks>
-	    public string GlobalName { get; set; } = "";
+	    public string NameId { get; set; } = "";
 
         /// <summary>
         /// Names this DataSource may have had previously. <br/>
         /// This was introduced when we standardized the names, and still had historic data using old names or old namespaces. 
         /// </summary>
-	    public string[] PreviousNames { get; set; } = Array.Empty<string>();
+        /// <remarks>
+        /// * Was renamed in 15.04 to `NameIds` from `PreviousNames`
+        /// </remarks>
+	    public string[] NameIds { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// This marks the audience of a DataSource.
@@ -105,6 +125,5 @@ namespace ToSic.Eav.DataSources.Queries
         /// Made public and renamed to `Audience` in v15.03
         /// </remarks>
         public Audience Audience { get; set; } = Audience.Default;
-
-	}
+    }
 }

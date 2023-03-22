@@ -6,9 +6,15 @@ namespace ToSic.Eav.Apps.Parts
 {
     public class QueryRuntime: PartOf<AppRuntime>
     {
+        private readonly LazySvc<QueryDefinitionBuilder> _queryDefBuilder;
         private readonly Generator<Eav.DataSources.Queries.QueryManager> _queryManager;
-        public QueryRuntime(Generator<Eav.DataSources.Queries.QueryManager> queryManager) : base("RT.Query") 
-            => ConnectServices(_queryManager = queryManager);
+        public QueryRuntime(Generator<Eav.DataSources.Queries.QueryManager> queryManager, LazySvc<QueryDefinitionBuilder> queryDefBuilder) : base("RT.Query")
+        {
+            ConnectServices(
+                _queryManager = queryManager,
+                _queryDefBuilder = queryDefBuilder
+            );
+        }
 
 
         /// <summary>
@@ -17,7 +23,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="queryId"></param>
         /// <returns></returns>
         public QueryDefinition Get(int queryId) => Log.Func($"{nameof(queryId)}:{queryId}", () =>
-            new QueryDefinition(_queryManager.New().GetQueryEntity(queryId, Parent.AppState), Parent.AppId, Log));
+            _queryDefBuilder.Value.Create(_queryManager.New().GetQueryEntity(queryId, Parent.AppState), Parent.AppId));
 
     }
 }

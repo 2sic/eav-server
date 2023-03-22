@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
@@ -25,11 +26,11 @@ namespace ToSic.Eav.DataSources
         UiHint = "Load data from a CSV file",
         Icon = Icons.Description,
         Type = DataSourceType.Source,
-        GlobalName = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
         DynamicOut = false,
-        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.CsvDataSource",
+        ConfigurationType = "|Config ToSic.Eav.DataSources.CsvDataSource",
         HelpLink = "https://r.2sxc.org/DsCsv")]
-    public class CsvDataSource : ExternalData
+    public class CsvDataSource : CustomDataSourceAdvanced
     {
         #region Known errors
         [PrivateApi]
@@ -118,50 +119,47 @@ namespace ToSic.Eav.DataSources
 
 
         [PrivateApi]
-        public CsvDataSource(MyServices services, IDataBuilder dataBuilder, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv")
+        public CsvDataSource(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv")
         {
             ConnectServices(
                 _user = user,
                 _serverPaths = serverPaths,
-                _dataBuilder = dataBuilder
+                _dataFactory = dataFactory
             );
-            Provide(GetList);
+            ProvideOut(GetList);
         }
         private readonly IUser _user;
         private readonly IServerPaths _serverPaths;
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
 
 
-        private ImmutableArray<IEntity> GetList() => Log.Func(() =>
+        private IImmutableList<IEntity> GetList() => Log.Func(l =>
         {
             Configuration.Parse();
 
             var entityList = new List<IEntity>();
 
             var csvPath = GetServerPath(FilePath);
-            Log.A($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
+            l.A($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
 
             if (string.IsNullOrWhiteSpace(csvPath))
-                return (SetError("No Path Given", "There was no path for loading the CSV file."),
-                    "error");
+                return (Error.Create(title: "No Path Given", message: "There was no path for loading the CSV file."), "error");
 
             var pathPart = Path.GetDirectoryName(csvPath);
             if (!Directory.Exists(pathPart))
             {
-                Log.A($"Didn't find path '{pathPart}'");
-                return (SetError("Path not found",
-                        _user?.IsSystemAdmin == true
+                l.A($"Didn't find path '{pathPart}'");
+                return (Error.Create(title: "Path not found",
+                        message: _user?.IsSystemAdmin == true
                             ? $"Path for Super User only: '{pathPart}'"
-                            : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights."),
-                    "error");
+                            : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights."), "error");
             }
 
             if (!File.Exists(csvPath))
-                return (SetError("CSV File Not Found",
-                        _user?.IsSystemAdmin == true
+                return (Error.Create(title: "CSV File Not Found",
+                        message: _user?.IsSystemAdmin == true
                             ? $"Path for Super User only: '{csvPath}'"
-                            : "For security reasons the path isn't mentioned here. You'll find it in the Insights."),
-                    "error");
+                            : "For security reasons the path isn't mentioned here. You'll find it in the Insights."), "error");
 
             const string commonErrorsIdTitle =
                 "A common mistake is to use the wrong delimiter (comma / semi-colon) in which case this may also fail. ";
@@ -178,7 +176,7 @@ namespace ToSic.Eav.DataSources
             {
                 const int idColumnNotDetermined = -999;
                 var idColumnIndex = idColumnNotDetermined;
-                string titleColName = null;
+                string titleColName;
 
 
                 // Parse header - must happen after the first read
@@ -195,10 +193,10 @@ namespace ToSic.Eav.DataSources
                         idColumnIndex = Array.FindIndex(headers,
                             name => name.Equals(IdColumnName, StringComparison.InvariantCultureIgnoreCase));
                     if (idColumnIndex == -1)
-                        return (SetError("ID Column not found",
-                            $"ID column '{IdColumnName}' specified cannot be found in the file. " +
-                            $"The Headers: '{string.Join(",", headers)}'. " +
-                            $"{commonErrorsIdTitle}"), "err");
+                        return (Error.Create(title: "ID Column not found",
+                            message: $"ID column '{IdColumnName}' specified cannot be found in the file. " +
+                                     $"The Headers: '{string.Join(",", headers)}'. " +
+                                     $"{commonErrorsIdTitle}"), "error");
                 }
 
                 if (string.IsNullOrEmpty(TitleColumnName))
@@ -210,13 +208,13 @@ namespace ToSic.Eav.DataSources
                                    ?? headers.FirstOrDefault(colName =>
                                        colName.Equals(TitleColumnName, StringComparison.InvariantCultureIgnoreCase));
                     if (titleColName == null)
-                        return (SetError("Title column not found",
-                            $"Title column '{TitleColumnName}' cannot be found in the file. " +
-                            $"The Headers: '{string.Join(",", headers)}'. " +
-                            $"{commonErrorsIdTitle}"), "err");
+                        return (Error.Create(title: "Title column not found",
+                            message: $"Title column '{TitleColumnName}' cannot be found in the file. " +
+                                     $"The Headers: '{string.Join(",", headers)}'. " +
+                                     $"{commonErrorsIdTitle}"), "error");
                 }
 
-                _dataBuilder.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName);
+                var csvFactory = _dataFactory.New(options: new DataFactoryOptions(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName));
 
                 // Parse data
                 while (parser.Read())
@@ -229,20 +227,20 @@ namespace ToSic.Eav.DataSources
                         entityId = parser.Row;
                     // check if id can be parsed from the current row
                     else if (!int.TryParse(fields[idColumnIndex], out entityId))
-                    {
-                        return (SetError(ErrorIdNaN,
-                            $"Row {parser.Row}: ID field '{headers[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'."), "err");
-                    }
+                        return (Error.Create(title: ErrorIdNaN,
+                                message:
+                                $"Row {parser.Row}: ID field '{headers[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'."),
+                            "error");
 
                     var entityValues = new Dictionary<string, object>();
                     for (var i = 0; i < headers.Length; i++)
                         entityValues.Add(headers[i], (i < fields.Length) ? fields[i] : null);
 
-                    entityList.Add(_dataBuilder.Create(values: entityValues, id: entityId));
+                    entityList.Add(csvFactory.Create(values: entityValues, id: entityId));
                 }
             }
 
-            return (entityList.ToImmutableArray(), $"{entityList.Count}");
+            return (entityList.ToImmutableList(), $"{entityList.Count}");
         });
     }
 }

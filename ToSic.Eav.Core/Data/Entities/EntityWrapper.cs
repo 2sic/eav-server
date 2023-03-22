@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using ToSic.Lib.Documentation;
@@ -68,7 +68,7 @@ namespace ToSic.Eav.Data
         public ITarget MetadataFor => Entity.MetadataFor;
 
         /// <inheritdoc />
-        public Dictionary<string, IAttribute> Attributes => Entity.Attributes;
+        public IImmutableDictionary<string, IAttribute> Attributes => Entity.Attributes;
 
         /// <inheritdoc />
         public IContentType Type => Entity.Type;
@@ -123,7 +123,6 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public IEnumerable<Permission> Permissions => Entity.Permissions;
 
-        public bool IsLight => Entity.IsLight;
         #endregion
 
         #region support for LINQ enhancements

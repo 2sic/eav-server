@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.Data;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Logging;
@@ -32,7 +34,8 @@ namespace ToSic.Eav.Persistence.File.Tests
             IList<IEntity> cts;
             try
             {
-                cts = loader.Entities(FsDataConstants.QueriesFolder, 0); // .Queries(0);
+                cts = DirectEntitiesSource.Using(set => loader.Entities(FsDataConstants.QueriesFolder, 0, set.Source));
+                //cts = new DirectEntitiesSource() loader.Entities(FsDataConstants.QueriesFolder, 0, new List<IEntity>());
             }
             finally
             {

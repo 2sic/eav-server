@@ -20,15 +20,16 @@ namespace ToSic.Testing.Shared
                 .AddDataSources();
         }
 
-        public DataSourceFactory DataSourceFactory => _dataSourceFactory.Get(GetService<DataSourceFactory>);
-        private readonly GetOnce<DataSourceFactory> _dataSourceFactory = new GetOnce<DataSourceFactory>();
+        public IDataSourceFactory DataSourceFactory => _dataSourceFactory.Get(GetService<IDataSourceFactory>);
+        private readonly GetOnce<IDataSourceFactory> _dataSourceFactory = new GetOnce<IDataSourceFactory>();
 
-        public T CreateDataSource<T>(IDataSource upstream) where T: IDataSource => DataSourceFactory.GetDataSource<T>(upstream);
-        public T CreateDataSource<T>(IDataStream upstream) where T : IDataSource => DataSourceFactory.GetDataSource<T>(upstream);
+        public T CreateDataSource<T>(IDataSource upstream) where T: IDataSource => DataSourceFactory.TestCreate<T>(upstream: upstream);
+
+        public T CreateDataSource<T>(IDataStream upstream) where T : IDataSource => ((DataSourceFactory)DataSourceFactory).Create<T>(upstream);
 
         public T CreateDataSource<T>(ILookUpEngine lookUpEngine = default) where T : IDataSource
         {
-            return DataSourceFactory.GetDataSource<T>(new AppIdentity(0, 0), null, lookUpEngine ?? new LookUpEngine(Log));
+            return DataSourceFactory.TestCreate<T>(appIdentity: new AppIdentity(0, 0), configLookUp: lookUpEngine ?? new LookUpEngine(Log));
         }
     }
 }

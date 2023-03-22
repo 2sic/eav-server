@@ -24,7 +24,6 @@ namespace ToSic.Eav.DataSources.Queries
 
 		private StreamDictionary _out = new StreamDictionary();
 		private bool _requiresRebuildOfOut = true;
-        private bool _showDrafts;
 
         /// <summary>
         /// Standard out. Note that the Out is not prepared until accessed the first time,
@@ -74,14 +73,12 @@ namespace ToSic.Eav.DataSources.Queries
         /// </summary>
         /// <returns></returns>
         [PrivateApi]
-        // TODO: REMOVE LOG...
-		public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine config, bool showDrafts, IDataTarget source)
+		public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine configSource, IDataSourceTarget source = null)
 		{
-		    ZoneId = zoneId;
+            ZoneId = zoneId;
 		    AppId = appId;
-            Definition = new QueryDefinition(queryDef, appId, Log);
-            this.Init(config);
-            _showDrafts = showDrafts;
+            Definition = QueryBuilder.Create(queryDef, appId);
+            this.Init(configSource);
 
             // hook up in, just in case we get parameters from an In
             if (source == null) return this;
@@ -101,9 +98,9 @@ namespace ToSic.Eav.DataSources.Queries
             var resolvedParams = Configuration.LookUpEngine.LookUp(Definition.Params);
 
             // now provide an override source for this
-            var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, resolvedParams);
+            var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsSourceName, resolvedParams);
             var queryInfos = QueryBuilder.BuildQuery(Definition, Configuration.LookUpEngine,
-                new List<ILookUp> { paramsOverride }, _showDrafts);
+                new List<ILookUp> { paramsOverride });
             _source = queryInfos.Item1;
             _out = new StreamDictionary(this, _source.Out);
         });

@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources.Debug
         public QueryInfo BuildQueryInfo(QueryDefinition queryDef, IDataSource queryResult)
         {
             QueryDefinition = queryDef;
-            GetStreamInfosRecursive(queryResult as IDataTarget);
+            GetStreamInfosRecursive(queryResult);
             return this;
         }
 
@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources.Debug
         /// <summary>
         /// Provide an array of infos related to a stream and data source
         /// </summary>
-        private void GetStreamInfosRecursive(IDataTarget target) => Log.Do($"{target.Guid}[{target.In.Count}]", timer: true, action: l =>
+        private void GetStreamInfosRecursive(IDataSourceTarget target) => Log.Do($"{target.Guid}[{target.In.Count}]", timer: true, action: l =>
         {
             foreach (var stream in target.In)
             {
@@ -72,7 +72,7 @@ namespace ToSic.Eav.DataSources.Debug
                 // Get Sub-Streams recursive
                 try
                 {
-                    GetStreamInfosRecursive(stream.Value.Source as IDataTarget);
+                    GetStreamInfosRecursive(stream.Value.Source);
                 }
                 catch
                 {

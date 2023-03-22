@@ -30,7 +30,7 @@ namespace ToSic.Eav.Data
             // Get all properties which are not dynamic children
             var childAttributes = Attributes
                 .Where(att =>
-                    att.Value.Type == DataTypes.Entity
+                    att.Value.Type == ValueTypes.Entity
                     && (dynChildField == null || !att.Key.Equals(dynChildField, StringComparison.InvariantCultureIgnoreCase)));
             var resultProperties = childAttributes
                 .SelectMany(att
@@ -43,7 +43,7 @@ namespace ToSic.Eav.Data
             // Get all normal properties
             var resultValues =
                 Attributes
-                    .Where(att => att.Value.Type != DataTypes.Entity && att.Value.Type != DataTypes.VoidEmpty)
+                    .Where(att => att.Value.Type != ValueTypes.Entity && att.Value.Type != ValueTypes.Empty)
                     .Select(att =>
                     {
                         var property = FindPropertyInternal(specs.ForOtherField(att.Key), new PropertyLookupPath().Add("EntityDump"));

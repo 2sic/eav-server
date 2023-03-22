@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
@@ -62,7 +63,7 @@ namespace ToSic.Eav.Data
 #if NETFRAMEWORK
         new
 #endif
-            Dictionary<string, IAttribute> Attributes { get; }
+            IImmutableDictionary<string, IAttribute> Attributes { get; }
 
         /// <summary>
         /// Gets the "official" Title-Attribute <see cref="IAttribute{T}"/>
@@ -155,14 +156,5 @@ namespace ToSic.Eav.Data
 
         #endregion
 
-        #region Internal for Immutable / Light processing
-
-        /// <summary>
-        /// This determines if the access to the properties will use light-objects, or IAttributes containing multi-language objects
-        /// </summary>
-        [PrivateApi("internal use only, can change any time")]
-        bool IsLight { get; }
-
-        #endregion
     }
 }

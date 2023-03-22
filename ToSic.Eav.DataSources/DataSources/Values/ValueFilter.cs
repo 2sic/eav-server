@@ -4,8 +4,10 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -20,10 +22,10 @@ namespace ToSic.Eav.DataSources
         UiHint = "Keep items which have a property with the expected value",
         Icon = Icons.FilterList,
         Type = DataSourceType.Filter,
-        GlobalName = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
-        In = new[] { Constants.DefaultStreamNameRequired, Constants.FallbackStreamName },
+        NameId = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
+        In = new[] { QueryConstants.InStreamDefaultRequired, StreamFallbackName },
         DynamicOut = false,
-        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.ValueFilter",
+        ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://r.2sxc.org/DsValueFilter")]
 
     public sealed class ValueFilter : DataSource
@@ -87,13 +89,13 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new ValueFilter
         /// </summary>
         [PrivateApi]
-        public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.ValFil")
+        public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{LogPrefix}.ValFil")
         {
             ConnectServices(
                 _valueLanguageService = valLanguages
             );
 
-            Provide(GetValueFilterOrFallback);
+            ProvideOut(GetValueFilterOrFallback);
         }
         private readonly ValueLanguages _valueLanguageService;
 
@@ -106,8 +108,8 @@ namespace ToSic.Eav.DataSources
             var res = GetValueFilter();
             return res.Any()
                 ? (res, "found")
-                : In.HasStreamWithItems(Constants.FallbackStreamName)
-                    ? (In[Constants.FallbackStreamName].List.ToImmutableList(), "fallback")
+                : In.HasStreamWithItems(StreamFallbackName)
+                    ? (In[StreamFallbackName].List.ToImmutableList(), "fallback")
                     : (res, "final");
         });
 
@@ -119,35 +121,36 @@ namespace ToSic.Eav.DataSources
 
             var languages = _valueLanguageService.PrepareLanguageList(Languages);
 
-            // Get the In-list and stop if error orempty
-            if (!GetRequiredInList(out var originals)) return (originals, "error");
-            if (!originals.Any()) return (originals, "empty");
+            // Get the In-list and stop if error or empty
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (!source.Any()) return (source, "empty");
 
             var op = Operator.ToLowerInvariant();
 
             // Case 1/2: Handle basic "none" and "all" operators
             if (op == CompareOperators.OpNone)
-                return (ImmutableArray.Create<IEntity>(), CompareOperators.OpNone);
+                return (EmptyList, CompareOperators.OpNone);
             if (op == CompareOperators.OpAll)
-                return (ApplyTake(originals).ToImmutableArray(), CompareOperators.OpAll);
+                return (ApplyTake(source).ToImmutableList(), CompareOperators.OpAll);
 
             // Case 3: Real filter
             // Find first Entity which has this property being not null to detect type
             var (isSpecial, fieldType) = Attributes.InternalOnlyIsSpecialEntityProperty(fieldName);
             var firstEntity = isSpecial
-                ? originals.FirstOrDefault()
-                : originals.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName) && x.Value(fieldName) != null)
+                ? source.FirstOrDefault()
+                : source.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName) && x.Value(fieldName) != null)
                   // 2022-03-09 2dm If none is found with a real value, get the first that has this attribute
-                  ?? originals.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName));
+                  ?? source.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName));
 
             // if I can't find any, return empty list
             if (firstEntity == null)
-                return (ImmutableArray<IEntity>.Empty, "empty");
+                return (EmptyList, "empty");
 
             // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
             // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
             // 2022-03-09 2dm 
-            if (!isSpecial) fieldType = firstEntity[fieldName].ControlledType;
+            if (!isSpecial) fieldType = firstEntity[fieldName].Type;
             //var firstValue = firstEntity.Value(fieldName);
 
 
@@ -158,33 +161,34 @@ namespace ToSic.Eav.DataSources
             // then lazy-entities are marked as LazyEntity or similar, and NOT "Entity"
             //if (netTypeName.Contains(Constants.DataTypeEntity)) netTypeName = Constants.DataTypeEntity;
 
-            var compMaker = new ValueComparison((title, message) => SetError(title, message), Log);
+            IImmutableList<IEntity> innerErrors = null;
+            var compMaker = new ValueComparison((title, message) => innerErrors = Error.Create(title: title, message: message), Log);
             var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value);
 
-            return !ErrorStream.IsDefaultOrEmpty
-                ? (ErrorStream, "error")
-                : (GetFilteredWithLinq(originals, compare), "ok");
+            return innerErrors.SafeAny()
+                ? (innerErrors, "error") 
+                : (GetFilteredWithLinq(source, compare), "ok");
 
             // Note: the alternate GetFilteredWithLoop has more logging, activate in serious cases
             // Note that the code might not be 100% identical, but it should help find issues
         });
 
 
-        private ImmutableArray<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare) => Log.Func(() =>
+        private IImmutableList<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare) => Log.Func(() =>
         {
             try
             {
                 var results = originals.Where(compare);
                 results = ApplyTake(results);
-                return (results.ToImmutableArray(), "ok");
+                return (results.ToImmutableList(), "ok");
             }
             catch (Exception ex)
             {
-                return (SetError("Unexpected Error",
-                    "Experienced error while executing the filter LINQ. " +
-                    "Probably something with type-mismatch or the same field using different types or null. " +
-                    "The exception was logged to Insights.",
-                    ex), "error");
+                return (Error.Create(title: "Unexpected Error",
+                    message: "Experienced error while executing the filter LINQ. " +
+                             "Probably something with type-mismatch or the same field using different types or null. " +
+                             "The exception was logged to Insights.",
+                    exception: ex), "error");
             }
         });
 

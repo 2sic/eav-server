@@ -18,12 +18,6 @@ namespace ToSic.Eav.Context
         void ResetApp(IAppIdentity appIdentity);
 
         /// <summary>
-        /// Reset call to change what AppState is in the context
-        /// Internal API to get the context ready
-        /// </summary>
-        void ResetApp(int appId);
-
-        /// <summary>
         /// WIP v15
         /// </summary>
         PropertyStack AppSettings { get; }

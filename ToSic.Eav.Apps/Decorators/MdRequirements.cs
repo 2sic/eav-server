@@ -94,7 +94,6 @@ namespace ToSic.Eav.Apps.Decorators
 
         private bool VerifyLicense(RequirementDecorator reqObj) => Log.Func($"name: {reqObj.License}", () =>
         {
-            var wrapLog = Log.Fn<bool>($"name: {reqObj.License}");
             if (string.IsNullOrWhiteSpace(reqObj.License)) return (true, "no req. license");
 
             // find license

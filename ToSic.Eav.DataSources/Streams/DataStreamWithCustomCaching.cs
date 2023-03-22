@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Immutable;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Lib.Documentation;
 
@@ -13,7 +15,7 @@ namespace ToSic.Eav.DataSources
     [PrivateApi]
     public class DataStreamWithCustomCaching: DataStream
     {
-        public DataStreamWithCustomCaching(Func<ICacheInfo> cacheInfoDelegate, IDataSource source, string name, GetImmutableListDelegate listDelegate, 
+        public DataStreamWithCustomCaching(Func<ICacheInfo> cacheInfoDelegate, IDataSource source, string name, Func<IImmutableList<IEntity>> listDelegate, 
             bool enableAutoCaching, string scope)
             : base(source, name, listDelegate, enableAutoCaching)
         {

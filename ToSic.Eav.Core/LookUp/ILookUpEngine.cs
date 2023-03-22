@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Configuration;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -8,7 +9,7 @@ namespace ToSic.Eav.LookUp
     /// Resolves Configurations from LookUps. Common use is for configurable DataSources
     /// </summary>
     [PublicApi]
-    public interface ILookUpEngine: IHasLog
+    public interface ILookUpEngine: IHasLog, IConfiguration
 	{
         /// <summary>
         /// Property Sources this Provider can use.

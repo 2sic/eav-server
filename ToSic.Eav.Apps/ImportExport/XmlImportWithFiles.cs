@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Interfaces;
@@ -16,6 +16,7 @@ namespace ToSic.Eav.Apps.ImportExport
 	{
         public class MyServices: MyServicesBase
         {
+            public readonly LazySvc<DataBuilder> MultiBuilder;
             public LazySvc<ContentTypeAttributeBuilder> CtAttribBuilder { get; }
             internal readonly LazySvc<Import> ImporterLazy;
             internal readonly LazySvc<DbDataController> DbDataForNewApp;
@@ -35,8 +36,8 @@ namespace ToSic.Eav.Apps.ImportExport
                 SystemManager systemManager,
                 IAppStates appStates,
                 LazySvc<XmlToEntity> xmlToEntity,
-                LazySvc<ContentTypeAttributeBuilder> ctAttribBuilder
-                    )
+                LazySvc<ContentTypeAttributeBuilder> ctAttribBuilder,
+                LazySvc<DataBuilder> multiBuilder)
             {
                 ConnectServices(
                     CtAttribBuilder = ctAttribBuilder,
@@ -47,7 +48,8 @@ namespace ToSic.Eav.Apps.ImportExport
                     MetaTargetTypes = metaTargetTypes,
                     AppStates = appStates,
                     XmlToEntity = xmlToEntity,
-                    SystemManager = systemManager
+                    SystemManager = systemManager,
+                    MultiBuilder = multiBuilder
                 );
             }
         }

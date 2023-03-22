@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
@@ -11,12 +12,15 @@ namespace ToSic.Eav.Repository.Efc.Parts
         /// </summary>
         internal IQueryable<ToSicEavAttributes> GetAttributeDefinitions(int attributeSetId)
         {
+            if (attributeSetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(attributeSetId), "should never be 0 - this is a bug because of the new Immutable, report to iJungleboy");
+
             attributeSetId = DbContext.ContentType.ResolvePotentialGhostAttributeSetId(attributeSetId);
 
-            return from ais in DbContext.SqlDb.ToSicEavAttributesInSets
-                   where ais.AttributeSetId == attributeSetId
-                   orderby ais.SortOrder
-                   select ais.Attribute;
+            return DbContext.SqlDb.ToSicEavAttributesInSets
+                .Where(ais => ais.AttributeSetId == attributeSetId)
+                .OrderBy(ais => ais.SortOrder)
+                .Select(ais => ais.Attribute);
         }
 
 

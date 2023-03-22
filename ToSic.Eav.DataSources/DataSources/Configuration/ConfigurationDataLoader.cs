@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
@@ -21,12 +22,12 @@ namespace ToSic.Eav.DataSources
 
         #region Get List From Cache or Generate
 
-        public static Dictionary<Type, List<ConfigMaskInfo>> Cache = new Dictionary<Type, List<ConfigMaskInfo>>();
+        public static ConcurrentDictionary<Type, List<ConfigMaskInfo>> Cache = new ConcurrentDictionary<Type, List<ConfigMaskInfo>>();
 
         public List<ConfigMaskInfo> GetTokens(Type type) => Log.Func(() =>
         {
-            if (Cache.ContainsKey(type))
-                return (Cache[type], "cached");
+            if (Cache.TryGetValue(type, out var cachedResult))
+                return (cachedResult, "cached");
 
             var generateTokens = GenerateTokens(type);
             Cache[type] = generateTokens; // use indirection to make sure it's thread-safe, because Cache[type] could throw exception 'The given key was not present in dictionary'

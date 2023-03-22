@@ -39,7 +39,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         {
             var cts = LoadAllTypes();
             var sqlType = cts.First(ct => ct.NameId.Contains("Sql"));
-            Assert.AreEqual(9, sqlType.Attributes.Count, "sql type should have x attributes");
+            Assert.AreEqual(9, sqlType.Attributes.Count(), "sql type should have x attributes");
 
             var conStrName = "ConnectionString";
             var conStr = sqlType.Attributes.FirstOrDefault(a => a.Name == conStrName);
@@ -68,7 +68,7 @@ namespace ToSic.Eav.Persistence.File.Tests
         {
             var cts = LoadAllTypes();
             var sqlType = cts.First(ct => ct.NameId.Contains("Sql"));
-            Assert.AreEqual(9, sqlType.Attributes.Count, "sql type should have x attributes");
+            Assert.AreEqual(9, sqlType.Attributes.Count(), "sql type should have x attributes");
             
 
             var meta = sqlType.Metadata;

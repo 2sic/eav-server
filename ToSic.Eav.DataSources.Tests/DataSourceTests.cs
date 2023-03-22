@@ -8,11 +8,11 @@ namespace ToSic.Eav.DataSourceTests
     [TestClass]
     public class DataSourceTests: TestBaseEavDataSource
     {
-        public const int EavInstalledDsCount = 48;
-        public const int TestingAddedDsCount = 1;
+        public const int EavInstalledDsCount = 40; // with 2sxc it's ca. 48;
+        public const int TestingAddedDsCount = 2;
         public const int StandardInstalledDSCount = EavInstalledDsCount + TestingAddedDsCount;
 
-        public const int StandardInstalledPipeLineDS = 39;
+        public const int StandardInstalledPipeLineDS = 33; // with 2sxc it's ca. 39;
         public const string SqlFullName = "ToSic.Eav.DataSources.Sql";
         public const string DeferredFullName = "ToSic.Eav.DataSources.DeferredPipelineQuery";
 
@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSourceTests
         public void AutoFindAllDataSources()
         {
             var dsCatalog = GetService<DataSourceCatalog>();
-            var dsList = DataSourceCatalog.GetAll(false);
+            var dsList = dsCatalog.GetAll(false, 0);
             Assert.AreEqual(StandardInstalledDSCount, dsList.Count(), "expect a correct number of DSs");
 
             var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);
@@ -31,7 +31,8 @@ namespace ToSic.Eav.DataSourceTests
         [TestMethod]
         public void AutoFindPipelineDataSources()
         {
-            var dsList = DataSourceCatalog.GetAll(true);
+            var dsCatalog = GetService<DataSourceCatalog>();
+            var dsList = dsCatalog.GetAll(true, 0);
             Assert.AreEqual(StandardInstalledPipeLineDS, dsList.Count(), "expect a correct number of DSs");
 
             var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);

@@ -73,7 +73,7 @@ namespace ToSic.Eav.Apps.Parts
             LogListOfInputTypes("Combined", inputTypes);
 
             // Merge input types registered in global metadata-app
-            var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Constants.MetaDataAppId, true);
+            var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Constants.MetaDataAppId/*, true*/);
             var systemAppInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
             systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
             LogListOfInputTypes("System", systemAppInputTypes);

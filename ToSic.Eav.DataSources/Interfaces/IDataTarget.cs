@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
@@ -7,15 +10,10 @@ namespace ToSic.Eav.DataSources
 	/// Represents a data source that can be the recipient of Data.
 	/// This basically means it has an In <see cref="IDataStream"/>
 	/// </summary>
-	[PublicApi_Stable_ForUseInYourCode]
-	public interface IDataTarget: IDataPartShared
+	[PrivateApi]
+    [Obsolete("Obsolete since v15.04 - will be removed ca. v16")]
+	public interface IDataTarget: IDataSourceShared
     {
-        ///// <summary>
-        ///// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.
-        ///// </summary>
-        ///// <returns>The guid of this data source which identifies the configuration <see cref="IEntity"/> of the data source.</returns>
-        //Guid Guid { get; set; }
-
 		/// <summary>
 		/// List of all In connections
 		/// </summary>
@@ -33,7 +31,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="streamName">In-name of the stream</param>
         /// <param name="dataSource">The data source - will use it's default out</param>
         /// <param name="sourceName">The stream name on the source, will default to "Default"</param>
-        void Attach(string streamName, IDataSource dataSource, string sourceName = Constants.DefaultStreamName);
+        void Attach(string streamName, IDataSource dataSource, string sourceName = DataSourceConstants.StreamDefaultName);
 
         /// <summary>
         /// Add a single named stream to the In
@@ -41,5 +39,39 @@ namespace ToSic.Eav.DataSources
         /// <param name="streamName">In-name of the stream</param>
         /// <param name="dataStream">The data stream to attach</param>
         void Attach(string streamName, IDataStream dataStream);
-	}
+
+        /// <summary>
+        /// Get a specific Stream from In.
+        /// If it doesn't exist return false and place the error message in the list for returning to the caller.
+        ///
+        /// Usage usually like this in your GetList() function: 
+        /// <code>
+        /// private IImmutableList&lt;IEntity&gt; GetList()
+        /// {
+        ///   var source = TryGetIn();
+        ///   if (source is null) return Error.TryGetInFailed(this);
+        ///   var result = source.Where(s => ...).ToImmutableList();
+        ///   return result;
+        /// }
+        /// </code>
+        /// Or if you're using [Call Logging](xref:NetCode.Logging.Index) do something like this:
+        /// <code>
+        /// private IImmutableList&lt;IEntity&gt; GetList() => Log.Func(l =>
+        /// {
+        ///   var source = TryGetIn();
+        ///   if (source is null) return (Error.TryGetInFailed(this), "error");
+        ///   var result = source.Where(s => ...).ToImmutableList();
+        ///   return (result, $"ok - found: {result.Count}");
+        /// });
+        /// </code>
+        /// </summary>
+        /// <param name="name">Stream name - optional</param>
+        /// <returns>A list containing the data, or null if not found / something breaks.</returns>
+        /// <remarks>
+        /// Introduced in 2sxc 11.13
+        /// </remarks>
+        [PublicApi]
+        IImmutableList<IEntity> TryGetIn(string name = DataSourceConstants.StreamDefaultName);
+
+    }
 }

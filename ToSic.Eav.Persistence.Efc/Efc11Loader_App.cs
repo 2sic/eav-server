@@ -118,12 +118,10 @@ namespace ToSic.Eav.Persistence.Efc
                 // prepare metadata lists & relationships etc.
                 if (startAt <= AppStateLoadSequence.MetadataInit)
                 {
-                    // #removeUnusedPreloadOfMetaTypes
                     _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app));
-                    // New in V11.01
                     var nameAndFolder = PreLoadAppPath(app.AppId);
-                    app.Name = nameAndFolder?.Item1;
-                    app.Folder = nameAndFolder?.Item2;
+                    app.Name = nameAndFolder.Name;
+                    app.Folder = nameAndFolder.Path;
                 }
                 else
                     Log.A("skipping metadata load");
@@ -161,41 +159,40 @@ namespace ToSic.Eav.Persistence.Efc
         /// </summary>
         /// <param name="appId"></param>
         /// <returns></returns>
-        private Tuple<string, string> PreLoadAppPath(int appId)
+        private (string Name, string Path) PreLoadAppPath(int appId) => Log.Func(l =>
         {
-            var wrapLog = Log.Fn<Tuple<string, string>>();
-            var nullTuple = new Tuple<string, string>(null, null);
+            var nullTuple = (null as string, null as string);
             try
             {
                 // Get all Entities in the 2SexyContent-App scope
                 var dbEntity = GetRawEntities(Array.Empty<int>(), appId, false, AppLoadConstants.TypeAppConfig);
-                if (!dbEntity.Any()) return wrapLog.Return(nullTuple, "not in db");
+                if (!dbEntity.Any()) return (nullTuple, "not in db");
 
                 // Get the first one as it should be the one containing the App-Configuration
                 // WARNING: This looks a bit fishy, I think it shouldn't just assume the first one is the right one
                 var json = dbEntity.FirstOrDefault()?.Json;
-                if (string.IsNullOrEmpty(json)) return wrapLog.Return(nullTuple, "no json");
+                if (string.IsNullOrEmpty(json)) return (nullTuple, "no json");
 
-                Log.A("app Entity found - this json: " + json);
-                var serializer = _dataDeserializer.New();// ServiceProvider.Build<IDataDeserializer>();
+                l.A("app Entity found - this json: " + json);
+                var serializer = _dataDeserializer.New(); // ServiceProvider.Build<IDataDeserializer>();
                 serializer.Initialize(appId, new List<IContentType>(), null);
                 if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
-                    return wrapLog.Return(nullTuple, "can't deserialize");
+                    return (nullTuple, "can't deserialize");
                 var path = appEntity.Value<string>(AppLoadConstants.FieldFolder);
                 var name = appEntity.Value<string>(AppLoadConstants.FieldName);
 
-                return string.IsNullOrWhiteSpace(path) 
-                    ? wrapLog.Return(new Tuple<string, string>(name, path), "no folder") 
-                    : wrapLog.Return(new Tuple<string, string>(name, path), path);
+                return string.IsNullOrWhiteSpace(path)
+                    ? ((name, path), "no folder")
+                    : ((name, path), path);
             }
             catch (Exception ex)
             {
                 // Ignore, but log
-                Log.A("error " + ex.Message);
+                l.Ex(ex);
             }
 
-            return wrapLog.Return(nullTuple, "error");
-        }
+            return (nullTuple, "error");
+        });
 
         #endregion
 

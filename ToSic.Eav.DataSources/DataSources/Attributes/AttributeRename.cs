@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -21,10 +21,10 @@ namespace ToSic.Eav.DataSources
         UiHint = "Rename some attributes / properties",
         Icon = Icons.EditAttributes,
         Type = DataSourceType.Modify,
-        GlobalName = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { Constants.DefaultStreamNameRequired },
-        ExpectsDataOfType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
+        In = new[] { QueryConstants.InStreamDefaultRequired },
+        ConfigurationType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
         HelpLink = "https://r.2sxc.org/DsAttributeRename")]
 
     public class AttributeRename : DataSource
@@ -70,15 +70,15 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeRename(MultiBuilder multiBuilder, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.AtrRen")
+		public AttributeRename(DataBuilder dataBuilder, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.AtrRen")
         {
             ConnectServices(
-                _multiBuilder = multiBuilder
+                _dataBuilder = dataBuilder
             );
-            Provide(GetList);
+            ProvideOut(GetList);
         }
 
-        private readonly MultiBuilder _multiBuilder;
+        private readonly DataBuilder _dataBuilder;
 
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace ToSic.Eav.DataSources
 
             var preserveOthers = KeepOtherAttributes;
 
-            Dictionary<string, IAttribute> CreateDic(IEntity original)
+            IDictionary<string, IAttribute> CreateDic(IEntity original)
             {
                 return original.Attributes
                     .Select(a =>
@@ -138,31 +138,29 @@ namespace ToSic.Eav.DataSources
             var typeName = TypeName;
             IContentType newType = null;
             if (!string.IsNullOrEmpty(typeName))
-                newType = new ContentTypeBuilder().Transient(AppId, typeName, typeName);
+                newType = _dataBuilder.ContentType.Transient(AppId, typeName, typeName);
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
-            var result = originals
-                .Select(entity => _multiBuilder.Entity.Clone(entity,
-                    CreateDic(entity),
-                    entity.Relationships.AllRelationships,
-                    newType
-                ))
-                .Cast<IEntity>()
-                .ToImmutableArray();
+            var result = source
+                .Select(entity =>
+                {
+                    var values = CreateDic(entity);
+                    return _dataBuilder.Entity.CreateFrom(entity, attributes: _dataBuilder.Attribute.Create(values), type: newType);
+                })
+                .ToImmutableList();
 
-            Log.A($"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Length}");
-            return (result, "ok");
+            return (result, $"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Count}");
         });
 
 
 
         private IAttribute CloneAttributeAndRename(IAttribute original, string newName)
         {
-            var attributeType = DataTypes.GetAttributeTypeName(original);
-            var newAttrib = _multiBuilder.Attribute.CreateTyped(newName, attributeType);
-            newAttrib.Values = original.Values;
+            var newAttrib = _dataBuilder.Attribute.Create(newName, original.Type, original.Values.ToList());
+            // #immutable
+            //newAttrib.Values = original.Values;
             return newAttrib;
         }
 

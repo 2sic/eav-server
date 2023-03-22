@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         private StreamPick BuildStructure()
         {
             // todo: create a test using params...
-            var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsLookup, new Dictionary<string, string>
+            var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsSourceName, new Dictionary<string, string>
             {
                 {"StreamParam", "Lots"}
             });
@@ -46,9 +46,9 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var ds1 = new DataTablePerson(this).Generate(DefaultStreamSize, 1000);
             var ds2 = new DataTablePerson(this).Generate(MoreStreamSize, 2700);
             var ds3 = new DataTablePerson(this).Generate(53, 5300);
-            var dsBuild = GetService<DataSourceFactory>();
-            var streamPick = dsBuild.GetDataSource<StreamPick>(new AppIdentity(1, 1), null, ds1.Configuration.LookUpEngine);
-            streamPick.AttachForTests(Constants.DefaultStreamName, ds1);
+            var dsBuild = GetService<IDataSourceFactory>();
+            var streamPick = dsBuild.TestCreate<StreamPick>(appIdentity: new AppIdentity(1, 1), configLookUp: ds1.Configuration.LookUpEngine);
+            streamPick.AttachForTests(DataSourceConstants.StreamDefaultName, ds1);
             streamPick.AttachForTests(MoreStream, ds2);
             streamPick.AttachForTests("Lots", ds3);
             return streamPick;

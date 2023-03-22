@@ -1,18 +1,18 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 
 namespace ToSic.Eav.DataSourceTests.TestData
 {
     public class PersonsDataSource: DataSources.DataSource
     {
-        public PersonsDataSource(MyServices services, MultiBuilder multiBuilder): base(services, "TST.Person")
+        public PersonsDataSource(MyServices services, DataBuilder dataBuilder): base(services, "TST.Person")
         {
-            _multiBuilder = multiBuilder;
-            Provide(GetPersons);
+            _dataBuilder = dataBuilder;
+            ProvideOut(GetPersons);
         }
 
-        private MultiBuilder _multiBuilder;
+        private readonly DataBuilder _dataBuilder;
 
         public PersonsDataSource Init(int itemsToGenerate = 10, int firstId = 1001, bool multiLanguage = false)
         {
@@ -27,9 +27,9 @@ namespace ToSic.Eav.DataSourceTests.TestData
 
         private IImmutableList<IEntity> GetPersons()
         {
-            var persons = new PersonGenerator(_multiBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
-            var list = new PersonGenerator(_multiBuilder).Person2Entity(persons, _multiLanguage);
-            return list.ToImmutableArray();
+            var persons = new PersonGenerator(_dataBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
+            var list = new PersonGenerator(_dataBuilder).Person2Entity(persons, _multiLanguage);
+            return list.ToImmutableList();
         }
     }
 }

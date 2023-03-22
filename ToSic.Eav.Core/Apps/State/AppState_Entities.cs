@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Source;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -21,8 +22,8 @@ namespace ToSic.Eav.Apps
         {
             // todo: check if feature is enabled #SharedAppFeatureEnabled
             var buildFn = ParentApp.InheritEntities
-                ? () => Index.Values.Concat(ParentApp.Entities).ToImmutableArray()
-                : (Func<IImmutableList<IEntity>>)(() => Index.Values.ToImmutableArray());
+                ? () => Index.Values.Concat(ParentApp.Entities).ToImmutableList()
+                : (Func<IImmutableList<IEntity>>)(() => Index.Values.ToImmutableList());
 
             var syncList = new SynchronizedEntityList(this, buildFn);
 
@@ -38,7 +39,7 @@ namespace ToSic.Eav.Apps
         /// Add an entity to the cache. Should only be used by EAV code
         /// </summary>
         [PrivateApi("Only internal use")]
-        public void Add(Entity newEntity, int? publishedId, bool log)
+        public void Add(IEntity newEntity, int? publishedId, bool log)
         {
             if (!Loading)
                 throw new Exception("trying to add entity, but not in loading state. set that first!");
@@ -48,7 +49,7 @@ namespace ToSic.Eav.Apps
 
             RemoveObsoleteDraft(newEntity, log);
             Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
-            MapDraftToPublished(newEntity, publishedId, log);
+            MapDraftToPublished(newEntity as Entity, publishedId, log);
             _metadataManager.Register(newEntity);
 
             if (FirstLoadCompleted)

@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources.Queries
         public string Out { get; set; }
 
         /// <summary>
-        /// The DataSource ID which receives data, an <see cref="IDataTarget"/>
+        /// The DataSource ID which receives data, an <see cref="IDataSourceTarget"/>
         /// </summary>
         public string To { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
@@ -12,7 +13,10 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Gets the Language (<see cref="ILanguage"/>) assigned to this Value. Can be one or many. 
         /// </summary>
-        IList<ILanguage> Languages { get; set; }
+        /// <remarks>
+        /// This was an IList up until 15.04. Since it's very internal, we felt safe to change it to immutable
+        /// </remarks>
+        IEnumerable<ILanguage> Languages { get; }
 
         /// <summary>
         /// The internal contents of the value as a .net object.
@@ -24,6 +28,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Returns the inner value in a form that can be serialized, for JSON serialization etc.
         /// </summary>
+        [PrivateApi("2dm - changed to private v15.04 - was public before")]
         object SerializableObject { get; }
 
         /// <summary>
@@ -32,11 +37,8 @@ namespace ToSic.Eav.Data
         [PrivateApi("not sure why we have two serialization systems, probably will deprecate this some day")]
         string Serialized { get; }
 
-
-        [PrivateApi("very experimental in 12.05")]
-        bool? DynamicUseCache { get; set; }
-        [PrivateApi("very experimental in 12.05")]
-        object DynamicCache { get; set; }
+        [PrivateApi("WIP - not sure if it should be here - should ensure that we have a pure/functional object")]
+        IValue Clone(IImmutableList<ILanguage> newLanguages);
     }
 
 }

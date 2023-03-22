@@ -25,11 +25,11 @@ namespace ToSic.Eav.DataSourceTests.Caches
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
             // manually add to cache
-            listCache.Set(ds[Constants.DefaultStreamName]);
+            listCache.Set(ds[DataSourceConstants.StreamDefaultName]);
             Assert.IsTrue(listCache.Has(ds.CacheFullKey + "&Stream=Default"), "Should have it in cache now");
-            Assert.IsTrue(listCache.Has(ds[Constants.DefaultStreamName]), "Should also have the DS default");
+            Assert.IsTrue(listCache.Has(ds[DataSourceConstants.StreamDefaultName]), "Should also have the DS default");
             
-            Assert.IsTrue(listCache.Has(ds[Constants.DefaultStreamName]), "should have it by stream as well");
+            Assert.IsTrue(listCache.Has(ds[DataSourceConstants.StreamDefaultName]), "should have it by stream as well");
             
 
             // Try to auto-retrieve 
@@ -37,16 +37,16 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
             Assert.AreEqual(1, cached.Count());
 
-            cached = listCache.Get(ds[Constants.DefaultStreamName]).List;
+            cached = listCache.Get(ds[DataSourceConstants.StreamDefaultName]).List;
             Assert.AreEqual(1, cached.Count());
 
             var lci = listCache.Get(ds.CacheFullKey);
             Assert.AreEqual(null, lci, "Cached should be null because the name isn't correct");
 
-            lci = listCache.Get(ds[Constants.DefaultStreamName]);
+            lci = listCache.Get(ds[DataSourceConstants.StreamDefaultName]);
             Assert.AreNotEqual(null, lci, "Cached should be found because using stream instead of name");
 
-            cached = listCache.Get(ds[Constants.DefaultStreamName]).List;
+            cached = listCache.Get(ds[DataSourceConstants.StreamDefaultName]).List;
             Assert.AreEqual(1, cached.Count());
 
         }
@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSourceTests.Caches
             listCache.DefaultDuration = 1;
             Assert.IsFalse(listCache.Has(ds.CacheFullKey), "Should not have it in cache yet");
 
-            listCache.Set(ds.CacheFullKey, ds.ListForTests().ToImmutableArray(), ds.CacheTimestamp);
+            listCache.Set(ds.CacheFullKey, ds.ListForTests().ToImmutableList(), ds.CacheTimestamp);
             Assert.IsTrue(listCache.Has(ds.CacheFullKey), "Should have it in cache now");
 
             Thread.Sleep(400);

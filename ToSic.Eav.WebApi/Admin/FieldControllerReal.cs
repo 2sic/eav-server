@@ -32,7 +32,7 @@ namespace ToSic.Eav.WebApi.Admin
         public string[] DataTypes(int appId) => _ctApiLazy.Value.Init(appId).DataTypes();
 
 
-        public List<InputTypeInfo> InputTypes(int appId) => _appRuntime.Value.Init(appId, true).ContentTypes.GetInputTypes();
+        public List<InputTypeInfo> InputTypes(int appId) => _appRuntime.Value.Init(appId/*, true*/).ContentTypes.GetInputTypes();
 
 
         public Dictionary<string, string> ReservedNames() => Attributes.ReservedNames;

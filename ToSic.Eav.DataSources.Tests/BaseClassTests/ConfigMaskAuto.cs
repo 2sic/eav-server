@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,7 +16,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         public void EnsureNoCacheAtFirstAndCacheLater()
         {
             // Make sure it's reset
-            ConfigurationDataLoader.Cache = new Dictionary<Type, List<ConfigMaskInfo>>();
+            ConfigurationDataLoader.Cache = new ConcurrentDictionary<Type, List<ConfigMaskInfo>>();
 
             // should be false at first
             IsFalse(ConfigurationDataLoader.Cache.ContainsKey(typeof(Shuffle)));

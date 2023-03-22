@@ -54,7 +54,7 @@ namespace ToSic.Eav.Apps.ImportExport
             _xmlBuilder = base.Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
             #endregion
 
-            var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet);
+            var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet).ToList();
 		    var entNodes = xmlSource.Elements(XmlConstants.Entities).Elements(XmlConstants.Entity).ToList();
 
             var importAttributeSets = GetImportContentTypes(atsNodes);

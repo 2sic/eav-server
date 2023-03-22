@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
     /// name, folder, data, metadata etc.
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public partial class App: AppBase<App.AppServices>, IApp
+    public partial class App: AppBase<App.MyServices>, IApp
     {
         #region Constructor / DI
 
@@ -23,19 +23,19 @@ namespace ToSic.Eav.Apps
         /// Helper class, so inheriting stuff doesn't need to update the constructor all the time
         /// </summary>
         [PrivateApi]
-        public class AppServices: MyServicesBase
+        public class MyServices: MyServicesBase
         {
             public Generator<Query> QueryGenerator { get; }
             public LazySvc<QueryManager> QueryManager { get; }
             internal readonly IZoneMapper ZoneMapper;
             internal readonly ISite Site;
             internal readonly IAppStates AppStates;
-            internal readonly DataSourceFactory DataSourceFactory;
+            internal readonly IDataSourceFactory DataSourceFactory;
 
-            public AppServices(IZoneMapper zoneMapper,
+            public MyServices(IZoneMapper zoneMapper,
                 ISite site,
                 IAppStates appStates,
-                DataSourceFactory dataSourceFactory,
+                IDataSourceFactory dataSourceFactory,
                 LazySvc<QueryManager> queryManager,
                 Generator<Query> queryGenerator)
             {
@@ -55,15 +55,13 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="services">All the dependencies of this app, managed by this app</param>
         /// <param name="logName">must be null by default, because of DI</param>
-        public App(AppServices services, string logName = null): base(services, logName ?? "Eav.App")
+        public App(MyServices services, string logName = null): base(services, logName ?? "Eav.App")
         {
-            //Deps = services.SetLog(Log);
             _dsFactory = services.DataSourceFactory;
             
             Site = services.Site;
         }
-        //private readonly AppServices Deps;
-        private readonly DataSourceFactory _dsFactory;
+        private readonly IDataSourceFactory _dsFactory;
 
 
         #endregion
@@ -83,9 +81,6 @@ namespace ToSic.Eav.Apps
         [PrivateApi]
         public string AppGuid => NameId;
 
-        /// <inheritdoc />
-        public bool ShowDrafts { get; private set; }
-
         protected internal App Init(IAppIdentity appIdentity, Func<App, IAppDataConfiguration> buildConfiguration)
         {
             // Env / Tenant must be re-checked here
@@ -100,12 +95,10 @@ namespace ToSic.Eav.Apps
             if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
                 appIdentity = new AppIdentity(Site.ZoneId, appIdentity.AppId);
 
-            Init(appIdentity);
+            base.Init(appIdentity);
             Log.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
             // Look up name in cache
-            // 2020-11-25 changed to use State.Get. before it was this...
-            //AppGuid = State.Cache.Zones[ZoneId].Apps[AppId];
             NameId = Services.AppStates.Get(this).NameId;
 
             InitializeResourcesSettingsAndMetadata();

@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSourceTests
         {
             var dsCatalog = GetService<DataSourceCatalog>();
 
-            var allDS = DataSourceCatalog.GetAll(true).ToList();
+            var allDS = dsCatalog.GetAll(true, 0).ToList();
 
             allDS.ForEach(ds =>
             {
@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSourceTests
                 // Assert.AreEqual(dsInfo.GlobalName, ds.Type.FullName, $"testing '{ds.Type.FullName}'");
 
                 // check config
-                var dsDataType = dsInfo.ExpectsDataOfType;
+                var dsDataType = dsInfo.ConfigurationType;
                 if (!string.IsNullOrWhiteSpace(dsDataType))
                 {
                     // check if guid

@@ -1,6 +1,5 @@
 ﻿using System;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Catalog;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -13,9 +12,11 @@ namespace ToSic.Eav.DataSources.Queries
     public class QueryPartDefinition: EntityBasedWithLog
     {
         [PrivateApi]
-        public QueryPartDefinition(IEntity entity, ILog parentLog) : base(entity, parentLog, "DS.QrPart")
+        public QueryPartDefinition(IEntity entity, string typeIdentifier, Type type, DataSourceInfo dataSourceInfo, ILog parentLog) : base(entity, parentLog, "DS.QrPart")
         {
-
+            DataSourceTypeIdentifier = typeIdentifier;
+            DataSourceType = type;
+            DataSourceInfo = dataSourceInfo;
         }
 
         /// <summary>
@@ -28,29 +29,9 @@ namespace ToSic.Eav.DataSources.Queries
         /// The .net type which the data source has for this part. <br/>
         /// Will automatically resolve old names to new names as specified in the DataSources <see cref="VisualQueryAttribute"/>
         /// </summary>
-        public string DataSourceType => _dataSourceType ?? (_dataSourceType = RewriteOldAssemblyNames(DataSourceTypeInConfig));
-        private string _dataSourceType;
-        
-        private string DataSourceTypeInConfig
-            => Get<string>(QueryConstants.PartAssemblyAndType, null)
-               ?? throw new Exception("Tried to get DataSource Type of a query part, but didn't find anything");
+        public string DataSourceTypeIdentifier { get; }
 
-
-        /// <summary>
-        /// Check if a Query part has an old assembly name, and if yes, correct it to the new name
-        /// </summary>
-        /// <param name="assemblyAndType"></param>
-        /// <returns></returns>
-        private string RewriteOldAssemblyNames(string assemblyAndType)
-        {
-            var newName = assemblyAndType.EndsWith(DataSourceConstants.V3To4DataSourceDllOld)
-                ? assemblyAndType.Replace(DataSourceConstants.V3To4DataSourceDllOld, DataSourceConstants.V3To4DataSourceDllNew)
-                : assemblyAndType;
-
-            // find the new name in the catalog
-            return DataSourceCatalog.Find(newName);
-        }
-
-
+        public Type DataSourceType { get; }
+        public DataSourceInfo DataSourceInfo { get; }
     }
 }

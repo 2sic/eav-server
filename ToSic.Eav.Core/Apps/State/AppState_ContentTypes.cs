@@ -47,7 +47,7 @@ namespace ToSic.Eav.Apps
         });
 
 
-        private void BuildCacheForTypesByName(IList<IContentType> allTypes
+        private void BuildCacheForTypesByName(IImmutableList<IContentType> allTypes
         ) => Log.Do(message: $"build cache for type names for {allTypes.Count} items", timer: true, action: () =>
         {
             _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
@@ -65,19 +65,19 @@ namespace ToSic.Eav.Apps
                     _appTypesByName.Add(type.Name, type);
         });
 
-	    private ImmutableArray<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> appTypes)
+	    private IImmutableList<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> appTypes)
         {
             var globTypeNames = ParentApp.ContentTypes.Select(t => t.NameId);
             return appTypes.Where(t =>
 	                !t.AlwaysShareConfiguration // keep all locally defined types
 	                || !globTypeNames.Contains(t.NameId)    // for non-local: keep all which globally are not overwritten
 	            )
-	            .ToImmutableArray();
+	            .ToImmutableList();
 	    }
 
 
 	    private IDictionary<string, IContentType> _appTypesByName;
-	    private ImmutableArray<IContentType> _appContentTypesFromRepository;
+	    private IImmutableList<IContentType> _appContentTypesFromRepository;
 	    private ImmutableDictionary<int, string> _appTypeMap;
 
         /// <summary>

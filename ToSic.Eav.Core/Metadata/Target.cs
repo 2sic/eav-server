@@ -34,10 +34,20 @@ namespace ToSic.Eav.Metadata
         /// Constructor for a new MetadataTarget, which is empty.
         /// </summary>
         [PrivateApi]
-        public Target(int targetType, string identifier)
+        public Target(int targetType, string identifier, string keyString = default, int? keyNumber = default, Guid? keyGuid = default)
         {
             TargetType = targetType;
             Title = identifier;
+            KeyString = keyString;
+            KeyNumber = keyNumber;
+            KeyGuid = keyGuid;
+        }
+        /// <summary>
+        /// Constructor for a new MetadataTarget, which is empty.
+        /// </summary>
+        [PrivateApi]
+        public Target(int targetType, string identifier, object key): this(targetType, identifier, key as string, key as int?, key as Guid?)
+        {
         }
 
         /// <summary>
@@ -45,12 +55,12 @@ namespace ToSic.Eav.Metadata
         /// </summary>
         /// <param name="originalToCopy"></param>
         [PrivateApi("not sure if this should be public, since we don't have a proper cloning standard")]
-        public Target(ITarget originalToCopy)
+        public Target(ITarget originalToCopy, Guid? keyGuid = default)
         {
             TargetType = originalToCopy.TargetType;
             KeyString = originalToCopy.KeyString;
             KeyNumber = originalToCopy.KeyNumber;
-            KeyGuid = originalToCopy.KeyGuid;
+            KeyGuid = keyGuid ?? originalToCopy.KeyGuid;
             Title = originalToCopy.Title;
         }
 

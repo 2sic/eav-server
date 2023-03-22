@@ -65,7 +65,7 @@ namespace ToSic.Eav.WebApi.Sys
                         type.Scope,
                         type.NameId,
                         type.Name,
-                        LinkTo($"{type.Attributes.Count}", nameof(Attributes), appId, type: type.NameId),
+                        LinkTo($"{type.Attributes.Count()}", nameof(Attributes), appId, type: type.NameId),
                         LinkTo($"{type.Metadata.Count()}", nameof(TypeMetadata), appId, type: type.NameId),
                         LinkTo($"{type.Metadata.Permissions.Count()}", nameof(TypePermissions), appId, type: type.NameId),
                         type.IsDynamic.ToString(),

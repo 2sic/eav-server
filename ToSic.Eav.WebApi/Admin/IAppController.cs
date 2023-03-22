@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.WebApi.Dto;
 
 namespace ToSic.Eav.WebApi.Admin
@@ -32,7 +33,7 @@ namespace ToSic.Eav.WebApi.Admin
         /// <param name="key">Optional key like "Settings.Images.Content.Width"</param>
         /// <param name="view">Optional guid of a view to merge with the settings</param>
         /// <returns></returns>
-        List<StackInfoDto> GetStack(int appId, string part, string key = null, Guid? view = null);
+        List<AppStackDataRaw> GetStack(int appId, string part, string key = null, Guid? view = null);
 
         /// <summary>
         /// Reset an App to the last xml state

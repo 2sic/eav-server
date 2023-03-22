@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.RelationshipTests;
 using ToSic.Lib.Logging;
 
@@ -47,7 +48,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         public void DS_RelFil_NoConfigFallback()
         {
             var relFilt = BuildRelationshipFilter(RelationshipTestSpecs.Company);
-            relFilt.AttachForTests(Constants.FallbackStreamName, relFilt.InForTests()[Constants.DefaultStreamName]);
+            relFilt.AttachForTests(DataSourceConstants.StreamFallbackName, relFilt.InForTests()[DataSourceConstants.StreamDefaultName]);
 
             var result = relFilt.ListForTests().ToList();
 

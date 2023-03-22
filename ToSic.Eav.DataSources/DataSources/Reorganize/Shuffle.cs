@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSources.Queries;
@@ -18,10 +19,10 @@ namespace ToSic.Eav.DataSources
         UiHint = "Mix/randomize the order of items",
         Icon = Icons.Shuffle,
         Type = DataSourceType.Sort, 
-        GlobalName = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { Constants.DefaultStreamNameRequired },
-        ExpectsDataOfType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
+        In = new[] { QueryConstants.InStreamDefaultRequired },
+        ConfigurationType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
         HelpLink = "https://r.2sxc.org/DsShuffle")]
 	public sealed class Shuffle: DataSource
 	{
@@ -52,7 +53,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         public Shuffle(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Shuffl")
         {
-            Provide(GetShuffle);
+            ProvideOut(GetShuffle);
         }
 
 
@@ -60,20 +61,20 @@ namespace ToSic.Eav.DataSources
         {
             Configuration.Parse();
 
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
-            return (ShuffleInternal(originals, Take), "ok");
+            return (ShuffleInternal(source.ToList(), Take), "ok");
         });
 
         #region Shuffle based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
         static readonly Random Generator = new Random();
 
-        private IImmutableList<T> ShuffleInternal<T>(IImmutableList<T> sequence, int take) => Log.Func(l =>
+        private IImmutableList<T> ShuffleInternal<T>(List<T> sequence, int take) => Log.Func(l =>
         {
             // check if there is actually any data
             if (!sequence.Any())
-                return (sequence, "0 items found to shuffle");
+                return (sequence.ToImmutableList(), "0 items found to shuffle");
 
             var retArray = sequence.ToArray();
             var maxIndex = retArray.Length; // not Length -1, as the random-generator will always be below this
@@ -98,7 +99,7 @@ namespace ToSic.Eav.DataSources
 
             var result = retArray
                 .Take(maxTake)
-                .ToImmutableArray();
+                .ToImmutableList();
             return (result, maxTake.ToString());
         });
         #endregion

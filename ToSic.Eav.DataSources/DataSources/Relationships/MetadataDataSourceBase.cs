@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         protected MetadataDataSourceBase(MyServices services, string logName): base(services, logName)
         {
-            Provide(GetMetadata);
+            ProvideOut(GetMetadata);
         }
 
         private IImmutableList<IEntity> GetMetadata() => Log.Func(l =>
@@ -30,14 +30,14 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Make sure we have an In - otherwise error
-            if (!GetRequiredInList(out var originals))
-                return (originals, "error");
+            var source = TryGetIn();
+            if (source is null) return (Error.TryGetInFailed(), "error");
 
             var typeName = ContentTypeName;
             if (string.IsNullOrWhiteSpace(typeName)) typeName = null;
             l.A($"Content Type Name: {typeName}");
 
-            var relationships = SpecificGet(originals, typeName);
+            var relationships = SpecificGet(source, typeName);
 
             return (relationships.ToImmutableList(), "ok");
         });

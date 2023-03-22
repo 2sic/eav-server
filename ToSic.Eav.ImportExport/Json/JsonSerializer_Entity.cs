@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
@@ -43,7 +44,7 @@ namespace ToSic.Eav.ImportExport.Json
                 .ToList();
 
             var attribs = new JsonAttributes();
-            attributesInUse.GroupBy(a => a.ControlledType, a => a).ToList().ForEach(g =>
+            attributesInUse.GroupBy(a => a.Type, a => a).ToList().ForEach(g =>
             {
                 var gList = g.ToList();
                 switch (g.Key)
@@ -71,7 +72,7 @@ namespace ToSic.Eav.ImportExport.Json
                         attribs.Boolean = ToTypedDictionary<bool?>(gList);
                         break;
                     case ValueTypes.Entity:
-                        attribs.Entity = ToTypedDictionaryEntity(gList, false);
+                        attribs.Entity = ToTypedDictionaryEntity(gList);
                         break;
                     case ValueTypes.Empty:
                     case ValueTypes.Undefined:
@@ -105,8 +106,7 @@ namespace ToSic.Eav.ImportExport.Json
         /// this is a special helper to create typed entities-dictionaries
         /// </summary>
         /// <returns></returns>
-        private Dictionary<string, Dictionary<string, List<Guid?>>> 
-            ToTypedDictionaryEntity(List<IAttribute> gList, bool fullObjects)
+        private Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(List<IAttribute> gList)
         {
             // the following is a bit complex for the following reason
             // 1. either the relationship is guid based, and in that case, 
@@ -117,7 +117,7 @@ namespace ToSic.Eav.ImportExport.Json
             // so it tries to get the guids first, and otherwise uses the items
             var entities = ToTypedDictionary<IEnumerable<IEntity>>(gList)
                 .ToDictionary(a => a.Key, a => a.Value
-                    .ToDictionary(b => b.Key, b => ((LazyEntities)b.Value).ResolveGuids()));
+                    .ToDictionary(b => b.Key, b => ((LazyEntitiesSource)b.Value).ResolveGuids()));
             return entities;
         }
 

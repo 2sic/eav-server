@@ -3,6 +3,7 @@ using System.Linq;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSources.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -17,7 +18,7 @@ namespace ToSic.Eav.DataSources
         UiHint = "Find the first stream which has data",
         Icon = Icons.Merge,
         Type = DataSourceType.Logic, 
-        GlobalName = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
         DynamicOut = false,
         DynamicIn = true,
 	    HelpLink = "https://r.2sxc.org/DsStreamFallback")]
@@ -36,15 +37,15 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public StreamFallback(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.FallBk")
+		public StreamFallback(MyServices services) : base(services, $"{LogPrefix}.FallBk")
 		{
-			Provide(GetStreamFallback);
+			ProvideOut(GetStreamFallback);
 		}
 
         private IImmutableList<IEntity> GetStreamFallback()
         {
             var foundStream = FindIdealFallbackStream();
-            return foundStream?.List.ToImmutableArray() ?? ImmutableArray<IEntity>.Empty;
+            return foundStream?.List.ToImmutableList() ?? EmptyList;
         }
 
         private IDataStream FindIdealFallbackStream() => Log.Func(() =>
@@ -52,12 +53,12 @@ namespace ToSic.Eav.DataSources
             Configuration.Parse();
 
             // Check if there is a default-stream in with content - if yes, try to return that
-            if (In.HasStreamWithItems(Constants.DefaultStreamName))
-                return (In[Constants.DefaultStreamName], "found default");
+            if (In.HasStreamWithItems(StreamDefaultName))
+                return (In[StreamDefaultName], "found default");
 
             // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
             var streamList = In
-                .Where(x => x.Key != Constants.DefaultStreamName)
+                .Where(x => x.Key != StreamDefaultName)
                 .OrderBy(x => x.Key);
 
             foreach (var stream in streamList)

@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Environment;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Xml;
@@ -9,16 +10,16 @@ namespace ToSic.Eav.Apps.ImportExport
 {
     public sealed class XmlExporterUnknown: XmlExporter, IIsUnknown
     {
-        public XmlExporterUnknown(XmlSerializer xmlSerializer, IAppStates appStates, WarnUseOfUnknown<XmlExporterUnknown> _) 
-            : base(xmlSerializer, appStates, LogScopes.NotImplemented)
+        public XmlExporterUnknown(XmlSerializer xmlSerializer, IAppStates appStates, IContextResolver ctxResolver, WarnUseOfUnknown<XmlExporterUnknown> _) 
+            : base(xmlSerializer, appStates, ctxResolver, LogScopes.NotImplemented)
         {
         }
 
-        public override XmlExporter Init(int zoneId, int appId, AppRuntime appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
+        protected override void PostContextInit(IContextOfApp appContext)
         {
-            // do nothing
-            return this;
+            /* do nothing */
         }
+
 
         public override void AddFilesToExportQueue()
         {

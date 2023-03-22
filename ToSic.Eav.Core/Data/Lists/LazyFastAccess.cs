@@ -61,7 +61,7 @@ namespace ToSic.Eav.Data
 #endif
             if (_ofType.TryGetValue(name, out var found)) return found;
 
-            var newEntry = _list.Where(e => e.Type.Is(name)).ToImmutableArray();
+            var newEntry = _list.Where(e => e.Type.Is(name)).ToImmutableList();
             _ofType.TryAdd(name, newEntry);
             return newEntry;
         }

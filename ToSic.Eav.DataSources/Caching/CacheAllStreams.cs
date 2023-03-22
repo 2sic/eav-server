@@ -18,11 +18,11 @@ namespace ToSic.Eav.DataSources.Caching
         UiHint = "Cache all streams based on some rules",
         Icon = Icons.HistoryOff,
         Type = DataSourceType.Cache, 
-        GlobalName = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
         DynamicOut = true,
         DynamicIn = true,
-        ExpectsDataOfType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
-        PreviousNames = new []
+        ConfigurationType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
+        NameIds = new []
             {
                 "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources"
             },

@@ -11,13 +11,15 @@ namespace ToSic.Eav.DataSources
         {
             // Dependencies, new in v15
             services.TryAddTransient<DataSource.MyServices>();
+            services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
             services.TryAddTransient<App.MyServices>();
-            services.TryAddTransient<DataSourceConfiguration>();
-            services.TryAddTransient<DataSourceConfiguration.MyServices>();
+            services.TryAddTransient<DataSourceConfigurationManager>();
+            services.TryAddTransient<DataSourceConfigurationManager.MyServices>();
 
             services.TryAddTransient<DataSourceCatalog>();
-            services.TryAddTransient<DataSourceFactory>();
-            services.TryAddTransient<DataSourceErrorHandling>();
+            services.TryAddTransient<IDataSourceFactory, DataSourceFactory>();
+            services.TryAddTransient<DataSourceErrorHelper>();
+            services.TryAddTransient(typeof(IDataSourceGenerator<>), typeof(DataSourceGenerator<>));
 
             services.TryAddTransient<IAppRoot, AppRoot>();
 
@@ -28,12 +30,15 @@ namespace ToSic.Eav.DataSources
             services.TryAddTransient<DataTable>();
 
             services.TryAddTransient<QueryBuilder>();
+            services.TryAddTransient<QueryDefinitionBuilder>();
 
             services.TryAddTransient<ValueLanguages>();
 
             services.TryAddTransient<ITreeMapper, TreeMapper>();
 
             services.TryAddTransient<ConfigurationDataLoader>();
+
+            
 
             return services;
         }

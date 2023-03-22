@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Lib.Logging;
@@ -22,6 +23,7 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public partial class ContentTypeApi : ServiceBase
     {
+
         #region Constructor / DI
 
         public ContentTypeApi(
@@ -30,6 +32,7 @@ namespace ToSic.Eav.WebApi
             LazySvc<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
             LazySvc<IConvertToEavLight> convertToEavLight, 
+            LazySvc<DataBuilder> multiBuilder,
             IAppStates appStates) : base("Api.EavCTC")
         {
             ConnectServices(
@@ -38,10 +41,12 @@ namespace ToSic.Eav.WebApi
                 _dbLazy = dbLazy,
                 _appInitializedChecker = appInitializedChecker,
                 _convertToEavLight = convertToEavLight,
+                _multiBuilder = multiBuilder,
                 _appStates = appStates
             );
         }
 
+        private readonly LazySvc<DataBuilder> _multiBuilder;
         private readonly LazySvc<AppRuntime> _appRuntimeLazy;
         private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly LazySvc<DbDataController> _dbLazy;
@@ -119,7 +124,7 @@ namespace ToSic.Eav.WebApi
                 UsesSharedDef = ancestorDecorator != null,
                 SharedDefId = ancestorDecorator?.Id,
                 Items = count,
-                Fields = t.Attributes.Count,
+                Fields = t.Attributes.Count(),
                 Metadata = (ser as ConvertToEavLight)?.CreateListOfSubEntities(t.Metadata,
                     SubEntitySerialization.AllTrue()),
                 Properties = properties,
@@ -194,7 +199,7 @@ namespace ToSic.Eav.WebApi
             var hasAncestor = type.HasAncestor();
             var ancestorDecorator = type.GetDecorator<IAncestor>();
 
-            var appInputTypes = _appRuntimeLazy.Value.Init(_appId, true).ContentTypes.GetInputTypes();
+            var appInputTypes = _appRuntimeLazy.Value.Init(_appId/*, true*/).ContentTypes.GetInputTypes();
 
             var ser = _convertToEavLight.Value;
             return fields.Select(a =>
@@ -204,7 +209,7 @@ namespace ToSic.Eav.WebApi
                 {
                     Id = a.AttributeId,
                     SortOrder = a.SortOrder,
-                    Type = a.Type,
+                    Type = a.Type.ToString(),
                     InputType = inputType,
                     StaticName = a.Name,
                     IsTitle = a.IsTitle,
@@ -299,7 +304,8 @@ namespace ToSic.Eav.WebApi
         public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
 	        Log.A($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
-            var attDef = new ContentTypeAttribute(AppManager.AppId, staticName, type, false, 0, sortOrder);
+            var attDef = _multiBuilder.Value.TypeAttributeBuilder
+                .Create(appId: AppManager.AppId, name: staticName, type: ValueTypeHelpers.Get(type), isTitle: false, id: 0, sortOrder: sortOrder);
             return AppManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
 	    }
 

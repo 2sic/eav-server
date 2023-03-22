@@ -52,27 +52,28 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// The entities created from the document. They will be saved to the repository.
         /// </summary>
-        public List<Entity> ImportEntities { get; set; }
+        public List<Entity> ImportEntities { get; } = new List<Entity>();
 
-        private Entity GetImportEntity(Guid entityGuid)
+        private Entity GetImportEntity(Guid entityGuid) => Log.Func(l =>
         {
             var result = ImportEntities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
-            if (result != null) Log.A($"Will modify entity from existing import list {entityGuid}");
+            if (result != null) l.A($"Will modify entity from existing import list {entityGuid}");
             return result;
-        }
+        });
 
 
         private int _appendEntityCount = 0;
-        private Entity AppendEntity(Guid entityGuid)
+
+        private Entity AppendEntity(Guid entityGuid, IDictionary<string, IAttribute> values) => Log.Func(l =>
         {
-            if(_appendEntityCount++ < 100)
-                Log.A($"Add entity to import list {entityGuid}");
-            if (_appendEntityCount == 100) Log.A("Add entity: will stop listing each one...");
-            if (_appendEntityCount % 100 == 0) Log.A("Add entity: Current count:" + _appendEntityCount);
-            var entity = new Entity(_appId, entityGuid, ContentType, new Dictionary<string, object>());
+            if (_appendEntityCount++ < 100) l.A($"Add entity to import list {entityGuid}");
+            if (_appendEntityCount == 100) l.A("Add entity: will stop listing each one...");
+            if (_appendEntityCount % 100 == 0) l.A("Add entity: Current count:" + _appendEntityCount);
+            var entity = _builder.Entity.Create(appId: _appId, guid: entityGuid, contentType: ContentType,
+                attributes: _builder.Attribute.Create(values));
             ImportEntities.Add(entity);
             return entity;
-        }
+        });
 
         /// <summary>
         /// Errors found while importing the document to memory.

@@ -46,7 +46,12 @@ namespace ToSic.Eav.Data
         /// <returns>Always returns a list - empty or containing results</returns>
         List<IEntity> FindParents(string type = null, string field = null, ILog log = null);
 
-        [PrivateApi]
-        IEnumerable<EntityRelationship> AllRelationships { get; }
+        ///// <summary>
+        ///// Note 2dm - this actually just contained the stream of all relationships of the App
+        ///// or in rare cases, personal relationships, which was fairly confusing
+        ///// so I removed this in the interface 2023-02-27
+        ///// </summary>
+        //[PrivateApi]
+        //IEnumerable<EntityRelationship> AllRelationships { get; }
     }
 }

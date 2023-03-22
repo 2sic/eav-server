@@ -10,6 +10,7 @@ using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
+using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
@@ -26,7 +27,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ContextOfSite>();
 
             // Runtimes and Managers
-            services.TryAddTransient<AppRuntimeServices>();
+            services.TryAddTransient<AppRuntimeBase.MyServices>();
             services.TryAddTransient<AppRuntime>();
             services.TryAddTransient<AppManager>();
             services.TryAddTransient<AppManager.MyServices>();
@@ -53,7 +54,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ZipFromUrlImport>();
 
             // App Dependencies
-            services.TryAddTransient<App.AppServices>();
+            services.TryAddTransient<App.MyServices>();
 
             // Context
             services.TryAddTransient<IContextOfApp, ContextOfApp>();
@@ -93,7 +94,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppUserLanguageCheck>();
 
             // V15 Data Sources
-            services.TryAddTransient<DataSources.Sys.Apps.MyServices>();
+            services.TryAddTransient<Eav.DataSources.CustomDataSourceAdvanced.MyServices>();
 
 
             return services;
@@ -108,7 +109,7 @@ namespace ToSic.Eav.Apps
         /// <remarks>
         /// All calls in here MUST use TryAddTransient, and never without the Try
         /// </remarks>
-        public static IServiceCollection AddFallbackAppServices(this IServiceCollection services)
+        public static IServiceCollection AddAppFallbackServices(this IServiceCollection services)
         {
             services.TryAddTransient<IEnvironmentLogger, EnvironmentLoggerUnknown>();
             services.TryAddTransient<XmlExporter, XmlExporterUnknown>();
@@ -117,8 +118,8 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
             services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
             services.TryAddTransient<IAppFileSystemLoader, FileSystemLoaderUnknown>();
-
             services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
+            services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();
 
             return services;
         }

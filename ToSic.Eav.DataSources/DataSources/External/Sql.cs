@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
@@ -31,16 +32,16 @@ namespace ToSic.Eav.DataSources
         UiHint = "Get data from a database using SQL",
         Icon = Icons.FormDyn,
         Type = DataSourceType.Source,
-        GlobalName = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
+        NameId = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
         DynamicOut = false,
-        ExpectsDataOfType = "c76901b5-0345-4866-9fa3-6208de7f8543",
-        PreviousNames = new []
+        ConfigurationType = "c76901b5-0345-4866-9fa3-6208de7f8543",
+        NameIds = new []
             {
                 "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources"
             },
         HelpLink = "https://r.2sxc.org/DsSql")]
 
-	public class Sql : ExternalData
+	public class Sql : CustomDataSourceAdvanced
 	{
         // Note: of the standard SQL-terms, I will only allow exec|execute|select
         // Everything else shouldn't be allowed
@@ -126,10 +127,10 @@ namespace ToSic.Eav.DataSources
         #region Constructor
 
         [PrivateApi]
-		public new class MyServices: MyServicesBase<DataSource.MyServices>
+		public new class MyServices: MyServicesBase<CustomDataSourceAdvanced.MyServices>
         {
             public SqlPlatformInfo SqlPlatformInfo { get; }
-            public MyServices(SqlPlatformInfo sqlPlatformInfo, DataSource.MyServices parentServices): base(parentServices)
+            public MyServices(SqlPlatformInfo sqlPlatformInfo, CustomDataSourceAdvanced.MyServices parentServices): base(parentServices)
             {
                 ConnectServices(
                     SqlPlatformInfo = sqlPlatformInfo
@@ -143,16 +144,16 @@ namespace ToSic.Eav.DataSources
 		/// Initializes a new instance of the SqlDataSource class
 		/// </summary>
 		[PrivateApi]
-		public Sql(MyServices services, IDataBuilder dataBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.ExtSql")
+		public Sql(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.ExtSql")
         {
             ConnectServices(
-                _dataBuilder = dataBuilder
+                _dataFactory = dataFactory
             );
             SqlServices = services;
-            Provide(GetList);
+            ProvideOut(GetList);
         }
         [PrivateApi] protected readonly MyServices SqlServices;
-        private readonly IDataBuilder _dataBuilder;
+        private readonly IDataFactory _dataFactory;
 
         #endregion
 
@@ -231,22 +232,22 @@ namespace ToSic.Eav.DataSources
                 // Ready to finish, but first, ensure repeating if desired
                 SelectCommand = result.ToString();
             }
-	        CacheRelevantConfigurations = CacheRelevantConfigurations.Concat(additionalParams).ToList();
+	        CacheRelevantConfigurations.AddRange(additionalParams);
 
             Configuration.Parse();
         }
 
 
-	    private ImmutableArray<IEntity> GetList()
+	    private IImmutableList<IEntity> GetList() => Log.Func(l =>
 		{
             CustomConfigurationParse();
 
-            Log.A($"get from sql:{SelectCommand}");
+            l.A($"get from sql:{SelectCommand}");
 
             // Check if SQL contains forbidden terms
             if (ForbiddenTermsInSelect.IsMatch(SelectCommand))
-                return ErrorHandler.CreateErrorList(source: this, title: ErrorTitleForbiddenSql,
-                    message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue.");
+                return (Error.Create(source: this, title: ErrorTitleForbiddenSql,
+                    message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue."), "error");
 
 
             // Load ConnectionString by Name (if specified)
@@ -262,15 +263,15 @@ namespace ToSic.Eav.DataSources
                 }
 			    catch(Exception ex)
                 {
-                    return ErrorHandler.CreateErrorList(source: this, exception: ex,
+                    return (Error.Create(source: this, exception: ex,
                         title: "Can't find Connection String Name",
-                        message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message.");
+                        message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message."), "error");
 			    }
 
             // make sure we have one - often it's empty, if the query hasn't been configured yet
             if (string.IsNullOrWhiteSpace(ConnectionString))
-                return ErrorHandler.CreateErrorList(source: this, title: "Connection Problem",
-                    message: "The ConnectionString property is empty / has not been initialized");
+                return (Error.Create(source: this, title: "Connection Problem",
+                    message: "The ConnectionString property is empty / has not been initialized"), "error");
 
 			var list = new List<IEntity>();
             using (var connection = new SqlConnection(ConnectionString))
@@ -292,9 +293,9 @@ namespace ToSic.Eav.DataSources
                     }
                     catch(Exception ex)
                     {
-                        return ErrorHandler.CreateErrorList(source: this, exception: ex,
+                        return (Error.Create(source: this, exception: ex,
                             title: "Can't read from Database",
-                            message: "Something failed trying to read from the Database.");
+                            message: "Something failed trying to read from the Database."), "error");
                     }
 
                     var casedTitle = TitleField;
@@ -311,16 +312,16 @@ namespace ToSic.Eav.DataSources
 			            if (!columNames.Contains(casedEntityId))
 			                casedEntityId = columNames.FirstOrDefault(c =>
 			                    string.Equals(c, casedEntityId, InvariantCultureIgnoreCase));
-			            Log.A($"will used '{casedEntityId}' as entity field (null if not found)");
+			            l.A($"will used '{casedEntityId}' as entity field (null if not found)");
 
 			            // try alternate casing - new: just take first column if the defined one isn't found - worst case it doesn't have a title
 			            if (!columNames.Contains(casedTitle))
 			                casedTitle = columNames.FirstOrDefault(c =>
 			                                 string.Equals(c, casedTitle, InvariantCultureIgnoreCase))
 			                             ?? columNames.FirstOrDefault();
-			            Log.A($"will use '{casedTitle}' as title field");
+			            l.A($"will use '{casedTitle}' as title field");
 
-                        _dataBuilder.Configure(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle);
+                        var sqlFactory = _dataFactory.New(options: new DataFactoryOptions(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle));
 
                         #endregion
 
@@ -337,7 +338,7 @@ namespace ToSic.Eav.DataSources
 								var value = reader[c];
                                 return Convert.IsDBNull(value) ? null : value;
                             });
-                            var entity = _dataBuilder.Create(values, id: entityId);
+                            var entity = sqlFactory.Create(values, id: entityId);
 			                list.Add(entity);
 			            }
 
@@ -352,8 +353,7 @@ namespace ToSic.Eav.DataSources
 			    }
 			}
 
-		    Log.A($"found:{list.Count}");
-			return list.ToImmutableArray();
-		}
+			return (list.ToImmutableList(), $"found:{list.Count}");
+		});
 	}
 }

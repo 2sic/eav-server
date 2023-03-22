@@ -123,6 +123,7 @@
     <Compile Include="PlumbingTests\ObjectExtensionTests\ConvertOrFallback.cs" />
     <Compile Include="PlumbingTests\AnonymousTypeTests.cs" />
     <Compile Include="PlumbingTests\SubStringTests.cs" />
+    <Compile Include="Serialization\ExceptionConverterTests.cs" />
     <Compile Include="Signature\KeyPairForTesting.cs" />
     <Compile Include="Signature\SignatureDataSha256.cs" />
     <Compile Include="Signature\SignatureHashSha1.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="Signature\TestData.cs" />
     <Compile Include="Signature\TestKeys.cs" />
     <Compile Include="Signature\EncryptTests.cs" />
+    <Compile Include="TestBaseEavData.cs" />
     <Compile Include="Types\Builder\Entity.cs" />
     <Compile Include="Types\Builder\String.cs" />
     <Compile Include="Types\GlobalManagerTests.cs" />

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Builder;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Efc.Intermediate;
 using ToSic.Eav.Serialization;
+using static System.StringComparer;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc
@@ -98,8 +99,7 @@ namespace ToSic.Eav.Persistence.Efc
                 if (AddLogCount++ == MaxLogDetailsCount)
                     l.A($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-                var newEntity = BuildNewEntity(app, rawEntity, serializer, relatedEntities, attributes,
-                    PrimaryLanguage);
+                var newEntity = BuildNewEntity(app, rawEntity, serializer, relatedEntities, attributes, PrimaryLanguage);
 
                 // If entity is a draft, also include references to Published Entity
                 app.Add(newEntity, rawEntity.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
@@ -115,63 +115,77 @@ namespace ToSic.Eav.Persistence.Efc
 
 
 
-        private Entity BuildNewEntity(AppState app, TempEntity e, 
+        private IEntity BuildNewEntity(AppState app, TempEntity e, 
             IDataDeserializer serializer,
             Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities,
             Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes,
             string primaryLanguage)
         {
-            Entity newEntity;
 
             if (e.Json != null)
             {
-                newEntity = serializer.Deserialize(e.Json, false, true) as Entity;
+                var fromJson = serializer.Deserialize(e.Json, false, true);
                 // add properties which are not in the json
                 // ReSharper disable once PossibleNullReferenceException
-                newEntity.IsPublished = e.IsPublished;
-                newEntity.Created = e.Created;
-                newEntity.Modified = e.Modified;
-                newEntity.Owner = e.Owner;
-                return newEntity;
+                //fromJson.IsPublished = e.IsPublished;
+                //fromJson.Created = e.Created;
+                //fromJson.Modified = e.Modified;
+                //fromJson.Owner = e.Owner;
+                var clonedExtended = _dataBuilder.Entity.CreateFrom(fromJson,
+                    isPublished: e.IsPublished,
+                    created: e.Created,
+                    modified: e.Modified,
+                    owner: e.Owner
+                );
+                return clonedExtended; // fromJson;
             }
 
             var contentType = app.GetContentType(e.AttributeSetId);
             if (contentType == null)
                 throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
-            newEntity = _multiBuilder.Entity.EntityFromRepository(app.AppId, e.EntityGuid, e.EntityId, e.EntityId,
-                e.MetadataFor, contentType, e.IsPublished, app, e.Created, e.Modified, e.Owner,
-                e.Version);
+            // Prepare relationships to add to AttributeGenerator
+            var emptyValueList = new List<(string StaticName, IValue)>();
+            var preparedRelationships = relatedEntities.TryGetValue(e.EntityId, out var rawRels)
+                ? rawRels.Select(r => (r.StaticName, _dataBuilder.Value.Relationship(r.Children, app))).ToList()
+                : emptyValueList;
 
-            // Add all Attributes of that Content-Type
-            var titleAttrib = _multiBuilder.Attribute.GenerateAttributesOfContentType(newEntity, contentType);
-            if (titleAttrib != null)
-                newEntity.SetTitleField(titleAttrib.Name);
+            var attributeValuesLookup = !attributes.TryGetValue(e.EntityId, out var attribValues)
+                ? emptyValueList
+                : attribValues
+                    .Select(a => new
+                    {
+                        a.Name,
+                        CtAttribute = contentType[a.Name],
+                        a.Values
+                    })
+                    .Where(set => set.CtAttribute != null)
+                    .SelectMany(a =>
+                    {
+                        var results = a.Values
+                            .Select(v => _dataBuilder.Value.Build(a.CtAttribute.Type, v.Value, v.Languages))
+                            .ToList();
+                        var final = DataRepair.FixIncorrectLanguageDefinitions(results, primaryLanguage);
+                        return final.Select(r => (a.Name, r));
+                    }).ToList();
 
-            // add Related-Entities Attributes to the entity
-            if (relatedEntities.ContainsKey(e.EntityId))
-                foreach (var r in relatedEntities[e.EntityId])
-                    _multiBuilder.Attribute.BuildReferenceAttribute(newEntity, r.StaticName, r.Children, app);
 
-            #region Add "normal" Attributes (that are not Entity-Relations)
+            var mergedValueLookups = preparedRelationships
+                .Concat(attributeValuesLookup)
+                .ToLookup(x => x.Item1, x => x.Item2, InvariantCultureIgnoreCase);
 
-            if (!attributes.ContainsKey(e.EntityId)) 
-                return newEntity;
-
-            foreach (var a in attributes[e.EntityId])
-            {
-                if (!newEntity.Attributes.TryGetValue(a.Name, out var attrib))
-                    continue;
-
-                attrib.Values = a.Values
-                    .Select(v => _multiBuilder.Value.Build(attrib.Type, v.Value, v.Languages))
-                    .ToList();
-
-                // fix faulty data dimensions in case old storage mechanisms messed up
-                DataRepair.FixIncorrectLanguageDefinitions(attrib, primaryLanguage);
-            }
-
-            #endregion
+            // Get all Attributes of that Content-Type
+            var newAttributes = _dataBuilder.Attribute.Create(contentType, mergedValueLookups);
+            var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: app, metadata: null);
+            var newEntity = _dataBuilder.Entity.Create(
+                appId: app.AppId,
+                guid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,
+                metadataFor: e.MetadataFor, 
+                contentType: contentType, isPublished: e.IsPublished,
+                created: e.Created, modified: e.Modified, 
+                owner: e.Owner, version: e.Version, 
+                attributes: newAttributes,
+                partsBuilder: partsBuilder);
 
             return newEntity;
         }

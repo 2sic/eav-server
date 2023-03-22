@@ -16,12 +16,14 @@ namespace ToSic.Eav.DataSourceTests.Query
         private readonly JsonSerializer _jsonSerializer;
         private readonly QueryManager _queryManager;
         private readonly QueryBuilder _queryBuilder;
+        private readonly QueryDefinitionBuilder _queryDefinitionBuilder;
 
         public QueryBasicTest()
         {
             _jsonSerializer = GetService<JsonSerializer>();
             _queryManager = GetService<QueryManager>();
             _queryBuilder = GetService<QueryBuilder>();
+            _queryDefinitionBuilder = GetService<QueryDefinitionBuilder>();
         }
 
         private const int basicId = 765;
@@ -42,7 +44,8 @@ namespace ToSic.Eav.DataSourceTests.Query
         {
             var appState = GetService<IAppStates>().Get(appId);
             var pipelineEntity = _queryManager.GetQueryEntity(queryId, appState);
-            return new QueryDefinition(pipelineEntity, appId, null);
+
+            return _queryDefinitionBuilder.Create(pipelineEntity, appId);
         }
 
 
@@ -96,7 +99,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         public void Query_Run_And_Run_Materialized()
         {
             var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
-            var query = _queryBuilder.GetDataSourceForTesting(qdef, false).Item1;
+            var query = _queryBuilder.GetDataSourceForTesting(qdef).Main;
             var countDef = query.ListForTests().Count();
             Assert.IsTrue(countDef > 0, "result > 0");
             Assert.AreEqual(basicCount, countDef);
@@ -105,8 +108,8 @@ namespace ToSic.Eav.DataSourceTests.Query
             var strQuery = ser.Serialize(qdef.Entity, 10);
             var eDef2 = ser.Deserialize(strQuery, true);
             // TODO: #42
-            var qdef2 = new QueryDefinition(eDef2, 0, null);
-            var query2 = _queryBuilder.GetDataSourceForTesting(qdef2, false).Item1;
+            var qdef2 = _queryDefinitionBuilder.Create(eDef2, 0);
+            var query2 = _queryBuilder.GetDataSourceForTesting(qdef2).Main;
             var countDef2 = query2.ListForTests().Count();
             Assert.AreEqual(countDef2, countDef, "countdefs should be same");
         }
