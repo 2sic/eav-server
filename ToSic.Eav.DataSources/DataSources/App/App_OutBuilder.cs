@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.DataSources.Caching.CacheInfo;
 using ToSic.Lib.Logging;
 
@@ -110,8 +111,8 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         private EntityTypeFilter BuildTypeStream(IDataSource upstreamDataSource, string typeName) => Log.Func($"..., ..., {typeName}", () =>
         {
-            var ds = _services.DataSourceFactory.Create<EntityTypeFilter>(appIdentity: this, source: upstreamDataSource,
-                configuration: Configuration.LookUpEngine);
+            var ds = _services.DataSourceFactory.Create<EntityTypeFilter>(source: upstreamDataSource,
+                configuration: new DataSourceConfiguration(appIdentity: this, lookUp: Configuration.LookUpEngine));
             ds.TypeName = typeName;
             ds.AddDebugInfo(Guid, null); // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
             return ds;

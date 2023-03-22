@@ -18,8 +18,7 @@ namespace ToSic.Eav.DataSources
         public TDataSource New(
             string noParamOrder = Parameters.Protector,
             IDataSource source = default,
-            IAppIdentity appIdentity = default,
-            IConfiguration configuration = default) =>
-            _dataSourceFactory.Value.Create<TDataSource>(source: source, appIdentity: appIdentity, configuration: configuration);
+            IDataSourceConfiguration configuration = default) =>
+            _dataSourceFactory.Value.Create<TDataSource>(source: source, configuration: configuration);
     }
 }

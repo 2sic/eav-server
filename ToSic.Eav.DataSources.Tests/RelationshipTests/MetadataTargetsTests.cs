@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources;
@@ -45,7 +46,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
         {
             var lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
 
-            var baseDs = DataSourceFactory.CreateDefault(AppIdentity, configuration: lookUpEngine);
+            var baseDs = DataSourceFactory.CreateDefault(new DataSourceConfiguration(appIdentity: AppIdentity, lookUp: lookUpEngine));
             var appDs = CreateDataSource<App>(baseDs);
 
             var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));

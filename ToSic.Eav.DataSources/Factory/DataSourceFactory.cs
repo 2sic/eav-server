@@ -5,7 +5,6 @@ using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
-using ToSic.Eav.Configuration;
 
 namespace ToSic.Eav.DataSources
 {
@@ -33,12 +32,11 @@ namespace ToSic.Eav.DataSources
         public IDataSource Create(
             Type type,
             string noParamOrder = Parameters.Protector,
-            IDataSource source = default, 
-            IAppIdentity appIdentity = default,
-            IConfiguration configuration = default) => Log.Func(() =>
+            IDataSource source = default,
+            IDataSourceConfiguration configuration = default) => Log.Func(() =>
         {
             var newDs = _serviceProvider.Build<IDataSource>(type, Log);
-            return newDs.Init(appIdentity: appIdentity, source: source, configuration: configuration);
+            return newDs.Init(source: source, configuration: configuration);
         });
 
 
@@ -51,16 +49,16 @@ namespace ToSic.Eav.DataSources
         /// Experimental 12.10
         /// </summary>
         /// <typeparam name="TDataSource"></typeparam>
-        /// <param name="upstream"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
         [PrivateApi("internal, experimental, only used in tests ATM")]
-        public TDataSource Create<TDataSource>(IDataStream upstream) where TDataSource : IDataSource
+        public TDataSource Create<TDataSource>(IDataStream source) where TDataSource : IDataSource
         {
-            if (upstream.Source == null)
+            if (source.Source == null)
                 throw new Exception("Unexpected source - stream without a real source. can't process; wip");
-            var source = upstream.Source;
-            var ds = Create<TDataSource>(appIdentity: source, configuration: source.Configuration.LookUpEngine);
-            ds.Attach(DataSourceConstants.StreamDefaultName, upstream);
+            var sourceDs = source.Source;
+            var ds = Create<TDataSource>(configuration: new DataSourceConfiguration(appIdentity: sourceDs, lookUp: sourceDs.Configuration.LookUpEngine));
+            ds.Attach(DataSourceConstants.StreamDefaultName, source);
             return ds;
         }
 
@@ -68,37 +66,40 @@ namespace ToSic.Eav.DataSources
         public TDataSource Create<TDataSource>(
             string noParamOrder = Parameters.Protector,
             IDataSource source = default,
-            IAppIdentity appIdentity = default,
-            IConfiguration configuration = default) where TDataSource : IDataSource => Log.Func(() =>
+            IDataSourceConfiguration configuration = default) where TDataSource : IDataSource => Log.Func(() =>
         {
-            if (source == null && appIdentity == null)
-                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(source)} and {nameof(appIdentity)} no not be null.");
-            if (source == null && configuration == null)
-                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(source)} and {nameof(configuration)} no not be null.");
+            if (source == null && configuration?.AppIdentity == null)
+                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(source)} and configuration.AppIdentity no not be null.");
+            if (source == null && configuration?.LookUp == null)
+                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(source)} and configuration.LookUp no not be null.");
 
             var newDs = _serviceProvider.Build<TDataSource>(Log);
-            return newDs.Init(appIdentity: appIdentity, source: source, configuration: configuration);
+            return newDs.Init(source: source, configuration: configuration);
         });
 
         #endregion
 
         #region Get Root Data Source with Publishing
-
+        
         /// <inheritdoc />
         public IDataSource CreateDefault(
-            IAppIdentity appIdentity,
-            string noParamOrder = Parameters.Protector,
-            bool? showDrafts = default, 
-            IConfiguration configuration = default) 
+            IDataSourceConfiguration configuration,
+            string noParamOrder = Parameters.Protector)
         {
-            var l = Log.Fn<IDataSource>($"#{appIdentity.Show()}, draft:{showDrafts}, config:{configuration != null}");
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+            var appIdentity = configuration.AppIdentity
+                              ?? throw new ArgumentNullException(nameof(IDataSourceConfiguration.AppIdentity));
+            var lookUp = configuration.LookUp;
+            var l = Log.Fn<IDataSource>($"#{appIdentity.Show()}, draft:{configuration.ShowDrafts}, lookUp:{lookUp != null}");
 
-            configuration = configuration ?? _lookupResolveLazy.Value.GetLookUpEngine(0);
-            var appRoot = Create<IAppRoot>(appIdentity: appIdentity, configuration: configuration);
+            configuration = lookUp != null 
+                ? configuration 
+                : new DataSourceConfiguration(configuration, lookUp: _lookupResolveLazy.Value.GetLookUpEngine(0));
+            var appRoot = Create<IAppRoot>(configuration: configuration);
             var publishingFilter = Create<PublishingFilter>(source: appRoot, configuration: configuration);
 
-            if (showDrafts != null)
-                publishingFilter.ShowDrafts = showDrafts;
+            if (configuration.ShowDrafts != null)
+                publishingFilter.ShowDrafts = configuration.ShowDrafts;
 
             return l.Return(publishingFilter, "ok");
         }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -89,7 +90,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
 
         protected RelationshipFilter BuildRelationshipFilter(string primaryType, ILookUpEngine config = null)
         {
-            var baseDs = DataSourceFactory.CreateDefault(RelationshipTestSpecs.AppIdentity, configuration: config);
+            var baseDs = DataSourceFactory.CreateDefault(new DataSourceConfiguration(appIdentity: RelationshipTestSpecs.AppIdentity, lookUp: config));
             var appDs = CreateDataSource<App>(baseDs);
 
             // micro tests to ensure we have the right app etc.

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 
@@ -52,7 +53,7 @@ namespace ToSic.Eav.DataSources
         {
             var appState = _appStates.Get(this);
             
-            var initialSource = _dataSourceFactory.CreateDefault(appIdentity: appState);
+            var initialSource = _dataSourceFactory.CreateDefault(new DataSourceConfiguration(appIdentity: appState));
 
             var merge = _mergeGenerator.New(source: initialSource);
             // 2dm 2023-01-22 #maybeSupportIncludeParentApps
@@ -60,7 +61,7 @@ namespace ToSic.Eav.DataSources
             var countRecursions = 0;
             while (parent?.AppState != null && countRecursions++ < 5)
             {
-                var next = _dataSourceFactory.CreateDefault(appIdentity: parent.AppState);
+                var next = _dataSourceFactory.CreateDefault(new DataSourceConfiguration(appIdentity: parent.AppState));
                 merge.In.Add("App" + parent.AppState.NameId, next.Out.First().Value);
                 parent = parent.AppState.ParentApp;
             }

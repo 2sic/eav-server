@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources.Queries
             try
             {
                 var app = _appStates.IdentityOfApp(appId);
-                var source = _dataSourceFactory.CreateDefault(appIdentity: app);
+                var source = _dataSourceFactory.CreateDefault(new DataSourceConfiguration(appIdentity: app));
                 var appEntities = source.List;
 
                 // use findRepo, as it uses the cache, which gives the list of all items
@@ -90,14 +90,14 @@ namespace ToSic.Eav.DataSources.Queries
 	        #region prepare shared / global value providers
             
             // centralizing building of the primary configuration template for each part
-            var templateConfig = new LookUpEngine(lookUpEngineToClone, Log);
+            var baseLookUp = new LookUpEngine(lookUpEngineToClone, Log);
 
             var showDrafts = _userPermissions.UserPermissions().UserMayEdit;
             if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
                 paramsLookup.Properties[QueryConstants.ParamsShowDraftsKey] = showDrafts.ToString();
 
-            templateConfig.Add(queryDef.ParamsLookUp);      // Add [params:...]
-            templateConfig.AddOverride(overrideLookUps);    // add override
+            baseLookUp.Add(queryDef.ParamsLookUp);      // Add [params:...]
+            baseLookUp.AddOverride(overrideLookUps);    // add override
 
             // 2023-03-13 2dm - #removedQueryPartShowDrafts - it's available on [Params:ShowDrafts] and I don't think every source needs it too
             // provide global settings for ShowDrafts, ATM just if showdrafts are to be used
@@ -109,8 +109,8 @@ namespace ToSic.Eav.DataSources.Queries
 			#region Load Query Entity and Query Parts
 
 			// tell the primary-out that it has this guid, for better debugging
-            var passThroughConfig = new LookUpEngine(templateConfig, Log);
-            IDataSource outTarget = _passThrough.New().Init(passThroughConfig);
+            var passThroughLookUp = new LookUpEngine(baseLookUp, Log);
+            IDataSource outTarget = _passThrough.New().Init(passThroughLookUp);
 			if (outTarget.Guid == Guid.Empty)
                 outTarget.AddDebugInfo(queryDef.Entity.EntityGuid, null);
 
@@ -137,9 +137,10 @@ namespace ToSic.Eav.DataSources.Queries
 	        {
 	            #region Init Configuration Provider
 
-	            var partConfig = new LookUpEngine(templateConfig, Log);
+	            var partLookUp = new LookUpEngine(baseLookUp, Log);
                 // add / set item part configuration
-	            partConfig.Add(new LookUpInQueryMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, dimensions));
+	            partLookUp.Add(new LookUpInQueryMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, dimensions));
+                var partConfig = new DataSourceConfiguration(lookUp: partLookUp, appIdentity: appIdentity);
 
                 // 2023-03-13 2dm - #removedQueryPartShowDrafts
                 // if show-draft in overridden, add that to the settings
@@ -149,8 +150,7 @@ namespace ToSic.Eav.DataSources.Queries
 
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
                 var dsType = dataQueryPart.DataSourceType;
-
-                var dataSource = _dataSourceFactory.Create(type: dsType, appIdentity: appIdentity, source: null, configuration: partConfig);
+                var dataSource = _dataSourceFactory.Create(type: dsType, configuration: partConfig);
                 try { dataSource.AddDebugInfo(dataQueryPart.Guid, dataQueryPart.Entity.GetBestTitle()); }
                 catch { /* ignore */ }
 

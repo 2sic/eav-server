@@ -1,49 +1,40 @@
 ﻿using System;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSources
 {
     internal static class DSHelpers
     {
-        public static T Init<T>(this T thisDs, IConfiguration configuration) where T : IDataSource
+        public static T Init<T>(this T thisDs, ILookUpEngine lookUpEngine) where T : IDataSource
         {
-            if (configuration != null && thisDs.Configuration is DataSourceConfigurationManager dsConfig)
-            {
-                var lookup = configuration.GetLookupEngineWip();
-                if (lookup != null) dsConfig.LookUpEngine = lookup;
-            }
+            if (lookUpEngine != null && thisDs.Configuration is DataSourceConfigurationManager dsConfig)
+                dsConfig.LookUpEngine = lookUpEngine;
             return thisDs;
         }
 
         /// <summary>
         /// Helper function (internal) to configure a new data source.
         /// </summary>
-        /// <param name="thisDs">The new data source</param>
-        /// <param name="appIdentity">app identifier</param>
+        /// <param name="newDataSource">The new data source</param>
         /// <param name="source">upstream data source - for auto-attaching</param>
-        /// <param name="configuration">optional configuration provider - for auto-attaching</param>
-        public static T Init<T>(this T thisDs,
-            IAppIdentity appIdentity,
-            IDataSource source = default,
-            IConfiguration configuration = default) where T : IDataSource
+        /// <param name="configuration">optional configuration provider</param>
+        public static T Init<T>(this T newDataSource, IDataSource source = default, IDataSourceConfiguration configuration = default) where T : IDataSource
         {
-            if (thisDs == null) throw new ArgumentNullException(nameof(thisDs));
+            if (newDataSource == null) throw new ArgumentNullException(nameof(newDataSource));
 
-            (thisDs as IAppIdentitySync)?.UpdateAppIdentity(appIdentity ?? source);
+            (newDataSource as IAppIdentitySync)?.UpdateAppIdentity(configuration?.AppIdentity ?? source);
 
-            if (source != null) thisDs.Attach(source);
+            if (source != null) newDataSource.Attach(source);
 
-            configuration = configuration ?? source?.Configuration?.LookUpEngine;
-            if (configuration != null && thisDs.Configuration is DataSourceConfigurationManager dsConfig)
+            var lookUp = configuration?.LookUp ?? source?.Configuration?.LookUpEngine;
+            if (lookUp != null && newDataSource.Configuration is DataSourceConfigurationManager dsConfig)
             {
-                var lookup = configuration.GetLookupEngineWip();
-                if (lookup != null) dsConfig.LookUpEngine = lookup;
-                var configValues = configuration.GetValuesWip();
+                dsConfig.LookUpEngine = lookUp;
+                var configValues = configuration?.Values;
                 if (configValues != null) dsConfig.AddMany(configValues);
             }
-            return thisDs;
+            return newDataSource;
         }
     }
 }

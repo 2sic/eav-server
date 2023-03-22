@@ -244,8 +244,10 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // 2022-01-04 2dm - new code, simplified
             // Get all entities except Attribute/Field Metadata, which is exported in a different way
-            var entities = DataSourceFactory.CreateDefault(appIdentity: runtime, showDrafts: false).List
-                    .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
+            var entities = DataSourceFactory
+                .CreateDefault(new DataSourceConfiguration(appIdentity: runtime, showDrafts: false))
+                .List
+                .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
 
             if (!includeContentGroups)
                 entities = entities.Where(p => p.Type.NameId != SexyContentContentGroupName).ToList();
