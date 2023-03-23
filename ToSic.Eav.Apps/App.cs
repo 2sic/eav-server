@@ -93,11 +93,8 @@ namespace ToSic.Eav.Apps
 
             // if zone is missing, try to find it - but always assume current context
             if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
-            {
-                Site = Services.ZoneMapper.SiteOfApp(appIdentity.AppId);
                 appIdentity = new AppIdentity(Site.ZoneId, appIdentity.AppId);
-            }
-
+            
             base.Init(appIdentity);
             Log.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
