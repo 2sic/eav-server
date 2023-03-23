@@ -10,8 +10,6 @@ namespace ToSic.Eav.DataSources
     /// </summary>
     public static class BreachExtensions
     {
-        //public static void BreachAutoLoadAllConfigMasks(this DataSource ds, Type type) => ds.AutoLoadAllConfigMasks(type);
-
         public static CustomDataSourceLight CustomDataSourceLight(CustomDataSourceAdvanced.MyServices services,
             IDataSource wrapper,
             string noParamOrder = Parameters.Protector,
@@ -30,6 +28,5 @@ namespace ToSic.Eav.DataSources
             string name = StreamDefaultName,
             Func<DataFactoryOptions> options = default) =>
             ds.ProvideOut(source, options: options, name: name);
-        
     }
 }

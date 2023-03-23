@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSources
         public string FilePath
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSources
         public string Delimiter
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
 
@@ -93,7 +93,7 @@ namespace ToSic.Eav.DataSources
         public string ContentType
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources
         public string IdColumnName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
 
@@ -114,7 +114,7 @@ namespace ToSic.Eav.DataSources
         public string TitleColumnName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
 

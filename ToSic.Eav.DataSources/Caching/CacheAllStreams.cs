@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSources.Caching
         public int CacheDurationInSeconds
 		{
             get => Configuration.GetThis(0);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSources.Caching
         public bool RefreshOnSourceRefresh
         {
             get => Configuration.GetThis(true);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace ToSic.Eav.DataSources.Caching
         public bool ReturnCacheWhileRefreshing
         {
             get => Configuration.GetThis(false);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
 

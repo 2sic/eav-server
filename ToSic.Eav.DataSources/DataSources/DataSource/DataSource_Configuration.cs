@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources
                                             $"Instead, use the source name of the variable {nameof(MyConfiguration)}.");
             // New v15.04 - only add if it has not already been set
             // This is to ensure that config masks don't overwrite data which 
-            Configuration.AddIfMissing(key, token);
+            ((DataSourceConfiguration)Configuration).AddIfMissing(key, token);
             if (cacheRelevant)
                 CacheRelevantConfigurations.Add(key);
         }

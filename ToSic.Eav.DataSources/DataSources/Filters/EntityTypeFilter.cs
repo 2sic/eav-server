@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources
 		public string TypeName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         // 2dm 2023-01-22 #maybeSupportIncludeParentApps

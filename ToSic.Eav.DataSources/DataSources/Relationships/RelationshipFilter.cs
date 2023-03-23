@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources
         public string Relationship
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace ToSic.Eav.DataSources
         public string Filter
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace ToSic.Eav.DataSources
 		public string CompareAttribute
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace ToSic.Eav.DataSources
         public string CompareMode
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value.ToLowerInvariant());
+            set => Configuration.SetThisObsolete(value.ToLowerInvariant());
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace ToSic.Eav.DataSources
 		public string Separator
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value.ToLowerInvariant());
+            set => Configuration.SetThisObsolete(value.ToLowerInvariant());
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace ToSic.Eav.DataSources
                 var valLower = value.ToLowerInvariant();
                 if (!_directionPossibleValues.Contains(valLower))
                     throw new Exception("Value '" + value + "'not allowed for ChildOrParent");
-                Configuration.SetThis(valLower);
+                Configuration.SetThisObsolete(valLower);
             }
         }
 

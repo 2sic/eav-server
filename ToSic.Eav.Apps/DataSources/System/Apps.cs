@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSources.Sys
 	    public int OfZoneId
 	    {
 	        get => Configuration.GetThis(ZoneId);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         #endregion

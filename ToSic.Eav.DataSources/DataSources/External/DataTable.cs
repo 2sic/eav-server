@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSources
         public string ContentType
 		{
 			get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
 		}
 
 		/// <summary>
@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources
 		public string TitleField
 		{
 			get => Configuration.GetThis(fallback: Attributes.EntityFieldTitle);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
 		}
 
 		/// <summary>
@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSources
 		public string EntityIdField
 		{
 			get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
 		}
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace ToSic.Eav.DataSources
 		public string ModifiedField
 		{
 			get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
 		}
         #endregion
 

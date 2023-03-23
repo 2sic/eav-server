@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources
         public string StreamName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         ///// <summary>

@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources
         public string Identifier
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources
         public string ParentReferenceField
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataSources
         public string NewChildrenField
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSources
         public string NewParentField
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         #endregion

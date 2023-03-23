@@ -47,7 +47,7 @@ namespace ToSic.Eav.DataSources
                 var ps = Configuration.GetThis(DefPageSize);
                 return ps > 0 ? ps : DefPageSize;
             }
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSources
                 var pn = Configuration.GetThis(DefPageNum);
                 return pn > 0 ? pn : DefPageNum;
             }
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
 		#endregion

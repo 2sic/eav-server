@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSources
         public string AttributeNames
 		{
 		    get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
         
         /// <summary>
@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources
         public string Mode
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
       
 

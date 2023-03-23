@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
         public string AttributeMap
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSources
         public bool KeepOtherAttributes
         {
             get => Configuration.GetThis(true);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace ToSic.Eav.DataSources
         public string TypeName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         #endregion

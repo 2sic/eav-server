@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources
             {
                 // kill any spaces in the string
                 var cleaned = Regex.Replace(value ?? "", @"\s+", "");
-                Configuration.SetThis(cleaned);
+                Configuration.SetThisObsolete(cleaned);
             }
         }
 

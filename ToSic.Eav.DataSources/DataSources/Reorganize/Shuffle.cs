@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources
 		public int Take
         {
             get => Configuration.GetThis(DefaultTakeAll);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
 

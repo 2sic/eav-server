@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources
 		public bool? ShowDrafts
 		{
 			get => Configuration.GetThis<bool?>(null);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 		#endregion
 

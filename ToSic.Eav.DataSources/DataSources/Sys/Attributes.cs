@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources.Sys
         public string ContentTypeName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
         
 		#endregion

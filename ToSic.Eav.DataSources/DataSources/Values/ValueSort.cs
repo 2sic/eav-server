@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources
 		public string Attributes
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
 		public string Directions
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSources
 		public string Languages
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 		#endregion
 

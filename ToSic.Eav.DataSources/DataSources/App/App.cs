@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetThis(NotConfigured);
             set
 			{
-                Configuration.SetThis(value);
+                Configuration.SetThisObsolete(value);
                 AppId = value;
 				RequiresRebuildOfOut = true;
 			}
@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetThis(NotConfigured);
             set
 			{
-                Configuration.SetThis(value);
+                Configuration.SetThisObsolete(value);
                 ZoneId = value;
 				RequiresRebuildOfOut = true;
 			}
@@ -80,7 +80,7 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetThis(false);
             set
             {
-                Configuration.SetThis(value);
+                Configuration.SetThisObsolete(value);
                 RequiresRebuildOfOut = true;
             }
         }

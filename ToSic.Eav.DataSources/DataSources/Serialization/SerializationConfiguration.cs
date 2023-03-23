@@ -46,33 +46,33 @@ namespace ToSic.Eav.DataSources
         /// Should the ID be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeId { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the AppId be included in serialization.
         /// Especially for scenarios where data is retrieved from multiple Apps
         /// </summary>
         [Configuration]
-        public string IncludeAppId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeAppId { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the AppId be included in serialization.
         /// Especially for scenarios where data is retrieved from multiple Apps
         /// </summary>
         [Configuration]
-        public string IncludeZoneId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeZoneId { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the GUID be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeGuid { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeGuid { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the default Title be included as "Title" in serialization
         /// </summary>
         [Configuration]
-        public string IncludeTitle { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeTitle { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         #endregion
 
@@ -82,13 +82,13 @@ namespace ToSic.Eav.DataSources
         /// Should the Modified date be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeModified { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeModified { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the Created date be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeCreated { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeCreated { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         #endregion
 
@@ -98,25 +98,25 @@ namespace ToSic.Eav.DataSources
         /// todo
         /// </summary>
         [Configuration]
-        public string RemoveNullValues { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string RemoveNullValues { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// todo
         /// </summary>
         [Configuration]
-        public string RemoveZeroValues { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string RemoveZeroValues { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// todo
         /// </summary>
         [Configuration(Field = RmvEmptyStringsKey)]
-        public string RemoveEmptyStrings { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string RemoveEmptyStrings { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// todo
         /// </summary>
         [Configuration(Field = RmvBooleanFalseKey)]
-        public string DropFalseValues { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string DropFalseValues { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         #endregion
 
@@ -126,19 +126,19 @@ namespace ToSic.Eav.DataSources
         /// Should the Metadata target/for information be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeMetadataFor { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeMetadataFor { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the Metadata target/for information be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeMetadataForId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeMetadataForId { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the Metadata target/for information be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeMetadataForType { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeMetadataForType { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
         #endregion
 
         #region Metadata
@@ -147,25 +147,25 @@ namespace ToSic.Eav.DataSources
         /// Should the Metadata ID be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeMetadata { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeMetadata { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the Metadata ID be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeMetadataId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeMetadataId { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the Metadata GUID be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeMetadataGuid { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeMetadataGuid { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the default Title of the Metadata be included as "Title" in serialization
         /// </summary>
         [Configuration]
-        public string IncludeMetadataTitle { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeMetadataTitle { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         #endregion
 
@@ -176,7 +176,7 @@ namespace ToSic.Eav.DataSources
         /// Should the Relationships be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeRelationships { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeRelationships { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the Relationships be included as CSV like "42,27,999".
@@ -184,25 +184,25 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         /// <remarks>WIP / adding in v15.03</remarks>
         [Configuration(Fallback = false)]
-        public string IncludeRelationshipsAsCsv { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeRelationshipsAsCsv { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the Relationship ID be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeRelationshipId { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeRelationshipId { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the Relationship GUID be included in serialization
         /// </summary>
         [Configuration]
-        public string IncludeRelationshipGuid { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeRelationshipGuid { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
 
         /// <summary>
         /// Should the default Title of the Relationship be included as "Title" in serialization
         /// </summary>
         [Configuration]
-        public string IncludeRelationshipTitle { get => Configuration.GetThis(); set => Configuration.SetThis(value); }
+        public string IncludeRelationshipTitle { get => Configuration.GetThis(); set => Configuration.SetThisObsolete(value); }
         #endregion
 
 

@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources
         public string FieldMap
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
         #endregion
 

@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources
         public override string FieldName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
         public override string ContentTypeName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         public Parents(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Parent")

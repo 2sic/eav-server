@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources
         public bool FilterDuplicates
         {
             get => Configuration.GetThis(true);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>

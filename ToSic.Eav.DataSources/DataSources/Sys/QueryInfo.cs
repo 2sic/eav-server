@@ -52,14 +52,14 @@ namespace ToSic.Eav.DataSources.Sys
         public string QueryName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         [Configuration(Fallback = StreamDefaultName)]
         public string StreamName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         #endregion

@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources.Sys
         public int OfAppId
         {
             get => Configuration.GetThis(AppId);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
 	    /// <summary>
@@ -66,7 +66,7 @@ namespace ToSic.Eav.DataSources.Sys
 	    public string Scope
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         [PrivateApi]

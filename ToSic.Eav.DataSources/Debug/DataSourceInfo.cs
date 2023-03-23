@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.Debug
         /// <summary>
         /// The resolved values used from the settings/config of the data source
         /// </summary>
-        public IDictionary<string, string> Configuration { get; }
+        public IReadOnlyDictionary<string, string> Configuration { get; }
 
         /// <summary>
         /// Error state

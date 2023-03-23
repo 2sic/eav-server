@@ -13,27 +13,27 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         public string GetThisString
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         [Configuration(Fallback = true)]
         public bool GetThisTrue
         {
             get => Configuration.GetThis(false);    // should return true because it was configured
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         [Configuration]
         public bool GetThisFalseDefault
         {
             get => Configuration.GetThis(false);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
         [Configuration(Fallback = false)]
         public bool GetThisFalseInitialized
         {
             get => Configuration.GetThis(false);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
     }
 }

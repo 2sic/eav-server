@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSources
         public override string ContentTypeName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
         public Metadata(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.MetaDt")
         {

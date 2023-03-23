@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
     /// the LookUp engine which will perform the token resolution
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice] 
-    public interface IDataSourceConfiguration: IGetAccessors<string>, ISetAccessorsGeneric
+    public interface IDataSourceConfiguration: IGetAccessors<string>
     {
         /// <summary>
         /// Get a configuration value for a specific property.
@@ -33,16 +33,6 @@ namespace ToSic.Eav.DataSources
         /// <returns>The configuration value or the fallback.</returns>
         /// <remarks>Added in v15.04</remarks>
         T GetThis<T>(T fallback, [CallerMemberName] string name = default);
-
-        /// <summary>
-        /// Set a configuration value for a specific property.
-        /// Just use `SetThis(value)` and the method name (which is the key) is added automatically by the compiler.
-        /// </summary>
-        /// <param name="value">The new value</param>
-        /// <param name="name">The configuration key. Do not set this; it's auto-added by the compiler.</param>
-        /// <remarks>Added in v15.04</remarks>
-        void SetThis<T>(T value, [CallerMemberName] string name = default);
-
 
         /// <summary>
         /// Tell us if the values have already been parsed or not.
@@ -69,15 +59,31 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// The values (and keys) used in the data source which owns this Configuration
         /// </summary>
-        IDictionary<string, string> Values { get; }
+        IReadOnlyDictionary<string, string> Values { get; }
 
         /// <summary>
         /// The internal look up engine which manages value sources and will resolve the tokens
         /// </summary>
         [PrivateApi]
         ILookUpEngine LookUpEngine { get; }
+    }
 
-        [PrivateApi]
-        void AddIfMissing(string name, string value);
+    [PrivateApi]
+    public static class DataSourceConfigurationObsoleteExtensions
+    {
+        /// <summary>
+        /// Set a configuration value for a specific property.
+        /// This is BAD practice, do not use this.
+        /// This is necessary for older DataSources which hat configuration setters.
+        /// We will not support that any more, do not use.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="name">The configuration key. Do not set this; it's auto-added by the compiler.</param>
+        /// <param name="config"></param>
+        /// <remarks>Added in v15.04</remarks>
+#pragma warning disable CS0618
+        internal static void SetThisObsolete<T>(this IDataSourceConfiguration config, T value, [CallerMemberName] string name = default)
+            => ((DataSourceConfiguration)config).SetThisObsolete(value, name);
+#pragma warning restore CS0618
     }
 }

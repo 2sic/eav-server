@@ -51,18 +51,19 @@ namespace ToSic.Eav.DataSources
         private const string ConfigNotFoundMessage = "Trying to get a configuration by name of {0} but it doesn't exist. Did you forget to add to ConfigMask?";
 
         public string GetThis([CallerMemberName] string name = default) => ParseToken(GetRaw(name));
-        public string GetRaw([CallerMemberName] string name = default) => Values.TryGetValue(name, out var result) 
+        public string GetRaw([CallerMemberName] string name = default) => _values.TryGetValue(name, out var result) 
             ? result
             : throw new ArgumentException(string.Format(ConfigNotFoundMessage, name));
 
         public T GetThis<T>(T fallback, [CallerMemberName] string name = default) => Get<T>(name, fallback: fallback);
 
         // ReSharper disable once AssignNullToNotNullAttribute
-        public void SetThis<T>(T value, [CallerMemberName] string name = default) => Values[name] = value?.ToString();
+        [Obsolete("This is necessary for older DataSources which hat configuration setters. We will not support that any more, do not use.")]
+        internal void SetThisObsolete<T>(T value, [CallerMemberName] string name = default) => _values[name] = value?.ToString();
 
         [PrivateApi]
-        public IDictionary<string, string> Values { get; internal set; } = new Dictionary<string, string>(InvariantCultureIgnoreCase);
-
+        public IReadOnlyDictionary<string, string> Values => _values as IReadOnlyDictionary<string, string>;
+        private IDictionary<string, string> _values = new Dictionary<string, string>(InvariantCultureIgnoreCase);
 
         public ILookUpEngine LookUpEngine { get; protected internal set; }
 
@@ -77,7 +78,7 @@ namespace ToSic.Eav.DataSources
         public void Parse()
         {
             if (IsParsed) return;
-            Values = Parse(Values);
+            _values = Parse(_values);
             IsParsed = true;
         }
 
@@ -130,18 +131,16 @@ namespace ToSic.Eav.DataSources
             Parse(name).ConvertOrFallback(fallback);
 
 
-        public void Set<TValue>(string name, TValue value) => Values[name] = value?.ToString();
-
-        public void AddIfMissing(string name, string value)
+        internal void AddIfMissing(string name, string value)
         {
-            if (Values.ContainsKey(name)) return;
-            Values[name] = value;
+            if (_values.ContainsKey(name)) return;
+            _values[name] = value;
         }
 
-        public void AddMany(IDictionary<string, string> values)
+        internal void AddMany(IDictionary<string, string> values)
         {
             if (values == null) return;
-            foreach (var pair in values) Values[pair.Key] = pair.Value;
+            foreach (var pair in values) _values[pair.Key] = pair.Value;
         }
     }
 }

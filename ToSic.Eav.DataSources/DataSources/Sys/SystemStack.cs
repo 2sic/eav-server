@@ -31,21 +31,21 @@ namespace ToSic.Eav.DataSources.Sys
         public string StackNames
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         [Configuration]
         public string Keys
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         [Configuration(Fallback = true)]
         public bool AddValues
         {
             get => Configuration.GetThis(true);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
 
