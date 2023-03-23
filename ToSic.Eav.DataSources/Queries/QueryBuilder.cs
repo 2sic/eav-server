@@ -67,7 +67,7 @@ namespace ToSic.Eav.DataSources.Queries
             try
             {
                 var app = _appStates.IdentityOfApp(appId);
-                var source = _dataSourceFactory.CreateDefault(new DataSourceConfiguration(appIdentity: app));
+                var source = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: app));
                 var appEntities = source.List;
 
                 // use findRepo, as it uses the cache, which gives the list of all items
@@ -140,7 +140,7 @@ namespace ToSic.Eav.DataSources.Queries
 	            var partLookUp = new LookUpEngine(baseLookUp, Log);
                 // add / set item part configuration
 	            partLookUp.Add(new LookUpInQueryMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, dimensions));
-                var partConfig = new DataSourceConfiguration(lookUp: partLookUp, appIdentity: appIdentity);
+                var partConfig = new DataSourceOptions(lookUp: partLookUp, appIdentity: appIdentity);
 
                 // 2023-03-13 2dm - #removedQueryPartShowDrafts
                 // if show-draft in overridden, add that to the settings
@@ -150,7 +150,7 @@ namespace ToSic.Eav.DataSources.Queries
 
                 // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
                 var dsType = dataQueryPart.DataSourceType;
-                var dataSource = _dataSourceFactory.Create(type: dsType, configuration: partConfig);
+                var dataSource = _dataSourceFactory.Create(type: dsType, options: partConfig);
                 try { dataSource.AddDebugInfo(dataQueryPart.Guid, dataQueryPart.Entity.GetBestTitle()); }
                 catch { /* ignore */ }
 

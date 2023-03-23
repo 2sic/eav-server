@@ -25,11 +25,11 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
         /// <param name="source">optional source to attach as `in` on the newly created data source. If provided, it can also provide `appIdentity` and `configSource`</param>
-        /// <param name="configuration">optional configuration</param>
+        /// <param name="options">optional configuration</param>
         /// <returns></returns>
         TDataSource New(
             string noParamOrder = Parameters.Protector,
             IDataSource source = default,
-            IDataSourceConfiguration configuration = default);
+            IDataSourceOptions options = default);
     }
 }

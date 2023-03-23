@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Configuration;
-using ToSic.Eav.LookUp;
-using ToSic.Lib.DI;
+﻿using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
@@ -18,7 +15,7 @@ namespace ToSic.Eav.DataSources
         public TDataSource New(
             string noParamOrder = Parameters.Protector,
             IDataSource source = default,
-            IDataSourceConfiguration configuration = default) =>
-            _dataSourceFactory.Value.Create<TDataSource>(source: source, configuration: configuration);
+            IDataSourceOptions options = default) =>
+            _dataSourceFactory.Value.Create<TDataSource>(source: source, options: options);
     }
 }

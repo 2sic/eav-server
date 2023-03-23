@@ -41,7 +41,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
         {
             if(lookUpEngine == null) lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
 
-            var baseDs = DataSourceFactory.CreateDefault(new DataSourceConfiguration(appIdentity: AppIdentity, lookUp: lookUpEngine));
+            var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: AppIdentity, lookUp: lookUpEngine));
             var appDs = CreateDataSource<App>(baseDs);
 
             var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));

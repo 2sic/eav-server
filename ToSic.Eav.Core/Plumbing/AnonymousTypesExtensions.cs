@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -23,6 +25,15 @@ namespace ToSic.Eav.Plumbing
                    && type.IsGenericType && type.Name.Contains("AnonymousType")
                    && (type.Name.StartsWith("<>") || type.Name.StartsWith("VB$"))
                    && type.Attributes.HasFlag(TypeAttributes.NotPublic);
+        }
+
+        // inspired by https://stackoverflow.com/questions/3481923/in-c-sharp-convert-anonymous-type-into-key-value-array
+        public static IDictionary<string, object> ObjectToDictionary(this object a)
+        {
+            var dict = a.GetType()
+                .GetProperties()
+                .ToImmutableDictionary(x => x.Name, x => x.GetValue(a, null));
+            return dict;
         }
 
         public static bool IsSimpleType(this Type type)

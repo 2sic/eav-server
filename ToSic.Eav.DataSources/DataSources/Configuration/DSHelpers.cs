@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Generics;
 using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSources
@@ -19,7 +20,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="newDataSource">The new data source</param>
         /// <param name="source">upstream data source - for auto-attaching</param>
         /// <param name="configuration">optional configuration provider</param>
-        public static T Init<T>(this T newDataSource, IDataSource source = default, IDataSourceConfiguration configuration = default) where T : IDataSource
+        public static T Init<T>(this T newDataSource, IDataSource source = default, IDataSourceOptions configuration = default) where T : IDataSource
         {
             if (newDataSource == null) throw new ArgumentNullException(nameof(newDataSource));
 
@@ -32,7 +33,7 @@ namespace ToSic.Eav.DataSources
             {
                 dsConfig.LookUpEngine = lookUp;
                 var configValues = configuration?.Values;
-                if (configValues != null) dsConfig.AddMany(configValues);
+                if (configValues != null) dsConfig.AddMany(configValues.ToEditable());
             }
             return newDataSource;
         }

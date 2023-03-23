@@ -54,7 +54,7 @@ namespace ToSic.Eav.Apps.Parts
 
         #region Data & Cache
 
-        public IDataSource Data => _data ?? (_data = Services.DataSourceFactory.CreateDefault(new DataSourceConfiguration(appIdentity: this, showDrafts: ShowDrafts)));
+        public IDataSource Data => _data ?? (_data = Services.DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: this, showDrafts: ShowDrafts)));
         private IDataSource _data;
         
 

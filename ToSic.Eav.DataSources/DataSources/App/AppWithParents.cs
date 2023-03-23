@@ -53,7 +53,7 @@ namespace ToSic.Eav.DataSources
         {
             var appState = _appStates.Get(this);
             
-            var initialSource = _dataSourceFactory.CreateDefault(new DataSourceConfiguration(appIdentity: appState));
+            var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appState));
 
             var merge = _mergeGenerator.New(source: initialSource);
             // 2dm 2023-01-22 #maybeSupportIncludeParentApps
@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSources
             var countRecursions = 0;
             while (parent?.AppState != null && countRecursions++ < 5)
             {
-                var next = _dataSourceFactory.CreateDefault(new DataSourceConfiguration(appIdentity: parent.AppState));
+                var next = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: parent.AppState));
                 merge.In.Add("App" + parent.AppState.NameId, next.Out.First().Value);
                 parent = parent.AppState.ParentApp;
             }
