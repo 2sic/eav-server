@@ -65,7 +65,7 @@ namespace ToSic.Eav.Persistence
 
             #region Step 2: clean up unwanted attributes from both lists
 
-            var origAttribsOrNull = hasOriginal ? null : _dataBuilder.Attribute.Mutable(original.Attributes);
+            var origAttribsOrNull = original == null ? null : _dataBuilder.Attribute.Mutable(original.Attributes);
             var newAttribs = _dataBuilder.Attribute.Mutable(update.Attributes);
 
             l.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribsOrNull?.Count}, newAtts⋮{newAttribs.Count}");
