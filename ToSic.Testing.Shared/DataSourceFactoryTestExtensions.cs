@@ -16,5 +16,14 @@ namespace ToSic.Testing.Shared
             ILookUpEngine configLookUp = default) where TDataSource : IDataSource
             => dsf.Create<TDataSource>(source: upstream, options: new DataSourceOptions(appIdentity: appIdentity, lookUp: configLookUp));
 
+        public static TDataSource TestCreateNew<TDataSource>(
+            this IDataSourceFactory dsf,
+            string noParamOrder = Parameters.Protector,
+            IDataSource upstream = default,
+            IAppIdentity appIdentity = default,
+            object options = default) where TDataSource : IDataSource
+            => dsf.Create<TDataSource>(source: upstream, options: new DataSourceOptions.Converter()
+                .Create(new DataSourceOptions(appIdentity: appIdentity, lookUp: new LookUpEngine(null)), options));
+
     }
 }

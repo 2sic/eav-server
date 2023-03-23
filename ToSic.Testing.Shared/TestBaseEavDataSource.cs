@@ -31,5 +31,9 @@ namespace ToSic.Testing.Shared
         {
             return DataSourceFactory.TestCreate<T>(appIdentity: new AppIdentity(0, 0), configLookUp: lookUpEngine ?? new LookUpEngine(Log));
         }
+        public T CreateDataSourceNew<T>(object options = default) where T : IDataSource
+        {
+            return DataSourceFactory.TestCreateNew<T>(appIdentity: new AppIdentity(0, 0), options: options);
+        }
     }
 }

@@ -54,6 +54,7 @@ namespace ToSic.Eav.DataSources
         [PrivateApi("internal use only - for labeling data sources in queries to show in debugging")]
         public string Label { get; private set; }
 
+        [PrivateApi]
         public void AddDebugInfo(Guid? guid, string label)
         {
             Guid = guid ?? Guid;
