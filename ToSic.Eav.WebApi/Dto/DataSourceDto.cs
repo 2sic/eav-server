@@ -32,17 +32,20 @@ namespace ToSic.Eav.DataSources.Catalog
 
         public string Errors { get; }
 
-        public DataSourceDto(DataSourceInfo dsInfo, ICollection<string> outNames)
+        private static readonly string[] StreamNamesIfError = { DataSourceConstants.StreamDefaultName };
+
+        public DataSourceDto(DataSourceInfo dsInfo, ICollection<string> outNameList)
         {
+            var noError = dsInfo.ErrorOrNull == null;
             var dsAttribute = dsInfo.VisualQuery;
-            Name = dsInfo.Type.Name; // will override further down if dsInfo is provided
+            Name = noError ? dsInfo.Type.Name : dsInfo.Name; // will override further down if dsInfo is provided
             Identifier = dsInfo.Name;
             if (dsAttribute == null) return;
             UiHint = dsAttribute.UiHint;
             PrimaryType = dsAttribute.Type.ToString();
             Icon = dsAttribute.Icon; // ?.Replace("_", "-"); // wip: rename "xxx_yyy" icons to "xxx-yyy" - must switch to base64 soon
             HelpLink = dsAttribute.HelpLink;
-            In = dsAttribute.In ?? Array.Empty<string>();
+            In = noError ? dsAttribute.In ?? Array.Empty<string>() : StreamNamesIfError;
             DynamicOut = dsAttribute.DynamicOut;
             DynamicIn = dsAttribute.DynamicIn;
             EnableConfig = dsAttribute.EnableConfig;
@@ -53,8 +56,9 @@ namespace ToSic.Eav.DataSources.Catalog
             Audience = (int)dsAttribute.Audience;
             IsGlobal = dsInfo.IsGlobal;
 
-            TypeNameForUi = dsInfo.Type.FullName;
-            Out = outNames;
+            // If we have a substituted error-DS, give it the inner name so connections work
+            TypeNameForUi = noError ? dsInfo.Type.FullName : dsInfo.Name;
+            Out = noError ? outNameList : StreamNamesIfError;
             Errors = dsInfo.ErrorOrNull?.Message;
 
             // WIP try to deprecate

@@ -34,7 +34,10 @@ namespace ToSic.Eav.DataSources
             var vq = new VisualQueryAttribute
             {
                 NameId = typeName,
-                Type = DataSourceType.System,
+                Type = type,
+                DynamicOut = true,
+                DynamicIn = true,
+                Icon = "warning",
             };
             return new DataSourceInfo(typeof(Error), isGlobal, typeName, vq, error);
         }

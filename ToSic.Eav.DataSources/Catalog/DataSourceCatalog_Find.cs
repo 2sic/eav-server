@@ -81,7 +81,7 @@ namespace ToSic.Eav.DataSources.Catalog
 
             var appList = Get(appId) ?? new List<DataSourceInfo>();
             var fromApp = onlyForVisualQuery
-                ? appList.Where(dsi => (dsi.VisualQuery?.NameId).HasValue())
+                ? appList.Where(dsi => (dsi.VisualQuery?.NameId).HasValue()).ToList()
                 : appList;
 
             return fromGlobal.Concat(fromApp);
