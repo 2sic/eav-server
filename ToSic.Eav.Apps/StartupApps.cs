@@ -119,7 +119,6 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
             services.TryAddTransient<IAppFileSystemLoader, FileSystemLoaderUnknown>();
             services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
-            services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();
 
             return services;
         }

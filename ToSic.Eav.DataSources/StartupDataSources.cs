@@ -38,7 +38,14 @@ namespace ToSic.Eav.DataSources
 
             services.TryAddTransient<ConfigurationDataLoader>();
 
-            
+            services.AddDataSourcesFallback();
+
+            return services;
+        }
+
+        public static IServiceCollection AddDataSourcesFallback(this IServiceCollection services)
+        {
+            services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();
 
             return services;
         }

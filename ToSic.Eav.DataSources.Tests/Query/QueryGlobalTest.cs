@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSourceTests.Query
 {
     [TestClass]
     [DeploymentItem("..\\..\\" + TestConfig.GlobalQueriesData, TestConfig.TestingPath)]
-    public class QueryGlobalTest: TestBaseEav
+    public class QueryGlobalTest: TestBaseDiEavFullAndDb
     {
         public QueryGlobalTest()
         {
@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         [TestMethod]
         public void ReviewGlobalZonesQuery()
         {
-            var queryName = $"{DataSourceConstants.SystemQueryPrefixPreV15}Zones";
+            var queryName = $"{DataSourceConstants.SystemQueryPrefix}Zones";
             var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, queryName);
             Assert.AreEqual(queryName, queryEnt.Value<string>("Name"), "should find zones");
 
