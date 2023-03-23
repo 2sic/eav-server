@@ -268,7 +268,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeEnIntoML_KeepLangs()
         {
-            var merged = _entitySaver.TestCreateMergedForSaving(ProductEntityMl, ProductEntityEn, _saveKeepExistingLangs);
+            var original = ProductEntityMl;
+            var update = ProductEntityEn;
+            var merged = _entitySaver.TestCreateMergedForSaving(original, update, _saveKeepExistingLangs);
 
             // check the titles as expected
             Assert.AreEqual(2, merged[Attributes.TitleNiceName].Values.Count(), "should have 2 titles with languages - EN and a shared DE+CH");

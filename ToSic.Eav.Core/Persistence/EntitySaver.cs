@@ -37,7 +37,6 @@ namespace ToSic.Eav.Persistence
             SaveOptions saveOptions,
             string noParamOrder = Eav.Parameters.Protector,
             int? newId = default,
-            //Guid? newGuid = default,
             IContentType newType = default,
             bool logDetails = true
         ) => Log.Func($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", enabled: logDetails, func: l =>
@@ -66,7 +65,7 @@ namespace ToSic.Eav.Persistence
 
             #region Step 2: clean up unwanted attributes from both lists
 
-            var origAttribsOrNull = _dataBuilder.Attribute.Mutable(original?.Attributes);
+            var origAttribsOrNull = hasOriginal ? null : _dataBuilder.Attribute.Mutable(original.Attributes);
             var newAttribs = _dataBuilder.Attribute.Mutable(update.Attributes);
 
             l.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribsOrNull?.Count}, newAtts⋮{newAttribs.Count}");
@@ -221,6 +220,7 @@ namespace ToSic.Eav.Persistence
             return valsWithLanguagesSorted;
         }
 
+
         /// <summary>
         /// Merge two attributes, preserving languages as necessary
         /// </summary>
@@ -230,44 +230,82 @@ namespace ToSic.Eav.Persistence
         /// <returns></returns>
         private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions) => Log.Func(() =>
         {
-            var values = ValuesOrderedForProcessing(original.Values, saveOptions)
-                .Select(orgVal =>
-                {
-                    var remainingLanguages = new List<ILanguage>();
-                    foreach (var valLang in orgVal.Languages) // first process master-languages, then read-only
-                    {
-                        // se if this language has already been set, in that case just leave it
-                        var valInResults =
-                            update.Values.FirstOrDefault(rv => rv.Languages.Any(rvl => rvl.Key == valLang.Key));
-                        if (valInResults == null)
-                            // special case: if the original set had named languages, and the new set has no language set (undefined = primary)
-                            // to detect this, we must check if we're on primary, and there may be a "undefined" language assignment
-                            if (!(valLang.Key == saveOptions.PrimaryLanguage &&
-                                  update.Values.Any(v => v.Languages?.Count() == 0)))
-                                remainingLanguages.Add(valLang);
-                    }
-
-                    // nothing found to keep...
-                    if (remainingLanguages.Count == 0) return null;
-
-                    // Add the value with the remaining languages / relationships
-                    // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
-                    //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
-                    //var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
-                    var val = _dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableList());
-                    return val;
-                })
-                .Where(val => val != null)
-                .ToImmutableList();
-
             // everything in the update will be kept, and optionally some stuff in the original may be preserved
-            var result = _dataBuilder.Attribute.CreateFrom(update, values);
+            var result = update.Values.ToList();
+            foreach (var orgVal in ValuesOrderedForProcessing(original.Values, saveOptions))
+            {
+                var remainingLanguages = new List<ILanguage>();
+                foreach (var valLang in orgVal.Languages) // first process master-languages, then read-only
+                {
+                    // se if this language has already been set, in that case just leave it
+                    var valInResults = result.FirstOrDefault(rv => rv.Languages.Any(rvl => rvl.Key == valLang.Key));
+                    if (valInResults == null)
+                        // special case: if the original set had named languages, and the new set has no language set (undefined = primary)
+                        // to detect this, we must check if we're on primary, and there may be a "undefined" language assignment
+                        if (!(valLang.Key == saveOptions.PrimaryLanguage && result.Any(v => v.Languages?.Count() == 0)))
+                            remainingLanguages.Add(valLang);
+                }
 
-            return result;
+                // nothing found to keep...
+                if (remainingLanguages.Count == 0) continue;
+
+                // Add the value with the remaining languages / relationships
+                // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
+                //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
+                //var languagesToUse = LanguageBuilder..Clone(remainingLanguages);
+                var val = _dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableList());
+                result.Add(val);
+            }
+
+            var final = _dataBuilder.Attribute.CreateFrom(update, result.ToImmutableList());
+            return final;
         });
 
-        private DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
-        private DimensionBuilder _langBuilder;
+        // 2023-03-23 2dm - this new more functional code didn't produce the same result, so disabling it for now. Tests not passing with this.
+        ///// <summary>
+        ///// Merge two attributes, preserving languages as necessary
+        ///// </summary>
+        ///// <param name="original"></param>
+        ///// <param name="update"></param>
+        ///// <param name="saveOptions"></param>
+        ///// <returns></returns>
+        //private IAttribute MergeAttributeNewNotWorkingProperly(IAttribute original, IAttribute update, SaveOptions saveOptions) => Log.Func(() =>
+        //{
+        //    var values = ValuesOrderedForProcessing(original.Values, saveOptions)
+        //        .Select(orgVal =>
+        //        {
+        //            var remainingLanguages = new List<ILanguage>();
+        //            foreach (var valLang in orgVal.Languages) // first process master-languages, then read-only
+        //            {
+        //                // se if this language has already been set, in that case just leave it
+        //                var valInResults =
+        //                    update.Values.FirstOrDefault(rv => rv.Languages.Any(rvl => rvl.Key == valLang.Key));
+        //                if (valInResults == null)
+        //                    // special case: if the original set had named languages, and the new set has no language set (undefined = primary)
+        //                    // to detect this, we must check if we're on primary, and there may be a "undefined" language assignment
+        //                    if (!(valLang.Key == saveOptions.PrimaryLanguage &&
+        //                          update.Values.Any(v => v.Languages?.Count() == 0)))
+        //                        remainingLanguages.Add(valLang);
+        //            }
+
+        //            // nothing found to keep...
+        //            if (remainingLanguages.Count == 0) return null;
+
+        //            // Add the value with the remaining languages / relationships
+        //            // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
+        //            //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
+        //            //var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
+        //            var val = _dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableList());
+        //            return val;
+        //        })
+        //        .Where(val => val != null)
+        //        .ToImmutableList();
+
+        //    // everything in the update will be kept, and optionally some stuff in the original may be preserved
+        //    var result = _dataBuilder.Attribute.CreateFrom(update, values);
+
+        //    return result;
+        //});
 
         private IDictionary<string, IAttribute> KeepOnlyKnownKeys(IDictionary<string, IAttribute> orig, List<string> keys) => Log.Func(() =>
         {
