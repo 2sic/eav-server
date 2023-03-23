@@ -156,5 +156,11 @@ namespace ToSic.Eav.Data
 
         #endregion
 
+        #region Get (new replacement for Value - more consistent API)
+
+
+
+        #endregion
+
     }
 }

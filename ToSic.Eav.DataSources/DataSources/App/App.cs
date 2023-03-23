@@ -71,19 +71,12 @@ namespace ToSic.Eav.DataSources
         /// We're still evaluating impact on performance, confusion of developers etc.
         /// </summary>
         /// <remarks>
-        /// Added in v15.04
+        /// * Added in v15.04
+        /// * Uses the[immutable convention](xref:NetCode.Conventions.Immutable).
         /// </remarks>
         [PrivateApi("WIP and not sure if this should ever become public")]
         [Configuration(Fallback = false)]
-        public bool WithAncestors
-        {
-            get => Configuration.GetThis(false);
-            set
-            {
-                Configuration.SetThisObsolete(value);
-                RequiresRebuildOfOut = true;
-            }
-        }
+        public bool WithAncestors => Configuration.GetThis(false);
 
         #endregion
 
