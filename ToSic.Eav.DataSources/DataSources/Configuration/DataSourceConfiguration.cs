@@ -12,7 +12,7 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.DataSources
 {
-    public class DataSourceConfigurationManager : ServiceBase<DataSourceConfigurationManager.MyServices>, IDataSourceConfigurationManager
+    public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.MyServices>, IDataSourceConfiguration
     {
         #region Dependencies - Must be in DI
 
@@ -33,11 +33,11 @@ namespace ToSic.Eav.DataSources
         #region Constructor (non DI)
 
         [PrivateApi]
-        public DataSourceConfigurationManager(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Config")
+        public DataSourceConfiguration(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Config")
         {
         }
 
-        internal DataSourceConfigurationManager Attach(DataSource ds)
+        internal DataSourceConfiguration Attach(DataSource ds)
         {
             DataSourceForIn = ds;
             return this;

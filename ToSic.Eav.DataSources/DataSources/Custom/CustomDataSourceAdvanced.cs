@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
             public IDataFactory DataFactory { get; }
 
             public MyServices(
-                DataSourceConfigurationManager configuration,
+                DataSourceConfiguration configuration,
                 LazySvc<DataSourceErrorHelper> errorHandler,
                 ConfigurationDataLoader configDataLoader,
                 IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader)

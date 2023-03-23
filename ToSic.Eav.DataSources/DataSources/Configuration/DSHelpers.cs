@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
     {
         public static T Init<T>(this T thisDs, ILookUpEngine lookUpEngine) where T : IDataSource
         {
-            if (lookUpEngine != null && thisDs.Configuration is DataSourceConfigurationManager dsConfig)
+            if (lookUpEngine != null && thisDs.Configuration is DataSourceConfiguration dsConfig)
                 dsConfig.LookUpEngine = lookUpEngine;
             return thisDs;
         }
@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources
             if (source != null) newDataSource.Attach(source);
 
             var lookUp = configuration?.LookUp ?? source?.Configuration?.LookUpEngine;
-            if (lookUp != null && newDataSource.Configuration is DataSourceConfigurationManager dsConfig)
+            if (lookUp != null && newDataSource.Configuration is DataSourceConfiguration dsConfig)
             {
                 dsConfig.LookUpEngine = lookUp;
                 var configValues = configuration?.Values;

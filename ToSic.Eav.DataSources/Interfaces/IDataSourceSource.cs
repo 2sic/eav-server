@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSources
         /// Keeps track of all values which the data source will need, and manages the LookUp engine
         /// which provides these values. 
         /// </summary>
-        IDataSourceConfigurationManager Configuration { get; }
+        IDataSourceConfiguration Configuration { get; }
 
         #endregion
 

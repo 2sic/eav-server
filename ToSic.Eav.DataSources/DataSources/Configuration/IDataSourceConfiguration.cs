@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources
     /// the LookUp engine which will perform the token resolution
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice] 
-    public interface IDataSourceConfigurationManager: IGetAccessors<string>, ISetAccessorsGeneric
+    public interface IDataSourceConfiguration: IGetAccessors<string>, ISetAccessorsGeneric
     {
         /// <summary>
         /// Get a configuration value for a specific property.
