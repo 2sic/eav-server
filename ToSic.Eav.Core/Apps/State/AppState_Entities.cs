@@ -50,7 +50,7 @@ namespace ToSic.Eav.Apps
             RemoveObsoleteDraft(newEntity, log);
             Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
             MapDraftToPublished(newEntity as Entity, publishedId, log);
-            _metadataManager.Register(newEntity);
+            _metadataManager.Register(newEntity, true);
 
             if (FirstLoadCompleted)
                 DynamicUpdatesCount++;
@@ -75,8 +75,18 @@ namespace ToSic.Eav.Apps
                 foreach (var id in repositoryIds)
                 {
                     // Remove any drafts that are related if necessary
-                    //if (Index.TryGetValue(id, out var oldEntity)) 
-                    //    RemoveObsoleteDraft(oldEntity, log);
+                    if (Index.TryGetValue(id, out var oldEntity))
+                    {
+                        // RemoveObsoleteDraft(oldEntity, log);
+
+                        // Removes the entity from list
+                        _metadataManager.Register(oldEntity, false);
+
+                        // Removes reference to draft entity from published
+                        if (oldEntity.GetPublished() is Entity publishEntity) 
+                            publishEntity.DraftEntity = null;
+                    }
+
                     Index.Remove(id);
 
                     if (log) Log.A($"removed entity {id}");

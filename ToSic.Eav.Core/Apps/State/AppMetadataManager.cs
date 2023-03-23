@@ -70,22 +70,23 @@ namespace ToSic.Eav.Apps
         /// This ensures that any request for metadata would include this entity, if it's metadata
         /// </summary>
         /// <param name="entity"></param>
-        internal void Register(IEntity entity)
+        /// <param name="add">false - removes entity from list</param>
+        internal void Register(IEntity entity, bool add)
         {
             var md = entity.MetadataFor;
             if (!md.IsMetadata) return;
 
             // Try guid first. Note that an item can be assigned to both a guid, string and an int if necessary, though not commonly used
             if (md.KeyGuid.HasValue)
-                AddToMetaDic(_guid, md.TargetType, md.KeyGuid.Value, entity);
+                AddToMetaDic(_guid, md.TargetType, md.KeyGuid.Value, entity, add);
             if (md.KeyNumber.HasValue)
-                AddToMetaDic(_number, md.TargetType, md.KeyNumber.Value, entity);
+                AddToMetaDic(_number, md.TargetType, md.KeyNumber.Value, entity, add);
             if (!string.IsNullOrEmpty(md.KeyString))
-                AddToMetaDic(_string, md.TargetType, md.KeyString, entity);
+                AddToMetaDic(_string, md.TargetType, md.KeyString, entity, add);
         }
 
         
-        private static void AddToMetaDic<T>(IDictionary<int, Dictionary<T, List<IEntity>>> metadataIndex, int mdTargetType, T mdValue, IEntity newEntity)
+        private static void AddToMetaDic<T>(IDictionary<int, Dictionary<T, List<IEntity>>> metadataIndex, int mdTargetType, T mdValue, IEntity entity, bool add)
         {
             // Get or create the metadata index on this targetType
             if (!metadataIndex.TryGetValue(mdTargetType, out var indexOfType))
@@ -95,12 +96,13 @@ namespace ToSic.Eav.Apps
             var list = indexOfType.ContainsKey(mdValue) ? indexOfType[mdValue] : indexOfType[mdValue] = new List<IEntity>();
 
             // in case it was already in this index, remove first
-            var found = list.One(newEntity.EntityId);
+            var found = list.One(entity.EntityId);
             if (found != null)
                 list.Remove(found);
 
             // Now all containers must exist, add this item
-            list.Add(newEntity);
+            if (add) 
+                list.Add(entity);
         }
 
         /// <inheritdoc />
