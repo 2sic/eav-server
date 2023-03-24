@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSources.Debug
 
         public List<OutDto> Out;
 
-        public Connections Connections { get; set; }
+        public DataSourceConnections Connections { get; set; }
 
         public DataSourceInfo(IDataSource ds)
         {

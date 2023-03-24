@@ -11,13 +11,13 @@ namespace ToSic.Eav.DataSources
     public class ConnectionStream: IDataStream, IWrapper<IDataStream>
     {
 
-        public ConnectionStream(Connection connection, DataSourceErrorHelper errorHandler = null)
+        public ConnectionStream(DataSourceConnection connection, DataSourceErrorHelper errorHandler = null)
         {
             Connection = connection;
             _errorHandler = errorHandler;
         }
 
-        public Connection Connection;
+        public DataSourceConnection Connection;
         private readonly DataSourceErrorHelper _errorHandler;
 
         private IDataStream LoadStream()

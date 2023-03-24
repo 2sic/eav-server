@@ -4,8 +4,8 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
-    [PrivateApi("Experimental new connections between data sources")]
-    public class Connection
+    [PrivateApi]
+    public class DataSourceConnection
     {
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
         public IDataSource DataSource;
@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources
 
         #endregion
 
-        public Connection(IDataStream sourceStream, IDataSourceTarget target, string targetStream)
+        public DataSourceConnection(IDataStream sourceStream, IDataSourceTarget target, string targetStream)
         {
             DirectlyAttachedStream = sourceStream;
             DataSource = sourceStream.Source;
@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        public Connection(IDataSource source, string sourceStream, IDataSourceTarget target, string targetStream)
+        public DataSourceConnection(IDataSource source, string sourceStream, IDataSourceTarget target, string targetStream)
         {
             DataSource = source;
             DataTarget = target;

@@ -5,19 +5,19 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
-    [PrivateApi("Experimental")]
-    public class Connections
+    [PrivateApi]
+    public class DataSourceConnections
     {
-        public List<Connection> In = new List<Connection>();
-        public List<Connection> Out = new List<Connection>();
+        public List<DataSourceConnection> In = new List<DataSourceConnection>();
+        public List<DataSourceConnection> Out = new List<DataSourceConnection>();
 
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
         public DataSource Parent { get; }
 
         
-        public Connections(DataSource parent) => Parent = parent;
+        public DataSourceConnections(DataSource parent) => Parent = parent;
 
-        public void AddIn(Connection connection)
+        public void AddIn(DataSourceConnection connection)
         {
             // Check if a connection was already added?
             var existing = In.FirstOrDefault(item => item.SourceStream == connection.SourceStream);

@@ -12,8 +12,8 @@ namespace ToSic.Eav.DataSources
         #region Connections
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice]
-        internal Connections Connections => _connections ?? (_connections = new Connections(this));
-        private Connections _connections;
+        internal DataSourceConnections Connections => _connections ?? (_connections = new DataSourceConnections(this));
+        private DataSourceConnections _connections;
 
         #endregion
 
@@ -91,14 +91,14 @@ namespace ToSic.Eav.DataSources
         /// <inheritdoc />
         [PublicApi]
         public void Attach(string streamName, IDataSource dataSource, string sourceName = DataSourceConstants.StreamDefaultName) 
-            => Attach(new Connection(dataSource, sourceName, this, streamName));
+            => Attach(new DataSourceConnection(dataSource, sourceName, this, streamName));
 
         /// <inheritdoc />
         [PublicApi]
         public void Attach(string streamName, IDataStream dataStream) 
-            => Attach(new Connection(dataStream, this, streamName));
+            => Attach(new DataSourceConnection(dataStream, this, streamName));
 
-        private void Attach(Connection connection)
+        private void Attach(DataSourceConnection connection)
         {
             In[connection.TargetStream] = new ConnectionStream(connection, Error);
             Connections.AddIn(connection);
