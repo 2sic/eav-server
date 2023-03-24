@@ -28,26 +28,13 @@ namespace ToSic.Eav.DataSources.Sys
         #region Configuration
 
         [Configuration]
-        public string StackNames
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public string StackNames => Configuration.GetThis();
 
         [Configuration]
-        public string Keys
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public string Keys => Configuration.GetThis();
 
         [Configuration(Fallback = true)]
-        public bool AddValues
-        {
-            get => Configuration.GetThis(true);
-            set => Configuration.SetThisObsolete(value);
-        }
-
+        public bool AddValues => Configuration.GetThis(true);
 
         #endregion
 
