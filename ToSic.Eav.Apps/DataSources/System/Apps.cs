@@ -18,6 +18,10 @@ namespace ToSic.Eav.DataSources.Sys
     /// <summary>
     /// A DataSource that gets all Apps of a zone.
     /// </summary>
+    /// <remarks>
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
+    /// * note that the above change is actually a breaking change, but since this is such an advanced DataSource, we assume it's not used in dynamic code.
+    /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "Apps",
@@ -49,11 +53,7 @@ namespace ToSic.Eav.DataSources.Sys
 	    /// The attribute whose value will be filtered
 	    /// </summary>
 	    [Configuration(Field = ZoneIdField)]
-	    public int OfZoneId
-	    {
-	        get => Configuration.GetThis(ZoneId);
-            set => Configuration.SetThisObsolete(value);
-        }
+	    public int OfZoneId => Configuration.GetThis(ZoneId);
 
         #endregion
 

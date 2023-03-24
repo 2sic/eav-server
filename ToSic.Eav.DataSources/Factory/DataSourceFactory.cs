@@ -44,20 +44,20 @@ namespace ToSic.Eav.DataSources
 
         #region GetDataSource Typed
 
-
         /// <summary>
         /// Experimental 12.10
         /// </summary>
         /// <typeparam name="TDataSource"></typeparam>
         /// <param name="source"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
         [PrivateApi("internal, experimental, only used in tests ATM")]
-        public TDataSource Create<TDataSource>(IDataStream source) where TDataSource : IDataSource
+        public TDataSource Create<TDataSource>(IDataStream source, IDataSourceOptions options = default) where TDataSource : IDataSource
         {
             if (source.Source == null)
                 throw new Exception("Unexpected source - stream without a real source. can't process; wip");
             var sourceDs = source.Source;
-            var ds = Create<TDataSource>(options: new DataSourceOptions(appIdentity: sourceDs, lookUp: sourceDs.Configuration.LookUpEngine));
+            var ds = Create<TDataSource>(options: new DataSourceOptions.Converter().Create(new DataSourceOptions(appIdentity: sourceDs, lookUp: sourceDs.Configuration.LookUpEngine), options));
             ds.Attach(DataSourceConstants.StreamDefaultName, source);
             return ds;
         }

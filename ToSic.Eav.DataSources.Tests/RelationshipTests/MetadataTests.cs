@@ -46,9 +46,13 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
 
             var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));
 
-            var childDs = CreateDataSource<DataSources.Metadata>(inStream);
+            var dsParams = new Dictionary<string, object>();
             if (typeName != null)
-                childDs.ContentTypeName = typeName;
+                dsParams["ContentTypeName"] = typeName;
+
+            var childDs = CreateDataSource<DataSources.Metadata>(inStream, dsParams);
+            //if (typeName != null)
+            //    childDs.ContentTypeName = typeName;
 
             return childDs;
         }

@@ -14,7 +14,8 @@ namespace ToSic.Eav.DataSources
     /// Remodels multi-language values in own fields (like NameDe, NameEn) to single multi-language fields like Name
     /// </summary>
     /// <remarks>
-    /// New in v11.20
+    /// * New in v11.20
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
     /// </remarks>
     [VisualQuery(
         NameId = "f390e460-46ff-4a6e-883f-f50fdeb363ee",
@@ -40,11 +41,8 @@ namespace ToSic.Eav.DataSources
         /// Contains the field map which configures how fields should be connected.
         /// </summary>
         [Configuration]
-        public string FieldMap
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public string FieldMap => Configuration.GetThis();
+
         #endregion
 
         /// <summary>

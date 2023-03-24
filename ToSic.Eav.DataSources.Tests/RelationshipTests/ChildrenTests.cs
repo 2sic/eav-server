@@ -12,8 +12,12 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
         [TestMethod]
         public void PersonsAllWithoutFieldReturnAllCompanies()
         {
-            var cl = PrepareDs(Person, null, Company);
-            cl.FilterDuplicates = false;
+            var cl = PrepareDsWithOptions(Person, null, optionsForLastDs: new
+            {
+                FieldName = Company,
+                FilterDuplicates = false
+            });
+            //cl.FilterDuplicates = false;
             Assert.AreEqual(3, cl.ListForTests().Count());
         }
 
@@ -49,10 +53,9 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
         [TestMethod]
         public void InButNoFieldNameReturnLotsOfChildrenFilterDups()
         {
-            var unfiltered = PrepareDs();
+            var unfiltered = PrepareDsWithOptions(optionsForLastDs: new { FilterDuplicates = false });
             var filterDups = PrepareDs();
-            unfiltered.FilterDuplicates = false;
-            
+
             Trace.WriteLine("Unfiltered Count: " + unfiltered.ListForTests().Count());
             Trace.WriteLine("Filtered Count: " + filterDups.ListForTests().Count());
 

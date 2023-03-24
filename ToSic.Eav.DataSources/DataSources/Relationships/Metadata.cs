@@ -12,7 +12,8 @@ namespace ToSic.Eav.DataSources
     /// Get Metadata (metadata Entities) of the Entities coming into this DataSource
     /// </summary>
     /// <remarks>
-    /// Added in v12.10
+    /// * Added in v12.10
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
     /// </remarks>
     [VisualQuery(
         NiceName = "Metadata",
@@ -32,11 +33,8 @@ namespace ToSic.Eav.DataSources
         /// Optional Type Name restriction to only get **Metadata** of this Content Type.
         /// </summary>
         [Configuration]
-        public override string ContentTypeName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public override string ContentTypeName => Configuration.GetThis();
+
         public Metadata(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.MetaDt")
         {
         }

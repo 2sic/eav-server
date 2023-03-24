@@ -16,6 +16,9 @@ namespace ToSic.Eav.DataSources.Sys
     /// <summary>
     /// A DataSource that returns the attributes of a content-type
     /// </summary>
+    /// <remarks>
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
+    /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "Attributes of Type",
@@ -40,11 +43,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// The content-type name
         /// </summary>
         [Configuration(Fallback = TryToUseInStream)]
-        public string ContentTypeName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public string ContentTypeName => Configuration.GetThis();
         
 		#endregion
 

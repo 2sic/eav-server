@@ -10,7 +10,8 @@ namespace ToSic.Eav.DataSources
     /// Get Parent Entities (parent-relationships) of the Entities coming into this DataSource
     /// </summary>
     /// <remarks>
-    /// Added in v12.10
+    /// * Added in v12.10
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
     /// </remarks>
     [VisualQuery(
         NiceName = "Parents",
@@ -31,11 +32,7 @@ namespace ToSic.Eav.DataSources
         ///
         /// Example: If a person is referenced by books as both `Author` and `Illustrator` then leaving this empty will get both relationships, but specifying `Author` will only get this person if it's the author. 
         /// </summary>
-        public override string FieldName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public override string FieldName => Configuration.GetThis();
 
         /// <summary>
         /// Name of the content-type to get.
@@ -43,11 +40,7 @@ namespace ToSic.Eav.DataSources
         ///
         /// Example: If a person is referenced by books (as author) as by companies) as employee, then you may want to only find companies referencing this book. 
         /// </summary>
-        public override string ContentTypeName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public override string ContentTypeName => Configuration.GetThis();
 
         public Parents(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Parent")
         {

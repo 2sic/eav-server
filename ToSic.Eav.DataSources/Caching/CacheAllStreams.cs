@@ -6,13 +6,16 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources.Caching
 {
-	/// <summary>
-	/// Special DataSource which automatically caches everything it's given.
-	/// It's Used to optimize queries, so that heavier calculations don't need to be repeated if another request with the same signature is used. <br/>
-	/// Internally it asks all up-stream DataSources what factors would determine their caching.
-	/// So if part of the supplying DataSources would have a changed parameter (like a different filter), it will still run the full query and cache the results again. 
-	/// </summary>
-
+    /// <summary>
+    /// Special DataSource which automatically caches everything it's given.
+    /// It's Used to optimize queries, so that heavier calculations don't need to be repeated if another request with the same signature is used. <br/>
+    /// Internally it asks all up-stream DataSources what factors would determine their caching.
+    /// So if part of the supplying DataSources would have a changed parameter (like a different filter), it will still run the full query and cache the results again. 
+    /// </summary>
+    /// <remarks>
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
+    /// * note that the above change is actually a breaking change, but since this is such an advanced DataSource, we assume it's not used in dynamic code.
+    /// </remarks>
     [VisualQuery(
         NiceName = "Cache Streams",
         UiHint = "Cache all streams based on some rules",
@@ -37,31 +40,19 @@ namespace ToSic.Eav.DataSources.Caching
 		/// Default is `0` - meaning fall back to 1 day
 		/// </summary>
 		[Configuration(Fallback = 0)]
-        public int CacheDurationInSeconds
-		{
-            get => Configuration.GetThis(0);
-            set => Configuration.SetThisObsolete(value);
-        }
+        public int CacheDurationInSeconds => Configuration.GetThis(0);
 
         /// <summary>
         /// If a source-refresh should trigger a cache rebuild
         /// </summary>
         [Configuration(Fallback = true)]
-        public bool RefreshOnSourceRefresh
-        {
-            get => Configuration.GetThis(true);
-            set => Configuration.SetThisObsolete(value);
-        }
+        public bool RefreshOnSourceRefresh => Configuration.GetThis(true);
 
         /// <summary>
         /// Perform a cache rebuild async. 
         /// </summary>
         [Configuration(Fallback = false)]
-        public bool ReturnCacheWhileRefreshing
-        {
-            get => Configuration.GetThis(false);
-            set => Configuration.SetThisObsolete(value);
-        }
+        public bool ReturnCacheWhileRefreshing => Configuration.GetThis(false);
 
 
 		private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase);

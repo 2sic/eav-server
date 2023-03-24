@@ -11,7 +11,9 @@ namespace ToSic.Eav.DataSources
     /// Tell it where/how the relationships are mapped, and it will create Entities that have navigable relationships for this.
     /// </summary>
     /// <remarks>
-    /// New in v11.20
+    /// * New in v11.20
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
+    /// * note that the above change is actually a breaking change, but since this is such an advanced DataSource, we assume it's not used in dynamic code.
     /// </remarks>
     [VisualQuery(
         NameId = "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
@@ -40,41 +42,25 @@ namespace ToSic.Eav.DataSources
         /// Currently only allows "EntityId" and "EntityGuid"
         /// </summary>
         [Configuration(Field = "ParentIdentifierAttribute", Fallback = Attributes.EntityFieldId)]
-        public string Identifier
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public string Identifier => Configuration.GetThis();
 
         /// <summary>
         /// The property on a child which contains the parent ID
         /// </summary>
         [Configuration(Field = "ChildParentAttribute", Fallback = "ParentId")]
-        public string ParentReferenceField
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public string ParentReferenceField => Configuration.GetThis();
 
         /// <summary>
         /// The name of the new field on the parent, which will reference the children
         /// </summary>
         [Configuration(Field = "TargetChildrenAttribute", Fallback = "Children")]
-        public string NewChildrenField
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public string NewChildrenField => Configuration.GetThis();
 
         /// <summary>
         /// Name of the new field on a child, which will reference the parent. 
         /// </summary>
         [Configuration(Field = "TargetParentAttribute", Fallback = "Parent")]
-        public string NewParentField
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public string NewParentField => Configuration.GetThis();
 
         #endregion
 

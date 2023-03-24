@@ -19,6 +19,9 @@ namespace ToSic.Eav.DataSources.Sys
     /// For example, it says how many out-streams are available and what fields can be used on each stream. <br/>
     /// This is used in fields which let you pick a query, stream and field from that stream.
     /// </summary>
+    /// <remarks>
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
+    /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "DataSources",
@@ -49,18 +52,10 @@ namespace ToSic.Eav.DataSources.Sys
         /// The content-type name
         /// </summary>
         [Configuration(Fallback = DefQuery)]
-        public string QueryName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public string QueryName => Configuration.GetThis();
 
         [Configuration(Fallback = StreamDefaultName)]
-        public string StreamName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public string StreamName => Configuration.GetThis();
 
         #endregion
 

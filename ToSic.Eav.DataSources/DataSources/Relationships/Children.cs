@@ -10,7 +10,8 @@ namespace ToSic.Eav.DataSources
     /// Get Children Entities (child-relationships) of the Entities coming into this DataSource
     /// </summary>
     /// <remarks>
-    /// Added in v12.10
+    /// * Added in v12.10
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
     /// </remarks>
     [VisualQuery(
         NiceName = "Children",
@@ -30,11 +31,7 @@ namespace ToSic.Eav.DataSources
         /// Name of the field pointing to the children.
         /// If left blank, will use get all children.
         /// </summary>
-        public override string FieldName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public override string FieldName => Configuration.GetThis();
 
         /// <summary>
         /// Name of the content-type to get. 
@@ -42,11 +39,7 @@ namespace ToSic.Eav.DataSources
         ///
         /// Can usually be left empty (recommended).
         /// </summary>
-        public override string ContentTypeName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public override string ContentTypeName => Configuration.GetThis();
 
         public Children(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Child")
         {

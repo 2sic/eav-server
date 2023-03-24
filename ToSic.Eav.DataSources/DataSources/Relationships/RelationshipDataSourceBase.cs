@@ -18,23 +18,19 @@ namespace ToSic.Eav.DataSources
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
         /// </summary>
         [Configuration]
-        public abstract string FieldName { get; set; }
+        public abstract string FieldName { get; }
 
         /// <summary>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
         /// </summary>
         [Configuration]
-        public abstract string ContentTypeName { get; set; }
+        public abstract string ContentTypeName { get; }
 
         /// <summary>
         /// Will filter duplicate hits from the result.
         /// </summary>
         [Configuration(Fallback = true)]
-        public bool FilterDuplicates
-        {
-            get => Configuration.GetThis(true);
-            set => Configuration.SetThisObsolete(value);
-        }
+        public bool FilterDuplicates => Configuration.GetThis(true);
 
         /// <summary>
         /// Constructor

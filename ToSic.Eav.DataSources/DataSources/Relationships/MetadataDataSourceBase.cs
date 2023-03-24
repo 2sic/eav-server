@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources
         /// <remarks>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
         /// </remarks>
-        public abstract string ContentTypeName { get; set; }
+        public abstract string ContentTypeName { get; }
 
 
         /// <summary>

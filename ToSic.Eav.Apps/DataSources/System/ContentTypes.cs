@@ -18,6 +18,10 @@ namespace ToSic.Eav.DataSources.Sys
     /// <summary>
     /// A DataSource that all content-types of an app.
     /// </summary>
+    /// <remarks>
+    /// * New in v11.20
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
+    /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "Content Types",
@@ -50,11 +54,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// The app id
         /// </summary>
         [Configuration(Field = AppIdKey)]
-        public int OfAppId
-        {
-            get => Configuration.GetThis(AppId);
-            set => Configuration.SetThisObsolete(value);
-        }
+        public int OfAppId => Configuration.GetThis(AppId);
 
 	    /// <summary>
 	    /// The scope to get the content types of - normally it's only the default scope
@@ -63,19 +63,11 @@ namespace ToSic.Eav.DataSources.Sys
 	    /// * Renamed to `Scope` in v15, previously was called `OfScope`
 	    /// </remarks>
 	    [Configuration(Fallback = "Default")]
-	    public string Scope
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+	    public string Scope => Configuration.GetThis();
 
         [PrivateApi]
         [Obsolete("Do not use anymore, use Scope instead - only left in for compatibility. Probably remove v17 or something")]
-	    public string OfScope
-        {
-            get => Scope;
-            set => Scope = value;
-        }
+	    public string OfScope => Scope;
 
         #endregion
 

@@ -15,7 +15,8 @@ namespace ToSic.Eav.DataSources
     /// Get Target Entities (metadata targets) of the Entities coming into this DataSource
     /// </summary>
     /// <remarks>
-    /// Added in v12.10
+    /// * Added in v12.10
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
     /// </remarks>
     [VisualQuery(
         NiceName = "Metadata Targets",
@@ -35,11 +36,7 @@ namespace ToSic.Eav.DataSources
         /// Optional TypeName restrictions to only get **Targets** of this Content Type.
         /// </summary>
         [Configuration]
-        public override string ContentTypeName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThisObsolete(value);
-        }
+        public override string ContentTypeName => Configuration.GetThis();
 
         /// <summary>
         /// 
@@ -48,11 +45,8 @@ namespace ToSic.Eav.DataSources
         /// Defaults to true
         /// </remarks>
         [Configuration(Fallback = true)]
-        public bool FilterDuplicates
-        {
-            get => Configuration.GetThis(true);
-            set => Configuration.SetThisObsolete(value);
-        }
+        public bool FilterDuplicates => Configuration.GetThis(true);
+
         public MetadataTargets(IAppStates appStates, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
         {
             _appStates = appStates;
