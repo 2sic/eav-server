@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using ToSic.Eav.Conventions;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
 
@@ -12,7 +11,7 @@ namespace ToSic.Eav.DataSources
     /// the LookUp engine which will perform the token resolution
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice] 
-    public interface IDataSourceConfiguration: IGetAccessors<string>
+    public interface IDataSourceConfiguration
     {
         /// <summary>
         /// Get a configuration value for a specific property.
@@ -66,6 +65,18 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         [PrivateApi]
         ILookUpEngine LookUpEngine { get; }
+
+        #region Getters - new v15.04
+
+        string Get(string name);
+
+        TValue Get<TValue>(string name);
+
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        TValue Get<TValue>(string name, string noParamOrder = Eav.Parameters.Protector, TValue fallback = default);
+
+
+        #endregion
     }
 
     [PrivateApi]
