@@ -36,9 +36,25 @@ namespace ToSic.Sxc.Apps.Paths
         /// <remarks>Added v13.01</remarks>
         string PhysicalPathShared { get; }
 
+        /// <summary>
+        /// Path relative to the website root.
+        /// In DNN this is usually the same as the url-path.
+        /// In Oqtane it's very different. 
+        /// </summary>
+        /// <remarks>
+        /// * Made public v15.06 but existed previously
+        /// </remarks>
         [PrivateApi("not public, not sure if we should surface this")]
         string RelativePath { get; }
 
+        /// <summary>
+        /// Path of the shared App relative to the website root.
+        /// In DNN this is usually the same as the url-path.
+        /// In Oqtane it's very different. 
+        /// </summary>
+        /// <remarks>
+        /// * Made public v15.06 but existed previously
+        /// </remarks>
         [PrivateApi("not public, not sure if we should surface this")]
         string RelativePathShared { get; }
     }
