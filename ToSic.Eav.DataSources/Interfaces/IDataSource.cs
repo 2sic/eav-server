@@ -7,8 +7,8 @@ namespace ToSic.Eav.DataSources
 	/// All DataSource objects are based on this.
 	/// It is based on both the <see cref="IDataSourceSource"/> and <see cref="IDataSourceTarget"/>
 	/// </summary>
-	[PublicApi_Stable_ForUseInYourCode]
-	public interface IDataSource: IDataSourceSource, IDataSourceTarget
+	[PublicApi]
+	public interface IDataSource: IDataSourceSource, IDataSourceTarget, IDataSourceConnection
     {
     }
 

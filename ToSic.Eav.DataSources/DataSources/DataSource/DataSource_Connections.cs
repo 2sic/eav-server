@@ -75,6 +75,18 @@ namespace ToSic.Eav.DataSources
                 Attach(dataStream.Key, dataSource, dataStream.Key);
         }
 
+        public void Connect(IDataSourceConnection connections)
+        {
+            if (connections.SourceStreamName == DataSourceConstants.AllStreams)
+                Attach(connections.DataSource);
+            else
+            {
+                throw new ArgumentException($"The value '{connections.SourceStreamName}' is not yet allowed",
+                    nameof(connections));
+            }
+        }
+
+
 
         /// <inheritdoc />
         [PublicApi]

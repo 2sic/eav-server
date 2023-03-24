@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources
         /// <param name="newDataSource">The new data source</param>
         /// <param name="source">upstream data source - for auto-attaching</param>
         /// <param name="configuration">optional configuration provider</param>
-        public static T Init<T>(this T newDataSource, IDataSource source = default, IDataSourceOptions configuration = default) where T : IDataSource
+        public static T Init<T>(this T newDataSource, IDataSource source, IDataSourceOptions configuration/*, IDataSourceConnection connections*/) where T : IDataSource
         {
             if (newDataSource == null) throw new ArgumentNullException(nameof(newDataSource));
 

@@ -26,7 +26,7 @@ namespace ToSic.Testing.Shared
         public T CreateDataSource<T>(IDataSource upstream) where T: IDataSource => DataSourceFactory.TestCreate<T>(upstream: upstream);
 
         public T CreateDataSource<T>(IDataStream upstream, object options = default) where T : IDataSource 
-            => ((DataSourceFactory)DataSourceFactory).Create<T>(source: upstream, new DataSourceOptions.Converter().Convert(options, false, false));
+            => ((DataSourceFactory)DataSourceFactory).Create<T>(stream: upstream, new DataSourceOptions.Converter().Convert(options, false, false));
 
         public T CreateDataSource<T>(ILookUpEngine lookUpEngine = default) where T : IDataSource
         {

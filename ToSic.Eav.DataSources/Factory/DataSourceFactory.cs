@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources
             IDataSourceOptions options = default) => Log.Func(() =>
         {
             var newDs = _serviceProvider.Build<IDataSource>(type, Log);
-            return newDs.Init(source: source, configuration: options);
+            return newDs.Init(source: source, configuration: options/*, connections: source*/);
         });
 
 
@@ -45,20 +45,20 @@ namespace ToSic.Eav.DataSources
         #region GetDataSource Typed
 
         /// <summary>
-        /// Experimental 12.10
+        /// Experimental 12.10+
         /// </summary>
         /// <typeparam name="TDataSource"></typeparam>
-        /// <param name="source"></param>
+        /// <param name="stream"></param>
         /// <param name="options"></param>
         /// <returns></returns>
         [PrivateApi("internal, experimental, only used in tests ATM")]
-        public TDataSource Create<TDataSource>(IDataStream source, IDataSourceOptions options = default) where TDataSource : IDataSource
+        public TDataSource Create<TDataSource>(IDataStream stream, IDataSourceOptions options = default) where TDataSource : IDataSource
         {
-            if (source.Source == null)
+            if (stream.Source == null)
                 throw new Exception("Unexpected source - stream without a real source. can't process; wip");
-            var sourceDs = source.Source;
+            var sourceDs = stream.Source;
             var ds = Create<TDataSource>(options: new DataSourceOptions.Converter().Create(new DataSourceOptions(appIdentity: sourceDs, lookUp: sourceDs.Configuration.LookUpEngine), options));
-            ds.Attach(DataSourceConstants.StreamDefaultName, source);
+            ds.Attach(DataSourceConstants.StreamDefaultName, stream);
             return ds;
         }
 
@@ -74,7 +74,7 @@ namespace ToSic.Eav.DataSources
                 throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(source)} and configuration.LookUp no not be null.");
 
             var newDs = _serviceProvider.Build<TDataSource>(Log);
-            return newDs.Init(source: source, configuration: options);
+            return newDs.Init(source: source, configuration: options/*, connections: source*/);
         });
 
         #endregion

@@ -37,6 +37,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public const string StreamDefaultName = "Default";
 
+        [PrivateApi] internal const string AllStreams = "***";
 
         /// <summary>
         /// Very common stream name for fallback streams.
