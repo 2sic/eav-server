@@ -141,6 +141,22 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public T Value<T>(string field) => Entity.Value<T>(field);
 
+        /// <inheritdoc />
+        public object Get(string name) => Entity.Get(name);
+
+        /// <inheritdoc />
+        public object Get(string name, string noParamOrder = Parameters.Protector, string language = default,
+            string[] languages = default) =>
+            Entity.Get(name, noParamOrder, language, languages);
+
+        /// <inheritdoc />
+        public TValue Get<TValue>(string name) => Entity.Get<TValue>(name);
+
+        /// <inheritdoc />
+        public TValue Get<TValue>(string name, string noParamOrder = Parameters.Protector, TValue fallback = default,
+            string language = default, string[] languages = default) =>
+            Entity.Get(name, noParamOrder, fallback, language, languages);
+
 
         [PrivateApi("Internal")]
         public virtual PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)

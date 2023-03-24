@@ -158,6 +158,20 @@ namespace ToSic.Eav.Data
 
         #region Get (new replacement for Value - more consistent API)
 
+        [PrivateApi("wip 15.06 - not yet public/documented")]
+        object Get(string name);
+
+        [PrivateApi("wip 15.06 - not yet public/documented")]
+        object Get(string name, string noParamOrder = Eav.Parameters.Protector, string language = default, string[] languages = default);
+
+
+        [PrivateApi("wip 15.06 - not yet public/documented")]
+        TValue Get<TValue>(string name);
+
+        [PrivateApi("wip 15.06 - not yet public/documented")]
+        TValue Get<TValue>(string name, string noParamOrder = Eav.Parameters.Protector, TValue fallback = default,
+            string language = default, string[] languages = default);
+
 
 
         #endregion
