@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.Linking;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
 {
-	/// <summary>
-	/// Represents a data source that can be the recipient of Data.
-	/// This basically means it has an In <see cref="IDataStream"/>
-	/// </summary>
-	/// <remarks>
-	/// New in v15.04 as it replaces the old `IDataTarget` because of confusing names.
-	/// </remarks>
-	[PublicApi]
+    /// <summary>
+    /// Represents a data source that can be the recipient of Data.
+    /// This basically means it has an In <see cref="IDataStream"/>
+    /// </summary>
+    /// <remarks>
+    /// New in v15.04 as it replaces the old `IDataTarget` because of confusing names.
+    /// </remarks>
+    [PublicApi]
 	public interface IDataSourceTarget: IDataSourceShared, 
 #pragma warning disable CS0618
         IDataTarget
@@ -45,7 +46,7 @@ namespace ToSic.Eav.DataSources
         void Attach(string streamName, IDataStream dataStream);
 
         [PrivateApi]
-        void Connect(IDataSourceConnection connections);
+        void Connect(IDataSourceLinkInfo connections);
 
         /// <summary>
         /// Get a specific Stream from In.

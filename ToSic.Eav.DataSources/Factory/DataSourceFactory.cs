@@ -5,6 +5,7 @@ using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
+using ToSic.Eav.DataSources.Linking;
 
 namespace ToSic.Eav.DataSources
 {
@@ -36,7 +37,7 @@ namespace ToSic.Eav.DataSources
             IDataSourceOptions options = default) => Log.Func(() =>
         {
             var newDs = _serviceProvider.Build<IDataSource>(type, Log);
-            return newDs.Init(source: source, configuration: options/*, connections: source*/);
+            return newDs.Init(/*source: source,*/ configuration: options, links: source);
         });
 
 
@@ -65,16 +66,17 @@ namespace ToSic.Eav.DataSources
         /// <inheritdoc />
         public TDataSource Create<TDataSource>(
             string noParamOrder = Parameters.Protector,
-            IDataSource source = default,
+            IDataSourceLink links = default,
             IDataSourceOptions options = default) where TDataSource : IDataSource => Log.Func(() =>
         {
-            if (source == null && options?.AppIdentity == null)
-                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(source)} and configuration.AppIdentity no not be null.");
-            if (source == null && options?.LookUp == null)
-                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(source)} and configuration.LookUp no not be null.");
+            var primarySource = links?.Link?.DataSource;
+            if (primarySource == null && options?.AppIdentity == null)
+                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(links)} and configuration.AppIdentity no not be null.");
+            if (primarySource == null && options?.LookUp == null)
+                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(links)} and configuration.LookUp no not be null.");
 
             var newDs = _serviceProvider.Build<TDataSource>(Log);
-            return newDs.Init(source: source, configuration: options/*, connections: source*/);
+            return newDs.Init(/*source: source,*/ configuration: options, links: links);
         });
 
         #endregion
@@ -94,7 +96,7 @@ namespace ToSic.Eav.DataSources
                 ? options 
                 : new DataSourceOptions(options, lookUp: _lookupResolveLazy.Value.GetLookUpEngine(0));
             var appRoot = Create<IAppRoot>(options: options);
-            var publishingFilter = Create<PublishingFilter>(source: appRoot, options: options);
+            var publishingFilter = Create<PublishingFilter>(links: appRoot, options: options);
 
             if (options.ShowDrafts != null)
                 publishingFilter.ShowDrafts = options.ShowDrafts;

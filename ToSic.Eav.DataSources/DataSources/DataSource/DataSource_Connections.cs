@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.Linking;
 using ToSic.Lib.Documentation;
 using static System.StringComparer;
 
@@ -75,15 +76,14 @@ namespace ToSic.Eav.DataSources
                 Attach(dataStream.Key, dataSource, dataStream.Key);
         }
 
-        public void Connect(IDataSourceConnection connections)
+        public void Connect(IDataSourceLinkInfo connections)
         {
-            if (connections.SourceStreamName == DataSourceConstants.AllStreams)
-                Attach(connections.DataSource);
-            else
-            {
-                throw new ArgumentException($"The value '{connections.SourceStreamName}' is not yet allowed",
-                    nameof(connections));
-            }
+            var list = connections.Flatten();
+            foreach (var link in list)
+                if (link.Stream != null)
+                    Attach(link.InName, link.Stream);
+                else
+                    Attach(link.InName, link.DataSource, link.OutName);
         }
 
 

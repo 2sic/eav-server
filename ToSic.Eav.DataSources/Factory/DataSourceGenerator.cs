@@ -16,6 +16,6 @@ namespace ToSic.Eav.DataSources
             string noParamOrder = Parameters.Protector,
             IDataSource source = default,
             IDataSourceOptions options = default) =>
-            _dataSourceFactory.Value.Create<TDataSource>(source: source, options: options);
+            _dataSourceFactory.Value.Create<TDataSource>(links: source, options: options);
     }
 }

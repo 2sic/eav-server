@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.DataSources.Linking;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
@@ -38,12 +39,12 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         /// <typeparam name="TDataSource">The type of the data source to be created.</typeparam>
         /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-        /// <param name="source">optional source to attach as `in` on the newly created data source. It can also provide `AppIdentity` and `LookUp`</param>
+        /// <param name="links">optional source to attach as `in` on the newly created data source. It can also provide `AppIdentity` and `LookUp`</param>
         /// <param name="options">optional configuration lookup if needed</param>
         /// <returns></returns>
         TDataSource Create<TDataSource>(
             string noParamOrder = Parameters.Protector,
-            IDataSource source = default,
+            IDataSourceLink links = default,
             IDataSourceOptions options = default) where TDataSource : IDataSource;
 
         /// <summary>
