@@ -1,14 +1,25 @@
-﻿namespace ToSic.Eav.DataSources.Linking
+﻿using System.Collections.Generic;
+using ToSic.Lib.Documentation;
+
+namespace ToSic.Eav.DataSources.Linking
 {
     /// <summary>
-    /// This interface marks objects which can provide links to DataSources.
-    /// In most cases, the link references the data source itself.
-    ///
-    /// The returned link will point to one or more DataSources, and can be extended to contain more links.
-    /// This is important to connect DataSources together.
+    /// WIP interface to create one or many sources which can be attached when creating a new sources
     /// </summary>
-    public interface IDataSourceLink
+    public interface IDataSourceLink : IDataSourceLinkable
     {
-        IDataSourceLinkInfo Link { get; }
+        IDataSource DataSource { get; }
+        string OutName { get; }
+        string InName { get; }
+        IDataStream Stream { get; }
+
+        IEnumerable<IDataSourceLink> More { get; }
+
+        IDataSourceLink Rename(string name = default, string outName = default, string inName = default);
+
+        IDataSourceLink Add(params IDataSourceLinkable[] more);
+
+        [PrivateApi]
+        IEnumerable<IDataSourceLink> Flatten(int recursion = 0);
     }
 }

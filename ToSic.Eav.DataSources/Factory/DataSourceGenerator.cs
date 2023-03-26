@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.DI;
+﻿using ToSic.Eav.DataSources.Linking;
+using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources
@@ -12,10 +13,7 @@ namespace ToSic.Eav.DataSources
             _dataSourceFactory = dataSourceFactory;
         }
 
-        public TDataSource New(
-            string noParamOrder = Parameters.Protector,
-            IDataSource source = default,
-            IDataSourceOptions options = default) =>
-            _dataSourceFactory.Value.Create<TDataSource>(links: source, options: options);
+        public TDataSource New(IDataSourceLinkable attach = default, IDataSourceOptions options = default) =>
+            _dataSourceFactory.Value.Create<TDataSource>(attach: attach, options: options);
     }
 }

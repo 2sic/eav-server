@@ -4,16 +4,16 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSources.Linking
 {
-    public class DataSourceLinkInfo : IDataSourceLinkInfo
+    public class DataSourceLink : IDataSourceLink
     {
-        public DataSourceLinkInfo(IDataSourceLinkInfo original,
+        public DataSourceLink(IDataSourceLink original,
             string noParamOrder = Parameters.Protector,
             IDataSource dataSource = default,
             IDataStream stream = default,
             string name = default,
             string outName = default,
             string inName = default,
-            IEnumerable<IDataSourceLinkInfo> more = default)
+            IEnumerable<IDataSourceLink> more = default)
         {
             More = more ?? original?.More;
             DataSource = dataSource ?? original?.DataSource;
@@ -25,35 +25,35 @@ namespace ToSic.Eav.DataSources.Linking
         public string OutName { get; }
         public string InName { get; }
         public IDataStream Stream { get; }
-        public IEnumerable<IDataSourceLinkInfo> More { get; }
-        public IDataSourceLinkInfo Rename(string name = default, string outName = default, string inName = default) =>
+        public IEnumerable<IDataSourceLink> More { get; }
+        public IDataSourceLink Rename(string name = default, string outName = default, string inName = default) =>
             // Check if no names provided
-            !$"{name}{outName}{inName}".HasValue() ? this : new DataSourceLinkInfo(this, name: name, outName: outName, inName: inName);
+            !$"{name}{outName}{inName}".HasValue() ? this : new DataSourceLink(this, name: name, outName: outName, inName: inName);
 
-        public IDataSourceLinkInfo Add(params IDataSourceLink[] more)
+        public IDataSourceLink Add(params IDataSourceLinkable[] more)
         {
             if (more.SafeNone()) return this;
-            var newMore = more.Select(m => m.Link);
+            var newMore = more.Select(m => m.Links);
 
             // Note: it's important that if we add more sources, 
             // they are added _below_ the current source.
             // This ensures that the main / outer source is the primary
             // which will also provide AppId, Lookups etc.
-            if (More.SafeNone()) return new DataSourceLinkInfo(this, more: newMore);
+            if (More.SafeNone()) return new DataSourceLink(this, more: newMore);
 
             // Current has more and new has more, must merge
-            return more.SafeNone() ? this : new DataSourceLinkInfo(this, more: newMore.Concat(More));
+            return more.SafeNone() ? this : new DataSourceLink(this, more: newMore.Concat(More));
         }
 
-        public IEnumerable<IDataSourceLinkInfo> Flatten(int recursion = 0)
+        public IEnumerable<IDataSourceLink> Flatten(int recursion = 0)
         {
-            var list = Enumerable.Empty<IDataSourceLinkInfo>();
-            if (recursion > 10) return Enumerable.Empty<IDataSourceLinkInfo>();
+            var list = Enumerable.Empty<IDataSourceLink>();
+            if (recursion > 10) return Enumerable.Empty<IDataSourceLink>();
             list = list.Concat(new[] { this });
             if (More.SafeAny()) list = list.Concat(More.SelectMany(m => m.Flatten(recursion + 1)));
             return list;
         }
 
-        public IDataSourceLinkInfo Link => this;
+        public IDataSourceLink Links => this;
     }
 }

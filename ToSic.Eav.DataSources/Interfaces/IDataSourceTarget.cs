@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
         void Attach(string streamName, IDataStream dataStream);
 
         [PrivateApi]
-        void Connect(IDataSourceLinkInfo connections);
+        void Connect(IDataSourceLink connections);
 
         /// <summary>
         /// Get a specific Stream from In.

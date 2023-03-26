@@ -19,23 +19,23 @@ namespace ToSic.Eav.DataSources
         /// Helper function (internal) to configure a new data source.
         /// </summary>
         /// <param name="newDataSource">The new data source</param>
-        /// <param name="source">upstream data source - for auto-attaching</param>
-        /// <param name="configuration">optional configuration provider</param>
-        public static T Init<T>(this T newDataSource, /*IDataSource source,*/ IDataSourceOptions configuration, IDataSourceLink links) where T : IDataSource
+        /// <param name="attach"></param>
+        /// <param name="options">optional configuration provider</param>
+        public static T Init<T>(this T newDataSource, IDataSourceLinkable attach, IDataSourceOptions options) where T : IDataSource
         {
             if (newDataSource == null) throw new ArgumentNullException(nameof(newDataSource));
 
-            var mainUpstream = links?.Link?.DataSource;
-            (newDataSource as IAppIdentitySync)?.UpdateAppIdentity(configuration?.AppIdentity ?? mainUpstream);
+            var mainUpstream = attach?.Links?.DataSource;
+            (newDataSource as IAppIdentitySync)?.UpdateAppIdentity(options?.AppIdentity ?? mainUpstream);
 
             //if (source != null) newDataSource.Attach(source);
-            if (links?.Link != null) newDataSource.Connect(links.Link);
+            if (attach?.Links != null) newDataSource.Connect(attach.Links);
 
-            var lookUp = configuration?.LookUp ?? mainUpstream?.Configuration?.LookUpEngine;
+            var lookUp = options?.LookUp ?? mainUpstream?.Configuration?.LookUpEngine;
             if (lookUp != null && newDataSource.Configuration is DataSourceConfiguration dsConfig)
             {
                 dsConfig.LookUpEngine = lookUp;
-                var configValues = configuration?.Values;
+                var configValues = options?.Values;
                 if (configValues != null) dsConfig.AddMany(configValues.ToEditable());
             }
             return newDataSource;

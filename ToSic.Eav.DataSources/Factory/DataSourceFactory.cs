@@ -30,14 +30,10 @@ namespace ToSic.Eav.DataSources
         #region GetDataSource
 
         /// <inheritdoc />
-        public IDataSource Create(
-            Type type,
-            string noParamOrder = Parameters.Protector,
-            IDataSource source = default,
-            IDataSourceOptions options = default) => Log.Func(() =>
+        public IDataSource Create(Type type, IDataSourceLinkable attach = default, IDataSourceOptions options = default) => Log.Func(() =>
         {
             var newDs = _serviceProvider.Build<IDataSource>(type, Log);
-            return newDs.Init(/*source: source,*/ configuration: options, links: source);
+            return newDs.Init(attach: attach, options: options);
         });
 
 
@@ -64,19 +60,16 @@ namespace ToSic.Eav.DataSources
         }
 
         /// <inheritdoc />
-        public TDataSource Create<TDataSource>(
-            string noParamOrder = Parameters.Protector,
-            IDataSourceLink links = default,
-            IDataSourceOptions options = default) where TDataSource : IDataSource => Log.Func(() =>
+        public TDataSource Create<TDataSource>(IDataSourceLinkable attach = default, IDataSourceOptions options = default) where TDataSource : IDataSource => Log.Func(() =>
         {
-            var primarySource = links?.Link?.DataSource;
+            var primarySource = attach?.Links?.DataSource;
             if (primarySource == null && options?.AppIdentity == null)
-                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(links)} and configuration.AppIdentity no not be null.");
+                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.AppIdentity no not be null.");
             if (primarySource == null && options?.LookUp == null)
-                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(links)} and configuration.LookUp no not be null.");
+                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.LookUp no not be null.");
 
             var newDs = _serviceProvider.Build<TDataSource>(Log);
-            return newDs.Init(/*source: source,*/ configuration: options, links: links);
+            return newDs.Init(attach: attach, options: options);
         });
 
         #endregion
@@ -96,7 +89,7 @@ namespace ToSic.Eav.DataSources
                 ? options 
                 : new DataSourceOptions(options, lookUp: _lookupResolveLazy.Value.GetLookUpEngine(0));
             var appRoot = Create<IAppRoot>(options: options);
-            var publishingFilter = Create<PublishingFilter>(links: appRoot, options: options);
+            var publishingFilter = Create<PublishingFilter>(attach: appRoot, options: options);
 
             if (options.ShowDrafts != null)
                 publishingFilter.ShowDrafts = options.ShowDrafts;
