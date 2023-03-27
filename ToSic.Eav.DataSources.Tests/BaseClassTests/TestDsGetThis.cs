@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.DataSource;
 
 namespace ToSic.Eav.DataSourceTests.BaseClassTests
 {
