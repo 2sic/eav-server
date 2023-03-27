@@ -197,7 +197,7 @@ namespace ToSic.Eav.DataSources
             var tokenizer = TokenReplace.Tokenizer;
 
             // Before we process the Select-Command, we must get it (by default it's just a token!)
-	        if (SelectCommand.StartsWith("[" + MyConfiguration, InvariantCultureIgnoreCase))
+	        if (SelectCommand.StartsWith("[" + DataSourceConstants.MyConfigurationSourceName, InvariantCultureIgnoreCase))
 	        {
 	            var tempList = Configuration.LookUpEngine.LookUp(
                     new Dictionary<string, string> { { "one", SelectCommand } },

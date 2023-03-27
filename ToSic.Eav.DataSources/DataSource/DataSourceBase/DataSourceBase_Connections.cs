@@ -76,6 +76,7 @@ namespace ToSic.Eav.DataSource
                 Attach(dataStream.Key, dataSource, dataStream.Key);
         }
 
+        [PrivateApi]
         public void Connect(IDataSourceLink connections)
         {
             var list = connections.Flatten();

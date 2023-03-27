@@ -13,13 +13,13 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         public void ConfigMaskClassic()
         {
             var ds = GetDs();
-            ds.ConfigMask("Something", $"[{ToSic.Eav.DataSource.DataSourceBase.MyConfiguration}:Test]");
+            ds.ConfigMask("Something", $"[{ToSic.Eav.DataSource.DataSourceConstants.MyConfigurationSourceName}:Test]");
             var ccc = ds.CacheRelevantConfigurations.FirstOrDefault();
             AreEqual("Something", ccc);
 
             var pair = ds.Configuration.Values.FirstOrDefault();
             AreEqual("Something", pair.Key);
-            AreEqual($"[{ToSic.Eav.DataSource.DataSourceBase.MyConfiguration}:Test]", pair.Value);
+            AreEqual($"[{ToSic.Eav.DataSource.DataSourceConstants.MyConfigurationSourceName}:Test]", pair.Value);
         }
 
 

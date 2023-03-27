@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
 		}
         private readonly IAppStates _appStates;
 
-        IDataSourceLink IDataSourceLinkable.Links => _link.Get(() => new DataSourceLink(null, dataSource: this)
+        IDataSourceLink IDataSourceLinkable.Link => _link.Get(() => new DataSourceLink(null, dataSource: this)
             .Add(new DataSourceLink(null, dataSource: this, name: StreamPublishedName),
                 new DataSourceLink(null, dataSource: this, name: StreamDraftsName)));
         private readonly GetOnce<IDataSourceLink> _link = new GetOnce<IDataSourceLink>();

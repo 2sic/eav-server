@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSource
         public IDataSourceLink Add(params IDataSourceLinkable[] more)
         {
             if (more.SafeNone()) return this;
-            var newMore = more.Select(m => m.Links);
+            var newMore = more.Select(m => m.Link);
 
             // Note: it's important that if we add more sources, 
             // they are added _below_ the current source.
@@ -54,6 +54,6 @@ namespace ToSic.Eav.DataSource
             return list;
         }
 
-        public IDataSourceLink Links => this;
+        public IDataSourceLink Link => this;
     }
 }

@@ -25,11 +25,11 @@ namespace ToSic.Eav.DataSource
         {
             if (newDataSource == null) throw new ArgumentNullException(nameof(newDataSource));
 
-            var mainUpstream = attach?.Links?.DataSource;
+            var mainUpstream = attach?.Link?.DataSource;
             (newDataSource as IAppIdentitySync)?.UpdateAppIdentity(options?.AppIdentity ?? mainUpstream);
 
             //if (source != null) newDataSource.Attach(source);
-            if (attach?.Links != null) newDataSource.Connect(attach.Links);
+            if (attach?.Link != null) newDataSource.Connect(attach.Link);
 
             var lookUp = options?.LookUp ?? mainUpstream?.Configuration?.LookUpEngine;
             if (lookUp != null && newDataSource.Configuration is DataSourceConfiguration dsConfig)

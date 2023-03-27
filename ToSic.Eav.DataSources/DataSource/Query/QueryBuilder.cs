@@ -141,7 +141,7 @@ namespace ToSic.Eav.DataSource.Query
 
 	            var partLookUp = new LookUpEngine(baseLookUp, Log);
                 // add / set item part configuration
-	            partLookUp.Add(new LookUpInQueryMetadata(DataSourceBase.MyConfiguration, dataQueryPart.Entity, dimensions));
+	            partLookUp.Add(new LookUpInQueryMetadata(DataSourceConstants.MyConfigurationSourceName, dataQueryPart.Entity, dimensions));
                 var partConfig = new DataSourceOptions(lookUp: partLookUp, appIdentity: appIdentity);
 
                 // 2023-03-13 2dm - #removedQueryPartShowDrafts

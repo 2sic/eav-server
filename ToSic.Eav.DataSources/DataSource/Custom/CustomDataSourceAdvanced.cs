@@ -1,6 +1,5 @@
 ﻿using System;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
@@ -11,7 +10,7 @@ namespace ToSic.Eav.DataSource
     /// <summary>
     /// Base DataSource class for providing data from external sources.
     /// This is the advanced base class which is more complex.
-    /// You will usually want to use the CustomDataSourceLight
+    /// You will usually want to use the <see cref="CustomDataSourceLight"/>.
     /// </summary>
     /// <remarks>
     /// This has changed a lot in v15 (breaking change).
@@ -20,11 +19,13 @@ namespace ToSic.Eav.DataSource
     [PublicApi]
     public abstract class CustomDataSourceAdvanced: DataSourceBase
     {
-
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         public new class MyServices: DataSourceBase.MyServices
         {
+            [PrivateApi]
             public IDataFactory DataFactory { get; }
 
+            [PrivateApi]
             public MyServices(
                 DataSourceConfiguration configuration,
                 LazySvc<DataSourceErrorHelper> errorHandler,
@@ -63,6 +64,7 @@ namespace ToSic.Eav.DataSource
         /// <inheritdoc />
         public override long CacheTimestamp { get; } = DateTime.Now.Ticks;  // Initialize with moment the object was created
 
+        [PublicApi]
         protected IDataFactory DataFactory { get; }
     }
 }

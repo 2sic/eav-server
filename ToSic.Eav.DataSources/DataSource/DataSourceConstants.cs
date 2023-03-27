@@ -31,6 +31,16 @@ namespace ToSic.Eav.DataSource
 
         #endregion
 
+        #region Constants for in the DataSource
+
+        /// <summary>
+        /// Correct prefix to use when retrieving a value from the current data sources configuration entity.
+        /// Always use this variable, don't ever write the name as a string, as it could change in future.
+        /// </summary>
+        public const string MyConfigurationSourceName = "MyConfiguration";
+
+        #endregion
+
         #region Stream names - all public
 
         /// <summary>

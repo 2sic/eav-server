@@ -70,9 +70,9 @@ namespace ToSic.Eav.DataSource
         /// This list contains the names of all configuration items which are cache relevant.
         /// It will be used when generating a unique ID for caching the data.
         /// </summary>
-        List<string> CacheRelevantConfigurations { get; }
+        [PrivateApi] List<string> CacheRelevantConfigurations { get; }
 
-        ICacheKeyManager CacheKey { get; }
+        [PrivateApi] ICacheKeyManager CacheKey { get; }
 
         #endregion
 

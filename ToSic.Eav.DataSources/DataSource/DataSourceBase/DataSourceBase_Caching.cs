@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSource
         #region Caching stuff
 
         /// <inheritdoc />
-        [InternalApi_DoNotUse_MayChangeWithoutNotice]
+        [PrivateApi]
         public List<string> CacheRelevantConfigurations { get; } = new List<string>();
 
 
@@ -22,9 +22,11 @@ namespace ToSic.Eav.DataSource
         private CacheKey _cacheKey;
 
         /// <inheritdoc />
+        [PrivateApi]
         public virtual string CachePartialKey => CacheKey.CachePartialKey;
 
         /// <inheritdoc />
+        [PrivateApi]
         public virtual string CacheFullKey => CacheKey.CacheFullKey;
 
         /// <inheritdoc />
@@ -43,6 +45,7 @@ namespace ToSic.Eav.DataSource
 
 
         /// <inheritdoc />
+        [PrivateApi]
         public virtual void PurgeList(bool cascade = false) => Log.Do($"{cascade} - on {GetType().Name}", l =>
         {
             foreach (var stream in In)

@@ -63,7 +63,7 @@ namespace ToSic.Eav.Services
         /// <inheritdoc />
         public TDataSource Create<TDataSource>(IDataSourceLinkable attach = default, IDataSourceOptions options = default) where TDataSource : IDataSource => Log.Func(() =>
         {
-            var primarySource = attach?.Links?.DataSource;
+            var primarySource = attach?.Link?.DataSource;
             if (primarySource == null && options?.AppIdentity == null)
                 throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.AppIdentity no not be null.");
             if (primarySource == null && options?.LookUp == null)

@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSource
 {
     public abstract partial class DataSourceBase
     {
-        #region Various provide-out commands - all PrivateApi
+        #region Various provide-out commands - all public
 
         /// <summary>
         /// Provide a function to get the data which this DataSource offers.

@@ -7,14 +7,6 @@ namespace ToSic.Eav.DataSource
 {
     public abstract partial class DataSourceBase
     {
-        /// <summary>
-        /// Correct prefix to use when retrieving a value from the current data sources configuration entity.
-        /// Always use this variable, don't ever write the name as a string, as it could change in future.
-        /// </summary>
-        public static readonly string MyConfiguration = "MyConfiguration";
-
-        private static readonly string MyConfigOld = "Settings";
-
         /// <inheritdoc />
         public IDataSourceConfiguration Configuration => _config.Get(() => base.Services.Configuration.Attach(this));
         private readonly GetOnce<IDataSourceConfiguration> _config = new GetOnce<IDataSourceConfiguration>();
@@ -29,12 +21,13 @@ namespace ToSic.Eav.DataSource
         /// Default is `true`.
         /// Set to `false` for parameters which don't affect the result or are very confidential (like passwords)
         /// </param>
-        [PublicApi]
+        [PrivateApi]
         protected void ConfigMask(string key, string token, bool cacheRelevant = true)
         {
-            if (token.IndexOf($"[{MyConfigOld}:", InvariantCultureIgnoreCase) > -1)
-                throw new ArgumentException($"Don't user the source {MyConfigOld} for retrieving DS configuration any more (breaking change in v15). " +
-                                            $"Instead, use the source name of the variable {nameof(MyConfiguration)}.");
+            const string myConfigOld = "Settings";
+            if (token.IndexOf($"[{myConfigOld}:", InvariantCultureIgnoreCase) > -1)
+                throw new ArgumentException($"Don't user the source {myConfigOld} for retrieving DS configuration any more (breaking change in v15). " +
+                                            $"Instead, use the source name of the variable {nameof(DataSourceConstants.MyConfigurationSourceName)}.");
             // New v15.04 - only add if it has not already been set
             // This is to ensure that config masks don't overwrite data which 
             ((DataSourceConfiguration)Configuration).AddIfMissing(key, token);

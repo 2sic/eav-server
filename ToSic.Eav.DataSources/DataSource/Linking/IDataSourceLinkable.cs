@@ -21,6 +21,6 @@ namespace ToSic.Eav.DataSource
         /// A link - or possibly many.
         /// In most cases, this references the parent object which provides this/these links.
         /// </summary>
-        IDataSourceLink Links { get; }
+        IDataSourceLink Link { get; }
     }
 }

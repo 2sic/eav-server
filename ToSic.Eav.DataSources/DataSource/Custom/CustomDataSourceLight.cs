@@ -20,8 +20,10 @@ namespace ToSic.Eav.DataSource
     [PublicApi]
     public class CustomDataSourceLight: CustomDataSourceAdvanced
     {
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         public new class MyServices : CustomDataSourceAdvanced.MyServices
         {
+            [PrivateApi]
             public MyServices(
                 DataSourceConfiguration configuration,
                 LazySvc<DataSourceErrorHelper> errorHandler,
