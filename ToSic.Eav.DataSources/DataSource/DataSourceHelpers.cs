@@ -1,12 +1,12 @@
 ﻿using System;
 using ToSic.Eav.Apps;
-using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Generics;
 using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
-    internal static class DSHelpers
+    internal static class DataSourceHelpers
     {
         public static T Init<T>(this T thisDs, ILookUpEngine lookUpEngine) where T : IDataSource
         {

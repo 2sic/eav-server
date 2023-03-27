@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSource
+﻿using ToSic.Lib.Documentation;
+
+namespace ToSic.Eav.DataSource
 {
     /// <summary>
     /// This interface marks objects which can provide links to DataSources.
@@ -12,6 +14,7 @@
     /// But because it's visible a lot in public APIs where one or many links could be provided,
     /// we believe this is the best name for this use case.
     /// </remarks>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public interface IDataSourceLinkable
     {
         /// <summary>

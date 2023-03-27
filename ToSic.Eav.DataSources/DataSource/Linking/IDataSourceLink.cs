@@ -6,6 +6,7 @@ namespace ToSic.Eav.DataSource
     /// <summary>
     /// WIP interface to create one or many sources which can be attached when creating a new sources
     /// </summary>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public interface IDataSourceLink : IDataSourceLinkable
     {
         IDataSource DataSource { get; }

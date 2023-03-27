@@ -3,7 +3,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Raw;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     /// <summary>
     /// Various constants typically used in/for DataSources.

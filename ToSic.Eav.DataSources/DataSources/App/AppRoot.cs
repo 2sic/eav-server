@@ -5,7 +5,7 @@ using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
-using static ToSic.Eav.DataSources.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.DataSources
