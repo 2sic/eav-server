@@ -1,14 +1,15 @@
-﻿using ToSic.Eav.DataSources.Linking;
+﻿using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Linking;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.Services
 {
     public class DataSourceGenerator<TDataSource>: ServiceBase, IDataSourceGenerator<TDataSource> where TDataSource : IDataSource
     {
-        private readonly LazySvc<DataSourceFactory> _dataSourceFactory;
+        private readonly LazySvc<DataSourcesService> _dataSourceFactory;
 
-        public DataSourceGenerator(LazySvc<DataSourceFactory> dataSourceFactory): base("DS.DsGen")
+        public DataSourceGenerator(LazySvc<DataSourcesService> dataSourceFactory): base("DS.DsGen")
         {
             _dataSourceFactory = dataSourceFactory;
         }

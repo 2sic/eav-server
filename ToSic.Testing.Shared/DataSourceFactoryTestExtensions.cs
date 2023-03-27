@@ -3,13 +3,14 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Services;
 
 namespace ToSic.Testing.Shared
 {
     public static class DataSourceFactoryTestExtensions
     {
         public static TDataSource TestCreate<TDataSource>(
-            this IDataSourceFactory dsf,
+            this IDataSourcesService dsf,
             string noParamOrder = Parameters.Protector,
             IDataSource upstream = default,
             IAppIdentity appIdentity = default,
@@ -17,7 +18,7 @@ namespace ToSic.Testing.Shared
             => dsf.Create<TDataSource>(attach: upstream, options: new DataSourceOptions(appIdentity: appIdentity, lookUp: configLookUp));
 
         public static TDataSource TestCreateNew<TDataSource>(
-            this IDataSourceFactory dsf,
+            this IDataSourcesService dsf,
             string noParamOrder = Parameters.Protector,
             IDataSource upstream = default,
             IAppIdentity appIdentity = default,

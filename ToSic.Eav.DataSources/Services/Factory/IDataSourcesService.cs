@@ -1,8 +1,9 @@
 ﻿using System;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Linking;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.Services
 {
     /// <summary>
     /// A factory to create / initialize data sources.
@@ -10,10 +11,10 @@ namespace ToSic.Eav.DataSources
     /// Not meant for use in Razor code, but to be used in custom DataSources which may need other internal data sources to work.
     /// </summary>
     /// <remarks>
-    /// Released in v15.04
+    /// Released in v15.06
     /// </remarks>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface IDataSourceFactory
+    [PublicApi]
+    public interface IDataSourcesService
     {
         /// <summary>
         /// Get DataSource for specified sourceName/Type.

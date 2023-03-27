@@ -4,6 +4,7 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
+using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
@@ -30,12 +31,12 @@ namespace ToSic.Eav.Apps
             internal readonly IZoneMapper ZoneMapper;
             internal readonly ISite Site;
             internal readonly IAppStates AppStates;
-            internal readonly IDataSourceFactory DataSourceFactory;
+            internal readonly IDataSourcesService DataSourceFactory;
 
             public MyServices(IZoneMapper zoneMapper,
                 ISite site,
                 IAppStates appStates,
-                IDataSourceFactory dataSourceFactory,
+                IDataSourcesService dataSourceFactory,
                 LazySvc<QueryManager> queryManager,
                 Generator<Query> queryGenerator)
             {
@@ -61,7 +62,7 @@ namespace ToSic.Eav.Apps
             
             Site = services.Site;
         }
-        private readonly IDataSourceFactory _dsFactory;
+        private readonly IDataSourcesService _dsFactory;
 
 
         #endregion

@@ -1,22 +1,23 @@
 ﻿using System;
 using ToSic.Eav.Apps;
-using ToSic.Lib.Logging;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Linking;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
-using ToSic.Eav.DataSources.Linking;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.Services
 {
-    public class DataSourceFactory: ServiceBase, IDataSourceFactory
+    public class DataSourcesService: ServiceBase, IDataSourcesService
     {
         #region Constructor / DI
 
         private readonly IServiceProvider _serviceProvider;
         private readonly LazySvc<ILookUpEngineResolver> _lookupResolveLazy;
         
-        public DataSourceFactory(IServiceProvider serviceProvider,
+        public DataSourcesService(IServiceProvider serviceProvider,
             LazySvc<ILookUpEngineResolver> lookupResolveLazy) : base($"{DataSourceConstants.LogPrefix}.Factry")
         {
             ConnectServices(

@@ -4,6 +4,7 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Services;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
@@ -86,12 +87,12 @@ namespace ToSic.Eav.DataSources
 		public new class MyServices: MyServicesBase<DataSource.MyServices>
         {
             public IContextResolverUserPermissions UserPermissions { get; }
-            public IDataSourceFactory DataSourceFactory { get; }
+            public IDataSourcesService DataSourceFactory { get; }
             public IAppStates AppStates { get; }
 
             public MyServices(DataSource.MyServices parentServices,
                 IAppStates appStates,
-				IDataSourceFactory dataSourceFactory,
+				IDataSourcesService dataSourceFactory,
                 IContextResolverUserPermissions userPermissions) : base(parentServices)
             {
                 ConnectServices(

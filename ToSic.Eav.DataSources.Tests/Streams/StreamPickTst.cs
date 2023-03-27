@@ -6,6 +6,7 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Services;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Streams
@@ -46,7 +47,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             var ds1 = new DataTablePerson(this).Generate(DefaultStreamSize, 1000);
             var ds2 = new DataTablePerson(this).Generate(MoreStreamSize, 2700);
             var ds3 = new DataTablePerson(this).Generate(53, 5300);
-            var dsBuild = GetService<IDataSourceFactory>();
+            var dsBuild = GetService<IDataSourcesService>();
             var streamPick = dsBuild.TestCreate<StreamPick>(appIdentity: new AppIdentity(1, 1), configLookUp: ds1.Configuration.LookUpEngine);
             streamPick.AttachForTests(DataSourceConstants.StreamDefaultName, ds1);
             streamPick.AttachForTests(MoreStream, ds2);

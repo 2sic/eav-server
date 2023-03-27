@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Services;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Testing.Shared
@@ -20,13 +21,13 @@ namespace ToSic.Testing.Shared
                 .AddDataSources();
         }
 
-        public IDataSourceFactory DataSourceFactory => _dataSourceFactory.Get(GetService<IDataSourceFactory>);
-        private readonly GetOnce<IDataSourceFactory> _dataSourceFactory = new GetOnce<IDataSourceFactory>();
+        public IDataSourcesService DataSourceFactory => _dataSourceFactory.Get(GetService<IDataSourcesService>);
+        private readonly GetOnce<IDataSourcesService> _dataSourceFactory = new GetOnce<IDataSourcesService>();
 
         public T CreateDataSource<T>(IDataSource upstream) where T: IDataSource => DataSourceFactory.TestCreate<T>(upstream: upstream);
 
         public T CreateDataSource<T>(IDataStream upstream, object options = default) where T : IDataSource 
-            => ((DataSourceFactory)DataSourceFactory).Create<T>(stream: upstream, new DataSourceOptions.Converter().Convert(options, false, false));
+            => ((DataSourcesService)DataSourceFactory).Create<T>(stream: upstream, new DataSourceOptions.Converter().Convert(options, false, false));
 
         public T CreateDataSource<T>(ILookUpEngine lookUpEngine = default) where T : IDataSource
         {

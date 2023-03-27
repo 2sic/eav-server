@@ -1,21 +1,19 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Configuration;
+﻿using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Linking;
-using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.Services
 {
     /// <summary>
     /// A factory/generator to create one specific kind of data source.
     ///
     /// _Note: This is not meant for use in Razor code, but to be used in custom DataSources which may need other internal data sources to work._
     ///
-    /// Where possible, use the Generator instead of the <see cref="IDataSourceFactory"/>.
+    /// Where possible, use the Generator instead of the <see cref="IDataSourcesService"/>.
     /// The Generator makes it clearer when you only need to use a single typed DataSource and not need access to all kinds of DataSources.
     /// </summary>
     /// <remarks>
-    /// Released in v15.04
+    /// Released in v15.06
     /// </remarks>
     /// <typeparam name="T">The type of the data source to be created.</typeparam>
     [PublicApi]

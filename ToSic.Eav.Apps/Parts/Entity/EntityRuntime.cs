@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 
@@ -15,8 +16,8 @@ namespace ToSic.Eav.Apps.Parts
     // ReSharper disable once InheritdocConsiderUsage
     public class EntityRuntime: PartOf<AppRuntime>
     {
-        private readonly LazySvc<IDataSourceFactory> _dataSourceFactory;
-        public EntityRuntime(LazySvc<IDataSourceFactory> dataSourceFactory): base ("RT.EntRun") =>
+        private readonly LazySvc<IDataSourcesService> _dataSourceFactory;
+        public EntityRuntime(LazySvc<IDataSourcesService> dataSourceFactory): base ("RT.EntRun") =>
             ConnectServices(
                 _dataSourceFactory = dataSourceFactory
             );

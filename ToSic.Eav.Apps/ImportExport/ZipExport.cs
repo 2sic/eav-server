@@ -14,6 +14,7 @@ using ToSic.Lib.Logging;
 
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
@@ -39,7 +40,7 @@ namespace ToSic.Eav.Apps.ImportExport
         #region DI Constructor
 
         public ZipExport(AppRuntime appRuntime,
-            IDataSourceFactory dataSourceFactory,
+            IDataSourcesService dataSourceFactory,
             XmlExporter xmlExporter,
             Generator<FileManager> fileManagerGenerator,
             IGlobalConfiguration globalConfiguration): base(EavLogs.Eav + ".ZipExp")
@@ -56,7 +57,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly XmlExporter _xmlExporter;
         private readonly IGlobalConfiguration _globalConfiguration;
         private AppRuntime AppRuntime { get; }
-        public IDataSourceFactory DataSourceFactory { get; }
+        public IDataSourcesService DataSourceFactory { get; }
 
         public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, string physicalPathGlobal)
         {

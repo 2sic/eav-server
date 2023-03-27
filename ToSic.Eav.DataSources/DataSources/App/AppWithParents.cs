@@ -3,6 +3,7 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
+using ToSic.Eav.Services;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSources
@@ -35,11 +36,11 @@ namespace ToSic.Eav.DataSources
 
 
         private readonly IAppStates _appStates;
-        private readonly IDataSourceFactory _dataSourceFactory;
+        private readonly IDataSourcesService _dataSourceFactory;
         private int _appId;
         private int _zoneId;
 
-        public AppWithParents(MyServices services, IDataSourceFactory dataSourceFactory, IAppStates appStates, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
+        public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppStates appStates, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
         {
             ConnectServices(
                 _dataSourceFactory = dataSourceFactory,

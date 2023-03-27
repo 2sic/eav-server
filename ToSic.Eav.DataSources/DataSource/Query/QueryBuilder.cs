@@ -7,6 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources.LookUp;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
@@ -20,7 +21,7 @@ namespace ToSic.Eav.DataSources.Queries
         private readonly QueryDefinitionBuilder _queryDefinitionBuilder;
         private readonly IContextResolverUserPermissions _userPermissions;
         private readonly Generator<PassThrough> _passThrough;
-        private readonly IDataSourceFactory _dataSourceFactory;
+        private readonly IDataSourcesService _dataSourceFactory;
         private readonly IZoneCultureResolver _cultureResolver;
         private readonly IAppStates _appStates;
 
@@ -33,7 +34,7 @@ namespace ToSic.Eav.DataSources.Queries
 		/// Never call this constructor from your code, as it re-configures the DataSourceFactory it gets
 		/// </remarks>
         public QueryBuilder(
-            IDataSourceFactory dataSourceFactory, 
+            IDataSourcesService dataSourceFactory, 
             IZoneCultureResolver cultureResolver,
 			Generator<PassThrough> passThrough,
             IAppStates appStates,

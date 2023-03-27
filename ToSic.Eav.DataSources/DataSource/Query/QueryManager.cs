@@ -7,6 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
@@ -23,9 +24,9 @@ namespace ToSic.Eav.DataSources.Queries
 	{
         private readonly LazySvc<IAppStates> _appStates;
         private readonly Generator<Query> _queryGenerator;
-        public IDataSourceFactory DataSourceFactory { get; }
+        public IDataSourcesService DataSourceFactory { get; }
 
-        public QueryManager(IDataSourceFactory dataSourceFactory, Generator<Query> queryGenerator, LazySvc<IAppStates> appStates) : base($"{LogPrefix}.QryMan")
+        public QueryManager(IDataSourcesService dataSourceFactory, Generator<Query> queryGenerator, LazySvc<IAppStates> appStates) : base($"{LogPrefix}.QryMan")
         {
             ConnectServices(
                 DataSourceFactory = dataSourceFactory,
