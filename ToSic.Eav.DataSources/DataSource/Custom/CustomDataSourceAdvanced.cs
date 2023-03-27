@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSource
     /// This has changed a lot in v15 (breaking change).
     /// Read about it in the docs.
     /// </remarks>
-    [PublicApi]
+    [PrivateApi]
     public abstract class CustomDataSourceAdvanced: DataSourceBase
     {
         [InternalApi_DoNotUse_MayChangeWithoutNotice]
