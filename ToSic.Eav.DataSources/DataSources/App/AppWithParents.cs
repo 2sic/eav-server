@@ -55,7 +55,7 @@ namespace ToSic.Eav.DataSources
             
             var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appState));
 
-            var merge = _mergeGenerator.New(source: initialSource);
+            var merge = _mergeGenerator.New(attach: initialSource);
             // 2dm 2023-01-22 #maybeSupportIncludeParentApps
             var parent = appState.ParentApp;
             var countRecursions = 0;

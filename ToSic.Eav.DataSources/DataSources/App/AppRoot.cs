@@ -27,10 +27,10 @@ namespace ToSic.Eav.DataSources
 		}
         private readonly IAppStates _appStates;
 
-        IDataSourceLinkInfo IDataSourceLink.Link => _link.Get(() => new DataSourceLinkInfo(null, dataSource: this)
-            .Add(new DataSourceLinkInfo(null, dataSource: this, name: StreamPublishedName),
-                new DataSourceLinkInfo(null, dataSource: this, name: StreamDraftsName)));
-        private readonly GetOnce<IDataSourceLinkInfo> _link = new GetOnce<IDataSourceLinkInfo>();
+        IDataSourceLink IDataSourceLinkable.Links => _link.Get(() => new DataSourceLink(null, dataSource: this)
+            .Add(new DataSourceLink(null, dataSource: this, name: StreamPublishedName),
+                new DataSourceLink(null, dataSource: this, name: StreamDraftsName)));
+        private readonly GetOnce<IDataSourceLink> _link = new GetOnce<IDataSourceLink>();
 
         /// <summary>
         /// Special CacheKey generator for AppRoots, which rely on the state

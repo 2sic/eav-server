@@ -55,13 +55,13 @@ namespace ToSic.Eav.Apps.Parts
 
         public IEnumerable<IEntity> Get(string contentTypeName, IDataSource source = default)
         {
-            var typeFilter = _dataSourceFactory.Value.Create<EntityTypeFilter>(links: source ?? Parent.Data); // need to go to cache, to include published & unpublished
+            var typeFilter = _dataSourceFactory.Value.Create<EntityTypeFilter>(attach: source ?? Parent.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
             return typeFilter.List;
         }
         public IEnumerable<IEntity> GetWithParentAppsExperimental(string contentTypeName) => Log.Func(() =>
         {
-            var merged = _dataSourceFactory.Value.Create<AppWithParents>(links: Parent.Data);
+            var merged = _dataSourceFactory.Value.Create<AppWithParents>(attach: Parent.Data);
             return Get(contentTypeName, merged);
         });
 

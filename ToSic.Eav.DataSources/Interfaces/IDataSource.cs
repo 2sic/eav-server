@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources
     /// It is based on both the <see cref="IDataSourceSource"/> and <see cref="IDataSourceTarget"/>
     /// </summary>
     [PublicApi]
-	public interface IDataSource: IDataSourceSource, IDataSourceTarget, IDataSourceLink
+	public interface IDataSource: IDataSourceSource, IDataSourceTarget, IDataSourceLinkable
     {
     }
 

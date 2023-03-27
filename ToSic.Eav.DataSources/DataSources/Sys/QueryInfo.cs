@@ -103,7 +103,7 @@ namespace ToSic.Eav.DataSources.Sys
             if (!_query.Out.ContainsKey(StreamName))
                 return (EmptyList, "can't find stream name in query");
 
-            var attribInfo = _attributesGenerator.New(source: _query);
+            var attribInfo = _attributesGenerator.New(attach: _query);
             if (StreamName != StreamDefaultName)
                 attribInfo.Attach(StreamDefaultName, _query, StreamName);
 

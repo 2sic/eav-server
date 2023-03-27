@@ -76,7 +76,7 @@ namespace ToSic.Eav.DataSources
                 Attach(dataStream.Key, dataSource, dataStream.Key);
         }
 
-        public void Connect(IDataSourceLinkInfo connections)
+        public void Connect(IDataSourceLink connections)
         {
             var list = connections.Flatten();
             foreach (var link in list)

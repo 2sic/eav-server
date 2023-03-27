@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
+using ToSic.Eav.DataSources.Linking;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
 
@@ -16,20 +17,16 @@ namespace ToSic.Eav.DataSources
     /// <remarks>
     /// Released in v15.04
     /// </remarks>
-    /// <typeparam name="TDataSource">The type of the data source to be created.</typeparam>
+    /// <typeparam name="T">The type of the data source to be created.</typeparam>
     [PublicApi]
-    public interface IDataSourceGenerator<out TDataSource> where TDataSource : IDataSource
+    public interface IDataSourceGenerator<out T> where T : IDataSource
     {
         /// <summary>
         /// Preferred way to create DataSources.
         /// </summary>
-        /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-        /// <param name="source">optional source to attach as `in` on the newly created data source. If provided, it can also provide `appIdentity` and `configSource`</param>
+        /// <param name="attach">optional source to attach as `in` on the newly created data source. If provided, it can also provide `appIdentity` and `configSource`</param>
         /// <param name="options">optional configuration</param>
         /// <returns></returns>
-        TDataSource New(
-            string noParamOrder = Parameters.Protector,
-            IDataSource source = default,
-            IDataSourceOptions options = default);
+        T New(IDataSourceLinkable attach = default, IDataSourceOptions options = default);
     }
 }
