@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.DataSources.Linking;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     /// <summary>
     /// Public interface for an Eav DataSource.

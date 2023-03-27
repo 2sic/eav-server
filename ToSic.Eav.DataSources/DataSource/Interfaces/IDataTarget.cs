@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
 	/// <summary>
 	/// Represents a data source that can be the recipient of Data.

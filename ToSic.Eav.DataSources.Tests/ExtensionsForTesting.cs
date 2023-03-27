@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSourceTests
 {

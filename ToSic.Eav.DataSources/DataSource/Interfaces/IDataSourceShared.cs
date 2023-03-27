@@ -2,7 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     /// <summary>
     /// Shared properties of <see cref="IDataSourceSource"/> and <see cref="IDataSourceTarget"/>

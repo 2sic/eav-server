@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource.Caching;
-using ToSic.Eav.DataSources.Caching;
+using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
 	/// <summary>
 	/// Represents a DataStream object. This is a stream of IEntity objects, which has a source and a name.

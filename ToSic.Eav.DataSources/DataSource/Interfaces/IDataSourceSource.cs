@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.DataSource.Caching.CacheInfo;
+using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
 	/// <summary>
 	/// Public interface for an Eav DataSource. All DataSource objects are based on this. 
