@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources
     /// Had a major, breaking update in v15.
     /// Consult the guide to upgrade your custom data sources.
     /// </remarks>
-    [PublicApi]
+    [PrivateApi]
     public abstract partial class DataSource : ServiceBase<DataSource.MyServices>, IDataSource, IAppIdentitySync
     {
 

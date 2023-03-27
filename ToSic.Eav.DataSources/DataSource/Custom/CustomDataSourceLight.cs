@@ -7,6 +7,8 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.DI;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
@@ -15,9 +17,19 @@ namespace ToSic.Eav.DataSource
     /// <summary>
     /// Very lightweight DataSource base for data sources which are very simple and convention based.
     /// </summary>
+    [PublicApi]
     public class CustomDataSourceLight: CustomDataSourceAdvanced
     {
-
+        public new class MyServices : CustomDataSourceAdvanced.MyServices
+        {
+            public MyServices(
+                DataSourceConfiguration configuration,
+                LazySvc<DataSourceErrorHelper> errorHandler,
+                ConfigurationDataLoader configDataLoader,
+                IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader, dataFactory)
+            {
+            }
+        }
         protected internal CustomDataSourceLight(MyServices services, string logName = null) : base(services, logName ?? "Ds.CustLt")
         {
             // Provide a default out, in case the overriding class doesn't

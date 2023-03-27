@@ -94,10 +94,6 @@ namespace ToSic.Eav.Apps
             // V13 Language Checks
             services.TryAddTransient<AppUserLanguageCheck>();
 
-            // V15 Data Sources
-            services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
-
-
             return services;
         }
 

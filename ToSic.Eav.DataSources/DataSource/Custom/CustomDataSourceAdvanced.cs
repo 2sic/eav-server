@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSource
     /// This has changed a lot in v15 (breaking change).
     /// Read about it in the docs.
     /// </remarks>
-    [PublicApi_Stable_ForUseInYourCode]
+    [PublicApi]
     public abstract class CustomDataSourceAdvanced: DataSources.DataSource
     {
 
