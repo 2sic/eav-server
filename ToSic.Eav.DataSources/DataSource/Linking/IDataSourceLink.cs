@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.DataSource;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources.Linking
+namespace ToSic.Eav.DataSource
 {
     /// <summary>
     /// WIP interface to create one or many sources which can be attached when creating a new sources

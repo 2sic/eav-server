@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSources.Linking
+﻿namespace ToSic.Eav.DataSource
 {
     /// <summary>
     /// This interface marks objects which can provide links to DataSources.

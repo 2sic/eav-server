@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSources.Linking;
+﻿using ToSic.Eav.DataSource;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.DataSources

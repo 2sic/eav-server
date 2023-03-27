@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.DataSources.Linking
+namespace ToSic.Eav.DataSource
 {
     public class DataSourceLink : IDataSourceLink
     {
