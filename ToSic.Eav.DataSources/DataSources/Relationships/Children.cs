@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 

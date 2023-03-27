@@ -2,7 +2,7 @@
 
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource.VisualQuery
 {
     /// <summary>
     /// Marks a DataSource to be for a specific audience - `Default` or `Advanced`.

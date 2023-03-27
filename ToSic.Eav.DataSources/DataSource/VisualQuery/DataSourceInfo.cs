@@ -1,8 +1,8 @@
 ﻿using System;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource.VisualQuery
 {
     public class DataSourceInfo: TypeWithMetadataBase<VisualQueryAttribute>
     {

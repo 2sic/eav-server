@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;

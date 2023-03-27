@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Caching;
+using ToSic.Eav.DataSource.VisualQuery;
 
 namespace ToSic.Eav.DataSources.Catalog
 {

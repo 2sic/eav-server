@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 

@@ -3,7 +3,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource.VisualQuery
 {
     /// <summary>
     /// Custom Attribute for DataSources and use in the VisualQuery Designer.

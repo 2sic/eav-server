@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;

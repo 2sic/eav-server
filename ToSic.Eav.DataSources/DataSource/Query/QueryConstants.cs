@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources.Queries
 {
