@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Streams;
 
 namespace ToSic.Eav.DataSources
 {

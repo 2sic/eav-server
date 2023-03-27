@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.Generics;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource.Streams
 {
     public class StreamDictionary: DictionaryInvariant<IDataStream>
     {

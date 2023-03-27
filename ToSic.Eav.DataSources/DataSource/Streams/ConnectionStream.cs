@@ -1,12 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
 using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource.Streams
 {
     [PrivateApi]
     public class ConnectionStream: IDataStream, IWrapper<IDataStream>
