@@ -2,7 +2,7 @@
 using System.Runtime.Caching;
 using ToSic.Eav.DataSource.VisualQuery;
 
-namespace ToSic.Eav.DataSources.Catalog
+namespace ToSic.Eav.DataSource.Catalog
 {
     public partial class DataSourceCatalog
     {
@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources.Catalog
         {
             if (AppCache[AppCacheKey(appId)] is List<DataSourceInfo> dataFromCache) return dataFromCache;
 
-            var (data, policy) = _appDataSourcesLoader.Value.CreateAndReturnAppCache(appId);
+            var (data, policy) = _appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
             AppCache.Set(new CacheItem(AppCacheKey(appId), data), policy);
             return data;
         }

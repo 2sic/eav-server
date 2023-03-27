@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSources.Catalog
+namespace ToSic.Eav.DataSource.Catalog
 {
     [PrivateApi]
     public partial class DataSourceCatalog: ServiceBase

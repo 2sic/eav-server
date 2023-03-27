@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSources.Catalog;
+using ToSic.Eav.DataSource.Catalog;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests

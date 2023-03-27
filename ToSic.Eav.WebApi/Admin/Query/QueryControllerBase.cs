@@ -6,6 +6,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Catalog;
 using ToSic.Eav.DataSource.Debug;
 using ToSic.Eav.DataSource.Query;
 using ToSic.Eav.DataSources;

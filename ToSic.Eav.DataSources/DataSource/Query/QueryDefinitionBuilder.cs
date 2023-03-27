@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSource.Catalog;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSources.Catalog;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static ToSic.Eav.DataSource.DataSourceConstants;

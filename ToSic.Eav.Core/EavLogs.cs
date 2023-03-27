@@ -11,6 +11,6 @@
 
         public static string LogStoreAppStateLoader = "global-app-load";
 
-        public static string LogStoreAppDataSourcesLoader = "global-app-data-sources-load";
+        public static string LogStoreAppDataSourcesLoader = "global-app-data-source-compiler";
     }
 }

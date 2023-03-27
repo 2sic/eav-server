@@ -11,7 +11,6 @@ using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
