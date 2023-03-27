@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource.Query
 {
 
     public class QueryDefinitionDto

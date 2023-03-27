@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources
 {
@@ -20,8 +20,8 @@ namespace ToSic.Eav.DataSources
         UiHint = "Get the item's parents",
         Icon = Icons.Parents,
         Type = DataSourceType.Lookup,
-        NameId = "915217e5-7957-4303-a19c-a15505f2ad1d", 
-        In = new[] { QueryConstants.InStreamDefaultRequired },
+        NameId = "915217e5-7957-4303-a19c-a15505f2ad1d",
+        In = new[] { InStreamDefaultRequired },
         DynamicOut = false,
         ConfigurationType = "a72cb2f4-52bb-41e6-9281-10e69aeb0310",
         HelpLink = "https://r.2sxc.org/DsParents")]
@@ -44,7 +44,7 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         public override string ContentTypeName => Configuration.GetThis();
 
-        public Parents(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Parent")
+        public Parents(MyServices services) : base(services, $"{LogPrefix}.Parent")
         {
         }
 

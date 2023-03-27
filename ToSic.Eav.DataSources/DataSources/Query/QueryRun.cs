@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Query;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.LookUp;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
@@ -140,8 +140,8 @@ namespace ToSic.Eav.DataSources
         private LookUpEngine LookUpWithoutParams()
         {
             var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, true);
-            if (lookUpsWithoutParams.HasSource(QueryConstants.ParamsSourceName))
-                lookUpsWithoutParams.Sources.Remove(QueryConstants.ParamsSourceName);
+            if (lookUpsWithoutParams.HasSource(DataSourceConstants.ParamsSourceName))
+                lookUpsWithoutParams.Sources.Remove(DataSourceConstants.ParamsSourceName);
             // 1.1 note: can't add Override here because the underlying params don't exist yet - so an override wouldn't keep them
             return lookUpsWithoutParams;
         }

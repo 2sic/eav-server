@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource
@@ -65,6 +66,29 @@ namespace ToSic.Eav.DataSource
         public static IImmutableList<IEntity> EmptyList = ImmutableList<IEntity>.Empty;
 
         public static IImmutableList<IRawEntity> EmptyRawList = ImmutableList<IRawEntity>.Empty;
+
+        #endregion
+
+        #region Query / Visual Query
+
+        /// <summary>
+        /// Use this in the `In` stream names array of the of the <see cref="VisualQueryAttribute"/>
+        /// to mark an in-stream as being required.
+        /// </summary>
+        [PublicApi]
+        public const string InStreamRequiredSuffix = "*";
+
+        /// <summary>
+        /// Marker for specifying that the Default `In` stream is required on the <see cref="VisualQueryAttribute"/>.
+        /// </summary>
+        [PublicApi]
+        public const string InStreamDefaultRequired = "Default" + InStreamRequiredSuffix;
+
+        /// <summary>
+        /// The source name to get query parameters.
+        /// Usually used in tokens like `[Params:MyParamKey]`
+        /// </summary>
+        [PublicApi] public const string ParamsSourceName = "Params";
 
         #endregion
     }

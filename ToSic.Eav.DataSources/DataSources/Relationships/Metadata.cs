@@ -5,8 +5,8 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources
 {
@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.OfferLocal,
         Type = DataSourceType.Lookup,
         NameId = "3ab4b010-2daa-4a7f-b882-635d2d9fa0a0",
-        In = new[] { QueryConstants.InStreamDefaultRequired },
+        In = new[] { InStreamDefaultRequired },
         DynamicOut = false,
         ConfigurationType = "d7858b36-1ef1-4c3d-b15c-c567b0d7bdd4",
         HelpLink = "https://r.2sxc.org/DsMetadata")]
@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources
         [Configuration]
         public override string ContentTypeName => Configuration.GetThis();
 
-        public Metadata(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.MetaDt")
+        public Metadata(MyServices services) : base(services, $"{LogPrefix}.MetaDt")
         {
         }
 

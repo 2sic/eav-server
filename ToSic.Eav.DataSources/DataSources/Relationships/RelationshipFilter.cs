@@ -5,9 +5,9 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Share,
         Type = DataSourceType.Filter,
         NameId = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
-        In = new[] { QueryConstants.InStreamDefaultRequired, DataSourceConstants.StreamFallbackName },
+        In = new[] { InStreamDefaultRequired, StreamFallbackName },
         DynamicOut = false,
         ConfigurationType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
         HelpLink = "https://r.2sxc.org/DsRelationshipFilter")]
@@ -144,7 +144,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new RelationshipFilter
         /// </summary>
         [PrivateApi]
-        public RelationshipFilter(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.Relfil")
+        public RelationshipFilter(MyServices services): base(services, $"{LogPrefix}.Relfil")
         {
             ProvideOut(GetRelationshipsOrFallback);
             //ConfigMask(nameof(Relationship));
@@ -159,8 +159,8 @@ namespace ToSic.Eav.DataSources
         private IImmutableList<IEntity> GetRelationshipsOrFallback() => Log.Func(() =>
         {
             var res = GetEntities();
-            if (!res.Any() && In.HasStreamWithItems(DataSourceConstants.StreamFallbackName))
-                return (In[DataSourceConstants.StreamFallbackName].List.ToImmutableList(), "fallback");
+            if (!res.Any() && In.HasStreamWithItems(StreamFallbackName))
+                return (In[StreamFallbackName].List.ToImmutableList(), "fallback");
 
             return (res, "ok");
         });

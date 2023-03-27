@@ -3,8 +3,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Query;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Services;
@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         private StreamPick BuildStructure()
         {
             // todo: create a test using params...
-            var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsSourceName, new Dictionary<string, string>
+            var paramsOverride = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, new Dictionary<string, string>
             {
                 {"StreamParam", "Lots"}
             });

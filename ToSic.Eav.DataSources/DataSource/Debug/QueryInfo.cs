@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource.Query;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 

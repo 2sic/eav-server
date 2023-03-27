@@ -4,7 +4,7 @@ using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource.Query
 {
     /// <summary>
     /// This contains the structure / definition of a query, which was originally stored in an <see cref="IEntity"/>
@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources.Queries
         internal const string FieldTestParams = "TestParameters";
 
         [PrivateApi]
-        internal const string FieldParams = QueryConstants.ParamsSourceName;
+        internal const string FieldParams = DataSourceConstants.ParamsSourceName;
 
         #endregion
 
@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// <summary>
         /// Connections used in the query to map various DataSource Out-Streams to various other DataTarget In-Streams
         /// </summary>
-        public IList<Connection> Connections => _connections ?? (_connections = Queries.Connections.Deserialize(ConnectionsRaw));
+        public IList<Connection> Connections => _connections ?? (_connections = DataSource.Query.Connections.Deserialize(ConnectionsRaw));
         private IList<Connection> _connections;
 
         /// <summary>

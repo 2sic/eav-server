@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource.Query;
 using ToSic.Lib.Logging;
 
 

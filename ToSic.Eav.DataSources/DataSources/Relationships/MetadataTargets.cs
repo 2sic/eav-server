@@ -6,10 +6,10 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources
 {
@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Metadata,
         Type = DataSourceType.Lookup,
         NameId = "afaf73d9-775c-4932-aebd-23e898b1643e",
-        In = new[] { QueryConstants.InStreamDefaultRequired },
+        In = new[] { InStreamDefaultRequired },
         DynamicOut = false,
         ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
         HelpLink = "https://r.2sxc.org/DsMetadataTargets")]
@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSources
         [Configuration(Fallback = true)]
         public bool FilterDuplicates => Configuration.GetThis(true);
 
-        public MetadataTargets(IAppStates appStates, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
+        public MetadataTargets(IAppStates appStates, MyServices services) : base(services, $"{LogPrefix}.MetaTg")
         {
             _appStates = appStates;
         }

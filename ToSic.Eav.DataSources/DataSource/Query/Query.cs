@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Streams;
-using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
+using ToSic.Lib.Logging;
 using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource.Query
 {
 	/// <summary>
 	/// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 
 	/// </summary>
-	[PublicApi_Stable_ForUseInYourCode]
-	public sealed class Query : DataSource, IQuery
+	[PrivateApi]
+	public sealed class Query : DataSources.DataSource, IQuery
 	{
         #region Configuration-properties
 
@@ -100,7 +99,7 @@ namespace ToSic.Eav.DataSources.Queries
             var resolvedParams = Configuration.LookUpEngine.LookUp(Definition.Params);
 
             // now provide an override source for this
-            var paramsOverride = new LookUpInDictionary(QueryConstants.ParamsSourceName, resolvedParams);
+            var paramsOverride = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, resolvedParams);
             var queryInfos = QueryBuilder.BuildQuery(Definition, Configuration.LookUpEngine,
                 new List<ILookUp> { paramsOverride });
             _source = queryInfos.Item1;

@@ -6,9 +6,9 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Logic, 
         NameId = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { QueryConstants.InStreamDefaultRequired },
+        In = new[] { InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
         HelpLink = "https://r.2sxc.org/DsPaging")]
 
@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.Paging")
+		public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{LogPrefix}.Paging")
         {
             ConnectServices(
                 _pagingFactory = dataFactory.New(options: new DataFactoryOptions(typeName: "Paging"))

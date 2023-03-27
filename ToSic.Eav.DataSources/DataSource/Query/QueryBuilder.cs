@@ -4,15 +4,15 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.LookUp;
-using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Services;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource.Query
 {
 	/// <summary>
 	/// Factory to create a Data Query
@@ -141,7 +141,7 @@ namespace ToSic.Eav.DataSources.Queries
 
 	            var partLookUp = new LookUpEngine(baseLookUp, Log);
                 // add / set item part configuration
-	            partLookUp.Add(new LookUpInQueryMetadata(DataSource.MyConfiguration, dataQueryPart.Entity, dimensions));
+	            partLookUp.Add(new LookUpInQueryMetadata(DataSources.DataSource.MyConfiguration, dataQueryPart.Entity, dimensions));
                 var partConfig = new DataSourceOptions(lookUp: partLookUp, appIdentity: appIdentity);
 
                 // 2023-03-13 2dm - #removedQueryPartShowDrafts

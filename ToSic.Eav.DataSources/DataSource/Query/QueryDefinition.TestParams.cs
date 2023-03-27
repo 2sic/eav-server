@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource.Query
 {
     public partial class QueryDefinition
     {

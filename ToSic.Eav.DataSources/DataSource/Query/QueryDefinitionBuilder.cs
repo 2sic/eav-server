@@ -8,7 +8,7 @@ using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource.Query
 {
     public class QueryDefinitionBuilder: ServiceBase
     {

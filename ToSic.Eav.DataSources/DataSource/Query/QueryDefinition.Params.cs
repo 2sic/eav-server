@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource.Query
 {
     public partial class QueryDefinition
     {
@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources.Queries
         /// The <see cref="ILookUp"/> for the params of this query - based on the Params.
         /// </summary>
         /// <returns>Always returns a valid ILookup, even if no params found. </returns>
-        public ILookUp ParamsLookUp => _paraLookUp ?? (_paraLookUp = new LookUpInDictionary(QueryConstants.ParamsSourceName, Params));
+        public ILookUp ParamsLookUp => _paraLookUp ?? (_paraLookUp = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, Params));
         private ILookUp _paraLookUp;
 
         /// <summary>

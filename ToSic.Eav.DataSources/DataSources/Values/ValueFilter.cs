@@ -6,7 +6,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -26,7 +25,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.FilterList,
         Type = DataSourceType.Filter,
         NameId = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
-        In = new[] { QueryConstants.InStreamDefaultRequired, StreamFallbackName },
+        In = new[] { InStreamDefaultRequired, StreamFallbackName },
         DynamicOut = false,
         ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://r.2sxc.org/DsValueFilter")]

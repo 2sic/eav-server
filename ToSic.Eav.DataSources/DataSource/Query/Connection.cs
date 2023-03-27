@@ -1,12 +1,11 @@
-﻿using ToSic.Eav.DataSource;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource.Query
 {
     /// <summary>
     /// Represent a connection which connects two DataSources in a Query
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+    [PrivateApi("this is just fyi")]
     public struct Connection
     {
         internal const string FromField = "From";

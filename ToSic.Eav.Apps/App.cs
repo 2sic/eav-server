@@ -1,7 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Context;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource.Query;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 using ToSic.Eav.Services;

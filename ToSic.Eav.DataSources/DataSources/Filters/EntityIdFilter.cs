@@ -6,9 +6,9 @@ using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Filter, 
         NameId = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { QueryConstants.InStreamDefaultRequired },
+        In = new[] { InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
         HelpLink = "https://r.2sxc.org/DsIdFilter")]
 
@@ -54,7 +54,7 @@ namespace ToSic.Eav.DataSources
 		/// Constructs a new EntityIdFilter
 		/// </summary>
 		[PrivateApi]
-		public EntityIdFilter(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.EntIdF")
+		public EntityIdFilter(MyServices services): base(services, $"{LogPrefix}.EntIdF")
         {
             ProvideOut(GetList);
 		}

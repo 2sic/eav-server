@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource.Query
 {
 	/// <summary>
 	/// Helper for DataPipeline Wiring of DataSources

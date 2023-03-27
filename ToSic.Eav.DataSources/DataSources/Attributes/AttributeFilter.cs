@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using static System.StringComparer;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -25,7 +23,7 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Modify, 
         NameId = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new []{QueryConstants.InStreamDefaultRequired},
+        In = new [] { InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.AttributeFilter",
         HelpLink = "https://r.2sxc.org/DsAttributeFilter")]
 
@@ -68,7 +66,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeFilter(EntityBuilder entityBuilder, MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.AtribF")
+		public AttributeFilter(EntityBuilder entityBuilder, MyServices services): base(services, $"{LogPrefix}.AtribF")
         {
             _entityBuilder = entityBuilder;
             ProvideOut(GetList);

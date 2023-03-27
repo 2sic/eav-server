@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Query;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources.Queries
+namespace ToSic.Eav.DataSource
 {
     /// <summary>
     /// Marks a special <see cref="IDataSource"/> which is a query.
     /// It has an underlying <see cref="QueryDefinition"/> and Params which can be modified by code before running the query. 
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
+    [PublicApi]
     public interface IQuery: IDataSource
     {
         /// <summary>
