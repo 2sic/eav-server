@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSource
     /// <summary>
     /// Base DataSource class for providing data from external sources.
     /// This is the advanced base class which is more complex.
-    /// You will usually want to use the <see cref="CustomDataSourceLight"/>.
+    /// You will usually want to use the <see cref="CustomDataSource"/>.
     /// </summary>
     /// <remarks>
     /// This has changed a lot in v15 (breaking change).

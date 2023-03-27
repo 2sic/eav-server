@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSource
     /// Very lightweight DataSource base for data sources which are very simple and convention based.
     /// </summary>
     [PublicApi]
-    public class CustomDataSourceLight: CustomDataSourceAdvanced
+    public class CustomDataSource: CustomDataSourceAdvanced
     {
         [InternalApi_DoNotUse_MayChangeWithoutNotice]
         public new class MyServices : CustomDataSourceAdvanced.MyServices
@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSource
             {
             }
         }
-        protected internal CustomDataSourceLight(MyServices services, string logName = null) : base(services, logName ?? "Ds.CustLt")
+        protected internal CustomDataSource(MyServices services, string logName = null) : base(services, logName ?? "Ds.CustLt")
         {
             // Provide a default out, in case the overriding class doesn't
             base.ProvideOut(() => GetRaw(GetDefault, null));

@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources.Sys
         DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Licenses : CustomDataSourceLight
+    public sealed class Licenses : CustomDataSource
     {
         #region Configuration-properties (no config)
 

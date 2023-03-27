@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources.Sys
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Apps: CustomDataSourceLight
+    public sealed class Apps: CustomDataSource
 	{
 
         #region Configuration-properties (no config)

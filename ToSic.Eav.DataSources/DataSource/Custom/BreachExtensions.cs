@@ -10,19 +10,19 @@ namespace ToSic.Eav.DataSource
     /// </summary>
     public static class BreachExtensions
     {
-        public static CustomDataSourceLight CustomDataSourceLight(CustomDataSourceLight.MyServices services,
+        public static CustomDataSource CustomDataSourceLight(CustomDataSource.MyServices services,
             IDataSource wrapper,
             string noParamOrder = Parameters.Protector,
             string logName = null)
         {
-            var ds = new CustomDataSourceLight(services, logName);
+            var ds = new CustomDataSource(services, logName);
             ds.Error.Link(wrapper);
             ds.AutoLoadAllConfigMasks(wrapper.GetType());
             return ds;
         }
 
         public static void BreachProvideOut(
-            this CustomDataSourceLight ds,
+            this CustomDataSource ds,
             Func<IEnumerable> source,
             string noParamOrder = Parameters.Protector,
             string name = StreamDefaultName,

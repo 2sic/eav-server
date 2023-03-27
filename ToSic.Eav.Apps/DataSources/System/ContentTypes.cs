@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSources.Sys
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
     // ReSharper disable once UnusedMember.Global
-    public sealed class ContentTypes: CustomDataSourceLight
+    public sealed class ContentTypes: CustomDataSource
 	{
         #region Configuration-properties (no config)
 
