@@ -214,19 +214,33 @@ namespace ToSic.Eav.Api.Api01
         {
             var result = new Dictionary<string, object>();
             foreach (var value in values)
-                if (value.Value is IEnumerable<int> ids)
-                {
-                    // The value has entity ids. For import, these must be converted to a string of guids.
-                    var guids = ids.Select(id => _context.Entities.GetDbEntity(id))
-                        .Select(entity => entity.EntityGuid).ToList();
-                    result.Add(value.Key, string.Join(",", guids));
-                }
-                else if (value.Value is IEnumerable<Guid> guids)
-                    result.Add(value.Key, string.Join(",", guids));
-                else if (value.Value is IEnumerable<Guid?> nullGuids)
-                    result.Add(value.Key, string.Join(",", nullGuids));
+            {
+                if (value.Value is IEnumerable<int> idInt)
+                    result.Add(value.Key, idInt.Cast<int?>().ToList());
+                else if(value.Value is IEnumerable<int?> idIntNull)
+                    result.Add(value.Key, idIntNull.ToList());
+                else if (value.Value is IEnumerable<Guid> idGuid)
+                    result.Add(value.Key, idGuid.Cast<Guid?>().ToList());
+                else if(value.Value is IEnumerable<Guid?> idGuidNull)
+                    result.Add(value.Key, idGuidNull.ToList());
                 else
                     result.Add(value.Key, value.Value);
+
+                // 2023-03-27 2dm - this was the previous code, but I think it was wrong...?
+                //if (value.Value is IEnumerable<int> ids)
+                //{
+                //    // The value has entity ids. For import, these must be converted to a string of guids.
+                //    var guids = ids.Select(id => _context.Entities.GetDbEntity(id))
+                //        .Select(entity => entity.EntityGuid).ToList();
+                //    result.Add(value.Key, string.Join(",", guids));
+                //}
+                //else if (value.Value is IEnumerable<Guid> guids)
+                //    result.Add(value.Key, string.Join(",", guids));
+                //else if (value.Value is IEnumerable<Guid?> nullGuids)
+                //    result.Add(value.Key, string.Join(",", nullGuids));
+                //else
+                //    result.Add(value.Key, value.Value);
+            }
 
             return result;
         });
