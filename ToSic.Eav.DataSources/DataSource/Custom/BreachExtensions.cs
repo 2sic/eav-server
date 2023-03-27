@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSources;
 using static ToSic.Eav.DataSources.DataSourceConstants;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     /// <summary>
     /// Special - very internal - helper to breach internal APIs in edge cases where they are needed outside.

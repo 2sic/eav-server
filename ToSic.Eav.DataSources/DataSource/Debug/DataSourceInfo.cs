@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Queries;
 
-namespace ToSic.Eav.DataSources.Debug
+namespace ToSic.Eav.DataSource.Debug
 {
     public class DataSourceInfo
     {
@@ -39,7 +40,7 @@ namespace ToSic.Eav.DataSources.Debug
             {
                 Guid = ds.Guid;
                 Type = ds.GetType().Name;
-                Connections = (ds as DataSource)?.Connections;
+                Connections = (ds as DataSources.DataSource)?.Connections;
                 Configuration = ds.Configuration.Values;
 
                 try

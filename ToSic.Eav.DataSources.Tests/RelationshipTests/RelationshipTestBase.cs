@@ -5,6 +5,7 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.RelationshipTests;
 using ToSic.Lib.Logging;
@@ -117,7 +118,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         {
             var testData = new LookUpTestData(GetService<DataBuilder>());
             var vc = testData.AppSetAndRes();
-            vc.Add(testData.BuildLookUpEntity(DataSource.MyConfiguration, vals));
+            vc.Add(testData.BuildLookUpEntity(ToSic.Eav.DataSources.DataSource.MyConfiguration, vals));
             return vc;
         }
 

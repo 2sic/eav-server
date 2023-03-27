@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Caching;
+using ToSic.Eav.DataSources;
 
-namespace ToSic.Eav.DataSources.Caching
+namespace ToSic.Eav.DataSource.Caching
 {
     public class CacheKey: ICacheKeyManager
     {

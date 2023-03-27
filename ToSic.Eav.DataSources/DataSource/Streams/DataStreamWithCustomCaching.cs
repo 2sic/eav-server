@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Caching.CacheInfo;
+using ToSic.Eav.DataSource.Caching.CacheInfo;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources

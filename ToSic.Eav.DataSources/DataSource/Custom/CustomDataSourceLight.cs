@@ -10,7 +10,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.DataSources.DataSourceConstants;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     /// <summary>
     /// Very lightweight DataSource base for data sources which are very simple and convention based.

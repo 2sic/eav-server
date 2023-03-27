@@ -2,8 +2,9 @@
 using System.Linq;
 using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
 
-namespace ToSic.Eav.DataSources.Debug
+namespace ToSic.Eav.DataSource.Debug
 {
     public class StreamInfo
     {

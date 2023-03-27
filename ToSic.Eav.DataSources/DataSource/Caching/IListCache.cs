@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources.Caching
+namespace ToSic.Eav.DataSource.Caching
 {
     /// <summary>
     /// Marks objects that can cache lists based on certain rules - including retention time and if up-stream changes should refresh the cache. 

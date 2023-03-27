@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     [PrivateApi]
     public class DataSourceConnection

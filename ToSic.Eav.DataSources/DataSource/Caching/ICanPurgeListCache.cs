@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources.Caching
+namespace ToSic.Eav.DataSource.Caching
 {
     /// <summary>
     /// Marks objects which can purge it's own cache, and also force upstream caches to be purged. <br/>

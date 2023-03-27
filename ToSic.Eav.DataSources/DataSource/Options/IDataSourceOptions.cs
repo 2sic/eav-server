@@ -2,7 +2,7 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     public interface IDataSourceOptions
     {

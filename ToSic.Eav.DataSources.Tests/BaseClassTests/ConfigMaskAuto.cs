@@ -31,7 +31,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
             var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(Shuffle));
             AreEqual(1, masks.Count);
-            AreEqual($"[{DataSource.MyConfiguration}:Take||0]", masks.First().Token);
+            AreEqual($"[{ToSic.Eav.DataSources.DataSource.MyConfiguration}:Take||0]", masks.First().Token);
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
             var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(Children));
             AreEqual(3, masks.Count);
-            AreEqual($"[{DataSource.MyConfiguration}:{nameof(Children.FieldName)}]", masks.Skip(1).First().Token);
+            AreEqual($"[{ToSic.Eav.DataSources.DataSource.MyConfiguration}:{nameof(Children.FieldName)}]", masks.Skip(1).First().Token);
         }
 
         [TestMethod]
@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
             var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(RelationshipFilter));
             AreEqual(6, masks.Count);
-            AreEqual($"[{DataSource.MyConfiguration}:Direction||{RelationshipFilter.DefaultDirection}]", masks.First(m => m.Key == nameof(RelationshipFilter.ChildOrParent)).Token);
+            AreEqual($"[{ToSic.Eav.DataSources.DataSource.MyConfiguration}:Direction||{RelationshipFilter.DefaultDirection}]", masks.First(m => m.Key == nameof(RelationshipFilter.ChildOrParent)).Token);
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
             var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(RelationshipFilter));
             AreEqual(6, masks.Count);
-            AreEqual($"[{DataSource.MyConfiguration}:Comparison||contains]", masks.First(m => m.Key == nameof(RelationshipFilter.CompareMode)).Token);
+            AreEqual($"[{ToSic.Eav.DataSources.DataSource.MyConfiguration}:Comparison||contains]", masks.First(m => m.Key == nameof(RelationshipFilter.CompareMode)).Token);
         }
 
         [TestMethod]

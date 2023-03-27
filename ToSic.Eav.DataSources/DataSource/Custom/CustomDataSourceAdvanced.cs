@@ -1,10 +1,11 @@
 ﻿using System;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSources;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     /// <inheritdoc />
     /// <summary>
@@ -17,10 +18,10 @@ namespace ToSic.Eav.DataSources
     /// Read about it in the docs.
     /// </remarks>
     [PublicApi_Stable_ForUseInYourCode]
-    public abstract class CustomDataSourceAdvanced: DataSource
+    public abstract class CustomDataSourceAdvanced: DataSources.DataSource
     {
 
-        public new class MyServices: DataSource.MyServices
+        public new class MyServices: DataSources.DataSource.MyServices
         {
             public IDataFactory DataFactory { get; }
 

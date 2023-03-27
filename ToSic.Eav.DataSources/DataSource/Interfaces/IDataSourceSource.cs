@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
-using ToSic.Eav.DataSources.Caching;
-using ToSic.Eav.DataSources.Caching.CacheInfo;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Caching;
+using ToSic.Eav.DataSource.Caching.CacheInfo;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;

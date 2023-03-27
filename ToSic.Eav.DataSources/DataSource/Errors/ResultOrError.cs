@@ -2,7 +2,7 @@
 using ToSic.Eav.Data;
 using static ToSic.Eav.DataSources.DataSourceConstants;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     public class ResultOrError<T>
     {

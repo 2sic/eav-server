@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     [PrivateApi]
     public class DataSourceConnections
@@ -12,10 +12,10 @@ namespace ToSic.Eav.DataSources
         public List<DataSourceConnection> Out = new List<DataSourceConnection>();
 
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
-        public DataSource Parent { get; }
+        public DataSources.DataSource Parent { get; }
 
         
-        public DataSourceConnections(DataSource parent) => Parent = parent;
+        public DataSourceConnections(DataSources.DataSource parent) => Parent = parent;
 
         public void AddIn(DataSourceConnection connection)
         {
@@ -24,14 +24,14 @@ namespace ToSic.Eav.DataSources
             if (existing != null) In.Remove(existing);
                 
             In.Add(connection);
-            (connection.DataSource as DataSource)?.Connections.Out.Add(connection);
+            (connection.DataSource as DataSources.DataSource)?.Connections.Out.Add(connection);
         }
 
         public void ClearIn()
         {
             // Remove from Out of other side
             foreach (var connection in In)
-                (connection?.DataSource as DataSource)?.Connections?.Out.Remove(connection);
+                (connection?.DataSource as DataSources.DataSource)?.Connections?.Out.Remove(connection);
             
             In.Clear();
             

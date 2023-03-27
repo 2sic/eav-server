@@ -3,12 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Runtime.Caching;
 using ToSic.Eav.Caching;
+using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.Caching
+namespace ToSic.Eav.DataSource.Caching
 {
     /// <summary>
     /// Responsible for caching lists / streams. Usually used in queries or sources which have an intensive loading or querying time.

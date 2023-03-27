@@ -3,7 +3,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources.Caching
+namespace ToSic.Eav.DataSource.Caching
 {
     /// <summary>
     /// Cache Item in the List-Cache. 

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Caching;
-using ToSic.Eav.DataSources.Caching;
-using ToSic.Eav.DataSources.Caching.CacheInfo;
+using ToSic.Eav.DataSource.Caching;
+using ToSic.Eav.DataSource.Caching.CacheInfo;
 
 namespace ToSic.Eav.DataSources
 {
