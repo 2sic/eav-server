@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     [PrivateApi("Internal helper")]
     public class ConfigurationDataLoader: ServiceBase
@@ -69,7 +68,7 @@ namespace ToSic.Eav.DataSources
                 // because of Csv example and \t for fallback value
                 fallback = !string.IsNullOrEmpty(fallback) ? $"||{fallback}" : "";
                 var rule = $"{name}{fallback}";
-                var token = $"[{DataSource.MyConfiguration}:{rule}]";
+                var token = $"[{DataSources.DataSource.MyConfiguration}:{rule}]";
                 result.Add(new ConfigMaskInfo
                 {
                     Key = configProp.Name,

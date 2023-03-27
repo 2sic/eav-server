@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     /// <summary>
     /// This helps a data source get configured.

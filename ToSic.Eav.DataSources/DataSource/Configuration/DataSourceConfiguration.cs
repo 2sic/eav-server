@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ToSic.Eav.Context;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
@@ -11,7 +10,7 @@ using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 using static System.StringComparer;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.MyServices>, IDataSourceConfiguration
     {
@@ -38,14 +37,14 @@ namespace ToSic.Eav.DataSources
         {
         }
 
-        internal DataSourceConfiguration Attach(DataSource ds)
+        internal DataSourceConfiguration Attach(DataSources.DataSource ds)
         {
             DataSourceForIn = ds;
             return this;
         }
 
 
-        [PrivateApi] internal DataSource DataSourceForIn;
+        [PrivateApi] internal DataSources.DataSource DataSourceForIn;
 
         #endregion
 
