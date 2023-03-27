@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.Parts
                       $"rid: {contEntity.RepositoryId}, isPublished: {contEntity.IsPublished}");
 
                 var maybeDraft = contEntity.IsPublished
-                    ? contEntity.GetDraft() ?? contEntity // if no draft exists, use current
+                    ? Parent.Read.AppState.GetDraft(contEntity) ?? contEntity // if no draft exists, use current
                     : contEntity; // if it isn't published, use current
 
                 var repoId = maybeDraft.RepositoryId;

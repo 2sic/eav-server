@@ -133,7 +133,7 @@ namespace ToSic.Eav.WebApi
         {
             var found = AppRead.AppState.List.GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
             // if there is a draft, use that for editing - not the original
-            found = found.GetDraft() ?? found;
+            found = AppRead.AppState.GetDraft(found) ?? found;
 
             // If we want the original (not a copy for new) then stop here
             if (!p.DuplicateEntity.HasValue) return found;

@@ -47,10 +47,10 @@ namespace ToSic.Eav.Data
         #region IEntity Implementation
 
         /// <inheritdoc />
-        public IEntity GetDraft() => Entity.GetDraft();
+        // public IEntity GetDraft() => Entity.GetDraft(); // 2023-03-27 v15.06 remove GetDraft/GetPublished from Entity
 
         /// <inheritdoc />
-        public IEntity GetPublished() => Entity.GetPublished();
+        //public IEntity GetPublished() => Entity.GetPublished(); // 2023-03-27 v15.06 remove GetDraft/GetPublished from Entity
 
         /// <inheritdoc />
         public int AppId => Entity.AppId;

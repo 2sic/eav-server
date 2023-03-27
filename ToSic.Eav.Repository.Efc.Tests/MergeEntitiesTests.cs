@@ -442,7 +442,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Assert.AreEqual(stateProviderE.EntityGuid, merged.EntityGuid, "guid");
             Assert.AreEqual(stateProviderE.IsPublished, merged.IsPublished, "ispublished");
             Assert.AreEqual(stateProviderE.RepositoryId, merged.RepositoryId, "repositoryid");
-            Assert.AreEqual(stateProviderE.GetDraft(), merged.GetDraft(), "getdraft()");
+            //Assert.AreEqual(stateProviderE.GetDraft(), merged.GetDraft(), "getdraft()"); // 2023-03-27 v15.06 remove GetDraft/GetPublished from Entity
 
         }
 

@@ -48,8 +48,8 @@ namespace ToSic.Eav.Apps
                 throw new Exception("Entities without real ID not supported yet");
 
             RemoveObsoleteDraft(newEntity, log);
+            MapDraftToPublished(newEntity as Entity, publishedId, log); // this is not immutable, but probably not an issue because it is not in the index yet
             Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
-            MapDraftToPublished(newEntity as Entity, publishedId, log);
             _metadataManager.Register(newEntity, true);
 
             if (FirstLoadCompleted)
@@ -82,9 +82,9 @@ namespace ToSic.Eav.Apps
                         // Removes the entity from list
                         _metadataManager.Register(oldEntity, false);
 
-                        // Removes reference to draft entity from published
-                        if (oldEntity.GetPublished() is Entity publishEntity) 
-                            publishEntity.DraftEntity = null;
+                        //// Removes reference to draft entity from published
+                        //if (GetPublished(oldEntity) is Entity publishEntity) 
+                        //    publishEntity.DraftEntity = null;
                     }
 
                     Index.Remove(id);
