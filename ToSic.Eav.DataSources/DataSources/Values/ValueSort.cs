@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.ValueSort",
         HelpLink = "https://r.2sxc.org/DsValueSort")]
 
-    public sealed class ValueSort : DataSource
+    public sealed class ValueSort : Eav.DataSource.DataSourceBase
 	{
         #region Configuration-properties
         

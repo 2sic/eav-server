@@ -18,10 +18,10 @@ namespace ToSic.Eav.DataSource
     /// Read about it in the docs.
     /// </remarks>
     [PublicApi]
-    public abstract class CustomDataSourceAdvanced: DataSources.DataSource
+    public abstract class CustomDataSourceAdvanced: DataSourceBase
     {
 
-        public new class MyServices: DataSources.DataSource.MyServices
+        public new class MyServices: DataSourceBase.MyServices
         {
             public IDataFactory DataFactory { get; }
 

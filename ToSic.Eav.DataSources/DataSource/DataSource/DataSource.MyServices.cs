@@ -1,14 +1,13 @@
-﻿using ToSic.Eav.DataSource;
-using ToSic.Lib.DI;
+﻿using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
-    public abstract partial class DataSource
+    public abstract partial class DataSourceBase
     {
         /// <summary>
-        /// Services used by the <see cref="DataSource"/>.
+        /// Services used by the <see cref="DataSourceBase"/>.
         /// This ensures that it's easy to inherit DataSources, while giving it all the services it needs even if the needs change with time.
         /// </summary>
         /// <remarks>

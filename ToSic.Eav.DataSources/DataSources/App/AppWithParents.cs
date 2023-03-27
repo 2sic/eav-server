@@ -9,7 +9,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSources
 {
-    internal class AppWithParents: DataSource
+    internal class AppWithParents: Eav.DataSource.DataSourceBase
     {
         private readonly IDataSourceGenerator<StreamMerge> _mergeGenerator;
 

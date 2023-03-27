@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources.Sys
         DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Scopes : DataSource
+    public sealed class Scopes : Eav.DataSource.DataSourceBase
     {
         private readonly IDataFactory _scopesFactory;
 

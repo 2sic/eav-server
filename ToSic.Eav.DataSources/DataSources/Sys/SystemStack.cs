@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources.Sys
         ConfigurationType = "f9aca0f0-1b1b-4414-b42e-b337de124124"
         // HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes"
         )]
-    public class SystemStack: DataSource
+    public class SystemStack: Eav.DataSource.DataSourceBase
     {
         #region Configuration
 

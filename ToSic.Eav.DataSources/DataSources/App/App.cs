@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources
         In = new []{DataSourceConstants.StreamDefaultName},
 		ConfigurationType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://r.2sxc.org/DsApp")]
-    public partial class App : DataSource
+    public partial class App : Eav.DataSource.DataSourceBase
 	{
         #region Configuration-properties
 
@@ -86,13 +86,13 @@ namespace ToSic.Eav.DataSources
         #region Constructor / DI
 
 
-		public new class MyServices: MyServicesBase<DataSource.MyServices>
+		public new class MyServices: MyServicesBase<Eav.DataSource.DataSourceBase.MyServices>
         {
             public IContextResolverUserPermissions UserPermissions { get; }
             public IDataSourcesService DataSourceFactory { get; }
             public IAppStates AppStates { get; }
 
-            public MyServices(DataSource.MyServices parentServices,
+            public MyServices(Eav.DataSource.DataSourceBase.MyServices parentServices,
                 IAppStates appStates,
 				IDataSourcesService dataSourceFactory,
                 IContextResolverUserPermissions userPermissions) : base(parentServices)

@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
-    public abstract partial class DataSource
+    public abstract partial class DataSourceBase
     {
         #region Various provide-out commands - all PrivateApi
 

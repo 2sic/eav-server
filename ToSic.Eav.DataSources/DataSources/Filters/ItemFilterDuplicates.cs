@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
         In = new[] { StreamDefaultName },
 	    HelpLink = "https://r.2sxc.org/DsFilterDuplicates")]
 
-    public sealed class ItemFilterDuplicates: DataSource
+    public sealed class ItemFilterDuplicates: Eav.DataSource.DataSourceBase
 	{
 	    internal const string DuplicatesStreamName = "Duplicates";
 

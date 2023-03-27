@@ -37,14 +37,14 @@ namespace ToSic.Eav.DataSource
         {
         }
 
-        internal DataSourceConfiguration Attach(DataSources.DataSource ds)
+        internal DataSourceConfiguration Attach(DataSourceBase ds)
         {
             DataSourceForIn = ds;
             return this;
         }
 
 
-        [PrivateApi] internal DataSources.DataSource DataSourceForIn;
+        [PrivateApi] internal DataSourceBase DataSourceForIn;
 
         #endregion
 

@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
         NameId = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a"   // namespace or guid
     )]
     [PublicApi]
-    public class Error: DataSource
+    public class Error: Eav.DataSource.DataSourceBase
     {
         /// <summary>
         /// The error title. Defaults to "Demo Error"

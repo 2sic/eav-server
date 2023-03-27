@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
         HelpLink = "https://r.2sxc.org/DsIdFilter")]
 
-    public class EntityIdFilter : DataSource
+    public class EntityIdFilter : Eav.DataSource.DataSourceBase
 	{
         #region Configuration-properties
 

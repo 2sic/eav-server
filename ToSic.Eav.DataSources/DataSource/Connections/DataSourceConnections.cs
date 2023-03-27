@@ -12,10 +12,10 @@ namespace ToSic.Eav.DataSource
         public List<DataSourceConnection> Out = new List<DataSourceConnection>();
 
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
-        public DataSources.DataSource Parent { get; }
+        public DataSourceBase Parent { get; }
 
         
-        public DataSourceConnections(DataSources.DataSource parent) => Parent = parent;
+        public DataSourceConnections(DataSourceBase parent) => Parent = parent;
 
         public void AddIn(DataSourceConnection connection)
         {
@@ -24,14 +24,14 @@ namespace ToSic.Eav.DataSource
             if (existing != null) In.Remove(existing);
                 
             In.Add(connection);
-            (connection.DataSource as DataSources.DataSource)?.Connections.Out.Add(connection);
+            (connection.DataSource as DataSourceBase)?.Connections.Out.Add(connection);
         }
 
         public void ClearIn()
         {
             // Remove from Out of other side
             foreach (var connection in In)
-                (connection?.DataSource as DataSources.DataSource)?.Connections?.Out.Remove(connection);
+                (connection?.DataSource as DataSourceBase)?.Connections?.Out.Remove(connection);
             
             In.Clear();
             

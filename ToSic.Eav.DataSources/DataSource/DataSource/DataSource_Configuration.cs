@@ -1,12 +1,11 @@
 ﻿using System;
-using ToSic.Eav.DataSource;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using static System.StringComparison;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
-    public abstract partial class DataSource
+    public abstract partial class DataSourceBase
     {
         /// <summary>
         /// Correct prefix to use when retrieving a value from the current data sources configuration entity.

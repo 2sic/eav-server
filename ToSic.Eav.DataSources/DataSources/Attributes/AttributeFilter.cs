@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.AttributeFilter",
         HelpLink = "https://r.2sxc.org/DsAttributeFilter")]
 
-    public class AttributeFilter : DataSource
+    public class AttributeFilter : Eav.DataSource.DataSourceBase
 	{
         #region Constants
 

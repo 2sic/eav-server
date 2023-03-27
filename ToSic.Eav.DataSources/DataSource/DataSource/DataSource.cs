@@ -1,11 +1,10 @@
 ﻿using System;
 using ToSic.Eav.Apps;
-using ToSic.Eav.DataSource;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
     /// <summary>
     /// The base class for all DataSources, especially custom DataSources.
@@ -19,7 +18,7 @@ namespace ToSic.Eav.DataSources
     /// Consult the guide to upgrade your custom data sources.
     /// </remarks>
     [PrivateApi]
-    public abstract partial class DataSource : ServiceBase<DataSource.MyServices>, IDataSource, IAppIdentitySync
+    public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServices>, IDataSource, IAppIdentitySync
     {
 
         /// <summary>
@@ -28,11 +27,11 @@ namespace ToSic.Eav.DataSources
         /// </summary>
         /// <param name="services">All the services a DataSource needs. Uses the MyServices convention TODO: DOCUMENT</param>
         /// <param name="logName">Your own log name, such as `My.CsvDs`</param>
-        protected DataSource(MyServices services, string logName) : base(services, logName)
+        protected DataSourceBase(MyServices services, string logName) : base(services, logName)
         {
             AutoLoadAllConfigMasks(GetType());
         }
-        protected DataSource(MyServicesBase<MyServices> extendedServices, string logName) : base(extendedServices, logName)
+        protected DataSourceBase(MyServicesBase<MyServices> extendedServices, string logName) : base(extendedServices, logName)
         {
             AutoLoadAllConfigMasks(GetType());
         }

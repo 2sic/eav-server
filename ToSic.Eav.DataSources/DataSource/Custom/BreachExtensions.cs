@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource
@@ -11,7 +10,7 @@ namespace ToSic.Eav.DataSource
     /// </summary>
     public static class BreachExtensions
     {
-        public static CustomDataSourceLight CustomDataSourceLight(CustomDataSourceAdvanced.MyServices services,
+        public static CustomDataSourceLight CustomDataSourceLight(CustomDataSourceLight.MyServices services,
             IDataSource wrapper,
             string noParamOrder = Parameters.Protector,
             string logName = null)

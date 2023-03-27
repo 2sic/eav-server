@@ -68,7 +68,7 @@ namespace ToSic.Eav.DataSource
                 // because of Csv example and \t for fallback value
                 fallback = !string.IsNullOrEmpty(fallback) ? $"||{fallback}" : "";
                 var rule = $"{name}{fallback}";
-                var token = $"[{DataSources.DataSource.MyConfiguration}:{rule}]";
+                var token = $"[{DataSourceBase.MyConfiguration}:{rule}]";
                 result.Add(new ConfigMaskInfo
                 {
                     Key = configProp.Name,

@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false, 
         HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
 
-    public class PublishingFilter : DataSource
+    public class PublishingFilter : Eav.DataSource.DataSourceBase
 	{
 
         #region Configuration-properties

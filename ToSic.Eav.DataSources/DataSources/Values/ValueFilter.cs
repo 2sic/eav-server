@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources
         ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://r.2sxc.org/DsValueFilter")]
 
-    public sealed class ValueFilter : DataSource
+    public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     {
         #region Configuration-properties Attribute, Value, Language, Operator
 

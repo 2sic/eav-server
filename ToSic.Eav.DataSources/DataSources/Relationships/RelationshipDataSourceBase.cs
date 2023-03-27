@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
     /// Base class for Children and Parents - since they share a lot of code
     /// </summary>
 
-    public abstract class RelationshipDataSourceBase : DataSource
+    public abstract class RelationshipDataSourceBase : Eav.DataSource.DataSourceBase
     {
         /// <summary>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance

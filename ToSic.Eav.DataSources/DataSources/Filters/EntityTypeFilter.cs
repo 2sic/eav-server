@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
         HelpLink = "https://r.2sxc.org/DsTypeFilter")]
 
-    public class EntityTypeFilter : DataSource
+    public class EntityTypeFilter : Eav.DataSource.DataSourceBase
 	{
         #region Configuration-properties
 

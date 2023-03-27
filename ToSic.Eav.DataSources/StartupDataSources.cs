@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources
         public static IServiceCollection AddDataSources(this IServiceCollection services)
         {
             // Dependencies, new in v15
-            services.TryAddTransient<DataSource.MyServices>();
+            services.TryAddTransient<Eav.DataSource.DataSourceBase.MyServices>();
             services.TryAddTransient<App.MyServices>();
             services.TryAddTransient<DataSourceConfiguration>();
             services.TryAddTransient<DataSourceConfiguration.MyServices>();

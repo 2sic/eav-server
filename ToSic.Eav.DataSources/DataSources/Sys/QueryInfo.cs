@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources.Sys
         ConfigurationType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
         HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.System.QueryInfo.html")]
 
-    public sealed class QueryInfo : DataSource
+    public sealed class QueryInfo : Eav.DataSource.DataSourceBase
     {
         private readonly IDataSourceGenerator<Attributes> _attributesGenerator;
         private readonly IDataFactory _dataFactory;

@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources.Sys
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Zones: DataSource
+    public sealed class Zones: Eav.DataSource.DataSourceBase
 	{
         private readonly IDataFactory _dataFactory;
 

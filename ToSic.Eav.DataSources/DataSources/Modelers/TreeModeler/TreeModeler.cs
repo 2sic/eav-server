@@ -32,7 +32,7 @@ namespace ToSic.Eav.DataSources
         HelpLink = "https://r.2sxc.org/DsTreeModeler")]
     [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
     // ReSharper disable once UnusedMember.Global
-    public sealed class TreeModeler : DataSource
+    public sealed class TreeModeler : Eav.DataSource.DataSourceBase
     {
         private readonly ITreeMapper _treeMapper;
 

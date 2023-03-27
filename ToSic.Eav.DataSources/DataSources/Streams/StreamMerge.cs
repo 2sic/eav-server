@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
         DynamicIn = true,
 	    HelpLink = "https://r.2sxc.org/DsStreamMerge")]
 
-    public sealed class StreamMerge: DataSource
+    public sealed class StreamMerge: Eav.DataSource.DataSourceBase
 	{
         /// <summary>
         /// Name of stream which offers only distinct items (filter duplicates)

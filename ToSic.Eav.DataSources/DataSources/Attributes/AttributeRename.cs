@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources
         ConfigurationType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
         HelpLink = "https://r.2sxc.org/DsAttributeRename")]
 
-    public class AttributeRename : DataSource
+    public class AttributeRename : Eav.DataSource.DataSourceBase
 	{
 		#region Configuration-properties
 

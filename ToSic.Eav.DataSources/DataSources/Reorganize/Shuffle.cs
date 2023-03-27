@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
         In = new[] { InStreamDefaultRequired },
         ConfigurationType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
         HelpLink = "https://r.2sxc.org/DsShuffle")]
-	public sealed class Shuffle: DataSource
+	public sealed class Shuffle: Eav.DataSource.DataSourceBase
 	{
         #region Configuration-properties (no config)
 

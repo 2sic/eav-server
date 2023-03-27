@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
     /// This is also the object returned as the root in any query.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class AppRoot : DataSource, IAppRoot
+    public class AppRoot : Eav.DataSource.DataSourceBase, IAppRoot
     {
         [PrivateApi]
         public AppRoot(IAppStates appStates, MyServices services) : base(services, $"{LogPrefix}.Root")

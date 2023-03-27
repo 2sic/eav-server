@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources
 	    ConfigurationType = "5c84cd3f-f853-40b3-81cf-dee6a07dc411",
         HelpLink = "https://r.2sxc.org/DsSerializationConfiguration")]
 
-    public partial class SerializationConfiguration : DataSource
+    public partial class SerializationConfiguration : Eav.DataSource.DataSourceBase
 	{
         #region Constants
 

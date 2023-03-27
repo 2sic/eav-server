@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSources
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
         HelpLink = "https://r.2sxc.org/DsPaging")]
 
-    public sealed class Paging: DataSource
+    public sealed class Paging: Eav.DataSource.DataSourceBase
 	{
         private readonly IDataFactory _pagingFactory;
 

@@ -118,7 +118,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests
         {
             var testData = new LookUpTestData(GetService<DataBuilder>());
             var vc = testData.AppSetAndRes();
-            vc.Add(testData.BuildLookUpEntity(ToSic.Eav.DataSources.DataSource.MyConfiguration, vals));
+            vc.Add(testData.BuildLookUpEntity(ToSic.Eav.DataSource.DataSourceBase.MyConfiguration, vals));
             return vc;
         }
 

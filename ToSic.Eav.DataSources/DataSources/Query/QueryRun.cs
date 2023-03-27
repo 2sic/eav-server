@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources
         )]
 
     // ReSharper disable once UnusedMember.Global
-    public class QueryRun : DataSource
+    public class QueryRun : Eav.DataSource.DataSourceBase
 	{
         private readonly Generator<Query> _queryGenerator;
 

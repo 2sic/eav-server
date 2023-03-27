@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources.Sys
     )]
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
-    public class MetadataTargetTypes : DataSource
+    public class MetadataTargetTypes : Eav.DataSource.DataSourceBase
     {
         private readonly IDataFactory _dataFactory;
 

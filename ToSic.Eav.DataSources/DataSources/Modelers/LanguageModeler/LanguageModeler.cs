@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources
         In = new[] { DataSourceConstants.StreamDefaultName + "*" },
         HelpLink = "https://r.2sxc.org/DsLanguageModeler")]
     [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
-    public sealed class LanguageModeler : DataSource
+    public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
     {
 
         #region Constants / Properties

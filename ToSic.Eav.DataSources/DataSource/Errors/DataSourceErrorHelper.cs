@@ -10,7 +10,7 @@ using ToSic.Lib.Logging;
 namespace ToSic.Eav.DataSource
 {
     /// <summary>
-    /// An Errors-helper which is automatically available on all <see cref="DataSource"/> objects.
+    /// An Errors-helper which is automatically available on all <see cref="DataSourceBase"/> objects.
     ///
     /// It helps create a stream of standardized error entities.
     /// </summary>

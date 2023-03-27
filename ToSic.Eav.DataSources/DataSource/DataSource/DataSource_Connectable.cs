@@ -1,15 +1,10 @@
-﻿using ToSic.Eav.DataSource;
-using ToSic.Lib.Helpers;
+﻿using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
-    public partial class DataSource: IDataSourceLinkable
+    public partial class DataSourceBase: IDataSourceLinkable
     {
-        IDataSourceLink IDataSourceLinkable.Links => _link.Get(() => new DataSourceLink(null,
-            dataSource: this
-            //sourceName: DataSourceConstants.AllStreams,
-            //targetName: DataSourceConstants.AllStreams
-        ));
+        IDataSourceLink IDataSourceLinkable.Links => _link.Get(() => new DataSourceLink(null, dataSource: this));
         private readonly GetOnce<IDataSourceLink> _link = new GetOnce<IDataSourceLink>();
     }
 }

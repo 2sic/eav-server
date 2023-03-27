@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Caching;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Caching;
-using ToSic.Eav.DataSources.Caching;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSource
 {
-    public abstract partial class DataSource
+    public abstract partial class DataSourceBase
     {
         #region Caching stuff
 

@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         ConfigurationType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
         HelpLink = "https://r.2sxc.org/DsRelationshipFilter")]
-    public sealed class RelationshipFilter : DataSource
+    public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     {
         #region Configuration-properties
 

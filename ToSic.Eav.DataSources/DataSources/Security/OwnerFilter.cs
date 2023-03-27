@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.OwnerFilter",
         HelpLink = "https://r.2sxc.org/DsOwnerFilter")]
 
-    public class OwnerFilter : DataSource
+    public class OwnerFilter : Eav.DataSource.DataSourceBase
 	{
         #region Configuration-properties
 
