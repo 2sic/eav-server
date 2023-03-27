@@ -4,7 +4,7 @@
 	  <!--<TargetFrameworks>net472;netstandard2.0;net6.0;</TargetFrameworks>-->
 	  <TargetFrameworks>net472;net6.0;</TargetFrameworks>
     <AssemblyName>ToSic.Eav.DataSources</AssemblyName>
-    <RootNamespace>ToSic.Eav.DataSources</RootNamespace>
+    <RootNamespace>ToSic.Eav</RootNamespace>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <Deterministic>true</Deterministic>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
@@ -49,9 +49,5 @@
     <PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
   </ItemGroup>-->
-
-  <ItemGroup>
-    <Folder Include="DataSources\Modelers\LanguageModeler\" />
-  </ItemGroup>
 
 </Project>
