@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSource.Query
     /// <summary>
     /// The configuration / definition of a query part. The <see cref="QueryDefinition"/> uses a bunch of these together to build a query. 
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+    [PrivateApi("this is just fyi")]
     public class QueryPartDefinition: EntityBasedWithLog
     {
         [PrivateApi]

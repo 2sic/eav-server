@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource.Caching
@@ -9,7 +8,7 @@ namespace ToSic.Eav.DataSource.Caching
     /// <summary>
     /// Marks objects that can cache lists based on certain rules - including retention time and if up-stream changes should refresh the cache. 
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+    [PrivateApi("this is just fyi")]
     public interface IListCache
     {
         /// <summary>

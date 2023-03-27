@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSource.Caching
     /// <summary>
     /// Cache Item in the List-Cache. 
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+    [PrivateApi("this is just fyi")]
     public class ListCacheItem: ICacheExpiring
     {
         /// <summary>
