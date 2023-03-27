@@ -21,6 +21,9 @@ namespace ToSic.Eav.DataSources
     /// <summary>
     /// DataSource for importing/reading CSV files. 
     /// </summary>
+    /// <remarks>
+    /// * Renamed from `CsvDataSource` to `Csv` in v15.06 for consistency. Believe this should not affect anybody.
+    /// </remarks>
     [PublicApi_Stable_ForUseInYourCode]
     [VisualQuery(
         NiceName = "CSV Data",
@@ -31,7 +34,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         ConfigurationType = "|Config ToSic.Eav.DataSources.CsvDataSource",
         HelpLink = "https://r.2sxc.org/DsCsv")]
-    public class CsvDataSource : CustomDataSourceAdvanced
+    public class Csv : CustomDataSourceAdvanced
     {
         #region Known errors
         [PrivateApi]
@@ -120,7 +123,7 @@ namespace ToSic.Eav.DataSources
 
 
         [PrivateApi]
-        public CsvDataSource(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv")
+        public Csv(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv")
         {
             ConnectServices(
                 _user = user,

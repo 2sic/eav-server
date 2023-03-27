@@ -17,6 +17,7 @@ namespace ToSic.Eav.DataSources
     /// <remarks>
     /// * New in v11.20
     /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
+    /// * Renamed to `SerializationConfiguration` from `SerializationConfiguration` in 15.05
     /// </remarks>
     [PublicApi_Stable_ForUseInYourCode]
 	[VisualQuery(
@@ -30,7 +31,7 @@ namespace ToSic.Eav.DataSources
 	    ConfigurationType = "5c84cd3f-f853-40b3-81cf-dee6a07dc411",
         HelpLink = "https://r.2sxc.org/DsSerializationConfiguration")]
 
-    public partial class SerializationConfiguration : Eav.DataSource.DataSourceBase
+    public partial class Serialization : DataSourceBase
 	{
         #region Constants
 
@@ -216,7 +217,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public SerializationConfiguration(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.SerCnf")
+		public Serialization(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.SerCnf")
         {
         }
 
