@@ -22,12 +22,14 @@ namespace ToSic.Eav.DataSource
             IAppIdentity appIdentity = default,
             IImmutableDictionary<string, string> values = default,
             ILookUpEngine lookUp = default,
-            bool? showDrafts = default)
+            bool? showDrafts = default,
+            bool? immutable = default)
         {
             ShowDrafts = showDrafts ?? original?.ShowDrafts;
             AppIdentity = appIdentity ?? original?.AppIdentity;
             _values = values ?? original?.Values;
             LookUp = lookUp ?? original?.LookUp;
+            Immutable = immutable ?? original?.Immutable ?? false;
         }
 
         IImmutableDictionary<string, string> IDataSourceOptions.Values => _values;
@@ -35,6 +37,7 @@ namespace ToSic.Eav.DataSource
         public IAppIdentity AppIdentity { get; }
         public ILookUpEngine LookUp { get; }
         public bool? ShowDrafts { get; }
+        public bool Immutable { get; }
 
         #region General Setter - like a constructor
 

@@ -34,7 +34,8 @@ namespace ToSic.Eav.Services
         public IDataSource Create(Type type, IDataSourceLinkable attach = default, IDataSourceOptions options = default) => Log.Func(() =>
         {
             var newDs = _serviceProvider.Build<IDataSource>(type, Log);
-            return newDs.Init(attach: attach, options: options);
+            newDs.Setup(options, attach);
+            return newDs;
         });
 
 
@@ -70,7 +71,8 @@ namespace ToSic.Eav.Services
                 throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.LookUp no not be null.");
 
             var newDs = _serviceProvider.Build<TDataSource>(Log);
-            return newDs.Init(attach: attach, options: options);
+            newDs.Setup(options, attach);
+            return newDs;
         });
 
         #endregion

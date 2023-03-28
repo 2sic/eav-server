@@ -1,4 +1,6 @@
 ﻿using System;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Generics;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using static System.StringComparison;
@@ -9,6 +11,7 @@ namespace ToSic.Eav.DataSource
     {
         /// <inheritdoc />
         public IDataSourceConfiguration Configuration => _config.Get(() => base.Services.Configuration.Attach(this));
+
         private readonly GetOnce<IDataSourceConfiguration> _config = new GetOnce<IDataSourceConfiguration>();
 
         /// <summary>
@@ -34,5 +37,25 @@ namespace ToSic.Eav.DataSource
             if (cacheRelevant)
                 CacheRelevantConfigurations.Add(key);
         }
+
+        [PrivateApi]
+        public void Setup(IDataSourceOptions options, IDataSourceLinkable attach)
+        {
+            var mainUpstream = attach?.Link?.DataSource;
+            (this as IAppIdentitySync).UpdateAppIdentity(options?.AppIdentity ?? mainUpstream);
+            
+            // Attach in-bound, and make it immutable afterwards
+            if (attach?.Link != null) Connect(attach.Link);
+            if (options?.Immutable == true) Immutable = true;
+
+            var lookUp = options?.LookUp ?? mainUpstream?.Configuration?.LookUpEngine;
+            if (lookUp != null && Configuration is DataSourceConfiguration dsConfig)
+            {
+                dsConfig.LookUpEngine = lookUp;
+                var configValues = options?.Values;
+                if (configValues != null) dsConfig.AddMany(configValues.ToEditable());
+            }
+        }
+
     }
 }

@@ -4,7 +4,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.DataSource.Caching.CacheInfo;
-using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -60,6 +59,9 @@ namespace ToSic.Eav.DataSource
         /// which provides these values. 
         /// </summary>
         IDataSourceConfiguration Configuration { get; }
+
+        [PrivateApi]
+        void Setup(IDataSourceOptions options, IDataSourceLinkable attach);
 
         #endregion
 

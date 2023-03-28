@@ -77,7 +77,7 @@ namespace ToSic.Eav.DataSource
         }
 
         [PrivateApi]
-        public void Connect(IDataSourceLink connections)
+        private void Connect(IDataSourceLink connections)
         {
             var list = connections.Flatten();
             foreach (var link in list)
@@ -101,6 +101,7 @@ namespace ToSic.Eav.DataSource
 
         private void Attach(DataSourceConnection connection)
         {
+            if (Immutable) throw new Exception($"This data source is Immutable. Attaching more sources after creation is not allowed. DataSource: {GetType().Name}");
             In[connection.TargetStream] = new ConnectionStream(connection, Error);
             Connections.AddIn(connection);
         }

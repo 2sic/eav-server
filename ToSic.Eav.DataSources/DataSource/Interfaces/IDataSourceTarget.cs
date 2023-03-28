@@ -45,9 +45,6 @@ namespace ToSic.Eav.DataSource
         /// <param name="dataStream">The data stream to attach</param>
         void Attach(string streamName, IDataStream dataStream);
 
-        [PrivateApi]
-        void Connect(IDataSourceLink connections);
-
         /// <summary>
         /// Get a specific Stream from In.
         /// If it doesn't exist return false and place the error message in the list for returning to the caller.

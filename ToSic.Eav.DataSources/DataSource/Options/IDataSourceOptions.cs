@@ -13,5 +13,7 @@ namespace ToSic.Eav.DataSource
         ILookUpEngine LookUp { get; }
 
         bool? ShowDrafts { get; }
+
+        bool Immutable { get; }
     }
 }

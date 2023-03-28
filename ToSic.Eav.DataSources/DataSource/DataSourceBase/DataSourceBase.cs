@@ -58,6 +58,9 @@ namespace ToSic.Eav.DataSource
         public string Label { get; private set; }
 
         [PrivateApi]
+        public bool Immutable { get; private set; }
+
+        [PrivateApi]
         public void AddDebugInfo(Guid? guid, string label)
         {
             Guid = guid ?? Guid;
