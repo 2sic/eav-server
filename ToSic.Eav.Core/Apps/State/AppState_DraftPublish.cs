@@ -20,8 +20,12 @@ namespace ToSic.Eav.Apps
         {
             if (entity == null) return null;
             if (!entity.IsPublished) return null;
-            var publishedEntityId = ((Entity) entity).RepositoryId;
-            return ListDrafts.Value.ContainsKey(publishedEntityId) ? ListDrafts.Value[publishedEntityId] : null;
+            // 2023-03-28 2dm - I don't think the RepoId is correct here, the publish item still has it's original EntityId...?
+            var publishedEntityId = entity.EntityId; // ((Entity) entity).RepositoryId;
+            // Try to get it, but make sure we only return it if it has a different repo-id - very important
+            if (ListDrafts.Value.TryGetValue(publishedEntityId, out var result) && result.RepositoryId == publishedEntityId)
+                return null;
+            return result;
             //return Index.Values.FirstOrDefault(draftEntity => draftEntity.IsPublished == false && draftEntity.EntityId == publishedEntityId);
         }
 
@@ -33,7 +37,7 @@ namespace ToSic.Eav.Apps
         {
             if (entity == null) return null;
             if (entity.IsPublished) return null;
-            var publishedEntityId = ((Entity) entity).EntityId;
+            var publishedEntityId = ((Entity)entity).EntityId;
             return Index.ContainsKey(publishedEntityId) ? Index[publishedEntityId] : null;
         }
 
@@ -56,8 +60,8 @@ namespace ToSic.Eav.Apps
         [PrivateApi("this is an optimization feature which shouldn't be used by others")]
         public SynchronizedList<IEntity> ListNotHavingDrafts
             => _listNotHavingDrafts ?? (_listNotHavingDrafts =
-                   new SynchronizedEntityList(this,
-                       () => List.Where(e => GetDraft(e) == null).ToImmutableList()));
+                new SynchronizedEntityList(this,
+                    () => List.Where(e => GetDraft(e) == null).ToImmutableList()));
 
         private SynchronizedEntityList _listNotHavingDrafts;
 
@@ -68,7 +72,15 @@ namespace ToSic.Eav.Apps
         [PrivateApi("this is an optimization feature which shouldn't be used by others")]
         private SynchronizedObject<ImmutableDictionary<int, IEntity>> ListDrafts
             => _listDrafts ?? (_listDrafts = new SynchronizedObject<ImmutableDictionary<int, IEntity>>(this,
-                () => List.Where(e => e.IsPublished == false).ToImmutableDictionary(e => e.EntityId)));
+                () =>
+                {
+                    var unpublished = List.Where(e => e.IsPublished == false);
+                    // there are rare cases where the main item is unpublished and it also has a draft which points to it
+                    // this would result in duplicate entries in the index, so we have to be very sure we don't have these
+                    // so we deduplicate and keep the last - otherwise we would break this dictionary.
+                    var lastOnly = unpublished.GroupBy(e => e.EntityId).Select(g => g.Last()).ToList();
+                    return lastOnly.ToImmutableDictionary(e => e.EntityId);
+                }));
 
         private SynchronizedObject<ImmutableDictionary<int, IEntity>> _listDrafts;
 
