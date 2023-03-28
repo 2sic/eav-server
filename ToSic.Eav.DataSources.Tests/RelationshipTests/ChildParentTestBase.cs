@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
             var inStream = appDs.GetStream(appType);
             inStream = FilterStreamByIds(ids, inStream);
 
-            var childDs = CreateDataSource<T>(inStream, options: optionsForLastDs);
+            var childDs = CreateDataSource<T>(attach: inStream, options: optionsForLastDs);
 
             //if (fieldName != null) childDs.FieldName = fieldName;
             return childDs;

@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Caching;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -193,5 +194,9 @@ namespace ToSic.Eav.DataSource.Streams
         #endregion Support for IEnumerable<IEntity>
 
         public ILog Log => Source?.Log; // Note that it can be null, but most commands on Log are null-safe
+
+
+        public IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: Source, stream: this, outName: Name));
+        private readonly GetOnce<IDataSourceLink> _link = new GetOnce<IDataSourceLink>();
     }
 }

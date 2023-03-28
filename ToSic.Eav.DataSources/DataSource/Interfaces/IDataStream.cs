@@ -12,8 +12,8 @@ namespace ToSic.Eav.DataSource
 	/// A stream can be read from, and it can be attached to upstream data-sources for further processing.
 	/// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
-	public interface IDataStream: ICanSelfCache, ICanPurgeListCache, IEnumerable<IEntity>
-	{
+	public interface IDataStream: ICanSelfCache, ICanPurgeListCache, IEnumerable<IEntity>, IDataSourceLinkable
+    {
         /// <summary>
         /// The list of items in this stream.
         /// IMPORTANT: This is actually an Immutable List - so you can read it but not change it.

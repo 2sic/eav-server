@@ -55,8 +55,8 @@ namespace ToSic.Eav.DataSource.Streams
             return new DataStream(intendedSource, "ConnectionStreamError", () => errors);
         }
 
-        public IDataStream GetContents() => UnwrappedDataStream;
-        private IDataStream UnwrappedDataStream => _dataStream.Get(LoadStream);
+        public IDataStream GetContents() => InnerStream;
+        private IDataStream InnerStream => _dataStream.Get(LoadStream);
         private readonly GetOnce<IDataStream> _dataStream = new GetOnce<IDataStream>();
 
 
@@ -64,37 +64,39 @@ namespace ToSic.Eav.DataSource.Streams
 
         public bool AutoCaching
         {
-            get => UnwrappedDataStream.AutoCaching;
-            set => UnwrappedDataStream.AutoCaching = value;
+            get => InnerStream.AutoCaching;
+            set => InnerStream.AutoCaching = value;
         }
 
         public int CacheDurationInSeconds
         {
-            get => UnwrappedDataStream.CacheDurationInSeconds;
-            set => UnwrappedDataStream.CacheDurationInSeconds = value;
+            get => InnerStream.CacheDurationInSeconds;
+            set => InnerStream.CacheDurationInSeconds = value;
         }
 
         public bool CacheRefreshOnSourceRefresh
         {
-            get => UnwrappedDataStream.CacheRefreshOnSourceRefresh;
-            set => UnwrappedDataStream.CacheRefreshOnSourceRefresh = value;
+            get => InnerStream.CacheRefreshOnSourceRefresh;
+            set => InnerStream.CacheRefreshOnSourceRefresh = value;
         }
 
-        public void PurgeList(bool cascade = false) => UnwrappedDataStream.PurgeList(cascade);
+        public void PurgeList(bool cascade = false) => InnerStream.PurgeList(cascade);
 
-        public IEnumerator<IEntity> GetEnumerator() => UnwrappedDataStream.GetEnumerator();
+        public IEnumerator<IEntity> GetEnumerator() => InnerStream.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => UnwrappedDataStream.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => InnerStream.GetEnumerator();
 
-        public IEnumerable<IEntity> List => UnwrappedDataStream.List;
+        public IEnumerable<IEntity> List => InnerStream.List;
 
-        public IDataSource Source => UnwrappedDataStream.Source;
+        public IDataSource Source => InnerStream.Source;
 
-        public string Name => UnwrappedDataStream.Name;
-        public string Scope => UnwrappedDataStream.Scope;
+        public string Name => InnerStream.Name;
+        public string Scope => InnerStream.Scope;
 
-        public DataStreamCacheStatus Caching => UnwrappedDataStream.Caching;
+        public DataStreamCacheStatus Caching => InnerStream.Caching;
 
         #endregion
+
+        public IDataSourceLink Link => InnerStream.Link;
     }
 }
