@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Data;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
@@ -163,7 +164,7 @@ namespace ToSic.Eav.Api.Api01
             var publishing = FigureOutPublishing(type, values, existingIsPublished);
 
             // Prepare attributes to add
-            var preparedValues = ConvertRelationsToGuidNullArray(values);
+            var preparedValues = ConvertRelationsToNullArray(type, values);
             var preparedIAttributes = _builder.Attribute.Create(preparedValues);
             var attributes = BuildNewEntityValues(type, preparedIAttributes, _defaultLanguageCode);
 
@@ -210,8 +211,46 @@ namespace ToSic.Eav.Api.Api01
         public void Delete(Guid entityGuid) => Delete(_context.Entities.GetMostCurrentDbEntity(entityGuid).EntityId);
 
 
-        private IDictionary<string, object> ConvertRelationsToGuidNullArray(IDictionary<string, object> values) => Log.Func(() =>
+        private IDictionary<string, object> ConvertRelationsToNullArray(IContentType contentType,
+            IDictionary<string, object> values) => Log.Func(() =>
         {
+            // Find all attributes which are relationships
+            var relationships = contentType.Attributes.Where(a => a.Type == ValueTypes.Entity).ToList();
+
+            var newValues = values.ToDictionary(pair => pair.Key, pair =>
+            {
+                var value = pair.Value;
+                // Not relationship, don't convert
+                if (!relationships.Any(a => a.Name.EqualsInsensitive(pair.Key)))
+                    return value;
+
+                switch (value)
+                {
+                    case null: return null;
+                    case int intVal:
+                        return new List<int?> { intVal };
+                    case Guid guidVal:
+                        return new List<Guid?> {guidVal };
+                    case IEnumerable<int> idInt:
+                        return idInt.Cast<int?>().ToList();
+                    case IEnumerable<int?> idIntNull:
+                        return idIntNull.ToList();
+                    case IEnumerable<Guid> idGuid:
+                        return idGuid.Cast<Guid?>().ToList();
+                    case IEnumerable<Guid?> idGuidNull:
+                        return idGuidNull.ToList();
+                    case string strValEmpty when !strValEmpty.HasValue(): return null;
+                    case string strVal:
+                        // could be int/guid - must convert - must all be the same
+                        var parts = strVal.Split(',').Where(s => s.HasValue()).ToList();
+                        // TODO: @STV pls complete - Events app...
+                        return null;
+                    default:
+                        return value;
+                }
+            });
+            return newValues;
+
             var result = new Dictionary<string, object>();
             foreach (var value in values)
             {
