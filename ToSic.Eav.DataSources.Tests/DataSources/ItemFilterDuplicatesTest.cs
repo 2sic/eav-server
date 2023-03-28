@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSourceTests
             var sf = dsf.TestCreate<StreamMerge>(appIdentity: new AppIdentity(0, 0), upstream: ds);
 
             for (int i = 1; i < attach; i++)
-                sf.InForTests().Add("another" + i, ds.Out.First().Value);
+                sf.Attach("another" + i, ds.Out.First().Value);
 
             var unique = dsf.TestCreate<ItemFilterDuplicates>(appIdentity: new AppIdentity(0, 0), upstream: sf);
             return unique;

@@ -52,7 +52,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         {
             var desiredFinds = ItemsToGenerate * 2;
             var sf = GenerateMergeDs(ItemsToGenerate);
-            sf.InForTests().Add("another", sf.InForTests().FirstOrDefault().Value);
+            sf.Attach("another", sf.InForTests().FirstOrDefault().Value);
             VerifyStreams(sf, desiredFinds, ItemsToGenerate, ItemsToGenerate, 0);
         }
 
@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
             // Second has the same amount, but they should be different entity objects
             var secondSf = GenerateMergeDs(ItemsToGenerate);
 
-            sf.InForTests().Add("another", secondSf.InForTests().First().Value);
+            sf.Attach("another", secondSf.InForTests().First().Value);
             VerifyStreams(sf, desiredFinds, desiredFinds, 0, desiredFinds);
         }
 
@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
 
             // Second has the same amount, but they should be different entity objects
             var secondSf = GenerateSecondStreamWithSomeResults(sf, itemsInSecondStream);
-            sf.InForTests().Add("another", secondSf.StreamForTests());
+            sf.Attach("another", secondSf.StreamForTests());
             VerifyStreams(sf, desiredFinds, ItemsToGenerate, itemsInSecondStream, ItemsToGenerate - itemsInSecondStream);
         }
 
@@ -91,7 +91,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
 
             // Second has the same amount, but they should be different entity objects
             var secondSf = GenerateSecondStreamWithSomeResults(sf, itemsInSecondStream);
-            sf.InForTests().Add("another", secondSf.StreamForTests());
+            sf.Attach("another", secondSf.StreamForTests());
             VerifyStreams(sf, desiredFinds, ItemsToGenerate, itemsInSecondStream, ItemsToGenerate - itemsInSecondStream);
         }
 
@@ -112,9 +112,9 @@ namespace ToSic.Eav.DataSourceTests.Streams
         {
             var desiredFinds = ItemsToGenerate * 3;
             var sf = GenerateMergeDs(ItemsToGenerate);
-            sf.InForTests().Add("another", sf.InForTests().FirstOrDefault().Value);
-            sf.InForTests().Add("middle", null);
-            sf.InForTests().Add("xFinal", sf.InForTests().FirstOrDefault().Value);
+            sf.Attach("another", sf.InForTests().FirstOrDefault().Value);
+            sf.Attach("middle", null);
+            sf.Attach("xFinal", sf.InForTests().FirstOrDefault().Value);
 
             VerifyStreams(sf, desiredFinds, ItemsToGenerate, ItemsToGenerate, 0);
         }

@@ -130,8 +130,11 @@ namespace ToSic.Eav.DataSource
 
         /// <inheritdoc />
         [PublicApi]
-        public void Attach(string streamName, IDataStream dataStream) 
-            => Attach(new DataSourceConnection(dataStream, this, streamName));
+        public void Attach(string streamName, IDataStream dataStream)
+        {
+            if (dataStream == null) return;
+            Attach(new DataSourceConnection(dataStream, this, streamName));
+        }
 
         private void Attach(DataSourceConnection connection)
         {
