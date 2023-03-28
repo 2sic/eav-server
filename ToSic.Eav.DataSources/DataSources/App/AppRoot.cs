@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
     /// This is also the object returned as the root in any query.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class AppRoot : Eav.DataSource.DataSourceBase, IAppRoot
+    public class AppRoot : DataSourceBase, IAppRoot
     {
         [PrivateApi]
         public AppRoot(IAppStates appStates, MyServices services) : base(services, $"{LogPrefix}.Root")
@@ -28,9 +28,10 @@ namespace ToSic.Eav.DataSources
 		}
         private readonly IAppStates _appStates;
 
-        IDataSourceLink IDataSourceLinkable.Link => _link.Get(() => new DataSourceLink(null, dataSource: this)
-            .Add(new DataSourceLink(null, dataSource: this, name: StreamPublishedName),
-                new DataSourceLink(null, dataSource: this, name: StreamDraftsName)));
+        public override IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: this)
+            .AddStream(name: StreamPublishedName)
+            .AddStream(name: StreamDraftsName));
+
         private readonly GetOnce<IDataSourceLink> _link = new GetOnce<IDataSourceLink>();
 
         /// <summary>

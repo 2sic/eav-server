@@ -51,6 +51,11 @@ namespace ToSic.Eav.DataSource
             base.ProvideOut(() => GetRaw(GetDefault, null));
         }
 
+        /// <summary>
+        /// Every new DataSource based on this is [immutable](xref:NetCode.Conventions.Immutable).
+        /// </summary>
+        public override bool Immutable => true;
+
         protected virtual DataFactoryOptions Options
         {
             // ReSharper disable once ConvertToNullCoalescingCompoundAssignment

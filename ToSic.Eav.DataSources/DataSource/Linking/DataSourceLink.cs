@@ -30,6 +30,9 @@ namespace ToSic.Eav.DataSource
             // Check if no names provided
             !$"{name}{outName}{inName}".HasValue() ? this : new DataSourceLink(this, name: name, outName: outName, inName: inName);
 
+        public IDataSourceLink AddStream(string name = default, string outName = default, string inName = default) =>
+            Add(new DataSourceLink(null, dataSource: DataSource, name: name, inName: inName, outName: outName));
+
         public IDataSourceLink Add(params IDataSourceLinkable[] more)
         {
             if (more.SafeNone()) return this;

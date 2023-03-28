@@ -18,6 +18,8 @@ namespace ToSic.Eav.DataSource
 
         IDataSourceLink Rename(string name = default, string outName = default, string inName = default);
 
+        IDataSourceLink AddStream(string name = default, string outName = default, string inName = default);
+
         IDataSourceLink Add(params IDataSourceLinkable[] more);
 
         [PrivateApi]
