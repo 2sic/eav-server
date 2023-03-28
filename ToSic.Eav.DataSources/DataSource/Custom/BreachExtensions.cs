@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Immutable;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
@@ -20,6 +22,9 @@ namespace ToSic.Eav.DataSource
             ds.AutoLoadAllConfigMasks(wrapper.GetType());
             return ds;
         }
+
+        public static IImmutableList<IEntity> TryGetIn(this CustomDataSource ds, string name = StreamDefaultName)
+            => ds.TryGetIn(name);
 
         public static void BreachProvideOut(
             this CustomDataSource ds,

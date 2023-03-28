@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSource.Debug
         /// <summary>
         /// Provide an array of infos related to a stream and data source
         /// </summary>
-        private void GetStreamInfosRecursive(IDataSourceTarget target) => Log.Do($"{target.Guid}[{target.In.Count}]", timer: true, action: l =>
+        private void GetStreamInfosRecursive(IDataSource target) => Log.Do($"{target.Guid}[{target.In.Count}]", timer: true, action: l =>
         {
             foreach (var stream in target.In)
             {

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
 using ToSic.Lib.Documentation;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources
 {
 	/// <summary>
@@ -15,10 +14,11 @@ namespace ToSic.Eav.DataSources
     [Obsolete("Obsolete since v15.04 - will be removed ca. v17")]
 	public interface IDataTarget
     {
-		/// <summary>
-		/// List of all In connections
-		/// </summary>
-		IDictionary<string, IDataStream> In { get; }
+        // Removed from IDataTarget in 15.06
+		///// <summary>
+		///// List of all In connections
+		///// </summary>
+		//IDictionary<string, IDataStream> In { get; }
 		
 		/// <summary>
 		/// Attach a DataSource to In - replaces all existing in-streams.
@@ -41,38 +41,6 @@ namespace ToSic.Eav.DataSources
         /// <param name="dataStream">The data stream to attach</param>
         void Attach(string streamName, IDataStream dataStream);
 
-        /// <summary>
-        /// Get a specific Stream from In.
-        /// If it doesn't exist return false and place the error message in the list for returning to the caller.
-        ///
-        /// Usage usually like this in your GetList() function: 
-        /// <code>
-        /// private IImmutableList&lt;IEntity&gt; GetList()
-        /// {
-        ///   var source = TryGetIn();
-        ///   if (source is null) return Error.TryGetInFailed(this);
-        ///   var result = source.Where(s => ...).ToImmutableList();
-        ///   return result;
-        /// }
-        /// </code>
-        /// Or if you're using [Call Logging](xref:NetCode.Logging.Index) do something like this:
-        /// <code>
-        /// private IImmutableList&lt;IEntity&gt; GetList() => Log.Func(l =>
-        /// {
-        ///   var source = TryGetIn();
-        ///   if (source is null) return (Error.TryGetInFailed(this), "error");
-        ///   var result = source.Where(s => ...).ToImmutableList();
-        ///   return (result, $"ok - found: {result.Count}");
-        /// });
-        /// </code>
-        /// </summary>
-        /// <param name="name">Stream name - optional</param>
-        /// <returns>A list containing the data, or null if not found / something breaks.</returns>
-        /// <remarks>
-        /// Introduced in 2sxc 15.04
-        /// </remarks>
-        [PublicApi]
-        IImmutableList<IEntity> TryGetIn(string name = DataSourceConstants.StreamDefaultName);
 
     }
 }

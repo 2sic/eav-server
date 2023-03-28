@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource
@@ -11,7 +10,7 @@ namespace ToSic.Eav.DataSource
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
         public IDataSource DataSource;
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
-        public IDataSourceTarget DataTarget;
+        public IDataSource DataTarget;
         
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
         public string SourceStream { get; }
@@ -31,7 +30,7 @@ namespace ToSic.Eav.DataSource
 
         #endregion
 
-        public DataSourceConnection(IDataStream sourceStream, IDataSourceTarget target, string targetStream)
+        public DataSourceConnection(IDataStream sourceStream, IDataSource target, string targetStream)
         {
             DirectlyAttachedStream = sourceStream;
             DataSource = sourceStream.Source;
@@ -41,7 +40,7 @@ namespace ToSic.Eav.DataSource
         }
 
 
-        public DataSourceConnection(IDataSource source, string sourceStream, IDataSourceTarget target, string targetStream)
+        public DataSourceConnection(IDataSource source, string sourceStream, IDataSource target, string targetStream)
         {
             DataSource = source;
             DataTarget = target;
@@ -54,7 +53,7 @@ namespace ToSic.Eav.DataSource
     [PrivateApi]
     public class QuickSourceInfo 
     {
-        public QuickSourceInfo(IDataSourceShared data, string streamName)
+        public QuickSourceInfo(IDataSource data, string streamName)
         {
             Label = data?.Label;
             Guid = data?.Guid;

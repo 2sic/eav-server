@@ -49,7 +49,7 @@ namespace ToSic.Eav.DataSource
 
                 if (!throwIfNoMatch) return null;
                 throw new ArgumentException(
-                    $"Could not convert {nameof(original)} of type '{original.GetType()}' to {nameof(IDataSourceSource)}. " +
+                    $"Could not convert {nameof(original)} of type '{original.GetType()}' to {nameof(IDataSource)}. " +
                     $"{nameof(Convert)} only accepts object types as specified by the conversion methods of {nameof(Converter)}");
 
             }
@@ -72,7 +72,7 @@ namespace ToSic.Eav.DataSource
                         if (values != null) return values;
                         if (!throwIfNoMatch) return null;
                         throw new ArgumentException(
-                            $"Could not convert {nameof(original)} of type '{original.GetType()}' to {nameof(IDataSourceSource)}. " +
+                            $"Could not convert {nameof(original)} of type '{original.GetType()}' to {nameof(IDataSource)}. " +
                             $"{nameof(Convert)} only accepts object types as specified by the conversion methods of {nameof(Converter)}");
                 }
             }

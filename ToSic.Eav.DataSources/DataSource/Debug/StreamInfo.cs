@@ -29,7 +29,7 @@ namespace ToSic.Eav.DataSource.Debug
         [JsonIgnore]
         protected readonly IDataStream Stream;
 
-        public StreamInfo(IDataStream stream, IDataSourceTarget target, string inName)
+        public StreamInfo(IDataStream stream, IDataSource target, string inName)
         {
             try
             {
