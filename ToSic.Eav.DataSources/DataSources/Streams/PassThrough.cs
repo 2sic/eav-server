@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = true,
         DynamicIn = true)]
 
-    public class PassThrough : Eav.DataSource.DataSourceBase
+    public class PassThrough : DataSourceBase
 	{
         /// <inheritdoc />
         /// <summary>
