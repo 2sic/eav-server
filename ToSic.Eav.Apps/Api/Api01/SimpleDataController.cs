@@ -241,47 +241,23 @@ namespace ToSic.Eav.Api.Api01
                         return idGuidNull.ToList();
                     case string strValEmpty when !strValEmpty.HasValue(): return null;
                     case string strVal:
-                        // could be int/guid - must convert - must all be the same
                         var parts = strVal.Split(',').Where(s => s.HasValue()).ToList();
-                        // TODO: @STV pls complete - Events app...
-                        return null;
+                        if (parts.Count == 0) return value;
+
+                        // could be int/guid - must convert - must all be the same
+                        if (int.TryParse(parts[0], out var intValue))
+                            return parts.Select(item => int.TryParse(item, out intValue) ? (int?)intValue : null).ToList();
+                        
+                        if (Guid.TryParse(parts[0], out var guidValue))
+                            return parts.Select(item => Guid.TryParse(item, out guidValue) ? (Guid?)guidValue : null).ToList();
+
+                        // fallback
+                        return value;
                     default:
                         return value;
                 }
             });
             return newValues;
-
-            var result = new Dictionary<string, object>();
-            foreach (var value in values)
-            {
-                if (value.Value is IEnumerable<int> idInt)
-                    result.Add(value.Key, idInt.Cast<int?>().ToList());
-                else if(value.Value is IEnumerable<int?> idIntNull)
-                    result.Add(value.Key, idIntNull.ToList());
-                else if (value.Value is IEnumerable<Guid> idGuid)
-                    result.Add(value.Key, idGuid.Cast<Guid?>().ToList());
-                else if(value.Value is IEnumerable<Guid?> idGuidNull)
-                    result.Add(value.Key, idGuidNull.ToList());
-                else
-                    result.Add(value.Key, value.Value);
-
-                // 2023-03-27 2dm - this was the previous code, but I think it was wrong...?
-                //if (value.Value is IEnumerable<int> ids)
-                //{
-                //    // The value has entity ids. For import, these must be converted to a string of guids.
-                //    var guids = ids.Select(id => _context.Entities.GetDbEntity(id))
-                //        .Select(entity => entity.EntityGuid).ToList();
-                //    result.Add(value.Key, string.Join(",", guids));
-                //}
-                //else if (value.Value is IEnumerable<Guid> guids)
-                //    result.Add(value.Key, string.Join(",", guids));
-                //else if (value.Value is IEnumerable<Guid?> nullGuids)
-                //    result.Add(value.Key, string.Join(",", nullGuids));
-                //else
-                //    result.Add(value.Key, value.Value);
-            }
-
-            return result;
         });
 
         private (bool ShouldPublish, bool DraftShouldBranch)? FigureOutPublishing(
