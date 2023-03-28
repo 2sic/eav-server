@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 
-namespace ToSic.Eav.DataSources.Catalog
+namespace ToSic.Eav.WebApi.Dto
 {
     public class DataSourceDto
     {

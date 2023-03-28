@@ -10,7 +10,6 @@ using ToSic.Eav.DataSource.Catalog;
 using ToSic.Eav.DataSource.Debug;
 using ToSic.Eav.DataSource.Query;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Catalog;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
