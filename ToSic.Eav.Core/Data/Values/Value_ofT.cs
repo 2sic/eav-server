@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
     /// Represents a typed Value object in the memory model
     /// </summary>
     /// <typeparam name="T">Type of the actual Value</typeparam>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi, always work with interface IValue<T>")]
+    [PrivateApi("this is just fyi, always work with interface IValue<T>")]
     public class Value<T> : IValue<T>
     {
         /// <summary>
