@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource
@@ -20,7 +22,9 @@ namespace ToSic.Eav.DataSource
 
         /// <inheritdoc />
         [PublicApi]
-        public IDictionary<string, IDataStream> In { get; protected set; } = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
+        public virtual IReadOnlyDictionary<string, IDataStream> In => _in.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inRw));
+        private GetOnce<IReadOnlyDictionary<string, IDataStream>> _in = new GetOnce<IReadOnlyDictionary<string, IDataStream>>();
+        private IDictionary<string, IDataStream> _inRw = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
 
         /// <summary>
         /// Get a specific Stream from In.
@@ -57,7 +61,8 @@ namespace ToSic.Eav.DataSource
 
         /// <inheritdoc />
         [PublicApi]
-        public virtual IDictionary<string, IDataStream> Out { get; protected internal set; } = new StreamDictionary();
+        public virtual IReadOnlyDictionary<string, IDataStream> Out => _outRw.AsReadOnly(); // { get; protected internal set; } = new StreamDictionary();
+        private StreamDictionary _outRw = new StreamDictionary();
 
         /// <inheritdoc />
         public IDataStream this[string outName] => GetStream(outName);
@@ -131,7 +136,7 @@ namespace ToSic.Eav.DataSource
         private void Attach(DataSourceConnection connection)
         {
             if (Immutable) throw new Exception($"This data source is Immutable. Attaching more sources after creation is not allowed. DataSource: {GetType().Name}");
-            In[connection.TargetStream] = new ConnectionStream(connection, Error);
+            _inRw[connection.TargetStream] = new ConnectionStream(connection, Error);
             Connections.AddIn(connection);
         }
         

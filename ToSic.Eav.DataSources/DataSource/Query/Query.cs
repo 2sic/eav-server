@@ -8,6 +8,7 @@ using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
 using static System.String;
+using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Query
@@ -30,14 +31,14 @@ namespace ToSic.Eav.DataSource.Query
         /// Standard out. Note that the Out is not prepared until accessed the first time,
         /// when it will auto-assembles the query
         /// </summary>
-		public override IDictionary<string, IDataStream> Out
+		public override IReadOnlyDictionary<string, IDataStream> Out
 		{
 			get
 			{
-			    if (!_requiresRebuildOfOut) return _out;
+			    if (!_requiresRebuildOfOut) return _out.AsReadOnly();
 			    CreateOutWithAllStreams();
 			    _requiresRebuildOfOut = false;
-			    return _out;
+			    return _out.AsReadOnly();
 			}
 		}
         #endregion
@@ -85,9 +86,15 @@ namespace ToSic.Eav.DataSource.Query
             if (source == null) return this;
 
             Log.A("found target for Query, will attach");
-            In = source.In;
+            _inSource = source;
             return this;
         }
+
+        [PublicApi]
+        public override IReadOnlyDictionary<string, IDataStream> In => _inSource?.In ?? _in;
+        private readonly IReadOnlyDictionary<string, IDataStream> _in = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
+        private IDataSource _inSource;
+
 
         /// <summary>
         /// Create a stream for each data-type

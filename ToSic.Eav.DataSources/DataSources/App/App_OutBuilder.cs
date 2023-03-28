@@ -6,6 +6,7 @@ using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Caching.CacheInfo;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources
 {
@@ -17,12 +18,12 @@ namespace ToSic.Eav.DataSources
         protected bool RequiresRebuildOfOut = true;
         
         /// <inheritdoc/>
-        public override IDictionary<string, IDataStream> Out
+        public override IReadOnlyDictionary<string, IDataStream> Out
         {
             get
             {
                 // Use pre-built if already ready and nothing changed RequiresRebuild
-                if (!RequiresRebuildOfOut) return _out;
+                if (!RequiresRebuildOfOut) return _out.AsReadOnly();
 
                 // Parse config before we continue, as AppSwitch could be set now
                 Configuration.Parse();
@@ -34,7 +35,7 @@ namespace ToSic.Eav.DataSources
                 // now create all streams
                 CreateAppOutWithAllStreams();
                 RequiresRebuildOfOut = false;
-                return _out;
+                return _out.AsReadOnly();
             }
         }
         #endregion
@@ -48,19 +49,19 @@ namespace ToSic.Eav.DataSources
             try
             {
                 // auto-attach to cache of current system?
-                if (!In.ContainsKey(DataSourceConstants.StreamDefaultName))
+                if (!In.ContainsKey(StreamDefaultName))
                     AttachOtherDataSource();
-                upstream = In[DataSourceConstants.StreamDefaultName];
+                upstream = In[StreamDefaultName];
             }
             catch (KeyNotFoundException)
             {
                 throw new Exception(
-                    $"Trouble with the App DataSource - must have a Default In-Stream with name {DataSourceConstants.StreamDefaultName}. It has {In.Count} In-Streams.");
+                    $"Trouble with the App DataSource - must have a Default In-Stream with name {StreamDefaultName}. It has {In.Count} In-Streams.");
             }
 
             var upstreamDataSource = upstream.Source;
             _out.Clear();
-            _out.Add(DataSourceConstants.StreamDefaultName, upstreamDataSource.Out[DataSourceConstants.StreamDefaultName]);
+            _out.Add(StreamDefaultName, upstreamDataSource.Out[StreamDefaultName]);
 
             // now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
             // because the "real" source already applies filters like published
@@ -71,7 +72,7 @@ namespace ToSic.Eav.DataSources
             foreach (var contentType in listOfTypes)
             {
                 var typeName = contentType.Name;
-                if (typeName == DataSourceConstants.StreamDefaultName || typeName.StartsWith("@") || _out.ContainsKey(typeName))
+                if (typeName == StreamDefaultName || typeName.StartsWith("@") || _out.ContainsKey(typeName))
                     continue;
                 typeList += typeName + ",";
 
@@ -88,25 +89,6 @@ namespace ToSic.Eav.DataSources
 
             l.A($"Added with drafts:{showDraftsForCacheKey} streams: {typeList}");
         });
-
-        ///// <summary>
-        ///// Ask the current configuration system if the current user should see drafts
-        ///// </summary>
-        ///// <returns></returns>
-        //// TODO: VERIFY THIS is the right way to do it - and there is not a better/global available way?
-        //private bool ShowDrafts => _showDrafts.Get(() =>
-        //{
-        //    var lookupShowDrafts = Configuration.Parse(new Dictionary<string, string>
-        //    {
-        //        {
-        //            QueryConstants.ParamsShowDraftKey,
-        //            $"[{QueryConstants.ParamsLookup}:{QueryConstants.ParamsShowDraftKey}||[{LookUpConstants.InstanceContext}:{QueryConstants.ParamsShowDraftKey}||false]]"
-        //        }
-        //    });
-        //    if (!bool.TryParse(lookupShowDrafts.First().Value, out var showDrafts)) showDrafts = false;
-        //    return showDrafts;
-        //});
-        //private readonly GetOnce<bool> _showDrafts = new GetOnce<bool>();
 
         /// <summary>
         /// Build an EntityTypeFilter for this content-type to provide as a stream

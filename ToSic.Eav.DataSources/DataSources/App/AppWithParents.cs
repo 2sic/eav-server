@@ -56,17 +56,19 @@ namespace ToSic.Eav.DataSources
             var appState = _appStates.Get(this);
             
             var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appState));
+            var initialLink = initialSource.Link;
 
-            var merge = _mergeGenerator.New(attach: initialSource);
             // 2dm 2023-01-22 #maybeSupportIncludeParentApps
             var parent = appState.ParentApp;
             var countRecursions = 0;
             while (parent?.AppState != null && countRecursions++ < 5)
             {
                 var next = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: parent.AppState));
-                merge.In.Add("App" + parent.AppState.NameId, next.Out.First().Value);
+                initialLink = initialLink.Add(next.Link.Rename(inName: $"App{parent.AppState.NameId}"));
                 parent = parent.AppState.ParentApp;
             }
+
+            var merge = _mergeGenerator.New(attach: initialLink);
 
             return merge.Out.First().Value.List.ToImmutableList();
         });

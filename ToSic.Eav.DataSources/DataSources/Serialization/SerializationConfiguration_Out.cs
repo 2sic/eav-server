@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Streams;
@@ -13,9 +14,9 @@ namespace ToSic.Eav.DataSources
         #region Dynamic Out
 
         /// <inheritdoc/>
-        public override IDictionary<string, IDataStream> Out => _getOut.Get(CreateOutWithAllStreams);
+        public override IReadOnlyDictionary<string, IDataStream> Out => _getOut.Get(() => new ReadOnlyDictionary<string, IDataStream>(CreateOutWithAllStreams()));
 
-        private readonly GetOnce<IDictionary<string, IDataStream>> _getOut = new GetOnce<IDictionary<string, IDataStream>>();
+        private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _getOut = new GetOnce<IReadOnlyDictionary<string, IDataStream>>();
 
         /// <summary>
         /// Attach all missing streams, now that Out is used the first time.

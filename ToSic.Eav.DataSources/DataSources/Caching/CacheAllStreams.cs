@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
+using static System.StringComparer;
 
 namespace ToSic.Eav.DataSources.Caching
 {
@@ -33,7 +35,7 @@ namespace ToSic.Eav.DataSources.Caching
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
     [PublicApi_Stable_ForUseInYourCode]
-	public class CacheAllStreams : Eav.DataSource.DataSourceBase
+	public class CacheAllStreams : DataSourceBase
     {
         #region Configuration-properties
 
@@ -57,22 +59,22 @@ namespace ToSic.Eav.DataSources.Caching
         public bool ReturnCacheWhileRefreshing => Configuration.GetThis(false);
 
 
-		private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase);
-		private bool _requiresRebuildOfOut = true;
-
         /// <inheritdoc />
-		public override IDictionary<string, IDataStream> Out
-		{
-			get
-			{
-                if (!_requiresRebuildOfOut) return _out;
-                // now create all streams
-                CreateOutWithAllStreams();
-                _requiresRebuildOfOut = false;
-                return _out;
-			}
-		}
-		#endregion
+        public override IReadOnlyDictionary<string, IDataStream> Out => _out.Get(() =>
+        {
+            Configuration.Parse();
+
+            // attach all missing streams, now that Out is used the first time
+            // note that some streams were already added because of the DeferredOut
+            var outList = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
+            foreach (var dataStream in In.Where(s => !outList.ContainsKey(s.Key)))
+                outList.Add(dataStream.Key, StreamWithCaching(dataStream.Key));
+
+            return new ReadOnlyDictionary<string, IDataStream>(outList);
+        });
+        private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _out = new GetOnce<IReadOnlyDictionary<string, IDataStream>>();
+
+        #endregion
 
 		/// <inheritdoc />
 		/// <summary>
@@ -82,20 +84,6 @@ namespace ToSic.Eav.DataSources.Caching
 		public CacheAllStreams(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.CachAl")
 		{
 			// this one is unusual, so don't pre-attach a default data stream
-            //OutIsDynamic = true;
-        }
-
-		/// <summary>
-		/// Create a stream for each data-type
-		/// </summary>
-		private void CreateOutWithAllStreams()
-		{
-            Configuration.Parse();
-
-            // attach all missing streams, now that Out is used the first time
-            // note that some streams were already added because of the DeferredOut
-            foreach (var dataStream in In.Where(s => !_out.ContainsKey(s.Key)))
-                _out.Add(dataStream.Key, StreamWithCaching(dataStream.Key));
         }
 
 	    private IDataStream StreamWithCaching(string name)

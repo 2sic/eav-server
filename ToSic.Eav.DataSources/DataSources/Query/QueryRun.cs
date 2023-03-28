@@ -65,10 +65,9 @@ namespace ToSic.Eav.DataSources
 
         #region Out
         /// <inheritdoc/>
-        public override IDictionary<string, IDataStream> Out 
-            => _out ?? (_out = new StreamDictionary(this, Query?.Out  ?? new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase)));
+        public override IReadOnlyDictionary<string, IDataStream> Out => (_out ?? (_out = new StreamDictionary(this, Query?.Out))).AsReadOnly();
 
-        private IDictionary<string, IDataStream> _out;
+        private StreamDictionary _out;
         #endregion
 
         #region Surface the inner query in the API in case we need to look into it from our Razor Code

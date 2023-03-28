@@ -50,7 +50,7 @@ namespace ToSic.Eav.DataSource
         /// In rare cases you need the Out, for example to list the stream names in the data source.
         /// </summary>
         /// <returns>A dictionary of named <see cref="IDataStream"/> objects, case insensitive</returns>
-        IDictionary<string, IDataStream> Out { get; }
+        IReadOnlyDictionary<string, IDataStream> Out { get; }
 
         /// <summary>
         /// Gets the Out-Stream with specified Name. 
@@ -85,7 +85,7 @@ namespace ToSic.Eav.DataSource
         /// List of all In connections.
         /// </summary>
         /// <returns>A dictionary of named <see cref="IDataStream"/> objects, case insensitive</returns>
-        IDictionary<string, IDataStream> In { get; }
+        IReadOnlyDictionary<string, IDataStream> In { get; }
 
         #endregion
         #region Config
