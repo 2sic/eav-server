@@ -20,7 +20,14 @@ namespace ToSic.Eav.DataSource
     [PublicApi]
     public class CustomDataSource: CustomDataSourceAdvanced
     {
-        [InternalApi_DoNotUse_MayChangeWithoutNotice]
+        /// <summary>
+        /// The Services of CustomDataSource.
+        /// Note that it is the same as the base MyServices,
+        /// but it's still important to have an own class.
+        /// This is in case some day it will need more dependencies.
+        /// Otherwise compiled code would break when we need additional dependencies just for the CustomDataSource.
+        /// </summary>
+        [PrivateApi]
         public new class MyServices : CustomDataSourceAdvanced.MyServices
         {
             [PrivateApi]
@@ -32,6 +39,12 @@ namespace ToSic.Eav.DataSource
             {
             }
         }
+
+        /// <summary>
+        /// Constructor for creating a Custom DataSource.
+        /// </summary>
+        /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.MyServices)</param>
+        /// <param name="logName">Optional name for logging such as `My.JsonDS`</param>
         protected internal CustomDataSource(MyServices services, string logName = null) : base(services, logName ?? "Ds.CustLt")
         {
             // Provide a default out, in case the overriding class doesn't

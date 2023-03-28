@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSource
     /// New in v15.04 as it replaces the old `IDataTarget` because of confusing names.
     /// </remarks>
     [PublicApi]
-	public interface IDataSourceTarget: IDataSourceShared, 
+	public interface IDataSourceTarget: IDataSourceShared,
 #pragma warning disable CS0618
         IDataTarget
 #pragma warning restore CS0618

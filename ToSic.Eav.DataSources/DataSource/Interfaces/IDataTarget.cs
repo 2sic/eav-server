@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSource;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSource
+namespace ToSic.Eav.DataSources
 {
 	/// <summary>
 	/// Represents a data source that can be the recipient of Data.
 	/// This basically means it has an In <see cref="IDataStream"/>
 	/// </summary>
 	[PrivateApi]
-    [Obsolete("Obsolete since v15.04 - will be removed ca. v16")]
-	public interface IDataTarget: IDataSourceShared
+    [Obsolete("Obsolete since v15.04 - will be removed ca. v17")]
+	public interface IDataTarget
     {
 		/// <summary>
 		/// List of all In connections
@@ -69,7 +69,7 @@ namespace ToSic.Eav.DataSource
         /// <param name="name">Stream name - optional</param>
         /// <returns>A list containing the data, or null if not found / something breaks.</returns>
         /// <remarks>
-        /// Introduced in 2sxc 11.13
+        /// Introduced in 2sxc 15.04
         /// </remarks>
         [PublicApi]
         IImmutableList<IEntity> TryGetIn(string name = DataSourceConstants.StreamDefaultName);

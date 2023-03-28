@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSource
         /// * Added in v15.0x
         /// * Important: The internals of this class are not documented, as they will change with time.
         /// </remarks>
-        [InternalApi_DoNotUse_MayChangeWithoutNotice]
+        [PrivateApi]
         public class MyServices : MyServicesBase
         {
             [PrivateApi] public DataSourceConfiguration Configuration { get; }

@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSource
     [PrivateApi]
     public abstract class CustomDataSourceAdvanced: DataSourceBase
     {
-        [InternalApi_DoNotUse_MayChangeWithoutNotice]
+        [PrivateApi]
         public new class MyServices: DataSourceBase.MyServices
         {
             [PrivateApi]

@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSource
         /// Default Constructor, _protected_.
         /// To inherit this, make sure your new class also gets the `MyServices` in it's constructor and passes it to here.
         /// </summary>
-        /// <param name="services">All the services a DataSource needs. Uses the MyServices convention TODO: DOCUMENT</param>
+        /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.MyServices)</param>
         /// <param name="logName">Your own log name, such as `My.CsvDs`</param>
         [PrivateApi]
         protected DataSourceBase(MyServices services, string logName) : base(services, logName)
