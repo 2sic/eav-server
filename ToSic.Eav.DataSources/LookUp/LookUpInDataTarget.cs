@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
 
@@ -21,13 +22,13 @@ namespace ToSic.Eav.LookUp
         /// </summary>
         public const string InStreamName = "In";
 
-	    private readonly IDataSourceTarget _dataTarget;
+	    private readonly IDataSource _dataTarget;
         private readonly IZoneCultureResolver _cultureResolver;
 
         /// <summary>
 		/// Constructor expecting the data-target, of which it will use the In-Stream
 		/// </summary>
-        public LookUpInDataTarget(IDataSourceTarget dataTarget, IZoneCultureResolver cultureResolver)
+        public LookUpInDataTarget(IDataSource dataTarget, IZoneCultureResolver cultureResolver)
 		{
 		    _dataTarget = dataTarget;
             _cultureResolver = cultureResolver;

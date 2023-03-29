@@ -66,8 +66,7 @@ namespace ToSic.Eav.Core.Tests
                 attributes: attributes);
         }
 
-        public static IAttribute TestCreateTyped(this AttributeBuilder builder, string name, ValueTypes type,
-            IList<IValue> values = null)
-            => builder.TestCreateTyped(name, type, values);
+        public static IAttribute TestCreateTyped(this AttributeBuilder builder, string name, ValueTypes type, IList<IValue> values = null)
+            => builder.Create(name, type, values);
     }
 }

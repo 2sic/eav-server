@@ -9,6 +9,41 @@ namespace ToSic.Eav.Apps
 {
     public partial class AppState
     {
+
+        #region GetDraft and GetPublished
+
+        /// <summary>
+        /// If entity is published and there is a draft of it, then it can be navigated through DraftEntity
+        /// </summary>
+        [PrivateApi]
+        public IEntity GetDraft(IEntity entity)
+        {
+            if (entity == null) return null;
+            if (!entity.IsPublished) return null;
+            // 2023-03-28 2dm - I don't think the RepoId is correct here, the publish item still has it's original EntityId...?
+            var publishedEntityId = entity.EntityId; // ((Entity) entity).RepositoryId;
+            // Try to get it, but make sure we only return it if it has a different repo-id - very important
+            if (ListDrafts.Value.TryGetValue(publishedEntityId, out var result) && result.RepositoryId == publishedEntityId)
+                return null;
+            return result;
+            //return Index.Values.FirstOrDefault(draftEntity => draftEntity.IsPublished == false && draftEntity.EntityId == publishedEntityId);
+        }
+
+        /// <summary>
+        /// If entity is draft and there is a published edition, then it can be navigated through PublishedEntity
+        /// </summary>
+        [PrivateApi]
+        public IEntity GetPublished(IEntity entity)
+        {
+            if (entity == null) return null;
+            if (entity.IsPublished) return null;
+            var publishedEntityId = ((Entity)entity).EntityId;
+            return Index.ContainsKey(publishedEntityId) ? Index[publishedEntityId] : null;
+        }
+
+        #endregion
+
+
         /// <summary>
         /// Get all Published Entities in this App (excluding Drafts)
         /// </summary>
@@ -25,11 +60,29 @@ namespace ToSic.Eav.Apps
         [PrivateApi("this is an optimization feature which shouldn't be used by others")]
         public SynchronizedList<IEntity> ListNotHavingDrafts
             => _listNotHavingDrafts ?? (_listNotHavingDrafts =
-                   new SynchronizedEntityList(this,
-                       () => List.Where(e => e.GetDraft() == null).ToImmutableList()));
+                new SynchronizedEntityList(this,
+                    () => List.Where(e => GetDraft(e) == null).ToImmutableList()));
 
         private SynchronizedEntityList _listNotHavingDrafts;
 
+
+        /// <summary>
+        /// Get all Draft Entities in this App
+        /// </summary>
+        [PrivateApi("this is an optimization feature which shouldn't be used by others")]
+        private SynchronizedObject<ImmutableDictionary<int, IEntity>> ListDrafts
+            => _listDrafts ?? (_listDrafts = new SynchronizedObject<ImmutableDictionary<int, IEntity>>(this,
+                () =>
+                {
+                    var unpublished = List.Where(e => e.IsPublished == false);
+                    // there are rare cases where the main item is unpublished and it also has a draft which points to it
+                    // this would result in duplicate entries in the index, so we have to be very sure we don't have these
+                    // so we deduplicate and keep the last - otherwise we would break this dictionary.
+                    var lastOnly = unpublished.GroupBy(e => e.EntityId).Select(g => g.Last()).ToList();
+                    return lastOnly.ToImmutableDictionary(e => e.EntityId);
+                }));
+
+        private SynchronizedObject<ImmutableDictionary<int, IEntity>> _listDrafts;
 
         /// <summary>
         /// Reconnect / wire drafts to the published item
@@ -41,9 +94,9 @@ namespace ToSic.Eav.Apps
             if (log) Log.A($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
 
             // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
-            newEntity.PublishedEntity = Index[publishedId.Value];
-            ((Entity)newEntity.PublishedEntity).DraftEntity = newEntity;
-            newEntity.EntityId = publishedId.Value;
+            //newEntity.PublishedEntity = Index[publishedId.Value];
+            //((Entity)newEntity.PublishedEntity).DraftEntity = newEntity;
+            newEntity.EntityId = publishedId.Value; // this is not immutable, but probably not an issue because it is not in the index yet
         }
 
         /// <summary>
@@ -54,7 +107,7 @@ namespace ToSic.Eav.Apps
         private void RemoveObsoleteDraft(IEntity newEntity, bool log)
         {
             var previous = Index.ContainsKey(newEntity.EntityId) ? Index[newEntity.EntityId] : null;
-            var draftEnt = previous?.GetDraft();
+            var draftEnt = GetDraft(previous);
 
             // check if we went from draft-branch to published, because in this case, we have to remove the last draft
             string msg = null;

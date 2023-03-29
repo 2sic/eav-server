@@ -3,7 +3,6 @@
     public class LogNames
     {
         public static string LogStoreStartUp = "global-start-up";
-
-        public static string LogStorePatches = "global-system-patches";
+        public static string LogStoreInstallation = "global-installation";
     }
 }

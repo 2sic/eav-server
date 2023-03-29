@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSource;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -12,29 +13,25 @@ namespace ToSic.Eav.DataSources
     /// Base class for Children and Parents - since they share a lot of code
     /// </summary>
 
-    public abstract class RelationshipDataSourceBase : DataSource
+    public abstract class RelationshipDataSourceBase : Eav.DataSource.DataSourceBase
     {
         /// <summary>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
         /// </summary>
         [Configuration]
-        public abstract string FieldName { get; set; }
+        public abstract string FieldName { get; }
 
         /// <summary>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
         /// </summary>
         [Configuration]
-        public abstract string ContentTypeName { get; set; }
+        public abstract string ContentTypeName { get; }
 
         /// <summary>
         /// Will filter duplicate hits from the result.
         /// </summary>
         [Configuration(Fallback = true)]
-        public bool FilterDuplicates
-        {
-            get => Configuration.GetThis(true);
-            set => Configuration.SetThis(value);
-        }
+        public bool FilterDuplicates => Configuration.GetThis(true);
 
         /// <summary>
         /// Constructor

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
+using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSources.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys
@@ -19,6 +22,9 @@ namespace ToSic.Eav.DataSources.Sys
     /// For example, it says how many out-streams are available and what fields can be used on each stream. <br/>
     /// This is used in fields which let you pick a query, stream and field from that stream.
     /// </summary>
+    /// <remarks>
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
+    /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "DataSources",
@@ -31,7 +37,7 @@ namespace ToSic.Eav.DataSources.Sys
         ConfigurationType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
         HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.System.QueryInfo.html")]
 
-    public sealed class QueryInfo : DataSource
+    public sealed class QueryInfo : Eav.DataSource.DataSourceBase
     {
         private readonly IDataSourceGenerator<Attributes> _attributesGenerator;
         private readonly IDataFactory _dataFactory;
@@ -49,18 +55,10 @@ namespace ToSic.Eav.DataSources.Sys
         /// The content-type name
         /// </summary>
         [Configuration(Fallback = DefQuery)]
-        public string QueryName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
-        }
+        public string QueryName => Configuration.GetThis();
 
         [Configuration(Fallback = StreamDefaultName)]
-        public string StreamName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
-        }
+        public string StreamName => Configuration.GetThis();
 
         #endregion
 
@@ -108,7 +106,7 @@ namespace ToSic.Eav.DataSources.Sys
             if (!_query.Out.ContainsKey(StreamName))
                 return (EmptyList, "can't find stream name in query");
 
-            var attribInfo = _attributesGenerator.New(source: _query);
+            var attribInfo = _attributesGenerator.New(attach: _query);
             if (StreamName != StreamDefaultName)
                 attribInfo.Attach(StreamDefaultName, _query, StreamName);
 

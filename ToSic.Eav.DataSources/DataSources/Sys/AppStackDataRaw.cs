@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources.Sys
 
         public int TotalResults { get; set; }
 
-        public override Dictionary<string, object> Attributes(RawConvertOptions options)
+        public override IDictionary<string, object> Attributes(RawConvertOptions options)
         {
             var attributes = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase)
             {

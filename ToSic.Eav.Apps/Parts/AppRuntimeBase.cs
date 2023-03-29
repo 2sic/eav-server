@@ -1,4 +1,7 @@
-﻿using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.Configuration;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSources;
+using ToSic.Eav.Services;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
@@ -13,12 +16,12 @@ namespace ToSic.Eav.Apps.Parts
 
         public class MyServices : MyServicesBase
         {
-            public IDataSourceFactory DataSourceFactory { get; }
+            public IDataSourcesService DataSourceFactory { get; }
             public IAppStates AppStates { get; }
             public ZoneRuntime ZoneRuntime { get; }
 
             public MyServices(
-                IDataSourceFactory dataSourceFactory,
+                IDataSourcesService dataSourceFactory,
                 IAppStates appStates,
                 ZoneRuntime zoneRuntime
             ) => ConnectServices(
@@ -53,7 +56,7 @@ namespace ToSic.Eav.Apps.Parts
 
         #region Data & Cache
 
-        public IDataSource Data => _data ?? (_data = Services.DataSourceFactory.CreateDefault(appIdentity: this, showDrafts: ShowDrafts));
+        public IDataSource Data => _data ?? (_data = Services.DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: this, showDrafts: ShowDrafts)));
         private IDataSource _data;
         
 

@@ -9,12 +9,12 @@ namespace ToSic.Eav.DataSources
     /// Base class for Children and Parents - since they share a lot of code
     /// </summary>
 
-    public abstract class MetadataDataSourceBase : DataSource
+    public abstract class MetadataDataSourceBase : Eav.DataSource.DataSourceBase
     {
         /// <remarks>
         /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
         /// </remarks>
-        public abstract string ContentTypeName { get; set; }
+        public abstract string ContentTypeName { get; }
 
 
         /// <summary>

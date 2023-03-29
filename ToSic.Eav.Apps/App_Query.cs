@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.DataSources.Queries;
-using static ToSic.Eav.DataSources.DataSourceConstants;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Query;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.Apps
 {

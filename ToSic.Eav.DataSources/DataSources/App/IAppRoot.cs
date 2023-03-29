@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSources.Queries;
+﻿using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using AppState = ToSic.Eav.Apps.AppState;
 

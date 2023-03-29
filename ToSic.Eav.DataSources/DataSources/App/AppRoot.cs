@@ -1,7 +1,11 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.DataSources
@@ -12,17 +16,23 @@ namespace ToSic.Eav.DataSources
     /// This is also the object returned as the root in any query.
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-    public class AppRoot : DataSource, IAppRoot
+    public class AppRoot : DataSourceBase, IAppRoot
     {
         [PrivateApi]
-        public AppRoot(IAppStates appStates, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Root")
+        public AppRoot(IAppStates appStates, MyServices services) : base(services, $"{LogPrefix}.Root")
         {
             _appStates = appStates;
             ProvideOut(() => AppState.List);
-            ProvideOut(() => AppState.ListPublished.List, DataSourceConstants.StreamPublishedName);
-            ProvideOut(() => AppState.ListNotHavingDrafts.List, DataSourceConstants.StreamDraftsName);
+            ProvideOut(() => AppState.ListPublished.List, StreamPublishedName);
+            ProvideOut(() => AppState.ListNotHavingDrafts.List, StreamDraftsName);
 		}
         private readonly IAppStates _appStates;
+
+        public override IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: this)
+            .AddStream(name: StreamPublishedName)
+            .AddStream(name: StreamDraftsName));
+
+        private readonly GetOnce<IDataSourceLink> _link = new GetOnce<IDataSourceLink>();
 
         /// <summary>
         /// Special CacheKey generator for AppRoots, which rely on the state

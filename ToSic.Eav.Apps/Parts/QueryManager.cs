@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Query;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using Connection = ToSic.Eav.DataSources.Queries.Connection;
-using Connections = ToSic.Eav.DataSources.Queries.Connections;
+using Connection = ToSic.Eav.DataSource.Query.Connection;
+using Connections = ToSic.Eav.DataSource.Query.Connections;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -27,7 +28,7 @@ namespace ToSic.Eav.Apps.Parts
             LazySvc<DataBuilder> builder,
             LazySvc<ValueBuilder> valueBuilder,
             LazySvc<JsonSerializer> jsonSerializer,
-            LazySvc<Eav.DataSources.Queries.QueryManager> queryManager,
+            LazySvc<DataSource.Query.QueryManager> queryManager,
             LazySvc<QueryDefinitionBuilder> queryDefBuilder) : base("App.QryMng")
         {
             ConnectServices(
@@ -42,7 +43,7 @@ namespace ToSic.Eav.Apps.Parts
         private readonly LazySvc<SystemManager> _systemManagerLazy;
         private readonly LazySvc<ValueBuilder> _valueBuilder;
         private LazySvc<JsonSerializer> Serializer { get; }
-        private readonly LazySvc<Eav.DataSources.Queries.QueryManager> _queryManager;
+        private readonly LazySvc<DataSource.Query.QueryManager> _queryManager;
         private readonly LazySvc<QueryDefinitionBuilder> _queryDefBuilder;
         private readonly LazySvc<DataBuilder> _builder;
 

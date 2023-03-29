@@ -2,9 +2,12 @@
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -21,11 +24,11 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Share,
         Type = DataSourceType.Filter,
         NameId = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
-        In = new[] { QueryConstants.InStreamDefaultRequired, DataSourceConstants.StreamFallbackName },
+        In = new[] { InStreamDefaultRequired, StreamFallbackName },
         DynamicOut = false,
         ConfigurationType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
         HelpLink = "https://r.2sxc.org/DsRelationshipFilter")]
-    public sealed class RelationshipFilter : DataSource
+    public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     {
         #region Configuration-properties
 
@@ -74,7 +77,7 @@ namespace ToSic.Eav.DataSources
         public string Relationship
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -84,7 +87,7 @@ namespace ToSic.Eav.DataSources
         public string Filter
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -94,7 +97,7 @@ namespace ToSic.Eav.DataSources
 		public string CompareAttribute
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -106,7 +109,7 @@ namespace ToSic.Eav.DataSources
         public string CompareMode
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value.ToLowerInvariant());
+            set => Configuration.SetThisObsolete(value.ToLowerInvariant());
         }
 
         /// <summary>
@@ -116,7 +119,7 @@ namespace ToSic.Eav.DataSources
 		public string Separator
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value.ToLowerInvariant());
+            set => Configuration.SetThisObsolete(value.ToLowerInvariant());
         }
 
         /// <summary>
@@ -131,7 +134,7 @@ namespace ToSic.Eav.DataSources
                 var valLower = value.ToLowerInvariant();
                 if (!_directionPossibleValues.Contains(valLower))
                     throw new Exception("Value '" + value + "'not allowed for ChildOrParent");
-                Configuration.SetThis(valLower);
+                Configuration.SetThisObsolete(valLower);
             }
         }
 
@@ -141,7 +144,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new RelationshipFilter
         /// </summary>
         [PrivateApi]
-        public RelationshipFilter(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.Relfil")
+        public RelationshipFilter(MyServices services): base(services, $"{LogPrefix}.Relfil")
         {
             ProvideOut(GetRelationshipsOrFallback);
             //ConfigMask(nameof(Relationship));
@@ -156,8 +159,8 @@ namespace ToSic.Eav.DataSources
         private IImmutableList<IEntity> GetRelationshipsOrFallback() => Log.Func(() =>
         {
             var res = GetEntities();
-            if (!res.Any() && In.HasStreamWithItems(DataSourceConstants.StreamFallbackName))
-                return (In[DataSourceConstants.StreamFallbackName].List.ToImmutableList(), "fallback");
+            if (!res.Any() && In.HasStreamWithItems(StreamFallbackName))
+                return (In[StreamFallbackName].List.ToImmutableList(), "fallback");
 
             return (res, "ok");
         });

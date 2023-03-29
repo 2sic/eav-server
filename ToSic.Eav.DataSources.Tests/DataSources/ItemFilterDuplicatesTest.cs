@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Eav.Services;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests
@@ -74,11 +75,11 @@ namespace ToSic.Eav.DataSourceTests
         {
             if(attach < 1) throw new Exception("attach must be at least 1");
             var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
-            var dsf = GetService<IDataSourceFactory>();
+            var dsf = GetService<IDataSourcesService>();
             var sf = dsf.TestCreate<StreamMerge>(appIdentity: new AppIdentity(0, 0), upstream: ds);
 
             for (int i = 1; i < attach; i++)
-                sf.InForTests().Add("another" + i, ds.Out.First().Value);
+                sf.Attach("another" + i, ds.Out.First().Value);
 
             var unique = dsf.TestCreate<ItemFilterDuplicates>(appIdentity: new AppIdentity(0, 0), upstream: sf);
             return unique;

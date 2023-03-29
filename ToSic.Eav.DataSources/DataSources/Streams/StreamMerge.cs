@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -27,7 +28,7 @@ namespace ToSic.Eav.DataSources
         DynamicIn = true,
 	    HelpLink = "https://r.2sxc.org/DsStreamMerge")]
 
-    public sealed class StreamMerge: DataSource
+    public sealed class StreamMerge: Eav.DataSource.DataSourceBase
 	{
         /// <summary>
         /// Name of stream which offers only distinct items (filter duplicates)

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.DataSource;
 
 namespace ToSic.Eav.DataSourceTests.BaseClassTests
 {
@@ -10,30 +10,14 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
         {
         }
         [Configuration(Fallback = ExpectedGetThisString)]
-        public string GetThisString
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
-        }
+        public string GetThisString => Configuration.GetThis();
 
         [Configuration(Fallback = true)]
-        public bool GetThisTrue
-        {
-            get => Configuration.GetThis(false);    // should return true because it was configured
-            set => Configuration.SetThis(value);
-        }
+        public bool GetThisTrue => Configuration.GetThis(false); // should return true because it was configured
 
         [Configuration]
-        public bool GetThisFalseDefault
-        {
-            get => Configuration.GetThis(false);
-            set => Configuration.SetThis(value);
-        }
+        public bool GetThisFalseDefault => Configuration.GetThis(false);
         [Configuration(Fallback = false)]
-        public bool GetThisFalseInitialized
-        {
-            get => Configuration.GetThis(false);
-            set => Configuration.SetThis(value);
-        }
+        public bool GetThisFalseInitialized => Configuration.GetThis(false);
     }
 }

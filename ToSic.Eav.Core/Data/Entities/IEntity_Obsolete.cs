@@ -1,5 +1,7 @@
 ﻿#if NETFRAMEWORK
 using System;
+using System.Runtime.InteropServices;
+using ToSic.Lib.Documentation;
 
 // This is old stuff / compatibility necessary for DNN
 // It should not bleed into Oqtane or newer implementations
@@ -20,6 +22,7 @@ namespace ToSic.Eav.Data
         /// the object is string, int or even a EntityRelationship
         /// </returns>
         [Obsolete]
+        [PrivateApi]
         new object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks);
 
         /// <summary>
@@ -35,6 +38,7 @@ namespace ToSic.Eav.Data
         /// the object is string, int or even a EntityRelationship
         /// </returns>
         [Obsolete]
+        [PrivateApi]
         new T GetBestValue<T>(string attributeName, string[] languages, bool resolveHyperlinks);
 
     }

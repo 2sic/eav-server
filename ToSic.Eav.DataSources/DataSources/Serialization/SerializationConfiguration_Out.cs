@@ -1,44 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Streams;
+using ToSic.Lib.Helpers;
+using static System.StringComparer;
 
 namespace ToSic.Eav.DataSources
 {
-    public partial class SerializationConfiguration //: IDeferredDataSource
+    public partial class Serialization
     {
 
-        #region Deferred / Dynamic Out
+        #region Dynamic Out
 
         /// <inheritdoc/>
-        public override IDictionary<string, IDataStream> Out
-        {
-            get
-            {
-                if (!_requiresRebuildOfOut) return _out;
-                CreateOutWithAllStreams();
-                _requiresRebuildOfOut = false;
-                return _out;
-            }
-        }
+        public override IReadOnlyDictionary<string, IDataStream> Out => _getOut.Get(() => new ReadOnlyDictionary<string, IDataStream>(CreateOutWithAllStreams()));
 
-        ///// <inheritdoc />
-        //[PrivateApi]
-        //public IDataStream DeferredOut(string name)
-        //    => _out.ContainsKey(name) ? _out[name] : AttachDeferredStreamToOut(name);
-
-
-        private readonly IDictionary<string, IDataStream> _out = new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase);
-        private bool _requiresRebuildOfOut = true;
+        private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _getOut = new GetOnce<IReadOnlyDictionary<string, IDataStream>>();
 
         /// <summary>
         /// Attach all missing streams, now that Out is used the first time.
-        /// Note that some streams were already added because of the DeferredOut
         /// </summary>
-        private void CreateOutWithAllStreams()
+        private IDictionary<string, IDataStream> CreateOutWithAllStreams()
         {
-            foreach (var dataStream in In.Where(s => !_out.ContainsKey(s.Key)))
-                //Provide(dataStream.Key, () => GetList(dataStream.Key));
-                _out.Add(dataStream.Key, new DataStream(this, dataStream.Key, () => GetList(dataStream.Key)));
+            var outDic = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
+            foreach (var dataStream in In.Where(s => !outDic.ContainsKey(s.Key)))
+                outDic.Add(dataStream.Key, new DataStream(this, dataStream.Key, () => GetList(dataStream.Key)));
+            return outDic;
         }
 
         #endregion

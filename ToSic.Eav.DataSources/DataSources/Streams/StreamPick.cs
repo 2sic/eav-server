@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -25,7 +26,7 @@ namespace ToSic.Eav.DataSources
         DynamicIn = true,
         HelpLink = "https://r.2sxc.org/DsStreamPick")]
 
-    public sealed class StreamPick : DataSource
+    public sealed class StreamPick : Eav.DataSource.DataSourceBase
     {
         #region Configuration-properties
 
@@ -37,7 +38,7 @@ namespace ToSic.Eav.DataSources
         public string StreamName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         ///// <summary>

@@ -9,7 +9,7 @@ namespace ToSic.Eav.LookUp
     /// Resolves Configurations from LookUps. Common use is for configurable DataSources
     /// </summary>
     [PublicApi]
-    public interface ILookUpEngine: IHasLog, IConfiguration
+    public interface ILookUpEngine: IHasLog
 	{
         /// <summary>
         /// Property Sources this Provider can use.

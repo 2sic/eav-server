@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSourceTests.Streams
 {
@@ -13,7 +14,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         public void StreamWhereDefaultIsReturned()
         {
             var stmf = AssembleTestFallbackStream();
-            stmf.InForTests()[DataSourceConstants.StreamDefaultName] = stmf.InForTests()["1"];
+            stmf.Attach(StreamDefaultName, stmf.InForTests()["1"]);
 
             Assert.AreEqual(1, stmf.ListForTests().Count(), "should have found 1");
         }
@@ -28,13 +29,15 @@ namespace ToSic.Eav.DataSourceTests.Streams
         [TestMethod]
         public void DoManyFoldFallback()
         {
-            var stmf = AssembleTestFallbackStream();
-            stmf.InForTests().Remove("1");
-            stmf.InForTests().Add("Fallback1", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
-            stmf.InForTests().Add("Fallback2", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
-            stmf.InForTests().Add("Fallback3", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
-            stmf.InForTests().Add("Fallback4", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
-            stmf.InForTests().Add("Fallback5", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
+            var stmf = AssembleTestFallbackStream(addStream1: false);
+            //stmf.InForTests().Remove("1");
+            var inDefaultStream = stmf.InForTests()[StreamDefaultName];
+            stmf.Attach("Fallback1", inDefaultStream);
+            stmf.Attach("Fallback2", inDefaultStream);
+            stmf.Attach("Fallback3", inDefaultStream);
+            stmf.Attach("Fallback4", inDefaultStream);
+            stmf.Attach("Fallback5", inDefaultStream);
+
             Assert.AreEqual(45, stmf.ListForTests().Count(), "Should have looped through many and found the 45");
             Assert.AreEqual("ZMany", stmf.ReturnedStreamName);
         }
@@ -42,13 +45,13 @@ namespace ToSic.Eav.DataSourceTests.Streams
         [TestMethod]
         public void DoManyFallbacks2()
         {
-            var stmf = AssembleTestFallbackStream();
-            stmf.InForTests().Add("ZZZ", stmf.InForTests()["1"]); // should be after the "ZMany" so it should not return anything
-            stmf.InForTests().Remove("1");
-            stmf.InForTests().Add("1", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
-            stmf.InForTests().Add("2", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
-            stmf.InForTests().Add("3", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
-            stmf.InForTests().Add("Fallback5", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
+            var sourceForStream1 = AssembleTestFallbackStream(addStream1: true);
+            var stmf = AssembleTestFallbackStream(addStream1: false);
+            stmf.Attach("ZZZ", sourceForStream1.InForTests()["1"]); // should be after the "ZMany" so it should not return anything
+            stmf.Attach("1", stmf.InForTests()[StreamDefaultName]);
+            stmf.Attach("2", stmf.InForTests()[StreamDefaultName]);
+            stmf.Attach("3", stmf.InForTests()[StreamDefaultName]);
+            stmf.Attach("Fallback5", stmf.InForTests()[StreamDefaultName]);
             Assert.AreEqual(45, stmf.ListForTests().Count(), "Should have looped through many and found the 45");
             Assert.AreEqual("ZMany", stmf.ReturnedStreamName);
         }
@@ -56,24 +59,24 @@ namespace ToSic.Eav.DataSourceTests.Streams
         [TestMethod]
         public void FindNothing()
         {
-            var stmf = AssembleTestFallbackStream();
-            stmf.InForTests().Remove("1");
-            stmf.InForTests().Add("1", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
-            stmf.InForTests().Add("2", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
-            stmf.InForTests().Add("3", stmf.InForTests()[DataSourceConstants.StreamDefaultName]);
-            stmf.InForTests().Remove("ZMany");
+            var stmf = AssembleTestFallbackStream(addStream1: false, addStreamZMany: false);
+            stmf.Attach("1", stmf.InForTests()[StreamDefaultName]);
+            stmf.Attach("2", stmf.InForTests()[StreamDefaultName]);
+            stmf.Attach("3", stmf.InForTests()[StreamDefaultName]);
             Assert.AreEqual(0, stmf.ListForTests().Count(), "Should find none");
         }
 
-        public StreamFallback AssembleTestFallbackStream()
+        private StreamFallback AssembleTestFallbackStream(bool addStream1 = true, bool addStreamZMany = true)
         {
             var emptyDs = new DataTablePerson(this).Generate(0, 1001);
             var streams = CreateDataSource<StreamFallback>(emptyDs);
 
             var dsWith1 = new DataTablePerson(this).Generate(1, 2000);
             var dsWithmany = new DataTablePerson(this).Generate(45, 4000);
-            streams.AttachForTests("1", dsWith1);
-            streams.AttachForTests("ZMany", dsWithmany);
+            if (addStream1)
+                streams.AttachForTests("1", dsWith1);
+            if (addStreamZMany)
+                streams.AttachForTests("ZMany", dsWithmany);
             return streams;
 
         }

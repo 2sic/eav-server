@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Data.Raw;
 
 namespace ToSic.Eav.DataSourceTests.TreeMapperTests
 {
@@ -27,7 +28,7 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
 
         public List<int> ChildrenIds { get; }
 
-        public Dictionary<string, object> Attributes(RawConvertOptions options) => new Dictionary<string, object>
+        public IDictionary<string, object> Attributes(RawConvertOptions options) => new Dictionary<string, object>
         {
             { nameof(Title), Title },
             { "Children", new RawRelationship(keys: ChildrenIds?.Cast<object>() ?? new List<object>())},

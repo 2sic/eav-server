@@ -159,7 +159,7 @@ namespace ToSic.Eav.Data
 
         #region ToString to improve debugging experience
 
-        public override string ToString() => $"{GetType()} ={GetTypedValue()?.Serialized}";
+        public override string ToString() => $"[{GetType()}:{Values?.Count()}x] - first={GetTypedValue()?.Serialized}";
 
         #endregion
     }

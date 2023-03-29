@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.DataSource.Debug;
 
 
 namespace ToSic.Eav.WebApi.Dto
@@ -8,8 +9,8 @@ namespace ToSic.Eav.WebApi.Dto
     public class QueryRunDto
     {
         public IDictionary<string, IEnumerable<EavLightEntity>> Query;
-        public List<DataSources.Debug.StreamInfo> Streams;
-        public Dictionary<Guid, DataSources.Debug.DataSourceInfo> Sources;
+        public List<StreamInfo> Streams;
+        public Dictionary<Guid, DataSourceInfo> Sources;
         public QueryTimerDto QueryTimer;
     }
 

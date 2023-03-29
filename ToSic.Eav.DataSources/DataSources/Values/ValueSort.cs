@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSources.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -21,11 +22,11 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Sort,
         NameId = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { QueryConstants.InStreamDefaultRequired },
+        In = new[] { InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.ValueSort",
         HelpLink = "https://r.2sxc.org/DsValueSort")]
 
-    public sealed class ValueSort : DataSource
+    public sealed class ValueSort : Eav.DataSource.DataSourceBase
 	{
         #region Configuration-properties
         
@@ -36,7 +37,7 @@ namespace ToSic.Eav.DataSources
 		public string Attributes
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace ToSic.Eav.DataSources
 		public string Directions
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace ToSic.Eav.DataSources
 		public string Languages
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 		#endregion
 

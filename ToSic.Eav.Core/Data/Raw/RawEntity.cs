@@ -26,15 +26,15 @@ namespace ToSic.Eav.Data.Raw
             _values = values;
         }
 
-        public Dictionary<string, object> Values
+        public IDictionary<string, object> Values
         {
             // ReSharper disable once ConvertToNullCoalescingCompoundAssignment
             get => _values ?? (_values = new Dictionary<string, object>(InvariantCultureIgnoreCase));
             set => _values = value?.ToInvariant() ?? _values;
         }
-        private Dictionary<string, object> _values;
+        private IDictionary<string, object> _values;
 
         /// <inheritdoc />
-        public override Dictionary<string, object> Attributes(RawConvertOptions options) => _values;
+        public override IDictionary<string, object> Attributes(RawConvertOptions options) => _values;
     }
 }

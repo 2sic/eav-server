@@ -4,12 +4,13 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSources.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys
@@ -18,6 +19,10 @@ namespace ToSic.Eav.DataSources.Sys
     /// <summary>
     /// A DataSource that gets all Apps of a zone.
     /// </summary>
+    /// <remarks>
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
+    /// * note that the above change is actually a breaking change, but since this is such an advanced DataSource, we assume it's not used in dynamic code.
+    /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "Apps",
@@ -37,7 +42,7 @@ namespace ToSic.Eav.DataSources.Sys
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Apps: CustomDataSourceLight
+    public sealed class Apps: CustomDataSource
 	{
 
         #region Configuration-properties (no config)
@@ -49,11 +54,7 @@ namespace ToSic.Eav.DataSources.Sys
 	    /// The attribute whose value will be filtered
 	    /// </summary>
 	    [Configuration(Field = ZoneIdField)]
-	    public int OfZoneId
-	    {
-	        get => Configuration.GetThis(ZoneId);
-            set => Configuration.SetThis(value);
-        }
+	    public int OfZoneId => Configuration.GetThis(ZoneId);
 
         #endregion
 
@@ -67,7 +68,10 @@ namespace ToSic.Eav.DataSources.Sys
         public Apps(MyServices services, Generator<Eav.Apps.App> appGenerator, IAppStates appStates) : base(services, $"{LogPrefix}.Apps")
         {
             ConnectServices(appGenerator, appStates);
-            ProvideOutRaw(() => GetDefault(appStates, appGenerator), options: new DataFactoryOptions(typeName: AppsContentTypeName, titleField: AppType.Name.ToString()));
+            ProvideOutRaw(
+                () => GetDefault(appStates, appGenerator),
+                options: () => new DataFactoryOptions(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
+            );
         }
 
         #endregion

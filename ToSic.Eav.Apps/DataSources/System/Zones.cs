@@ -4,7 +4,8 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
@@ -36,7 +37,7 @@ namespace ToSic.Eav.DataSources.Sys
             },
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Zones: DataSource
+    public sealed class Zones: Eav.DataSource.DataSourceBase
 	{
         private readonly IDataFactory _dataFactory;
 

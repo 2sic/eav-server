@@ -138,7 +138,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var app2 = loader2.AppState(test.AppId, false);
             var itm2 = app2.List.One(newId.First());
 
-            Assert.AreEqual(itm2.GetBestTitle(), ctTitle, "title should be loaded as saved" );
+            Assert.AreEqual(ctTitle, itm2.GetBestTitle(), "title should be loaded as saved" );
 
             trans.Rollback();
 

@@ -4,7 +4,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -29,7 +30,7 @@ namespace ToSic.Eav.DataSources.Sys
     )]
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
-    public class MetadataTargetTypes : DataSource
+    public class MetadataTargetTypes : Eav.DataSource.DataSourceBase
     {
         private readonly IDataFactory _dataFactory;
 

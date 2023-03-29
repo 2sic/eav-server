@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource.Query;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;

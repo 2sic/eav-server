@@ -4,13 +4,14 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Query;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Logging;
-using Connection = ToSic.Eav.DataSources.Queries.Connection;
-using Connections = ToSic.Eav.DataSources.Queries.Connections;
+using Connection = ToSic.Eav.DataSource.Query.Connection;
+using Connections = ToSic.Eav.DataSource.Query.Connections;
 
 namespace ToSic.Eav.Apps.Parts
 {

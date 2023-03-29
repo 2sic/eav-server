@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.DataSources.Queries;
+﻿using System.Collections.Generic;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources
@@ -19,7 +21,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = true,
         DynamicIn = true)]
 
-    public class PassThrough : DataSource
+    public class PassThrough : DataSourceBase
 	{
         /// <inheritdoc />
         /// <summary>
@@ -33,8 +35,12 @@ namespace ToSic.Eav.DataSources
         [PrivateApi]
         protected PassThrough(MyServices services, string logName) : base(services, logName)
         {
-            Out = In;
         }
+
+        /// <summary>
+        /// The Out is the same as the In.
+        /// </summary>
+        public override IReadOnlyDictionary<string, IDataStream> Out => In;
 
         /// <summary>
         /// provide a static cachekey - as there is nothing dynamic on this source to modify the cache

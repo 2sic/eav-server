@@ -11,7 +11,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
@@ -57,7 +58,7 @@ namespace ToSic.Eav.DataSources
         public string ConnectionStringName
 		{
 			get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
 		}
 
 		/// <summary>
@@ -67,7 +68,7 @@ namespace ToSic.Eav.DataSources
 		public string ConnectionString
 		{
 			get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
 		}
 
         /// <summary>
@@ -77,7 +78,7 @@ namespace ToSic.Eav.DataSources
         public string SelectCommand
 		{
 			get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
 		}
 
         /// <summary>
@@ -87,7 +88,7 @@ namespace ToSic.Eav.DataSources
 		public string ContentType
 		{
 			get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
 		}
 
 		/// <summary>
@@ -97,7 +98,7 @@ namespace ToSic.Eav.DataSources
 		public string TitleField
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
 		/// <summary>
@@ -107,7 +108,7 @@ namespace ToSic.Eav.DataSources
 		public string EntityIdField
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         #endregion
@@ -196,7 +197,7 @@ namespace ToSic.Eav.DataSources
             var tokenizer = TokenReplace.Tokenizer;
 
             // Before we process the Select-Command, we must get it (by default it's just a token!)
-	        if (SelectCommand.StartsWith("[" + MyConfiguration, InvariantCultureIgnoreCase))
+	        if (SelectCommand.StartsWith("[" + DataSourceConstants.MyConfigurationSourceName, InvariantCultureIgnoreCase))
 	        {
 	            var tempList = Configuration.LookUpEngine.LookUp(
                     new Dictionary<string, string> { { "one", SelectCommand } },

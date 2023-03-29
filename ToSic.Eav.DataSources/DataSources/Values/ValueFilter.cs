@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSources.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -23,12 +25,12 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.FilterList,
         Type = DataSourceType.Filter,
         NameId = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
-        In = new[] { QueryConstants.InStreamDefaultRequired, StreamFallbackName },
+        In = new[] { InStreamDefaultRequired, StreamFallbackName },
         DynamicOut = false,
         ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",
         HelpLink = "https://r.2sxc.org/DsValueFilter")]
 
-    public sealed class ValueFilter : DataSource
+    public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     {
         #region Configuration-properties Attribute, Value, Language, Operator
 
@@ -39,7 +41,7 @@ namespace ToSic.Eav.DataSources
         public string Attribute
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -49,7 +51,7 @@ namespace ToSic.Eav.DataSources
         public string Value
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -59,7 +61,7 @@ namespace ToSic.Eav.DataSources
         public string Languages
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -70,7 +72,7 @@ namespace ToSic.Eav.DataSources
         public string Operator
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -80,7 +82,7 @@ namespace ToSic.Eav.DataSources
         public string Take
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
         #endregion
 

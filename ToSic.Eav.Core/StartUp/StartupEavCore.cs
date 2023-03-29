@@ -105,7 +105,7 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
             services.TryAddTransient<IUser, UserUnknown>();
             services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
-            services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
+            services.TryAddTransient<IContextResolverUserPermissions, ContextResolverUserPermissions>();
             services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
             services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
             services.TryAddTransient<IAppRepositoryLoader, AppRepositoryLoaderUnknown>();
@@ -116,6 +116,7 @@ namespace ToSic.Eav.StartUp
             // Unknown-Runtime for loading configuration etc. File-runtime
             services.TryAddTransient<IRuntime, RuntimeUnknown>();
             services.TryAddTransient<IPlatformInfo, PlatformUnknown>();
+
 
             return services;
         }

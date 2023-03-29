@@ -2,7 +2,8 @@
 using System.Linq;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -25,7 +26,7 @@ namespace ToSic.Eav.DataSources.Sys
         DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Features : CustomDataSourceLight
+    public sealed class Features : CustomDataSource
     {
 
         #region Configuration-properties (no config)
@@ -40,7 +41,7 @@ namespace ToSic.Eav.DataSources.Sys
         public Features(MyServices services, IFeaturesInternal featuresService) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
         {
             ConnectServices(featuresService);
-            ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: new DataFactoryOptions(typeName: "Feature"));
+            ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: () => new DataFactoryOptions(typeName: "Feature"));
         }
     }
 }

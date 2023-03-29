@@ -53,12 +53,23 @@ namespace ToSic.Eav.Plumbing
             var t = typeof(T);
             var unboxedT = t.UnboxIfNullable();
 
+            // Some pre-checks which we'll need anyhow, and should result in less try/catch
+            var toBool = unboxedT == typeof(bool);
+            var toNumber = unboxedT.IsNumeric();
+
             // If we start with a string, we can optimize number and boolean conversion
             // Numbers are first converted to decimal, because it could handle .notation
             // Booleans are also first converted to decimal, so that "1.1" or "27" is treated as truthy
-            if(value is string s)
+            if (value is string s)
             {
-                if (numeric && unboxedT.IsNumeric() || truthy && unboxedT == typeof(bool))
+                // Short circuit string-to-string
+                if (unboxedT == typeof(string)) return (true, (T)(object)s);
+
+                // Catch empty strings early for very common use cases
+                if (string.IsNullOrWhiteSpace(s) && (toBool || toNumber)) 
+                    return (false, default);
+
+                if (numeric && toNumber || truthy && toBool)
                 {
                     if (s.IndexOf(',') > -1) s = s.Replace(',', '.');
                     if (decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out var dec))

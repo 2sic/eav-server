@@ -18,7 +18,7 @@ namespace ToSic.Eav.Data.Build
             _builder = builder;
         }
 
-        internal Dictionary<string, object> RelationshipsToAttributes(Dictionary<string, object> values, ILookup<object, IEntity> relationships)
+        internal Dictionary<string, object> RelationshipsToAttributes(IDictionary<string, object> values, ILookup<object, IEntity> relationships)
         {
             var l = Log.Fn<Dictionary<string, object>>();
             var valuesWithRelationships = values.ToDictionary(

@@ -6,7 +6,8 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Data.Raw;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using static ToSic.Eav.Configuration.ConfigurationConstants;
 
@@ -23,31 +24,18 @@ namespace ToSic.Eav.DataSources.Sys
         ConfigurationType = "f9aca0f0-1b1b-4414-b42e-b337de124124"
         // HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes"
         )]
-    public class SystemStack: DataSource
+    public class SystemStack: Eav.DataSource.DataSourceBase
     {
         #region Configuration
 
         [Configuration]
-        public string StackNames
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
-        }
+        public string StackNames => Configuration.GetThis();
 
         [Configuration]
-        public string Keys
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
-        }
+        public string Keys => Configuration.GetThis();
 
         [Configuration(Fallback = true)]
-        public bool AddValues
-        {
-            get => Configuration.GetThis(true);
-            set => Configuration.SetThis(value);
-        }
-
+        public bool AddValues => Configuration.GetThis(true);
 
         #endregion
 

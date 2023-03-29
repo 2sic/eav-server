@@ -1,9 +1,11 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Context;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSources.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -24,7 +26,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false, 
         HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
 
-    public class PublishingFilter : DataSource
+    public class PublishingFilter : Eav.DataSource.DataSourceBase
 	{
 
         #region Configuration-properties
@@ -36,7 +38,7 @@ namespace ToSic.Eav.DataSources
 		public bool? ShowDrafts
 		{
 			get => Configuration.GetThis<bool?>(null);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 		#endregion
 

@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.DataSources.Catalog;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Catalog;
+using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.Services;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources
 {
     public static class DataSourcesStartup
@@ -10,14 +13,15 @@ namespace ToSic.Eav.DataSources
         public static IServiceCollection AddDataSources(this IServiceCollection services)
         {
             // Dependencies, new in v15
-            services.TryAddTransient<DataSource.MyServices>();
-            services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
+            services.TryAddTransient<Eav.DataSource.DataSourceBase.MyServices>();
             services.TryAddTransient<App.MyServices>();
-            services.TryAddTransient<DataSourceConfigurationManager>();
-            services.TryAddTransient<DataSourceConfigurationManager.MyServices>();
+            services.TryAddTransient<DataSourceConfiguration>();
+            services.TryAddTransient<DataSourceConfiguration.MyServices>();
+            services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
+            services.TryAddTransient<CustomDataSource.MyServices>();
 
             services.TryAddTransient<DataSourceCatalog>();
-            services.TryAddTransient<IDataSourceFactory, DataSourceFactory>();
+            services.TryAddTransient<IDataSourcesService, DataSourcesService>();
             services.TryAddTransient<DataSourceErrorHelper>();
             services.TryAddTransient(typeof(IDataSourceGenerator<>), typeof(DataSourceGenerator<>));
 
@@ -38,7 +42,14 @@ namespace ToSic.Eav.DataSources
 
             services.TryAddTransient<ConfigurationDataLoader>();
 
-            
+            services.AddDataSourcesFallback();
+
+            return services;
+        }
+
+        public static IServiceCollection AddDataSourcesFallback(this IServiceCollection services)
+        {
+            services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();
 
             return services;
         }

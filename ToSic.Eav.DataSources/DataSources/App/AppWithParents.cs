@@ -1,12 +1,15 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.Services;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSources
 {
-    internal class AppWithParents: DataSource
+    internal class AppWithParents: Eav.DataSource.DataSourceBase
     {
         private readonly IDataSourceGenerator<StreamMerge> _mergeGenerator;
 
@@ -34,11 +37,11 @@ namespace ToSic.Eav.DataSources
 
 
         private readonly IAppStates _appStates;
-        private readonly IDataSourceFactory _dataSourceFactory;
+        private readonly IDataSourcesService _dataSourceFactory;
         private int _appId;
         private int _zoneId;
 
-        public AppWithParents(MyServices services, IDataSourceFactory dataSourceFactory, IAppStates appStates, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
+        public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppStates appStates, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
         {
             ConnectServices(
                 _dataSourceFactory = dataSourceFactory,
@@ -52,18 +55,20 @@ namespace ToSic.Eav.DataSources
         {
             var appState = _appStates.Get(this);
             
-            var initialSource = _dataSourceFactory.CreateDefault(appIdentity: appState);
+            var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appState));
+            var initialLink = initialSource.Link;
 
-            var merge = _mergeGenerator.New(source: initialSource);
             // 2dm 2023-01-22 #maybeSupportIncludeParentApps
             var parent = appState.ParentApp;
             var countRecursions = 0;
             while (parent?.AppState != null && countRecursions++ < 5)
             {
-                var next = _dataSourceFactory.CreateDefault(appIdentity: parent.AppState);
-                merge.In.Add("App" + parent.AppState.NameId, next.Out.First().Value);
+                var next = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: parent.AppState));
+                initialLink = initialLink.Add(next.Link.Rename(inName: $"App{parent.AppState.NameId}"));
                 parent = parent.AppState.ParentApp;
             }
+
+            var merge = _mergeGenerator.New(attach: initialLink);
 
             return merge.Out.First().Value.List.ToImmutableList();
         });

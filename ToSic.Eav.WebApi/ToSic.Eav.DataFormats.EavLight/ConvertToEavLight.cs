@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
 // ReSharper disable once CheckNamespace
@@ -23,12 +25,14 @@ namespace ToSic.Eav.DataFormats.EavLight
 
         public class MyServices: MyServicesBase
         {
+            public LazySvc<IAppStates> AppStates { get; }
             public IValueConverter ValueConverter { get; }
             public IZoneCultureResolver ZoneCultureResolver { get; }
 
-            public MyServices(IValueConverter valueConverter, IZoneCultureResolver zoneCultureResolver)
+            public MyServices(LazySvc<IAppStates> appStates, IValueConverter valueConverter, IZoneCultureResolver zoneCultureResolver)
             {
                 ConnectServices(
+                    AppStates = appStates,
                     ValueConverter = valueConverter,
                     ZoneCultureResolver = zoneCultureResolver
                 );
@@ -141,7 +145,11 @@ namespace ToSic.Eav.DataFormats.EavLight
 
             AddAllIds(entity, entityValues, rules);
 
-            if (WithPublishing) AddPublishingInformation(entity, entityValues);
+            if (WithPublishing)
+            {
+                var appState = Services.AppStates.Value.Get(entity.AppId);
+                AddPublishingInformation(entity, entityValues, appState);
+            };
 
             AddMetadataAndFor(entity, entityValues, rules);
 

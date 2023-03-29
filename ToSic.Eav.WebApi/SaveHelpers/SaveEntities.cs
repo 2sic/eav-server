@@ -62,13 +62,13 @@ namespace ToSic.Eav.WebApi.SaveHelpers
         /// Generate pairs of guid/id of the newly added items
         /// </summary>
         /// <returns></returns>
-        public Dictionary<Guid, int> GenerateIdList(EntityRuntime appEntities, IEnumerable<BundleWithHeader> items) => Log.Func(l =>
+        public Dictionary<Guid, int> GenerateIdList(EntityRuntime appEntities, IEnumerable<BundleWithHeader> items, AppState appState) => Log.Func(l =>
         {
             var idList = items.Select(e =>
                 {
                     var foundEntity = appEntities.Get(e.Header.Guid);
                     var state = foundEntity == null ? "not found" : foundEntity.IsPublished ? "published" : "draft";
-                    var draft = foundEntity?.GetDraft();
+                    var draft = foundEntity  == null ? null : appState.GetDraft(foundEntity);
                     l.A($"draft check: entity {e.Header.Guid} ({state}) - additional draft: {draft != null} - will return the draft");
                     return draft ?? foundEntity; // return the draft (that would be the latest), or the found, or null if not found
                 })

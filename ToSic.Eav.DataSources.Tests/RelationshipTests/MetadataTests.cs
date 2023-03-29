@@ -1,8 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
@@ -40,14 +42,18 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
         {
             if(lookUpEngine == null) lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
 
-            var baseDs = DataSourceFactory.CreateDefault(AppIdentity, configuration: lookUpEngine);
+            var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: AppIdentity, lookUp: lookUpEngine));
             var appDs = CreateDataSource<App>(baseDs);
 
             var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));
 
-            var childDs = CreateDataSource<DataSources.Metadata>(inStream);
+            var dsParams = new Dictionary<string, object>();
             if (typeName != null)
-                childDs.ContentTypeName = typeName;
+                dsParams["ContentTypeName"] = typeName;
+
+            var childDs = CreateDataSource<DataSources.Metadata>(inStream, dsParams);
+            //if (typeName != null)
+            //    childDs.ContentTypeName = typeName;
 
             return childDs;
         }

@@ -4,9 +4,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -23,11 +25,11 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Modify,
         NameId = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { QueryConstants.InStreamDefaultRequired },
+        In = new[] { InStreamDefaultRequired },
         ConfigurationType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
         HelpLink = "https://r.2sxc.org/DsAttributeRename")]
 
-    public class AttributeRename : DataSource
+    public class AttributeRename : Eav.DataSource.DataSourceBase
 	{
 		#region Configuration-properties
 
@@ -39,7 +41,7 @@ namespace ToSic.Eav.DataSources
         public string AttributeMap
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -49,7 +51,7 @@ namespace ToSic.Eav.DataSources
         public bool KeepOtherAttributes
         {
             get => Configuration.GetThis(true);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -60,7 +62,7 @@ namespace ToSic.Eav.DataSources
         public string TypeName
         {
             get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         #endregion
@@ -70,7 +72,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new AttributeFilter DataSource
         /// </summary>
         [PrivateApi]
-		public AttributeRename(DataBuilder dataBuilder, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.AtrRen")
+		public AttributeRename(DataBuilder dataBuilder, MyServices services) : base(services, $"{LogPrefix}.AtrRen")
         {
             ConnectServices(
                 _dataBuilder = dataBuilder

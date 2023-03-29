@@ -203,8 +203,8 @@ namespace ToSic.Eav.Data.Build
         #region Create basic Dictionary
 
         /// <inheritdoc />
-        public IEntity Create(Dictionary<string, object> values,
-            int id = default,
+        public IEntity Create(IDictionary<string, object> values,
+            int id = 0,
             Guid guid = default,
             DateTime created = default,
             DateTime modified = default)

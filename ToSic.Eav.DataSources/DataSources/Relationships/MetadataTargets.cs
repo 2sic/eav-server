@@ -4,10 +4,12 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources
 {
@@ -15,7 +17,8 @@ namespace ToSic.Eav.DataSources
     /// Get Target Entities (metadata targets) of the Entities coming into this DataSource
     /// </summary>
     /// <remarks>
-    /// Added in v12.10
+    /// * Added in v12.10
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
     /// </remarks>
     [VisualQuery(
         NiceName = "Metadata Targets",
@@ -23,7 +26,7 @@ namespace ToSic.Eav.DataSources
         Icon = Icons.Metadata,
         Type = DataSourceType.Lookup,
         NameId = "afaf73d9-775c-4932-aebd-23e898b1643e",
-        In = new[] { QueryConstants.InStreamDefaultRequired },
+        In = new[] { InStreamDefaultRequired },
         DynamicOut = false,
         ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
         HelpLink = "https://r.2sxc.org/DsMetadataTargets")]
@@ -35,11 +38,7 @@ namespace ToSic.Eav.DataSources
         /// Optional TypeName restrictions to only get **Targets** of this Content Type.
         /// </summary>
         [Configuration]
-        public override string ContentTypeName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
-        }
+        public override string ContentTypeName => Configuration.GetThis();
 
         /// <summary>
         /// 
@@ -48,12 +47,9 @@ namespace ToSic.Eav.DataSources
         /// Defaults to true
         /// </remarks>
         [Configuration(Fallback = true)]
-        public bool FilterDuplicates
-        {
-            get => Configuration.GetThis(true);
-            set => Configuration.SetThis(value);
-        }
-        public MetadataTargets(IAppStates appStates, MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
+        public bool FilterDuplicates => Configuration.GetThis(true);
+
+        public MetadataTargets(IAppStates appStates, MyServices services) : base(services, $"{LogPrefix}.MetaTg")
         {
             _appStates = appStates;
         }

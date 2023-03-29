@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using static ToSic.Eav.DataSources.CompareOperators;
 using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
 using static ToSic.Eav.DataSourceTests.ValueSortShared;
@@ -276,7 +277,7 @@ namespace ToSic.Eav.DataSourceTests
             vf.Value = "inexisting city";
             
             // attach fallback to give all if no match
-            vf.InForTests().Add(DataSourceConstants.StreamFallbackName, vf.InForTests()[DataSourceConstants.StreamDefaultName]);
+            vf.Attach(StreamFallbackName, vf.InForTests()[StreamDefaultName]);
             Assert.AreEqual(TestVolume, vf.ListForTests().Count(), "Should find exactly 0 people with this city");
         }
         #endregion

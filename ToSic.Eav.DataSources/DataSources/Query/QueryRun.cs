@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.LookUp;
-using ToSic.Eav.DataSources.Queries;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
@@ -27,7 +30,7 @@ namespace ToSic.Eav.DataSources
         )]
 
     // ReSharper disable once UnusedMember.Global
-    public class QueryRun : DataSource
+    public class QueryRun : Eav.DataSource.DataSourceBase
 	{
         private readonly Generator<Query> _queryGenerator;
 
@@ -62,10 +65,9 @@ namespace ToSic.Eav.DataSources
 
         #region Out
         /// <inheritdoc/>
-        public override IDictionary<string, IDataStream> Out 
-            => _out ?? (_out = new StreamDictionary(this, Query?.Out  ?? new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase)));
+        public override IReadOnlyDictionary<string, IDataStream> Out => (_out ?? (_out = new StreamDictionary(this, Query?.Out))).AsReadOnly();
 
-        private IDictionary<string, IDataStream> _out;
+        private StreamDictionary _out;
         #endregion
 
         #region Surface the inner query in the API in case we need to look into it from our Razor Code
@@ -89,7 +91,7 @@ namespace ToSic.Eav.DataSources
             // the LookUp Root is either a LookUpInQueryMetadata, or a group of lookups which has one inside it
             // It's a LookUpInLookUps if the QueryBuilder overwrote it with SaveDraft infos...
             // which we're not sure yet 2023-03-14 2dm if it's in use anywhere
-            var lookUpRoot = Configuration.LookUpEngine.FindSource(MyConfiguration);
+            var lookUpRoot = Configuration.LookUpEngine.FindSource(DataSourceConstants.MyConfigurationSourceName);
             var metadataLookUp = lookUpRoot as LookUpInQueryMetadata
                                  ?? (lookUpRoot as LookUpInLookUps)
                                  ?.Providers.FirstOrDefault(p => p is LookUpInQueryMetadata) as LookUpInQueryMetadata;
@@ -137,8 +139,8 @@ namespace ToSic.Eav.DataSources
         private LookUpEngine LookUpWithoutParams()
         {
             var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, true);
-            if (lookUpsWithoutParams.HasSource(QueryConstants.ParamsSourceName))
-                lookUpsWithoutParams.Sources.Remove(QueryConstants.ParamsSourceName);
+            if (lookUpsWithoutParams.HasSource(DataSourceConstants.ParamsSourceName))
+                lookUpsWithoutParams.Sources.Remove(DataSourceConstants.ParamsSourceName);
             // 1.1 note: can't add Override here because the underlying params don't exist yet - so an override wouldn't keep them
             return lookUpsWithoutParams;
         }

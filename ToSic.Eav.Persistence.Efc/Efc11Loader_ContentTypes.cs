@@ -61,7 +61,7 @@ namespace ToSic.Eav.Persistence.Efc
         {
             var wrapLog = Log.Fn<IList<IContentType>>();
             // must create a new loader for each app
-            var loader = _appFileContentTypesLoader.New();
+            var loader = _appFileContentTypesLoader.New().Init(app);
             var types = loader.ContentTypes(app);
             return wrapLog.ReturnAsOk(types);
         }

@@ -1,9 +1,11 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSources.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -23,7 +25,7 @@ namespace ToSic.Eav.DataSources
         DynamicIn = true,
 	    HelpLink = "https://r.2sxc.org/DsStreamFallback")]
 
-    public sealed class StreamFallback : DataSource
+    public sealed class StreamFallback : Eav.DataSource.DataSourceBase
 	{
 
         #region Debug-Properties

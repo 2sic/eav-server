@@ -4,10 +4,11 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Documentation;
-using static ToSic.Eav.DataSources.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys
@@ -16,6 +17,9 @@ namespace ToSic.Eav.DataSources.Sys
     /// <summary>
     /// A DataSource that returns the attributes of a content-type
     /// </summary>
+    /// <remarks>
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
+    /// </remarks>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [VisualQuery(
         NiceName = "Attributes of Type",
@@ -28,7 +32,7 @@ namespace ToSic.Eav.DataSources.Sys
         ConfigurationType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes")]
 
-    public sealed class Attributes: DataSource
+    public sealed class Attributes: Eav.DataSource.DataSourceBase
 	{
 
         #region Configuration-properties (no config)
@@ -40,11 +44,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// The content-type name
         /// </summary>
         [Configuration(Fallback = TryToUseInStream)]
-        public string ContentTypeName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
-        }
+        public string ContentTypeName => Configuration.GetThis();
         
 		#endregion
 

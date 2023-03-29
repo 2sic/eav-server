@@ -3,11 +3,10 @@ using System.Linq;
 using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Data;
 using ToSic.Eav.Generics;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps
 {
@@ -102,6 +101,8 @@ namespace ToSic.Eav.Apps
             DataController.Value.Delete(entityId);
             // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
+            // workaround because AppState is deleted
+            //In.Remove(DataSourceConstants.StreamDefaultName);
         });
 
         /// <summary>

@@ -10,7 +10,7 @@ using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
-using ToSic.Eav.DataSources.Catalog;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
@@ -93,10 +93,6 @@ namespace ToSic.Eav.Apps
             // V13 Language Checks
             services.TryAddTransient<AppUserLanguageCheck>();
 
-            // V15 Data Sources
-            services.TryAddTransient<Eav.DataSources.CustomDataSourceAdvanced.MyServices>();
-
-
             return services;
         }
 
@@ -119,7 +115,6 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
             services.TryAddTransient<IAppFileSystemLoader, FileSystemLoaderUnknown>();
             services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
-            services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();
 
             return services;
         }

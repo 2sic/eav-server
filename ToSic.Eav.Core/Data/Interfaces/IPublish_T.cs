@@ -22,14 +22,14 @@ namespace ToSic.Eav.Data
         /// </summary>
         bool IsPublished { get; }
 
-        /// <summary>
-        /// Get Draft Entity of this Entity
-        /// </summary>
-        T GetDraft();
+        ///// <summary>
+        ///// Get Draft Entity of this Entity
+        ///// </summary>
+        //T GetDraft(); // 2023-03-27 v15.06 remove GetDraft/GetPublished from Entity
 
-        /// <summary>
-        /// Get Published Entity of this Entity
-        /// </summary>
-        T GetPublished();
+        ///// <summary>
+        ///// Get Published Entity of this Entity
+        ///// </summary>
+        //T GetPublished(); // 2023-03-27 v15.06 remove GetDraft/GetPublished from Entity
     }
 }

@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data.Source
     /// - An additional optimization: in special cases where we just need the IDs for saving,
     ///   it won't actually query the cache if the IDs are already known.
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+    [PrivateApi("this is just fyi")]
     public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelatedEntitiesValue
     {
         /// <summary>

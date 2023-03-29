@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources
 {
@@ -10,15 +12,16 @@ namespace ToSic.Eav.DataSources
     /// Get Parent Entities (parent-relationships) of the Entities coming into this DataSource
     /// </summary>
     /// <remarks>
-    /// Added in v12.10
+    /// * Added in v12.10
+    /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
     /// </remarks>
     [VisualQuery(
         NiceName = "Parents",
         UiHint = "Get the item's parents",
         Icon = Icons.Parents,
         Type = DataSourceType.Lookup,
-        NameId = "915217e5-7957-4303-a19c-a15505f2ad1d", 
-        In = new[] { QueryConstants.InStreamDefaultRequired },
+        NameId = "915217e5-7957-4303-a19c-a15505f2ad1d",
+        In = new[] { InStreamDefaultRequired },
         DynamicOut = false,
         ConfigurationType = "a72cb2f4-52bb-41e6-9281-10e69aeb0310",
         HelpLink = "https://r.2sxc.org/DsParents")]
@@ -31,11 +34,7 @@ namespace ToSic.Eav.DataSources
         ///
         /// Example: If a person is referenced by books as both `Author` and `Illustrator` then leaving this empty will get both relationships, but specifying `Author` will only get this person if it's the author. 
         /// </summary>
-        public override string FieldName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
-        }
+        public override string FieldName => Configuration.GetThis();
 
         /// <summary>
         /// Name of the content-type to get.
@@ -43,13 +42,9 @@ namespace ToSic.Eav.DataSources
         ///
         /// Example: If a person is referenced by books (as author) as by companies) as employee, then you may want to only find companies referencing this book. 
         /// </summary>
-        public override string ContentTypeName
-        {
-            get => Configuration.GetThis();
-            set => Configuration.SetThis(value);
-        }
+        public override string ContentTypeName => Configuration.GetThis();
 
-        public Parents(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Parent")
+        public Parents(MyServices services) : base(services, $"{LogPrefix}.Parent")
         {
         }
 

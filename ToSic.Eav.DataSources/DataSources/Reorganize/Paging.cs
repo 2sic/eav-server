@@ -4,9 +4,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -23,11 +25,11 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Logic, 
         NameId = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { QueryConstants.InStreamDefaultRequired },
+        In = new[] { InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
         HelpLink = "https://r.2sxc.org/DsPaging")]
 
-    public sealed class Paging: DataSource
+    public sealed class Paging: Eav.DataSource.DataSourceBase
 	{
         private readonly IDataFactory _pagingFactory;
 
@@ -47,7 +49,7 @@ namespace ToSic.Eav.DataSources
                 var ps = Configuration.GetThis(DefPageSize);
                 return ps > 0 ? ps : DefPageSize;
             }
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
         /// <summary>
@@ -61,7 +63,7 @@ namespace ToSic.Eav.DataSources
                 var pn = Configuration.GetThis(DefPageNum);
                 return pn > 0 ? pn : DefPageNum;
             }
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
 		#endregion
@@ -77,7 +79,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-		public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.Paging")
+		public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{LogPrefix}.Paging")
         {
             ConnectServices(
                 _pagingFactory = dataFactory.New(options: new DataFactoryOptions(typeName: "Paging"))

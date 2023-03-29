@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data.Build
     {
 
 
-        public static int? GetInternalPublishedIdForSaving(this Entity entity) => entity.PublishedEntity?.EntityId ?? entity.PublishedEntityId;
+        public static int? GetInternalPublishedIdForSaving(this Entity entity) => /*entity.PublishedEntity?.EntityId ??*/ entity.PublishedEntityId;
         
         public static List<ILanguage> GetUsedLanguages(this IEntity entity) => entity.Attributes?.Values
             .SelectMany(v => v.Values)

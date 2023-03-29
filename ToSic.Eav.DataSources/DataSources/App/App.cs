@@ -1,8 +1,12 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Services;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
@@ -25,7 +29,7 @@ namespace ToSic.Eav.DataSources
         In = new []{DataSourceConstants.StreamDefaultName},
 		ConfigurationType = "|Config ToSic.Eav.DataSources.App",
         HelpLink = "https://r.2sxc.org/DsApp")]
-    public partial class App : DataSource
+    public partial class App : Eav.DataSource.DataSourceBase
 	{
         #region Configuration-properties
 
@@ -41,7 +45,7 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetThis(NotConfigured);
             set
 			{
-                Configuration.SetThis(value);
+                Configuration.SetThisObsolete(value);
                 AppId = value;
 				RequiresRebuildOfOut = true;
 			}
@@ -57,7 +61,7 @@ namespace ToSic.Eav.DataSources
             get => Configuration.GetThis(NotConfigured);
             set
 			{
-                Configuration.SetThis(value);
+                Configuration.SetThisObsolete(value);
                 ZoneId = value;
 				RequiresRebuildOfOut = true;
 			}
@@ -70,34 +74,27 @@ namespace ToSic.Eav.DataSources
         /// We're still evaluating impact on performance, confusion of developers etc.
         /// </summary>
         /// <remarks>
-        /// Added in v15.04
+        /// * Added in v15.04
+        /// * Uses the[immutable convention](xref:NetCode.Conventions.Immutable).
         /// </remarks>
         [PrivateApi("WIP and not sure if this should ever become public")]
         [Configuration(Fallback = false)]
-        public bool WithAncestors
-        {
-            get => Configuration.GetThis(false);
-            set
-            {
-                Configuration.SetThis(value);
-                RequiresRebuildOfOut = true;
-            }
-        }
+        public bool WithAncestors => Configuration.GetThis(false);
 
         #endregion
 
         #region Constructor / DI
 
 
-		public new class MyServices: MyServicesBase<DataSource.MyServices>
+		public new class MyServices: MyServicesBase<Eav.DataSource.DataSourceBase.MyServices>
         {
             public IContextResolverUserPermissions UserPermissions { get; }
-            public IDataSourceFactory DataSourceFactory { get; }
+            public IDataSourcesService DataSourceFactory { get; }
             public IAppStates AppStates { get; }
 
-            public MyServices(DataSource.MyServices parentServices,
+            public MyServices(Eav.DataSource.DataSourceBase.MyServices parentServices,
                 IAppStates appStates,
-				IDataSourceFactory dataSourceFactory,
+				IDataSourcesService dataSourceFactory,
                 IContextResolverUserPermissions userPermissions) : base(parentServices)
             {
                 ConnectServices(
@@ -146,12 +143,12 @@ namespace ToSic.Eav.DataSources
             {
                 Log.A("Will use Ancestors accessor with all ancestors");
                 // Important: only pass the identity in, never pass this source in, or you'll get infinite recursions
-                var appStack = _services.DataSourceFactory.Create<AppWithParents>(appIdentity: new AppIdentity(this), configuration: Configuration.LookUpEngine);
+                var appStack = _services.DataSourceFactory.Create<AppWithParents>(options: new DataSourceOptions(appIdentity: new AppIdentity(this), lookUp: Configuration.LookUpEngine));
                 ((IAppIdentitySync)appStack).UpdateAppIdentity(this);
                 appDs = appStack;
             }
             else
-                appDs = _services.DataSourceFactory.CreateDefault(appIdentity: this, configuration: Configuration.LookUpEngine);
+                appDs = _services.DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: this, lookUp: Configuration.LookUpEngine));
 
             Attach(DataSourceConstants.StreamDefaultName, appDs);
             _attachOtherDataSourceRunning = false;

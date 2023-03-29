@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.DataSources.Queries;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
@@ -21,10 +23,10 @@ namespace ToSic.Eav.DataSources
         Type = DataSourceType.Sort, 
         NameId = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
         DynamicOut = false,
-        In = new[] { QueryConstants.InStreamDefaultRequired },
+        In = new[] { InStreamDefaultRequired },
         ConfigurationType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
         HelpLink = "https://r.2sxc.org/DsShuffle")]
-	public sealed class Shuffle: DataSource
+	public sealed class Shuffle: Eav.DataSource.DataSourceBase
 	{
         #region Configuration-properties (no config)
 
@@ -38,7 +40,7 @@ namespace ToSic.Eav.DataSources
 		public int Take
         {
             get => Configuration.GetThis(DefaultTakeAll);
-            set => Configuration.SetThis(value);
+            set => Configuration.SetThisObsolete(value);
         }
 
 
@@ -51,7 +53,7 @@ namespace ToSic.Eav.DataSources
         /// Constructs a new EntityIdFilter
         /// </summary>
         [PrivateApi]
-        public Shuffle(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Shuffl")
+        public Shuffle(MyServices services) : base(services, $"{LogPrefix}.Shuffl")
         {
             ProvideOut(GetShuffle);
         }

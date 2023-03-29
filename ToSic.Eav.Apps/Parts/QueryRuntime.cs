@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSources.Queries;
+﻿using ToSic.Eav.DataSource.Query;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 
@@ -7,8 +7,8 @@ namespace ToSic.Eav.Apps.Parts
     public class QueryRuntime: PartOf<AppRuntime>
     {
         private readonly LazySvc<QueryDefinitionBuilder> _queryDefBuilder;
-        private readonly Generator<Eav.DataSources.Queries.QueryManager> _queryManager;
-        public QueryRuntime(Generator<Eav.DataSources.Queries.QueryManager> queryManager, LazySvc<QueryDefinitionBuilder> queryDefBuilder) : base("RT.Query")
+        private readonly Generator<DataSource.Query.QueryManager> _queryManager;
+        public QueryRuntime(Generator<DataSource.Query.QueryManager> queryManager, LazySvc<QueryDefinitionBuilder> queryDefBuilder) : base("RT.Query")
         {
             ConnectServices(
                 _queryManager = queryManager,

@@ -1,8 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
 using static ToSic.Eav.DataSourceTests.RelationshipTests.MetadataTestSpecs;
@@ -45,17 +47,24 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests
         {
             var lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
 
-            var baseDs = DataSourceFactory.CreateDefault(AppIdentity, configuration: lookUpEngine);
+            var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: AppIdentity, lookUp: lookUpEngine));
             var appDs = CreateDataSource<App>(baseDs);
 
             var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));
 
-            var childDs = CreateDataSource<MetadataTargets>(inStream);
+            var dsParams = new Dictionary<string, object>();
             if (typeName != null)
-                childDs.ContentTypeName = typeName;
+                dsParams["ContentTypeName"] = typeName;
 
             if(deduplicate != null)
-                childDs.FilterDuplicates = deduplicate.Value;
+                dsParams["FilterDuplicates"] = deduplicate.Value;
+
+            var childDs = CreateDataSource<MetadataTargets>(inStream, dsParams);
+            //if (typeName != null)
+            //    childDs.ContentTypeName = typeName;
+
+            //if(deduplicate != null)
+            //    childDs.FilterDuplicates = deduplicate.Value;
 
             // todo: unique
 

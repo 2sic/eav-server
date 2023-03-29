@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSourceTests.TestData;
@@ -67,9 +68,9 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
         }
 
-        private CacheAllStreams CreateCacheDS(IDataSource filtered)
+        private CacheAllStreams CreateCacheDS(IDataSource filtered, object options = default)
         {
-            var cacher = CreateDataSource<CacheAllStreams>(filtered.Configuration.LookUpEngine);
+            var cacher = CreateDataSourceNew<CacheAllStreams>(/*filtered.Configuration.LookUpEngine,*/ options);
             cacher.AttachForTests(filtered);
             return cacher;
         }
@@ -136,10 +137,13 @@ namespace ToSic.Eav.DataSourceTests.Caches
             Thread.Sleep(100);
 
             var laterTimeIdenticalData = CreateFilterForTesting(100, uniqueIdsForThisTest);
-            var cache2 = CreateCacheDS(laterTimeIdenticalData);
+            var cache2 = CreateCacheDS(laterTimeIdenticalData, options: new
+            {
+                RefreshOnSourceRefresh = false
+            });
 
             // special: tell cache2 to ignore time etc.
-            cache2.RefreshOnSourceRefresh = false;
+            //cache2.RefreshOnSourceRefresh = false;
 
             var listFromCache2 = cache2[DataSourceConstants.StreamDefaultName].ListForTests();
             Assert.AreEqual(listFromCache2, results1, "Second list sohuldn't STILL be same because we ignore time difference in source");
@@ -151,8 +155,11 @@ namespace ToSic.Eav.DataSourceTests.Caches
         {
             var uniqueIdsForThisTest = "1001,1043,1099";
             var filtered = CreateFilterForTesting(100, uniqueIdsForThisTest);
-            var cacher = CreateCacheDS(filtered);
-            cacher.CacheDurationInSeconds = 1;
+            var cacher = CreateCacheDS(filtered, options: new
+            {
+                CacheDurationInSeconds = 1
+            });
+            //cacher.CacheDurationInSeconds = 1;
             var listCache = QuickCachesTest.GetTestListCache();
 
             // Get first list from direct query and from cache - compare. Should be same
@@ -165,9 +172,13 @@ namespace ToSic.Eav.DataSourceTests.Caches
 
             // Create new identical filtered, and new cache-object to separate from original...
             filtered = CreateFilterForTesting(100, uniqueIdsForThisTest);
-            var newCacher = CreateCacheDS(filtered);
-            newCacher.CacheDurationInSeconds = 1;
-            newCacher.RefreshOnSourceRefresh = false; // don't enforce this, otherwise it will automatically be a new cache anyhow
+            var newCacher = CreateCacheDS(filtered, options: new
+            {
+                CacheDurationInSeconds = 1,
+                RefreshOnSourceRefresh = false, // don't enforce this, otherwise it will automatically be a new cache anyhow
+        });
+            //newCacher.CacheDurationInSeconds = 1;
+            //newCacher.RefreshOnSourceRefresh = false; // don't enforce this, otherwise it will automatically be a new cache anyhow
             var listFromCacheAfter1Second = newCacher[DataSourceConstants.StreamDefaultName].ListForTests();
             Assert.AreNotEqual(listFromCacheAfter1Second, originalList, "Second list MUST be Different because 1 second passed");
         }

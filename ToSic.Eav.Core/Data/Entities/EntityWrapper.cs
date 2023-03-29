@@ -47,10 +47,10 @@ namespace ToSic.Eav.Data
         #region IEntity Implementation
 
         /// <inheritdoc />
-        public IEntity GetDraft() => Entity.GetDraft();
+        // public IEntity GetDraft() => Entity.GetDraft(); // 2023-03-27 v15.06 remove GetDraft/GetPublished from Entity
 
         /// <inheritdoc />
-        public IEntity GetPublished() => Entity.GetPublished();
+        //public IEntity GetPublished() => Entity.GetPublished(); // 2023-03-27 v15.06 remove GetDraft/GetPublished from Entity
 
         /// <inheritdoc />
         public int AppId => Entity.AppId;
@@ -140,6 +140,22 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public T Value<T>(string field) => Entity.Value<T>(field);
+
+        /// <inheritdoc />
+        public object Get(string name) => Entity.Get(name);
+
+        /// <inheritdoc />
+        public object Get(string name, string noParamOrder = Parameters.Protector, string language = default,
+            string[] languages = default) =>
+            Entity.Get(name, noParamOrder, language, languages);
+
+        /// <inheritdoc />
+        public TValue Get<TValue>(string name) => Entity.Get<TValue>(name);
+
+        /// <inheritdoc />
+        public TValue Get<TValue>(string name, string noParamOrder = Parameters.Protector, TValue fallback = default,
+            string language = default, string[] languages = default) =>
+            Entity.Get(name, noParamOrder, fallback, language, languages);
 
 
         [PrivateApi("Internal")]

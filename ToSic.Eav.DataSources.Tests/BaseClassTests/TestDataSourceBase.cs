@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSourceTests.BaseClassTests
 {
-    public class TestDataSourceBase: DataSources.DataSource
+    public class TestDataSourceBase: Eav.DataSource.DataSourceBase
     {
 
         // make public for testing, otherwise protected...

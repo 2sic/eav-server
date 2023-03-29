@@ -78,7 +78,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
                 ";", "Anonymous", TestFileTitleColumnName /* String cannot be parsed to Int */, TestFileTitleColumnName);
             // ReSharper disable once UnusedVariable
             var sourceList = source.ListForTests();
-            DataSourceErrors.VerifyStreamIsError(source, CsvDataSource.ErrorIdNaN);
+            DataSourceErrors.VerifyStreamIsError(source, Csv.ErrorIdNaN);
         }
 
         [TestMethod]
@@ -93,7 +93,7 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
 
 
 
-        private void AssertIsSourceListValid(CsvDataSource source)
+        private void AssertIsSourceListValid(Csv source)
         {
             var sourceList = source.ListForTests().OrderBy(item => item.EntityId).ToList();
 
@@ -123,9 +123,9 @@ namespace ToSic.Eav.DataSourceTests.ExternalData
             return entity.Value(entity.Attributes[name].Name);
         }
 
-        public CsvDataSource CreateCsvDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
+        public Csv CreateCsvDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
         {
-            var source = CreateDataSource<CsvDataSource>(new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes());
+            var source = CreateDataSource<Csv>(new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes());
 
             source.FilePath = filePath;
             source.Delimiter = delimiter;

@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Build;
 
 namespace ToSic.Eav.DataSourceTests.TestData
 {
-    public class PersonsDataSource: DataSources.DataSource
+    public class PersonsDataSource: Eav.DataSource.DataSourceBase
     {
         public PersonsDataSource(MyServices services, DataBuilder dataBuilder): base(services, "TST.Person")
         {
