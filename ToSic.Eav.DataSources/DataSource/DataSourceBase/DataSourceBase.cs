@@ -61,6 +61,16 @@ namespace ToSic.Eav.DataSource
         public virtual bool Immutable { get; private set; }
 
         [PrivateApi]
+        public void DoWhileOverrideImmutable(Action action)
+        {
+            _overrideImmutable = true;
+            action();
+            _overrideImmutable = false;
+        }
+
+        private bool _overrideImmutable;
+
+        [PrivateApi]
         public void AddDebugInfo(Guid? guid, string label)
         {
             Guid = guid ?? Guid;

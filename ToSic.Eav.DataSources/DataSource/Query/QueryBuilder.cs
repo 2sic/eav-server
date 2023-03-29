@@ -240,19 +240,23 @@ namespace ToSic.Eav.DataSource.Query
                 
                 // loop all wirings from this DataSource (except already initialized)
                 foreach (var wire in unassignedConnectionsForThisSource)
-				{
-				    try
-				    {
-				        var conSource = allDataSources[wire.From];
-                        allDataSources[wire.To].Attach(wire.In, conSource, wire.Out);
+                {
+                    var errMsg = $"Trouble with connecting query from {wire.From}:{wire.Out} to {wire.To}:{wire.In}. ";
+                    if (!allDataSources.TryGetValue(wire.From, out var conSource))
+                        throw new Exception(errMsg + $"The source '{wire.From}' can't be found");
+                    if (!allDataSources.TryGetValue(wire.To, out var conTarget))
+                        throw new Exception(errMsg + $"The target '{wire.To}' can't be found");
+                    try
+                    {
+                        // Temporary solution until immutable works perfectly
+                        conTarget.DoWhileOverrideImmutable(() => conTarget.Attach(wire.In, conSource, wire.Out));
                         initializedWirings.Add(wire);
-
                         // In the end, inform caller that we did add some connections
 				        connectionsWereAdded = true;
 				    }
 				    catch (Exception ex)
 				    {
-				        throw new Exception("Trouble with connecting query from " + wire.From + ":" + wire.Out + " to " + wire.To + ":" + wire.In, ex);
+				        throw new Exception(errMsg, ex);
 				    }
 				}
 			}

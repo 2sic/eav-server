@@ -139,5 +139,8 @@ namespace ToSic.Eav.DataSource
         /// New in 15.06
         /// </remarks>
         bool Immutable { get; }
+
+        [PrivateApi]
+        void DoWhileOverrideImmutable(Action action);
     }
 }

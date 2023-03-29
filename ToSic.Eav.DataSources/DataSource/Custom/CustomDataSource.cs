@@ -56,7 +56,7 @@ namespace ToSic.Eav.DataSource
         /// </summary>
         public override bool Immutable => true;
 
-        protected virtual DataFactoryOptions Options
+        private DataFactoryOptions Options
         {
             // ReSharper disable once ConvertToNullCoalescingCompoundAssignment
             get => _options ?? (_options = new DataFactoryOptions(typeName: "Custom"));
@@ -83,7 +83,7 @@ namespace ToSic.Eav.DataSource
         /// <param name="name">_optional_ name of the out-stream.</param>
         /// <param name="options">Conversion options which are relevant for <see cref="IRawEntity"/> data</param>
         protected internal void ProvideOut(
-            Func<IEnumerable> data,
+            Func<object> data,
             string noParamOrder = Parameters.Protector,
             string name = StreamDefaultName,
             Func<DataFactoryOptions> options = default)
@@ -113,26 +113,46 @@ namespace ToSic.Eav.DataSource
             base.ProvideOut(() => GetRaw(data, options), name);
         }
 
-        private IImmutableList<IEntity> GetAny(Func<IEnumerable> source, Func<DataFactoryOptions> options)
+        private IImmutableList<IEntity> GetAny(Func<object> source, Func<DataFactoryOptions> options)
         {
             var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
-            
-            List<object> data;
+
+            // Call the Generator and handle errors/null
+            object funcResult;
             try
             {
-                data = source?.Invoke().Cast<object>().ToList();
+                funcResult = source?.Invoke();
             }
             catch (Exception ex)
             {
                 l.Ex(ex);
                 var runErr = Error.Create(title: $"Error calling source generator of {nameof(ProvideOut)}. " +
-                                                 "Error details can be found in Insights.");
+                                                 "Error details can be found in Insights.", exception: ex);
+                return l.Return(runErr, "error");
+            }
+            if (funcResult is null) l.Return(EmptyList, "null, no data returned");
+
+            // Make a list out of the result
+            List<object> data;
+            try
+            {
+                data = funcResult is IEnumerable enumerable
+                    ? enumerable.Cast<object>().ToList()
+                    : new List<object>() { funcResult };
+            }
+            catch (Exception ex)
+            {
+                l.Ex(ex);
+                var runErr = Error.Create(title: $"Error handling result of source generator of {nameof(ProvideOut)}. " +
+                                                 "Error details can be found in Insights.", exception: ex);
                 return l.Return(runErr, "error");
             }
 
+            // Handle empty list
             if (data.SafeNone()) l.Return(EmptyList, "no items returned");
 
+            // Handle all is already converted to IEntity
             if (data.All(i => i is IEntity))
                 return l.Return(data.Cast<IEntity>().ToImmutableList(), "IEntities");
 

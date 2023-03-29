@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSource
 
         public static void BreachProvideOut(
             this CustomDataSource ds,
-            Func<IEnumerable> source,
+            Func<object> source,
             string noParamOrder = Parameters.Protector,
             string name = StreamDefaultName,
             Func<DataFactoryOptions> options = default) =>
