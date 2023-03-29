@@ -75,7 +75,7 @@ namespace ToSic.Eav.Data.Build
         /// <param name="created"></param>
         /// <param name="modified"></param>
         /// <returns></returns>
-        IEntity Create(Dictionary<string, object> values,
+        IEntity Create(IDictionary<string, object> values,
             int id = default,
             Guid guid = default,
             DateTime created = default,

@@ -21,7 +21,7 @@ namespace ToSic.Eav.Data.Raw
         public virtual Guid Guid { get; set; } = Guid.Empty;
         public virtual DateTime Created { get; set; } = DateTime.Now;
         public virtual DateTime Modified { get; set; } = DateTime.Now;
-        public abstract Dictionary<string, object> Attributes(RawConvertOptions options);
+        public abstract IDictionary<string, object> Attributes(RawConvertOptions options);
         public virtual IEnumerable<object> RelationshipKeys(RawConvertOptions options) => new List<object>();
     }
 }

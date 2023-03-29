@@ -136,6 +136,14 @@ namespace ToSic.Eav.DataSource
             if (data.All(i => i is IEntity))
                 return l.Return(data.Cast<IEntity>().ToImmutableList(), "IEntities");
 
+            // If all are Anonymous, convert to Raw
+            if (data.All(d => d.IsAnonymous()))
+            {
+                l.A("Was anonymous, converted to raw");
+                data = data.Select(d => new RawFromAnonymous(d)).Cast<object>().ToList();
+            }
+
+            // Handle raw
             if (data.All(i => i is IRawEntity))
             {
                 var raw = data.Cast<IRawEntity>().ToList();
