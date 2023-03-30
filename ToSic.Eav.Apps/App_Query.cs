@@ -43,10 +43,13 @@ namespace ToSic.Eav.Apps
 
             // Try to find query definition - while also checking parent apps
             var qEntity = Services.QueryManager.Value.FindQuery(AppState, name, recurseParents: 3);
-            if (qEntity == null && name.StartsWith(SystemQueryPrefixPreV15) || name.StartsWith(SystemQueryPrefix))
-                throw new Exception("Global EAV Query not Found!");
+            
+            if (qEntity != null)
+                return Services.QueryGenerator.New().Init(ZoneId, AppId, qEntity, ConfigurationProvider);
 
-            return Services.QueryGenerator.New().Init(ZoneId, AppId, qEntity, ConfigurationProvider);
+            var isGlobal = name.StartsWith(SystemQueryPrefixPreV15) || name.StartsWith(SystemQueryPrefix);
+            throw new Exception((isGlobal ? "Global " : "") + "Query not Found!");
+
         }
 
         // #dropGlobalQueryPrefixWithUnknownPurpose - delete code 2023 Q3
