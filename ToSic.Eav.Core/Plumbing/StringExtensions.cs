@@ -27,10 +27,16 @@ namespace ToSic.Eav.Plumbing
 
         public static string NeverNull(this string value) => value ?? "";
 
+        /// <summary>
+        /// Null-safe string-equals method. If both are null, it's equal.
+        /// </summary>
+        /// <param name="a">The initial string, can also be null.</param>
+        /// <param name="b">The compare string, can also be null</param>
+        /// <returns></returns>
         public static bool EqualsInsensitive(this string a, string b)
         {
             if (a == null && b == null) return true;
-            if (a == null) return false;
+            if (a == null || b == null) return false;
             return a.Equals(b, InvariantCultureIgnoreCase);
         }
 
