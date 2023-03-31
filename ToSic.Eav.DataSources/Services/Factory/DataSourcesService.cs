@@ -68,7 +68,8 @@ namespace ToSic.Eav.Services
             if (primarySource == null && options?.AppIdentity == null)
                 throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.AppIdentity no not be null.");
             if (primarySource == null && options?.LookUp == null)
-                throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.LookUp no not be null.");
+                options = OptionsWithLookUp(options);
+                // throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.LookUp no not be null.");
 
             var newDs = _serviceProvider.Build<TDataSource>(Log);
             newDs.Setup(options, attach);
@@ -85,12 +86,9 @@ namespace ToSic.Eav.Services
             if (options == null) throw new ArgumentNullException(nameof(options));
             var appIdentity = options.AppIdentity
                               ?? throw new ArgumentNullException(nameof(IDataSourceOptions.AppIdentity));
-            var lookUp = options.LookUp;
-            var l = Log.Fn<IDataSource>($"#{appIdentity.Show()}, draft:{options.ShowDrafts}, lookUp:{lookUp != null}");
+            var l = Log.Fn<IDataSource>($"#{appIdentity.Show()}, draft:{options.ShowDrafts}, lookUp:{options.LookUp != null}");
 
-            options = lookUp != null 
-                ? options 
-                : new DataSourceOptions(options, lookUp: _lookupResolveLazy.Value.GetLookUpEngine(0));
+            options = OptionsWithLookUp(options);
             var appRoot = Create<IAppRoot>(options: options);
             var publishingFilter = Create<PublishingFilter>(attach: appRoot, options: options);
 
@@ -98,6 +96,13 @@ namespace ToSic.Eav.Services
                 publishingFilter.ShowDrafts = options.ShowDrafts;
 
             return l.Return(publishingFilter, "ok");
+        }
+
+        private IDataSourceOptions OptionsWithLookUp(IDataSourceOptions optionsOrNull)
+        {
+            return optionsOrNull?.LookUp != null 
+                ? optionsOrNull 
+                : new DataSourceOptions(optionsOrNull, lookUp: _lookupResolveLazy.Value.GetLookUpEngine(0));
         }
 
         #endregion

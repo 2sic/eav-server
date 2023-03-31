@@ -61,6 +61,7 @@ namespace ToSic.Eav.Data.Build
         /// <summary>
         /// Spawn a new <see cref="IDataFactory"/> with an initial configuration.
         /// This returns a _new_ <see cref="IDataFactory"/> and will not modify the original/parent.
+        /// Uses the [Spawn New convention](xref:NetCode.Conventions.SpawnNew).
         /// </summary>
         /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
         /// <param name="options">All the options which are relevant for the DataFactory</param>
