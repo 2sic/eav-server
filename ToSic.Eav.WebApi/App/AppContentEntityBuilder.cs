@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Data;
@@ -126,12 +127,12 @@ namespace ToSic.Eav.WebApi.App
                         case JsonElement jn when jn.ValueKind == JsonValueKind.Number:
                             foundNumber = jn.GetInt32();
                             break;
-                        case JsonElement jo when jo.ValueKind == JsonValueKind.Object:
+                        case JsonObject jo:
                         {
-                            if (jo.TryGetProperty("Id", out var foundId))
-                                foundNumber = foundId.GetInt32();
-                            else if (jo.TryGetProperty("id", out foundId))
-                                foundNumber = foundId.GetInt32();
+                            if (jo.TryGetPropertyValue("Id", out var foundId))
+                                foundNumber = (int)foundId;
+                            else if (jo.TryGetPropertyValue("id", out foundId))
+                                foundNumber = (int)foundId;
                             break;
                         }
                     }
