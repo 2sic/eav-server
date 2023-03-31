@@ -58,27 +58,27 @@ namespace ToSic.Eav.Data.Build
 
         #region Spawn New
 
-        public IDataFactory New(
-            string noParamOrder = Parameters.Protector,
-            int appId = default,
-            string typeName = default,
-            string titleField = default,
-            int idSeed = DataConstants.DataFactoryDefaultIdSeed,
-            bool idAutoIncrementZero = true,
-            ILookup<object, IEntity> relationships = default,
-            RawConvertOptions rawConvertOptions = default
-        )
-        {
-            // Ensure parameters are named
-            Parameters.Protect(noParamOrder);
+        //public IDataFactory New(
+        //    string noParamOrder = Parameters.Protector,
+        //    int appId = default,
+        //    string typeName = default,
+        //    string titleField = default,
+        //    int idSeed = DataConstants.DataFactoryDefaultIdSeed,
+        //    bool idAutoIncrementZero = true,
+        //    ILookup<object, IEntity> relationships = default,
+        //    RawConvertOptions rawConvertOptions = default
+        //)
+        //{
+        //    // Ensure parameters are named
+        //    Parameters.Protect(noParamOrder);
 
-            var clone = new DataFactory(_builder,
-                options: new DataFactoryOptions(appId: appId, typeName: typeName, titleField: titleField, idSeed: idSeed, autoId: idAutoIncrementZero), relationships: relationships,
-                rawConvertOptions: rawConvertOptions
-                );
-            if ((Log as Log)?.Parent != null) clone.LinkLog(((Log)Log).Parent);
-            return clone;
-        }
+        //    var clone = new DataFactory(_builder,
+        //        options: new DataFactoryOptions(appId: appId, typeName: typeName, titleField: titleField, idSeed: idSeed, autoId: idAutoIncrementZero), relationships: relationships,
+        //        rawConvertOptions: rawConvertOptions
+        //        );
+        //    if ((Log as Log)?.Parent != null) clone.LinkLog(((Log)Log).Parent);
+        //    return clone;
+        //}
 
         public IDataFactory New(
             string noParamOrder = Parameters.Protector,
