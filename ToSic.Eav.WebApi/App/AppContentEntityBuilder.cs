@@ -134,20 +134,12 @@ namespace ToSic.Eav.WebApi.App
                     {
                         l.A("Test cases where it's an object with 'id' property");
 
-                        //int? SafeConvert(string key, JsonNode foundId)
-                        //{
-                        //    var l2 = l.Fn<int?>($"Found '{key}' - type {foundId?.GetType()} - string would be {foundId}");
-                        //    return l2.ReturnAndLog(foundId?.ToString().ConvertOrDefault<int?>());
-                        //}
-
                         foreach (var key in new [] { "Id", "id" })
                             if (jo.TryGetPropertyValue(key, out var foundId))
                             {
                                 l.A($"Found '{key}' - type {foundId?.GetType()} - string would be {foundId}");
                                 return l.ReturnAndLog(foundId?.ToString().ConvertOrDefault<int?>());
-                                //return l.ReturnAndLog(SafeConvert(key, foundId));
                             }
-
                         break;
                     }
                 }
