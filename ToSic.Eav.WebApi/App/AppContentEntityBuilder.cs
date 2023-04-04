@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Data;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
@@ -69,11 +71,12 @@ namespace ToSic.Eav.WebApi.App
                     case ValueTypes.Entity:
                         var relationships = new List<int>();
 
+                        void AddRelationshipIfNotNull(int? id) { if (id != null) relationships.Add(id.Value); }
                         if (foundValue is IEnumerable foundEnum) // it's a list!
                             foreach (var item in foundEnum)
-                                relationships.Add(CreateSingleRelationshipItem(item));
+                                AddRelationshipIfNotNull(CreateSingleRelationshipItem(item));
                         else // not a list
-                            relationships.Add(CreateSingleRelationshipItem(foundValue));
+                            AddRelationshipIfNotNull(CreateSingleRelationshipItem(foundValue));
 
                         cleanedNewItem.Add(attrName, relationships);
 
@@ -112,36 +115,40 @@ namespace ToSic.Eav.WebApi.App
         /// and then converts it to an item in the relationships-list
         /// </summary>
         /// <param name="foundValue"></param>
-        private int CreateSingleRelationshipItem(object foundValue)
+        private int? CreateSingleRelationshipItem(object foundValue)
         {
-            Log.A("create relationship");
+            var l = Log.Fn<int?>($"{foundValue}");
             try
             {
                 // the object foundNumber is either just an Id, or an Id/Title combination
                 // Try to see if it's already a number, else check if it's a JSON property
-                if (!int.TryParse(foundValue.ToString(), out var foundNumber))
+                if (int.TryParse(foundValue.ToString(), out var foundNumber)) 
+                    return l.ReturnAndLog(foundNumber);
+                
+                l.A("simple int-convert failed, try other formats");
+                switch (foundValue)
                 {
-                    switch (foundValue)
+                    case JsonElement jn when jn.ValueKind == JsonValueKind.Number:
+                        return l.ReturnAndLog(jn.GetInt32());
+                    case JsonObject jo:
                     {
-                        case JsonElement jn when jn.ValueKind == JsonValueKind.Number:
-                            foundNumber = jn.GetInt32();
-                            break;
-                        case JsonElement jo when jo.ValueKind == JsonValueKind.Object:
-                        {
-                            if (jo.TryGetProperty("Id", out var foundId))
-                                foundNumber = foundId.GetInt32();
-                            else if (jo.TryGetProperty("id", out foundId))
-                                foundNumber = foundId.GetInt32();
-                            break;
-                        }
+                        l.A("Test cases where it's an object with 'id' property");
+
+                        foreach (var key in new [] { "Id", "id" })
+                            if (jo.TryGetPropertyValue(key, out var foundId))
+                            {
+                                l.A($"Found '{key}' - type {foundId?.GetType()} - string would be {foundId}");
+                                return l.ReturnAndLog(foundId?.ToString().ConvertOrDefault<int?>());
+                            }
+                        break;
                     }
                 }
-                Log.A($"relationship found:{foundNumber}");
-                return foundNumber;
+                return l.ReturnNull("not found/can't convert");
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception("Tried to find Id of a relationship - but only found " + foundValue);
+                l.Ex(ex);
+                return l.ReturnNull("error");
             }
         }
     }

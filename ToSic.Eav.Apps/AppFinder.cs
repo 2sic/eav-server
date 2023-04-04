@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
@@ -18,42 +20,59 @@ namespace ToSic.Eav.Apps
         /// Find the app id from the app-name (usually a guid or "Default").
         /// Can also check the folder name
         /// </summary>
-        public int FindAppId(int zoneId, string appName, bool alsoCheckFolderName = false
-        ) => Log.Func($"{nameof(zoneId)}:{zoneId}, {nameof(appName)}:{appName}, {nameof(alsoCheckFolderName)}:{alsoCheckFolderName}", () =>
+        public int FindAppId(int zoneId, string appName, bool alsoCheckFolderName = false) 
         {
-            if (string.IsNullOrEmpty(appName))
-                return (Constants.AppIdEmpty, "no name");
+            var l = Log.Fn<int>($"{nameof(zoneId)}:{zoneId}, {nameof(appName)}:{appName}, {nameof(alsoCheckFolderName)}:{alsoCheckFolderName}");
+            try
+            {
+                if (appName.IsEmptyOrWs())
+                    return l.Return(Constants.AppIdEmpty, "no name");
 
-            var nameLower = appName.ToLowerInvariant();
-            var appId = _appStates.Apps(zoneId)
-                .Where(p => p.Value.ToLowerInvariant() == nameLower)
-                .Select(p => p.Key).FirstOrDefault();
+                var nameLower = appName.ToLowerInvariant();
+                var appId = _appStates.Apps(zoneId)
+                    .Where(p => p.Value.EqualsInsensitive(nameLower))
+                    .Select(p => p.Key).FirstOrDefault();
 
-            // optionally check folder names
-            if (appId == 0 && alsoCheckFolderName)
-                appId = AppIdFromFolderName(zoneId, appName);
+                // optionally check folder names
+                if (appId == 0 && alsoCheckFolderName)
+                    appId = AppIdFromFolderName(zoneId, appName);
 
-            var final = appId > 0 ? appId : AppConstants.AppIdNotFound;
-            return (final, final.ToString());
-        });
+                var final = appId > 0 ? appId : AppConstants.AppIdNotFound;
+                return l.ReturnAndLog(final);
+            }
+            catch (Exception ex)
+            {
+                l.Ex(ex);
+                l.Done();
+                throw;
+            }
+        }
 
         /// <summary>
         /// Find an app based on the folder name. Will check the App Metadata for this
         /// </summary>
-        public int AppIdFromFolderName(int zoneId, string folderName) => Log.Func(folderName, () =>
+        public int AppIdFromFolderName(int zoneId, string folderName)
         {
-            var nameLower = folderName.ToLowerInvariant();
-
-            foreach (var p in _appStates.Apps(zoneId))
+            var l = Log.Fn<int>($"{nameof(zoneId)}: {zoneId}; {nameof(folderName)}: {folderName}");
+            try
             {
-                var appState = _appStates.Get(new AppIdentity(zoneId, p.Key));
-                if (!string.IsNullOrEmpty(appState.Folder) && appState.Folder.ToLowerInvariant() == nameLower)
-                    return (p.Key, "folder matched");
-            }
+                foreach (var p in _appStates.Apps(zoneId))
+                {
+                    var appState = _appStates.Get(new AppIdentity(zoneId, p.Key));
+                    if (appState.Folder.EqualsInsensitive(folderName))
+                        return l.Return(p.Key, "folder matched");
+                }
 
-            // not found
-            return (AppConstants.AppIdNotFound, "not found");
-        });
+                // not found
+                return l.Return(AppConstants.AppIdNotFound, "not found");
+            }
+            catch (Exception ex)
+            {
+                l.Ex(ex);
+                l.Done();
+                throw;
+            }
+        }
 
         /// <summary>
         /// Find an app based on the app name. Will check the App Metadata for this
