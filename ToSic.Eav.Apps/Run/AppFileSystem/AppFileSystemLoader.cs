@@ -177,15 +177,18 @@ namespace ToSic.Eav.Apps.Run
 
         private List<string> ExtensionPaths()
         {
+            var wrapLog = Log.Fn<List<string>>();
             var dir = new DirectoryInfo(Path);
-            if (!dir.Exists) return new List<string>();
+            if (!dir.Exists) return wrapLog.ReturnAndLog(new List<string>(), $"directory do not exist: {dir}");
             var sub = dir.GetDirectories();
             var subDirs = sub.SelectMany(
-                s => s.GetDirectories(System.IO.Path.Combine(Constants.AppDataProtectedFolder, Constants.FolderData))
-                    .Union(s.GetDirectories(".data"))
-                );
-            var paths = subDirs.Select(s => s.FullName).ToList();
-            return paths;
+                s => 
+                    s.GetDirectories(Constants.AppDataProtectedFolder)
+                        .Where(d => d.Exists)
+                        .SelectMany(a => a.GetDirectories(Constants.FolderData)
+                    ).Union(s.GetDirectories(".data")));
+            var paths = subDirs.Where(d => d.Exists).Select(s => s.FullName).ToList();
+            return wrapLog.ReturnAndLog(paths, $"OK, paths:{string.Join(";", paths)}");
         }
 
         #endregion
