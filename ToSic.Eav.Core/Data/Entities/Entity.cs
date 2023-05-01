@@ -36,7 +36,7 @@ namespace ToSic.Eav.Data
             Version = version;
             IsPublished = isPublished;
             PlaceDraftInBranch = placeDraftInBranch;
-            PublishedEntityId = publishedId;
+            PublishedEntityId = publishedId == 0 ? null : (int?)publishedId; // fix: #3070 convert 0 to null 
             _getMetadataOf = partsBuilder.GetMetadataOfDelegate;
         }
 
