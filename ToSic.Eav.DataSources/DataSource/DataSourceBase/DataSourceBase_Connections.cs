@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
+using ToSic.Lib.Logging;
 using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource
@@ -113,12 +115,17 @@ namespace ToSic.Eav.DataSource
         [PrivateApi]
         private void Connect(IDataSourceLink connections)
         {
-            var list = connections.Flatten();
-            foreach (var link in list)
-                if (link.Stream != null)
-                    Attach(link.InName, link.Stream);
-                else
-                    Attach(link.InName, link.DataSource, link.OutName);
+            var list = connections.Flatten().ToList();
+            var l = Log.Fn($"{nameof(connections)}: {list.Count}");
+            DoWhileOverrideImmutable(() =>
+            {
+                foreach (var link in list)
+                    if (link.Stream != null)
+                        Attach(link.InName, link.Stream);
+                    else
+                        Attach(link.InName, link.DataSource, link.OutName);
+            });
+            l.Done();
         }
 
 
@@ -138,10 +145,12 @@ namespace ToSic.Eav.DataSource
 
         private void Attach(DataSourceConnection connection)
         {
+            var l = Log.Fn($"{nameof(connection)}: {connection.SourceStream} to {connection.TargetStream}");
             if (Immutable && !_overrideImmutable)
-                throw new Exception($"This data source is Immutable. Attaching more sources after creation is not allowed. DataSource: {GetType().Name}");
+                throw l.Ex(new Exception($"This data source is Immutable. Attaching more sources after creation is not allowed. DataSource: {GetType().Name}"));
             _inRw[connection.TargetStream] = new ConnectionStream(connection, Error);
             Connections.AddIn(connection);
+            l.Done();
         }
         
 
