@@ -92,7 +92,7 @@ namespace ToSic.Eav.DataSource
             base.ProvideOut(() => GetAny(data, options), name);
         }
 
-
+        [PrivateApi]
         protected internal void ProvideOutRaw<T>(
             Func<IEnumerable<IHasRawEntity<T>>> data,
             string noParamOrder = Parameters.Protector,
@@ -103,6 +103,7 @@ namespace ToSic.Eav.DataSource
             base.ProvideOut(() => GetHasRaw(data, options), name);
         }
 
+        [PrivateApi]
         protected internal void ProvideOutRaw<T>(
             Func<IEnumerable<T>> data,
             string noParamOrder = Parameters.Protector,
