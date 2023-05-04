@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSource.Catalog
             var l = Log.Fn<DataSourceInfo>($"{nameof(name)}: {name}, {nameof(appId)}: {appId}");
             // New 11.12.x If the type is identified by a GUID, that's what we should return
             var typeInfo = FindInCache(name, appId);
-            if (typeInfo?.Name != null) return typeInfo;
+            if (typeInfo?.Name != null) return l.Return(typeInfo, $"found in cache {typeInfo.Name}");
 
             // Old mechanism which checks real types etc but probably is never needed any more
             var typeFromCatalog = FindDataSourceInfo(name, appId);
