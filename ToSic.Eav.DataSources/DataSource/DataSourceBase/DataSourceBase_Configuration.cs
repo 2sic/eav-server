@@ -3,6 +3,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Generics;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
+using ToSic.Lib.Logging;
 using static System.StringComparison;
 
 namespace ToSic.Eav.DataSource
@@ -41,20 +42,28 @@ namespace ToSic.Eav.DataSource
         [PrivateApi]
         public void Setup(IDataSourceOptions options, IDataSourceLinkable attach)
         {
+            var l = Log.Fn();
             var mainUpstream = attach?.Link?.DataSource;
             (this as IAppIdentitySync).UpdateAppIdentity(options?.AppIdentity ?? mainUpstream);
             
             // Attach in-bound, and make it immutable afterwards
-            if (attach?.Link != null) Connect(attach.Link);
+            if (attach?.Link == null)
+                l.A("Nothing to attach");
+            else
+                Connect(attach.Link);
+
             if (options?.Immutable == true) Immutable = true;
+            l.A($"{nameof(Immutable)}, {Immutable}");
 
             var lookUp = options?.LookUp ?? mainUpstream?.Configuration?.LookUpEngine;
             if (lookUp != null && Configuration is DataSourceConfiguration dsConfig)
             {
+                l.A("Add lookups");
                 dsConfig.LookUpEngine = lookUp;
                 var configValues = options?.Values;
                 if (configValues != null) dsConfig.AddMany(configValues.ToEditable());
             }
+            l.Done();
         }
 
     }

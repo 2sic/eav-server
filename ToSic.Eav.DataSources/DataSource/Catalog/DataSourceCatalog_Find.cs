@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSource.Catalog
 {
@@ -34,12 +35,14 @@ namespace ToSic.Eav.DataSource.Catalog
         //}
         internal DataSourceInfo FindDsiByGuidOrName(string name, int appId)
         {
+            var l = Log.Fn<DataSourceInfo>($"{nameof(name)}: {name}, {nameof(appId)}: {appId}");
             // New 11.12.x If the type is identified by a GUID, that's what we should return
             var typeInfo = FindInCache(name, appId);
-            if (typeInfo?.Name != null) return typeInfo;
+            if (typeInfo?.Name != null) return l.Return(typeInfo, $"found in cache {typeInfo.Name}");
 
             // Old mechanism which checks real types etc but probably is never needed any more
-            return FindDataSourceInfo(name, appId);
+            var typeFromCatalog = FindDataSourceInfo(name, appId);
+            return l.Return(typeFromCatalog, typeFromCatalog?.Name);
         }
 
         // 2023-03-21 2dm disabled this as we now need the DSI
@@ -58,6 +61,7 @@ namespace ToSic.Eav.DataSource.Catalog
         // Note: only public because we're still supporting a very old API in a 2sxc code
         public DataSourceInfo FindDataSourceInfo(string name, int appId)
         {
+            var l = Log.Fn<DataSourceInfo>($"{nameof(name)}: {name}, {nameof(appId)}: {appId}");
             // 2023-03-31 2dm disabled this as we now need the DSI - believe this should not have an effect
             //// first try to just find the type, but check if it's marked [Obsolete]
             //var type = Type.GetType(name);
@@ -66,7 +70,7 @@ namespace ToSic.Eav.DataSource.Catalog
 
             // if not found, or if obsolete, try to find another
             var typeFromCatalog = FindInCache(name, appId);
-            return typeFromCatalog;
+            return l.Return(typeFromCatalog, typeFromCatalog?.Name);
         }
 
         /// <summary>
@@ -75,6 +79,8 @@ namespace ToSic.Eav.DataSource.Catalog
         /// <remarks>Objects that implement IDataSource</remarks>
         public IEnumerable<DataSourceInfo> GetAll(bool onlyForVisualQuery, int appId)
         {
+            var l = Log.Fn<IEnumerable<DataSourceInfo>>($"{onlyForVisualQuery}, {appId}");
+
             var fromGlobal = onlyForVisualQuery
                 ? GlobalCache.Where(dsi => (dsi.VisualQuery?.NameId).HasValue())
                 : GlobalCache;
@@ -84,7 +90,8 @@ namespace ToSic.Eav.DataSource.Catalog
                 ? appList.Where(dsi => (dsi.VisualQuery?.NameId).HasValue()).ToList()
                 : appList;
 
-            return fromGlobal.Concat(fromApp);
+            var result = fromGlobal.Concat(fromApp);
+            return l.Return(result, $"{result.Count()}");
         }
     }
 }

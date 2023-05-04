@@ -70,10 +70,10 @@ namespace ToSic.Eav.Configuration.Licenses
         internal static bool AreAllLicensesInvalid()
         {
             // if we do not have license for validation, than it can not be invalid
-            if (AllCache.Count(l => l.License.AutoEnable != true) == 0) return false;
+            if (AllCache.All(l => l.License.AutoEnable)) return false;
             
             // any valid license?
-            foreach (var license in AllCache.Where(l => l.License.AutoEnable != true))
+            foreach (var license in AllCache.Where(l => !l.License.AutoEnable))
                 if (license.Valid)
                     return false;
             return true;

@@ -1,7 +1,15 @@
 ﻿using ToSic.Eav.Plumbing;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data.Build
 {
+    /// <summary>
+    /// Options how Entities should be generated from the initial data.
+    /// </summary>
+    /// <remarks>
+    /// Added in v15.x but made public in v16.00
+    /// </remarks>
+    [PublicApi]
     public class DataFactoryOptions
     {
         /// <summary>
@@ -9,6 +17,10 @@ namespace ToSic.Eav.Data.Build
         /// By default it will be `0`
         /// </summary>
         public int AppId { get; }
+
+        /// <summary>
+        /// The type name to use for a generated Entity.
+        /// </summary>
         public string TypeName { get; }
 
         /// <summary>
@@ -24,6 +36,16 @@ namespace ToSic.Eav.Data.Build
 
         public int IdSeed { get; }
 
+        /// <summary>
+        /// Main Constructor to create such options.
+        /// </summary>
+        /// <param name="original">Optional initial object which would be used as a template when creating the new one.</param>
+        /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+        /// <param name="appId">Optional AppId to set on each generated Entity</param>
+        /// <param name="typeName">Optional ContentTypeName to use instead of the default</param>
+        /// <param name="titleField">Optional Title field to use instead of the default `Title`</param>
+        /// <param name="autoId">Determines if items with Id 0 should get an automatic ID</param>
+        /// <param name="idSeed">A root ID seed for numbering the items</param>
         public DataFactoryOptions(
             DataFactoryOptions original = default,
             string noParamOrder = Eav.Parameters.Protector,

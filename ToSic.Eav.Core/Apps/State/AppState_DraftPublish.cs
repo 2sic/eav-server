@@ -89,7 +89,8 @@ namespace ToSic.Eav.Apps
         /// </summary>
         private void MapDraftToPublished(Entity newEntity, int? publishedId, bool log)
         {
-            if (newEntity.IsPublished || !publishedId.HasValue) return;
+            // fix: #3070, publishedId sometimes has value 0, but that one should not be used
+            if (newEntity.IsPublished || !publishedId.HasValue || publishedId.Value == 0) return;
 
             if (log) Log.A($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
 
