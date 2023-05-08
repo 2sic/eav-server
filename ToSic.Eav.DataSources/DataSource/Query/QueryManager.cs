@@ -92,16 +92,28 @@ namespace ToSic.Eav.DataSource.Query
             return (result, "ok");
         });
 
-        internal IEntity FindQuery(IAppIdentity appIdentity, string nameOrGuid, int recurseParents = 0) => Log.Func($"{nameOrGuid}, recurse: {recurseParents}", () =>
+        public IQuery GetQuery(IAppIdentity appIdentity, string nameOrGuid, ILookUpEngine lookUps, int recurseParents = 0)
         {
-            if (nameOrGuid.IsEmptyOrWs()) return (null, "null - no name");
+            var l = Log.Fn<IQuery>($"{nameOrGuid}, recurse: {recurseParents}");
+            var qEntity = FindQuery(appIdentity, nameOrGuid, recurseParents);
+            if (qEntity == null)
+                return l.ReturnNull("not found");
+            var delayedQuery = _queryGenerator.New().Init(appIdentity.ZoneId, appIdentity.AppId, qEntity, lookUps);
+            return delayedQuery;
+        }
+
+        internal IEntity FindQuery(IAppIdentity appIdentity, string nameOrGuid, int recurseParents = 0) 
+        {
+            var l = Log.Fn<IEntity>($"{nameOrGuid}, recurse: {recurseParents}");
+            if (nameOrGuid.IsEmptyOrWs())
+                return l.ReturnNull("null - no name");
             var all = AllQueryItems(appIdentity, recurseParents);
             var result = FindByNameOrGuid(all, nameOrGuid);
             // If nothing found and we have an old name, try the new name
             if (result == null && nameOrGuid.StartsWith(SystemQueryPrefixPreV15))
                 result = FindByNameOrGuid(all, nameOrGuid.Replace(SystemQueryPrefixPreV15, SystemQueryPrefix));
-            return (result, result == null ? "null" : "ok");
-        });
+            return l.Return(result, result == null ? "null" : "ok");
+        }
 
         // todo: move to query-read or helper
 
