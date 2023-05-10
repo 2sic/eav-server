@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data.Raw
 {
-    public class RawFromAnonymous: RawEntity
+    public sealed class RawFromAnonymous: RawEntity
     {
-        public RawFromAnonymous(object original)
+        public RawFromAnonymous(object original, ILog log)
         {
             var dic = original.ObjectToDictionary(mutable: true, caseInsensitive: true);
-                // ReSharper disable VirtualMemberCallInConstructor
+            
             if (dic.ContainsKey(nameof(Id)))
             {
                 Id = dic[nameof(Id)].ConvertOrDefault<int>();
@@ -32,11 +36,43 @@ namespace ToSic.Eav.Data.Raw
                 Modified = dic[nameof(Modified)].ConvertOrDefault<DateTime>();
                 dic.Remove(nameof(Modified));
             }
-                // ReSharper restore VirtualMemberCallInConstructor
+
+            if (dic.ContainsKey(nameof(RelationshipKeys)))
+            {
+                var maybeRels = dic[nameof(RelationshipKeys)];
+                if (maybeRels is IEnumerable rels && !(rels is string))
+                    try
+                    {
+                        _relationshipKeys = rels.Cast<object>().ToList();
+                        // only remove if everything worked - so it stays in if something is wrong
+                        // this will make it easier to spot issues
+                        dic.Remove(nameof(RelationshipKeys));
+                    }
+                    catch
+                    {
+                        log.E($"Error in {nameof(RawFromAnonymous)} trying to convert {nameof(RelationshipKeys)}");
+                    }
+            }
+            else
+                _relationshipKeys = new List<object>();
+
+            _relationshipKeys.Add(Id);
+
+            // Scan relationships in dic...
+            foreach (var key in dic.Keys.ToList() /* must copy the keys as we plan to change the dic */)
+            {
+                var val = dic[key];
+                if (val == null || !val.IsAnonymous()) continue;
+                var maybeRefs = val.ObjectToDictionary(caseInsensitive: false);
+                if (maybeRefs.TryGetValue("Relationships", out var relsTemp) && relsTemp is IEnumerable relsList && !(relsList is string))
+                    dic[key] = new RawRelationship(keys: relsList.Cast<object>().ToList());
+            }
 
             Values = dic;
         }
 
-        
+
+        public override IEnumerable<object> RelationshipKeys(RawConvertOptions options) => _relationshipKeys;
+        private readonly List<object> _relationshipKeys = new List<object>();
     }
 }
