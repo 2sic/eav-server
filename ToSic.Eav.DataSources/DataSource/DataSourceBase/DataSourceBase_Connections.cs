@@ -25,8 +25,8 @@ namespace ToSic.Eav.DataSource
         /// <inheritdoc />
         [PublicApi]
         public virtual IReadOnlyDictionary<string, IDataStream> In => _in.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inRw));
-        private GetOnce<IReadOnlyDictionary<string, IDataStream>> _in = new GetOnce<IReadOnlyDictionary<string, IDataStream>>();
-        private IDictionary<string, IDataStream> _inRw = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
+        private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _in = new GetOnce<IReadOnlyDictionary<string, IDataStream>>();
+        private readonly IDictionary<string, IDataStream> _inRw = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
 
         /// <summary>
         /// Get a specific Stream from In.
@@ -59,12 +59,24 @@ namespace ToSic.Eav.DataSource
         /// Introduced in 2sxc 15.04
         /// </remarks>
         [PublicApi]
-        protected internal IImmutableList<IEntity> TryGetIn(string name = DataSourceConstants.StreamDefaultName) => !In.ContainsKey(name) ? null : In[name]?.List?.ToImmutableList();
+        protected internal IImmutableList<IEntity> TryGetIn(string name = DataSourceConstants.StreamDefaultName)
+            => !In.ContainsKey(name) ? null : In[name]?.List?.ToImmutableList();
+
+        /// <summary>
+        /// Try get an out-stream.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Introduced in 2sxc 16.01
+        /// </remarks>
+        protected internal IImmutableList<IEntity> TryGetOut(string name = DataSourceConstants.StreamDefaultName)
+            => !Out.ContainsKey(name) ? null : Out[name]?.List?.ToImmutableList();
 
         /// <inheritdoc />
         [PublicApi]
-        public virtual IReadOnlyDictionary<string, IDataStream> Out => _outRw.AsReadOnly(); // { get; protected internal set; } = new StreamDictionary();
-        private StreamDictionary _outRw = new StreamDictionary();
+        public virtual IReadOnlyDictionary<string, IDataStream> Out => _outRw.AsReadOnly();
+        private readonly StreamDictionary _outRw = new StreamDictionary();
 
         /// <inheritdoc />
         public IDataStream this[string outName] => GetStream(outName);

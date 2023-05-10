@@ -64,21 +64,57 @@ namespace ToSic.Eav.DataSource
             return new[] { entity }.ToImmutableList();
         }
 
-        public IImmutableList<IEntity> TryGetInFailed(IDataSource source = default, string streamName = DataSourceConstants.StreamDefaultName)
+        /// <summary>
+        /// Create a stream of items showing a detailed error why an In stream was not found.
+        /// </summary>
+        /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+        /// <param name="source"></param>
+        /// <param name="name">Name of the stream.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Added v16.00
+        /// </remarks>
+        public IImmutableList<IEntity> TryGetInFailed(string noParamOrder = Parameters.Protector, IDataSource source = default, string name = DataSourceConstants.StreamDefaultName)
+         {
+             Parameters.Protect(noParamOrder, $"{nameof(source)}, {nameof(name)}");
+             return TryGetFailed(source, true, name);
+         }
+
+        /// <summary>
+        /// Create a stream of items showing a detailed error why an Out stream was not found.
+        /// </summary>
+        /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+        /// <param name="source"></param>
+        /// <param name="name">Name of the stream.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Added v16.01
+        /// </remarks>
+        public IImmutableList<IEntity> TryGetOutFailed(string noParamOrder = Parameters.Protector, IDataSource source = default, string name = DataSourceConstants.StreamDefaultName)
+         {
+             Parameters.Protect(noParamOrder, $"{nameof(source)}, {nameof(name)}");
+             return TryGetFailed(source, false, name);
+         }
+
+         [PrivateApi]
+        private IImmutableList<IEntity> TryGetFailed(IDataSource source, bool inStreams, string streamName)
         {
             source = source ?? _source;
-            if (!source.In.ContainsKey(streamName))
+            var inOrOut = inStreams ? source.In : source.Out;
+            var partName = inStreams ? "In" : "Out";
+            if (!inOrOut.ContainsKey(streamName))
                 return Create(source: source, title: $"Stream '{streamName}' not found",
-                        message: $"This DataSource needs the stream '{streamName}' on the In to work, but it couldn't find it.");
-            var stream = source.In[streamName];
+                        message: $"This DataSource needs the stream '{streamName}' on the {partName} to work, but it couldn't find it.");
+            var stream = inOrOut[streamName];
             if (stream == null)
-                return Create(source: source, title: $"Stream '{streamName}' is Null", message: $"The Stream '{streamName}' was found on In, but it's null");
+                return Create(source: source, title: $"Stream '{streamName}' is Null", message: $"The Stream '{streamName}' was found on {partName}, but it's null");
             var list = stream.List?.ToImmutableList();
             if (list == null)
                 return Create(source: source, title: $"Stream '{streamName}' is Null",
-                        message: $"The Stream '{streamName}' exists, but the List is null");
+                        message: $"The Stream '{streamName}' exists on {partName}, but the List is null");
             return null;
         }
+
 
         [PrivateApi("usually not needed externally")]
         public IEntity CreateErrorEntity(IDataSource source, string stream, string title, string message)

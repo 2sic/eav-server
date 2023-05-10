@@ -26,6 +26,9 @@ namespace ToSic.Eav.DataSource
         public static IImmutableList<IEntity> TryGetIn(this CustomDataSource ds, string name = StreamDefaultName)
             => ds.TryGetIn(name);
 
+        public static IImmutableList<IEntity> TryGetOut(this CustomDataSource ds, string name = StreamDefaultName)
+            => ds.TryGetOut(name);
+
         public static void BreachProvideOut(
             this CustomDataSource ds,
             Func<object> source,

@@ -62,10 +62,19 @@ namespace ToSic.Eav.Data.Raw
             foreach (var key in dic.Keys.ToList() /* must copy the keys as we plan to change the dic */)
             {
                 var val = dic[key];
-                if (val == null || !val.IsAnonymous()) continue;
+                if (val == null || !val.IsAnonymous())
+                    continue;
+
                 var maybeRefs = val.ObjectToDictionary(caseInsensitive: false);
-                if (maybeRefs.TryGetValue("Relationships", out var relsTemp) && relsTemp is IEnumerable relsList && !(relsList is string))
-                    dic[key] = new RawRelationship(keys: relsList.Cast<object>().ToList());
+                if (!maybeRefs.TryGetValue("Relationships", out var relsTemp) || relsTemp == null)
+                    continue;
+                
+                // If we only have on object / string, use it as key
+                // if we have an ienumerable use the list as the keys
+                var keys = relsTemp is IEnumerable relsList && !(relsTemp is string)
+                    ? relsList.Cast<object>().ToList()
+                    : new List<object> { relsTemp };
+                dic[key] = new RawRelationship(keys: keys);
             }
 
             Values = dic;
