@@ -121,14 +121,14 @@ namespace ToSic.Eav.DataSource
         {
             var values = new Dictionary<string, object>
             {
-                { DataConstants.ErrorTitleField, GenerateTitle(title)},
-                {"SourceName", source?.Name},
-                {"SourceLabel", source?.Label },
-                {"SourceGuid", source?.Guid },
-                {"SourceType", source?.GetType().Name },
-                {"SourceStream", stream },
-                {"Message", message },
-                {"DebugNotes", "There should be more details in the insights logs, see https://r.2sxc.org/insights" }
+                { DataConstants.ErrorFieldTitle, GenerateTitle(title) },
+                { "SourceName", source?.Name },
+                { "SourceLabel", source?.Label },
+                { "SourceGuid", source?.Guid },
+                { "SourceType", source?.GetType().Name },
+                { "SourceStream", stream },
+                { DataConstants.ErrorFieldMessage, message },
+                { DataConstants.ErrorFieldDebugNotes, DataConstants.ErrorDebugMessage }
             };
 
             // #DebugDataSource
@@ -140,7 +140,7 @@ namespace ToSic.Eav.DataSource
             var errorEntity = _builder.Entity.Create(appId: DataConstants.ErrorAppId, entityId: DataConstants.ErrorEntityId,
                 contentType: _builder.ContentType.Transient(DataConstants.ErrorTypeName),
                 attributes: _builder.Attribute.Create(values),
-                titleField: DataConstants.ErrorTitleField);
+                titleField: DataConstants.ErrorFieldTitle);
             return errorEntity;
         }
 
