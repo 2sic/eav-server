@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.WebApi.Dto;
@@ -34,6 +35,14 @@ namespace ToSic.Eav.WebApi.Formats
         /// </summary>
         public dynamic Prefill { get; set; }
 
+        /// <summary>
+        /// Additional data to preserve during client requests.
+        /// The contents of which is not important for the server,
+        /// but the client should get it again on the identifier bundle.
+        /// </summary>
+        /// <remarks>Added v16.01</remarks>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Dictionary<string, object> ClientData { get; set; }
 
         public int? DuplicateEntity { get; set; }
 
