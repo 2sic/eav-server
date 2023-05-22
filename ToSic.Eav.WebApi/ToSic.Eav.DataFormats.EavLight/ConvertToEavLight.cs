@@ -100,7 +100,9 @@ namespace ToSic.Eav.DataFormats.EavLight
         // TODO: the _Title is probably never used in JS but we must verify
         public const string InternalTitleField = "_Title";
         public const string InternalTypeField = "_Type";
-        private readonly IEnumerable<string> _notSerializableAttributeNames = new List<string> { "EphemeralString", "Group", "GroupEnd", "Message" };
+        // TODO: @STV - this looks completely wrong
+        // The field names don't always look like this - we must check the field type and possibly a metadata attribute
+        //private readonly IEnumerable<string> _notSerializableAttributeNames = new List<string> { "EphemeralString", "Group", "GroupEnd", "Message" };
 
         #endregion
 
@@ -123,7 +125,9 @@ namespace ToSic.Eav.DataFormats.EavLight
             var entityValues = entity.Attributes
                 .Select(d => d.Value)
                 // exclude attributes when name is in the not serializable attribute name list
-                .Where(d => !_notSerializableAttributeNames.Contains(d.Name))
+                // TODO: @STV - this looks completely wrong
+                // The field names don't always look like this - we must check the field type and possibly a metadata attribute
+                //.Where(d => !_notSerializableAttributeNames.Contains(d.Name))
                 .ToEavLight(attribute => attribute.Name, attribute =>
                 {
                     var value = entity.GetBestValue(attribute.Name, Languages);
