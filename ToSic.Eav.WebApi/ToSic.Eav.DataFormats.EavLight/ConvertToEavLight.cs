@@ -120,14 +120,18 @@ namespace ToSic.Eav.DataFormats.EavLight
             var rules = entity.GetDecorator<EntitySerializationDecorator>();
             var serRels = SubEntitySerialization.Stabilize(rules?.SerializeRelationships, true, false, true, false, true);
 
+            // Exclude attributes when field type is Empty or attribute metadata is IsEphemeral
+            var toClear = entity.Type.Attributes?.ToList()
+                .Where(a => a.Type == ValueTypes.Empty 
+                            || a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
+                .Select(a => a.Name)
+                .ToList();
+
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
             var entityValues = entity.Attributes
                 .Select(d => d.Value)
-                // exclude attributes when name is in the not serializable attribute name list
-                // TODO: @STV - this looks completely wrong
-                // The field names don't always look like this - we must check the field type and possibly a metadata attribute
-                //.Where(d => !_notSerializableAttributeNames.Contains(d.Name))
+                .Where(d => toClear?.Contains(d.Name) != true)
                 .ToEavLight(attribute => attribute.Name, attribute =>
                 {
                     var value = entity.GetBestValue(attribute.Name, Languages);
