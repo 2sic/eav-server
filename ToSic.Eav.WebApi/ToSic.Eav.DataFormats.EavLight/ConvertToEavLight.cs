@@ -121,17 +121,23 @@ namespace ToSic.Eav.DataFormats.EavLight
             var serRels = SubEntitySerialization.Stabilize(rules?.SerializeRelationships, true, false, true, false, true);
 
             // Exclude attributes when field type is Empty or attribute metadata is IsEphemeral
-            var toClear = entity.Type.Attributes?.ToList()
-                .Where(a => a.Type == ValueTypes.Empty 
-                            || a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
-                .Select(a => a.Name)
-                .ToList();
+            // Check if the entity type is in the cache
+            if (!_excludeAttributesCache.TryGetValue(entity.Type, out var excludeAttributes))
+            {
+                // If it's not in the cache, compute the list of attributes and add it to the cache
+                excludeAttributes = entity.Type.Attributes?.ToList()
+                    .Where(a => a.Type == ValueTypes.Empty
+                                || a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
+                    .Select(a => a.Name)
+                    .ToList();
+                _excludeAttributesCache[entity.Type] = excludeAttributes;
+            }
 
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
             var entityValues = entity.Attributes
                 .Select(d => d.Value)
-                .Where(d => toClear?.Contains(d.Name) != true)
+                .Where(d => excludeAttributes?.Contains(d.Name) != true)
                 .ToEavLight(attribute => attribute.Name, attribute =>
                 {
                     var value = entity.GetBestValue(attribute.Name, Languages);
@@ -188,6 +194,7 @@ namespace ToSic.Eav.DataFormats.EavLight
 
             return entityValues;
         }
+        private readonly Dictionary<object, List<string>> _excludeAttributesCache = new Dictionary<object, List<string>>();
 
         private void OptimizeRemoveEmptyValues(EntitySerializationDecorator rules, EavLightEntity entityValues)
         {
