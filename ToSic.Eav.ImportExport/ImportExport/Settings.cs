@@ -15,7 +15,7 @@
 
         public static string[] ExcludeRootFolders =
         {
-            Constants.FolderData,
+            Constants.FolderOldDotData, // ".data" should be migrated to new location "App_Data/system", so no need for export for old ".data"
             $"{Constants.AppDataProtectedFolder}\\{Constants.ZipFolderForSiteFiles}",
             $"{Constants.AppDataProtectedFolder}\\{Constants.ZipFolderForGlobalAppStuff}"
         };

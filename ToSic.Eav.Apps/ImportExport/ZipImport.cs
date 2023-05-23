@@ -333,7 +333,7 @@ namespace ToSic.Eav.Apps.ImportExport
         public static void MigrateForImportAppDataFile(string appRootPath)
         {
             var oldAppFilePath = Path.Combine(appRootPath, Constants.AppDataFile);
-            var oldDataAppFilePath = Path.Combine(appRootPath, Constants.ToSxcFolder, Constants.FolderData, Constants.AppDataFile);
+            var oldDataAppFilePath = Path.Combine(appRootPath, Constants.ToSxcFolder, Constants.FolderOldDotData, Constants.AppDataFile);
             if (!File.Exists(oldAppFilePath) && !File.Exists(oldDataAppFilePath)) return;
 
             Directory.CreateDirectory(Path.Combine(appRootPath, Constants.ToSxcFolder, Constants.AppDataProtectedFolder));
@@ -359,7 +359,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="appRootPath"></param>
         public static void MigrateOldAppDataFile(string appRootPath)
         {
-            var oldDataAppFilePath = Path.Combine(appRootPath, Constants.FolderData, Constants.AppDataFile);
+            var oldDataAppFilePath = Path.Combine(appRootPath, Constants.FolderOldDotData, Constants.AppDataFile);
             if (!File.Exists(oldDataAppFilePath)) return;
 
             Directory.CreateDirectory(Path.Combine(appRootPath, Constants.AppDataProtectedFolder));

@@ -1,13 +1,11 @@
-﻿using ToSic.Eav.Plumbing;
-
-namespace ToSic.Eav.Helpers
+﻿namespace ToSic.Eav.Helpers
 {
     public class DataFolder
     {
         public static string GetDataRoot(string dataFolder)
         {
-            return dataFolder?.EndsWith(Constants.FolderData) ?? false
-                ? dataFolder.Substring(0, dataFolder.Length - Constants.FolderData.Length).TrimLastSlash()
+            return dataFolder?.EndsWith(Constants.FolderSystem) ?? false
+                ? dataFolder.Substring(0, dataFolder.Length - Constants.FolderSystem.Length).TrimLastSlash()
                 : dataFolder ?? string.Empty;
         }
     }

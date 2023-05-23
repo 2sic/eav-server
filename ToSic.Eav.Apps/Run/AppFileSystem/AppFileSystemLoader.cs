@@ -185,8 +185,8 @@ namespace ToSic.Eav.Apps.Run
                 s => 
                     s.GetDirectories(Constants.AppDataProtectedFolder)
                         .Where(d => d.Exists)
-                        .SelectMany(a => a.GetDirectories(Constants.FolderData)
-                    ).Union(s.GetDirectories(".data")));
+                        .SelectMany(a => a.GetDirectories(Constants.FolderSystem)
+                    ).Union(s.GetDirectories(Constants.FolderOldDotData)));
             var paths = subDirs.Where(d => d.Exists).Select(s => s.FullName).ToList();
             return wrapLog.ReturnAndLog(paths, $"OK, paths:{string.Join(";", paths)}");
         }
