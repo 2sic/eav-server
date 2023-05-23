@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data;
+﻿using System;
+using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps
@@ -32,5 +33,6 @@ namespace ToSic.Eav.Apps
             => appState.NameId == Constants.PrimaryAppGuid;
 
         public static IEntity GetDraftOrKeep(this AppState appState, IEntity entity) => appState.GetDraft(entity) ?? entity;
+        public static IEntity GetDraftOrPublished(this AppState appState, Guid guid) => appState.GetDraftOrKeep(appState.List.One(guid));
     }
 }
