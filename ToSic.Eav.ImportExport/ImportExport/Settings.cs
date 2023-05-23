@@ -10,12 +10,14 @@
             ".git",
             "node_modules",
             "bower_components",
-            ".vs",
+            ".vs"
         };
 
         public static string[] ExcludeRootFolders =
         {
-            Constants.FolderData
+            Constants.FolderData,
+            $"{Constants.AppDataProtectedFolder}\\{Constants.ZipFolderForSiteFiles}",
+            $"{Constants.AppDataProtectedFolder}\\{Constants.ZipFolderForGlobalAppStuff}"
         };
 
         // Keep this commented till End of June 2022 #cleanUp #oldTemplates #2631
