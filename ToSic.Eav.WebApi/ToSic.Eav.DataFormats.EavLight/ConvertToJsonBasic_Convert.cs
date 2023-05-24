@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataFormats.EavLight
                 {
                     IEntity entity = null;
                     if (c is IEntity ent) entity = ent;
-                    else if (c is IEntityWrapper dynEnt) entity = dynEnt.Entity;
+                    else if (c is ICanBeEntity dynEnt) entity = dynEnt.Entity;
                     if (entity == null)
                         throw new Exception("tried to convert an item, but it was not a known Entity-type");
                     return GetDictionaryFromEntity(entity);
@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         public virtual EavLightEntity Convert(object item)
         {
             if (item is IEntity ent) return Convert(ent);
-            if (item is IEntityWrapper dynEnt) return Convert(dynEnt.Entity);
+            if (item is ICanBeEntity dynEnt) return Convert(dynEnt.Entity);
 
             throw new ArgumentException("expected an IEntity or IEntityWrapper like a DynamicEntity, but got something else", nameof(item));
         }

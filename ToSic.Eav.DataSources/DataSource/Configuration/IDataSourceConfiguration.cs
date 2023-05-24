@@ -70,12 +70,25 @@ namespace ToSic.Eav.DataSource
 
         string Get(string name);
 
-        //[PrivateApi]
-        //TValue Get<TValue>(string name);
+        /// <summary>
+        /// Get a configuration as a typed (converted) value.
+        /// It's usually better to use the overload which also provides a fallback.
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        TValue Get<TValue>(string name);
 
-        //// ReSharper disable once MethodOverloadWithOptionalParameter
-        //[PrivateApi]
-        //TValue Get<TValue>(string name, string noParamOrder = Eav.Parameters.Protector, TValue fallback = default);
+        /// <summary>
+        /// Get a typed value but return the fallback if not found or if the conversion fails.
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="name">Name of the configuration</param>
+        /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+        /// <param name="fallback">Fallback value if the configuration is missing or can't be parsed into the expected data format.</param>
+        /// <returns></returns>
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        TValue Get<TValue>(string name, string noParamOrder = Eav.Parameters.Protector, TValue fallback = default);
 
 
         #endregion

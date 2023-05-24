@@ -10,12 +10,12 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.WebApi.Plumbing;
-using ToSic.Eav.WebApi.Security;
 using System.Collections.Generic;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Serialization;
+using ToSic.Eav.Security;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 #if NETFRAMEWORK
@@ -70,7 +70,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             string selectedIds) => Log.Func(l =>
         {
             l.A($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
-            SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
+            SecurityHelpers.ThrowIfNotContentAdmin(user, l);
 
             var contextLanguages = _appStates.Languages(_appManager.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
 
@@ -106,7 +106,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         public THttpResponseType DownloadTypeAsJson(IUser user, string name) => Log.Func(l =>
         {
             l.A($"get fields type:{name}");
-            SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
+            SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
             var type = _appManager.Read.ContentTypes.Get(name);
             var serializer = _jsonSerializer.New().SetApp(_appManager.AppState);
             var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
@@ -119,7 +119,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         public THttpResponseType DownloadEntityAsJson(IUser user, int id, string prefix, bool withMetadata) => Log.Func(l =>
         {
             l.A($"get fields id:{id}");
-            SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
+            SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
             var entity = _appManager.Read.Entities.Get(id);
             var serializer = _jsonSerializer.New().SetApp(_appManager.AppState);
 
@@ -134,7 +134,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         public THttpResponseType JsonBundleExport(IUser user, Guid exportConfiguration, int indentation) => Log.Func(l =>
         {
             l.A($"create Json Bundle Export for ExportConfiguration:{exportConfiguration}");
-            SecurityHelpers.ThrowIfNotAdmin(user.IsSiteAdmin);
+            SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
 
             _features.Value.ThrowIfNotEnabled("This feature is required", BuiltInFeatures.DataExportImportBundles.Guid);
 

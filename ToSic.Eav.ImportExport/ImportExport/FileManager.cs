@@ -112,28 +112,49 @@ namespace ToSic.Eav.ImportExport
         /// <returns></returns>
         public IEnumerable<string> GetAllTransferableFiles(string searchPattern = "*.*") => Log.Func(l =>
         {
+            var hardcodedExcludedFolders = GetHardcodedExcludedFolders();
+            l.A($"Hardcoded excluded folders count: {hardcodedExcludedFolders.Count}");
+
             var pathToDotAppJson = GetPathToDotAppJson(_sourceFolder);
+            IEnumerable<string> files;
+
             if (File.Exists(pathToDotAppJson))
-                // exclude files based on app.json from v14.08
-                return (ExcludeFilesBasedOnExcludeInDotAppJson(_root, searchPattern).ToList(),
-                    $"ok, exclude files based on {pathToDotAppJson}");
+            {
+                l.A($"Exclude files based on {pathToDotAppJson}");
+                files = ExcludeFilesBasedOnExcludeInDotAppJson(_root, searchPattern);
+            }
+            else
+            {
+                l.A($"Can't find {pathToDotAppJson}, exclude files using old way");
+                files = AllFiles(searchPattern);
+            }
 
-            // old hardcoded way of excluding files
-            l.A($"can't find {pathToDotAppJson}, exclude files on old way");
+            l.A($"Process excluding files based on hardcoded exclusions");
+            var filteredFiles = files
+                .Where(file => !FileManager.IsFileInExcludedFolder(file, hardcodedExcludedFolders))
+                .ToList();
 
+            l.A($"Returning filtered files based on exclusion criteria");
+            return (filteredFiles, "Done filtering files based on exclusion criteria");
+        });
+
+        private List<string> GetHardcodedExcludedFolders() => Log.Func(l =>
+        {
             // add folder slashes to ensure the term is part of a folder, not within a file-name
             var exclAnyFolder = Settings.ExcludeFolders
-                .Select(f => $"{DirectorySeparatorChar}{f}{DirectorySeparatorChar}").ToList();
+                .Select(f => $"{DirectorySeparatorChar}{f}{DirectorySeparatorChar}")
+                .ToList();
+
             var exclRootFolders = Settings.ExcludeRootFolders
-                .Select(f => $"{Combine(_root, f)}{DirectorySeparatorChar}").ToList();
-            var excFolders = exclAnyFolder.Union(exclRootFolders).ToList();
-            l.A($"hardcoded, excFolders:{excFolders.Count()}");
+                .Select(f => $"{Combine(_root, f)}{DirectorySeparatorChar}")
+                .ToList();
 
-            return (AllFiles(searchPattern)
-                .Where(f => !excFolders.Any(ex => f.ToLowerInvariant().Contains(ex.ToLowerInvariant())))
-                .ToList(), "ok, exclude files on old way");
-
+            var result = exclAnyFolder.Union(exclRootFolders).ToList();
+            return (result, "Ok, building list of hardcoded excluded folders");
         });
+
+        private static bool IsFileInExcludedFolder(string filePath, IEnumerable<string> excludedFolders) 
+            => excludedFolders.Any(ex => filePath.ToLowerInvariant().Contains(ex.ToLowerInvariant()));
 
 
         /// <summary>

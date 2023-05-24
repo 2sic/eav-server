@@ -16,11 +16,11 @@ namespace ToSic.Eav.Core.Tests
 
         public override List<string> RootPaths => new List<string>
         {
-            BuildPath(Constants.FolderData),
+            BuildPath(Constants.FolderOldDotData),
             //BuildPath("dist/edit/" + Constants.FolderData),
             //BuildPath("dist/sxc-edit/" + Constants.FolderData),
-            BuildPath(Constants.FolderDataBeta),
-            BuildPath(Constants.FolderDataCustom)
+            BuildPath(Constants.FolderOldDotDataBeta),
+            BuildPath(Constants.FolderOldDotDataCustom)
         };
 
         private string BuildPath(string pathEnd) => System.IO.Path.Combine(TestRootPath, pathEnd);

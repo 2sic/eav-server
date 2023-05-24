@@ -45,7 +45,7 @@ namespace ToSic.Eav.DataSource.Debug
 
                 var firstItem = Stream.List?.FirstOrDefault();
                 Error = firstItem?.Type?.Name == DataConstants.ErrorTypeName;
-                if (Error) ErrorData = firstItem; // errorConverter.Convert(firstItem);
+                if (Error) ErrorData = firstItem;
             }
             catch
             {

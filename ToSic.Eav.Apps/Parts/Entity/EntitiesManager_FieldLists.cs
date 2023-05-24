@@ -10,6 +10,7 @@ namespace ToSic.Eav.Apps.Parts
     {
         public void FieldListUpdate(IEntity target, string[] fields, bool asDraft, Callback callback)
         {
+            target = Parent.AppState.GetDraftOrKeep(target);
             var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
             var values = callback.Invoke(lists);
             Parent.Entities.UpdatePartsFromValues(target, values, (published: !asDraft, branch: asDraft));

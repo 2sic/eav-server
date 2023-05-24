@@ -161,7 +161,7 @@ namespace ToSic.Eav.DataSource
             if (data.All(d => d.IsAnonymous()))
             {
                 l.A("Was anonymous, converted to raw");
-                data = data.Select(d => new RawFromAnonymous(d)).Cast<object>().ToList();
+                data = data.Select(d => new RawFromAnonymous(d, Log)).Cast<object>().ToList();
             }
 
             // Handle raw

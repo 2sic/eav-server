@@ -100,6 +100,9 @@ namespace ToSic.Eav.DataFormats.EavLight
         // TODO: the _Title is probably never used in JS but we must verify
         public const string InternalTitleField = "_Title";
         public const string InternalTypeField = "_Type";
+        // TODO: @STV - this looks completely wrong
+        // The field names don't always look like this - we must check the field type and possibly a metadata attribute
+        //private readonly IEnumerable<string> _notSerializableAttributeNames = new List<string> { "EphemeralString", "Group", "GroupEnd", "Message" };
 
         #endregion
 
@@ -117,10 +120,24 @@ namespace ToSic.Eav.DataFormats.EavLight
             var rules = entity.GetDecorator<EntitySerializationDecorator>();
             var serRels = SubEntitySerialization.Stabilize(rules?.SerializeRelationships, true, false, true, false, true);
 
+            // Exclude attributes when field type is Empty or attribute metadata is IsEphemeral
+            // Check if the entity type is in the cache
+            if (!_excludeAttributesCache.TryGetValue(entity.Type, out var excludeAttributes))
+            {
+                // If it's not in the cache, compute the list of attributes and add it to the cache
+                excludeAttributes = entity.Type.Attributes?.ToList()
+                    .Where(a => a.Type == ValueTypes.Empty
+                                || a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
+                    .Select(a => a.Name)
+                    .ToList();
+                _excludeAttributesCache[entity.Type] = excludeAttributes;
+            }
+
             // Convert Entity to dictionary
             // If the value is a relationship, then give those too, but only Title and Id
             var entityValues = entity.Attributes
                 .Select(d => d.Value)
+                .Where(d => excludeAttributes?.Contains(d.Name) != true)
                 .ToEavLight(attribute => attribute.Name, attribute =>
                 {
                     var value = entity.GetBestValue(attribute.Name, Languages);
@@ -177,6 +194,7 @@ namespace ToSic.Eav.DataFormats.EavLight
 
             return entityValues;
         }
+        private readonly Dictionary<object, List<string>> _excludeAttributesCache = new Dictionary<object, List<string>>();
 
         private void OptimizeRemoveEmptyValues(EntitySerializationDecorator rules, EavLightEntity entityValues)
         {

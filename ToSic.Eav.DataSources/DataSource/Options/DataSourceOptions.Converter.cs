@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.Generics;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
@@ -21,6 +20,7 @@ namespace ToSic.Eav.DataSource
             {
                 // other is null
                 if (other is null) return original ?? new DataSourceOptions();
+
                 var secondDs = Convert(other, throwIfNull: false, throwIfNoMatch: false);
                 if (original is null) return secondDs ?? new DataSourceOptions();
 

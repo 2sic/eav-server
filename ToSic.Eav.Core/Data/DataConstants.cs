@@ -25,7 +25,12 @@
         public static readonly int ErrorAppId = 0;
         public static readonly int ErrorEntityId = 0;
         public static readonly string ErrorTypeName = "Error";
-        public static readonly string ErrorTitleField = "Error";
+        public static readonly string ErrorFieldTitle = "Error";
+        public static readonly string ErrorFieldMessage = "Message";
+        public static readonly string ErrorFieldDebugNotes = "DebugNotes";
+
+        public static readonly string ErrorDebugMessage =
+            "There should be more details in the insights logs, see https://r.2sxc.org/insights";
 
         #endregion
     }
