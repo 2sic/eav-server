@@ -73,10 +73,7 @@ namespace ToSic.Eav.ImportExport.Json
                         name: jsonType.Name,
                         nameId: jsonType.Id,
                         id: 0,
-                        scope: jsonType.Scope,
-                        // #RemoveContentTypeDescription #2974 - #remove 2023 Q2 if all works
-                        //jsonType.Description,
-                        parentTypeId: jsonType.Sharing?.ParentId,
+                        scope: jsonType.Scope, parentTypeId: jsonType.Sharing?.ParentId,
                         configZoneId: jsonType.Sharing?.ParentZoneId ?? 0,
                         configAppId: jsonType.Sharing?.ParentAppId ?? 0,
                         isAlwaysShared: jsonType.Sharing?.AlwaysShare ?? false,

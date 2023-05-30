@@ -33,13 +33,6 @@ namespace ToSic.Eav.Data
         string NameId { get; }
 
 
-        // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-        ///// <summary>
-        ///// The content-type description
-        ///// </summary>
-        //[Obsolete("Obsolete in v12, used to contain the description, which is now in the metadata")]
-        //string Description { get; }
-
         /// <summary>
         /// Get the scope of the Content Type (like sections in a DB)
         /// </summary>

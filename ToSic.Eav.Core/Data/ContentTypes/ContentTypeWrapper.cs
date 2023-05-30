@@ -52,9 +52,6 @@ namespace ToSic.Eav.Data
 
         public string NameId => GetContents().NameId;
 
-        // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-        //public string Description => _contents.Description;
-
         public string Scope => GetContents().Scope;
 
         public int Id => GetContents().Id;

@@ -103,8 +103,6 @@ namespace ToSic.Eav.Persistence.Efc
                     set.Name,
                     set.StaticName,
                     set.Scope,
-                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                    //set.Description,
                     Attributes = set.ToSicEavAttributesInSets
                         .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
                         .Select(a => _dataBuilder.TypeAttributeBuilder
@@ -166,8 +164,6 @@ namespace ToSic.Eav.Persistence.Efc
                     nameId: set.StaticName, 
                     id: set.AttributeSetId,
                     scope: set.Scope,
-                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                    /*set.Description,*/
                     parentTypeId: set.IsGhost,
                     configZoneId: set.ZoneId,
                     configAppId: set.AppId,

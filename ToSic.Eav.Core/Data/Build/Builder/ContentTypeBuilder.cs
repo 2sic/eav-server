@@ -17,8 +17,6 @@ namespace ToSic.Eav.Data.Build
         public ContentTypeBuilder() { }
 
         public const int DynTypeId = 1;
-        // #RemoveContentTypeDescription #2974 - #remove ca. 2023 Q2 if all works
-        //public const string DynTypeDefDescription = "Dynamic content type";
 
         public IContentType Create(
             // Basic identifiers (5)
@@ -170,9 +168,8 @@ namespace ToSic.Eav.Data.Build
             => Transient(Constants.TransientAppId, typeName, typeName);
 
         public IContentType Transient(int appId, string typeName, string nameId, string scope = null)
-            // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
             => Create(appId: appId, name: typeName, nameId: nameId, id: DynTypeId,
-                scope: scope ?? Scopes.System /*, DynTypeDefDescription*/,
+                scope: scope ?? Scopes.System,
                 attributes: new List<IContentTypeAttribute>(), isDynamic: true);
 
     }

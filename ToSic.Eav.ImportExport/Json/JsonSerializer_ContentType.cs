@@ -105,8 +105,6 @@ namespace ToSic.Eav.ImportExport.Json
                 Id = contentType.NameId,
                 Name = contentType.Name,
                 Scope = contentType.Scope,
-                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                //Description = contentType.Description,
                 Attributes = attribs,
                 Sharing = jctShare,
                 Metadata = contentType.Metadata.Select(md => ToJson(md)).ToList()

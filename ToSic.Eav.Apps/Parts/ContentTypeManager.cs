@@ -9,11 +9,10 @@ namespace ToSic.Eav.Apps.Parts
     {
         public ContentTypeManager() : base("App.TypMng") { }
 
-        // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-        public void Create(string name, string staticName, /*string description,*/ string scope)
+        public void Create(string name, string staticName, string scope)
         {
             Parent.DataController.DoAndSave(() =>
-                Parent.DataController.AttribSet.PrepareDbAttribSet(name, /*description,*/ name, scope, false, Parent.AppId));
+                Parent.DataController.AttribSet.PrepareDbAttribSet(name, name, scope, false, Parent.AppId));
         }
 
         /// <summary>
