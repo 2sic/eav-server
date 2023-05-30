@@ -85,29 +85,33 @@ namespace ToSic.Eav.DataSource
         [PublicApi]
         public IDataStream GetStream(string name = null, string noParamOrder = Parameters.Protector, bool nullIfNotFound = false, bool emptyIfNotFound = false)
         {
-            Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(GetStream), $"{nameof(nullIfNotFound)}");
+            var l = Log.Fn<IDataStream>($"{nameof(name)}: {name}; {nameof(nullIfNotFound)}: {nullIfNotFound}; {nameof(emptyIfNotFound)}: {emptyIfNotFound}");
+            Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(GetStream), $"{nameof(nullIfNotFound)}, {nameof(emptyIfNotFound)}");
 
             // Check if streamName was not provided
             if (string.IsNullOrEmpty(name)) name = DataSourceConstants.StreamDefaultName;
 
             // Simple case - just get it
-            if (Out.ContainsKey(name)) return Out[name];
+            if (Out.TryGetValue(name, out var foundStream))
+                return l.Return(foundStream, $"found stream {name}");
 
             if (nullIfNotFound && emptyIfNotFound)
-                throw new ArgumentException($"You cannot set both {nameof(nullIfNotFound)} and {nameof(emptyIfNotFound)} to true");
+                throw l.Done(new ArgumentException($"You cannot set both {nameof(nullIfNotFound)} and {nameof(emptyIfNotFound)} to true"));
 
             // If null is preferred to an error, return this
-            if (nullIfNotFound) return null;
+            if (nullIfNotFound)
+                return l.ReturnNull("null if not found");
 
             // If empty is preferred to an error, return this
-            if (emptyIfNotFound) return new DataStream(this, name, () => new List<IEntity>());
+            if (emptyIfNotFound)
+                return l.Return(new DataStream(this, name, () => new List<IEntity>()), "create empty");
 
             // Not found and no rule to handle it, throw error
-            throw new KeyNotFoundException(
+            throw l.Done(new KeyNotFoundException(
                 $"Can't find Stream with the name '{name}'. This could be a typo. Otherwise we recommend that you use either " +
                 $"'{nameof(nullIfNotFound)}: true' (for null-checks or ?? chaining) " +
                 $"or '{nameof(emptyIfNotFound)}: true' (for situations where you just want to add LINQ statements"
-            );
+            ));
         }
 
         /// <inheritdoc />
