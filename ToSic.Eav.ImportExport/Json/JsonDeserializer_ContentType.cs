@@ -26,7 +26,7 @@ namespace ToSic.Eav.ImportExport.Json
             }
             catch (Exception e)
             {
-                throw l.Ex(e);
+                throw l.Done(e);
             }
         });
 
@@ -89,7 +89,7 @@ namespace ToSic.Eav.ImportExport.Json
                 }
                 catch (Exception e)
                 {
-                    throw l.Ex(e);
+                    throw l.Done(e);
                 }
             }));
 

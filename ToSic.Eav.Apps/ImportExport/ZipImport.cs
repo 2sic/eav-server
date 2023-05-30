@@ -177,7 +177,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="pendingApp"></param>
         public bool ImportApp(string rename, string appDirectory, List<Message> importMessages, bool pendingApp)
         {
-            var wrapLog = Log.Fn<bool>($"{nameof(rename)}:'{rename}', {nameof(appDirectory)}:'{appDirectory}', ...");
+            var l = Log.Fn<bool>($"{nameof(rename)}:'{rename}', {nameof(appDirectory)}:'{appDirectory}', ...");
             try
             {
                 // migrate old app.xml and 2sexy/.data/app.xml to 2sexy/App_Data
@@ -189,12 +189,11 @@ namespace ToSic.Eav.Apps.ImportExport
             }
             catch (Exception e)
             {
-                Log.Ex(e);
-                Log.A("had found errors during import, will throw");
-                wrapLog.ReturnFalse("error");
+                l.A("had found errors during import, will throw");
+                l.Done(e);
                 throw; // must throw, to enable logging outside
             }
-            return wrapLog.ReturnTrue("ok");
+            return l.ReturnTrue("ok");
         }
 
         private void ImportAppXmlAndFiles(string rename, string appDirectory, List<Message> importMessages, bool pendingApp

@@ -56,7 +56,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
             if(entityList == null)
             {
                 l.A("error: entityList is null");
-                throw l.Ex(new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel"));
+                throw l.Done(new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel"));
             }
 
             _mdRead.Value.Init(appState);
@@ -141,7 +141,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
                     md = appState.GetMetadata(targetType, keyInt, contentType).ToList();
                     return ((md, mdFor), $"number:{keyInt}; count:{md.Count}");
                 default:
-                    throw l.Ex(new Exception("key type unknown:" + keyType));
+                    throw l.Done(new Exception("key type unknown:" + keyType));
             }
         });
 

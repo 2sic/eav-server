@@ -37,7 +37,7 @@ namespace ToSic.Eav.ImportExport.Json
             }
             catch (Exception ex)
             {
-                throw l.Ex(new FormatException("cannot deserialize json - bad format", ex));
+                throw l.Done(new FormatException("cannot deserialize json - bad format", ex));
             }
 
             if (jsonObj._.V != 1)
@@ -282,7 +282,7 @@ namespace ToSic.Eav.ImportExport.Json
                     }
                     catch { /* ignore */ }
                     l.W($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
-                    throw l.Ex(ex);
+                    throw l.Done(ex);
                 }
 
                 try
@@ -292,7 +292,7 @@ namespace ToSic.Eav.ImportExport.Json
                 catch (Exception ex)
                 {
                     l.W($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
-                    throw l.Ex(ex);
+                    throw l.Done(ex);
                 }
             });
             return result;

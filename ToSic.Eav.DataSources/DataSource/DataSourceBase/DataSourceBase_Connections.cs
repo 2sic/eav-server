@@ -159,7 +159,7 @@ namespace ToSic.Eav.DataSource
         {
             var l = Log.Fn($"{nameof(connection)}: {connection.SourceStream} to {connection.TargetStream}");
             if (Immutable && !_overrideImmutable)
-                throw l.Ex(new Exception($"This data source is Immutable. Attaching more sources after creation is not allowed. DataSource: {GetType().Name}"));
+                throw l.Done(new Exception($"This data source is Immutable. Attaching more sources after creation is not allowed. DataSource: {GetType().Name}"));
             _inRw[connection.TargetStream] = new ConnectionStream(connection, Error);
             Connections.AddIn(connection);
             l.Done();

@@ -120,7 +120,7 @@ namespace ToSic.Eav.Api.Api01
             // ensure the type really exists
             var type = _appManager.Read.ContentTypes.Get(contentTypeName);
             if (type == null)
-                throw Log.Ex(new ArgumentException("Error: Content type '" + contentTypeName + "' does not exist."));
+                throw l.Done(new ArgumentException("Error: Content type '" + contentTypeName + "' does not exist."));
 
             l.A($"Type {contentTypeName} found. Will build entities to save...");
 

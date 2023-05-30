@@ -42,8 +42,7 @@ namespace ToSic.Eav.Apps
             }
             catch (Exception ex)
             {
-                l.Ex(ex);
-                l.Done();
+                l.Done(ex);
                 throw;
             }
         }

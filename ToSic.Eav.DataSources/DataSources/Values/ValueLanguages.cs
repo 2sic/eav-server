@@ -43,7 +43,7 @@ namespace ToSic.Eav.DataSources
 
             l.E($"Error - can't figure out '{lang}'");
             var ex = new Exception($"Can't figure out what language to use: '{lang}'. Expected '{LanguageDefaultPlaceholder}', '{LanguageCurrentPlaceholder}' or a 2-character code");
-            throw Log.Ex(ex);
+            throw l.Done(ex);
         });
 
         private string ResolveOneLanguageCode(string lang) => Log.Func(lang, () =>
