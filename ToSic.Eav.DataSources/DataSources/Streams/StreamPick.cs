@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -76,8 +77,7 @@ namespace ToSic.Eav.DataSources
             if (string.IsNullOrWhiteSpace(StreamName))
                 return (ImmutableList<IEntity>.Empty, "no name");
 
-            name = name.ToLowerInvariant();
-            var foundStream = In.FirstOrDefault(pair => pair.Key.ToLowerInvariant() == name);
+            var foundStream = In.FirstOrDefault(pair => pair.Key.EqualsInsensitive(name));
 
             if (!string.IsNullOrEmpty(foundStream.Key))
                 return (foundStream.Value.List.ToImmutableList(), "ok");
