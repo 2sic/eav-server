@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Data
 {
@@ -10,12 +9,6 @@ namespace ToSic.Lib.Data
     [PrivateApi]
     public abstract class Wrapper<T>: IWrapper<T>
     {
-        ///// <summary>
-        ///// Property with the contents - should be used for all private/internal access to the UnwrappedContent
-        ///// </summary>
-        //[PrivateApi("should never appear in documentations")]
-        //protected virtual T UnwrappedContents => _unwrappedContents;
-
         private T _unwrappedContents;
 
         /// <inheritdoc />
