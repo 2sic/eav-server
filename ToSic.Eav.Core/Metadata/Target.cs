@@ -1,10 +1,14 @@
 using System;
 using System.Text.Json.Serialization;
+using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Metadata
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Reference to target. Usually used on <see cref="IEntity"/> to define what thing it provides additional metadata for.
+    /// Basically it contains all the references necessary to identify what it belongs to.
+    /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
     public class Target : ITarget
     {

@@ -23,7 +23,6 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources
 {
-    /// <inheritdoc />
     /// <summary>
     /// Provide Entities from a SQL Server
     /// </summary>
