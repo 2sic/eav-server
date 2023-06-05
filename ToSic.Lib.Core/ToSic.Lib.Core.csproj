@@ -16,18 +16,7 @@
     <FileVersion>0.0.1</FileVersion>
     <RootNamespace>ToSic.Lib</RootNamespace>
     <!-- end: Don't generate... -->
-    <!-- DocFX start -->
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
-    <!-- DocFX end -->
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
-  </ItemGroup>
   <!-- Different DI for .net 4.5 (using .net core 1.1) and .net Standard 2 -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
