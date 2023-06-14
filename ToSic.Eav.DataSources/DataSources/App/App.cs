@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = true,
         In = new []{DataSourceConstants.StreamDefaultName},
 		ConfigurationType = "|Config ToSic.Eav.DataSources.App",
-        HelpLink = "https://r.2sxc.org/DsApp")]
+        HelpLink = "https://go.2sxc.org/DsApp")]
     public partial class App : Eav.DataSource.DataSourceBase
 	{
         #region Configuration-properties

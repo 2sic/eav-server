@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
         In = new[] { InStreamDefaultRequired },
         DynamicOut = false,
         ConfigurationType = "a72cb2f4-52bb-41e6-9281-10e69aeb0310",
-        HelpLink = "https://r.2sxc.org/DsParents")]
+        HelpLink = "https://go.2sxc.org/DsParents")]
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
     public class Parents : RelationshipDataSourceBase
     {

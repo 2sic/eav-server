@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources
                 "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",
                 "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources"
             },
-        HelpLink = "https://r.2sxc.org/DsAppRoot")]
+        HelpLink = "https://go.2sxc.org/DsAppRoot")]
     [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public interface IAppRoot : IDataSource
     {

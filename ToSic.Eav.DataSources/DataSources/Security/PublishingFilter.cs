@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
         NameId = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
         In = new []{ StreamPublishedName + "*", StreamDefaultName + "*",  StreamDraftsName + "*" },
         DynamicOut = false, 
-        HelpLink = "https://r.2sxc.org/DsPublishingFilter")]
+        HelpLink = "https://go.2sxc.org/DsPublishingFilter")]
 
     public class PublishingFilter : Eav.DataSource.DataSourceBase
 	{

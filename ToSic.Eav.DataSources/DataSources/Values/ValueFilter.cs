@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources
         In = new[] { InStreamDefaultRequired, StreamFallbackName },
         DynamicOut = false,
         ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",
-        HelpLink = "https://r.2sxc.org/DsValueFilter")]
+        HelpLink = "https://go.2sxc.org/DsValueFilter")]
 
     public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     {

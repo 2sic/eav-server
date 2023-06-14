@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
         In = new[] { InStreamDefaultRequired },
         DynamicOut = false,
         ConfigurationType = "832cd470-49f2-4909-a08a-77644457713e",
-        HelpLink = "https://r.2sxc.org/DsChildren")]
+        HelpLink = "https://go.2sxc.org/DsChildren")]
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
     public class Children : RelationshipDataSourceBase

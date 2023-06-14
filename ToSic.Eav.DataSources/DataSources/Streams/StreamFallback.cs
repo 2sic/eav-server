@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
         NameId = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
         DynamicOut = false,
         DynamicIn = true,
-	    HelpLink = "https://r.2sxc.org/DsStreamFallback")]
+	    HelpLink = "https://go.2sxc.org/DsStreamFallback")]
 
     public sealed class StreamFallback : Eav.DataSource.DataSourceBase
 	{

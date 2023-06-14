@@ -14,6 +14,6 @@ namespace ToSic.Eav.Configuration
         public override bool IsOk(Condition condition) => Features.Value.IsEnabled(condition.NameId);
 
         public override string InfoIfNotOk(Condition condition) 
-            => $"The feature '{condition.NameId}' is not enabled - see https://r.2sxc.org/features.";
+            => $"The feature '{condition.NameId}' is not enabled - see https://go.2sxc.org/features.";
     }
 }

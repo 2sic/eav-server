@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
         In = new[] { InStreamDefaultRequired },
         DynamicOut = false,
         ConfigurationType = "d7858b36-1ef1-4c3d-b15c-c567b0d7bdd4",
-        HelpLink = "https://r.2sxc.org/DsMetadata")]
+        HelpLink = "https://go.2sxc.org/DsMetadata")]
     [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
     public class Metadata : MetadataDataSourceBase

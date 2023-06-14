@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         In = new[] { InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.ValueSort",
-        HelpLink = "https://r.2sxc.org/DsValueSort")]
+        HelpLink = "https://go.2sxc.org/DsValueSort")]
 
     public sealed class ValueSort : Eav.DataSource.DataSourceBase
 	{

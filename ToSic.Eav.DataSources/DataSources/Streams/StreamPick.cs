@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
         ConfigurationType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",
         DynamicOut = false,
         DynamicIn = true,
-        HelpLink = "https://r.2sxc.org/DsStreamPick")]
+        HelpLink = "https://go.2sxc.org/DsStreamPick")]
 
     public sealed class StreamPick : Eav.DataSource.DataSourceBase
     {

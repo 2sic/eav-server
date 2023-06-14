@@ -39,7 +39,7 @@ namespace ToSic.Eav.DataSources
             {
                 "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources"
             },
-        HelpLink = "https://r.2sxc.org/DsSql")]
+        HelpLink = "https://go.2sxc.org/DsSql")]
 
 	public class Sql : CustomDataSourceAdvanced
 	{

@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
 	public class DataTable : CustomDataSourceAdvanced
 	{
         private readonly IDataFactory _dataFactory;
-        // help Link: https://r.2sxc.org/DsDataTable
+        // help Link: https://go.2sxc.org/DsDataTable
 		#region Configuration-properties
 
 		/// <summary>
