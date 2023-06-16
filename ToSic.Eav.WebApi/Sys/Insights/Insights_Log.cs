@@ -12,10 +12,10 @@ namespace ToSic.Eav.WebApi.Sys
             return _logHtml.LogHeader("Overview", false) + _logHtml.LogHistoryOverview();
         }
 
-        private string Logs(string key)
+        private string Logs(string key, string filter)
         {
             Log.A($"debug log load for {key}");
-            return _logHtml.LogHeader(key, true) + _logHtml.LogHistoryList(_logStore, key);
+            return _logHtml.LogHeader(key, true) + _logHtml.LogHistoryList(_logStore, key, filter);
         }
 
         private string Logs(string key, int position)

@@ -81,7 +81,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
         }
 
 
-        internal string LogHistoryList(ILogStoreLive logStore, string key)
+        internal string LogHistoryList(ILogStoreLive logStore, string key, string filter)
         {
             var msg = "";
             if (!logStore.Segments.TryGetValue(key, out var set))
@@ -92,6 +92,21 @@ namespace ToSic.Eav.WebApi.Sys.Insights
 
             // Helper to get the correct value depending of if it should fill the column, or it's found...
             string GetValOrAlt(bool use, IDictionary<string, string> specs, string k) => !use ? null : specs.TryGetValue(k, out var a) ? a : "";
+
+            var logItems = set as IEnumerable<LogStoreEntry>; //.Select(x => x);
+            if (filter.HasValue())
+            {
+                var parts = filter.Split(',');
+                foreach (var part in parts)
+                {
+                    var criteria = part.Split('=');
+                    if (criteria.Length != 2) continue;
+                    logItems = logItems.Where(l =>
+                        l.Specs != null && l.Specs.TryGetValue(criteria[0], out var val) &&
+                        val.EqualsInsensitive(criteria[1]));
+                }
+            }
+                
 
             var hasApp = HasKey(nameof(IAppIdentity.AppId));
             var hasSite = HasKey("SiteId");
@@ -106,7 +121,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                     hasMod ? "Mod": null,
                     /*"Key",*/ /*"TopLevel Name",*/
                     "Lines", "First Message", "Info", "Time"),
-                Tbody(set
+                Tbody(logItems
                     .Select((bundle, i) =>
                     {
                         var realLog = bundle.Log as Log;
