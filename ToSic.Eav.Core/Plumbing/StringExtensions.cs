@@ -6,6 +6,11 @@ namespace ToSic.Eav.Plumbing
 {
     public static class StringExtensions
     {
+        /// <summary>
+        /// Check if a string is null or empty. Whitespace is treated as not-empty, use <see cref="IsEmptyOrWs"/> for that.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool IsEmpty(this string value) => string.IsNullOrEmpty(value);
         public static bool IsEmptyOrWs(this string value) => string.IsNullOrWhiteSpace(value);
 

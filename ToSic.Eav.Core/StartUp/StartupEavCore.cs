@@ -9,6 +9,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Obsolete;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
@@ -117,6 +118,9 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient<IRuntime, RuntimeUnknown>();
             services.TryAddTransient<IPlatformInfo, PlatformUnknown>();
 
+            // V16.02 - Obsolete service
+            services.TryAddTransient<CodeChangeService>();
+            services.TryAddScoped<CodeChangesInScope>();
 
             return services;
         }
