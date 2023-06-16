@@ -16,11 +16,11 @@ namespace ToSic.Lib.Logging
         /// <summary>
         /// Add a message
         /// </summary>
-        internal static Entry AddInternal(this ILog log, string message, CodeRef code)
+        internal static Entry AddInternal(this ILog log, string message, CodeRef code, EntryOptions options = default)
         {
             // Null-check
             if (!(log.GetRealLog() is ILogInternal realLog)) return null;
-            return realLog.CreateAndAdd(message, code);
+            return realLog.CreateAndAdd(message, code, options);
         }
 
         internal static Entry AddInternalReuse(this ILog log, string message, CodeRef code) 

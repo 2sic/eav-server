@@ -26,8 +26,9 @@ namespace ToSic.Lib.Logging
             string message,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
-            [CallerLineNumber] int cLine = default
-        ) => log.AddInternal(message, CodeRef.Create(cPath, cName, cLine));
+            [CallerLineNumber] int cLine = default,
+            EntryOptions options = default
+        ) => log.AddInternal(message, CodeRef.Create(cPath, cName, cLine), options);
 
 
         /// <summary>
@@ -46,8 +47,9 @@ namespace ToSic.Lib.Logging
             string message,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
-            [CallerLineNumber] int cLine = default
-        ) { if (enabled) log.AddInternal(message, CodeRef.Create(cPath, cName, cLine)); }
+            [CallerLineNumber] int cLine = default,
+            EntryOptions options = default
+        ) { if (enabled) log.AddInternal(message, CodeRef.Create(cPath, cName, cLine), options); }
 
         /// <summary>
         /// Add a **warning** to the log.

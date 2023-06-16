@@ -94,9 +94,9 @@ namespace ToSic.Lib.Logging
             (Parent as Log)?.AddEntry(entry);
         }
 
-        public Entry CreateAndAdd(string message, CodeRef code)
+        public Entry CreateAndAdd(string message, CodeRef code, EntryOptions options = default)
         {
-            var e = new Entry(this, message, WrapDepth, code);
+            var e = new Entry(this, message, WrapDepth, code, options);
             AddEntry(e);
             return e;
         }
