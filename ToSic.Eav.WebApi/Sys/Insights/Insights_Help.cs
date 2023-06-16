@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.WebApi.Sys.Insights;
-using ToSic.Lib.Logging;
+﻿using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
 using ToSic.Razor.Html5;
 using static ToSic.Razor.Blade.Tag;
@@ -69,31 +68,14 @@ namespace ToSic.Eav.WebApi.Sys
             return result.ToString();
         });
 
-        internal A DemoLink(string labelAndLink) => HtmlTableBuilder.DemoLink(labelAndLink);// Tag.A(labelAndLink).Href(labelAndLink);
+        internal A DemoLink(string labelAndLink) => HtmlTableBuilder.DemoLink(labelAndLink);
         
         internal A LinkTo(string label, string view, 
             int? appId = null, string noParamOrder = Eav.Parameters.Protector, 
             string key = null, string type = null, string nameId = null, string more = null)
         {
             return HtmlTableBuilder.LinkTo(label, view, appId, noParamOrder, key, type, nameId,more);
-            //Eav.Parameters.Protect(noParamOrder, "...");
-            //var link = UrlTo(view, appId, key: key, type: type, nameId: nameId, more: more);
-            //return Tag.A(label).Href(link);
         }
 
-        //protected bool NiceLink = true;
-
-        //protected string UrlTo(string view, int? appId = null, string noParamOrder = Eav.Parameters.Protector, 
-        //    string key = null, string type = null, string nameId = null, string more = null)
-        //{
-        //    Eav.Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(UrlTo), "...");
-        //    var link = (NiceLink ? $"./{view}?" : $"details?view={view}")
-        //               + (appId != null ? "&appid=" + appId : "")
-        //               + (type != null ? "&type=" + type : "")
-        //               + (key != null ? "&key=" + key : "")
-        //               + (nameId != null ? "&nameId=" + nameId : "")
-        //               + (more != null ? "&" + more : "");
-        //    return link;
-        //}
     }
 }
