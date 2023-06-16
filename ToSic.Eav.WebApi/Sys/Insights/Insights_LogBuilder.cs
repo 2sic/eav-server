@@ -173,15 +173,17 @@ namespace ToSic.Eav.WebApi.Sys
 
             #endregion
 
+            var message = HtmlEncode(e.Message.NeverNull());
+            if (e.Options?.ShowNewLines == true) message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
             return Span(
                 HoverLabel(label, e.Source, "logIds")
                    + " - "
-                   + HtmlEncode(e.Message)
+                   + message
                    + (e.Result != null
                        ? $" {ResStart}{HtmlEncode(e.Result)}{ResEnd}"
                        : string.Empty)
                    + time.ShowTime(e, parentTime)
-                   + (e.Code != null
+                   + (e.Code != null && e.Options?.HideCodeReference != true
                        ? " " + HoverLabel("C#", $"{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}", "codePeek")
                        : string.Empty)
                     + "\n")
