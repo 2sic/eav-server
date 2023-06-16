@@ -1,6 +1,4 @@
-﻿using System;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
+﻿using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Obsolete
@@ -14,13 +12,12 @@ namespace ToSic.Eav.Obsolete
             _scope = scope;
         }
 
-        public void Warn(ICodeChangeInfo change, /*int appId = default, string specificId = default,*/ Action<ILog> addMore = default)
+        public void Warn(ICodeChangeInfo change)
         {
             if (change is null) return;
             var use = change as CodeChangeUse ?? new CodeChangeUse(change);
-            LogObsolete(use/*, specificId, addMore*/);
-            _scope.Value.Add(use/*, appId*/);
-
+            var logged = LogObsolete(use);
+            _scope.Value.Add(logged);
         }
 
     }

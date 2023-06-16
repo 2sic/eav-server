@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using static ToSic.Razor.Blade.Tag;
+using ToSic.Eav.WebApi.Sys.Insights;
 
 namespace ToSic.Eav.WebApi.Sys
 {
@@ -38,7 +39,7 @@ namespace ToSic.Eav.WebApi.Sys
                     .ToList();
                 msg += P($"types: {types.Count}\n");
                 msg += "<table id='table'>"
-                       + HeadFields(
+                       + InsightsHtmlTable.HeadFields(
                                "#", "Scope", "StaticName", "Name", "Attribs", "Metadata", "Permissions", "IsDyn",
                                "Repo", "Items"
                            )
@@ -60,7 +61,7 @@ namespace ToSic.Eav.WebApi.Sys
                         /*ignore*/
                     }
 
-                    msg += RowFields(
+                    msg += InsightsHtmlTable.RowFields(
                         ++count,
                         type.Scope,
                         type.NameId,
@@ -74,13 +75,13 @@ namespace ToSic.Eav.WebApi.Sys
                     ) + "\n";
                 }
                 msg += "</tbody>" + "\n";
-                msg += RowFields("", "", "", "", "", "", "", "", "",
+                msg += InsightsHtmlTable.RowFields("", "", "", "", "", "", "", "", "",
                     LinkTo($"{totalItems}", nameof(Entities), appId, type: "all"));
                 msg += "</table>";
                 msg += "\n\n";
                 msg += P(
                     $"Total item in system: {items?.Count} - in types: {totalItems} - numbers {Em("should")} match!");
-                msg += JsTableSort();
+                msg += InsightsHtmlParts.JsTableSort();
             }
             catch (Exception ex)
             {
@@ -98,11 +99,11 @@ namespace ToSic.Eav.WebApi.Sys
 
         private string GlobalTypesLog()
         {
-            var msg = PageStyles() + LogHeader(null, false);
+            var msg = InsightsHtmlParts.PageStyles() + _logHtml.LogHeader(null, false);
             var log = Runtime.LoadLog;
             return msg + (log == null
                 ? P("log is null").ToString()
-                : DumpTree($"Log for Global Types loading", log));
+                : _logHtml.DumpTree("Log for Global Types loading", log));
         }
 
         private string TypeMetadata(int? appId = null, string type = null) => Log.Func(l =>

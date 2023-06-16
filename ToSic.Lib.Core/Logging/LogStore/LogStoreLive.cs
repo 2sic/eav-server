@@ -21,9 +21,9 @@ namespace ToSic.Lib.Logging
         private static int _segmentSize = LogConstants.LiveStoreSegmentSize;
 
         /// <inheritdoc />
-        public ConcurrentDictionary<string, FixedSizedQueue<ILog>> Segments => StaticSegments;
-        private static readonly ConcurrentDictionary<string, FixedSizedQueue<ILog>> StaticSegments 
-            = new ConcurrentDictionary<string, FixedSizedQueue<ILog>>();
+        public ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> Segments => StaticSegments;
+        private static readonly ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> StaticSegments 
+            = new ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>>();
 
         #region Pause
 
@@ -47,22 +47,22 @@ namespace ToSic.Lib.Logging
         #region Add
 
         /// <inheritdoc />
-        public void Add(string segment, ILog log) => AddInternal(segment, log, false);
+        public LogStoreEntry Add(string segment, ILog log) => AddInternal(segment, log, false);
 
         [PrivateApi("shouldn't be visible outside")]
-        public void ForceAdd(string key, ILog log) => AddInternal(key, log, true);
+        public LogStoreEntry ForceAdd(string key, ILog log) => AddInternal(key, log, true);
 
         [PrivateApi]
-        private void AddInternal(string key, ILog log, bool force)
+        private LogStoreEntry AddInternal(string key, ILog log, bool force)
         {
             // Check exit clauses if not forced
             if (!force)
             {
                 // only add if not paused
-                if (Pause) return;
+                if (Pause) return null;
 
                 // don't keep in journal if it shouldn't be preserved
-                if ((log as Log)?.Preserve != true) return;
+                if ((log as Log)?.Preserve != true) return null;
             }
 
             // auto-pause after 1000 logs were run through this, till someone decides to unpause again
@@ -70,11 +70,13 @@ namespace ToSic.Lib.Logging
 
             // make sure we have a queue
             if (!Segments.ContainsKey(key))
-                Segments.TryAdd(key, new FixedSizedQueue<ILog>(SegmentSize));
+                Segments.TryAdd(key, new FixedSizedQueue<LogStoreEntry>(SegmentSize));
 
             // add the current item if it's not already in the queue
-            if (Segments.TryGetValue(key, out var queue) && !queue.ToArray().Contains(log)) 
-                queue.Enqueue(log);
+            var entry = new LogStoreEntry { Log = log };
+            if (Segments.TryGetValue(key, out var queue) && queue.ToArray().All(x => x.Log != log))
+                queue.Enqueue(entry);
+            return entry;
         }
 
 

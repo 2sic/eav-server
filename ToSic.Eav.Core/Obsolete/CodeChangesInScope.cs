@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Obsolete
 {
@@ -6,14 +9,28 @@ namespace ToSic.Eav.Obsolete
     {
         public CodeChangesInScope() { }
 
-        internal void Add(ICodeChangeInfo change, int appId)
+        public IEnumerable<CodeChangeLogged> List => _list;
+        private readonly List<CodeChangeLogged> _list = new List<CodeChangeLogged>();
+
+
+        internal void Add(CodeChangeLogged codeChangeUse) => _list.Add(codeChangeUse);
+
+        public void AddContext(Func<IDictionary<string, string>> specsFactory)
         {
-            _list.Add(new CodeChangeUse(change, appId));
+            // If nothing to add, ignore.
+            if (!_list.SafeAny() || specsFactory == null) return;
+
+            // We could use some specs, so let's get them
+            try
+            {
+                var specs = specsFactory();
+                foreach (var logged in _list)
+                    logged?.EntryOrNull?.UpdateSpecs(specs);
+            }
+            catch
+            {
+                /* ignore */
+            }
         }
-
-        internal void Add(CodeChangeUse codeChangeUse) => _list.Add(codeChangeUse);
-
-        public IEnumerable<CodeChangeUse> List => _list;
-        private readonly List<CodeChangeUse> _list = new List<CodeChangeUse>();
     }
 }

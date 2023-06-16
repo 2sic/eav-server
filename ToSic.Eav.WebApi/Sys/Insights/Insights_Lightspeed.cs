@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Plumbing;
+using ToSic.Eav.WebApi.Sys.Insights;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
@@ -15,7 +16,7 @@ namespace ToSic.Eav.WebApi.Sys
                 var sizeStats = _lightSpeedStats.Size;
                 msg += P($"Apps in Cache: {countStats.Count}");
                 msg += "<table id='table'>"
-                       + HeadFields("#", "ZoneId", "AppId", "Name", "Items in Cache", "Ca. Memory Use", "NameId")
+                       + InsightsHtmlTable.HeadFields("#", "ZoneId", "AppId", "Name", "Items in Cache", "Ca. Memory Use", "NameId")
                        + "<tbody>";
                 var count = 0;
                 var totalItems = 0;
@@ -23,7 +24,7 @@ namespace ToSic.Eav.WebApi.Sys
                 foreach (var md in countStats)
                 {
                     var appState = AppState(md.Key);
-                    msg += RowFields(
+                    msg += InsightsHtmlTable.RowFields(
                         ++count,
                         SpecialField.Right(appState.ZoneId),
                         SpecialField.Right(md.Key),
@@ -37,7 +38,7 @@ namespace ToSic.Eav.WebApi.Sys
                 }
                 msg += "</tbody>";
                 msg += "<tfoot>";
-                msg += RowFields(
+                msg += InsightsHtmlTable.RowFields(
                     B("Total:"),
                     "",
                     "",
@@ -50,7 +51,7 @@ namespace ToSic.Eav.WebApi.Sys
                 msg += "</tfoot>";
                 msg += "</table>";
                 msg += "\n\n";
-                msg += JsTableSort();
+                msg += InsightsHtmlParts.JsTableSort();
             }
             catch
             {

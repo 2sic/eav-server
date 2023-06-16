@@ -6,6 +6,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Errors;
+using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
@@ -21,7 +22,6 @@ namespace ToSic.Eav.WebApi.Sys
         #region Constructor / DI
 
         public InsightsControllerReal(
-            IServiceProvider serviceProvider, 
             IAppStates appStates, 
             SystemManager systemManager,
             ILogStoreLive logStore, 
@@ -34,7 +34,6 @@ namespace ToSic.Eav.WebApi.Sys
             : base("Api.SysIns")
         {
             ConnectServices(
-                _serviceProvider = serviceProvider,
                 _appStates = appStates,
                 _logStore = logStore,
                 _licenseServiceLazy = licenseServiceLazy,
@@ -45,14 +44,17 @@ namespace ToSic.Eav.WebApi.Sys
                 _jsonSerializer = jsonSerializer,
                 SystemManager = systemManager
             );
+            _logHtml = new InsightsHtmlLog(_logStore);
         }
-        private readonly IServiceProvider _serviceProvider;
         private readonly IAppStates _appStates;
         private readonly ILogStoreLive _logStore;
         private readonly LazySvc<ILicenseService> _licenseServiceLazy;
         private readonly IUser _user;
         private readonly LightSpeedStats _lightSpeedStats;
         protected readonly SystemManager SystemManager;
+
+        private InsightsHtmlTable HtmlTableBuilder { get; } = new InsightsHtmlTable();
+        private readonly InsightsHtmlLog _logHtml;
 
         #endregion
 

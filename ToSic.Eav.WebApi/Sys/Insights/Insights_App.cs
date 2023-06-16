@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Debug;
 using ToSic.Eav.Caching;
+using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
@@ -16,7 +17,7 @@ namespace ToSic.Eav.WebApi.Sys
                 return message;
 
             Log.A($"debug app-load {appId}");
-            return PageStyles() + DumpTree($"2sxc load log for app {appId}", AppRt(appId).AppState.Log);
+            return InsightsHtmlParts.PageStyles() + _logHtml.DumpTree($"2sxc load log for app {appId}", AppRt(appId).AppState.Log);
         }
 
         private string Cache()
@@ -26,7 +27,7 @@ namespace ToSic.Eav.WebApi.Sys
             var zones = _appStates.Zones.OrderBy(z => z.Key);
 
             msg += "<table id='table'>"
-                + HeadFields("Zone ↕", "App ↕", Eav.Data.Attributes.GuidNiceName, "InCache", "Name ↕", "Folder ↕", "Details", "Actions", "Hash", "Timestamp", "List-Timestamp")
+                + InsightsHtmlTable.HeadFields("Zone ↕", "App ↕", Eav.Data.Attributes.GuidNiceName, "InCache", "Name ↕", "Folder ↕", "Details", "Actions", "Hash", "Timestamp", "List-Timestamp")
                 + "<tbody>";
 
             foreach (var zone in zones)
@@ -60,7 +61,7 @@ namespace ToSic.Eav.WebApi.Sys
 
                 foreach (var app in apps)
                 {
-                    msg += RowFields(
+                    msg += InsightsHtmlTable.RowFields(
                         zone.Key.ToString(),
                         app.Id.ToString(),
                         $"{app.Guid}",
@@ -80,7 +81,7 @@ namespace ToSic.Eav.WebApi.Sys
             }
             msg += "</tbody>"
                    + "</table>"
-                   + JsTableSort();
+                   + InsightsHtmlParts.JsTableSort();
             return msg;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Lib.Logging;
 using static ToSic.Razor.Blade.Tag;
 
@@ -23,18 +24,18 @@ namespace ToSic.Eav.WebApi.Sys
                 var attribs = typ.Attributes;
                 msg += P($"attribs: {attribs.Count()}\n");
                 msg += "<table id='table'>"
-                    + HeadFields( "#", "Id", "Name", "Type", "Input", "IsTitle", "Metadata", "Permissions" )
+                    + InsightsHtmlTable.HeadFields( "#", "Id", "Name", "Type", "Input", "IsTitle", "Metadata", "Permissions" )
                     + "<tbody>";
                 var count = 0;
                 foreach (var att in attribs)
                 {
-                    msg += RowFields(
+                    msg += InsightsHtmlTable.RowFields(
                         (++count).ToString(),
                         att.AttributeId.ToString(),
                         att.Name,
                         att.Type.ToString(),
                         att.InputType(),
-                        EmojiTrueFalse(att.IsTitle),
+                        InsightsHtmlBase.EmojiTrueFalse(att.IsTitle),
                         LinkTo($"{att.Metadata.Count()}", nameof(AttributeMetadata), appId, type: type, nameId: att.Name),
                         LinkTo($"{att.Metadata.Permissions.Count()}", nameof(AttributePermissions), appId, type: type, nameId: att.Name)
                     );
@@ -42,7 +43,7 @@ namespace ToSic.Eav.WebApi.Sys
                 msg += "</tbody>";
                 msg += "</table>";
                 msg += "\n\n";
-                msg += JsTableSort();
+                msg += InsightsHtmlParts.JsTableSort();
             }
             catch
             {
