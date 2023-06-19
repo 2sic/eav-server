@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.Obsolete
+namespace ToSic.Eav.CodeChanges
 {
     public class CodeChangesInScope
     {

@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Obsolete
+namespace ToSic.Eav.CodeChanges
 {
     public static class CodeChangeConstants
     {

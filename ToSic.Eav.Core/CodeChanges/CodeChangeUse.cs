@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.Obsolete
+namespace ToSic.Eav.CodeChanges
 {
     public class CodeChangeUse: ICodeChangeInfo
     {

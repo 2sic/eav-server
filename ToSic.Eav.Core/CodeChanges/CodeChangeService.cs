@@ -1,7 +1,7 @@
 ﻿using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Obsolete
+namespace ToSic.Eav.CodeChanges
 {
     public partial class CodeChangeService: ServiceBase
     {

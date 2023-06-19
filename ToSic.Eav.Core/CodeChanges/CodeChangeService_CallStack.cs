@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static ToSic.Eav.Obsolete.CodeChangeConstants;
+using static ToSic.Eav.CodeChanges.CodeChangeConstants;
 
-namespace ToSic.Eav.Obsolete
+namespace ToSic.Eav.CodeChanges
 {
     public partial class CodeChangeService
     {

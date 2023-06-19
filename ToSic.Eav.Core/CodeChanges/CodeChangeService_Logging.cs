@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.Obsolete.CodeChangeConstants;
+using static ToSic.Eav.CodeChanges.CodeChangeConstants;
 using static System.StringComparer;
 
-namespace ToSic.Eav.Obsolete
+namespace ToSic.Eav.CodeChanges
 {
     public partial class CodeChangeService
     {

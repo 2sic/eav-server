@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.CodeChanges;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
 using ToSic.Lib.Logging;
@@ -73,7 +74,7 @@ namespace ToSic.Eav.WebApi.Zone
                 Owner = owner
             };
 
-            var warningsObsolete = CountInsightsMessages(Obsolete.CodeChangeConstants.ObsoleteNameInHistory);
+            var warningsObsolete = CountInsightsMessages(CodeChangeConstants.ObsoleteNameInHistory);
             var warningsOther = CountInsightsMessages(LogConstants.StoreWarningsPrefix) - warningsObsolete;
 
             var warningsDto = new MessagesDto
