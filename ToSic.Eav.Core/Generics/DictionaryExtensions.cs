@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Linq;
 using static System.StringComparer;
 
@@ -37,5 +35,16 @@ namespace ToSic.Eav.Generics
 
         public static Dictionary<string, T> ToInvariantCopy<T>(this IDictionary<string, T> original) 
             => new Dictionary<string, T>(original, InvariantCultureIgnoreCase);
+
+        public static bool TryGetValue<TResult, TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, out TResult result) where TResult: new()
+        {
+            result = default;
+            if (source == null) return false;
+            if (!source.TryGetValue(key, out var innerResult)) return false;
+            //if (innerResult == null) return false;
+            if (!(innerResult is TResult typed)) return false;
+            result = typed;
+            return true;
+        }
     }
 }
