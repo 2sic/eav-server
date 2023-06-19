@@ -83,6 +83,11 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient<AesCryptographyService>();
             services.TryAddTransient<Rfc2898Generator>();
 
+            // V16.02 - Obsolete service
+            services.TryAddTransient<CodeChangeService>();
+            services.TryAddScoped<CodeChangesInScope>();
+            services.TryAddTransient<CodeChangeStats>();
+
             return services;
         }
 
@@ -117,10 +122,6 @@ namespace ToSic.Eav.StartUp
             // Unknown-Runtime for loading configuration etc. File-runtime
             services.TryAddTransient<IRuntime, RuntimeUnknown>();
             services.TryAddTransient<IPlatformInfo, PlatformUnknown>();
-
-            // V16.02 - Obsolete service
-            services.TryAddTransient<CodeChangeService>();
-            services.TryAddScoped<CodeChangesInScope>();
 
             return services;
         }

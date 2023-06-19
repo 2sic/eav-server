@@ -7,6 +7,12 @@ namespace ToSic.Eav.CodeChanges
 {
     public class CodeChangesInScope
     {
+        public readonly CodeChangeStats CodeChangeStats;
+        public CodeChangesInScope(CodeChangeStats codeChangeStats)
+        {
+            CodeChangeStats = codeChangeStats;
+        }
+
         public IEnumerable<CodeChangeLogged> List => _list;
         private readonly List<CodeChangeLogged> _list = new List<CodeChangeLogged>();
 
@@ -19,6 +25,7 @@ namespace ToSic.Eav.CodeChanges
             if (codeChangeUse == null) return;
             codeChangeUse.EntryOrNull?.UpdateSpecs(Specs);
             _list.Add(codeChangeUse);
+            CodeChangeStats.Register(codeChangeUse.EntryOrNull);
         }
 
         /// <summary>
