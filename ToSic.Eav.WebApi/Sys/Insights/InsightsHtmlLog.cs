@@ -63,7 +63,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             return Div(H2("Log Specs"), specList);
         }
 
-        internal string LogHeader(string key, bool showFlush)
+        internal string LogHeader(string key, bool showFlush, bool showReset = false)
         {
             var msg =
                 +Div("back to " + LinkTo("2sxc insights home", nameof(InsightsControllerReal.Help)))
@@ -75,25 +75,32 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                     " | ",
                     LinkTo(HtmlEncode("⏸"), nameof(InsightsControllerReal.PauseLogs), more: "toggle=true"),
                     $" collecting #{_logStore.AddCount} of max {_logStore.MaxItems} (keep max {_logStore.SegmentSize} per set, then FIFO)"
-                    + (showFlush ? " " + LinkTo("flush " + key, nameof(InsightsControllerReal.LogsFlush), key: key).ToString() : "")
+                    + (showFlush
+                        ? " " + LinkTo("flush " + key, nameof(InsightsControllerReal.LogsFlush), key: key).ToString()
+                        : "")
                 );
+            if (showReset)
+                msg += Br()
+                       + Strong("This list has filters applied. ")
+                       + LinkTo(HtmlEncode("❌") + "remove filters", nameof(InsightsControllerReal.Logs), key: key);
+                
             return msg.ToString();
         }
 
 
-        internal string LogHistoryList(ILogStoreLive logStore, string key, string filter)
+        internal string LogHistoryList(string key, string filter)
         {
             var msg = "";
-            if (!logStore.Segments.TryGetValue(key, out var set))
+            if (!_logStore.Segments.TryGetValue(key, out var set))
                 return msg + "item not found";
 
             // Helper to check if any log has this key
             bool HasKey(string k) => set.Any(s => s.Specs?.ContainsKey(k) == true);
 
             // Helper to get the correct value depending of if it should fill the column, or it's found...
-            string GetValOrAlt(bool use, IDictionary<string, string> specs, string k) => !use ? null : specs.TryGetValue(k, out var a) ? a : "";
+            string GetValOrAlt(bool use, IDictionary<string, string> specs, string k) => (!use || specs is null) ? null : specs.TryGetValue(k, out var a) ? a : "";
 
-            var logItems = set as IEnumerable<LogStoreEntry>; //.Select(x => x);
+            var logItems = set as IEnumerable<LogStoreEntry>;
             if (filter.HasValue())
             {
                 var parts = filter.Split(',');
@@ -119,7 +126,6 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                     hasSite ? "Site": null,
                     hasPage ? "Page": null,
                     hasMod ? "Mod": null,
-                    /*"Key",*/ /*"TopLevel Name",*/
                     "Lines", "First Message", "Info", "Time"),
                 Tbody(logItems
                     .Select((bundle, i) =>
@@ -161,11 +167,10 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             var breadcrumb = new Stack<string>();
             var times = new Stack<TimeSpan>();
 
-            var fullTime = (log as Log)?.Entries.FirstOrDefault()?.Elapsed ?? default;
+            var entries = (log as Log)?.Entries;
+            var time = new InsightsTime(entries?.FirstOrDefault()?.Elapsed ?? default);
 
-            var time = new InsightsTime((log as Log)?.Entries.FirstOrDefault()?.Elapsed ?? default);
-
-            foreach (var e in (log as Log)?.Entries)
+            foreach (var e in entries)
             {
                 // a wrap-close should happen before adding a line, since it must go up a level
                 if (e.WrapClose)

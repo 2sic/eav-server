@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using static ToSic.Razor.Blade.Tag;
 
@@ -15,7 +16,7 @@ namespace ToSic.Eav.WebApi.Sys
         private string Logs(string key, string filter)
         {
             Log.A($"debug log load for {key}");
-            return _logHtml.LogHeader(key, true) + _logHtml.LogHistoryList(_logStore, key, filter);
+            return _logHtml.LogHeader(key, true, filter.HasValue()) + _logHtml.LogHistoryList(key, filter);
         }
 
         private string Logs(string key, int position)
