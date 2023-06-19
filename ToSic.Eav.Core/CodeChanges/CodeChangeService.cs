@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.DI;
+﻿using ToSic.Eav.Plumbing;
+using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.CodeChanges
@@ -16,9 +17,17 @@ namespace ToSic.Eav.CodeChanges
         {
             if (change is null) return;
             var use = change as CodeChangeUse ?? new CodeChangeUse(change);
-            var logged = LogObsolete(use);
+            var logged = WarnObsolete(use);
             _scope.Value.Add(logged);
         }
 
+        /// <summary>
+        /// Quick helper to warn and return an object. 
+        /// </summary>
+        public T GetAndWarn<T>(ICodeChangeInfo change, T result)
+        {
+            Warn(change);
+            return result;;
+        }
     }
 }

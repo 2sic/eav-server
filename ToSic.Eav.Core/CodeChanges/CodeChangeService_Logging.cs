@@ -25,9 +25,10 @@ namespace ToSic.Eav.CodeChanges
         /// 
         /// </summary>
         /// <param name="change"></param>
-        private CodeChangeLogged LogObsolete(CodeChangeUse change)
+        private CodeChangeLogged WarnObsolete(CodeChangeUse change)
         {
-            var l = Log.Fn<CodeChangeLogged>($"Obsolete: '{change.NameId}' will be removed {(change.To == null ? null: "v" + change.To)}");
+            var logWrapper = new Log("Cod.Obsolete", Log);
+            var l = logWrapper.Fn<CodeChangeLogged>($"'{change.NameId}' will be removed {(change.To == null ? null: "v" + change.To)}");
             CodeChangeLogged changeLogged = null;
             try
             {
@@ -57,10 +58,11 @@ namespace ToSic.Eav.CodeChanges
                 }
 
                 // Don't log to normal warnings if it's been reported already
-                if (countGeneral > MaxGeneralToLog || countSpecific > MaxSpecificToLog) return l.Return(new CodeChangeLogged(change));
+                if (countGeneral > MaxGeneralToLog || countSpecific > MaxSpecificToLog) 
+                    return l.Return(new CodeChangeLogged(change));
 
                 // Now we know that we'll keep it
-                var logEntry = new LogStoreLive().ForceAdd(ObsoleteNameInHistory, Log);
+                var logEntry = new LogStoreLive().ForceAdd(ObsoleteNameInHistory, logWrapper);
                 changeLogged = new CodeChangeLogged(change, logEntry);
 
                 var msg = $"Obsolete: {longId} is deprecated in v{change.From} "
