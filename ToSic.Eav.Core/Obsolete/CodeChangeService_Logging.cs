@@ -38,6 +38,10 @@ namespace ToSic.Eav.Obsolete
                 if (useCaseId.IsEmpty() && stackInfo.Main != MainError)
                     useCaseId = stackInfo.Main;
 
+                // New 16.02 - on WebAPIs we should have the entry point to mark the specific use
+                if (useCaseId.IsEmpty())
+                    useCaseId = _scope.Value.EntryPoint;
+
                 // Count how often this case has already been logged
                 var thing = change.NameId;
                 ObsoleteIdCount.TryGetValue(thing, out var countGeneral);
@@ -62,7 +66,7 @@ namespace ToSic.Eav.Obsolete
                 var msg = $"Obsolete: {longId} is deprecated in v{change.From} "
                           + (change.To == null ? "and has been removed." : $"and will be removed in {change.To}.");
                 l.A(msg, options: NoCodeDetails);
-                l.A($"For further information, check: {change.Link}", options: NoCodeDetails);
+                l.A(change.Link.HasValue() ? $"For further information, check: {change.Link}" : "No link for further help provided.", options: NoCodeDetails);
 
                 try
                 {

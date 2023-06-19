@@ -57,7 +57,9 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             if (specs == null) return null;
 
             var specList = Table(Tr(Th("Aspect"), Th("Value")));
-            specList = specs.Aggregate(specList, (current, spec) 
+            specList = specs
+                .OrderBy(s => s.Key)
+                .Aggregate(specList, (current, spec) 
                 => current.Add(Tr(Td(spec.Key), Td(spec.Value))));
 
             return Div(H2("Log Specs"), specList);
@@ -98,7 +100,9 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             bool HasKey(string k) => set.Any(s => s.Specs?.ContainsKey(k) == true);
 
             // Helper to get the correct value depending of if it should fill the column, or it's found...
-            string GetValOrAlt(bool use, IDictionary<string, string> specs, string k) => (!use || specs is null) ? null : specs.TryGetValue(k, out var a) ? a : "";
+            string GetValOrAlt(bool use, IDictionary<string, string> specs, string k) => !use 
+                ? null 
+                : specs?.TryGetValue(k, out var a) == true ? a : "";
 
             var logItems = set as IEnumerable<LogStoreEntry>;
             if (filter.HasValue())

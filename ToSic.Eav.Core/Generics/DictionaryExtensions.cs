@@ -36,7 +36,7 @@ namespace ToSic.Eav.Generics
         public static Dictionary<string, T> ToInvariantCopy<T>(this IDictionary<string, T> original) 
             => new Dictionary<string, T>(original, InvariantCultureIgnoreCase);
 
-        public static bool TryGetValue<TResult, TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, out TResult result) where TResult: new()
+        public static bool TryGetTyped<TResult, TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, out TResult result)
         {
             result = default;
             if (source == null) return false;
