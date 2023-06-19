@@ -56,7 +56,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             var specs = entry?.Specs;
             if (specs == null) return null;
 
-            var specList = Table(Tr(Th("Aspect"), Th("Value")));
+            var specList = Table(HeadFields(SpecialField.Left("Aspect ↕"), SpecialField.Left("Value ↕")));
             specList = specs
                 .OrderBy(s => s.Key)
                 .Aggregate(specList, (current, spec) 
@@ -126,10 +126,10 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             msg += P($"Logs Overview: {set.Count}\n");
             msg += Table().Id("table").Wrap(
                 HeadFields("#", "Timestamp",
-                    hasApp ? "App" : null,
-                    hasSite ? "Site": null,
-                    hasPage ? "Page": null,
-                    hasMod ? "Mod": null,
+                    hasApp ? "App ↕" : null,
+                    hasSite ? "Site ↕" : null,
+                    hasPage ? "Page ↕" : null,
+                    hasMod ? "Mod ↕" : null,
                     "Lines", "First Message", "Info", "Time"),
                 Tbody(logItems
                     .Select((bundle, i) =>
@@ -139,8 +139,8 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                         var specs = bundle.Specs;
                         var timestamp = realLog?.Created.ToUniversalTime().ToString("O").Substring(5) ?? "no timestamp";
                         return RowFields(
-                            $"{i+1}",
-                            LinkTo(timestamp, nameof(InsightsControllerReal.Logs), key: key, more: $"position={i+1}"),
+                            $"{i + 1}",
+                            LinkTo(timestamp, nameof(InsightsControllerReal.Logs), key: key, more: $"position={i + 1}"),
                             GetValOrAlt(hasApp, specs, nameof(IAppIdentity.AppId)),
                             GetValOrAlt(hasSite, specs, "SiteId"),
                             GetValOrAlt(hasPage, specs, "PageId"),

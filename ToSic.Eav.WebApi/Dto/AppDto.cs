@@ -26,5 +26,7 @@
         public bool IsInherited { get; set; }
 
         public AppMetadataDto Lightspeed { get; set; }
+
+        public bool HasCodeWarnings { get; set; }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using ToSic.Razor.Blade;
+using ToSic.Razor.Html5;
+using ToSic.Razor.Markup;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights
@@ -11,8 +13,12 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 Tr(
                     fields
                         .Where(f => f != null)
-                        .Select(fresh => Th(HtmlEncode((fresh ?? "").ToString())))
-                        .ToArray<object>()
+                        .Select(fresh =>
+                        {
+                            return DataToCell(fresh, true, true);
+                            // return Th(HtmlEncode((fresh ?? "").ToString()));
+                        })
+                        // .ToArray<object>()
                 )
             );
 
@@ -20,22 +26,26 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             => Tr(
                 fields
                     .Where(f => f != null)
-                    .Select(fresh =>
-                    {
-                        var data = fresh;
-                        string styles = null;
-                        if (fresh is SpecialField special)
-                        {
-                            data = special.Value;
-                            styles = special.Styles;
-                        }
+                    .Select(fresh => DataToCell(fresh, false, false))
+                    // .ToArray<object>()
+                );
 
-                        var td = Td((data ?? "").ToString());
-                        if (styles != null)
-                            td.Style(styles);
-                        return td;
-                    })
-                    .ToArray<object>());
+        private static IHtmlTag DataToCell(object fresh, bool encode, bool isHeader)
+        {
+            var data = fresh;
+            string styles = null;
+            if (fresh is SpecialField special)
+            {
+                data = special.Value;
+                styles = special.Styles;
+            }
 
+            var contents = (data ?? "").ToString();
+            if (encode) contents = HtmlEncode(contents);
+            var cell = isHeader ? Th(contents) as IHtmlTag : Td(contents);
+            if (styles != null)
+                cell.Style(styles);
+            return cell;
+        }
     }
 }

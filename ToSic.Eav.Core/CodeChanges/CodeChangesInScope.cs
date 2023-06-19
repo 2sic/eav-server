@@ -45,7 +45,11 @@ namespace ToSic.Eav.CodeChanges
             // We could use some specs, so let's get them
             var specs = Specs;
             foreach (var logged in _list)
+            {
                 logged?.EntryOrNull?.UpdateSpecs(specs);
+                // re-check registration, now that the specs may have changed
+                CodeChangeStats.Register(logged?.EntryOrNull);
+            }
         }
         internal string EntryPoint { get; private set; }
 
