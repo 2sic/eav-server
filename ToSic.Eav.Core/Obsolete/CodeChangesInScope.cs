@@ -6,8 +6,6 @@ namespace ToSic.Eav.Obsolete
 {
     public class CodeChangesInScope
     {
-        public CodeChangesInScope() { }
-
         public IEnumerable<CodeChangeLogged> List => _list;
         private readonly List<CodeChangeLogged> _list = new List<CodeChangeLogged>();
 
