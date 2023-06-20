@@ -47,6 +47,8 @@ namespace ToSic.Eav.CodeChanges
         public static CodeChangeInfo V05To17(string nameId, string link = default, string message = default) =>
             new CodeChangeInfo(nameId, new Version(5, 0), new Version(17, 0), link ?? "https://go.2sxc.org/brc-17", message);
 
+        public static ICodeChangeInfo CaV8To17(string nameId, string link = default, string message = default) =>
+            new CodeChangeInfo(nameId, new Version(8, 0), new Version(17, 0), link, message);
 
 
         public static ICodeChangeInfo V13To17(string nameId, string link = default, string message = default) =>
