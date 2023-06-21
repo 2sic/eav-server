@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Helpers;
 
@@ -13,18 +14,21 @@ namespace ToSic.Eav.CodeChanges
             CodeChangeStats = codeChangeStats;
         }
 
-        public IEnumerable<CodeChangeLogged> List => _list;
-        private readonly List<CodeChangeLogged> _list = new List<CodeChangeLogged>();
+        public IEnumerable<CodeChangeLogged> GetObsoletes() => Warnings?.Where(x => x.Use.Change.Type == CodeInfoTypes.Obsolete) ?? new List<CodeChangeLogged>();
+        public IEnumerable<CodeChangeLogged> GetWarnings() => Warnings?.Where(x => x.Use.Change.Type == CodeInfoTypes.Recommendation) ?? new List<CodeChangeLogged>();
+
+        private IEnumerable<CodeChangeLogged> Warnings => _warnings;
+        private readonly List<CodeChangeLogged> _warnings = new List<CodeChangeLogged>();
 
         /// <summary>
         /// Add it to the list and ensure that any known specs are also included
         /// </summary>
         /// <param name="codeChangeUse"></param>
-        internal void Add(CodeChangeLogged codeChangeUse)
+        internal void AddObsolete(CodeChangeLogged codeChangeUse)
         {
             if (codeChangeUse == null) return;
             codeChangeUse.EntryOrNull?.UpdateSpecs(Specs);
-            _list.Add(codeChangeUse);
+            _warnings.Add(codeChangeUse);
             CodeChangeStats.Register(codeChangeUse.EntryOrNull);
         }
 
@@ -40,11 +44,11 @@ namespace ToSic.Eav.CodeChanges
             _specs.Reset();
 
             // If nothing to add, ignore.
-            if (!_list.SafeAny()) return;
+            if (!_warnings.SafeAny()) return;
 
             // We could use some specs, so let's get them
             var specs = Specs;
-            foreach (var logged in _list)
+            foreach (var logged in _warnings)
             {
                 logged?.EntryOrNull?.UpdateSpecs(specs);
                 // re-check registration, now that the specs may have changed

@@ -1,35 +1,24 @@
-﻿using System;
-
+﻿
 namespace ToSic.Eav.CodeChanges
 {
-    public class CodeChangeUse: ICodeChangeInfo
+    public class CodeChangeUse
     {
-        public string SpecificId { get; }
-        public string[] More { get; }
-
         public CodeChangeUse(ICodeChangeInfo change, int appId = default, string specificId = default, string[] more = default)
         {
+            Change = change;
             SpecificId = specificId;
             More = more;
-            Change = change;
             AppId = appId;
         }
 
-        public readonly ICodeChangeInfo Change;
-        public readonly int AppId;
-        public string NameId => Change.NameId;
+        public ICodeChangeInfo Change { get; }
+        public int AppId { get; }   // FYI: ATM not reported anywhere
+        public string SpecificId { get; }
+        public string[] More { get; }
 
-        public Version From => Change.From;
 
-        public Version To => Change.To;
-
-        public string Link => Change.Link;
-
-        public string Message => Change.Message;
-
-        public CodeChangeUse UsedAs(int appId = default, string specificId = default,
-            string[] more = default)
-            => new CodeChangeUse(this,
+        public CodeChangeUse UsedAs(int appId = default, string specificId = default, string[] more = default)
+            => new CodeChangeUse(Change,
                 appId: appId == default ? AppId : appId,
                 specificId: specificId ?? SpecificId,
                 more: more ?? More);

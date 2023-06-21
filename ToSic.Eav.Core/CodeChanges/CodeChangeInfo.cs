@@ -2,23 +2,33 @@
 
 namespace ToSic.Eav.CodeChanges
 {
+    public enum CodeInfoTypes
+    {
+        Obsolete,
+        Recommendation
+    }
+
     public class CodeChangeInfo : ICodeChangeInfo
     {
-        private CodeChangeInfo(string nameId, Version from, Version to, string link = default, string message = default)
+        private CodeChangeInfo(string nameId, Version from, Version to, string link = default, string message = default, CodeInfoTypes? type = default)
         {
             NameId = nameId;
-            From = from;
-            To = to;
             Link = link;
             Message = message;
+            From = from;
+            To = to;
+            Type = type ?? CodeInfoTypes.Obsolete;
         }
 
         private CodeChangeInfo(ICodeChangeInfo original, string nameId = default, string link = default,
-            string message = default)
+            string message = default, CodeInfoTypes? type = default)
         {
             NameId = nameId ?? original.NameId;
             Link = link ?? original.Link;
             Message = message ?? original.Message;
+            From = original.From;
+            To = original.To;
+            Type = type ?? original.Type;
         }
         
 
@@ -31,6 +41,8 @@ namespace ToSic.Eav.CodeChanges
         public string Link { get; }
 
         public string Message { get; }
+
+        public CodeInfoTypes Type { get; }
 
         /// <summary>
         /// Create a new CodeChangeInfo with placeholders like {0} replaced.
@@ -59,5 +71,9 @@ namespace ToSic.Eav.CodeChanges
 
         public static ICodeChangeInfo V13Removed(string nameId, string link = default) =>
             new CodeChangeInfo(nameId, new Version(13, 0), null, link);
+
+        public static ICodeChangeInfo Warn(string nameId, string link = default, string message = default) =>
+            new CodeChangeInfo("no-settings-resources-on-code16", new Version(), new Version(), link, message,
+                type: CodeInfoTypes.Recommendation);
     }
 }

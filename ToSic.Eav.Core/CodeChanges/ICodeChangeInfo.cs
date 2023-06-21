@@ -10,6 +10,8 @@ namespace ToSic.Eav.CodeChanges
         string Link { get; }
         string Message { get; }
 
+        CodeInfoTypes Type { get; }
+
         CodeChangeUse UsedAs(int appId = default, string specificId = default, string[] more = default);
     }
 }

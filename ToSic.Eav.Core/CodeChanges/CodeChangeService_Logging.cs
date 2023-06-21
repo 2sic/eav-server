@@ -24,10 +24,11 @@ namespace ToSic.Eav.CodeChanges
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="change"></param>
-        private CodeChangeLogged WarnObsolete(CodeChangeUse change)
+        /// <param name="use"></param>
+        private CodeChangeLogged WarnObsolete(CodeChangeUse use)
         {
             var logWrapper = new Log("Cod.Obsolete", Log);
+            var change = use.Change;
             var l = logWrapper.Fn<CodeChangeLogged>($"'{change.NameId}' will be removed {(change.To == null ? null: "v" + change.To)}");
             CodeChangeLogged changeLogged = null;
             try
@@ -35,7 +36,7 @@ namespace ToSic.Eav.CodeChanges
                 var stackInfo = GetStackAndMainFile();
 
                 // If we don't have a case-identifier, use the path of the top CSHTML as the identifier
-                var useCaseId = change.SpecificId;
+                var useCaseId = use.SpecificId;
                 if (useCaseId.IsEmpty() && stackInfo.Main != MainError)
                     useCaseId = stackInfo.Main;
 
@@ -59,11 +60,11 @@ namespace ToSic.Eav.CodeChanges
 
                 // Don't log to normal warnings if it's been reported already
                 if (countGeneral > MaxGeneralToLog || countSpecific > MaxSpecificToLog) 
-                    return l.Return(new CodeChangeLogged(change));
+                    return l.Return(new CodeChangeLogged(use));
 
                 // Now we know that we'll keep it
                 var logEntry = new LogStoreLive().ForceAdd(ObsoleteNameInHistory, logWrapper);
-                changeLogged = new CodeChangeLogged(change, logEntry);
+                changeLogged = new CodeChangeLogged(use, logEntry);
 
                 var msg = $"Obsolete: {longId} is deprecated in v{change.From} "
                           + (change.To == null ? "and has been removed." : $"and will be removed in {change.To}.");
@@ -72,10 +73,10 @@ namespace ToSic.Eav.CodeChanges
 
                 try
                 {
-                    if (change.More != null)
+                    if (use.More != null)
                     {
                         l.A("Additional Info:", options: NoCodeDetails);
-                        foreach (var s in change.More)
+                        foreach (var s in use.More)
                             l.A(s, options: new EntryOptions { ShowNewLines = true, HideCodeReference = true });
                     }
                     else
@@ -114,7 +115,7 @@ namespace ToSic.Eav.CodeChanges
                 /* ignore - avoid throwing errors just because logging is defect */
             }
 
-            return l.Return(changeLogged ?? new CodeChangeLogged(change));
+            return l.Return(changeLogged ?? new CodeChangeLogged(use));
         }
     }
 }

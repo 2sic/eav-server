@@ -11,14 +11,20 @@ namespace ToSic.Eav.CodeChanges
         {
             _scope = scope;
         }
-
-        public void Warn(ICodeChangeInfo change)
+        public void Warn(CodeChangeUse use)
         {
-            if (change is null) return;
-            var use = change as CodeChangeUse ?? new CodeChangeUse(change);
+            if (use is null) return;
             var logged = WarnObsolete(use);
-            _scope.Value.Add(logged);
+            _scope.Value.AddObsolete(logged);
         }
+
+        public void Warn(ICodeChangeInfo change) => Warn(change == null ? null : new CodeChangeUse(change));
+        //{
+        //    if (change is null) return;
+        //    var use = new CodeChangeUse(change);
+        //    var logged = WarnObsolete(use);
+        //    _scope.Value.AddObsolete(logged);
+        //}
 
         /// <summary>
         /// Quick helper to warn and return an object. 
