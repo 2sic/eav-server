@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ToSic.Eav.CodeChanges
+namespace ToSic.Eav.Code.Infos
 {
-    public interface ICodeChangeInfo
+    public interface ICodeInfo
     {
         string NameId { get; }
         Version From { get; }
@@ -12,6 +12,8 @@ namespace ToSic.Eav.CodeChanges
 
         CodeInfoTypes Type { get; }
 
-        CodeChangeUse UsedAs(int appId = default, string specificId = default, string[] more = default);
+        CodeUse UsedAs(int appId = default, string specificId = default, string[] more = default);
+
+        ICodeInfo Replace(params object[] replacements);
     }
 }

@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static ToSic.Eav.CodeChanges.CodeChangeConstants;
+using static ToSic.Eav.Code.InfoSystem.CodeInfoConstants;
 
-namespace ToSic.Eav.CodeChanges
+namespace ToSic.Eav.Code.InfoSystem
 {
-    public partial class CodeChangeService
+    public partial class CodeInfoService
     {
         private const int StackFramesWhichBelongToThisService = 3;
 

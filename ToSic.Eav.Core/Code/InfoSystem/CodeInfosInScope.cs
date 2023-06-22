@@ -1,41 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Code.Infos;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.CodeChanges
+namespace ToSic.Eav.Code.InfoSystem
 {
-    public class CodeChangesInScope
+    public class CodeInfosInScope
     {
-        public readonly CodeChangeStats CodeChangeStats;
-        public CodeChangesInScope(CodeChangeStats codeChangeStats)
+        public readonly CodeInfoStats CodeInfoStats;
+        public CodeInfosInScope(CodeInfoStats codeInfoStats)
         {
-            CodeChangeStats = codeChangeStats;
+            CodeInfoStats = codeInfoStats;
         }
 
-        public IEnumerable<CodeChangeLogged> GetObsoletes() => Warnings?.Where(x => x.Use.Change.Type == CodeInfoTypes.Obsolete) ?? new List<CodeChangeLogged>();
-        public IEnumerable<CodeChangeLogged> GetWarnings() => Warnings?.Where(x => x.Use.Change.Type == CodeInfoTypes.Recommendation) ?? new List<CodeChangeLogged>();
+        public IEnumerable<CodeInfoInLogStore> GetObsoletes() => Warnings?.Where(x => x.Use.Change.Type == CodeInfoTypes.Obsolete) ?? new List<CodeInfoInLogStore>();
+        public IEnumerable<CodeInfoInLogStore> GetWarnings() => Warnings?.Where(x => x.Use.Change.Type == CodeInfoTypes.Warning) ?? new List<CodeInfoInLogStore>();
 
-        private IEnumerable<CodeChangeLogged> Warnings => _warnings;
-        private readonly List<CodeChangeLogged> _warnings = new List<CodeChangeLogged>();
+        private IEnumerable<CodeInfoInLogStore> Warnings => _warnings;
+        private readonly List<CodeInfoInLogStore> _warnings = new List<CodeInfoInLogStore>();
 
         /// <summary>
         /// Add it to the list and ensure that any known specs are also included
         /// </summary>
-        /// <param name="codeChangeUse"></param>
-        internal void AddObsolete(CodeChangeLogged codeChangeUse)
+        /// <param name="codeInfoUse"></param>
+        internal void AddObsolete(CodeInfoInLogStore codeInfoUse)
         {
-            if (codeChangeUse == null) return;
-            codeChangeUse.EntryOrNull?.UpdateSpecs(Specs);
-            _warnings.Add(codeChangeUse);
-            CodeChangeStats.Register(codeChangeUse.EntryOrNull);
+            if (codeInfoUse == null) return;
+            codeInfoUse.EntryOrNull?.UpdateSpecs(Specs);
+            _warnings.Add(codeInfoUse);
+            CodeInfoStats.Register(codeInfoUse.EntryOrNull);
         }
 
         /// <summary>
         /// Add context information and update anything that was previously added
         /// </summary>
-        /// <param name="specsFactory"></param>
         public void AddContext(Func<IDictionary<string, string>> specsFactory, string entryPoint = default)
         {
             if (entryPoint != null) EntryPoint = entryPoint;
@@ -52,7 +52,7 @@ namespace ToSic.Eav.CodeChanges
             {
                 logged?.EntryOrNull?.UpdateSpecs(specs);
                 // re-check registration, now that the specs may have changed
-                CodeChangeStats.Register(logged?.EntryOrNull);
+                CodeInfoStats.Register(logged?.EntryOrNull);
             }
         }
         internal string EntryPoint { get; private set; }
@@ -69,7 +69,7 @@ namespace ToSic.Eav.CodeChanges
             }
         });
 
-        
+
         private readonly GetOnce<IDictionary<string, string>> _specs = new GetOnce<IDictionary<string, string>>();
         private Func<IDictionary<string, string>> _specsFactory;
     }

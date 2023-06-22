@@ -1,8 +1,8 @@
 ﻿using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.CodeChanges
+namespace ToSic.Eav.Code.InfoSystem
 {
-    public static class CodeChangeConstants
+    public static class CodeInfoConstants
     {
         public const string ObsoleteNameInHistory = LogConstants.StoreWarningsPrefix + "obsolete";
         public const int MaxGeneralToLog = 25;

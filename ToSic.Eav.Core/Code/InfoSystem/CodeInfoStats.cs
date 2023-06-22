@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.CodeChanges
+namespace ToSic.Eav.Code.InfoSystem
 {
-    public class CodeChangeStats
+    public class CodeInfoStats
     {
         /// <summary>
         /// Empty for DI
         /// </summary>
-        public CodeChangeStats() { }
+        public CodeInfoStats() { }
 
         public void Register(LogStoreEntry use)
         {

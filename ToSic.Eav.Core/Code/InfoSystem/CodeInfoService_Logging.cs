@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Code.Infos;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.CodeChanges.CodeChangeConstants;
-using static System.StringComparer;
 
-namespace ToSic.Eav.CodeChanges
+namespace ToSic.Eav.Code.InfoSystem
 {
-    public partial class CodeChangeService
+    public partial class CodeInfoService
     {
         /// <summary>
         /// Keep track of all obsolete code, so we don't over-report it.
         /// </summary>
-        private static Dictionary<string, int> ObsoleteIdCount { get; } = new Dictionary<string, int>(InvariantCultureIgnoreCase);
+        private static Dictionary<string, int> ObsoleteIdCount { get; } = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// Keep track of specific cases of an obsolete report, because these should always only be reported once
         /// </summary>
-        private static Dictionary<string, int> SpecificCases { get; } = new Dictionary<string, int>(InvariantCultureIgnoreCase);
+        private static Dictionary<string, int> SpecificCases { get; } = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
 
         private static readonly EntryOptions NoCodeDetails = new EntryOptions { HideCodeReference = true };
 
@@ -25,19 +24,19 @@ namespace ToSic.Eav.CodeChanges
         /// 
         /// </summary>
         /// <param name="use"></param>
-        private CodeChangeLogged WarnObsolete(CodeChangeUse use)
+        private CodeInfoInLogStore WarnObsolete(CodeUse use)
         {
             var logWrapper = new Log("Cod.Obsolete", Log);
             var change = use.Change;
-            var l = logWrapper.Fn<CodeChangeLogged>($"'{change.NameId}' will be removed {(change.To == null ? null: "v" + change.To)}");
-            CodeChangeLogged changeLogged = null;
+            var l = logWrapper.Fn<CodeInfoInLogStore>($"'{change.NameId}' will be removed {(change.To == null ? null : "v" + change.To)}");
+            CodeInfoInLogStore infoInLogStore = null;
             try
             {
                 var stackInfo = GetStackAndMainFile();
 
                 // If we don't have a case-identifier, use the path of the top CSHTML as the identifier
                 var useCaseId = use.SpecificId;
-                if (useCaseId.IsEmpty() && stackInfo.Main != MainError)
+                if (useCaseId.IsEmpty() && stackInfo.Main != CodeInfoConstants.MainError)
                     useCaseId = stackInfo.Main;
 
                 // New 16.02 - on WebAPIs we should have the entry point to mark the specific use
@@ -59,12 +58,12 @@ namespace ToSic.Eav.CodeChanges
                 }
 
                 // Don't log to normal warnings if it's been reported already
-                if (countGeneral > MaxGeneralToLog || countSpecific > MaxSpecificToLog) 
-                    return l.Return(new CodeChangeLogged(use));
+                if (countGeneral > CodeInfoConstants.MaxGeneralToLog || countSpecific > CodeInfoConstants.MaxSpecificToLog)
+                    return l.Return(new CodeInfoInLogStore(use));
 
                 // Now we know that we'll keep it
-                var logEntry = new LogStoreLive().ForceAdd(ObsoleteNameInHistory, logWrapper);
-                changeLogged = new CodeChangeLogged(use, logEntry);
+                var logEntry = new LogStoreLive().ForceAdd(CodeInfoConstants.ObsoleteNameInHistory, logWrapper);
+                infoInLogStore = new CodeInfoInLogStore(use, logEntry);
 
                 var msg = $"Obsolete: {longId} is deprecated in v{change.From} "
                           + (change.To == null ? "and has been removed." : $"and will be removed in {change.To}.");
@@ -94,7 +93,7 @@ namespace ToSic.Eav.CodeChanges
                     foreach (var razorFile in stackInfo.AllCshtml)
                         l.A(razorFile, options: NoCodeDetails);
 
-                    l.A("Entire Stack for additional debugging \n" + stackInfo.Stack, options: new EntryOptions { ShowNewLines = true, HideCodeReference = true});
+                    l.A("Entire Stack for additional debugging \n" + stackInfo.Stack, options: new EntryOptions { ShowNewLines = true, HideCodeReference = true });
                 }
                 catch (Exception ex)
                 {
@@ -102,11 +101,11 @@ namespace ToSic.Eav.CodeChanges
                 }
 
                 // Stop logging a general case if it's already been logged very often
-                if (countGeneral == MaxGeneralToLog)
+                if (countGeneral == CodeInfoConstants.MaxGeneralToLog)
                     l.A($"This is the last log we'll add for the case '{thing}', further messages won't be logged for this problem.", options: NoCodeDetails);
 
                 // Stop logging a specific case if it has already been logged
-                if (countSpecific == MaxSpecificToLog)
+                if (countSpecific == CodeInfoConstants.MaxSpecificToLog)
                     l.A($"This is the only log we'll add for the id '{longId}', further messages won't be logged for this.", options: NoCodeDetails);
 
             }
@@ -115,7 +114,7 @@ namespace ToSic.Eav.CodeChanges
                 /* ignore - avoid throwing errors just because logging is defect */
             }
 
-            return l.Return(changeLogged ?? new CodeChangeLogged(use));
+            return l.Return(infoInLogStore ?? new CodeInfoInLogStore(use));
         }
     }
 }
