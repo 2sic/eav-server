@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Code.Help;
 using ToSic.Eav.Plumbing;
 
@@ -13,16 +14,19 @@ namespace ToSic.Eav
             ParamNames = paramNames;
             ParamsText = paramsText;
 
-            Help = new CodeHelp("named-parameters", null,
+            var help = new CodeHelp("named-parameters", null,
                 Parameters.HelpLink,
                 uiMessage: " ",
                 detailsHtml: intro.Replace("\n", "<br>") +
                              (paramNames.HasValue() ? $"<br>Param Names: <code>{paramNames}</code>" : ""));
+            Helps = new List<CodeHelp> { help };
         }
 
         public string Intro { get; }
         public string ParamNames { get; }
         public string ParamsText { get; }
-        public CodeHelp Help { get; }
+        
+        public List<CodeHelp> Helps { get; }
+
     }
 }

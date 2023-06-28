@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Code.Help;
 
 namespace ToSic.Eav
@@ -7,12 +9,15 @@ namespace ToSic.Eav
     {
         public ExceptionWithHelp(CodeHelp help, Exception inner = null) : base(help.ErrorMessage, inner)
         {
-            Help = help;
+            Helps = new List<CodeHelp> { help };
         }
 
-        public CodeHelp Help { get; }
+        public ExceptionWithHelp(List<CodeHelp> helps, Exception inner = null) : base(helps?.FirstOrDefault()?.ErrorMessage ?? "", inner)
+        {
+            Helps = helps;
+        }
 
-        public ExceptionWithHelp(string message, Exception inner) : base(message, inner)
-        { }
+        public List<CodeHelp> Helps { get; }
+        
     }
 }
