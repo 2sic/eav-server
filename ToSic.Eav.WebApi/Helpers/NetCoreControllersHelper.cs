@@ -60,6 +60,7 @@ namespace ToSic.Eav.WebApi.Helpers
             _actionTimerWrap = null; // just to mark that Action Delegate is not in use any more, so GC can collect it
         }
 
+        /// <inheritdoc cref="ToSic.Sxc.Code.IDynamicCode.GetService{TService}" />
         public TService GetService<TService>() where TService : class =>
             ServiceProvider?.Build<TService>(LogOrNull)
             ?? throw new Exception($"Can't use {nameof(GetService)} before {nameof(OnActionExecuting)}");
