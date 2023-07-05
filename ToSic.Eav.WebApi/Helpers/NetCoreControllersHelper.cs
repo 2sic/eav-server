@@ -35,7 +35,7 @@ namespace ToSic.Eav.WebApi.Helpers
             _serviceProvider = context.HttpContext.RequestServices;
 
             // Add to Log History
-            _serviceProvider.Build<ILogStore>().Add(historyLogGroup, LogOrNull);
+            GetService<ILogStore>().Add(historyLogGroup, LogOrNull);
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
@@ -61,9 +61,9 @@ namespace ToSic.Eav.WebApi.Helpers
         }
 
         /// <inheritdoc cref="ToSic.Sxc.Code.IDynamicCode.GetService{TService}" />
-        public TService GetService<TService>() where TService : class =>
-            ServiceProvider?.Build<TService>(LogOrNull)
-            ?? throw new Exception($"Can't use {nameof(GetService)} before {nameof(OnActionExecuting)}");
+        public TService GetService<TService>() where TService : class
+            => ServiceProvider?.Build<TService>(LogOrNull)
+               ?? throw new Exception($"Can't use {nameof(GetService)} before {nameof(OnActionExecuting)}");
 
         public TRealController Real<TRealController>() where TRealController : class, IHasLog
             => GetService<TRealController>();
