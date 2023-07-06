@@ -12,17 +12,17 @@ namespace ToSic.Eav.WebApi.Helpers
 {
     public class NetCoreControllersHelper
     {
-        public NetCoreControllersHelper(Controller parent)
+        public NetCoreControllersHelper(ControllerBase parent)
         {
             Parent = parent;
             LogOrNull = (parent as IHasLog)?.Log;
         }
-        public Controller Parent { get; }
+        public ControllerBase Parent { get; }
         public ILog LogOrNull { get; }
 
         private ILogCall _actionTimerWrap; // it is used across events to track action execution total time
 
-        public IServiceProvider ServiceProvider => _serviceProvider ?? throw new Exception($"{nameof(ServiceProvider)} is only available after calling {nameof(OnActionExecuting)}");
+        public IServiceProvider ServiceProvider => _serviceProvider ?? throw new($"{nameof(ServiceProvider)} is only available after calling {nameof(OnActionExecuting)}");
         private IServiceProvider _serviceProvider;
 
 
@@ -60,13 +60,7 @@ namespace ToSic.Eav.WebApi.Helpers
             _actionTimerWrap = null; // just to mark that Action Delegate is not in use any more, so GC can collect it
         }
 
-        /// <inheritdoc cref="ToSic.Sxc.Code.IDynamicCode.GetService{TService}" />
-        public TService GetService<TService>() where TService : class
-            => ServiceProvider?.Build<TService>(LogOrNull)
-               ?? throw new Exception($"Can't use {nameof(GetService)} before {nameof(OnActionExecuting)}");
-
-        public TRealController Real<TRealController>() where TRealController : class, IHasLog
-            => GetService<TRealController>();
+        public TService GetService<TService>() where TService : class => ServiceProvider.Build<TService>(LogOrNull);
     }
 }
 #endif 
