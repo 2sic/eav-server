@@ -6,7 +6,7 @@ namespace ToSic.Lib.Logging
     {
         List<Entry> Entries { get; }
 
-        Entry CreateAndAdd(string message, CodeRef code);
+        Entry CreateAndAdd(string message, CodeRef code, EntryOptions options = default);
 
     }
 }

@@ -59,8 +59,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private bool DbAttribSetExists(int appId, string staticName)
             => GetSetCoreQuery(appId).Any(a => a.StaticName == staticName);
 
-        // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-        internal ToSicEavAttributeSets PrepareDbAttribSet(string name, /*string description,*/ string nameId, string scope, bool skipExisting, int? appId)
+        internal ToSicEavAttributeSets PrepareDbAttribSet(string name, string nameId, string scope, bool skipExisting, int? appId)
         {
             if (string.IsNullOrEmpty(nameId))
                 nameId = Guid.NewGuid().ToString();

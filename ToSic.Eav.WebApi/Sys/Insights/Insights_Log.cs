@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using static ToSic.Razor.Blade.Tag;
 
@@ -6,43 +7,44 @@ namespace ToSic.Eav.WebApi.Sys
 {
     public partial class InsightsControllerReal
     {
-        private string Logs()
+        internal string Logs()
         {
             Log.A("debug log load");
-            return LogHeader("Overview", false) + LogHistoryOverview(_logStore);
+            return _logHtml.LogHeader("Overview", false) + _logHtml.LogHistoryOverview();
         }
 
-        private string Logs(string key)
+        private string Logs(string key, string filter)
         {
             Log.A($"debug log load for {key}");
-            return LogHeader(key, true) + LogHistory(_logStore, key);
+            return _logHtml.LogHeader(key, true, filter.HasValue()) + _logHtml.LogHistoryList(key, filter);
         }
 
         private string Logs(string key, int position)
         {
             Log.A($"debug log load for {key}/{position}");
-            var msg = PageStyles() + LogHeader($"{key}[{position}]", false);
+            var msg = InsightsHtmlParts.PageStyles() + _logHtml.LogHeader($"{key}[{position}]", false);
 
             if (!_logStore.Segments.TryGetValue(key, out var set))
                 return msg + $"position {position} not found in log set {key}";
 
             if (set.Count < position - 1)
                 return msg + $"position ({position}) > count ({set.Count})";
-            
-            var log = set.Take(position).LastOrDefault();
-            return msg + (log == null
+
+            var bundle = set.Take(position).LastOrDefault();
+
+            return msg + (bundle?.Log == null
                 ? P("log is null").ToString()
-                : DumpTree($"Log for {key}[{position}]", log));
+                : _logHtml.ShowSpecs(bundle) + _logHtml.DumpTree($"Log for {key}[{position}]", bundle.Log));
         }
 
-        private string PauseLogs(bool pause)
+        internal string PauseLogs(bool pause)
         {
             Log.A($"pause log {pause}");
             _logStore.Pause = pause;
             return $"pause set to {pause}";
         }
 
-        private string LogsFlush(string key)
+        internal string LogsFlush(string key)
         {
             Log.A($"flush log for {key}");
             _logStore.FlushSegment(key);

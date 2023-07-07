@@ -5,7 +5,7 @@ namespace ToSic.Eav.Metadata
 {
     /// <summary>
     /// This interface allows objects to lookup metadata-target id / name of the system. 
-    /// It basically translates the <see cref="TargetTypes"/> to name and vica versa
+    /// It basically translates the <see cref="ToSic.Eav.Metadata.TargetTypes"/> to name and vica versa
     /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public interface ITargetTypes

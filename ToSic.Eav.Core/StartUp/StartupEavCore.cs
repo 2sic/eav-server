@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
+using ToSic.Eav.Code.InfoSystem;
 using ToSic.Eav.Compression;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Configuration.Licenses;
@@ -16,6 +17,7 @@ using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
+using CodeInfoService = ToSic.Eav.Code.InfoSystem.CodeInfoService;
 
 namespace ToSic.Eav.StartUp
 {
@@ -82,6 +84,11 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient<AesCryptographyService>();
             services.TryAddTransient<Rfc2898Generator>();
 
+            // V16.02 - Obsolete service
+            services.TryAddTransient<CodeInfoService>();
+            services.TryAddScoped<CodeInfosInScope>();
+            services.TryAddTransient<CodeInfoStats>();
+
             return services;
         }
 
@@ -116,7 +123,6 @@ namespace ToSic.Eav.StartUp
             // Unknown-Runtime for loading configuration etc. File-runtime
             services.TryAddTransient<IRuntime, RuntimeUnknown>();
             services.TryAddTransient<IPlatformInfo, PlatformUnknown>();
-
 
             return services;
         }

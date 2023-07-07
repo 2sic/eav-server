@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         In = new[] { InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
-        HelpLink = "https://r.2sxc.org/DsTypeFilter")]
+        HelpLink = "https://go.2sxc.org/DsTypeFilter")]
 
     public class EntityTypeFilter : Eav.DataSource.DataSourceBase
 	{

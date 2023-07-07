@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSources
         NameId = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
         DynamicOut = false,
         ConfigurationType = "|Config ToSic.Eav.DataSources.CsvDataSource",
-        HelpLink = "https://r.2sxc.org/DsCsv")]
+        HelpLink = "https://go.2sxc.org/DsCsv")]
     public class Csv : CustomDataSourceAdvanced
     {
         #region Known errors

@@ -28,6 +28,9 @@ namespace ToSic.Eav.Plumbing
                    && type.Attributes.HasFlag(TypeAttributes.NotPublic);
         }
 
+        public static IDictionary<string, object> ObjectToDictionaryInvariant(this object a, bool mutable = false)
+            => ObjectToDictionary(a, mutable, caseInsensitive: true);
+
         // inspired by https://stackoverflow.com/questions/3481923/in-c-sharp-convert-anonymous-type-into-key-value-array
         public static IDictionary<string, object> ObjectToDictionary(this object a, bool mutable = false, bool caseInsensitive = false)
         {

@@ -69,7 +69,7 @@ namespace ToSic.Eav.Configuration
             var messages = missing.Select(f => $"'{f.NameId}'");
 
             return
-                $"Features {string.Join(", ", messages)} not enabled - see also https://r.2sxc.org/features";
+                $"Features {string.Join(", ", messages)} not enabled - see also https://go.2sxc.org/features";
         }
 
 

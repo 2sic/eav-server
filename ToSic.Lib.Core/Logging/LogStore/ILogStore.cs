@@ -13,10 +13,10 @@ namespace ToSic.Lib.Logging
         /// </summary>
         /// <param name="segment">Segment name, like `webapi` or `module`</param>
         /// <param name="log"></param>
-        void Add(string segment, ILog log);
+        LogStoreEntry Add(string segment, ILog log);
 
         [PrivateApi]
-        void ForceAdd(string key, ILog log);
+        LogStoreEntry ForceAdd(string key, ILog log);
 
     }
 }

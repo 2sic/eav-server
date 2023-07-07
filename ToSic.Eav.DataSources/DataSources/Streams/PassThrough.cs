@@ -48,6 +48,7 @@ namespace ToSic.Eav.DataSources
         /// <remarks>
         /// if the key is not static (like the default setup) it will always cause errors
         /// </remarks>
-	    public override string CachePartialKey => "PassThrough";
+        [PrivateApi]
+        public override string CachePartialKey => "PassThrough";
 	}
 }

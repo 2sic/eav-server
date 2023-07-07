@@ -1,13 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <!--<TargetFrameworks>net472;netstandard2.0;net6.0;</TargetFrameworks>-->
-	  <TargetFrameworks>net472;net6.0;</TargetFrameworks>
+    <TargetFrameworks>net472;net7.0;</TargetFrameworks>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <Deterministic>true</Deterministic>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
-
     <!-- Don't generate assembly properties from this XML which should come from the core file, like version - these lines must be in sync in all ToSic.Eav.*.csproj files -->
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
@@ -30,7 +28,7 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="ToSic.Razor">
-	    <HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\net472\ToSic.Razor.dll</HintPath>
+      <HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\net472\ToSic.Razor.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -41,12 +39,12 @@
     </Reference>
   </ItemGroup>-->
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-		<Reference Include="ToSic.Razor">
-			<HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\net6.0\ToSic.Razor.dll</HintPath>
-		</Reference>
-	</ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <Reference Include="ToSic.Razor">
+      <HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\net6.0\ToSic.Razor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfoInherited.cs" Link="Properties\AssemblyInfoInherited.cs" />

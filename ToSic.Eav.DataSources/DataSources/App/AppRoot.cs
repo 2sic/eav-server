@@ -50,13 +50,19 @@ namespace ToSic.Eav.DataSources
         #region Cache-Chain
 
         /// <inheritdoc />
+        [PrivateApi]
         public override long CacheTimestamp => AppState.CacheTimestamp;
 
-	    /// <inheritdoc />
+        /// <inheritdoc />
+        [PrivateApi]
 	    public override bool CacheChanged(long dependentTimeStamp) => AppState.CacheChanged(dependentTimeStamp);
 
-	    /// <inheritdoc />
-	    public override string CacheFullKey => CachePartialKey;
+        /// <summary>
+        /// Combination of the current key and all keys of upstream cached items, to create a long unique key for this context.
+        /// </summary>
+        /// <returns>Full key containing own partial key and upstream keys.</returns>
+        [PrivateApi]
+        public override string CacheFullKey => CachePartialKey;
 
         #endregion
 

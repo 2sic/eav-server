@@ -39,8 +39,7 @@ namespace ToSic.Eav.ImportExport.Json.V1
             {
                 var description = entity.Type.Metadata.DetailsOrNull;
                 Title = description?.Title ?? entity.Type.NameId;
-                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                Description = description?.Description ?? ""; // entity.Type.Description;
+                Description = description?.Description ?? "";
             }
         }
     }

@@ -15,7 +15,6 @@ using SqlDataTable = System.Data.DataTable;
 
 namespace ToSic.Eav.DataSources
 {
-    /// <inheritdoc />
     /// <summary>
     /// Provide Entities from a System.Data.DataTable. <br/>
     /// This is not meant for VisualQuery, but for code which pre-processes data in a DataTable and then wants to provide it as entities. 
@@ -24,7 +23,7 @@ namespace ToSic.Eav.DataSources
 	public class DataTable : CustomDataSourceAdvanced
 	{
         private readonly IDataFactory _dataFactory;
-        // help Link: https://r.2sxc.org/DsDataTable
+        // help Link: https://go.2sxc.org/DsDataTable
 		#region Configuration-properties
 
 		/// <summary>

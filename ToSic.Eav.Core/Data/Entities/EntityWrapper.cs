@@ -40,7 +40,7 @@ namespace ToSic.Eav.Data
         /// <param name="decorator">Additional wrapper to add</param>
         public EntityWrapper(IEntity baseEntity, IDecorator<IEntity> decorator) : this(baseEntity)
         {
-            if(decorator != null) Decorators.Add(decorator);
+            if (decorator != null) Decorators.Add(decorator);
         }
 
 

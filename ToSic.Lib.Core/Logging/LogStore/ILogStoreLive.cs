@@ -21,7 +21,7 @@ namespace ToSic.Lib.Logging
         /// <summary>
         /// All segments, each containing one or more logs.
         /// </summary>
-        ConcurrentDictionary<string, FixedSizedQueue<ILog>> Segments { get; }
+        ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> Segments { get; }
 
         [PrivateApi]
         bool Pause { get; set; }

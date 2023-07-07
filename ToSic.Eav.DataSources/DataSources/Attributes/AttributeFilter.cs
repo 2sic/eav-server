@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         In = new [] { InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.AttributeFilter",
-        HelpLink = "https://r.2sxc.org/DsAttributeFilter")]
+        HelpLink = "https://go.2sxc.org/DsAttributeFilter")]
 
     public class AttributeFilter : Eav.DataSource.DataSourceBase
 	{

@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSource.Query
     /// <summary>
     /// This contains the structure / definition of a query, which was originally stored in an <see cref="IEntity"/>
     /// </summary>
-    [PrivateApi("this is just fyi")]
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
     public partial class QueryDefinition: EntityBasedWithLog
     {
         #region Constants / Field Names

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.WebApi.Sys.Insights;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
@@ -13,7 +14,7 @@ namespace ToSic.Eav.WebApi.Sys
             {
                 msg += P($"Assigned Items: {metadata.Count}\n");
                 msg += "<table id='table'>"
-                       + HeadFields( "#", "Id", Eav.Data.Attributes.TitleNiceName, "Content-Type", "Target", "Key" )
+                       + InsightsHtmlTable.HeadFields( "#", "Id", Eav.Data.Attributes.TitleNiceName, "Content-Type", "Target", "Key" )
                        + "<tbody>";
                 var count = 0;
                 foreach (var md in metadata)
@@ -27,7 +28,7 @@ namespace ToSic.Eav.WebApi.Sys
                                 ? "{" + mdFor.KeyGuid + "}"
                                 : "(directly attached)";
 
-                    msg = msg + RowFields(
+                    msg += InsightsHtmlTable.RowFields(
                         ++count,
                         md.EntityId,
                         md.GetBestTitle(),
@@ -39,7 +40,7 @@ namespace ToSic.Eav.WebApi.Sys
                 msg += "</tbody>";
                 msg += "</table>";
                 msg += "\n\n";
-                msg += JsTableSort();
+                msg += InsightsHtmlParts.JsTableSort();
             }
             catch
             {

@@ -1,64 +1,22 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Web;
-using ToSic.Razor.Blade;
+﻿using ToSic.Razor.Blade;
 
 namespace ToSic.Eav.WebApi.Sys
 {
-    internal class SpecialField
+    internal class InsightsHtmlParts
     {
+        #region Table / Sort
 
-        public SpecialField(object value, string styles)
-        {
-            Styles = styles;
-            Value = value;
-        }
-        public object Value { get; }
-        public string Styles { get; }
+        internal const string JsTableSortCdn = "https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/";
 
-        public static SpecialField Right(object value) => new SpecialField(value, "text-align: right; padding - right: 5px;");
-    }
-
-    public partial class InsightsControllerReal
-    {
-        protected static IHtmlTag HeadFields(params object[] fields)
-            => Tag.Thead(Tag.Tr(
-                fields.Select(fresh => Tag.Th(HtmlEncode((fresh ?? "").ToString()))).ToArray<object>()
-            ));
-
-        protected static IHtmlTag RowFields(params object[] fields)
-            => Tag.Tr(
-                fields
-                    .Select(fresh =>
-                    {
-                        var data = fresh;
-                        string styles = null;
-                        if (fresh is SpecialField special)
-                        {
-                            data = special.Value;
-                            styles = special.Styles;
-                        }
-                        
-                        var td = Tag.Td((data ?? "").ToString());
-                        if (styles != null)
-                            td.Style(styles);
-                        return td;
-                    })
-                .ToArray<object>());
-
-        protected const string JsTableSortCdn = "https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/";
-
-        protected static IHtmlTag JsTableSort(string id = "table")
+        internal static IHtmlTag JsTableSort(string id = "table")
             => Tag.Script().Src(JsTableSortCdn + "tablesort.min.js")
                + Tag.Script().Src(JsTableSortCdn + "sorts/tablesort.number.min.js")
                + Tag.Script($"new Tablesort(document.getElementById('{id}'));") as IHtmlTag;
 
+        #endregion
 
-
-
-        protected static string PageStyles() =>
-            @"
+        internal static string PageStyles() =>
+    @"
 <style>
 .logIds {
     color: darkgray;
@@ -208,29 +166,5 @@ span.log-line:hover {
 }
 
 </style>";
-
-        protected static string HoverLabel(string label, string text, string classes)
-            => Tag.Span(label).Class(classes).Title(text).ToString();
-
-        internal static string HtmlEncode(string text)
-        {
-            if (text == null) return "";
-            var chars = HttpUtility.HtmlEncode(text).ToCharArray();
-            var result = new StringBuilder(text.Length + (int)(text.Length * 0.1));
-
-            foreach (var c in chars)
-            {
-                var value = Convert.ToInt32(c);
-                if (value > 127)
-                    result.AppendFormat("&#{0};", value);
-                else
-                    result.Append(c);
-            }
-
-            return result.ToString();
-        }
-
-        protected static string EmojiTrueFalse(bool value) => HtmlEncode(value ? "✅" : "⛔");
-
     }
 }

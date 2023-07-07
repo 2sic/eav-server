@@ -82,7 +82,7 @@ namespace ToSic.Eav.Apps.Parts.Tools
             if (newSequence.Length != Lists.First().Value.Count)
             {
                 const string msg = "Error: Can't re-order - list length is different";
-                throw l.Ex(new Exception(msg));
+                throw l.Done(new Exception(msg));
             }
 
             const int usedMarker = int.MinValue;

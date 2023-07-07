@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources
         NameId = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
         DynamicOut = false,
         DynamicIn = true,
-	    HelpLink = "https://r.2sxc.org/DsStreamMerge")]
+	    HelpLink = "https://go.2sxc.org/DsStreamMerge")]
 
     public sealed class StreamMerge: Eav.DataSource.DataSourceBase
 	{

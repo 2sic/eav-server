@@ -93,8 +93,6 @@ namespace ToSic.Eav.Apps.Parts
             var addList = new List<AddContentTypeAndOrEntityTask>();
             if (appConfig == null)
                 addList.Add(new AddContentTypeAndOrEntityTask(AppLoadConstants.TypeAppConfig,
-                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                    //"App Metadata",
                     values: new Dictionary<string, object>
                     {
                         { "DisplayName", string.IsNullOrEmpty(newAppName) ? eavAppName : newAppName },
@@ -111,15 +109,11 @@ namespace ToSic.Eav.Apps.Parts
 
             // Add new (empty) ContentType for Settings
             if (appSettings == null)
-                addList.Add(new AddContentTypeAndOrEntityTask(AppLoadConstants.TypeAppSettings
-                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                    /*"Stores settings for an app"*/));
+                addList.Add(new AddContentTypeAndOrEntityTask(AppLoadConstants.TypeAppSettings));
 
             // add new (empty) ContentType for Resources
             if (appResources == null)
-                addList.Add(new AddContentTypeAndOrEntityTask(AppLoadConstants.TypeAppResources
-                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                    /*"Stores resources like translations for an app"*/));
+                addList.Add(new AddContentTypeAndOrEntityTask(AppLoadConstants.TypeAppResources));
 
             if (CreateAllMissingContentTypes(addList))
             {
@@ -148,8 +142,7 @@ namespace ToSic.Eav.Apps.Parts
                 {
                     l.A("couldn't find type, will create");
                     // create App-Man if not created yet
-                    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                    AppManager.ContentTypes.Create(item.SetName, item.SetName, /* item.Description,*/ Scopes.App);
+                    AppManager.ContentTypes.Create(item.SetName, Scopes.App);
                     addedTypes = true;
                 }
                 else
@@ -205,15 +198,12 @@ namespace ToSic.Eav.Apps.Parts
         private class AddContentTypeAndOrEntityTask
         {
             public readonly string SetName;
-            // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-            //public readonly string Description;
             public readonly Dictionary<string, object> Values;
             public readonly bool InAppType;
 
-            public AddContentTypeAndOrEntityTask(string setName, /*string description = "",*/ Dictionary<string, object> values = null, bool inAppType = true)
+            public AddContentTypeAndOrEntityTask(string setName, Dictionary<string, object> values = null, bool inAppType = true)
             {
                 SetName = setName;
-                //Description = description;
                 Values = values;
                 InAppType = inAppType;
             }

@@ -143,15 +143,6 @@ namespace ToSic.Eav.Apps.ImportExport
             );
 
 
-            //   ct.SetImportParameters(
-            //    scope: xmlContentType.Attributes(XmlConstants.Scope).Any()
-            //        ? xmlContentType.Attribute(XmlConstants.Scope).Value
-            //        : base.Services.Environment.FallbackContentTypeScope,
-            //    nameId: xmlContentType.Attribute(XmlConstants.Static).Value,
-            //       // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-            //       // description: xmlContentType.Attribute(XmlConstants.Description).Value,
-            //    AllowUpdateOnSharedTypes && isSharedType
-            //);
             return (ct, "ok");
         });
 

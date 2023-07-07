@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
@@ -9,6 +8,7 @@ using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using ToSic.Eav.Code.InfoSystem;
 
 namespace ToSic.Eav.WebApi.Zone
 {
@@ -74,7 +74,7 @@ namespace ToSic.Eav.WebApi.Zone
                 Owner = owner
             };
 
-            var warningsObsolete = CountInsightsMessages(Obsolete.LogObsolete.ObsoleteNameInHistory);
+            var warningsObsolete = CountInsightsMessages(CodeInfoConstants.ObsoleteNameInHistory);
             var warningsOther = CountInsightsMessages(LogConstants.StoreWarningsPrefix) - warningsObsolete;
 
             var warningsDto = new MessagesDto

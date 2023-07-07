@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         In = new[] { InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
-        HelpLink = "https://r.2sxc.org/DsPaging")]
+        HelpLink = "https://go.2sxc.org/DsPaging")]
 
     public sealed class Paging: Eav.DataSource.DataSourceBase
 	{

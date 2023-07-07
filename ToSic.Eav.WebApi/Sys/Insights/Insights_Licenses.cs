@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Razor.Markup;
+using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
@@ -33,7 +35,7 @@ namespace ToSic.Eav.WebApi.Sys
 
             var rows = _licenseServiceLazy.Value.All
                 .ToList()
-                .Select(l => RowFields(
+                .Select(l => InsightsHtmlTable.RowFields(
                         EmojiTrueFalse(l.Enabled),
                         l.Title,
                         l.LicenseKey,
@@ -51,7 +53,7 @@ namespace ToSic.Eav.WebApi.Sys
 
             var msg = intro
                       + Table().Id("table").Wrap(
-                          HeadFields(
+                          InsightsHtmlTable.HeadFields(
                               "Enabled", "Title", "License Key on this System", "License Name", "License Guid Identifier", 
                               "Valid", "VSig", "VFP", "VVer", "VExp",
                               "Expires"

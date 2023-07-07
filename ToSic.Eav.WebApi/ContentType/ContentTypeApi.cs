@@ -118,8 +118,7 @@ namespace ToSic.Eav.WebApi
                 Label = nameOverride,
                 StaticName = t.NameId,
                 Scope = t.Scope,
-                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-                Description = /*t.Description.UseFallbackIfNoValue*/(details?.Description),
+                Description = details?.Description,
                 EditInfo = new EditInfoDto(t),
                 UsesSharedDef = ancestorDecorator != null,
                 SharedDefId = ancestorDecorator?.Id,
@@ -162,9 +161,6 @@ namespace ToSic.Eav.WebApi
                 item["StaticName"], 
                 item["Scope"], 
                 item["Name"],
-                // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-
-                //item["Description"],
                 null, false);
 	        return true;
 	    }

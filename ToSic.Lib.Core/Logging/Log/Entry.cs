@@ -14,17 +14,20 @@ namespace ToSic.Lib.Logging
         public bool WrapClose;
         public bool WrapOpenWasClosed;
 
+        public readonly EntryOptions Options;
+
         private readonly ILog _log;
 
         public string Source => (_log as Log)?.FullIdentifier;
 
         public string ShortSource => _log.NameId;
 
-        internal Entry(ILog log, string message, int depth, CodeRef code)
+        internal Entry(ILog log, string message, int depth, CodeRef code, EntryOptions options = default)
         {
             _log = log;
             Message = message;
             Depth = depth;
+            Options = options;
             Code = code;
         }
 

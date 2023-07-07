@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources
         DynamicOut = false,
         In = new[] { InStreamDefaultRequired },
 	    ConfigurationType = "|Config ToSic.Eav.DataSources.OwnerFilter",
-        HelpLink = "https://r.2sxc.org/DsOwnerFilter")]
+        HelpLink = "https://go.2sxc.org/DsOwnerFilter")]
 
     public class OwnerFilter : Eav.DataSource.DataSourceBase
 	{

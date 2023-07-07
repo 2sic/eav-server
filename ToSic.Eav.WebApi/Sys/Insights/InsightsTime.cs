@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Lib.Logging;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
 {
-    internal class InsightsTime
+    internal class InsightsTime: InsightsHtmlBase
     {
         public InsightsTime(TimeSpan fullTime = default)
         {
@@ -44,7 +45,7 @@ namespace ToSic.Eav.WebApi.Sys
 
             return Span(
                 " ",
-                Span(InsightsControllerReal.HtmlEncode("⌚")).Class("emoji"),
+                Span(HtmlEncode("⌚")).Class("emoji"),
                 $" {time}",
                 percentString
             ).Class("time").ToString();

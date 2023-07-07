@@ -19,7 +19,7 @@ namespace ToSic.Eav.Run.Unknown
                 "The system uses extensive Dependency Injection, and defaults to 'Unknown' implementations if something is missing. ");
             log.A("You are seeing this warning, because apparently such an implementation was initialized, which shouldn't happen in a good productive environment.");
             log.A("This warning will only appear once per used type");
-            log.A("See https://r.2sxc.org/unknown-implementations");
+            log.A("See https://go.2sxc.org/unknown-implementations");
             logStore.Add("warnings-not-implemented", log);
         }
 

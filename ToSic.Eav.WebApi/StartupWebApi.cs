@@ -26,7 +26,7 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<InsightsControllerReal>();
             services.TryAddSingleton<DummyControllerReal>();
 
-            // Real Controller Implementations https://r.2sxc.org/proxy-controllers
+            // Real Controller Implementations https://go.2sxc.org/proxy-controllers
             services.TryAddTransient<FeatureControllerReal>();
             services.TryAddTransient<MetadataControllerReal>();
             services.TryAddTransient(typeof(EntityControllerReal<>));

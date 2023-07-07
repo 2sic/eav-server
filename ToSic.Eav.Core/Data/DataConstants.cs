@@ -30,7 +30,7 @@
         public static readonly string ErrorFieldDebugNotes = "DebugNotes";
 
         public static readonly string ErrorDebugMessage =
-            "There should be more details in the insights logs, see https://r.2sxc.org/insights";
+            "There should be more details in the insights logs, see https://go.2sxc.org/insights";
 
         #endregion
     }

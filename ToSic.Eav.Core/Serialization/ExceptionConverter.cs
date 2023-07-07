@@ -25,7 +25,7 @@ namespace ToSic.Eav.Serialization
                 .Select(uu => new { uu.Name, Value = uu.GetValue(value) })
                 .Where(uu => uu.Name != nameof(Exception.TargetSite));
 
-            if (options?.IgnoreNullValues == true)
+            if (options?.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingNull)
             {
                 serializableProperties = serializableProperties.Where(uu => uu.Value != null);
             }

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Serialization;
+using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
@@ -32,12 +33,12 @@ namespace ToSic.Eav.WebApi.Sys
                     : appRead.Entities.Get(type).ToImmutableList();
                 msg += P($"entities: {entities.Count}\n");
                 msg += "<table id='table'>"
-                    + HeadFields("#", "Id", Eav.Data.Attributes.GuidNiceName, Eav.Data.Attributes.TitleNiceName, "Type", "Modified", "Owner", "Version", "Metadata", "Permissions")
+                    + InsightsHtmlTable.HeadFields("#", "Id", Eav.Data.Attributes.GuidNiceName, Eav.Data.Attributes.TitleNiceName, "Type", "Modified", "Owner", "Version", "Metadata", "Permissions")
                     + "<tbody>";
                 var count = 0;
                 foreach (var ent in entities)
                 {
-                    msg = msg + RowFields(
+                    msg += InsightsHtmlTable.RowFields(
                         (++count).ToString(),
                         LinkTo($"{ent.EntityId}", nameof(Entity), appId, nameId: ent.EntityId.ToString()),
                         LinkTo($"{ent.EntityGuid}", nameof(Entity), appId, nameId: ent.EntityGuid.ToString()), 
@@ -52,7 +53,7 @@ namespace ToSic.Eav.WebApi.Sys
                 msg += "</tbody>";
                 msg += "</table>";
                 msg += "\n\n";
-                msg += JsTableSort();
+                msg += InsightsHtmlParts.JsTableSort();
             }
             catch
             {

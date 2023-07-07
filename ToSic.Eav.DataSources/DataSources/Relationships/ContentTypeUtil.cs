@@ -12,8 +12,6 @@ namespace ToSic.Eav.DataSources.Sys
         {
             {ContentTypeType.Name.ToString(), t.Name},
             {ContentTypeType.StaticName.ToString(), t.NameId},
-            // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-            //{ContentTypeType.Description.ToString(), t.Description},
             {ContentTypeType.IsDynamic.ToString(), t.IsDynamic},
 
             {ContentTypeType.Scope.ToString(), t.Scope},
