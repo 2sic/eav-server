@@ -57,7 +57,7 @@ namespace ToSic.Eav.DataSource
         [PrivateApi("internal use only - for labeling data sources in queries to show in debugging")]
         public string Label { get; private set; }
 
-        [PrivateApi]
+        [InternalApi_DoNotUse_MayChangeWithoutNotice]
         public virtual bool Immutable { get; private set; }
 
         [PrivateApi]

@@ -5,7 +5,7 @@ namespace ToSic.Eav.Metadata
     /// <summary>
     /// Metadata targets specific things, and the TargetTypes determines what kind of thing this is. 
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
+    [PublicApi]
     public enum TargetTypes
     {
         /// <summary>
