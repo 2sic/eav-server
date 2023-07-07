@@ -255,7 +255,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             var tmpAppGlobalFilesRoot =
                 pendingApp ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder) : appDirectory;
-            CopyAppGlobalFiles(importMessages, appId, tmpAppGlobalFilesRoot, deleteGlobalTemplates: true,
+            CopyAppGlobalFiles(importMessages, appId, tmpAppGlobalFilesRoot, deleteGlobalTemplates: false,
                 overwriteFiles: true);
             // New in V11 - now that we just imported content types into the /system folder
             // the App must be refreshed to ensure these are available for working
@@ -306,6 +306,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                 Log.A("copy all files to app global template folder");
                 base.Services.FileManagerGenerator.New()
+                    .SetFolder(appTemplateRoot)
                     .CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
             }
         });
