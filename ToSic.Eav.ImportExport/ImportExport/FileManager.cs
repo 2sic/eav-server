@@ -53,7 +53,7 @@ namespace ToSic.Eav.ImportExport
             Log.A($"copy files:{filteredFiles.Count}");
             foreach (var file in filteredFiles)
             {
-                var relativeFilePath = file.Replace(_root, "");
+                var relativeFilePath = file.Replace(_root, "").TrimPrefixSlash();
                 var destinationFilePath = $"{destinationFolder}{DirectorySeparatorChar}{relativeFilePath}";
                 Log.A($"relFilePath:{relativeFilePath},destFilePath:{destinationFilePath}");
 
