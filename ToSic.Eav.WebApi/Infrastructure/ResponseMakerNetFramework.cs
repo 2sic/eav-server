@@ -9,7 +9,7 @@ using System.Text.Json;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.WebApi.Plumbing
+namespace ToSic.Eav.WebApi.Infrastructure
 {
     public class ResponseMakerNetFramework: ResponseMaker<HttpResponseMessage>
     {

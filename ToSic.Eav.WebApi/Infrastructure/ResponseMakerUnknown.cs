@@ -2,7 +2,7 @@
 using System.IO;
 using ToSic.Eav.Run.Unknown;
 
-namespace ToSic.Eav.WebApi.Plumbing
+namespace ToSic.Eav.WebApi.Infrastructure
 {
     public class ResponseMakerUnknown<THttpResponseType> : ResponseMaker<THttpResponseType>
     {

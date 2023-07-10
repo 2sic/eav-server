@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 
-namespace ToSic.Eav.WebApi.Plumbing
+namespace ToSic.Eav.WebApi.Infrastructure
 {
     public abstract class ResponseMaker<THttpResponseType>
     {
