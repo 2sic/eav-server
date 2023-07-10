@@ -62,6 +62,10 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<EavCollectionJsonConverter>();
             services.TryAddTransient<EavJsonConverterFactory>();
 
+            // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
+            // This ensures that generic backends (.net framework/core) can create a response object
+            services.TryAddScoped<IResponseMaker, ResponseMaker>();
+
             services.AddNetInfrastructure();
 
             return services;
@@ -86,12 +90,6 @@ namespace ToSic.Eav.WebApi
 #if NETFRAMEWORK
         public static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
         {
-            // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
-            //services.TryAddScoped<ResponseMaker>();     // this must come first!
-            services.TryAddScoped<IResponseMaker, ResponseMaker>(); //sp => sp.GetRequiredService<ResponseMaker>());
-            //services.TryAddScoped<ResponseMaker<System.Net.Http.HttpResponseMessage>>(x => x.GetRequiredService<ResponseMaker>());
-            //services.TryAddScoped<IResponseMaker<System.Net.Http.HttpResponseMessage>>(x => x.GetRequiredService<ResponseMaker>());
-
             return services;
         }
 #else
@@ -99,16 +97,6 @@ namespace ToSic.Eav.WebApi
         {
             // Helper to get header, query string and route information from current request
             services.TryAddScoped<RequestHelper>();
-
-            // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
-            // This ensures that generic backends (.net framework/core) can create a response object
-            //services.TryAddScoped<ResponseMaker>();     // this must come first!
-            services.TryAddScoped<IResponseMaker, ResponseMaker>(); //sp => sp.GetRequiredService<ResponseMaker>());
-            //services.TryAddScoped<ResponseMaker<Microsoft.AspNetCore.Mvc.IActionResult>>(x => x.GetRequiredService<ResponseMaker>());
-            //services.TryAddScoped<IResponseMaker<Microsoft.AspNetCore.Mvc.IActionResult>>(x => x.GetRequiredService<ResponseMaker>());
-
-            //// This ensures that generic backends (.net framework/core) can create a response object
-            //services.TryAddScoped<ResponseMaker<Microsoft.AspNetCore.Mvc.IActionResult>, ResponseMakerNetCore>();
 
             return services;
         }
