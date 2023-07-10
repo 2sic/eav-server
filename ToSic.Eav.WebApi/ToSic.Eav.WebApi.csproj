@@ -40,7 +40,8 @@
   </ItemGroup>-->
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+	<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	<!--<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />-->
     <Reference Include="ToSic.Razor">
       <HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\net6.0\ToSic.Razor.dll</HintPath>
     </Reference>

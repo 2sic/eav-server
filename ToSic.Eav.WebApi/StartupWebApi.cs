@@ -62,10 +62,7 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<EavCollectionJsonConverter>();
             services.TryAddTransient<EavJsonConverterFactory>();
 
-#if NETFRAMEWORK
-            // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
-            services.TryAddScoped<ResponseMaker<System.Net.Http.HttpResponseMessage>, ResponseMakerNetFramework>();
-#endif
+            services.AddNetInfrastructure();
 
             return services;
         }
@@ -86,5 +83,33 @@ namespace ToSic.Eav.WebApi
             services.TryAddScoped(typeof(ResponseMaker<>), typeof(ResponseMakerUnknown<>));
             return services;
         }
+
+#if NETFRAMEWORK
+        public static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
+        {
+            // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
+            services.TryAddScoped<ResponseMaker>();     // this must come first!
+            services.TryAddScoped<ResponseMaker<System.Net.Http.HttpResponseMessage>>(x => x.GetRequiredService<ResponseMaker>());
+
+            return services;
+        }
+#else
+        public static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
+        {
+            // Helper to get header, query string and route information from current request
+            services.TryAddScoped<RequestHelper>();
+
+            // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
+            // This ensures that generic backends (.net framework/core) can create a response object
+            services.TryAddScoped<ResponseMaker>();     // this must come first!
+            services.TryAddScoped<ResponseMaker<Microsoft.AspNetCore.Mvc.IActionResult>>(x => x.GetRequiredService<ResponseMaker>());
+
+            //// This ensures that generic backends (.net framework/core) can create a response object
+            //services.TryAddScoped<ResponseMaker<Microsoft.AspNetCore.Mvc.IActionResult>, ResponseMakerNetCore>();
+
+            return services;
+        }
+#endif
+
     }
 }

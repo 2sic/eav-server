@@ -11,7 +11,7 @@ using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.WebApi.Infrastructure
 {
-    public class ResponseMakerNetFramework: ResponseMaker<HttpResponseMessage>
+    public class ResponseMaker: ResponseMaker<HttpResponseMessage>
     {
         public void Init(System.Web.Http.ApiController apiController) => _apiController = apiController;
 
@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi.Infrastructure
 
         private System.Web.Http.ApiController ApiController
             => _apiController ?? throw new Exception(
-                $"Accessing the {nameof(ApiController)} in the {nameof(ResponseMakerNetFramework)} requires it to be Init first.");
+                $"Accessing the {nameof(ApiController)} in the {nameof(ResponseMaker)} requires it to be Init first.");
 
         public override HttpResponseMessage Error(int statusCode, string message) 
             => ApiController.Request.CreateErrorResponse((HttpStatusCode)statusCode, message);
