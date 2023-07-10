@@ -29,7 +29,7 @@ namespace ToSic.Eav.WebApi
             // Real Controller Implementations https://go.2sxc.org/proxy-controllers
             services.TryAddTransient<FeatureControllerReal>();
             services.TryAddTransient<MetadataControllerReal>();
-            services.TryAddTransient(typeof(EntityControllerReal<>));
+            services.TryAddTransient<EntityControllerReal>();
             services.TryAddTransient<FieldControllerReal>();
             services.TryAddTransient<ZoneControllerReal>();
             services.TryAddTransient<LogControllerReal>();
@@ -44,7 +44,7 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<EntityPickerApi>();
             services.TryAddTransient<ContentTypeApi>();
             services.TryAddTransient(typeof(QueryControllerBase<>.MyServices));
-            services.TryAddTransient(typeof(ContentExportApi<>));
+            services.TryAddTransient<ContentExportApi>();
             services.TryAddTransient<ContentImportApi>();
 
             // Internal API helpers
@@ -71,16 +71,15 @@ namespace ToSic.Eav.WebApi
         /// Add typed EAV WebApi objects.
         /// Make sure it's called AFTER adding the normal EAV. Otherwise the ResponseMaker will be the unknown even in
         /// </summary>
-        /// <typeparam name="THttpResponseType"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddEavWebApiTypedAfterEav<THttpResponseType>(this IServiceCollection services)
+        public static IServiceCollection AddEavWebApiTypedAfterEav(this IServiceCollection services)
         {
             // APIs
-            services.TryAddTransient<ApiExplorerControllerReal<THttpResponseType>>();
+            services.TryAddTransient<ApiExplorerControllerReal>();
             services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
             // The ResponseMaker must be registered as generic, so that any specific registration will have priority
-            services.TryAddScoped(typeof(ResponseMaker<>), typeof(ResponseMakerUnknown<>));
+            services.TryAddScoped<IResponseMaker, ResponseMakerUnknown>();
             return services;
         }
 
@@ -88,8 +87,10 @@ namespace ToSic.Eav.WebApi
         public static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
         {
             // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
-            services.TryAddScoped<ResponseMaker>();     // this must come first!
-            services.TryAddScoped<ResponseMaker<System.Net.Http.HttpResponseMessage>>(x => x.GetRequiredService<ResponseMaker>());
+            //services.TryAddScoped<ResponseMaker>();     // this must come first!
+            services.TryAddScoped<IResponseMaker, ResponseMaker>(); //sp => sp.GetRequiredService<ResponseMaker>());
+            //services.TryAddScoped<ResponseMaker<System.Net.Http.HttpResponseMessage>>(x => x.GetRequiredService<ResponseMaker>());
+            //services.TryAddScoped<IResponseMaker<System.Net.Http.HttpResponseMessage>>(x => x.GetRequiredService<ResponseMaker>());
 
             return services;
         }
@@ -101,8 +102,10 @@ namespace ToSic.Eav.WebApi
 
             // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
             // This ensures that generic backends (.net framework/core) can create a response object
-            services.TryAddScoped<ResponseMaker>();     // this must come first!
-            services.TryAddScoped<ResponseMaker<Microsoft.AspNetCore.Mvc.IActionResult>>(x => x.GetRequiredService<ResponseMaker>());
+            //services.TryAddScoped<ResponseMaker>();     // this must come first!
+            services.TryAddScoped<IResponseMaker, ResponseMaker>(); //sp => sp.GetRequiredService<ResponseMaker>());
+            //services.TryAddScoped<ResponseMaker<Microsoft.AspNetCore.Mvc.IActionResult>>(x => x.GetRequiredService<ResponseMaker>());
+            //services.TryAddScoped<IResponseMaker<Microsoft.AspNetCore.Mvc.IActionResult>>(x => x.GetRequiredService<ResponseMaker>());
 
             //// This ensures that generic backends (.net framework/core) can create a response object
             //services.TryAddScoped<ResponseMaker<Microsoft.AspNetCore.Mvc.IActionResult>, ResponseMakerNetCore>();

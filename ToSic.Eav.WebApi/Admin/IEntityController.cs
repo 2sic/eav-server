@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.WebApi.Dto;
+#if NETFRAMEWORK
+using THttpResponseType = System.Net.Http.HttpResponseMessage;
+#else
+using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
+#endif
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public interface IEntityController<THttpResponseType>
+    public interface IEntityController
     {
         /// <summary>
         /// Get all entities of a specific type in the app

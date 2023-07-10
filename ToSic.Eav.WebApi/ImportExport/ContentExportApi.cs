@@ -23,15 +23,21 @@ using System.Web.Http;
 #else
 using Microsoft.AspNetCore.Mvc;
 #endif
+#if NETFRAMEWORK
+using THttpResponseType = System.Net.Http.HttpResponseMessage;
+#else
+using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
+#endif
+
 
 namespace ToSic.Eav.WebApi.ImportExport
 {
-    public class ContentExportApi<THttpResponseType> : ServiceBase
+    public class ContentExportApi : ServiceBase
     {
         private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly IAppStates _appStates;
         private readonly Generator<JsonSerializer> _jsonSerializer;
-        private readonly ResponseMaker<THttpResponseType> _responseMaker;
+        private readonly IResponseMaker _responseMaker;
         private readonly LazySvc<IFeaturesInternal> _features;
 
         private AppManager _appManager;
@@ -39,7 +45,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             LazySvc<AppManager> appManagerLazy, 
             IAppStates appStates,
             Generator<JsonSerializer> jsonSerializer,
-            ResponseMaker<THttpResponseType> responseMaker,
+            IResponseMaker responseMaker,
             LazySvc<IFeaturesInternal> features
             ) : base("Api.EaCtEx")
         {
@@ -53,7 +59,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             );
         }
 
-        public ContentExportApi<THttpResponseType> Init(int appId)
+        public ContentExportApi Init(int appId)
         {
             _appManager = _appManagerLazy.Value.Init(appId);
             Log.A($"For app: {appId}");

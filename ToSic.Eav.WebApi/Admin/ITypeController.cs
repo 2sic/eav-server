@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.WebApi.Dto;
+#if NETFRAMEWORK
+using THttpResponseType = System.Net.Http.HttpResponseMessage;
+#else
+using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
+#endif
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public interface ITypeController<THttpResponseType>
+    public interface ITypeController
     {
         /// <summary>
         /// Create a ghost-content-type (very advanced feature)
