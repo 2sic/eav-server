@@ -2,6 +2,11 @@
 {
     public partial class ToSicEavAttributesInSets
     {
+        public ToSicEavAttributesInSets()
+        {
+            IsTitle = false;
+        }
+
         public int AttributeId { get; set; }
         public int AttributeSetId { get; set; }
         public int AttributeGroupId { get; set; }
