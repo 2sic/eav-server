@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using ToSic.Eav.Configuration;
 #if NETFRAMEWORK
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -14,8 +15,14 @@ namespace ToSic.Eav.Persistence.Efc.Models
             var connectionString = _dbConfig.ConnectionString;
             if (!connectionString.ToLowerInvariant().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
                 connectionString += ";MultipleActiveResultSets=True";
-
+#if NETFRAMEWORK
             optionsBuilder.UseSqlServer(connectionString);
+#else
+            // https://learn.microsoft.com/en-gb/ef/core/querying/single-split-queries
+            optionsBuilder
+                .UseSqlServer(connectionString/*, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)*/)
+                .ConfigureWarnings(w => w.Log(RelationalEventId.MultipleCollectionIncludeWarning));
+#endif
         }
 
         //public bool DebugMode = false;
