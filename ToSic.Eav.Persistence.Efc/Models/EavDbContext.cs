@@ -20,7 +20,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
 #else
             // https://learn.microsoft.com/en-gb/ef/core/querying/single-split-queries
             optionsBuilder
-                .UseSqlServer(connectionString/*, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)*/)
+                .UseSqlServer(connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
                 .ConfigureWarnings(w => w.Log(RelationalEventId.MultipleCollectionIncludeWarning));
 #endif
         }
