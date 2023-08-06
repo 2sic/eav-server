@@ -16,15 +16,23 @@ namespace ToSic.Eav.Data
         public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path)
             => TraversePath(specs, path.KeepOrNew(), this, NameId);
 
+        public const char PathSeparator = '.';
+
+        public static string[] SplitPathIntoParts(string path, string prefixToIgnore = default)
+        {
+            if (path == null) return Array.Empty<string>();
+            var parts = path.Split(PathSeparator);
+            return prefixToIgnore != default && parts.Any() && prefixToIgnore.EqualsInsensitive(parts.First())
+                ? parts.Skip(1).ToArray()
+                : parts;
+        }
+
         [PrivateApi]
         public static PropReqResult TraversePath(PropReqSpecs specs, PropertyLookupPath path,
             IPropertyLookup initialSource, string prefixToIgnore = null
         ) => specs.LogOrNull.Func(specs.Field, l =>
         {
-            var fields = specs.Field.Split('.');
-            if (prefixToIgnore != null && fields.Any() && prefixToIgnore.EqualsInsensitive(fields.First()))
-                fields = fields.Skip(1).ToArray();
-
+            var fields = SplitPathIntoParts(specs.Field, prefixToIgnore);
             PropReqResult result = null;
             var currentSource = initialSource;
 

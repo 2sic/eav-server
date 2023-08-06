@@ -17,11 +17,9 @@ namespace ToSic.Eav.Data.Debug
             return new PropertyDumpItem
             {
                 Path = errPath,
-                Property = new PropReqResult("error", new PropertyLookupPath().Add(errPath))
+                Property = new PropReqResult(result: "error", fieldType: Attributes.FieldIsVirtual, path: new PropertyLookupPath().Add(errPath))
                 {
-                    FieldType = "Todo",
                     Name = "error",
-                    Result = "error"
                 }
             };
         }

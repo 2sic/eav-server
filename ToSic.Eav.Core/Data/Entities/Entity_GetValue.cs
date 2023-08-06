@@ -31,20 +31,20 @@ namespace ToSic.Eav.Data
             {
                 var attribute = Attributes[field];
                 var (valueField, result) = attribute.GetTypedValue(languages);
-                return new PropReqResult(result, path) { Value = valueField, FieldType = attribute.Type.ToString(), Source = this };
+                return new PropReqResult(result: result, fieldType: attribute.Type.ToString(), path: path) { Value = valueField, Source = this };
             }
             
             if (field == EntityFieldTitle)
             {
                 var attribute = Title;
                 var valT = attribute?.GetTypedValue(languages);
-                return new PropReqResult(valT?.Result, path) { Value = valT?.ValueField, FieldType = attribute?.Type.ToString(), Source = this };
+                return new PropReqResult(result: valT?.Result, fieldType: attribute?.Type.ToString() ?? FieldIsNotFound, path: path) { Value = valT?.ValueField, Source = this };
             }
 
             // directly return internal properties, mark as virtual to not cause further Link resolution
             var valueFromInternalProperty = GetInternalPropertyByName(field);
-            var likelyResult = new PropReqResult(valueFromInternalProperty, path) { FieldType = FieldIsVirtual, Source = this };
-            if (valueFromInternalProperty != null) return likelyResult;
+            if (valueFromInternalProperty != null)
+                return new PropReqResult(result: valueFromInternalProperty, fieldType: FieldIsVirtual, path: path) { Source = this };
 
             // New Feature in 12.03 - Sub-Item Navigation if the data contains information what the sub-entity identifiers are
             try
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Data
                 if (subItem != null) return subItem;
             } catch { /* ignore */ }
 
-            return likelyResult;
+            return new PropReqResult(result: null, fieldType: FieldIsNotFound, path: path) { Source = this };
         }
 
         protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)

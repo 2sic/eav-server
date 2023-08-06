@@ -88,6 +88,11 @@ namespace ToSic.Eav.Data
         /// </summary>
         public static string FieldIsDynamic = "dynamic";
 
+        /// <summary>
+        /// Mark result types as not found
+        /// </summary>
+        public static string FieldIsNotFound = "not-found";
+
         #endregion
 
         /// <summary>
