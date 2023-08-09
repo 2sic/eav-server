@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data.Raw
     {
         public RawFromAnonymous(object original, ILog log)
         {
-            var dic = original.ObjectToDictionaryInvariant(mutable: true);
+            var dic = original.ToDicInvariantInsensitive(mutable: true);
             
             if (dic.ContainsKey(nameof(Id)))
             {
