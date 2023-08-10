@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
+// ReSharper disable ConvertToNullCoalescingCompoundAssignment
 
 namespace ToSic.Eav.Data
 {
@@ -30,8 +31,8 @@ namespace ToSic.Eav.Data
         protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)
             => LookupLanguages = languageCodes ?? Array.Empty<string>();
 
-        protected EntityBasedType(IEntity entity, string languageCode) : this(entity) 
-            => LookupLanguages = languageCode != null ? new[] {languageCode} : Array.Empty<string>();
+        protected EntityBasedType(IEntity entity, string languageCode) : this(entity)
+            => LookupLanguages = languageCode != null ? new[] { languageCode } : Array.Empty<string>();
 
         /// <inheritdoc />
         public virtual string Title => _title ?? (_title = Entity?.GetBestTitle() ?? "");
