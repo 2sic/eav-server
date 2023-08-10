@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data
     /// <summary>
     /// A interface to ensure all things that carry an IEntity can be compared based on the Entity they carry.
     /// </summary>
-    [PublicApi]
+    [PrivateApi("Hide, was public before 2023-08-10")]
     public interface IEntityWrapper: IHasDecorators<IEntity>, IMultiWrapper<IEntity>, ICanBeEntity
     {
         /// <summary>
