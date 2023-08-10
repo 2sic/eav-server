@@ -36,19 +36,20 @@ namespace ToSic.Eav
         public static void Protect(
             string criticalParameter, 
             string paramNames = default,
-            [CallerMemberName] string methodName = default)
+            [CallerMemberName] string methodName = default,
+            string message = default)
         {
             // Note: this is duplicate code, but we don't want the call stack to become more confusing
             if (criticalParameter != Protector)
-                throw CreateException(methodName, paramNames);
+                throw CreateException(methodName, paramNames, message);
         }
 
-        private static NamedArgumentException CreateException(string methodName, string paramNames)
+        private static NamedArgumentException CreateException(string methodName, string paramNames, string addMessage = default)
         {
             var intro = $"When using '.{methodName}(...)'\n you must use named parameters\n to ensure your code works in future\n when params might change. ";
             var see = $"See {HelpLink} ";
             var paramsText = paramNames == null ? "" : $". This command expects these parameters: '{paramNames}'.";
-            var msg = intro + see + paramsText;
+            var msg = intro + see + paramsText + addMessage;
             return new NamedArgumentException(msg, intro, paramNames, paramsText);
         }
 
