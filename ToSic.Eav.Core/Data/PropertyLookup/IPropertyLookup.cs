@@ -11,10 +11,17 @@ namespace ToSic.Eav.Data.PropertyLookup
         /// Internal helper to get a property with additional information for upstream processing. 
         /// </summary>
         /// <returns></returns>
+        [PrivateApi]
         PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path);
 
         [PrivateApi]
         List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path);
+    }
 
+    [PrivateApi]
+    public interface IHasPropLookup
+    {
+        [PrivateApi]
+        IPropertyLookup PropertyLookup { get; }
     }
 }
