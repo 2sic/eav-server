@@ -173,7 +173,7 @@ namespace ToSic.Eav.Configuration.Licenses
                         Title = licenseStored.Title,
                         License = licDef,
                         EntityGuid = licenseStored.GuidSalt,
-                        LicenseKey = licenseStored.Key,
+                        LicenseKey = licenseStored.Key ?? LicenseKeyDescription,
                         Expiration = storedDetails.Expires ?? licenseStored.Expires,
                         ExpirationIsValid = validDate,
                         FingerprintIsValid = validFp,
@@ -186,7 +186,10 @@ namespace ToSic.Eav.Configuration.Licenses
 
             return (licenseStates, licenseStates.Count.ToString());
         });
-        
+
+        // license key description on this system
+        private const string LicenseKeyDescription = "system license";
+
         /// <summary>
         /// Get list of licenses which are always auto-enabled
         /// </summary>
