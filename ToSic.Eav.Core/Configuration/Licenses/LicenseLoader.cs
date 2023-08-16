@@ -175,7 +175,7 @@ namespace ToSic.Eav.Configuration.Licenses
                         EntityGuid = licenseStored.GuidSalt,
                         LicenseKey = licenseStored.Key ?? LicenseKeyDescription,
                         Expiration = storedDetails.Expires ?? licenseStored.Expires,
-                        ExpirationIsValid = validDate,
+                        ExpirationIsValid = DateTime.Now.CompareTo(storedDetails.Expires ?? licenseStored.Expires) <= 0,
                         FingerprintIsValid = validFp,
                         SignatureIsValid = validSig,
                         VersionIsValid = validVersion,
